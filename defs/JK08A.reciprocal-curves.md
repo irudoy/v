@@ -23,13 +23,6 @@ bytes `57F6472A000B0009` lie outside the tested stock spans. The following
 complete parent entry, original configuration selection and scheduling are
 not admitted. No stock function is stubbed.
 
-The raw component retains complete CPU/SR/ABI/frame/RAM, calibration inputs,
-and both original invocations inside the existing complete COPY packet.
-Independent physical, instruction-state and integer consumers require exact
-word/neighbor reads, arguments after delay slots, returned quotient, genuine
-zero-divisor fault, unchanged fault on nonzero divisors and independent
-divisor/quotient variation for both entries.
-
 The exact native proposals replace only the two legacy arithmetic reader
 claims with conditional `arithmetic-argument` dependencies and retire their
 corresponding legacy consumer selectors. Complete original claims and ledgers

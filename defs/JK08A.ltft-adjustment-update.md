@@ -10,14 +10,10 @@ signedness, units/scale, diagnostic bindings and the unresolved narrower
 operating-mode name remain exact. The two reader claims retain their
 reverse-only properties and `indexed_by` roles.
 
-`JK08A.ltft-adjustment-update-paths.toml` binds 553 stock instructions in
-3 actual entry paths and 6 spans, 34 literal pools, 16 four-byte RAM pointer
-aliases and 42 calibration spans. The complete root, signed divider
-`21BBC` and fixed-record predicate `25E20` retain actual instruction bytes,
-calls, branches, delay slots and natural returns. 8 raw ROM controls
-remain independent. The existing 80-byte context, 572-byte observation,
-192-byte frame and complete 65536-byte RAM retain their ordinary transport.
-The root uses 68 stack bytes; real nested helper frames remain observable.
+Source bindings: `JK08A.ltft-adjustment-update-paths.toml`.
+
+The real helpers include signed divider `21BBC` and fixed-record
+predicate `25E20`. The root uses 68 stack bytes.
 
 The actual `5819C` word read supplies unsigned `L=RAM16[2304]` to
 `delta=floor(L*ROM8[878B]/25600)`. The first division executes on every
@@ -60,15 +56,6 @@ Independent numerical equations and physical operand consumers remain
 separate. Held-other changes to `2304`, `2308` and prior `564A` must each
 change the actual published `564A` word.
 
-The owning declaration binds three complete native owners with nine
-known evidence appends: six from existing bank-pulse/learning families
-and three from this updater. All three owners require one common complete
-before or after phase. Missing, duplicate, extra, changed or mixed-phase
-appends refuse admission. The existing family-scoped declarations remain
-unchanged. Their complete bank-pulse components and learning original
-remain mandatory from the same primary. All individual claim properties,
-roles, other owner facts, function, symbols, ledger, evidence and TEST
-positions remain fixed.
 
 Source preparation supplies no native publication, receipt, forward
 property donation, new semantic type, geometry, units, scale, physical

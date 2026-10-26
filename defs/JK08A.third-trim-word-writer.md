@@ -1,12 +1,6 @@
 # Complete third-trim word writer
 
-The source binds 205 stock instructions in 1 actual entry path and 2 spans,
-20 literal pools, 7 four-byte RAM pointer aliases and 28 calibration spans.
-The complete 0005B534 entry has 205 instructions. The source includes
-1 stock entry path and 8 raw ROM controls containing 8 bytes.
-The existing 80-byte context, 572-byte observer and 192-byte frame retain
-20 independent context fields. All published counts read the executed
-descriptor.
+The described natural entry is `0005B534`.
 
 All 256 raw channel values of the complete incoming R4 remain observed.
 The function selects its low8 and uses channel+1 as the actual mask.
@@ -57,12 +51,3 @@ effect on full output CPU, frame and other RAM. Independent high24
 bits of the incoming channel require identical complete output state.
 A matching low16 store, truncated accumulator, shifted-bit mask or
 supplied produced R2 cannot replace these complete requirements.
-
-Original 058492927bab2006d7003566c42d6b3afdd9d72a78f5fb8070f12848fff98780 retains its writer
-type, structural identity support, roles and evidence. One exact owning
-proof append preserves complete native owner and function facts, width16,
-absent producer signedness, unit percent*256, the typed bank-base-pulse
-reader, other writers and all ledger/evidence/TEST positions. Storage
-width and the existing units receive no additional semantic admission.
-Engineering scale, physical correction source, scheduler reachability
-and hardware qualification are not inferred.

@@ -11,11 +11,8 @@ The first stage reuses the exact registered `jk08a-coherent-00020fcc` prefix
 The existing R11 entry condition, 76-byte context, 380-byte observer, 96-byte
 frame and 4 observing-boundary instructions remain intact.
 
-The second stage executes the complete `00047A56` comparator and its real
-curve and fixed diagnostic helpers through the existing 80-byte context,
-572-byte observer and 192-byte frame. All 20 comparator context fields vary
-independently. The driver observes the complete 65536-byte RAM after the
-first stage and before the second stage without reseeding it.
+The second stage uses the complete `00047A56` comparator and its real
+curve and fixed diagnostic helpers.
 
 Independent equations cover the complete history and block transfer, both
 pedal comparison modes, timer and diagnostic precedence, raw ordered

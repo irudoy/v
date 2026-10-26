@@ -2,9 +2,7 @@
 
 `JK08A.closed-loop-coolant-accesses.toml` binds the complete natural
 `0005525A` invocation and its existing byte-curve and absolute-value callees.
-The owning function is `knowing-potoo/fn`. The existing assembly, numerical
-model, literal input source, legacy harness and common observer retain their
-source identities. No stock function is replaced by an arithmetic stub.
+The owning function is `knowing-potoo/fn`.
 
 ## Native owners and physical operands
 
@@ -38,14 +36,6 @@ the existing translation into ordinary simulator RAM. The source has no
 additional native workspace, observing return stub or storage allocator.
 All tested executable bytes remain stock.
 
-The common observer has an 80-byte incoming context, a 572-byte result and
-a 192-byte frame at SP-160..SP+31. Complete incoming and terminal registers,
-full prepared SR, natural PR/SP, MACH/MACL/GBR, external ABI and the whole
-frame are observed. Complete 64 KiB RAM, all 770 bound bytes and all
-42 controlled calibration bytes are recorded before and after the call.
-Other RAM bytes have the explicit initial value A5 and remain part of the
-full state comparison. Instruction-state execution uses the existing
-ordinary RAM and frame domains.
 
 BSR/JSR state binds the real curve call at `00055392` to `00026370`,
 including its byte-extension delay slot and natural return to `00055396`.
@@ -84,31 +74,3 @@ Both feasible outcomes are required. The separate byte-entry guard at
 it zero. The original must not enter the word-only `26A9C..26AAA` span
 (end exclusive). This exact call premise grants no general absence,
 hardware, interrupt, scheduling or event-cadence claim.
-
-## Exact owning publication and refusals
-
-The existing coordinate/publication descriptor contains twelve exact owning appends.
-All ten preceding complete reference records and all 37 calculation
-identities retain independent pins. The two coolant appends retain each
-full native owner, the reader relation class and its properties, the
-unsigned8/signed16 facts, symbol/layout/ledger data, all other links and
-the original TEST/spec positions. The symbol L0 evidence remains exact.
-Existing complete batch, TEST-origin, metadata-publication, identity-only
-and COPY/injection/coherent/SID22 scope guards remain mandatory.
-
-One `closed_loop_coolant_paths` binding joins the existing ordinary family.
-The registration contains thirteen ordinary families and forty-seven capture bindings.
-The existing mode, common dispatcher, transport envelope, observer and
-writer operations remain in use. The independent consumer must establish
-`exact_coolant_accesses`, `exact_selected_coefficient` and
-`exact_signed_offset` from the same complete actual COPY primary.
-
-Refusal sources cover missing/stale originals, altered source reconstruction,
-aliases, toolchain, headers, invocation streams, all RAM/frame/CPU/ABI and
-bound snapshots, selected index/address/value/width/direction, exact physical
-order, full post-delay calls, natural returns, word-only path escapes,
-noncausal positives, changed semantic types and changed TEST/spec contexts.
-No scale, units, geometry publication, upstream producer, natural ECU
-scheduling, peripheral behavior, hardware eligibility or engine behavior
-follows. Source preparation does not close an original pending review or
-constitute executable acceptance.

@@ -1,28 +1,11 @@
 # Bounded JK08A I/O accesses
 
-`JK08A.io-accesses.toml` binds independently assembled SH-2E instruction
-windows to exact stock bytes. `JK08A.io-access-claims.toml` binds three
-existing register claims to their complete original and proposed native
-documents. Qualified admission requires the original complete shared GNU
-execution, independently consumed full state, exact native transitions,
-unchanged TEST origins and unchanged physical proof namespaces.
+Source bindings: `JK08A.io-accesses.toml`.
+
 
 ## Storage and observations
 
-The simulator exposes flat storage at `FFFFD900` for 1024 bytes,
-`FFFFF400` for 256 bytes and `FFFFF700` for 256 bytes. The harness observes
-all 1536 native bytes before and after every invocation, separately from
-all 65536 bytes of relocated RAM at `01000000`. Initial native bytes are
-copied from their declared RAM shadows. Subsequent native writes do not
-update those shadows. The consumer compares both snapshots independently.
-The ELF storage gate excludes the four declared memory domains from
-harness allocation; the state oracle also refuses a frame overlapping them.
 
-Each observation includes the immutable 80-byte input context, actual exit
-registers, full SR, stack pointer, continuation, caller ABI, 192-byte frame,
-both memory domains and all 512 declared descriptor bytes. Numeric
-equations complement the instruction-state oracle. Neither component
-grants its own semantic admission.
 
 ## Captured word
 
@@ -86,14 +69,6 @@ ledger remain intact, with one qualified owning evidence append.
 
 ## Publication boundary
 
-`reconcile-io-access` accepts all three unique exact original claim
-identities in one metadata publication batch. Preparation requires each
-complete unchanged native document and exact retained unresolved review.
-Publication permits only the two owning link-evidence appends and the
-specified captured-word relation removal and symbol-evidence append.
-Original evidence order, TEST attachments, diagnostic bindings, names,
-geometry, units and other native facts remain fixed. Ordinary `link`
-operations cannot attach these reserved proof items.
 
 Owning I/O evidence supports identity only. It grants no reverse function
 level, scale, physical units, peripheral side effects, natural scheduling

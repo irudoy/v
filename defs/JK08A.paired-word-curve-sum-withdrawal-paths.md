@@ -58,28 +58,3 @@ original fields and every other reference and function remain exact. Shared
 native/family registration binds both independent caller captures in the same
 existing family. Common B acceptance remains required before original review
 retirement or native admission.
-
-Adapter34 uses the standard input-only source generator and ordinary 80/572
-observer. All 66 preceding generated outputs retain their complete bytes.
-The generated driver and structural refusal source bind the same domain-owned
-declaration and input callbacks.
-
-
-## Shared owning source boundary
-
-The shared descriptor contains 136 exact access originals: 125 readers and eleven
-individually pinned writers, 101 complete datum owners, 76 complete functions and
-128 matching ledger selectors (120 datum-end selectors and 8 function-end
-selectors). All 135 exact normal unlink operations form one complete phase.
-Thirty-five independent components use the same complete original COPY primary.
-The existing registry contains 42 families and 88 captures. Five complete
-function transitions retain eight exact function-end selector withdrawals.
-
-The clamp and paired word-curve package preserves all 127 preceding reference
-records and all 68 preceding function records. Only the three proposed-image
-fields of the three existing shared scalar records change; their complete
-prior images remain recoverable with separate exact current image pins. Both
-new complete function snapshots remain unchanged. Exact types, evidence,
-TEST positions, ledger order, calibration semantics and downstream RAM and
-producer dependencies remain mandatory. Source completion grants no native,
-identity, scale, units, executable or hardware admission.

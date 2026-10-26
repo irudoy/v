@@ -47,22 +47,3 @@ a supplied scalar or a changed write-set alone supplies no admission. Index
 alternatives also require changed actual common-byte values with all other
 inputs fixed. Every sentinel observation preserves the entire RAM and has no
 RAM read or write.
-
-The standard `ordinary-80-572` adapter transports only declared inputs and raw
-observations. Its reviewed declaration owns generated C transport and
-structural refusals. Exact code/pool reconstruction, physical and numerical
-checks, full native/TEST preservation and current same-primary source bindings
-remain separate obligations. Source preparation establishes no accepted
-execution, native publication or hardware eligibility.
-
-
-## Registered shared source boundary
-
-The diagnostic-record-bit4-access family contains four exact positive
-originals: three writers and one indexed reader, with five complete unchanged
-function snapshots and one joint owner postimage. All four original captures
-belong to the same complete primary. The existing registry contains 42 families
-and 87 captures. The standard ordinary adapter registry contains 40 descriptors
-and 80 generated outputs. The high-bit clear adapter supplies two source outputs;
-the 78 preceding generated outputs retain their exact bytes. The older paired
-array originals keep their separate source obligations and receive no credit.

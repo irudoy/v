@@ -46,11 +46,3 @@ The bounded caller proof distinguishes the physical lookup readers from
 the later divider's value arguments. It does not publish native relations
 or geometry, resolve other divider callers, admit units or scale, establish
 natural scheduling, or qualify hardware behavior.
-
-`JK08A.timing-arguments.toml` owns the exact proposed native dispositions
-for `0000C50E` and `00011F02`, alongside the registered accumulator-tail
-dispositions. The normal writer requires every registered disposition
-and the same original caller/direct-callee evidence.
-It changes only the original relations and their exact legacy reader
-selectors. Native geometry, all other properties, every original TEST
-context and the existing physical evidence namespaces remain fixed.

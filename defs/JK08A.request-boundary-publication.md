@@ -42,17 +42,7 @@ no reachability credit. The word interpolation arm, impossible signed
 division branches, and unsigned word negative-adjustment arms remain
 explicitly excluded under their exact caller premises.
 
-The input-only matrix carries complete 80-byte CPU/SR contexts, full
-64 KiB RAM, raw calibration bytes, and prior publications. The unchanged
-572-byte ordinary observer records complete 192-byte natural frames,
-external ABI, CPU, RAM, calibration, and instruction/literal snapshots.
-One invocation executes the complete dispatcher and all actual helpers.
-Separate complete stage equations predict every RAM publication. Physical
-site/address/width/register checks and real post-delay call/return states
-remain independent obligations. Eleven held-other alternatives require
-an actual changed computed `FFFF19C6` word while every other complete
-input remains fixed. An echoed input, matching final number, or write set
-alone supplies no owning support.
+
 
 The complete existing division, byte-curve, counter-threshold, and
 register-helper originals remain required from the same primary process.

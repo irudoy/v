@@ -60,12 +60,7 @@ divider's zero path is infeasible for positive fractional axis intervals;
 the complete existing denominator originals remain separate obligations
 of the same primary.
 
-Only declared four-byte RAM pointer pools are relocated. The existing
-80-byte context,572-byte observation,192-byte frame and64K RAM profile
-remain fixed. Instruction bytes and signed16 literals remain stock.
-Physical surface/axis windows define the fixture without publishing
-native geometry or types. Raw coordinates do not establish their producer
-or an axis scale association.
+Raw coordinates do not establish their producer or an axis scale association.
 
 `JK08A.conditional-endpoint-blend-claims.toml` permits both exact owning
 appends as one ordered batch. It supplies no reverse function identity,

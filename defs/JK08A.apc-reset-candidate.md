@@ -1,12 +1,6 @@
 # Published APC candidate and live register consumption
 
-The source binds 552 stock instructions in 1 actual entry path and 7 spans,
-29 literal pools, 8 four-byte RAM pointer aliases and 42 calibration spans.
-The complete 0004C1E4 entry has 219 instructions. The source includes
-6 stock entry paths and 12 raw ROM controls containing 13 bytes.
-The existing 80-byte context, 572-byte observer and 192-byte frame retain
-20 independent context fields. All published counts read the executed
-descriptor.
+The described natural entry is `0004C1E4`.
 
 FFFF4184.bit6 selects the unsigned word-coordinate path or byte-coordinate
 path. The word FFFF10CA is extended unsigned before quartering and its sign
@@ -53,13 +47,3 @@ complete input fixed. Independent variations of overwritten prior
 FFFF1875 RAM must preserve the complete exit CPU, frame and final RAM.
 Input echo, a supplied intermediate R5, detached context or matching
 publication bytes cannot replace complete live R5 continuity.
-
-Original b7129a622e276420fd2cd5b784fbc324cde6583c87fd7999bea65aa5dbc68c40 retains its reader
-type, structural identity claim, roles and evidence. The reader binds the
-published quantity and its subsequent live register use. It does not
-assert a physical read of the prior FFFF1875 byte. One exact owning proof
-append preserves the existing writer, both input-table dependencies, all
-other native owner facts, the full function and all ledger/evidence/TEST
-positions. Semantic width and signedness stay unset. The raw command
-count has no additional geometry, engineering scale, units, scheduling
-or hardware admission.

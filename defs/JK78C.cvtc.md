@@ -11,10 +11,6 @@ JK08A output stage, which programs the intake pair from the 8-bit cells
 `0xFFFF23B4` and `0xFFFF23B5`. The producers of the duty words and the
 physical response of the solenoids are outside this specification.
 
-`tools/mapkit/tests/test_vq37_intake_duty_scheme.py` executes the stock
-instructions of every span below on the exact images and binds the addresses
-and equations of this document.
-
 ## Scheme selector
 
 Bit 2 of a calibration byte selects the duty scheme, and a factor byte `K`

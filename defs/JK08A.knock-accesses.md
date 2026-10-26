@@ -2,12 +2,6 @@
 
 ## Software boundary
 
-`JK08A.knock-accesses.toml` declares four existing stock assembly units for
-the owned JK08A image. The original normalization, metric, threshold and
-comparison GNU regions and their full literal matrices retain their contracts.
-`jk08a-knock-accesses` observes these units through separate image fixtures
-inside the existing complete COPY primary.
-
 | Unit | Explicit entry | End or return | Real stock closure |
 |---|---|---|---|
 | Normalization | `0004A26A` or `0004A3B0` | Before `0004A2B6` | Both cache paths and positive word divider `00021CE0` |
@@ -24,42 +18,6 @@ normalization return in a metric fixture, changes a tested entry.
 Only that unit's declared high-RAM pointer words are aliased. Every tested
 instruction retains its original address and image bytes. No stock helper is
 replaced by a stub.
-
-## Inputs and independent admission
-
-Inputs are complete software contexts. The selected channel is 1..6;
-selector bit 3 chooses the primary or alternate channel byte. Normalization
-also requires R11 to match that choice and primary R5 or alternate R14 to
-contain the selected channel. Composite metric entry receives the explicit
-sample-array pointer at `SP+0` through the existing independent fifth argument.
-These premises establish no natural evaluator caller, acquisition or scheduler.
-
-The raw driver reads input columns from bounded prefixes of the existing
-literal arrays. Expected outputs, expected registers and expected frame state
-do not supply inputs. Explicit additions cover channel choices, masks, counts,
-word and gain boundaries, zero-block fallback, weighted saturation, signed
-scaler boundaries and strict unsigned comparison equality. Artificial table
-and axis inputs have fixed complete contexts and all other physical inputs.
-The table alternatives change only word `0001108E`. The axis alternatives
-change only word `00015340` with the table fixed. These are bounded software
-experiments, without a new calibration geometry or engineering scale claim.
-
-The existing 80-byte context and 572-byte observer record all GPRs, full
-prepared SR, MACL/MACH/GBR, natural SP/PR, the separate C caller ABI, complete
-192-byte observed frame, all 64 KiB aliased RAM and every declared calibration
-span. Entry T is explicit while the observer retains its existing runtime-mode
-policy. There is no arbitrary incoming M/Q or mode-change claim.
-
-Independent admission requires the actual original stdout, a unique marker
-for each stage, typed invocation order, private source bytes, exact independent
-stock reconstruction and the unit-local fixture. Separate instruction equations
-predict complete machine state. Separate integer equations describe normalized
-samples and cache words, signed order/sum, gain saturation, unsigned interpolation
-and strict offset-binary comparison. Physical admission requires exact RAM and
-selected ROM datum sites, access direction, width, value and repeated-site
-order. Real helper calls retain their order and post-delay operands. Declared
-conditional outcomes and positive fixed-other input/output alternatives are
-required. Output observations alone provide no datum identity.
 
 ## Owning native publication
 

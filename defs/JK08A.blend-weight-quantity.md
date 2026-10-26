@@ -1,14 +1,6 @@
 # Shared blend-weight quantity
 
-The `blend_weight_quantity_paths` component observes complete stock 70E4C
-followed by complete stock 720C4 through the existing ordinary 80/572 observer.
-One prepared input supplies both independent complete CPU contexts and the
-whole initial RAM and calibration. The driver carries actual RAM between
-the two natural entries. It records complete before/after RAM, calibration,
-bound bytes, CPU/SR, ABI, 192-byte frames, SP and return state for each phase.
-The private input header stores equal complete raw calibration blobs once
-and supplies an index per case. Every case still installs and observes its
-entire calibration. The existing separate-storage gate remains mandatory.
+These descriptions cover the natural entries `00070E4C` and `000720C4`.
 
 The executed descriptor binds 1065 stock instructions in 14 complete bodies and 16 spans,
 68 literal pools, 17 four-byte RAM pointer aliases and 91 calibration spans.
@@ -91,7 +83,3 @@ function documents, `eminent-moth/fn` and `tuscan-vulture/fn`, remain exact.
 The proof grants only owning identity support. It grants no reverse function
 identity, native geometry/type/scale/units publication, physical-access or
 absence exception, natural scheduling/cadence or hardware qualification.
-
-Source preparation grants no acceptance. The existing shared GNU/TEST gate
-consumes the entire registered source package and its actual original
-terminal before native publication or review retirement.

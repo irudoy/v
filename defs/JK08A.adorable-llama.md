@@ -31,10 +31,6 @@ physical reader on `00021BBC` and its ledger selector. It retains the other
 readers, editor metadata, raw identity scale and all unrelated native facts.
 It supplies no physical units or scale admission.
 
-Stock instructions write SP+24. The existing `stock_normalization_invoke.s`
-observer also preserves continuation at SP+28, which the separately assembled
-`000416F8..00041700` return uses. Both continuation copies and the overwritten
-SP+24 stock temporary are part of the complete frame comparison. The fixture
-aliases only the RAM pointer at `000416B4`; the later pointer loaded from
-`0004192C` stays stock and is not dereferenced. Later brake/mode processing,
-scheduling and hardware behavior remain unadmitted.
+Stock instructions write SP+24. The later pointer loaded from
+`0004192C` is not dereferenced. Later brake/mode processing,
+scheduling and hardware behavior require separate evidence.

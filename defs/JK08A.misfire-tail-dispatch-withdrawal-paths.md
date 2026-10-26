@@ -8,13 +8,6 @@ remain unset. The scheduler pending-flag summary and note, cadence, dispatch
 table, evidence, other reader/indexed_by and producer facts and every transitive
 scheduling dependency remain exact. The complete function remains exact.
 
-The fixture contains 146 stock instructions, 292 code bytes and 3 complete code
-spans: full `7C494`, `7C4E0` and `872D0`. Coverage requires every instruction and
-both outcomes of 14 conditional sites. Inputs contain 12 complete RAM fields,
-4 configuration bytes and 26 raw input fields. There are 15 causal input fields,
-8 pointer aliases, 14 literal spans, 18 data spans and 18 calibration spans.
-These are source boundaries; native admission and common acceptance remain
-separate obligations.
 
 The real BSR at `7C496` executes `7C4E0` after its NOP delay slot. The real tail
 JMP at `7C49C` executes full `872D0` after `LDS.L @R15+,PR` restores original PR
@@ -58,30 +51,3 @@ owner-end consumer selector. Complete function, scheduler, native evidence and
 all other links remain exact. The existing scalar withdrawal family binds
 this independent capture and its complete source set in the current owning
 batch. Source preparation grants no scheduling, hardware or publication admission.
-
-Adapter35 uses the existing ordinary 80/572 observer and standard input-only
-source generator. All 68 preceding generated outputs retain their complete
-bytes. The complete generated driver and refusal source bind the same
-domain-owned declaration and raw input callbacks.
-
-
-## Shared owning source boundary
-
-The shared descriptor contains 136 exact access originals: 125 readers and
-eleven individually pinned writers, 101 complete datum owners, 76 complete
-functions and 128 matching ledger selectors (120 datum-end selectors and
-8 function-end selectors). All 135 exact normal unlink operations form one
-complete phase. Thirty-five independent components use the same complete
-original COPY primary. The existing registry contains 42 families and
-88 captures. Five complete function transitions retain eight exact
-function-end selector withdrawals.
-
-The three-caller package preserves all 129 preceding reference records and
-all 70 preceding complete functions. Only the three proposed-image fields of
-the previous clamp record change to the common two-reader table postimage.
-Its full preceding image remains recoverable and has a separate exact current
-image pin. All three new function snapshots remain complete and unchanged.
-Native types, evidence, TEST positions, ledger order, calibration semantics,
-other reader/writer and producer facts, and downstream RAM dependencies remain
-mandatory. Source completion grants no identity, scale, units, executable,
-native publication or hardware admission.

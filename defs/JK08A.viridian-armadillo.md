@@ -27,12 +27,6 @@ arguments, the zero-divisor bypass, physical reads, and branch outcomes.
 The curve, axis and configuration inputs are explicit simulator inputs;
 their use does not establish natural caller reachability.
 
-The fixture relocates only the declared RAM pointer literal at `000B7C18`
-to the simulator RAM domain. Stock instructions and PC-relative values
-remain independently bound to the owned image. No stock function is
-stubbed. The driver, assembler and simulator are part of the same complete
-primary producer; the raw component remains inside its existing COPY
-packet.
 
 The proposed native disposition replaces the exact `00014E42` reader claim
 on `00021BBC` with a conditional `arithmetic-argument` dependency. Its

@@ -34,8 +34,7 @@ second phase exposes the sustained Boolean in R0/R2. The third phase exposes
 the CAN ceiling Boolean in R0; its call delay uses the incoming R0.
 No result is retroactively inserted into an earlier delay slot.
 
-`stock_jk08a_rpm_remaining_inhibit.s` independently reconstructs the exact
-caller, leaf and byte16 helper spans and their data. The stationary helper is
+The stationary helper is
 the real `00026388` entry with natural tail jumps through `00026A84` and
 `00026740`. The call at `0004F398` passes the actual table at `000124D2` and
 the byte coordinate after its EXTU.B delay. The upper-byte RTS at `00026396`
@@ -83,11 +82,6 @@ branches. The CAN equation distinguishes disabled configuration, invalid
 requests, status gates, request floor, strict RPM comparison and nonwrapping
 hysteresis. Unrelated latch bits and every other RAM byte remain exact.
 
-The input source supplies 35 controlled calibration bytes, including the
-sixteen curve cells. A generated standard input driver uses the existing
-80-byte context, 572-byte observer result and 192-byte before/after frames.
-It records complete 64 KiB RAM, context, CPU, SP, continuation, ABI, frames,
-SR and bound executable/data bytes. It contains no expected outputs.
 
 Independent consumers require agreement between the instruction-state
 equations, separate scalar equations and ordered physical ROM/RAM transfers.
@@ -97,10 +91,3 @@ natural leaf and helper returns include their delay-slot effects. All
 fixed-outcome sites retain their exact quiet-status or byte-entry premises.
 Fixed-other alternatives must change the actual caller result for every
 native root; copying the incoming flag into an observation is insufficient.
-
-Complete producer, descriptor, independent consumer, generated driver,
-refusal source and transitive source identities belong to the same complete
-COPY primary. The ordinary writer admits only the exact joint owning batch
-after that primary and all shared acceptance obligations pass. The component
-provides no native geometry, units, scale, natural scheduling, whole
-coordinator, diagnostic producer or hardware qualification.

@@ -7,16 +7,6 @@ layout `7mfk` have the candidate scale `x*50 RPM`. Their scale owner is
 `defs/JK08A.axes.csv`; the editor grid inverse is `x/50`. This inverse is
 not an exact inverse of physical RPM after the firmware quantizes the value.
 
-The placement and conversion fixture executes each of these independently
-SHA-locked stock images. A common layout name is not the transfer proof.
-The exact expected instruction, literal, and axis-byte spans are bound and
-executed separately for every image by
-`tools/mapkit/tests/test_rpm_axis_scale.py`.
-
-The independent SHA-256 lock of each image is declared by the corresponding
-`IMAGE_FIXTURES` entry in `tools/mapkit/tests/test_rpm_axis_scale.py`.
-`rom-images/roms.csv` owns image identity and provenance.
-
 | Image | Independent lock |
 | --- | --- |
 | `JK00A` | `IMAGE_FIXTURES["JK00A"]` |
@@ -103,19 +93,3 @@ equality, axis geometry, and plausible RPM breakpoints do not supply the
 physical multiplier.
 
 ## Executable boundary
-
-The producer fixture executes three conversion segments. Its intervening
-filter calculations and producer-helper calls/returns are outside the proof;
-the conversion operands bridge the segments explicitly. The copier and byte
-writer execute their real narrow call/return paths. Axis placement stops after
-the first byte-axis sample read: interpolation-wrapper helper returns,
-fractional interpolation, full ECU functions, protocol readiness and response
-headers are outside this placement/conversion proof. No stock-function stubs
-or simulator-only instruction relocations are used.
-
-The negative fixtures reject changed source and axis literals, registers,
-widths, call delay operands, shifts, copy count and placement, publication
-factor, saturation, byte order, and source formula/context. Instruction mutants
-exist only in memory and are not patch images. The compiled-owner gate checks
-that the four typed test items support `scale`, retain `candidate`, and resolve
-to the actual top-level test functions through the knowledge-base AST check.

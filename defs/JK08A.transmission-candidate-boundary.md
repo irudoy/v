@@ -1,11 +1,6 @@
 # Transmission candidate and signed request boundary
 
-The source binds 294 stock instructions in 2 actual entry paths and 3 spans,
-38 literal pools, 9 four-byte RAM pointer aliases and 41 calibration spans.
-The complete 000777FA completion has 64 instructions; the complete 00079030
-boundary has 230 instructions. Both use the existing 80-byte context,
-572-byte observer and 192-byte frame. Each phase has 20 independent context
-fields. All published counts read the executed descriptor.
+The completion entry is `000777FA` and the boundary entry is `00079030`.
 
 The completion reads the signed candidate at FFFF4162 when ROM8[000083C1].bit0
 is clear and FFFF41A6.bit3 is set. Raw ROM8[000089C5].bit0 selects either that
@@ -39,16 +34,6 @@ all ROM modes and every other physical input stay fixed. A supplied
 intermediate scalar or matching output bytes do not establish the path.
 The complete existing request-boundary publication original remains
 mandatory from the same primary.
-
-Original 9377739e0c6019c86f49d44e3ec1a8af161348c35772dcacacad54b6eea2416a
-retains its reader type, structural identity claim, roles and evidence.
-Its physical FFFF4162 loads belong to 000777FA. The reader relation to
-00079030 states the conditional quantity association through FFFF3480 and
-FFFF3484. One exact owning proof append preserves all other native links,
-input/lookup dependencies, summaries, units, symbols, ledger/evidence/TEST
-positions and both complete native functions. Semantic width and signedness
-remain unset. The package grants no geometry, scaling, units, scheduling,
-whole-ECU or hardware admission.
 
 The separate 0000942C scalar association requires its own complete producer
 and transitive scope. This package does not admit or remove that original.

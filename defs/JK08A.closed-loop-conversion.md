@@ -1,9 +1,7 @@
 # JK08A bounded closed-loop input conversion
 
 The complete stock entry at `0003edb4` calls the natural coordinate conditioner
-at `0003ef74` and nine real lookup or division helpers. One mandatory Region
-binds 823 instructions, 2233 bound bytes and 4338 literal cases. The contract
-describes independent software inputs and both conversion channels. Hardware
+at `0003ef74` and nine real lookup or division helpers. Hardware
 readiness is NO. Source producers, physical units, permission cadence and the
 joint feedback cycle require separate evidence and hardware observation.
 
@@ -32,7 +30,6 @@ The coefficient is copied to `ffff2f8e`; the two coordinates are copied to
 The stock midpoint is 880. With admitted raw source 65534 and coefficient 136,
 the first clamp produces 32767, signed division produces 30839 and the
 published coordinate is 31719. Omitting the first clamp yields 33647.
-The literal matrix executes this witness without asserting engine reachability.
 
 ## Exact lookup and output arithmetic
 
@@ -62,29 +59,3 @@ Bit `b` of the independent byte at `ffff2b4d` selects
 The surface results are retained as unsigned words at `ffff8544+14-2*b`.
 Their positive output influence and the signed-state influence refer to these
 declared software values. The stock optional offset is zero.
-
-## Execution boundary and observations
-
-The bounded real caller-to-conditioner access contracts are described in
-`JK08A.closed-loop-coordinate-accesses.md`. They retain the full legacy
-assembly, harness and matrix while separately observing the exact native
-conditioner workspace. Their caller premises grant no full parent entry
-or helper-specific physical RAM reader interpretation.
-
-The simulator relocates nine declared 32-bit RAM pools and two exact 16-bit
-RAM pointers: `0003ef10=8544` names a 28-byte workspace and `0003f002=8560`
-names a 20-byte workspace. Both aliases preserve the addressed bytes and use
-the original instruction bytes. All call targets are real stock functions.
-The division fault and wide-divisor arms have byte identity only because they
-are unreachable within the declared caller domains and the bound stock axes.
-
-The observer checks R0..R14, full SR including M/Q/T, MACH, MACL, GBR, natural
-PR/SP, the outer ABI, every byte of the 64 KiB RAM image, both workspace aliases
-and neighbors, all bound code and data bytes, and the complete 160-byte nested
-frame. The complete entry, branch outcomes, delay slots and real call/return
-paths execute. Independent stock and synthetic calibration contexts exercise
-all mode bytes, all permit bytes, every coefficient byte, signed clamps,
-admission neighbors, all 64 surface cells, ascending and descending curves,
-word-wrap inputs and output saturation boundaries. The matrix contains 4022
-admitted calls and 46 zero-coefficient calls; it does not exhaust every joint
-input combination or establish physical reachability or scheduler cadence.

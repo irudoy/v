@@ -1,24 +1,5 @@
 # Diagnostic-state reset writer
 
-`JK08A.diagnostic-state-reset-writer-paths.toml` binds 272 stock instructions in 1 entry and 4 spans,
-30 literal pools, 6 four-byte RAM pointer aliases and 31 calibration spans.
-The closure contains 3 complete functions: the root `2E81A`, its obligatory
-`2E76E` callee and its obligatory `CD75C` callee. The internal literal at
-`2E780` separates two code spans of `2E76E`. Independent assembly reconstructs
-the complete code and every PC-relative pool. Signed native word literals
-and the two natural call targets retain their stock bytes. Only declared
-four-byte ordinary RAM pointers receive simulator aliases.
-
-The existing ordinary observer uses an 80-byte context, 572-byte observer and
-192-byte frame. Its 20 complete context words and all 65536 ordinary RAM bytes
-are observed before and after each root invocation. The existing multi-bank
-`native_io_before/after` transport records 2304 native snapshot bytes in
-3 native snapshot banks: `FFFF8400/256`, `FFFF9900/1792` and `FFFFF500/256`.
-The descriptor binds 27 exact native permissions by PC, address or loop
-range, access width and mode. The complete snapshots include unused
-preservation canaries. Actual ordinary shadows and native publications are
-checked separately against independent logical-state and physical-state
-views.
 
 `2E76E` clears byte operands at `FFFF9924..FFFF99D3` through its real loops,
 writes `FF` at `FFFF2B96`, and clears bit 5 at `FFFF4232` in its real RTS
@@ -81,15 +62,3 @@ and the actual paired halfwords follow the unsigned product equations.
 Complete raw read-byte preimages, ordinary state, native canaries, code,
 pools, aliases, consumed source bytes, terminal streams and pinned GNU
 toolchain identities are required by the same original capture.
-
-The retained original is
-`939c9a3b6a4bbc89b4d0183a02aa6bcbe3024a8716b51676cd36dca5eb9e487a`:
-`rare-butterfly/ram` has a writer relation to `amber-wildcat/fn`.
-This exact relation receives one identity-support evidence append. The
-complete owner and all three functions, other readers and writers,
-symbol evidence, ledgers and TEST origins retain their recorded facts.
-Native width and signedness remain unset; the existing unit remains
-`raw`. Physical operand ranges supply no native object geometry, unit
-conversion, natural caller, scheduling or peripheral side-effect
-qualification. Hardware qualification requires the project bench and
-live-data evidence.

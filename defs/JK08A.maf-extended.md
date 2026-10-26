@@ -1,13 +1,7 @@
 # JK08A MAF processing, publication and bounded caller accesses
 
-`JK08A.maf-extended.toml` binds six assembly units to natural
-entries `0003AE8A`, `0003AF42`, `0003C408`, `0003B224`, `0003C45C` and `00039A9E`
-and bounded caller entries `0003A91A` and `0003C3B6`. The stock compensation,
-contribution and scaling harnesses remain in the common execution gate.
-One raw source reuses their exact assembly and the common
-`stock_ignition_consumer_invoke.s` observer. Its 80-byte context and
-572-byte observation are byte layouts. Every invocation retains the
-complete GPR/SR/frame/ABI, relocated RAM and declared calibration bytes.
+Source bindings: `JK08A.maf-extended.toml`.
+
 
 The independent consumer compares reconstructed stock bytes, private
 sources, pointer aliases, fixture/ELF/object identities, the actual GNU
@@ -153,8 +147,7 @@ Its ledger, offset mapping and TEST evidence at index 1 remain unchanged.
 
 ## Bounded two-curve lookup
 
-`JK08A.maf-transfer.toml` binds the existing
-`stock_jk08a_maf_transfer.s` at0003A922..0003A94C and the real
+`JK08A.maf-transfer.toml` binds 0003A922..0003A94C and the real
 26410/26A74/26740 wrapper and interpolation bodies. The normalized
 parent is0003A904, dual_bank_maf_coordinator. Incoming R14 explicitly
 selects the relocated FFFF1E1C input base. Independent unsigned ADC
@@ -177,16 +170,10 @@ observed; its correction consumer has no execution admission here. An
 independently assembled SP+24/R7 observing return at0003A94C lies outside
 the tested spans. Every stock instruction retains its exact bytes.
 
-Required component `maf_transfer_paths` uses the existing80/572 observer
-and the same complete original COPY primary as the other MAF components.
-Input-only ADC/context and two-curve data feed separate complete-state,
-scalar, physical, post-delay-call, branch and natural/observing-return
-consumers. The lower-cell word load at00026AA0 binds each exact curve
+The lower-cell word load at00026AA0 binds each exact curve
 root. Neighbor reads and high-end loads retain their own sites and
-addresses. Root-only calibration alternatives separately change each
-output while every other RAM byte, register and literal remains fixed.
-The word wrapper selects the word arm of the shared interpolation body;
-the byte arm has byte identity without an execution claim from this entry.
+addresses. The word wrapper selects the word arm of the shared interpolation
+body; the byte arm is outside this entry's described domain.
 
 The exact native disposition removes the two unsupported reader relations
 to wondrous-camel/0003B27E. Positive owning evidence attaches to the
@@ -217,14 +204,7 @@ branch executes OR.B80 in the BRA delay slot at0003C3D6 or AND.B7F at
 0003C3D8, preserving status bits0..6 while assigning bit7 from the
 predicate. Separate byte read and write observations bind that exact RMW.
 
-Only base literal00025F10 changes from FFFF5718 to01005718. The index
-and function literals retain their stock values. An independently
-assembled SP+24/R7 observing return at0003C3DA lies outside tested stock
-bytes. Required component `maf_record_paths` uses the same complete
-original COPY primary and unchanged80/572 observer. Full context,
-siblings, canaries, all RAM, calibration bytes, calls, returns and SR
-remain observed. Independent state and scalar consumers require positive
-member/output alternatives with every other input fixed.
+
 
 Two owning appends share one complete record-owner postimage. Its eleven
 symbol evidence items, ledger and other three access relations remain
@@ -235,30 +215,6 @@ hardware behavior.
 
 ## Joint owning publication
 
-`JK08A.maf-access-claims.toml` contains all 35 exact original claims:
-four copy/filter accesses, 22 accesses from six natural entries and four
-bounded caller accesses, together with two exact curve-reader attribution
-corrections, two existing record-member readers and one complete accumulator
-writer. The accumulator shares its native owner with the compensation reader. The batch contains
-21 complete owner documents.
-Every complete owner document has one shared preimage and postimage.
-In particular, spiked-dalmatian retains both the filter writer and
-contribution reader in the same postimage. The imposing-auk contribution
-writer and bank-publication reader also share one postimage, as do both
-hairy-dalmatian readers. The two maf_b1 caller relations share one complete
-postimage; the maf_b2 postimage includes both natural-callee relations
-and both bounded caller relations. Their unsigned 16-bit declarations,
-other-layout symbols, manual evidence and ledger remain unchanged.
-The satisfied-oarfish owner shares its complete postimage between the
-MAF and battery coefficient readers. Their original claims, evidence
-items, unsigned16 type, reverse properties, roles, TEST and ledger retain
-exact values and positions.
-The existing writer requires35 exact ordinary `link` operations and two
-exact ordinary `unlink` operations together. Each registered original
-claim and owning item remains exact. Only the two pinned unsupported
-reader relations are removed; the two existing correct readers receive
-their owning appends. All other relation properties, ledger fields,
-symbol types, original evidence positions and TEST origins remain fixed.
 
 Full publication comparison and exact COPY/injection/coherent/SID22
 scope equality are required. Only a unique owning append with its full

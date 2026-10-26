@@ -1,11 +1,6 @@
 # Natural map-bias and positive-term division caller
 
-The source descriptor binds nine complete function bodies and 453 stock
-instructions for natural entry `000702c6`. Its 21 literal pools and three
-four-byte ordinary RAM pointer aliases use the existing 80-byte context,
-572-byte observer and complete 192-byte frame. Every helper retains its
-original ROM address, instruction bytes, natural calls, tail jump and returns.
-No stock-function stub, instruction replacement, observer or runner is added.
+The natural entry is `000702C6`.
 
 The two byte controls at `ffff1880` and `ffff18b4` select the first calculation.
 Equal controls call the real signed helper on `uint16(ffff1878) -
@@ -64,29 +59,3 @@ full postimages retain exact separate reconstruction. Downstream aggregate,
 request and producer dependencies remain mandatory. A direct physical
 absence grants no logical-dependency, scale, storage geometry, scheduler,
 whole-ECU or hardware conclusion.
-
-The raw producer carries no expected numerical result. The independent
-consumer requires the complete original COPY primary, current consumed
-sources, exact GNU reconstruction, pinned toolchain, every feasible code
-site/branch/delay, actual computed alternatives and complete native owning
-admission. Source preparation establishes no accepted execution or native
-publication.
-
-
-## Shared owning source boundary
-
-The shared descriptor contains 136 exact access originals: 125 readers and
-eleven individually pinned writers, 101 complete datum owners, 76 complete
-functions and 128 matching ledger selectors (120 datum-end selectors and
-8 function-end selectors). Thirty-five independent components use the same
-complete original COPY primary. The existing registry contains 42 families and
-88 captures. The standard ordinary adapter registry contains 41 descriptors and
-82 generated outputs. The map-bias adapter supplies two source outputs; the
-76 preceding generated outputs retain their complete bytes.
-
-The exact withdrawal preserves all 134 preceding reference records through
-its finite four-record inverse and all 74 preceding complete functions.
-Only the three proposed-image fields of those four table-owner records change.
-Native types, RPM units, all layouts, TEST origins, ledger positions and every
-downstream request or producer dependency remain bound. This source boundary
-grants no accepted execution, identity publication or hardware admission.

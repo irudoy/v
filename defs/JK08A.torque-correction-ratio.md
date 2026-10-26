@@ -24,12 +24,6 @@ Both `64BD4` and `64C44` read the carried correction. The two ratio-byte paths
 retain their independent sentinels, signed divisions, zero-divisor behavior
 and lower/upper clamps before publishing `186C` and `1864`.
 
-The input-only C driver uses the existing80-byte context,572-byte ordinary
-observer and192-byte frame. Each phase retains a separate complete CPU context.
-All65536 RAM bytes, calibration bytes and bound code/pool bytes pass from the
-producer to the consumer unchanged by the driver. Equal complete raw
-calibration inputs share storage; every phase observes the complete input.
-The existing separate-storage gate remains mandatory.
 
 Independent integer equations, exact instruction-state reconstruction,
 ordered physical reads/writes and full post-delay call/tail/return checks
@@ -38,12 +32,3 @@ alternative with all other complete inputs fixed and changed actual producer
 correction and both ratio bytes. The guard word has a distinct physical-read
 obligation. Generic signed and unsigned division obligations remain required
 through `timing_denominator` from the same complete primary.
-
-`JK08A.torque-correction-ratio-claims.toml` describes one exact owning identity
-append for the retained `14C1A -> 64A1C` relation. The full owner and both
-function documents, all other links, ledger entries, TEST evidence, layouts
-and reverse properties remain fixed. The native width and signedness remain
-unset. The catalog `x*0.1 Nm` conversion retains its candidate status.
-The execution boundary establishes the exact table-derived quantity
-association; physical scaling, scheduling and hardware validation retain
-their separate evidence requirements.

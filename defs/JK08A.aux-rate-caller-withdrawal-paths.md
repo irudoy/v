@@ -10,18 +10,9 @@ individually pinned writers, 101 complete datum owners, 74 complete functions an
 126 matching ledger selectors. These include 118 datum-end selectors and 8 function-end selectors.
 All 134 exact normal unlink operations are mandatory. The unsupported original is:
 
-| Datum | Natural function | Exact unsupported original |
-|---|---|---|
-| `7mfk:000120ce` | `7mfk:00068d58` | `cc2cab771f9d3771294ab340e9fb92f772883f0be348085ede20c30fcf3da4b0` |
-
 ## Complete caller and real helpers
 
 The complete code spans are 68D58..68DE8, 21CE0..21DC6 and 8C3FA..8C446.
-Exactly 8 MOV.L native pointers relocate to the existing 64 KiB alias domain.
-The existing 80-byte context, 572-byte observer and 192-byte frame with
-160-byte prefix remain mandatory. All prologue/epilogue saves, local operands,
-post-delay helper arguments, helper returns and natural caller returns remain explicit.
-No observer, storage profile, instruction replacement or stub is added.
 
 The 24C0 bit 04 controls the natural early exit. The 4251 bit 01 initializes
 235C to 400 and 2018 to zero. A zero 235C word bypasses division and publishes zero.
@@ -64,77 +55,3 @@ RAM. Input echoes, unchanged common values, invented publications and a changed
 write-set alone fail. Full CPU/frame/RAM/calibration/bound preimages stay fixed.
 The selected ROM120CE root requires exact physical interval absence independently
 of operand direction or domain label. No native geometry is inferred.
-
-## Exact native and preceding source boundaries
-
-The reader original retains empty evidence/roles, relies=structure and
-supports=identity. Exactly one reader link and one matching datum-end selector
-are removed from the complete additional owner document. Its symbols, native
-types, other links, TEST contexts, ledger identities, notes and selector order
-remain exact. No preceding owner is shared. All preceding 115 full reference
-records, current postimages and 59 full function records retain complete prefix digests
-through the exact paired-reader delta and complete prefix reconstruction. Both prior exact function transitions and
-five function-end selector removals remain unchanged. All eight exact writer
-identities and eighteen indexed_by originals remain pinned.
-
-The 189 prior domain sources retain 188 byte-identical sources and the existing
-exact two-site gated spelling exception with complete current/legacy hashes.
-Thirty-three independent components require one complete original COPY primary.
-The registry contains 42 families and 88 capture bindings.
-The twenty-seventh standard source-only adapter retains the preceding twenty-six adapters
-and all fifty-two generated output identities. Its marker is
-VQ_SH_ELF_AUX_RATE_CALLER_WITHDRAWAL.
-
-Complete actual-original, controlled raw counter/product/signed carrier/local
-dwords/ordered clamps/auxiliary gate/publication/clear, CPU/SR/physical/call/
-delay/return/causal/native/prior/full-function/type/role/TEST/ledger/scope/review
-and published-count refusals remain mandatory. Source preparation grants no
-executable acceptance, owning replacement, reverse donation, native geometry,
-scale, units, natural-caller interpretation or hardware admission.
-
-## Joint paired normalization boundary
-
-The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,101 complete datum owners,74 complete functions and
-126 matching ledger selectors. These contain118 datum-end selectors and
-8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
-in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
-
-The complete prior reference and function boundaries retain exact full-record
-digests. The sole additional current image delta is at lyrical-dragon/tbl
-reference79:two exact reader links and two matching owner-end selectors.
-No other preceding reference field or complete function record changes.
-Both complete prior function transitions,five function-end selectors,eight
-writer identities,eighteen indexed_by originals and every previous full
-family/helper/native/TEST original remain mandatory from the identical primary.
-
-The complete byte-ratio producer boundary is specified in
-`defs/JK08A.byte-ratio-producer-withdrawal-paths.md`. The complete118-record and62-function prefix retains exact reconstructed
-digests and explicitly bounded current shared-owner transitions,including
-the paired-reader shared image and both full function transitions. Full variable
-unsigned division,signed shift10,actual saved post-DIV1 R1 frame continuity,
-byte publication and complete prior same-primary originals remain mandatory.
-
-The complete state-surface caller boundary is specified in
-`defs/JK08A.state-surface-caller-withdrawal-paths.md`. All119 preceding core
-records and63 full functions remain exact. Only the additional row99 reader
-and owner-end selector delta changes its full current postimage; the other118
-full records,paired row79 and both complete function transitions remain exact.
-The complete local word carrier,three state modes,raw four-row surface and
-implicit-byte curve retain both broader same-primary originals.
-
-The complete byte-factor caller boundary is specified in
-`defs/JK08A.byte-factor-caller-withdrawal-paths.md`. All121 preceding full
-records,current images and64 complete functions remain exact. An additional
-complete function transition removes one individually pinned reverse writer
-selector;the preceding two transitions,row79,row99,eight writer identities
-and eighteen indexed_by originals remain exact. Both real byte curves,signed
-word promotion,partial products and the percentage delay-slot store are required.
-
-The complete byte-sum caller boundary is specified in
-`defs/JK08A.byte-sum-caller-withdrawal-paths.md`. All122 preceding full
-records,current images and65 complete functions remain exact. An additional
-complete function transition removes one exact reverse writer selector;the new
-datum owner retains its absent ledger. The preceding three full transitions,
-row79,row99,nine writer identities and eighteen indexed_by originals remain exact.

@@ -1,12 +1,6 @@
 # Optional timing additive publication and live compositor use
 
-The source binds 510 stock instructions in 1 actual entry path and 9 spans,
-32 literal pools, 10 four-byte RAM pointer aliases and 38 calibration spans.
-The complete 0004BDC2 entry has 152 instructions. The source includes
-9 stock entry paths and 1 raw ROM control containing 2 bytes.
-The existing 80-byte context, 572-byte observer and 192-byte frame retain
-20 independent context fields. All published counts read the executed
-descriptor.
+The described natural entry is `0004BDC2`.
 
 The normal compositor branch is selected when FFFF2458.bit5 is clear.
 Its full base uses unsigned FFFF23BD, FFFF23C5, FFFF12DC, FFFF15EA and
@@ -56,14 +50,6 @@ existing mixed-curve and division originals remain mandatory from the
 same primary. The caller's zero/narrow division arms are explicitly
 infeasible, while all their stock instructions remain reconstructed.
 
-Separate wide equations bind every physical operand, actual publication
-and full local carrier. The independent complete instruction trace binds
-all CPU registers, real M/Q/T changes, preserved SR controls, SP/PR,
-full saved R13/R14/MACL/GBR words, GBR rebase and natural RTS-delay R13
-restore. All 65536 RAM bytes, complete frame and immutable calibration,
-code and pools remain observed. Only declared four-byte RAM pointers are
-relocated for the existing simulator. Instruction bytes, the observer,
-native profiles and all stock helper bodies remain fixed.
 
 Every one of 64 surface words and eight active byte-curve cells requires
 held-other alternatives changing actual FFFF134A and final FFFF1830.
@@ -73,12 +59,3 @@ and frame. Disabled and alternate paths preserve that prior byte while
 every other RAM byte, exit CPU, frame and final output stay independent
 of it. A supplied live result, low16-only stack carrier or matching
 publication bytes cannot replace these complete requirements.
-
-Original 8c93e593a4428c3b7195cbb174725161a8ac0b87b75ac385bf4de135d7bde09b retains its reader
-type, structural identity support, roles and evidence. One exact owning
-proof append binds the published optional quantity and continuing live
-register use. It preserves the writer, input/lookup/selector links,
-complete native owner and function, unit deg, and all ledger/evidence/TEST
-positions. Semantic width and signedness remain unset. Existing units
-receive no additional admission; geometry, engineering scale, scheduling
-and hardware qualification are not inferred.

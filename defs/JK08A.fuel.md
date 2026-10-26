@@ -119,12 +119,9 @@ mode uses eight times its cached unsigned `0xFFFF2804` byte. Every selected
 count is lower-bounded at 64. The pre-entry selector is statically bound;
 independent execution begins at `0x3B7C6` with its selected context.
 
-The complete bank-contribution and aggregate proofs bound coherent stock Q at
+The modeled coherent stock Q is bounded by
 `2*0xFFFFFF+0x7FFF+0xFFFF=0x02017FFC`. With stock F and K, p stays below
 `2^40` over that domain, so the simpler unbounded product gives the same result.
-Wide positive Q and changed fixture coefficients execute the 40-bit wrap as
-software boundaries without establishing live reachability or calibration
-validity.
 
 The following Q7 consumer uses cached quarter BFS, rather than rereading its
 longword, and publishes:
@@ -710,8 +707,7 @@ the stream carries neither `0xFFFF41B5` nor the remaining permit terms of
 ## Bounded bank base-pulse builder
 
 The complete natural-return `bank_base_pulse_builder/fn` at
-7mfk:0004ead4 has an independently reconstructed GNU SH-2E contract of
-103 instructions, 232 bound bytes and 6184 literal cases. Its stock RTS
+7mfk:0004ead4 returns through its stock RTS
 at 0004eb9e executes the MACL-restoring delay slot at 0004eba0. The three
 high-RAM pointer pools at 0004ec00/0004ec04/0004ec08 are the declared
 simulator aliases; the ROM pointer and arithmetic constant FFFF3800
@@ -744,29 +740,6 @@ L, E, I or A increases, including with factory flag bytes 51/01. The six
 complete-domain views in closed_loop_fuel steps 16..19 and fuel_pulse
 steps 17/19 therefore use sign=none. Their other fields and all other
 39 notes remain intact. These are views of one output publication.
-
-The fixture checks both legal banks, upper R4 bits, incoming T0/1,
-all flag-byte values, trim and cap equality neighbors, zero-I bypass,
-word boundaries, product overflow and offset wrap. Stock calibration
-contexts and artificial contexts retain separate classifications.
-Expectations are independent integer literals, including all fifteen
-exit GPRs and final cap T. Original GNU nonT status bits are retained;
-STC records the actual full SR after bank-preserving LDC. Exit full SR
-equals (sr_before&~1)|expected_T. Arbitrary nonT-bit variation and
-full incoming SR=0/1 are not claimed.
-
-Every case checks the selected two output bytes and every other byte of
-the 64 KiB aliased RAM, all 26 bound pool/calibration bytes, natural
-PR/SP/GBR/MACH/MACL and the independent C caller ABI. The complete
-80-byte frame spans SP-48..SP+31, with saved GBR at SP-8 and MACL
-at SP-4; all other observed bytes retain their seeded values. Exit capture
-starts at SP+32 and is disjoint from that frame.
-
-`tools/kb/tests/test_bank_base_pulse_chain.py` owns the native view through
-`test_bank_base_pulse_chain_owner_contract` and the registered executable
-identity through `test_bank_base_pulse_registered_stock_contract`. The
-gate binds every stock byte, scalar shape, typed bank and input conditions,
-literal matrix, publication counts and preserved ledger selectors.
 
 This bounded CPU result does not establish upstream producer states,
 physical units, live bank mapping, caller dispatch, scheduling, injector
@@ -1109,8 +1082,8 @@ remainder byte `0xFFFF193B`. For the zero-count offset path,
 `Q = floor(uint32(6554*M)/65536)`. It stores Q at `0xFFFF16C2` and
 `uint8(M-10*Q)` at `0xFFFF166C`. The following compare programmer uses
 `GR1A = 0xFFFF158A + Q`, or `TCNT1A + 2` when that instant has passed.
-The bounded software proof of argument splitting, normalization and
-offset arithmetic is in [JK08A.injection.md](JK08A.injection.md). `0xFFFF22BC` is the time of one 10-degree crank tooth in
+Argument splitting, normalization and offset arithmetic are described in
+[JK08A.injection.md](JK08A.injection.md). `0xFFFF22BC` is the time of one 10-degree crank tooth in
 `3.2 us` channel-1 counts and `0xFFFF158A` is the crank reference capture of
 the current event. It then clears `TSR1A` bit 0 and sets `TIER1A` bit 0. In
 P0335 fallback (`0xFFFF24C9.bit6`) an angle of 120 or more becomes count 1
@@ -1369,16 +1342,6 @@ saved R13/R14/PR at SP-4/-8/-12. Those slots have literal expectations;
 all other observed bytes, including a separate continuation at SP+24,
 are preserved. Exit capture starts at SP+32. Snapshots are per literal.
 
-The mandatory contracts test_ltft_publication_chain_owner_contract and
-test_ltft_publication_registered_stock_contract in
-tools/kb/tests/test_ltft_publication_chain.py bind every stock byte,
-the independent literal output/T/GPR vectors, exact typed conditions,
-scoped owner widths and the registered Region/header-array/C-loop counts.
-Missing required owners, registration, header or publication sections
-fail the contract. The shared predicate retains its separate bounded
-knock-reference proof, both ledger claiming ends and existing evidence.
-The fixed-id LTFT fixture adds no general-id helper case counts.
-
 Upstream learned-grid selection/learning, adjustment production, bank
 dispatch, percentages, physical fuel quantities, timing, live operating
 reachability, full coordinator behavior and hardware validation retain
@@ -1387,9 +1350,7 @@ other layouts and the shared predicate owner remain intact.
 
 ## Bounded channel pulse calculation and word snapshot
 
-The mandatory `jk08a-channel-pulse` Region reconstructs 184 instructions,
-423 bound bytes and 14132 literal cases with `EARLY_ONLY=0`. The complete
-natural builder enters at 0004eba2, executes its second span at 0004ec24,
+The complete natural builder enters at 0004eba2, executes its second span at 0004ec24,
 calls the real arithmetic-shift path 000224f8 and affine helper 0005b7ec,
 and returns through its own RTS and delay slot at 0004eca8. The admitted
 argument is uint8(R4)=i in 0..5; independent higher argument bits are retained.
@@ -1418,27 +1379,7 @@ not establish full scheduler execution, live cadence or hardware atomicity.
 The formulas occupy fuel_pulse steps 20, 21, 22 and 23; all other fuel and
 injection steps retain their independent contracts.
 
-The numeric harness checks all fifteen GPRs, actual complete SR, natural
-PR/SP, restored MACH/MACL/GBR, the immutable 76-byte entry context, 96 frame bytes,
-the independent C caller ABI, 64k RAM and all 55 bound pool/calibration bytes.
-The aggregate bypass and both real calls include exact saved and local words.
-Only the selected compensated and transformed word writes may change RAM.
-The simulator relocates exactly the three declared long RAM pools to matching
-low16 offsets in 0x01000000 RAM; all instruction bytes remain original.
-The original GNU image, assembler, compiler, simulator and 120-second stock
-timeouts execute the contract. The physical decomposition of the corrections,
-producer acquisition, operating cadence, actuation and hardware validation
-remain separate from this bounded numeric publication.
-
 ## Connected injection calculation and raw scheduling
-
-Ten mandatory Regions bind 3021 instructions, 7319 bound bytes
-and 194860 literal cases with EARLY_ONLY=0. Each function or bounded view
-has independently reconstructed instruction bytes. The registered contracts
-execute the complete opening-word publisher, pulse selector, delayed-start
-programmer, one-shot, end-angle publisher, injector-event ISR and dispatcher.
-Three RPM views cover word scaling, capped byte scaling and the real copy;
-they do not establish whole RPM-producer execution or sample simultaneity.
 
 The opening word uses unsigned battery B and ROM bytes Q/A:
 min(65535,max(0,floor((175-B)*Q/128)+A)). The real seven-SHAR helper floors
@@ -1501,24 +1442,8 @@ require their separate evidence.
 
 ## Upstream fuel pulse calculations
 
-Eleven mandatory Regions bind 2726 instructions, 6494 bound bytes
-and 696084 literal cases through the primary stock verifier. The sixteen
-formula-bearing fuel_pulse steps1..16 use raw operand widths and exact
+The formula-bearing fuel_pulse steps1..16 use raw operand widths and exact
 rounding, wrapping, latch and call boundaries.
-
-| Calculation | Region | Literal cases |
-|---|---|---|
-| base-accumulator | `jk08a-base-accumulator` | 132684 |
-| transient-coefficient | `jk08a-transient-coefficient` | 7440 |
-| transient-additive | `jk08a-transient-additive` | 87052 |
-| coolant-conditional | `jk08a-coolant-conditional` | 14261 |
-| transient-pair-1 | `jk08a-transient-pair-1` | 44640 |
-| transient-pair-2 | `jk08a-transient-pair-2` | 44640 |
-| fuel-multiplier | `jk08a-fuel-multiplier` | 77328 |
-| pulse-precursor | `jk08a-pulse-precursor` | 78272 |
-| common-gain | `jk08a-common-gain` | 68855 |
-| enrichment-prefix | `jk08a-enrichment-prefix` | 70800 |
-| enrichment-terminal | `jk08a-enrichment-terminal` | 70112 |
 
 Natural function 000554ae performs modulo-2^32 addition of RAM32[ffff15f8], 16384, unsigned RAM16[ffff230c] and unsigned RAM16[ffff15da], interprets the low32 result as signed, then clamps it to0..65535 atffff231a. The signed wrap seam prevents a universal positive input sign. Producer domains and physical units require independent evidence.
 
@@ -1548,14 +1473,6 @@ machine. The terminal resumes with a staged candidate at SP+12; it executes
 the actual auxiliary function and terminal publication without inferring
 the omitted state machine. These boundaries retain their original stock
 instruction bytes and expose the complete live frame state.
-
-All contexts compare complete GPRs, SR including M/Q/T and interrupt mask,
-PR/SP/GBR/MACH/MACL, immutable input records, 192 frame bytes and the complete
-64k RAM window. Natural calls and returns, original branch delay slots,
-declared lookup pools and the shared 16-bit RAM pointer's neighboring bytes
-are checked. Relocations affect declared data pointers only. The boundary
-observer restores the admitted outer stack through an explicit scratch
-register; it does not replace arithmetic under test.
 
 Before simulator entry, the linked big-endian ELF32 SH image is checked for
 every allocated section and every LOAD segment's virtual and physical memory

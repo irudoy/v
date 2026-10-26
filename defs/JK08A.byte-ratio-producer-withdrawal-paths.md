@@ -1,28 +1,13 @@
 # JK08A byte ratio producer withdrawal
 
-The complete natural 4AE6C producer and real 21BBC, 21CE0 and 22508 helpers
-contain 355 stock instructions, 710 code bytes and 5 code spans. The selected
-domain requires 296 feasible instructions and has 59 excluded instructions.
-The descriptor binds 17 literal spans, 5 pointer aliases, 6 complete RAM fields,
-2 scalar configuration fields, 17 complete calibration spans, 18 raw input fields
-and 7 complete helper sources. The joint descriptor contains 123 exact access
-originals: 123 readers and eleven individually pinned writers, 91 complete datum
-owners, 74 complete functions and 126 matching ledger selectors. These include
-118 datum-end selectors and 8 function-end selectors. All 134 exact normal unlink
-operations are mandatory. The selected unsupported original is:
+Source bindings: `JK08A.byte-ratio-producer-withdrawal-paths.toml`.
 
-| Datum | Natural function | Exact unsupported original |
-|---|---|---|
-| `7mfk:00012006` | `7mfk:0004ae6c` | `91c32f65b77d4ec19c96531ca7402eb1fa6b3c1b05a94eb3f41128ffe2bac40d` |
 
 ## Complete products and distinct real division paths
 
 The caller occupies 4AE6C..4AEAC and 4AEC4..4AF38 around its literal hole.
 All three complete helpers remain bound: 21BBC..21CD6, 21CE0..21DC6 and
-22508..2251A. Exactly five native MOV.L pointers relocate to the existing
-64 KiB alias domain. Instruction bytes remain exact. The existing 80-byte
-context, 572-byte observer and 192-byte frame with 160-byte prefix remain
-mandatory. No observer, storage profile, instruction replacement or stub is added.
+22508..2251A.
 
 The unsigned byte at 17B8 multiplies the complete unsigned word at 14DC.
 A zero product selects sentinel 65535 without calling the first divider.
@@ -79,22 +64,6 @@ common values and a changed write-set alone fail. The selected ROM12006 root
 requires exact physical interval absence independently of operand direction or
 domain labels. No native geometry or natural-caller interpretation is inferred.
 
-The reader retains empty evidence/roles, relies=structure and supports=identity.
-Exactly one reader link and one matching owner-end selector are removed from
-the complete additional datum owner. Its symbols, types, other links, TEST
-contexts, ledger identities, notes and positions remain exact. The preceding118-record and62-function boundary retains exact full
-prefix reconstruction and its bounded current shared-owner transitions. This includes the exact paired-reader row79
-postimage and both complete function transitions. The additional full function
-document remains unchanged. Eight writer identities and eighteen indexed_by
-originals stay pinned.
-
-The 207 prior domain sources retain 206 byte-identical sources and the exact
-two-site gated spelling exception with complete current/legacy hashes.
-Thirty-three independent components require one complete original COPY primary.
-The registry contains 42 families and 88 capture bindings.
-The twenty-ninth standard source-only adapter retains the preceding twenty-eight adapters
-and all fifty-six generated output identities. Its marker is
-VQ_SH_ELF_BYTE_RATIO_PRODUCER_WITHDRAWAL.
 
 Full actual-original, independent arithmetic, variable product/division,
 65536 split, signed shift, actual saved R1, frame overwrite, byte publication,
@@ -103,13 +72,6 @@ role/TEST/ledger/scope/review and published-count refusals remain mandatory.
 Source preparation grants no executable acceptance, owning replacement,
 reverse donation, native geometry, scale, units or hardware admission.
 
-The complete state-surface caller boundary is specified in
-`defs/JK08A.state-surface-caller-withdrawal-paths.md`. All119 preceding core
-records and63 full functions remain exact. Only the additional row99 reader
-and owner-end selector delta changes its full current postimage; the other118
-full records,paired row79 and both complete function transitions remain exact.
-The complete local word carrier,three state modes,raw four-row surface and
-implicit-byte curve retain both broader same-primary originals.
 
 The complete byte-factor caller boundary is specified in
 `defs/JK08A.byte-factor-caller-withdrawal-paths.md`. All121 preceding full
@@ -118,10 +80,3 @@ complete function transition removes one individually pinned reverse writer
 selector;the preceding two transitions,row79,row99,eight writer identities
 and eighteen indexed_by originals remain exact. Both real byte curves,signed
 word promotion,partial products and the percentage delay-slot store are required.
-
-The complete byte-sum caller boundary is specified in
-`defs/JK08A.byte-sum-caller-withdrawal-paths.md`. All122 preceding full
-records,current images and65 complete functions remain exact. An additional
-complete function transition removes one exact reverse writer selector;the new
-datum owner retains its absent ledger. The preceding three full transitions,
-row79,row99,nine writer identities and eighteen indexed_by originals remain exact.

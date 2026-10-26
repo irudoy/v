@@ -21,16 +21,6 @@ cap it at the preceding phase value, floor it at zero and store `FFFF15EA`.
 The complete frame, natural helper calls and return, registers, SR, ABI,
 RAM, physical curve bytes and calibration snapshots remain observed.
 
-The fixture independently reconstructs every declared stock instruction
-and pool. Only declared RAM pointer literals move to the simulator RAM
-domain; stock instruction bytes remain fixed. No stock function is stubbed.
-Independent integer and instruction-state consumers require both mode
-branches, signed and clamped outcomes, piecewise paths, physical reads and
-exact arguments after delay slots. An independent change to `0001244A`
-must change the divisor, dividend and bounded phase under equal RAM and
-other calibrations. The raw component stays in the complete primary's
-existing COPY packet.
-
 The proposed `arithmetic-argument` dependency preserves the original exact
 claim and retires only its corresponding legacy consumer selector. Its
 native write operation is not registered. Source preparation supplies no

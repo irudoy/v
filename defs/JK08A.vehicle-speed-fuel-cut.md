@@ -2,16 +2,11 @@
 
 ## Vehicle-speed fuel-cut state
 
-The bounded entry 0004f19c binds 63 stock instructions and 153 bytes.
-The literal matrix has 12544 independent contexts. Hardware readiness is NO.
-
-The invocation does not decrement the counter. The observer checks full SR/MQT.
-
 The natural stock entry `0004f19c` returns bit 0 of `ffff24a6` and updates a
 coarse vehicle-speed fuel-cut state. The function reads the raw speed byte at
 `ffff110e`, the complete control byte at `ffff24a7`, and the delay counter at
 `ffff24f6`. Its two code spans are `0004f19c..0004f1d8` and
-`0004f240..0004f282`. All 63 instructions retain the stock ROM bytes.
+`0004f240..0004f282`.
 
 ## Raw state transition
 
@@ -50,26 +45,3 @@ K = (1-U)*RAM8[ffff24f6]+U*ROM8[00008caf]; Z = 1-min(1,K);
 E = A*V*B+(1-A)*N; J = uint8((C&127)|(128*E));
 D = (1-G)*(A*V+(1-A)*N*Z); to = uint8((F&254)|D)
 ```
-
-## Bounded executable observations
-
-The declared matrix has 12,544 contexts and ten natural path classes. It
-covers all 256 state bytes, all 256 control bytes, all 256 counter bytes,
-speed boundaries 0, 90, 91, 92, 93, 94, 127, 128 and 255, and all 128
-combinations of T, IMASK, Q and M controls. These sets occur in separate
-bounded partitions; the matrix is not their full Cartesian product.
-
-Independent literals describe all fifteen GPRs, the complete controlled SR
-and final T. The observer independently captures actual status bits outside
-the declared controls and retains them through entry and return. It checks
-natural PR/SP, MACH/MACL/GBR, the C caller ABI, an 80-byte frame, all 64 KiB of
-working RAM, and all 27 bound pool and calibration bytes. The only stock
-frame write is the four-byte saved GBR at offsets 44..47. R7 receives the
-sign-extended incoming control byte and is an outgoing clobber.
-
-Six stock long pools supply the working base, speed base and calibration
-addresses. Three RAM long values have declared simulator translations;
-instruction bytes, calibration bytes and stock call/return behavior retain
-their original values. The function uses no helper stubs. Software execution
-does not establish the global inhibit coordinator, interrupt delivery,
-physical units, complete ECU scheduling or hardware readiness.

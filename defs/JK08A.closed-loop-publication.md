@@ -8,8 +8,7 @@ CONSULT-III Plus observation or bench validation before hardware testing.
 
 ## Post-feedback STFT publication
 
-One mandatory Region binds 43 instructions, 98 bound bytes and 6160 literal
-cases. The boundary is `0005ca08..0005ca5e`, the final publication fragment of
+The boundary is `0005ca08..0005ca5e`, the final publication fragment of
 `divergent-grasshopper/fn` at `0005c910`. Its preceding feedback calculation is
 outside this contract. The supplied 32-byte caller save frame contains the real
 saved PR and R8..R14. The original epilogue, RTS and delay slot execute.
@@ -19,24 +18,14 @@ Let `M` be the independent byte at `ffff99c4`, `P` the independent byte at
 `(1-F)*W + F*256*min(125,max(75,P))`. Bank 1 copies the unsigned word at
 `ffff40ac` to `ffff22dc`; bank 2 copies `ffff40ae` to `ffff22de`.
 The held working word has positive influence on its output; the forced branch
-is constant in that word. Every mode byte and every forced-percent byte occurs
-in the literals. The matrix includes word boundaries and both entry T values;
-it does not exhaust all pairs of working words.
-
-The simulator relocates the two exact 32-bit RAM pools and two declared
-16-bit RAM pointers (`0005ca5e=99c4`, `0005ca6c=9924`). It preserves the
-instruction bytes and the addressed byte within each declared RAM footprint.
-The observer checks R0..R14, entry and exit SP, PR, SR including M/Q/T, MACH,
-MACL, GBR, the full 64-byte observed frame, the outer caller ABI and the entire
-64 KiB RAM image. The output stores and sibling input bytes are explicit.
+is constant in that word.
 
 The mode and forced-percent bytes have a verified software reader. Their
 producer semantics, physical units and cadence are independent obligations.
 
 ## Learned-grid selection
 
-One mandatory Region binds 326 instructions, 765 bound bytes and 10840 literal
-cases. The complete entry is `successful-tarantula/fn` at `0005796c`.
+The complete entry is `successful-tarantula/fn` at `0005796c`.
 It calls the real stock fill helper at `00058092`, auxiliary reset helper at
 `000580e8` and diagnostic byte-1 bit-7 predicate at `00025e20`. The predicate
 receives descriptor index 297. Other predicate indices have byte identity only.
@@ -68,22 +57,11 @@ packed output byte is `8*speed_index + load_index` on both paths.
 
 The selected-cell influence has sign `none` over this unsigned domain. With
 the stock bounds, a cell of 23039 publishes 25600 through reset, while a cell
-of 23040 publishes 23040. The matrix covers all prior packed bytes, all speed
-bytes, threshold neighbors, stock and three independent synthetic calibration
-profiles, inverted bounds and the reset conditions. It contains 10621 normal
-and 219 reset calls; 10658 calls reach the diagnostic predicate.
-
-The simulator relocates 12 declared 32-bit RAM pools. Exact code, literal
-pools, tables and the descriptor index are bound to stock bytes before
-relocation. The observer checks every R0..R14 value, all relevant special
-registers and SR, natural call/return and delay slots, the full 112-byte
-observed frame, the outer ABI and the entire 64 KiB RAM image. Software byte
-storage does not establish physical units or scheduler cadence.
+of 23040 publishes 23040.
 
 ## Bounded learned-grid update
 
-One mandatory Region binds 267 instructions, 634 bound bytes and 9856 literal
-cases. The complete entry is `rousing-rhino/fn` at `00057d1e`. It executes the
+The complete entry is `rousing-rhino/fn` at `00057d1e`. It executes the
 real absolute-value helper at `00022590`, word fill helper at `00058092` and
 auxiliary helper at `000580e8`. Let `b = uint8(R4)` in 0..1 and the packed
 byte at `ffff130a+b` be explicitly in 0..63. The two independent permit bytes
@@ -110,16 +88,3 @@ Retain that value only when
 `256*ROM8[0000839d] <= W < 256*ROM8[0000839c]`; otherwise clear the cell.
 The enabled call changes only one learned word and one auxiliary byte in the
 selected bank. The other 63 cells and the sibling bank remain observable.
-
-The matrix includes every coefficient byte, every auxiliary byte, every
-permit byte, all 64 indices, both banks and entry T values, quantization and
-threshold neighbors, stock and three synthetic profiles, and word boundaries.
-There are 9340 enabled and 516 disabled calls, 3179 conditional minimum steps,
-1054 decay cases and 2421 auxiliary clears among enabled calls.
-
-The simulator relocates 14 declared 32-bit RAM pools without changing the
-instructions under test. The absolute-value domain is -25600..39935 and does
-not include INT32_MIN. The observer checks R0..R14, SP, PR, full SR, MACH,
-MACL, GBR, the full 112-byte observed frame, the outer ABI and the entire
-64 KiB RAM image. Hardware readiness is NO: producer semantics, physical
-units, live permits and cadence require separate validation.

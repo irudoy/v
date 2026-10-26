@@ -1,14 +1,9 @@
 # Natural JK08A APC phase normalization accesses
 
 `JK08A.phase-normalization.toml` binds the complete natural entry
-00028DC8..00028E7C and splitter 00028E7C..00028E9E to the existing
-`stock_jk08a_injection_tooth.s`.
-The normalizer has no helper calls or synthetic observing return. Its
-natural RTS instructions and delay-slot stores remain tested stock bytes.
-The fixture relocates only the longword base literal at 00029020 from
-FFFF128C to 0100128C. The word offset 0126 at 00028E9E selects position
+00028DC8..00028E7C and splitter 00028E7C..00028E9E.
+The normalizer has no helper calls. The word offset 0126 at 00028E9E selects position
 byte FFFF13B2. The multiplier word 6554 at 00028EA0 belongs to the splitter.
-All literals are observed before and after every call.
 
 Normalizer R4 and R5 explicitly select one of two native word/byte pairs:
 FFFF13B8/FFFF193B or FFFF1558/FFFF155A. These are pointer premises for
@@ -18,13 +13,6 @@ construction and call delay slots. The complete caller bodies, source
 argument dispatch, interrupt state and scheduler reachability are outside
 this bounded normalizer execution.
 
-The shared 80-byte context and 572-byte observer retain all GPRs, special
-registers, full SR, frame, SP, PR, independent caller ABI, complete relocated
-RAM and eight literal bytes. The raw C adapter records inputs and actual
-outputs without an expected-value table. Private source/header identities,
-GNU reconstruction, image/fixture/object/ELF/toolchain identities, commands
-and terminal streams bind the original complete COPY primary. No separate
-receipt, observer ABI or execution framework is introduced.
 
 ## Independent scalar and physical boundary
 
@@ -87,8 +75,7 @@ physical unit, scale or hardware behavior.
 
 ## Bounded programmer offset and real helper
 
-`JK08A.phase-programmer.toml` binds the existing
-`stock_jk08a_injection_offset.s` at0002B6D4..0002B6F8 and its real
+`JK08A.phase-programmer.toml` binds 0002B6D4..0002B6F8 and its real
 00028E7C..00028E9E helper. The entry explicitly assumes that control has
 reached the offset calculation after the count decision. Period word
 FFFF22BC and remainder byte FFFF193B are software inputs. The body
@@ -113,17 +100,6 @@ The complete programmer prologue, count decision, following compare
 programming, native MMIO, scheduling and hardware behavior retain
 separate evidence. The fixture uses no stock-function stub.
 
-Required component `phase_programmer_paths` belongs to the same original
-complete COPY primary as `phase_normalization_paths`. It uses the same
-80-byte context, 572-byte observer, complete relocated RAM, frame, ABI,
-SR and literal observations. Its private header reads only the first
-four input columns of all14118 existing offset literals, followed by
-explicit period/remainder, context and T boundaries. Expected-output
-columns do not enter raw inputs. Separate state, scalar, physical,
-post-delay call and branch consumers require both stores and exact
-return paths. Positive period and remainder alternatives separately
-vary each output while every other input remains fixed.
-
 Owning programmer relations bind writer2B64A/FFFF16C2 to the helper
 word store00028E94 and writer2B64A/FFFF166C to byte store00028E98.
 The complete family retains all ten normalizer/splitter original and
@@ -131,24 +107,3 @@ proposed claim items. Amphibian-panda retains unsigned16 in its symbol;
 injection_offset_reciprocal_residue retains inherited unsigned8 from
 its meaning. Their full native documents and existing TEST positions
 remain part of the exact grouped transition.
-
-## Owning metadata boundary
-
-`JK08A.phase-access-claims.toml` pins 12 exact original relations in six
-complete owner documents. Normalizer owners retain their reader and writer
-in one shared postimage; programmer owners retain their full documents.
-Existing ordinary `link` operations append the exact complete twelve-item
-batch. The whole transition preserves every
-other native value, semantic type, ledger, original symbol/link evidence
-position and TEST origin. Huge-lori retains unsigned16 and economic-collie
-retains unsigned8. Vivacious-petrel and peridot-pony retain unset width and
-signedness; physical word/byte accesses infer no semantic type.
-
-Unique exact owning appends are neutral to existing physical scopes only
-when their complete canonical relation digest matches the pinned postimage.
-Changed or duplicated items and all other native values retain their scope
-effect. Full native publication, TEST origin and COPY/injection/coherent/
-SID22 scope equality remain required. The evidence supports its owning
-access identity only. It grants no reverse function level, engineering
-units, scale, live scheduling, hardware reachability or peripheral effect.
-Source preparation qualifies no original review.

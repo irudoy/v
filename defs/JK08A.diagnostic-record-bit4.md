@@ -13,13 +13,6 @@ array extent nor identify caller scheduling, hardware status names or other
 record writers. The address calculation uses the complete incoming R4 and
 preserves it. It does not truncate R4 to a byte or sign-extended word.
 
-The instruction fixture retains the complete leaf and every PC literal.
-Two simulator-only pointer literal relocations map the native ordinary RAM to
-`01000000..0100FFFF`: array base `FFFF5718` becomes `01005718`, and the
-`FFFF4558` flag base becomes `01004558`. The word displacement `0B34` remains
-exact. Instruction bytes remain unchanged and no stock function stub is used.
-The existing ordinary-80-572 observer transports complete initial/final RAM,
-CPU and SR, both frame images, external ABI, code and literal bytes.
 
 Independent scalar equations bind `old_byte | 0x10`, the full sign-extended R0
 before and after the OR, complete index and address carriers, the final R0
@@ -39,34 +32,9 @@ physical address obligation; these contexts grant no numerical causality from
 an address-only change. First and second record bytes, every other selected
 record and the complete remaining ordinary RAM retain their original bytes.
 
-The exact native disposition appends one owning identity evidence item to the
-existing writer relation through the normal `link` path. Complete owner and
-function documents, native byte width and unsigned type, unit, both ledger
-ends, TEST origins and positions, other readers/writers, reverse properties,
-notes and symbol evidence remain exact. The separate FFFF508C writer relation
-and its function-end selector remain unchanged. The two existing paired array
-writer originals keep their independent source status and obligations.
 
 The source package and shared registration fragments establish no accepted
 execution, native publication, physical scale, array geometry, hardware result
 or completion of another original. The common B acceptance executes the
 independent reconstruction, state, physical, numerical, positive, native, TEST
 and refusal contracts together.
-
-
-## Registered positive source boundary
-
-The bit4 component retains one exact positive writer in the
-four-original diagnostic-record-bit4-access family. Its independent physical, numerical,
-full-state, actual-byte and native owning consumers use one complete original
-COPY primary. The existing registry contains 42 families and 88 captures.
-The standard ordinary adapter registry contains 40 descriptors and 80 generated
-outputs. The bit4 adapter adds exactly its C source and refusal source;
-the 70 preceding generated outputs retain their complete bytes.
-
-The complete owner and function retain all other original facts, links,
-ledger positions and TEST attachments. The two earlier paired-array pending
-originals retain their separate status and receive no credit from this writer.
-The finite tested index set supplies no array extent, caller reachability,
-scale, units or hardware admission. Native publication and executable
-qualification remain separate from source completion.

@@ -29,10 +29,6 @@ origin remains exact. The physical word read at `0000934E` and byte read at
 `FFFF2494`, `FFFF2448` and `FFFF418C` do not establish semantic width, signedness, table geometry,
 units or scale. Other questions attached to the coordinator remain separate.
 
-The nine `rpm_inhibit_paths` records use the boundary below. Five readers use
-the separate `rpm_remaining_inhibit_paths` fixture and conditional diagnostic
-premise in [`JK08A.rpm-remaining-inhibit.md`](JK08A.rpm-remaining-inhibit.md).
-Both complete originals belong to the same primary and joint owning batch.
 
 ## Executed boundary
 
@@ -63,37 +59,17 @@ composite-status function at `0004EDEC`, and executes `OR R2,R14` at
 `00050836..000508E6`; the natural RTS at `000508E2` returns to `0004EDF0`.
 The exact real helper closure contains `000259E4..00025A12`,
 `00026370..00026382`, `00026740..0002676E` and `00026A80..00026ABA`.
-The curve reuses `stock_jk08a_implicit_byte_curve.s`, including its natural
-tail jumps, linear kernel, literal pools and MACL save/restore.
-These four windows contain 22 caller bytes. The input-only header retains
-the vehicle/main kind and its complete RAM/context rules, with separate kinds
-for MAF summary, shared status and composite status. R0, R2 and R14 have explicit independent
+R0, R2 and R14 have explicit independent
 full-word inputs. Final R0 is the leaf Boolean; final R14 is incoming R14 OR
 incoming R0 for MAF summary, or incoming R14 OR incoming R2 for shared and composite status.
 The leaf result is not retroactively merged into that delay-slot accumulator.
-
-Fifteen long RAM pointer aliases relocate only the existing pointer literals at
-`0004F1FC`, `0004F224`, `0004F454`, `0004F460`, `0004F46C`, `0004F910`,
-`0004F914`, `0004FB9C`, `00025B98`, `000508EC`, `000508FC`, `00050900`,
-`00050908`, `0005090C` and `00050918` into the existing
-64 KiB simulator RAM domain. All tested instructions remain stock bytes.
-The shared independent SP+24/R7 observing return is separately assembled at
-`0004EDC6`, `0004EDD6`, `0004EDFC` and `0004EDF0`; all four outside returns restore PR
-and use the same eight-byte SP+24/R7 source. Their bytes are outside every
-tested span and literal pool. The ordinary GNU source reconstruction, original
-stock image, aliases, literal pools, private input header, observer, ELF,
-toolchain and complete process streams remain bound to the same COPY primary.
 
 ## Separate state and causal consumers
 
 The raw input domain supplies 27 calibration bytes: configuration at `00008B38`,
 main and vehicle delay reloads at `00008C69` and `00008CAF`, speed thresholds at
 `00008DB7` and `00008DC3`, six words at `0000934E..0000935A`, the hysteresis word
-at `00009462`, and eight curve bytes at `00012A32..00012A3A`. These inputs
-are disjoint from executable instructions and pointer literals. The private
-header contains explicit input values and no expected outputs. Complete raw
-RAM, input context, output registers, frame, ABI and unchanged calibrations
-are observed with the existing 80-byte context and 572-byte observer.
+at `00009462`, and eight curve bytes at `00012A32..00012A3A`.
 
 The instruction-state engine and separate scalar equations must agree on all
 RAM bytes and the output pair. The vehicle equations distinguish entry state,
@@ -167,27 +143,3 @@ and constant curves cover interpolation and last-cell returns. Full byte
 state domains, unsigned boundaries, gate combinations, SR/MQT and incoming
 word variants bind the actual root and helper paths.
 Positive grouping holds the exact kind and entry as well as all other inputs.
-
-## Publication and refusal boundary
-
-The complete primary supplies `rpm_inhibit_paths` to the existing COPY
-dispatcher. Its independent consumer must establish the exact bounded access
-summary-bit and composite-status flags before reserved `rpm-inhibit-access` evidence can support its own reader
-identity. It supports neither reverse function identity nor scale. Native
-publication requires the complete nine-item transition, exact full native
-postimages, unchanged TEST origins and equal existing physical scope digests.
-
-Regression sources reject missing or stale originals, source reconstruction
-changes, altered aliases or outside returns, incomplete or reordered raw
-invocations, changed complete input/output state, altered physical transfers,
-call and return mutations, and semantic type promotion. Controlled writer and
-level-routing tests grant no executable or native admission of their own.
-The four complete vehicle/main reference records and all six pre-composite
-reference records have independent retention pins. All bounded paths reuse
-the existing registration, writer namespace and raw component.
-
-This boundary does not execute the full coordinator, its prologue, the
-scheduler or other contributors. It establishes no producer, external counter
-cadence, physical units, calibration suitability, hardware eligibility or
-engine behavior. Existing broad static mechanism claims remain subject to
-their own evidence and hardware requirements.

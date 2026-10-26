@@ -29,16 +29,6 @@ to `FFFF895C` (`crazy-lynx/ram`) and `FFFF8960` (`arrogant-walrus/ram`).
 The actual sixth-argument pointer binds both addresses. Physical four-byte
 stores do not fill either owner's unset semantic width or signedness.
 
-All ten preceding complete coordinate/publication reference records have
-independent retention pins, including the six original coordinate records.
-All 37 calculation identities retain their exact pins, including the prior
-34-identity boundary; the calculation registry contains 38 dispositions. Every full native
-preimage and proposed postimage retains other links, reverse structural
-properties, symbol/layout/type data, ledger positions and TEST origins.
-The existing unsigned 16-bit RPM and transition-counter types remain exact;
-the other four semantic types remain unset. Ordinary appends and calculation dispositions use their
-existing complete batch and publication operations. Exact existing physical
-scope equality remains mandatory. Owning evidence supplies identity only.
 
 ## Real argument carriers and output phase
 
@@ -100,22 +90,6 @@ general hardware, interrupt, scheduling or event-cadence claim.
 
 ## Existing observation and input-only domain
 
-The unit contains 3067 instructions and 63998 bound code/pool bytes. Its
-43 long pointer aliases and 17 word pointer aliases retain the existing
-coherent translation. The shared workspace has 302 bytes at
-`FFFF88B0..FFFF89DE`, observed at `00005FFC..0000612A` (end exclusive), with 32 canary bytes
-at each end. Ordinary 64 KiB RAM is observed separately. Its unaliased copy
-of the workspace remains unchanged; only the independently observed shared
-bytes overlay the logical memory used by the consumers.
-
-The existing observer has a 76-byte incoming context, an 892-byte result and
-a 352-byte frame at SP-320..SP+31. Full incoming registers, actual prepared
-SR, exit registers, natural PR/SP, external ABI, MACH, MACL, GBR, frame,
-ordinary RAM, shared memory, canaries, controlled calibrations and all bound
-code/pool bytes are recorded before and after execution. Extended frame and
-shared-workspace interpretation in the independent instruction engine
-requires the exact feedback descriptor, unit, aliases and storage premise.
-Other descriptor paths retain their existing frame and memory boundaries.
 
 The input parser preserves 1829 legacy input contexts. It reads only the first
 three input columns and the `inputs` byte-change array. Expected output
@@ -137,44 +111,3 @@ There are 18 controlled calibration bytes: the 16-point criterion table at
 `00008CD4`. Stock, ascending and descending profiles are explicit inputs;
 controlled contrast grants no stock calibration or engine reachability claim.
 All other bound bytes remain stock or exactly declared pointer aliases.
-
-## Independent admission and refusals
-
-The `closed_loop_feedback_paths` capture joins the same complete COPY primary
-through its binding in the existing ordinary registration. The
-registration contains thirteen ordinary families and forty-seven capture bindings.
-No new mode, common dispatch route, observer, ISA or storage allocator is
-defined. Existing complete-primary capture presence remains structural;
-the independent domain consumer must establish
-`exact_feedback_arguments`, `exact_feedback_stores` and
-`exact_transition_counter_accesses`.
-
-Complete natural instruction state, the existing independent memory equations,
-separate nested-frame equations and terminal-register equations must agree
-with the actual original. The physical consumer requires the exact ordered
-caller reads, partial fifth-byte store, full fifth-word load, sixth pointer
-carriers, post-delay arguments, two phase-correct stores and natural return.
-All 27 required active-state and transition conditional sites require both feasible outcomes.
-The separate saturation guard retains its exact bounded taken premise.
-Each argument needs fixed-other alternatives that change a separate active
-state result after its own input bytes are excluded from the comparison.
-Each writer needs a changed actual store value with the bank input changed
-and every other complete input fixed.
-The counter reader needs a changed counter/flag result under fixed-other
-counter alternatives; the writer needs a changed actual store under
-fixed-other flag alternatives. Both ordinary and native mirrors retain
-the same exclusion, and the physical counter datum remains phase-specific.
-
-Regression sources retain complete native/type/TEST/scope and old-reference
-boundaries. They reject missing or stale originals, altered code/pools/aliases,
-changed toolchain or invocation streams, changed complete memory/CPU/frame/ABI,
-workspace or canary changes, reordered carriers/stores, altered full signed
-arguments, pointer substitutions, natural-return changes, transition phase or
-counter/flag substitutions, saturation escapes, changed original TEST/spec
-positions and missing independent
-domain flags. Controlled metadata tests grant no executable admission.
-
-This boundary establishes no upstream producer, physical units, calibration
-suitability, event cadence, complete ECU scheduling, interrupts, peripheral
-effects, hardware eligibility or engine behavior. Source preparation does not
-close an original review or constitute executable acceptance.

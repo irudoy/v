@@ -8,13 +8,10 @@ invocation admits incoming R4 low byte 1; its upper 24 bits and the other
 19 context fields remain independent. This code index establishes no
 physical channel-to-bank identity or natural scheduling.
 
-`JK08A.channel-target-builder-paths.toml` binds 457 stock instructions in
-8 actual entry paths and 9 spans, 31 literal pools, 11 four-byte RAM pointer
-aliases and 41 calibration spans. The complete root and helpers `26524`,
-`26984`, `26740`, `26C78`, `26474`, `26944` and `25E20` retain their
-instruction bytes, real calls, delay slots, tails and returns. The ordinary
-80-byte context, 572-byte observation, 192-byte frame and complete 65536-byte
-RAM retain their existing transport and independent consumers.
+Source bindings: `JK08A.channel-target-builder-paths.toml`.
+
+The real helpers are `26524`, `26984`, `26740`, `26C78`, `26474`,
+`26944` and `25E20`.
 
 The first coordinate is `floor(uint16[1340]/2)`. Actual `26524` receives
 curve `155A0` in R4 and axis `13202` in R5. This is the inverse operand order;
@@ -52,12 +49,6 @@ GBR/MACL/PR/SP, external ABI and exact immutable instructions/calibration.
 Held-other alternatives must change actual `28BE` for the base byte,
 every active inverse word and every active upper-curve byte.
 
-Eight caller-infeasible instructions remain bound: `6F526`, `6F570`,
-`6F572`, `6F606`, `6F608`, `25E3E`, `26D0A` and `26D0C`. Their byte values
-remain mandatory. The bounded callers cannot reach the excessive
-coordinate/byte caps, sentinel DTC ID or zero axis divisor. The complete
-existing timing-denominator and indexed `CB1CA` reader originals remain
-mandatory from the same primary. No stock function is stubbed.
 
 The owning declaration and `JK08A.channel-target-reader-claims.toml` bind
 one exact owner postimage with two known evidence appends, reader and writer.

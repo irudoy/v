@@ -178,12 +178,6 @@ complete high-level high-detonation policy.
 
 ## Bounded knock state selection
 
-The registered `jk08a-knock-state-selection` fixture reconstructs 70
-instructions and binds 208 bytes. Its 11615 literal cases comprise 7671
-post-lookup entries at `00049614` and 3944 standalone alternative entries
-at `000499b8`. Both stop at `0004964a` before the separate signed-low-word
-conversion and publication.
-
 H is the explicit first masked byte at SP+0x0c, in 0..127. Incoming R0
 supplies the independent second raw value; its AND #127 and byte store
 execute. With `ffff2469.bit7` clear and `ffff2467.bit6` set, widened R2 is
@@ -203,26 +197,13 @@ anchors bind both table pointers, call/delay pairs and bases; they establish
 no lookup numerics, producer identity or dispatch reachability. Six declared
 high-RAM pool aliases preserve all checked instruction bytes.
 
-Every case checks widened R2, all 15 general registers, T, MACL and other
-special registers, SP/driver PR, independent external C ABI, the complete
-64-byte frame, all 68 anchor/pool/calibration bytes and every other RAM byte.
-Only the normal-entry second stack byte may change. Output words and bytes
-retain their seeded values. The natural PR from the preceding second lookup
-is outside this proof; the ordinary boundary returns through driver PR.
-
-Composition with the separately registered conversion gives
+The conversion gives
 `ffff121a=uint16(R2)` and `ffff22fa=trunc0(int16(ffff121a)/256)`.
-It is not joint execution of both fragments. The conversion retains its
-declared RAM sweep boundary contract. Signed monotonic behavior across word
+Signed monotonic behavior across word
 wrap, complete coordinator execution, cadence, physical timing and hardware
-behavior remain outside these bounded proofs.
+behavior require separate evidence.
 
 ## Bounded knock event publication
-
-The registered `jk08a-knock-event-publication` fixture reconstructs 26
-instructions and binds 76 bytes from stock JK08A. Its 8754 literal cases
-enter at `0004db48`, pass through the shared clamp and store at `0004db86`,
-and stop at the ordinary return boundary `0004db8e` outside stock spans.
 
 Let S be the signed byte at `ffff2378`, W the signed word at `ffff11d6`,
 and C the signed byte at `ffff2356`. P is the full independent incoming
@@ -238,25 +219,13 @@ cover signed extrema, sums outside the signed-word range, independent
 P boundaries and all valid neighbors of both signed-byte clamp edges.
 
 The exact natural-path base anchors include the R13 load at `0004da7c`,
-which addresses the `ffff2330` context. Those anchors are not executed;
-the driver supplies their register bases. Only declared high-RAM pool
-words are aliased after exact ROM/GNU identity. Every case checks the
-widened longword and byte publications, clamp T, general/special registers,
-SP/driver PR, the entire frame, independent external C ABI, all bound
-calibration/pool bytes and every other RAM byte.
+which addresses the `ffff2330` context.
 
 Full builder execution, timer/latch behavior, scaled-term production,
 bypass branches, natural full-function return, cadence, physical input
 identities and hardware behavior remain outside this bounded proof.
 
 ## Bounded knock event retard
-
-The registered `jk08a-knock-event-retard` fixture reconstructs 63 instructions
-and binds 147 bytes from stock JK08A. Its 7408 literal cases enter at
-`0004d9ac` and stop at `0004da2a`, before the timer/latch and later sum logic.
-The input RAM contexts are explicit; their producers are outside this slice.
-There are 3605 stock-mode contexts and 3803 artificial mode contexts. In the
-3676 G0 cases the companion retains every bit of its prior word, with no store.
 
 Let K, A and B be signed bytes at `ffff22fa`, `ffff11f9` and `ffff11fa`.
 Let H be the unsigned high byte of word `ffff23c2`. Q is true when
@@ -275,16 +244,6 @@ first minimum, while the companion uses the unadjusted K. Signed byte loads,
 negation, EXTS.W, comparisons, branch outcomes and store delay slots bind to
 the exact instruction words. The unsigned high-byte interpretation does not
 establish the source word producer's signedness or engineering scale.
-
-Literal inputs cover signed byte extrema, all four Q/G arms, both independent
-Q bits and their combination, unrelated flag bits, all ROM mode bytes,
-high-byte limits and low-byte contamination. Stock mode contexts and explicit
-artificial calibration contexts remain distinct. Every case checks both
-publications or complete companion retention, T, all 15 general registers,
-special registers, SP/driver PR, the entire 52-byte frame, independent caller
-ABI, all 21 calibration/pool bytes and all other 64k RAM bytes. Four declared
-RAM pool aliases preserve all checked instruction words. The fragment has no
-calls or stack accesses; its ordinary RTS/NOP boundary is outside stock spans.
 
 Full event-builder mode reachability, timer/latch policy, producer lifecycle, later
 summation, physical input identities, cadence and hardware behavior remain
@@ -312,28 +271,12 @@ byte H supply the declared FIRST alternatives. SECOND has whole-word
 retention when G=0; when G=1 it publishes the separate B-based result.
 The accepted contracts define these widths, conditions and alternatives.
 
-`tools/kb/tests/test_ignition_event_arithmetic_chain.py` owns the shared
-views through `test_ignition_event_arithmetic_chain_owner_contract` and
-`test_ignition_event_arithmetic_registered_stock_contract`. The gate binds
-the four exact notes and identities to the accepted registered publication
-and retard Regions, reuses their stock-byte checks and rejects changes to
-the incoming register domain or retained-word interpretation. Their
-execution boundaries are 26 instructions / 76 bytes / 8754 cases and
-63 instructions / 147 bytes / 7408 cases. No additional executable Region
-or complete builder execution is inferred from shared chain membership.
-
 Full builder dispatch, upstream request and P production, snapshot copying,
 timer/latch behavior, scheduling, physical units and hardware validation
 remain outside these bounded arithmetic proofs. Their independent owned
 evidence retains its existing scope.
 
 ## Bounded knock integration
-
-The registered `jk08a-knock-integration` fixture reconstructs 39 instructions
-and binds 114 bytes from stock JK08A. It executes 4035 literal cases: 3967
-explicit event entries at `00049900` and 68 quiet entries at `00049544`.
-Both paths use the common signed saturation/publication block and stop at
-`00049582`, before subsequent coordinator behavior.
 
 Let S be signed word `ffff1258`. The quiet entry publishes
 `ffff1380 = clamp(S + ROM16[00008eaa], -32768, 32767)` with stock increment 13.
@@ -350,27 +293,14 @@ dispatcher MOV.B at `0004952c` and EXTU.B at `0004952e` have separate static
 byte checks; the dispatcher, quiet eligibility predicate and natural entry
 selection are outside this execution envelope.
 
-The literals cover all 256 R4 byte values, signed state boundaries, quiet
-upper saturation and every in-domain event lower-saturation transition.
 R4=213 includes the final transition at S=32623; R4>=214 publishes -32768
 throughout the signed-word domain. MACL equals 307*x on the event path and
-retains its incoming value on the quiet path. Working R4 before the final
-lower clamp, final T, all 15 general registers, special registers, stock
-SP/driver PR, the seeded 52-byte frame and external caller ABI are checked.
-Every case checks the full other 64k RAM bytes and all calibration/pool bytes.
-Only the five declared RAM pool words receive simulator aliases. The ordinary
-RTS/NOP boundary lies outside checked stock instructions.
+retains its incoming value on the quiet path.
 
 This contract does not execute the complete coordinator or establish physical
 mode reachability, event cadence, learning lifecycle or hardware behavior.
 
 ## Bounded timing-byte conversion
-
-The registered `jk08a-knock-timing-byte` fixture independently reconstructs
-16 instructions and binds 48 bytes from stock JK08A. It executes 65650 cases:
-all 65536 low-word inputs and 114 literal cases combining 19 signed boundaries
-with six independent upper words. Its entry is `0004964a`; the two checked
-instruction spans end at `0004965c` and `000496da`.
 
 Incoming R2 is an explicit raw register context. EXTS.W R2,R12 gives the signed
 low word. The delay-slot store at `00049656` publishes its raw low 16 bits to
@@ -385,14 +315,6 @@ Unexecuted stock load anchors at `000495da` and `000499ae` bind incoming R9 to
 `ffff22f8`. Their producing paths are outside this execution. Only pool
 `000496c8` receives the declared simulator alias for `ffff120e`. The ordinary
 RTS/NOP boundary at `000496da` is outside checked stock instructions.
-
-Every case checks both outputs, neighboring bytes, all 15 general registers,
-branch T, special registers, SP/PR, the seeded 52-byte frame, external caller
-ABI and context-anchor/pool preservation. Each literal case checks all other
-64k RAM bytes. The sweep checks full RAM at each 256-case block boundary and
-does not claim full per-case RAM observation: compensating writes within a
-block are not excluded by that snapshot alone. The exact stock spans contain
-only the two declared stores and no calls or stack accesses.
 
 Positive inputs establish arithmetic without asserting full-coordinator mode
 reachability. Earlier calculations, mode selection, event consumption, cadence,

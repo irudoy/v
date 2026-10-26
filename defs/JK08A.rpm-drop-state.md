@@ -59,14 +59,6 @@ The crank/cam fault predicate `FUN_00025E4E` returning nonzero selects
 the current sample and all four history words to `R`; a zero predicate result
 with bit 6 set selects the filter path and shifts the history after the store.
 
-`tools/kb/tests/test_engine_speed_drop.py` binds the mode tests, comparison,
-branches, operands, and coefficients to fixed stock bytes. The GNU SH-2E
-region `jk08a-rpm-drop-arithmetic` independently assembles and executes
-`0003e1fe..0003e26b`, including the rising zero branch, equal-speed history,
-falling-speed recurrence, truncation, and saturation. Its boundary return is
-outside the region; mode selection, history shifting, and publication are
-outside this executable slice.
-
 ## Calibration 0x1202E
 
 When `0xFFFF2459.bit5` is clear, `FUN_0003E1DA` calculates:

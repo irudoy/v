@@ -38,13 +38,6 @@ All 256 raw incoming byte values remain unchanged. Complete ordered accesses
 and independently computed publications distinguish this absence from a
 preserved input echo or an omitted function body.
 
-Thirty-five held-other input obligations cover every active word in both
-endpoint arrays and each of the three signed RAM inputs. At least one actual
-computed publication must change while all other complete RAM, CPU, frame,
-calibration and bound inputs stay fixed. The complete existing
-`request_limit_normalization_paths` and `timing_denominator` originals remain
-mandatory from the same primary. A coordinator trace fragment does not replace
-the complete independent natural-root invocation.
 
 The proposed native correction removes only the exact writer link and its
 single owner-end `writes` selector. The complete multipurpose-byte summary,
@@ -60,25 +53,3 @@ The current shared native/family boundary binds its independent capture,
 full source set and exact writer direction. Every pending permission remains
 separate. Source preparation grants no original retirement, owning identity,
 native width, physical scaling, scheduling, whole-ECU absence or hardware admission.
-
-
-## Shared owning source boundary
-
-The shared descriptor contains 136 exact access originals: 125 readers and
-eleven individually pinned writers, 101 complete datum owners, 76 complete
-functions and 128 matching ledger selectors (120 datum-end selectors and
-8 function-end selectors). All 135 exact normal unlink operations form one
-complete phase. Thirty-five independent components use the same complete
-original COPY primary. The existing registry contains 42 families and
-88 captures. Five complete function transitions retain eight exact
-function-end selector withdrawals.
-
-The three-caller package preserves all 129 preceding reference records and
-all 70 preceding complete functions. Only the three proposed-image fields of
-the previous clamp record change to the common two-reader table postimage.
-Its full preceding image remains recoverable and has a separate exact current
-image pin. All three new function snapshots remain complete and unchanged.
-Native types, evidence, TEST positions, ledger order, calibration semantics,
-other reader/writer and producer facts, and downstream RAM dependencies remain
-mandatory. Source completion grants no identity, scale, units, executable,
-native publication or hardware admission.

@@ -46,13 +46,6 @@ row serves.
 
 ## Executable lookup contract
 
-The registered `jk08a-knock-threshold` GNU fixture independently reconstructs
-184 instructions and binds 635 bytes of the exact JK08A image. Its 829 cases
-execute the complete accessor, explicit word-axis wrapper, axis search,
-fraction divider and unsigned linear finisher through their natural returns.
-Factory selector, six threshold rows, axis and final neighboring word are
-compared with the image before any artificial calibration context is installed.
-
 The accessor contract requires `1 <= channel <= 6`; it contains no channel
 guard. The zero-channel check belongs to the evaluator. Stock selector `0x82`
 chooses the primary channel; the other selector-byte contexts test bit 3
@@ -65,10 +58,7 @@ For unsigned cells `a`, `b` and Q0.16 fraction `f`, the finisher returns
 `a + floor(max(0, b-a)*f/65536) - floor(max(0, a-b)*f/65536)`.
 Descending intervals truncate the positive decrement before subtraction.
 The accessor stores the threshold and naturally returns `R0 = 2*channel`
-with the threshold in `R2`. The fixture compares all sibling outputs, the
-aliased RAM, calibration, stack footprints and preserved register states;
-the external C ABI is checked separately from stock entry and exit states.
-Only the three declared high-RAM pool words are relocated after byte identity.
+with the threshold in `R2`.
 
 This execution contract covers lookup and threshold publication from explicit
 RAM contexts. Metric production, evaluator comparison and event-count updates,
@@ -77,9 +67,7 @@ and the engineering threshold scale have separate evidence boundaries.
 
 ## Bounded comparison contract
 
-The registered `jk08a-knock-comparison` fixture reconstructs 314 instructions
-and binds 963 bytes of the exact JK08A image. Its 1100 cases include 1048
-comparison contexts and 52 direct bitmap-shift contexts. The comparison entry
+The comparison entry
 at `0x4A2EE` executes the natural threshold accessor and real interpolation
 helpers, then reads the selected unsigned longword metric and threshold word.
 The caller supplies legal channels `1..6`; the channel-zero guard is outside
@@ -302,9 +290,7 @@ and 512. The target calibration data agree across the three exact images.
 zero-fraction return; its accessor stores the low word. The integer wrapper
 and the fused leaf require separate arithmetic and ABI proofs.
 
-`tools/kb/tests/test_knock_target_homology.py` binds complete registered
-image identities, table/axis/callee operands, accessor widths and the biased
-strict comparison. The sole interpolation call has ordinal 0 of 1 inside
+The sole interpolation call has ordinal 0 of 1 inside
 each accessor. This static gate establishes neither target execution nor
 full arithmetic/ABI equivalence, engineering scale or physical channel
 identity.
@@ -376,18 +362,7 @@ independent R4 upper words, plus four low-word-ffff sentinel contexts.
 The sentinel returns zero without reading a record. Other signed indices
 and diagnostic array extent are outside this contract.
 
-Every case checks the complete 64k aliased RAM, all 40 bound pool/calibration bytes,
-the 80-byte observed frame, MACL/MACH/GBR, natural SP/PR and a distinct
-external C caller ABI. The 36-byte natural save footprint holds R8..R14, PR and
-MACL; the predicate adds no stack storage. Forced reset checks every
-reference word, normal learning checks every selected-row word, and a
-direct predicate permits no RAM change. The fixture checks final SR.T
-without injecting SR or claiming preservation of its other bits.
-
-`tools/kb/tests/test_knock_reference_learning_chain.py` gates image
-identity, exact instruction/data bytes, literal arithmetic, complete
-ordered Region bindings, published counts, typed conditional relations
-and owner preservation. Chain step 2 has sign=none. Separate static caller
+Chain step 2 has sign=none. Separate static caller
 anchors do not execute acquisition or full evaluator dispatch. ADC/DMAC,
 digital-bin production, metric scaling, threshold/count updates,
 diagnostic producers, physical units, sensor mapping, scheduling and
@@ -395,14 +370,11 @@ hardware behavior require their own evidence.
 
 ## Bounded post-acquisition knock metric
 
-One mandatory Region binds 362 instructions, 874 bound bytes and 9404 literal
-cases. `jk08a-knock-metric` starts at 0004a2b6 and stops before threshold
+The metric calculation starts at 0004a2b6 and stops before threshold
 lookup at 0004a2ee. Its alternate subtraction span is 0004a496..0004a4c8;
 complete selection 00049d88..00049e96, complete scaler 00049e96..00049fc0,
 bitmap dispatcher 000221bc..000221d6 and ladder 000221e0..000221f8 retain
-their stock addresses and instruction bytes. A simulator-only boundary
-restores the external continuation from SP+24 through R1. Direct selection
-and scaler entries execute their natural returns.
+their stock addresses and instruction bytes.
 
 The caller supplies eight unsigned software sample words at ffff20c2 and
 the selected eight-word reference row at ffff2178+16*(c-1). Selector
@@ -467,15 +439,12 @@ Hardware readiness is NO.
 
 ## Bounded software knock normalization
 
-One mandatory Region binds 266 instructions, 631 bound bytes and 6563 literal
-cases. `jk08a-knock-normalization` begins at 0004a26a or alternate 0004a3b0,
+Normalization begins at 0004a26a or alternate 0004a3b0,
 stops at 0004a2b6 before subtraction, and includes positive-word divider
 00021ce0..00021d6a with its natural returns. Additional stock spans are
 0004a3b0..0004a3fe, 0004a438..0004a496 and 0004a4fc..0004a58e. The
 last span includes the real delay-slot store at 0004a58c; alignment at
-0004a58e is outside the contract. Static selector and channel-guard anchors
-provide input-context identity and have no executed guard claim. The
-simulator-only SP+24/R1 continuation is outside stock instructions.
+0004a58e is outside the contract.
 
 Explicit inputs are legal selected channel c=1..6, unsigned byte
 B=ffff2154, unsigned word P=ffff2152, eight unsigned words
@@ -520,23 +489,12 @@ different Q. Arbitrary incoming M/Q and new runtime modes are outside
 this contract. The saved R2 and conditional last-long R3 words, sample/
 cache pointer slots and all frame neighbors have literal expectations.
 
-Eleven high-RAM pool aliases are applied after exact GNU reconstruction;
-stock instruction bytes and natural calls/returns remain unchanged.
-Normalization ends before metric subtraction. The separately registered
-metric does not establish joint invocation. ADC/DMAC/MMIO completion,
+ADC/DMAC/MMIO completion,
 filter/transform and bin production, ISR/RTE, full dispatch, channel-zero
 guards, physical channel mapping, cadence, physical units and engine
 reachability have no proof from this CPU contract. Hardware readiness is NO.
 
 ## Bounded owning access identity
 
-`defs/JK08A.knock-accesses.md` defines the exact eight-claim/seven-owner
-ordinary proof batch for the existing normalization, metric, threshold,
-comparison and axis-reader relations. Four separate stock fixtures retain
-the common complete observer, input-only literal prefixes, real helper
-closures and independent state, scalar, physical and positive consumers.
 The table readers bind lower-cell load 00026510 to root datum 0001108E.
-The cache writer belongs to normalization within parent 0004A238. Native
-types, all other facts, ledgers, TEST origins and existing physical scopes
-retain their exact original representations. No complete evaluator,
-acquisition, scheduling, scale, units or hardware admission follows.
+The cache writer belongs to normalization within parent 0004A238.

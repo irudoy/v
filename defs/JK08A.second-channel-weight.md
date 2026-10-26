@@ -1,13 +1,10 @@
 # Second-channel weight publication and live consumption
 
-`JK08A.second-channel-weight-paths.toml` binds 524 stock instructions in 1 actual entry path and 9 spans,
-42 literal pools, 8 four-byte RAM pointer aliases and 49 calibration spans.
-The complete 7A804 entry has 196 instructions. Its 8 stock entry paths include
-the real 266E8/265F0 wrappers, 26B84 axis search, 26AF8 interpolation,
-26B28 surface kernel, 26D10 fraction divider and 21CE0 unsigned divider.
-The 80-byte context, 572-byte observer and 192-byte frame preserve
-20 independent context fields. All 65536 RAM bytes remain observable.
-There are 2 raw ROM controls containing 3 bytes.
+Source bindings: `JK08A.second-channel-weight-paths.toml`.
+
+The entry is `0007A804`. Its helpers include the `266E8`/`265F0`
+wrappers, `26B84` axis search, `26AF8` interpolation, `26B28` surface
+kernel, `26D10` fraction divider and `21CE0` unsigned divider.
 
 ## Exact retained fact
 
@@ -64,20 +61,3 @@ at 1248. MUL.L changes MACL and retains the R6 used to construct divisor 800.
 There is no physical read of prior35F4. The retained reader describes the
 published quantity continuing in R5. Independent prior35F4 alternatives must
 preserve the complete final RAM, CPU and frame on both weight paths.
-
-## Required executable and independent consumers
-
-Every one of 64 surface words and the raw substitute word require held-other
-alternatives that change actual35F4, 35CA, 35CC and1248 publications. Input
-echoes and altered write sets do not establish the quantity association.
-The input matrix retains complete raw word domains, unsigned/sign-extension
-boundaries, duplicate and nonmonotonic knots, all surface fraction paths,
-wrapped products, wide R14, zero division, mode bits and output boundaries.
-
-The existing observer and GNU lifecycle transport complete original inputs
-and outputs. Separate numerical and instruction-state consumers require
-ordered physical operands, full pre/post-extension R5, complete local carrier,
-real nested calls, return paths, delay slots, ABI and exact source identities.
-The complete word-interpolation caller and division originals remain mandatory
-from the identical primary execution. Source files and local commits supply
-no successful executable acceptance or native publication.

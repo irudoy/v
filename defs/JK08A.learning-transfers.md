@@ -17,21 +17,6 @@ boot initialization, live permit, scheduler cadence or hardware behavior.
 
 ## Independent original
 
-The existing 80-byte input context and 572-byte observer retain all GPRs,
-special registers, full SR, frame, SP, PR, independent caller ABI and the
-complete relocated RAM image. Exact literals and calibration bytes are
-observed before and after every invocation. The raw C adapter consumes
-input fields and records actual state without an expected-output table.
-The original legacy selection and learning headers supply input columns
-only. Their expected results and expected registers are ignored; a source
-contract changes those columns independently without changing raw inputs.
-
-Independent reconstruction binds all stock units. Private source/header,
-image/fixture/object/ELF/toolchain identities, actual commands and bounded
-terminal streams bind the complete original COPY primary. Independent
-instruction-state equations execute the unchanged bytes. Separate scalar
-selection, learned-delta and auxiliary equations retain the existing
-integer mechanisms. A marker or source association alone grants no fact.
 
 First-break axis searches preserve prior-index hysteresis and unsorted
 axis inputs. Inclusive learned-cell bounds, the flag and the real
@@ -90,36 +75,3 @@ store. Positive bank1 alternatives vary L at FFFF2308 or A at FFFF564A
 with all other RAM, context and calibration bytes fixed. Both banks preserve
 their sibling output word. Physical input production, live learning permits,
 bank ordering and scheduling remain outside this software boundary.
-
-The joint ordinary batch retains the eighteen earlier original/proposed
-claim items and adds only reader57B36/FFFF2308, reader57B3A/FFFF564A and
-writer57C2A/FFFF2304. Shared inquisitive-dormouse relations use one complete
-grouped owner postimage. Native facts, all other layouts, ledger, evidence
-positions and every original TEST origin remain fixed apart from the exact
-owning appends. No observer, raw component, receipt, cache, namespace or
-writer command is added.
-
-## Owning publication
-
-`JK08A.learning-access-claims.toml` pins 21 exact original relations in
-13 complete owner documents. Six selector writers, eight learned-cell
-relations, four direct auxiliary relations and three LTFT relations form one exact ordinary
-`link` batch. Shared inquisitive-dormouse, auxiliary and learned-cell
-owners retain all their selected relations in one complete postimage.
-The writer appends owning evidence without changing other native values,
-ledger, original symbol/link evidence positions or TEST origins.
-
-The two auxiliary byte owners retain width8/signed false. Stft_b2,
-inquisitive-dormouse, ltft_b2 and benevolent-anteater retain width16 with
-unset signedness. All other
-registered widths and signedness remain unset. Physical byte or word
-transfers infer no semantic width, signedness, array geometry or engineering
-unit. Existing reverse-support properties remain unchanged.
-
-The unique complete pinned owning append is neutral to an existing physical
-scope only when the complete canonical relation digest matches. Changed,
-duplicated or misplaced attachments and other native values retain their
-scope effect. Full native publication, every TEST origin and exact COPY,
-injection, coherent and SID22 scopes remain required. Owning evidence grants
-access identity only, with no reverse function or scale donation. Source
-preparation qualifies no pending review and admits no hardware testing.

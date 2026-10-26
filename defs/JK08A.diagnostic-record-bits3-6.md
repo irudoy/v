@@ -41,36 +41,9 @@ wrong masks, a reload of the original byte or a missing first store fail.
 First and second record bytes, other selected records and all unrelated
 ordinary RAM remain exact.
 
-The existing diagnostic-record writer family binds this original and the
-separate `0008C968` bit4 original through independent captures in one complete
-primary. The exact shared native postimage adds the owning identity evidence items
-of the registered family; each original retains its own direction, function
-and independent capture. Complete owner and both function documents, native unsigned
-byte type, unit, reverse properties, both ledger ends, TEST origins and
-positions, symbol evidence and every other relation remain fixed. The
-`FFFF507F` writer and its function-end selector remain unchanged. Existing
-paired array writer originals retain their independent source obligations.
 
 The standalone source and exact shared fragments grant no accepted execution,
 native publication, array geometry, physical scale, hardware result or
 completion of another original. Common B acceptance retains the independent
 ROM reconstruction, complete state, ordered physical, numerical, positive,
 native, TEST and refusal contracts.
-
-
-## Registered shared source boundary
-
-The diagnostic-record-bit4-access family contains four exact positive
-originals: three writers and one indexed reader, with five complete unchanged
-function snapshots and one joint owner postimage. Each original retains
-its own independent raw capture, complete numerical and physical state,
-native binding and owning result. All four original captures belong to
-the same complete primary. The two paired-array pending originals retain
-their separate status and receive no credit from these proofs.
-
-The existing registry contains 42 families and 88 captures. The standard
-ordinary adapter registry contains 41 descriptors and 82 generated outputs.
-These two extensions add four generated source outputs; the 72 preceding
-outputs retain their exact bytes. Source preparation grants no array
-extent, units, scale, scheduling, caller reachability or hardware admission.
-Native publication and executable qualification remain separate.

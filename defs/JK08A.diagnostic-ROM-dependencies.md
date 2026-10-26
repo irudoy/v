@@ -12,13 +12,6 @@ successful GNU primary. It publishes no additional receipt.
 | Main byte surface `0000B33A` | `000BFDC0`, selected main endpoint in `000BFE88` | Byte `FFFF2327`, DID `1166` |
 | Correction word curve `000147DA` | `0004D99C`, `0004DBE8`, `0004DF82` | Byte `FFFF2022`, aliases from the executed SID22 descriptor |
 
-Every component requires exact stock instructions, explicit simulator
-relocations, original private inputs, complete register/frame/RAM observations
-and independent numeric and instruction-state equations. Cold/main composition
-uses directed calibration pairs and requires the entire RAM after BFDC0 to
-equal the RAM before BFE88. A matching source byte alone is insufficient.
-Independent register and frame entry premises remain explicit; this
-composition establishes no natural call or scheduler edge.
 
 The 147DA path keeps its three actual stage snapshots continuous. Its separate
 GNU-assembled scheduler sink at `0002A892` provides a synthetic R0 return only.
@@ -32,16 +25,6 @@ dependencies assert no physical ROM read by the publisher, universal absence of
 ROM reads, units, scale, all operating modes, natural scheduling or hardware
 qualification.
 
-The normal batch-only `reconcile-diagnostic-output` operation requires all four
-original claim hashes and their live proof. Its constrained publication changes
-only the declared relation representations, absent matching per-layout geometry
-and the exact alias-note phrase. Every original TEST attachment and semantic
-context remains identical. Unrelated facts, source origins, statuses and
-evidence positions remain under the ordinary publication equality guard.
-The exact legacy ledger selectors of the replaced physical readers are
-withdrawn. The conditional dependencies remain native facts. Every other
-ledger selector, field selection and evidence index retains its complete
-original value and order.
 
 SID22 excludes only these exact complete before/after representations from its
 RAM-publisher namespace. Modified properties, layouts, evidence, sources or

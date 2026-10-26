@@ -23,14 +23,6 @@ columns independently without changing capture inputs. Additional
 single-word alternatives hold the complete context, every other RAM byte
 and all calibration bytes fixed.
 
-The common 80-byte context and 572-byte observer retain all GPRs, special
-registers, full SR, frame, SP, PR, independent caller ABI and the complete
-relocated RAM image. The raw C adapter records actual state without
-expected results. All pointer, offset and flag bytes are observed before
-and after each invocation. The exact private assembly, legacy input header,
-generated input header, raw driver and observer bind the original COPY
-primary together with image/fixture/object/ELF/toolchain identities,
-commands and bounded terminal streams.
 
 Independent instruction-state equations execute the unchanged bytes.
 Separate scalar equations retain the existing base-pulse formula:
@@ -71,14 +63,6 @@ reconstructed. A pointer alias changes only the first longword of a
 larger pool; the remaining ROM pointers and values retain their bytes.
 Natural returns, delay slots and every tested instruction remain stock.
 
-The additional raw component uses 16 input-only prefix rows from each
-legacy stage header and explicit finite control, calibration and word
-boundary inputs. Expected results, expected GPRs and local-frame columns
-are ignored. The existing full legacy GNU regions and their complete
-matrices retain their contracts. Stage contexts state every register,
-RAM byte and calibration input independently. The current complete
-observer, COPY primary and strict private-source protocol are shared
-with the base-pulse component.
 
 The precursor reuses `stock_precursor_model.arithmetic`: source selection,
 optional speed cap, low32 product extraction, two bank products and real
@@ -105,28 +89,3 @@ wide-divisor branch is outside these premises. Every fixed-point call
 supplies exponent -2, retaining the real two-step left-shift loop and
 excluding the nonnegative-exponent branch. These guards grant no
 interior-entry or unconstrained helper-domain coverage.
-
-## Owning publication
-
-`JK08A.bank-pulse-access-claims.toml` pins 9 exact original relations in
-eight complete owner documents. Five base-pulse readers bind FFFF18C2, FFFF22DE,
-FFFF2304, FFFF2312 and FFFF2A26. One writer binds FFFF191E.
-The precursor adds the FFFF40B8 reader and FFFF18C2 writer; the channel
-adds the FFFF23CA writer. Both famous-grouse relations share one complete
-postimage. Both conditional LTFT sites belong to their exact relation.
-Seven owners retain semantic width16 and unset signedness. Injection_1
-retains unset width and signedness. All owners preserve original ledgers, all
-other layouts, link properties, symbol/link evidence positions and TEST
-origins.
-
-One exact nine-item ordinary `link` batch uses the existing writer.
-The complete proposed documents append only their owning proof items.
-Only a unique exact pinned append with its complete canonical claim
-digest is neutral to an existing physical scope. Changed, duplicated,
-misplaced or unrelated attachments and changed native values retain
-their scope effect. Full publication, every TEST origin and exact COPY,
-injection, coherent and SID22 scopes remain required.
-
-Owning evidence supports access identity only. It grants no reverse
-function, scale, units, upstream producer, scheduling or hardware
-admission. Source preparation qualifies no original pending review.

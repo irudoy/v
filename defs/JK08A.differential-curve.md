@@ -26,12 +26,3 @@ tested stock spans. The frame equations retain the partial byte writes at
 SP and SP+4. No stock helper is stubbed. The complete parent path, preceding
 register preparation, following parent instructions and scheduler remain
 unadmitted.
-
-The exact native proposals change only the legacy arithmetic reader claims
-of A and B to conditional `arithmetic-argument` dependencies and retire their
-corresponding legacy consumer selectors. Original claims and ledgers retain
-all other facts. Native write operations are not registered. The raw
-component remains inside the complete primary's existing COPY packet.
-Source preparation supplies no qualification, physical ROM reader on the
-arithmetic callee, units, scale, complete parent reachability, natural
-scheduling or hardware result.

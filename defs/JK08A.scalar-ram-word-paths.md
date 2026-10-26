@@ -1,17 +1,7 @@
 # JK08A exact word-rate and scalar channel withdrawals
 
-The component contains three natural entries, 78 stock instructions,
-156 code bytes, 16 literal/configuration spans and 5 pointer aliases.
-`defs/JK08A.scalar-ram-word-paths.toml` binds their exact owned image bytes.
-The joint descriptor contains134 exact access originals,100 complete owners,
-74 complete functions and126 matching ledger selectors. The writer requires
-all134 exact unlink operations. The selected unsupported originals are:
+Source bindings: `JK08A.scalar-ram-word-paths.toml`.
 
-| Datum | Natural function | Exact unsupported original |
-|---|---|---|
-| `7mfk:0000942c` | `7mfk:000cb1ca` | `3b093cf5dda17d51844bfd5eda0482f3f60aa8eeddab660f55294a3c42210bb7` |
-| `7mfk:0001296c` | `7mfk:0006e490` | `6979d26a6b9ca01b5e4e3dab5f2ab1878c8b82e53c6a9163d129cb2ed4ae3a6b` |
-| `7mfk:00013528` | `7mfk:00076380` | `3c0d93540474efe7370d42aa1e8fc82f40077e48751a9adbcb944ede4def1a06` |
 
 The complete natural6E490 path reads byte1766 and unsigned word93C8,
 forms their low32 product shifted by2, selects the unsigned32 cap at6E5F0,
@@ -64,49 +54,6 @@ legacy source identity through exact two-site reconstruction. The existing
 original RPM sources and existing counter/MAF full owner/reference inputs
 remain unchanged.
 
-The gated assembly spells the saved native instructions at44468 and74C5A
-as SHLL2 R11 and SHLL16 R2. Its complete legacy source hash is
-`d9926cbb33e1aedf650cbabd4051f7742855a2020af48ba2384875f3ba98d63c`;
-the current source hash is
-`74ad8b6ad76131e2b3f7469c3415f6962dc4f0ffb4d35aa6495cc83ffa90c0ae`.
-The existing legacy hash remains under the prior-source gate. A separate
-exact current hash and the two complete labeled instruction replacements
-reconstruct that legacy hash before the prior boundary comparison. Any
-other byte, shift, site or occurrence refuses. The GNU source uses numbered
-shift mnemonics directly; stock instruction bytes and the gated descriptor
-remain exact. Common GNU reconstruction and executable acceptance are
-pending. The word producer and generated adapter use the single terminal
-marker VQ_SH_ELF_SCALAR_RAM_WORD, bound by a source consistency contract.
-
-Six independent components require the same complete original COPY primary.
-The ordinary registry contains 42 families and 88 capture bindings.
-The eleventh standard source-only adapter retains the existing64KiB/80-572
-observer and profile; the preceding ten adapters retain all twenty generated
-output identities. There is no replacement owning evidence, reverse donation,
-geometry, scale, units, caller semantics, hardware acceptance or publication.
-Complete original/controlled source/word/long/index/state/physical/control/
-return/value/native/prior/TEST/type/ledger/scope/writer/review refusal sources
-are mandatory. Source preparation supplies no passing executable acceptance.
-
-The complete RPM-state component is defined by
-`defs/JK08A.rpm-state-withdrawal-paths.md`. Its two exact indexed_by readers
-share tough-earwig/ram and have no matching selectors. Full prior38/28
-reference/function boundaries and nine exact word-domain source pins remain
-mandatory. Thirty-three independent components share one original COPY primary.
-
-The exact indexed-word component is defined by
-`defs/JK08A.indexed-word-update-paths.md`. Its single writer type is pinned
-by original identity; all40 prior reader records and30 complete functions
-retain direct digests. The physical state-word overlap, temporary/restored
-interrupt mask and intermediate frame-pointer effects remain independent
-obligations under the shared original COPY primary.
-
-The complete bounded-divisor caller component is defined by
-`defs/JK08A.division-caller-withdrawal-paths.md`. Its real signed/unsigned
-helpers retain a separate complete direct-helper original from the identical
-primary. The only additional shared-owner delta removes the selected
-scrupulous-yak reader/selector. Full prior41/31 and earlier prefix boundaries
-retain complete previous records while current postimages remain separately pinned.
 
 The constant-root byte-curve caller component is defined by
 `defs/JK08A.byte-curve-caller-withdrawal-paths.md`. Its two additional writer
@@ -122,13 +69,6 @@ the shared curve neighbor. All earlier full helper originals remain mandatory,
 and this component also requires the unchanged timing-denominator original
 from the identical primary. The three exact writer exceptions remain unchanged.
 
-The scaling/division caller component is defined by
-`defs/JK08A.scaled-division-caller-withdrawal-paths.md`. Its shared owner permits
-only the additional exact kind-kittiwake reader/link-selector delta. Full
-prior54 records and 38 functions retain complete reconstructed prefix digests,
-with current full postimages separately pinned. All nine word-caller input
-sources remain exact. Complete division and register-only originals from the
-identical primary are mandatory in addition to every preceding helper obligation.
 
 The constant-root curve/scale caller component is defined by
 `defs/JK08A.curve-scale-caller-withdrawal-paths.md`. Full prior57 records and41 functions retain complete prefix postimage digests;
@@ -145,13 +85,6 @@ current complete images are separately pinned. The two shared owners admit
 only four additional exact reader/selector removals. Full timing, normalization,
 division and viridian originals remain mandatory from the identical primary.
 
-The guarded quotient caller component is defined by
-`defs/JK08A.guarded-quotient-caller-withdrawal-paths.md`. Complete prior71
-records and44 functions retain exact prefix reconstruction with separately
-pinned current images. Shared opal/vigilant owners admit only two additional
-exact reader/selector removals. Real zero/word/large-divisor instructions,
-signed fraction wrap, ordered frame carriers and full direct helper originals
-remain mandatory from the identical primary.
 
 The mixed curve caller component is defined by
 `defs/JK08A.mixed-curve-caller-withdrawal-paths.md`. Complete prior79 records
@@ -172,13 +105,6 @@ common computed publication alternatives exclude controlled RAM input echoes
 and write-set-only differences. All full preceding helper/native/TEST and
 original remainder-source obligations remain mandatory from the identical primary.
 
-The complete state-ratio and byte-transition component is defined by
-`defs/JK08A.state-ratio-caller-withdrawal-paths.md`. Full prior92 records,current
-postimages and53 functions retain direct exact boundaries. Signed-word divisor
-normalization,raw32 ratio operations,two distinct byte curves and separate
-candidate/counter publications retain their complete physical and actual CPU
-obligations. All full preceding division,byte-caller,standard implicit-byte,
-native and TEST originals remain mandatory from the identical primary.
 
 The complete DFCO state component is defined by
 `defs/JK08A.dfco-state-caller-withdrawal-paths.md`. Full prior 100 records, current
@@ -206,50 +132,3 @@ ordered local byte/dword carriers and actual boolean return remain bound.
 All previous family/helper/native/TEST originals remain mandatory from the
 identical primary. The joint selector total contains 118 datum-end and
 8 function-end removals.
-
-## Joint paired normalization boundary
-
-The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,101 complete datum owners,74 complete functions and
-126 matching ledger selectors. These contain118 datum-end selectors and
-8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
-in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
-
-The complete prior reference and function boundaries retain exact full-record
-digests. The sole additional current image delta is at lyrical-dragon/tbl
-reference79:two exact reader links and two matching owner-end selectors.
-No other preceding reference field or complete function record changes.
-Both complete prior function transitions,five function-end selectors,eight
-writer identities,eighteen indexed_by originals and every previous full
-family/helper/native/TEST original remain mandatory from the identical primary.
-
-The complete byte-ratio producer boundary is specified in
-`defs/JK08A.byte-ratio-producer-withdrawal-paths.md`. The complete118-record and62-function prefix retains exact reconstructed
-digests and explicitly bounded current shared-owner transitions,including
-the paired-reader shared image and both full function transitions. Full variable
-unsigned division,signed shift10,actual saved post-DIV1 R1 frame continuity,
-byte publication and complete prior same-primary originals remain mandatory.
-
-The complete state-surface caller boundary is specified in
-`defs/JK08A.state-surface-caller-withdrawal-paths.md`. All119 preceding core
-records and63 full functions remain exact. Only the additional row99 reader
-and owner-end selector delta changes its full current postimage; the other118
-full records,paired row79 and both complete function transitions remain exact.
-The complete local word carrier,three state modes,raw four-row surface and
-implicit-byte curve retain both broader same-primary originals.
-
-The complete byte-factor caller boundary is specified in
-`defs/JK08A.byte-factor-caller-withdrawal-paths.md`. All121 preceding full
-records,current images and64 complete functions remain exact. An additional
-complete function transition removes one individually pinned reverse writer
-selector;the preceding two transitions,row79,row99,eight writer identities
-and eighteen indexed_by originals remain exact. Both real byte curves,signed
-word promotion,partial products and the percentage delay-slot store are required.
-
-The complete byte-sum caller boundary is specified in
-`defs/JK08A.byte-sum-caller-withdrawal-paths.md`. All122 preceding full
-records,current images and65 complete functions remain exact. An additional
-complete function transition removes one exact reverse writer selector;the new
-datum owner retains its absent ledger. The preceding three full transitions,
-row79,row99,nine writer identities and eighteen indexed_by originals remain exact.

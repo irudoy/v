@@ -30,19 +30,3 @@ The remainder call follows the high-quotient bound of31 and uses the short
 division path. All helper instruction bytes remain bound, with complete
 `timing_denominator`, `bfs_path` and `exhaust_cvtc` obligations required from
 the identical primary.
-
-The raw C driver uses the existing80-byte context,572-byte observer and
-192-byte frame, complete65536-byte RAM and immutable calibration/code
-snapshots. Equal complete raw calibration inputs share storage. The existing
-separate-storage gate remains mandatory. Independent consumers require
-actual changed301C output after changing one coefficient byte with the exact
-pointer and every other complete input fixed. Incoming result poison and
-matching terminal bytes cannot replace complete physical and state evidence.
-
-`JK08A.evap-result-word-claims.toml` describes one exact owning identity
-append for writer301C. Full owner, writer and caller documents, semantic
-types, ledger, TEST, all other links and reverse properties remain fixed.
-Width and signedness remain unset; the unit remains `diagnostic raw`.
-The separate14BCA producer/snapshot chain and3018 reader disposition retain
-their own unfinished obligations. The bounded writer supplies no whole-caller
-execution, scheduling, pressure conversion or Service06 leak-area conversion.

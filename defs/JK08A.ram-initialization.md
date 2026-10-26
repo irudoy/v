@@ -53,13 +53,3 @@ applies only to this declared family; the common instruction limit remains
 relations in 17 complete owner documents. Native width, signedness, ledger,
 other facts and original TEST evidence positions remain fixed. A physical
 longword store infers no semantic field width, units, scale or hardware use.
-
-All previous forty-two original and proposed owning claims remain exact.
-The two existing `defiant-tiger/ram` rows and its natural-helper row share
-one complete postimage with all three exact writer appends. Only the shared
-postimage fields of those two previous rows incorporate the third append;
-their original documents, types, other facts, ledgers, symbol evidence and
-TEST positions remain exact. Controlled refusal sources bind both the retained
-claims and each complete previous postimage after removing that one exact
-proposed append. Canonical publication requires the same complete primary and
-joint ordinary batch, with unchanged physical scopes.

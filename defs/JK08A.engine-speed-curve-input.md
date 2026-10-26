@@ -1,13 +1,5 @@
 # Engine-speed byte coordinate and complete timing-state caller
 
-`JK08A.engine-speed-curve-input-paths.toml` binds 1153 stock instructions in 1 actual entry path and 18 spans,
-86 literal pools, 21 four-byte RAM pointer aliases and 108 calibration spans.
-The complete 4AFDC entry has 584 instructions. Its 13 stock entry paths include
-26370, 26140, 26770, 26A60, 21BBC, 26740, 26944, 26C78, 26474, 264CC,
-26984 and 21CE0. The 80-byte context, 572-byte observer and 192-byte frame
-preserve 20 independent context fields. All 65536 RAM bytes remain observable.
-There are 13 raw ROM controls containing 18 bytes and 9 raw input blobs
-containing 187 input bytes.
 
 ## Exact retained fact
 

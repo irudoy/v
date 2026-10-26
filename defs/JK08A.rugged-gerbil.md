@@ -25,14 +25,6 @@ continuation from SP+24 through R7; its separately assembled bytes are
 `57F6472A000B0009`. It lies outside the tested stock spans and admits no
 following parent instructions. No stock helper is replaced by a stub.
 
-The raw component retains the complete actual CPU, SR, ABI, frame, RAM,
-calibration and original terminal inside the existing common COPY packet.
-Independent instruction-state and numeric consumers require the explicit
-entry premises, physical word reads, arguments after delay slots, zero
-bypass and positive independent calibration changes with distinct divisors
-and outputs. Native relation admission requires the complete original and
-current exact inputs.
-
 The proposed native disposition changes only the exact legacy reader of
 `00015022` on `00021CE0` into an `arithmetic-argument` dependency. The complete
 original claim and ledger constrain the proposed replacement. Its native

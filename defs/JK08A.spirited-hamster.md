@@ -19,13 +19,6 @@ saved continuation at SP+24 through R7. Its bytes `57F6472A000B0009` replace
 only instructions outside the tested stock spans. The complete parent path,
 following instructions and scheduler are not admitted.
 
-The raw component retains explicit register and RAM inputs, stock or
-controlled curves and axes, the unchanged physical neighbor, complete CPU,
-SR, ABI, frame and RAM, and actual calibration bytes. It remains inside the
-same complete COPY original. Independent physical, instruction-state and
-integer consumers require actual arguments after delay slots, required
-conditional outcomes, the no-fault zero bypass and independent curve changes
-with distinct divisors and outputs.
 
 The exact proposed `arithmetic-argument` dependency preserves the complete
 original claim and retires only its corresponding legacy consumer selector.

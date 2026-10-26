@@ -42,14 +42,8 @@ clamp, offset publication at `177E`, weighted lag through `ROM16[928C]`,
 stuck-progress adjustment and zero floor produce the actual `177C` store.
 Raw previous words `>=0x8000` remain admitted inputs.
 
-The consumer saves GBR, loads the exact relocated `FFFF128C` base, uses the
-base for its real displaced accesses and restores the original GBR before
-return. The existing 80-byte context, 572-byte ordinary observer and 192-byte
-frame retain complete CPU/SR, natural PR/SP, caller ABI, all 65536 RAM bytes
-and exact code, pool and calibration bytes. The driver preserves the complete
-actual RAM between phases and carries separate independent CPU contexts.
-Identical complete raw calibration blobs share storage; the existing storage
-separation gate remains mandatory.
+The consumer saves GBR, loads the `FFFF128C` base, uses the base for its
+displaced accesses and restores the original GBR before return.
 
 Independent integer equations, full instruction-state reconstruction and
 ordered physical call/tail/return checks consume the original raw stream.

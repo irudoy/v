@@ -4,48 +4,16 @@
 
 `defs/JK08A.findings.csv` owns the home scale of these two tables at knowledge
 stage 4. Both identity confidence and scale confidence remain `candidate`.
-The executable evidence establishes local count arithmetic, not a physical
-quantity, an engineering unit, stock mode reachability, or a hardware result.
+The local count arithmetic identifies no physical quantity, engineering unit,
+stock mode reachability, or hardware result.
 There is no hardware validation for either conversion.
 
-| Table | Meaning | Unit retained by the owner | Scale | Inverse | Named scale test |
-| --- | --- | --- | --- | --- | --- |
-| `0000c98e` | `accomplished-alpaca/tbl` | `raw with offset 32768` | `x-32768` | `x+32768` | `test_c98e_centered_word_scale` |
-| `0001295c` | `sparkling-grebe/tbl` | `raw` | `x*2` | `x/2` | `test_1295c_local_bound_scale` |
+| Table | Meaning | Unit retained by the owner | Scale | Inverse |
+| --- | --- | --- | --- | --- |
+| `0000c98e` | `accomplished-alpaca/tbl` | `raw with offset 32768` | `x-32768` | `x+32768` |
+| `0001295c` | `sparkling-grebe/tbl` | `raw` | `x*2` | `x/2` |
 
-`tools/mapkit/tests/test_local_count_scales.py` provides these named tests and
-checks the compiled `7mfk` table symbols, CSV owner, retained scale metadata,
-`supports=scale` evidence, and top-level Python function keys. A missing function
-key fails the evidence matcher and the homology check. The identity fixture's
-existing tests do not automatically supply scale evidence.
-
-## Image and instruction binding
-
-Each image is loaded independently through `tools/mapkit/rom.py` and
-`rom-images/roms.csv`. Its independent literal SHA-256 lock is in the executable
-fixture, not copied into this document:
-
-| Image | Executable lock |
-| --- | --- |
-| `JK00A` | `IMAGE_FIXTURES["JK00A"]` |
-| `JK03A` | `IMAGE_FIXTURES["JK03A"]` |
-| `JK03B` | `IMAGE_FIXTURES["JK03B"]` |
-| `JK08A` | `IMAGE_FIXTURES["JK08A"]` |
-
-For each image, the scale fixture checks fixed expected instruction and literal
-spans, stock selector `ROM8[000083c1]=0x2c`, centered stock cells `0x8000`, and
-stock bound cells `0x80`, then executes the reviewed paths. Identical expected
-spans are stored once in `COMMON` and `PATHS` of
-`tools/mapkit/tests/test_candidate_identity_paths.py`; those dictionaries contain
-retained literals, not values inferred from the current image at test runtime.
-No image supplies another image's expectations, and common layout membership
-is not substituted for execution.
-
-The fixture reuses `PathSh2` without changing the shared interpreter or the
-identity fixture. Stock instructions execute at their original addresses with
-no relocations and no stock-function stubs. Calibration and selector variants
-change only data in memory. Instruction mutants are separate in-memory negative
-fixtures, not patch images.
+Image identities and source paths belong to `rom-images/roms.csv`.
 
 ## Centered word at 0000c98e
 

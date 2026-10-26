@@ -8,20 +8,7 @@ unit is `centered ffff8d6c channel counts`, the nominal expression is
 `x*10-73500`, and the inverse is `(x+73500)/10`. The unit names the home local
 channel, not a physical unit or a shared address on every layout.
 
-The scale evidence is
-`test:tools/mapkit/tests/test_lavender_scale.py#test_lavender_nominal_initialized_scale`.
-The named test executes actual H lookup, normal Q12 initialization, extraction,
-local C1 word publication, signed register interpretation, and signed word
-read/copy. It establishes the initialized no-floor relation in the linear
-count domain, not a universal H-to-output relation. No confidence is promoted.
-
 ## Image and byte binding
-
-The independent image identities are executable locks in
-[`tools/mapkit/tests/test_lavender_scale.py`](../tools/mapkit/tests/test_lavender_scale.py).
-The primary loader also checks the ROM registry
-[`rom-images/roms.csv`](../rom-images/roms.csv). The digest values are stored in
-those machine-readable sources, not repeated here.
 
 | Image | Independent executable SHA lock |
 |---|---|
@@ -32,17 +19,7 @@ those machine-readable sources, not repeated here.
 | `JK00C` | `IMAGE_FIXTURES["JK00C"]` |
 | `JK00D` | `IMAGE_FIXTURES["JK00D"]` |
 
-Each image passes its own SHA lock and fixed expected instruction/literal
-spans. The fixed `HOME_SPANS`, `JK00C_SPANS`, and `JK00D_SPANS` cover stock GBR
-setup, table and axis pointers, wrapper and axis helper, finisher, state and
-flag addresses, initialization, extraction, arithmetic literals, publication,
-and the later copy. Expected bytes are retained fixture literals; the test
-never derives them from the image it is checking.
-
 ## Stock cell domain
-
-The fixture checks every H and T cell, the zero step curve, and the exact axis
-points separately against every image. `STOCK_H` retains the complete H arrays.
 
 | Image | H table | Stock raw domain | Local publication address |
 |---|---|---|---|
@@ -150,21 +127,3 @@ into a saved channel. It is not a final actuator output. Downstream arithmetic,
 complete function output, physical-unit identification, and hardware behavior
 are outside this gate. There is no hardware validation or flashing eligibility
 claim.
-
-## Negative checks and compiled owner
-
-Snapshot mutants change retained literals, register operands, width,
-displacement, branches, or delay-slot instructions and are rejected by fixed
-byte binding. Separate execution mutants bypass snapshot binding and run the
-changed instruction through the same primary interpreter. Their observed
-publication, stores, registers, or extracted counts are compared with an
-independent oracle. Arithmetic, centering offset, saturation, width, and
-signedness have distinct witnesses; a signedness mutant can change a register
-or Q12 state while preserving the saturated or low-word component.
-
-The compiled-owner test checks the real typed `supports=scale` token, the
-retained owner fields, and the named top-level AST function. A nonexistent
-function key is rejected by both the evidence matcher and homology check.
-The specification test reads the image-lock keys, stock domains, publication
-addresses, inverse contract, and explicit exclusions from the executable
-fixture. `tools/single_source.py` includes this document while it is untracked.

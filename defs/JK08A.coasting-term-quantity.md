@@ -1,12 +1,6 @@
 # Byte-table coasting quantity and rate-limited publication
 
-The source binds 467 stock instructions in 2 actual entry paths and 9 spans,
-33 literal pools, 12 four-byte RAM pointer aliases and 47 calibration spans.
-The complete 0002C626 producer has 15 instructions; the complete 00047120
-consumer has 287 instructions. The source includes 8 stock entry paths.
-Both phases use the existing 80-byte context, 572-byte observer and
-192-byte frame. Each phase has 20 independent context fields. All counts
-read the executed descriptor.
+The producer is `0002C626` and the consumer is `00047120`.
 
 The producer reads the byte coordinate FFFF1077 and evaluates the physical
 8-byte curve at 000122E2 with the complete 00026370 entry. Coordinates
@@ -68,14 +62,3 @@ actual final FFFF13EA with every other complete input fixed. Input echo,
 a supplied intermediate word or matching output bytes alone is refused.
 The complete existing byte-factor caller original remains mandatory
 from the same primary.
-
-Original d5e2adc6b2fb8ed85f5a63dd8dd6ba51d6093025cfdb5364142328ed1922c183
-retains its reader type, structural identity claim, roles and evidence.
-One exact owning proof append preserves every other native fact, editor
-property, lookup/input dependency, symbol and ledger/evidence/TEST
-position. The intermediate FFFF1230 owner and both complete native
-functions stay fixed. Semantic width and signedness remain unset.
-The separate counter-average original on the same table owner and its
-pending source prerequisite remain independent. This source grants no
-native table geometry, scale, units, scheduling, whole-ECU or hardware
-admission.

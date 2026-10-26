@@ -8,12 +8,7 @@ Absence of access to the first byte establishes no array-dependency absence.
 
 ## Exact raw and executable source boundary
 
-The fixture contains 95 stock instructions,190 code bytes,4 complete code spans,
-5 literal spans and 3 pointer aliases. The ordinary80/572 observer transports
-5 complete RAM fields and 15 raw input fields. There are 5 calibration spans,
-18 unchanged helper source files,94 feasible instructions,1 excluded instruction,
-10 two-sided conditions and1 fixed condition. Source-count contracts read these
-values from the fixture,input,physical and consumer modules used by execution.
+
 
 Both positive post-delay R4 arguments are exact complete words:71 and123.
 The25E20 physical operand is base+3*signext16(R4)+1,producingFFFF586C andFFFF5A82.

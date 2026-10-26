@@ -23,13 +23,7 @@ input 3584 takes the saturation branch and yields 65535. The actual live R6
 word is stored at `CB1F6` to `FFFF387A + 2*index` in the real RTS delay slot.
 The full input byte domain and upper 24 R4 bits remain observable.
 
-Only the two declared four-byte native RAM pointer literals are relocated
-into the existing ordinary 64K RAM window. The signed16 literal 01A2,
-instruction bytes, branch, delay slot and return remain stock. The existing
-80-byte context, 572-byte observation and 192-byte frame are preserved. The
-independent consumer checks complete CPU/SR, frame, ABI, SP/PR, whole RAM,
-literal operands, actual ordered word read/store and live registers. Both
-conditional outcomes and the complete natural entry are required.
+The signed16 literal is `01A2`.
 
 Held-other alternatives change only the actual owning word at 28BE while
 index 1 and every other complete input remain fixed. The observed published

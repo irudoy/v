@@ -69,27 +69,3 @@ separately support a ROM-to-DID dependency. This caller/helper scope supplies
 no later BFE88 path, physical ROM-reader relation for the SID publisher,
 universal ROM-read exclusion, upstream coordinate reachability or hardware
 qualification.
-
-## Original observation contract
-
-The raw producer runs in the complete stock runner and retains
-`byte_surface_paths` in the existing COPY packet. Caller and direct-helper
-inputs have explicit typed roles. Stock and synthetic calibration inputs are
-distinct cases: synthetic table patterns exercise cell addressing, decreasing
-blends, both correction clamps and their exact boundaries. Configuration-bit
-variants preserve the surrounding ROM byte. Test instructions and natural
-helper entries remain fixed.
-
-The existing independent-fifth observer supplies the 80-byte input context and
-572-byte full observation. It stages the lookup fifth argument at SP+0 and
-incoming R7 at SP+4. The driver emits actual const context, full register/SR,
-caller ABI, frame, complete RAM, and calibration bytes before and after each
-invocation. Lossless canonical RLE represents the entire RAM span.
-
-The independent consumer binds current native table/function anchors, complete
-code/pool reconstruction, exact aliases, actual private sources, fixture/ELF
-identities, compile/simulator commands, finite simulator bound, original streams
-and typed invocation order. Separate state and numeric equations must agree
-with every actual observation. Required conditional branches have both outcomes;
-all natural entry roles and correction boundaries participate. Raw packets
-supply no self-admission, native geometry or ROM-to-DID dependency.

@@ -32,11 +32,3 @@ Their bytes `57F7472A000B0009` lie outside the tested stock spans. The full
 frame equations retain the stock write at SP+24. No stock helper is stubbed;
 the complete parent entry, distant stack flags, preceding admission checks,
 following parent instructions and scheduling remain unadmitted.
-
-The exact native proposals replace the arithmetic reader claims of the
-three tables and `FFFF2B68` with conditional `arithmetic-argument`
-dependencies. Complete original claims and ledgers preserve all other facts.
-Native write operations are not registered. The raw component remains in
-the complete primary's existing COPY packet. Source preparation supplies no
-qualification, physical datum reader on the arithmetic callee, units, scale,
-complete parent reachability, natural scheduling or hardware result.

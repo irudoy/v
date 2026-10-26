@@ -1,26 +1,7 @@
 # JK08A DFCO state caller withdrawals
 
-The complete natural 503E0 caller and real 50766 rotation helper contain
-409 stock instructions, 818 code bytes and 7 code spans. All 409 feasible instructions
-are required. Its preserved state source boundary binds 42 literal spans, 13 pointer aliases,
-25 complete RAM fields, 271 configuration fields, 44 complete calibration spans
-and 306 raw input fields. The joint descriptor contains 134 exact access originals:
-123 readers and eleven individually pinned writers, 100 complete owners,
-74 complete functions and 126 matching ledger selectors. All 134 normal unlink
-operations are mandatory. The selected unsupported originals are:
+Source bindings: `JK08A.dfco-state-caller-withdrawal-paths.toml`.
 
-| Datum | Natural function | Exact unsupported original |
-|---|---|---|
-| `7mfk:000120f6` | `7mfk:000503e0` | `fdaf3867d48487219ed37f59f2a79110967257a3933c1f3d3a5cda122d0e6a55` |
-| `7mfk:000126e4` | `7mfk:000503e0` | `6c0df85a37c801ca6a7d79ebf2c0a3a3ecbbc363e008f3167114fa6b1e9f97c6` |
-| `7mfk:00012718` | `7mfk:000503e0` | `dc34c59bb20daae1cf6908bb684df035a5825e89e2c052b27b26f886a28add13` |
-| `7mfk:00012818` | `7mfk:000503e0` | `0cfcf76e8ab04eab6aacd76907296a3acee472114a88a3f750d00e421a820ef6` |
-| `7mfk:0001298c` | `7mfk:000503e0` | `d01e3e567c9a6dd847ddc78602b5ac9db022cb3d6f01c911d22c3453c3a3735f` |
-| `7mfk:ffff14bd` | `7mfk:000503e0` | `d81705553131a9e20163fc8625517644ea150b1f8488cea0052a8b505f4280d1` |
-| `7mfk:ffff14be` | `7mfk:000503e0` | `95bd095088335f1392d2daceb203c8655979cc4c4c08cc25355c97a37cb1aaf3` |
-| `7mfk:ffff1939` | `7mfk:000503e0` | `1f4d2097a3f3458effbf6627988f7ca56994e2ac95e3acc84ff759a7a665c531` |
-| `7mfk:ffff16aa` | `7mfk:00050018` | `a66ad148b5399b0aa33727484628763c1d8210c778dd76e365159d56098cf5f8` |
-| `7mfk:ffff1778` | `7mfk:00050018` | `ee78dd754d5bc5778e829fa0e0fad67c39036ac7bf491d27c0fd7f3a9af3dbf7` |
 
 ## Complete caller, frame and real helper
 
@@ -28,9 +9,6 @@ The natural 503E0 body retains 503E0..50400, 50402..50444, 50484..50552,
 50554..5068C, 50698..506AE and 506E8..50766. All five literal holes remain data.
 The real 50766..5079C helper is complete. All prologue saves, local operands,
 conditional outcomes, delay slots, loop calls and natural returns remain explicit.
-Exactly 13 MOV.L native RAM pointers relocate to the existing 64 KiB alias domain.
-The existing 80-byte context, 572-byte observer and 192-byte frame with 160-byte
-prefix remain mandatory. No observer or storage profile is added.
 
 The caller first writes the low word of incomingR6 at local SP+2. It then
 overwrites local SP with the complete incomingR6 dword. The subsequent timer
@@ -102,127 +80,8 @@ The resulting mask and 249F flags retain their independent clear/set paths,
 RAM, full saved frame, all known CPU/SR/special-register values, physical operands,
 instruction sites and bytes, helper entries and natural returns remain bound.
 
-## Complete physical, causal and native boundaries
-
-The 47 two-sided conditions require both feasible outcomes. No instructions or
-branch outcomes are excluded. Full previous family/helper/native/TEST originals
-remain mandatory from the identical COPY primary through the joint admission.
-The complete real rotation helper is part of this component. No rotation,
-table lookup, state transition or natural return stub is used.
-
-Ordered physical operands retain exact instruction site, direction, address,
-width, register, domain and bytes. Full actual entry, intermediate, loop, helper
-post-delay and natural-return CPU state remains continuous. The selected ROM
-roots and native RAM14BD/14BE with aliases 010014BD/010014BE require exact
-interval absence independently of domain labels.
-
-Fixed-other alternatives require changed actualR0 or changed actual final bytes
-at a common real computed RAM publication. Locations come only from real
-reconstructed writes and values come from complete actual final RAM. A
-publication overlapping the controlled RAM input is excluded. An unchanged
-input echo, unchanged common values or only a different write-set cannot establish
-an alternative. All other CPU/frame/RAM/calibration/bound preimages stay fixed.
-
-All eight originals are readers with empty roles and identity-supporting props.
-Exactly eight matching selectors are removed from eight full owners.
-No owner is shared with the preceding 100-reference set. Complete prior 100
-records, current postimages and 55 functions retain their direct digests and
-every preceding prefix reconstruction. Types, unknown types, evidence positions,
-original TEST, ledger presence/absence and proof scopes remain exact. The three
-writer exceptions and eighteen indexed_by originals remain individually pinned.
-No owning replacement, reverse donation, native geometry, scale, units, natural
-caller interpretation or hardware admission is created.
-
-The 162 prior domain sources retain 161 byte-identical sources and the exact
-existing two-site gated spelling exception with complete current/legacy hashes.
-Thirty-three independent components require one complete original COPY primary.
-The registry contains 42 families and 88 capture bindings.
-The twenty-fourth standard source-only adapter retains the preceding twenty-three adapters
-and all forty-six generated output identities. Its marker is
-VQ_SH_ELF_DFCO_STATE_CALLER_WITHDRAWAL.
-
-Full actual-original, controlled state/counter/threshold/raw-table/rotation/frame,
-physical CPU/SR/call/return, computed-publication/input-echo/write-set, native/
-prior/type/role/TEST/ledger/scope/review and published-count refusal sources
-are mandatory. Source preparation grants no executable acceptance or publication.
-
-The complete paired flag writer component is defined by
-`defs/JK08A.paired-inhibit-writer-withdrawal-paths.md`. Full prior 107 records and
-56 functions retain exact boundaries. Entry-scoped absence preserves the real
-first-entry 4A45/4A70/4AC6 stores. All ordered RMW read/write pairs, the real nibble
-helper and five exact reverse selectors in two complete function postimages
-remain mandatory. The joint total includes 118 datum-end selectors and
-8 function-end selectors. Every previous family/helper/native/TEST original
-remains mandatory from the identical primary.
-
-The complete threshold-window reader component is defined by
-`defs/JK08A.threshold-window-reader-withdrawal-paths.md`. Three exact additional
-reader removals compose with the preceding paired writer postimages of the
-same three datum owners. Full prior 112 records reconstruct exactly; all
-58 complete prior function records, including both exact function postimages,
-remain unchanged. The full raw coordinate window, two real signed divisions,
-ordered local byte/dword carriers and actual boolean return remain bound.
-All previous family/helper/native/TEST originals remain mandatory from the
-identical primary. The joint selector total contains 118 datum-end and
-8 function-end removals.
-
-## Joint paired normalization boundary
-
-The joint descriptor contains134 exact access originals:123 readers and eleven
-individually pinned writers,101 complete datum owners,74 complete functions and
-126 matching ledger selectors. These contain118 datum-end selectors and
-8 function-end selectors. Thirty-three independent components require one
-complete original COPY primary. The registry contains 42 families and 88 capture bindings. The paired normalization boundary is specified
-in `defs/JK08A.paired-curve-normalization-withdrawal-paths.md`.
-
-The complete prior reference and function boundaries retain exact full-record
-digests. The sole additional current image delta is at lyrical-dragon/tbl
-reference79:two exact reader links and two matching owner-end selectors.
-No other preceding reference field or complete function record changes.
-Both complete prior function transitions,five function-end selectors,eight
-writer identities,eighteen indexed_by originals and every previous full
-family/helper/native/TEST original remain mandatory from the identical primary.
-
-The complete byte-ratio producer boundary is specified in
-`defs/JK08A.byte-ratio-producer-withdrawal-paths.md`. The complete118-record and62-function prefix retains exact reconstructed
-digests and explicitly bounded current shared-owner transitions,including
-the paired-reader shared image and both full function transitions. Full variable
-unsigned division,signed shift10,actual saved post-DIV1 R1 frame continuity,
-byte publication and complete prior same-primary originals remain mandatory.
-
-The complete state-surface caller boundary is specified in
-`defs/JK08A.state-surface-caller-withdrawal-paths.md`. All119 preceding core
-records and63 full functions remain exact. Only the additional row99 reader
-and owner-end selector delta changes its full current postimage; the other118
-full records,paired row79 and both complete function transitions remain exact.
-The complete local word carrier,three state modes,raw four-row surface and
-implicit-byte curve retain both broader same-primary originals.
-
-The complete byte-factor caller boundary is specified in
-`defs/JK08A.byte-factor-caller-withdrawal-paths.md`. All121 preceding full
-records,current images and64 complete functions remain exact. An additional
-complete function transition removes one individually pinned reverse writer
-selector;the preceding two transitions,row79,row99,eight writer identities
-and eighteen indexed_by originals remain exact. Both real byte curves,signed
-word promotion,partial products and the percentage delay-slot store are required.
-
-The complete byte-sum caller boundary is specified in
-`defs/JK08A.byte-sum-caller-withdrawal-paths.md`. All122 preceding full
-records,current images and65 complete functions remain exact. An additional
-complete function transition removes one exact reverse writer selector;the new
-datum owner retains its absent ledger. The preceding three full transitions,
-row79,row99,nine writer identities and eighteen indexed_by originals remain exact.
-
 ## Restore caller source closure
 
-The shared assembly also contains 485 restore source instructions, 970 restore code bytes,
-7 restore code spans and 17 restore RAM pointer aliases. The exact source unit in
-`dfco_state_caller_withdrawal_contract.py` contains the complete 50018 classifier,
-25C36 diagnostic predicate, 26388 byte wrapper, 26A60 lookup body and 26740 kernel.
-The 16-point wrapper jumps to the real 26A84 tail; the complete 26A60 function
-prefix remains bound source. This closure uses the existing 64 KiB ordinary RAM
-alias domain, the same assembly and the existing observer. Code addresses and
-calibration pointers remain native. Only the enumerated MOV.L RAM literals relocate.
 
 The caller retains both diagnostic calls at 50042 and 5005E, both byte lookups
 at 500AC and 500BC, their real delay slots, the complete prologue/local frame,
@@ -311,19 +170,6 @@ The last speed threshold remains a physical loop/condition operand; it does not
 claim an additional floor index or an output-value dependency.
 
 
-## Complete shared restore owning boundary
-
-The full RAM16AA owner retains RPM/25, unset native width and signedness, every
-symbol evidence item, the actual writer and all other fields and links. Only its
-exact unsupported reader and one consumer ledger selector are removed. The
-complete 50018 function snapshot has no reverse reader16AA selector and remains
-unchanged, including its actual writer selector and all 35 L0 identity bindings.
-All prior 125 complete reference records and prior 67 complete functions remain
-exact. The shared batch requires all 126 ordinary unlink operations, 100 complete
-owners, 74 complete functions and 126 matching ledger selectors. The selectors
-comprise 118 datum-end and eight function-end selectors. The complete source
-boundary does not establish executable qualification or publish native data.
-
 ## Intermediate restore reader direction
 
 The RAM1778 reader has its separate exact original
@@ -343,16 +189,3 @@ reader identities cannot donate an observation or retained-writer result to each
 other. Both raw domains have actual-original substitution and partial-domain
 refusal sources. These obligations do not supply semantic width, signedness,
 native geometry, identity or hardware qualification.
-
-
-## Complete intermediate reader owning boundary
-
-The full RAM1778 postimage removes only its exact unsupported reader and one
-consumer ledger selector. It retains the actual writer, RPM/25, unset semantic
-width and signedness, symbol evidence, notes and every other field and link.
-All prior 126 complete reference records and all 68 complete function snapshots
-remain exact. The existing complete 50018 function has no reverse reader1778
-selector and remains unchanged. The shared127 batch contains123 readers and eleven
-writers,100 full owners and126 matching ledger selectors (118 datum-end and eight
-function-end). All127 ordinary unlink operations belong to one exact phase.
-Native publication, TEST qualification and executable acceptance remain separate.

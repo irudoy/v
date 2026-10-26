@@ -3,10 +3,8 @@
 `JK08A.closed-loop-coordinate.toml` binds the real parent call at
 `0003EE7A` to the complete natural conditioner `0003EF74`. The parent
 window is `0003EE5C`..`0003EE7E`, inside normalized function `0003EDB4`.
-The existing `stock_jk08a_closed_loop_conversion.s`, full legacy harness
-and literal matrix remain unchanged. Five real helpers execute:
+Five real helpers execute:
 `000264A0`, `00026944`, `00026740`, `00026C78` and `00021BBC`.
-No helper is replaced by its arithmetic result.
 
 ## Explicit caller inputs
 
@@ -72,50 +70,3 @@ bytes overlay that range for the independent logical-state comparison.
 The explicit relocated caller workspace and native helper workspace are
 separate observed storage. The observation does not infer an unexecuted
 parent prologue or hardware memory timing.
-
-Four existing 32-bit pointer aliases bind FFFF9818, FFFF28F8, FFFF1094
-and FFFF4514 to their declared simulator RAM. An independently assembled
-SP+24/R7 observing return at0003EE7E lies outside every tested span.
-All tested stock instructions and the native GBR word retain exact bytes.
-The existing 80-byte context and572-byte observer retain all GPR/SR,
-MACH/MACL/GBR, natural calls and returns, frame, outer ABI and terminal SP/PR.
-
-Required component `closed_loop_coordinate_paths` joins the same complete
-original COPY primary. The input source reads only the first16 input
-columns of the existing4338 literal rows. Expected-result columns are
-not parsed. Separate source-word, calibration, coefficient, clamp, gate,
-SR and context alternatives supplement that input catalogue. Every
-owning read requires positive output alternatives with all other inputs
-fixed. Separate integer, complete-state, exact physical-transfer,
-post-delay-call, branch and return consumers retain the complete original
-process, private sources, toolchain, fixture and terminal identities.
-
-## Exact owning publication
-
-The coordinate component of `JK08A.closed-loop-coordinate-access-claims.toml` contains six exact
-original caller-owned relations in six complete owner documents. Five
-readers bind00008F98,00009384,00009386,000095C6 and00012292 through the
-actual natural call. The writer bindsFFFF2F8E at0003EFB0. All six owners
-retain unset semantic width and signedness. Physical byte or word access
-width assigns neither property.
-
-The shared descriptor contains twelve exact ordinary `link` appends. Its ten
-previous references retain their full independent pins; two active-state
-writers and two transition-counter relations use the whole-feedback component described in
-`JK08A.closed-loop-feedback-accesses.md`. The existing writer requires the
-complete twelve-item batch together. Two typed coolant constant readers use
-`JK08A.closed-loop-coolant-accesses.md` and the complete natural `0005525A`
-component, retaining their original reader class and TEST/spec contexts.
-Every other relation, property, layout, ledger, symbol evidence item and
-TEST position remains exact. The existing speed helper-reader retains its
-separate TEST evidence obligation. The exact sample value dependency uses
-`JK08A.closed-loop-sample-argument.toml` and the same complete raw component;
-it grants no helper-specific physical RAM reader. Full publication,
-TEST-origin equality and exact COPY/injection/coherent/SID22 scope equality
-remain required. Only a unique exact pinned owning append is neutral to
-existing physical scopes; changed or duplicate items retain their effect.
-
-The proof supports owning access identity only. It supplies no full
-conversion coordinator, source producer, engineering units, scale,
-scheduling, helper parameter-reader interpretation or hardware qualification.
-Source preparation does not qualify an original pending review.

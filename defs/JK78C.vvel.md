@@ -596,9 +596,6 @@ stored count arithmetic and separately bounded nominal grids, the cycle schedule
 of the ADC sampler, the converter channels of the pressure cells, the
 transfer `S = 20 + floor(7 * W / 408)` of the scaled pressure words, and the
 booster-vacuum logic of `FUN_0005A314`.
-`tools/mapkit/tests/test_jk78c_pressure_channel.py` executes the scaling
-paths, the division and block-copy helpers, and `FUN_0005A314` from the exact
-ROM bytes.
 
 Candidate: one count of the scaled pressure words is 1 hPa of absolute
 pressure; the MAP sensor signal voltage with the engine stopped at a known

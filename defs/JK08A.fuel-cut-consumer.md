@@ -2,13 +2,6 @@
 
 ## Fuel-cut consumer and event history
 
-Two existing mandatory Regions bind 679 instructions, 1582 bound bytes
-and 15266 literal cases with EARLY_ONLY=0. The complete one-shot function
-0002c13c has 8012 cases. The complete event handler 0002be40 and its real
-duration selector and one-shot callees have 7254 cases. Their instruction
-bytes, pools, declared simulator relocations, fixtures, literal headers,
-full CPU/RAM/frame observations and standard execution remain unchanged.
-Hardware readiness is NO.
 
 The one-shot takes the whole mask from independent R4 and six duration words
 from independent R5. The accepted domains include both ffff224e and ffff1568

@@ -33,41 +33,10 @@ Fixed-other input groups require a changed actual stored word for every active
 gate, metric, word, prior value and scalar calibration. Matching final word
 bytes cannot replace the complete returned state or physical operand stream.
 
-The observation uses the existing 80-byte context, 572-byte result and both
-192-byte frame images. It retains complete ordinary 64 KiB RAM and a complete
-native `ffff8400..ffff84ff` window, using the existing publication-inhibit
-memory premise. The native window must equal its ordinary-RAM mirror before
-and after each invocation. The native word literal `84c3` and every instruction
-remain exact. Only the three declared full pointer pools relocate into
-`01000000..0100ffff`. There are no stock-function stubs, synthetic returns or
-instruction substitutions.
+
 
 The sources participate in the existing scalar RAM leaf withdrawal family and
 complete GNU primary lifecycle. Their preparation establishes no accepted
 execution, native publication, TEST qualification, scheduling, scale, unit or
 hardware fact. The package acceptance consumes the exact current full native
 owners, retained function, ledger selectors and all original TEST positions.
-
-
-## Shared owning source boundary
-
-The shared descriptor contains 136 exact access originals: 125 readers and
-eleven individually pinned writers, 101 complete datum owners, 76 complete
-functions and 128 matching ledger selectors (120 datum-end selectors and
-8 function-end selectors). All 135 exact normal unlink operations form one
-complete phase. Thirty-five independent components use the same complete
-original COPY primary. The existing registry contains 42 families and
-88 captures. Five complete function transitions retain eight exact
-function-end selector withdrawals.
-
-The accumulator adds two exact originals and one complete unchanged function.
-Four preceding records share its two table owners. Only their three proposed
-image fields change to the complete three-reader postimage of each owner;
-the other 128 preceding records and all 73 complete functions remain exact.
-Full preceding images remain recoverable and have exact separate current
-image pins. Native types, evidence, TEST positions, ledger order, calibration
-semantics and downstream RAM and producer dependencies remain mandatory.
-The native8400/256 transport and observer retain their existing complete
-window; the finite source-oracle admission names only this component.
-Source completion grants no identity, scale, units, executable, native
-publication, whole-ECU or hardware admission.

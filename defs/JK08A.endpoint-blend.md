@@ -54,11 +54,6 @@ SP/PR. The generic divider's zero path is unreachable from a positive
 fractional axis interval; the full existing denominator originals remain
 separate obligations of the same primary.
 
-Only declared four-byte RAM pointer pools are relocated. The existing
-80-byte context,572-byte observation,192-byte frame and64K RAM profile
-remain fixed. Instruction bytes and signed16 literals remain stock.
-The physical table/axis byte windows are fixture boundaries and do not
-publish native geometry or types.
 
 `JK08A.endpoint-blend-claims.toml` permits both exact owning identity
 appends as one ordered batch. It supplies no reverse function identity,

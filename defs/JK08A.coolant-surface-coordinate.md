@@ -1,12 +1,5 @@
 # Coolant and raw inner coordinates of the complete composite accessor
 
-`JK08A.coolant-surface-coordinate-paths.toml` binds 209 stock instructions in
-1 actual entry path and 7 spans, 14 literal pools, 2 four-byte RAM pointer
-aliases and 16 calibration spans. The complete 52576 entry has 49 instructions.
-Its 7 stock entry paths contain 52576, 26040, 26AE0, 263D8, 26770, 26740 and
-the complete 26A60 body. The 80-byte context, 572-byte observer and 192-byte
-frame preserve 20 independent context fields. All 65536 RAM bytes remain
-observable. There are 2 raw input blobs containing 80 input bytes.
 
 ## Exact retained association
 
@@ -58,27 +51,3 @@ MUL.L at 525B0 multiplies the actual R14 surface byte and R2 word. The full
 product in MACL is shifted right by 7, capped at 65535 and stored from full R2
 to the actual RAM1652 word at 525CC. The physical quantity of this composite
 product remains unresolved. Prior1652 is not read.
-
-## Complete state and independent acceptance
-
-The root allocates 16 stack bytes, preserves R14, PR, MACL and GBR, and restores
-R14 in the natural 525D4 RTS delay slot at 525D6. R8-R13 and MACH remain
-preserved. GBR is rebased to relocated RAM1068 and restored on the real exit.
-The wrapper and surface helper retain their complete saved words and actual
-nested call frames. Only T can change in SR; incoming I/M/Q and other controls
-remain fixed.
-
-Independent numerical equations require the ordered physical ROM/RAM reads,
-real helper arguments, full signed returns, fractions, product and final word.
-The instruction-state consumer requires complete CPU, RAM and frame equality,
-exact opcodes, natural calls/tails/returns, delay slots and source identities.
-Held-other RAM106F and RAM10F0 alternatives must each change the actual 1652
-publication through the real surface result. Each group varies only its own
-coordinate. Input echoes and altered write sets are insufficient.
-Independent prior1652 alternatives must preserve the complete final CPU, RAM
-and frame. The full byte-surface and word-interpolation caller originals are
-mandatory from the identical primary execution.
-
-The existing observer and GNU lifecycle transport complete raw inputs and
-observations. Source preparation and local commits do not establish executable
-acceptance or native publication.

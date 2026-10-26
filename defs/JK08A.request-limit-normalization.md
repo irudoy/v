@@ -10,11 +10,6 @@ native multi-layout symbols, types, units/scale, relations, ledger,
 evidence, TEST and two function documents. Native width/signedness stay
 unset; unit raw and scale x remain unchanged.
 
-`JK08A.request-limit-normalization-paths.toml` binds 515 stock instructions, 1030 instruction bytes and 7 complete source bodies.
-It binds 32 literal pools, 9 four-byte RAM aliases and 37 calibration spans.
-The complete functions are21BBC,264F8,26740,26984,26C78,7AE80 and7AF78.
-The two endpoint windows and final neighbor bind 33 physical curve words.
-Fixture dimensions do not publish native geometry or types.
 
 7AE80 calls the actual7AF78 normalizer. It interpolates lower154E0 and
 upper154C0 through264F8 using the physical word axis14BAA and unsigned
@@ -52,14 +47,5 @@ inputs held fixed. Causal pairs execute the real bit1-set ROM mode;
 stock clear mode, overrides, flag preservation, equality and ordering
 boundaries remain independently covered.
 
-The existing80-byte context,572-byte observation,192-byte frame and64K
-RAM profile remain fixed. Only declared four-byte pointer pools relocate.
-The consumer requires exact code/pool bytes, physical widths/order,
-post-delay arguments, real division inputs, helper returns/tails, full
-CPU/SR/MACL/frame/RAM/ABI/SP/PR and independently transformed live stores.
-It admits neither new engineering units, physical quantity, scale,
-natural cadence, hardware behavior nor channel-to-bank identity.
-
-`JK08A.request-limit-normalization-claims.toml` binds both owning appends
-as one ordered batch. Native publication and receipts remain subject to
-their existing gates after all B source preparation and shared acceptance.
+The calculation establishes no engineering units, physical quantity, scale,
+natural cadence, hardware behavior or channel-to-bank identity.

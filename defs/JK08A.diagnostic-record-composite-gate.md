@@ -22,14 +22,7 @@ nonzero result; later record arguments and reads do not execute. The explicit
 high-byte argument preparation for `8A..8C` retains signed R3 and full unsigned
 R4 as separate actual register carriers.
 
-The fixture contains the complete caller, complete helper and exact PC
-pointer literal `00025B98`. One simulator-only pointer relocation changes
-native `FFFF5718` to ordinary observation address `01005718`; every instruction
-byte remains unchanged. No helper result, outside return or scheduler stub
-replaces natural code. The existing ordinary-80-572 observer transports the
-complete initial/final ordinary RAM, CPU/SR, frame, external ABI and all code
-and literal bytes. All selected records and the real saved-PR word fit this
-existing memory boundary.
+
 
 Independent equations compose the sentinel and bit predicates, exact call
 order, short-circuit result and complete intermediate CPU states. Every real
@@ -49,35 +42,9 @@ input fail. An absence of access to the array root supplies no array-absence
 claim: the relation remains a positive nested indexed reader through the
 actual helper operand.
 
-The existing diagnostic-record family retains this reader and its three
-independent writer originals in one complete primary. The shared native
-postimage appends only their exact owning identity evidence items. Complete
-array owner, parent and helper documents, contracts, native unsigned-byte type,
-unit, reverse properties, indexed_by role, both ledger ends, TEST origins and
-positions, symbol evidence and every other relation remain fixed. The two
-older paired array writer originals retain their independent source status
-and obligations.
 
 The source package establishes no accepted execution, native publication,
 array extent, engineering scale, hardware result or another original's
 completion. Common B acceptance retains independent ROM reconstruction,
 complete natural state, ordered physical reads/calls/returns, numerical and
 actual positive alternatives, native/TEST preservation and refusal contracts.
-
-
-## Registered shared source boundary
-
-The diagnostic-record-bit4-access family contains four exact positive
-originals: three writers and one indexed reader, with five complete unchanged
-function snapshots and one joint owner postimage. Each original retains
-its own independent raw capture, complete numerical and physical state,
-native binding and owning result. All four original captures belong to
-the same complete primary. The two paired-array pending originals retain
-their separate status and receive no credit from these proofs.
-
-The existing registry contains 42 families and 88 captures. The standard
-ordinary adapter registry contains 41 descriptors and 82 generated outputs.
-These two extensions add four generated source outputs; the 72 preceding
-outputs retain their exact bytes. Source preparation grants no array
-extent, units, scale, scheduling, caller reachability or hardware admission.
-Native publication and executable qualification remain separate.

@@ -25,12 +25,6 @@ instruction-state equations bind the exact read/repeated-read/store sequence,
 conditional branches, complete RAM, registers, SR, frame, SP, PR and ABI.
 The common default finite instruction limit applies without extension.
 
-The fixture places an RTS/NOP observation boundary outside each tested span.
-The common bounded-memory C driver and existing 80/572-byte observer capture
-explicit byte seeds and intermediate word-array patterns over complete RAM.
-The RAM initialization family retains its
-byte seeds and separate stream identity. Neither capture class grants its
-own numeric verdict or native identity.
 
 The 34 explicit inputs retain the previous eighteen counter rows and word
 patterns, add the same nine seed/context patterns for the third window, and
@@ -40,18 +34,3 @@ applies an explicit byte-input table before the raw snapshot; the RAM-clear
 input source has no such table. Observer and raw transport ABIs remain exact.
 Independent positive checks require the actual holdoff output and its
 saturating relation to all seven isolated byte inputs.
-
-One exact batch of ordinary `link` operations appends owning identity evidence
-to nine existing relations in nine complete native documents. Width and
-signedness stay unset. Ledger values, other facts, original evidence positions
-and all TEST origins remain fixed. Only a unique exact pinned owning append
-is neutral to an existing physical proof scope. A physical byte or word
-transfer infers no semantic field width, timer units, interrupt-entry
-reachability, periodic cadence, natural scheduling or hardware qualification.
-
-All eight previous complete reference records remain exact. The holdoff
-proposal appends one evidence item after its existing L0/TEST pair while
-retaining note, via, every other link, symbol, type, ledger and evidence
-position. Full native/TEST/physical scopes and same-primary guards apply to
-the complete joint batch. The ordinary publication path has no exception
-for the holdoff source.

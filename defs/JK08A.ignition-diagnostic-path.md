@@ -1,10 +1,7 @@
 # Conditional ignition diagnostic source boundary
 
-`JK08A.ignition-diagnostic-path.toml` describes the retained instruction
-sequence `0004D99C`, `0004DBE8`, `0004DF82`, its declared natural helpers and
-the owned stock image. The descriptor grants no execution or native publication.
-Exact instruction reconstruction, complete raw state capture and independent
-admission remain required.
+Source bindings: `JK08A.ignition-diagnostic-path.toml`.
+
 
 The conditional word wrapper `000264CC` receives the curve at `000147DA`,
 axis at `00013C48`, and the word coordinate at `FFFF237E`. Its axis search uses
@@ -45,10 +42,6 @@ physical neighboring word. The independent numeric consumer checks the word
 curve, selected coefficient, signed clamp, normal limits and command override
 against the full instruction-state observations.
 
-The existing COPY original retains `ignition_diagnostic_paths`; no additional
-receipt is created. Current original-primary, source, fixture, ELF, stream and
-ordered-invocation requirements remain mandatory. Conditional paths grant no
-joint diagnostic relation or hardware admission on their own.
 
 The descriptor records `native_relation_publication = false`,
 `native_geometry_publication = false`, `scale_admission = false`,

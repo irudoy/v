@@ -1,32 +1,10 @@
 # JK08A state surface caller withdrawal
 
-The complete natural 647E8 caller and seven real helpers contain 474 stock
-instructions, 948 code bytes and 9 code spans. The selected domain requires
-445 feasible instructions and has 29 excluded instructions. The descriptor
-binds 36 literal spans, 9 pointer aliases, 11 complete RAM fields, 62 scalar
-configuration fields, 42 complete calibration spans, 83 raw input fields and
-16 complete helper sources. The joint descriptor contains 123 exact access
-originals: 123 readers and eleven individually pinned writers, 101 complete datum
-owners, 74 complete functions and 126 matching ledger selectors. These include
-118 datum-end selectors and 8 function-end selectors. All 134 exact normal
-unlink operations are mandatory. The two selected unsupported originals are:
+Source bindings: `JK08A.state-surface-caller-withdrawal-paths.toml`.
 
-| Datum | Natural function | Exact unsupported original |
-|---|---|---|
-| `7mfk:00012b52` | `7mfk:000647e8` | `0057fd6cb20fac880f590fbd89fccd80768695872bed9c47fa438877314cec2b` |
-| `7mfk:00012b5a` | `7mfk:000647e8` | `55e5ca11aa978e3f61c1f44e450f5acc3fce0638cb0f1fdc434a77b0794c6eef` |
 
 ## Complete state and arithmetic boundary
 
-The natural caller occupies 647E8..64886 and 648F0..64A14 around its literal
-hole. The complete real helpers are 26084..260B4, 26370..26382,
-26944..26980, 26A60..26ABA, 26740..2676E, 26770..267C6 and
-26C78..26D0E. The implicit-byte entry is26A80 inside the complete normal
-26A60 exported parent. No replacement or stub changes an instruction byte.
-Exactly nine native MOV.L pointers relocate to the existing64 KiB RAM alias.
-The existing80-byte context,572-byte observer and192-byte frame with160-byte
-prefix remain mandatory. The full RAM, frame, special registers, raw registers,
-SR, instruction paths and ordered physical operands remain bound.
 
 ROM8B3F bit16 selects the state comparison mode. Both1082/1083 byte loads
 sign-extend before the actual unsigned32 comparisons. A lower1083 value
@@ -91,29 +69,6 @@ packed selection, axis, implicit curve, state factor and residual cell remains
 independent. Both selected ROM roots require physical interval absence for
 every access direction and domain label. No replacement identity is inferred.
 
-Both originals retain reader type, empty evidence/roles, relies=structure and
-supports=identity. The complete prior119 core records and63 full functions
-remain exact. Only prior row99,00064cb2-00012b52-withdraw, receives one
-additional exact reader removal and one owner-end selector removal. All118
-other full current records, the paired-reader row79, both full prior function
-transitions, eight exact writer identities and eighteen indexed_by originals
-remain exact. The additional complete mindful-pogona owner removes one reader
-and one owner-end selector. The complete spotted-zebra function retains every
-field and TEST position and has no matching function-end selectors.
-
-Every earlier complete prefix reconstructs its historical owner documents and
-applies only its individually pinned current shared-owner deltas before a full
-record comparison. No ignored field, owner-wide exception, TEST replacement,
-type/role broadening or reordered ledger is admitted. The216 prior domain
-sources retain215 byte-identical sources and the exact two-site gated spelling
-exception with complete current/legacy hashes.
-
-Thirty-three independent components require one complete original COPY primary.
-The registry contains 42 families and 88 capture bindings.
-The thirtieth standard source-only adapter retains the preceding twenty-nine adapters
-and all fifty-eight generated output identities. Its marker is
-VQ_SH_ELF_STATE_SURFACE_CALLER_WITHDRAWAL. The complete broader byte-surface
-and byte-curve originals remain mandatory in the identical primary.
 
 Full actual-original, independent arithmetic, raw state/axis/byte products,
 local-byte/full-word carrier, implicit endpoint, CPU/SR/RAM/frame/physical/
@@ -129,10 +84,3 @@ complete function transition removes one individually pinned reverse writer
 selector;the preceding two transitions,row79,row99,eight writer identities
 and eighteen indexed_by originals remain exact. Both real byte curves,signed
 word promotion,partial products and the percentage delay-slot store are required.
-
-The complete byte-sum caller boundary is specified in
-`defs/JK08A.byte-sum-caller-withdrawal-paths.md`. All122 preceding full
-records,current images and65 complete functions remain exact. An additional
-complete function transition removes one exact reverse writer selector;the new
-datum owner retains its absent ledger. The preceding three full transitions,
-row79,row99,nine writer identities and eighteen indexed_by originals remain exact.

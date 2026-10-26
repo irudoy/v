@@ -1,11 +1,6 @@
 # Conditional calculated-load table quantity
 
-The `calculated_load_quantity_paths` component observes stock B997C followed
-by stock 8083C through the existing ordinary 80/572 observer. One prepared
-input case supplies both independent CPU contexts and complete initial RAM
-and calibration. The driver preserves live RAM and calibration between the
-two natural entries. It records complete before/after RAM, calibration,
-bound bytes, CPU, ABI, 192-byte frames and return state for each phase.
+These descriptions cover the natural entries `000B997C` and `0008083C`.
 
 The source descriptor binds 436 stock instructions in 11 spans, 27 literal and
 configuration pools, 9 four-byte RAM pointer aliases and 30 calibration spans.
@@ -58,8 +53,3 @@ ROM 129D2 memory instruction to 8083C or weaken another physical-access proof
 or no-access guard. Independent contexts and an explicit software sequence
 grant no natural caller, scheduling, cadence or hardware claim and no native
 geometry, type, scale or units admission.
-
-The registry entry and native transition remain separate reviewable drafts.
-Source preparation grants no acceptance. The existing common GNU/TEST
-qualification consumes the complete registered source package and actual
-original terminal before any native publication or review retirement.

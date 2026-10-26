@@ -1,12 +1,6 @@
 # Centered channel quantities and indexed duty
 
-The source binds 816 stock instructions in 2 actual entry paths and 12 spans,
-53 literal pools, 14 four-byte RAM pointer aliases and 65 calibration spans.
-The complete 000BE5BC producer has 254 instructions; the complete 000BE814
-consumer has 107 instructions. The source includes 10 stock entry paths and
-9 raw ROM controls. Both phases use the existing 80-byte context,
-572-byte observer and 192-byte frame. Each phase has 20 independent context fields.
-All published counts read the executed descriptor.
+The producer is `000BE5BC` and the consumer is `000BE814`.
 
 The producer retains its complete low/high override paths controlled by
 ROM8[00008615], FFFF2326 and the real ROM thresholds, latch FFFF248E.bit6,
@@ -68,6 +62,3 @@ functions preserve all summaries, units, scales, editor properties, links,
 symbols and ledger/evidence/TEST positions. The table semantic width and
 signedness stay unset; the native writer keeps width 8 and unset signedness.
 No native geometry, scale, units, scheduling or hardware admission follows.
-
-Original reader: a69bc8909b529103b95aee0b5311f2066d0b1e3f6e42130b5cfc7444781a10e2.
-Original writer: 426553c268981befe38983973d516cf5698b607b5465df9fe36804564c4a3e92.
