@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_layout as layout_model
@@ -108,6 +109,75 @@ mov #0x5,r1
             VERIFIER.VerificationError, "not a high-RAM address"
         ):
             VERIFIER.alias_high_ram(0xFFFE7FFF)
+
+    def _fuel_cut_fixture(self):
+        layout = layout_model.load_layout()
+        stock = layout_model.validate_image(layout).data
+        composed = bytearray(stock)
+        hook = next(row for row in layout.hooks if row.key == "rev_fuel_cut_base")
+        composed[hook.address:hook.address + 4] = hook.replacement.to_bytes(4, "big")
+        reconstructed = bytearray(VERIFIER.FUEL_CUT_POOLS[-1] + 4 - VERIFIER.FUEL_CUT_ORIGIN)
+        for start, end in (
+            (VERIFIER.FUEL_CUT_START, VERIFIER.FUEL_CUT_END),
+            (VERIFIER.FUEL_CUT_POOLS[0], VERIFIER.FUEL_CUT_POOLS[-1] + 4),
+        ):
+            reconstructed[start - VERIFIER.FUEL_CUT_ORIGIN:end - VERIFIER.FUEL_CUT_ORIGIN] = stock[start:end]
+        return layout, stock, composed, reconstructed
+
+    def test_fuel_cut_consumer_binds_every_instruction_in_both_images(self):
+        layout, stock, composed, reconstructed = self._fuel_cut_fixture()
+        VERIFIER.require_fuel_cut_consumer_bytes(stock, composed, reconstructed, layout)
+        for name in ("stock", "composed"):
+            for address in range(VERIFIER.FUEL_CUT_START, VERIFIER.FUEL_CUT_END, 2):
+                with self.subTest(image=name, address=hex(address)):
+                    changed = bytearray(stock if name == "stock" else composed)
+                    changed[address] ^= 1
+                    with self.assertRaisesRegex(VERIFIER.VerificationError, name + " instructions differ"):
+                        VERIFIER.require_fuel_cut_consumer_bytes(
+                            changed if name == "stock" else stock,
+                            changed if name == "composed" else composed,
+                            reconstructed, layout,
+                        )
+
+    def test_fuel_cut_consumer_rejects_changed_pools_and_fixture_extent(self):
+        layout, stock, composed, reconstructed = self._fuel_cut_fixture()
+        for name in ("stock", "composed"):
+            for address in VERIFIER.FUEL_CUT_POOLS:
+                with self.subTest(image=name, address=hex(address)):
+                    changed = bytearray(stock if name == "stock" else composed)
+                    changed[address + 3] ^= 1
+                    with self.assertRaisesRegex(VERIFIER.VerificationError, name + " pool differs"):
+                        VERIFIER.require_fuel_cut_consumer_bytes(
+                            changed if name == "stock" else stock,
+                            changed if name == "composed" else composed,
+                            reconstructed, layout,
+                        )
+        for changed in (reconstructed[:-1], reconstructed + b"\0"):
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "extent differs"):
+                VERIFIER.require_fuel_cut_consumer_bytes(stock, composed, changed, layout)
+
+    def test_fuel_cut_translation_only_changes_the_three_bound_ram_words(self):
+        layout, stock, composed, reconstructed = self._fuel_cut_fixture()
+        VERIFIER.require_fuel_cut_consumer_bytes(stock, composed, reconstructed, layout)
+        before = bytes(composed)
+        self.assertEqual(VERIFIER.relocate_fuel_cut_consumer_literals(composed), 3)
+        allowed = {address + offset for address in (0x4f460, 0x4f468, 0x4f46c) for offset in range(4)}
+        self.assertLessEqual({i for i, (a, b) in enumerate(zip(before, composed)) if a != b}, allowed)
+        self.assertEqual(composed[VERIFIER.FUEL_CUT_START:VERIFIER.FUEL_CUT_END], stock[VERIFIER.FUEL_CUT_START:VERIFIER.FUEL_CUT_END])
+        for address in (0x4f460, 0x4f468, 0x4f46c):
+            original = int.from_bytes(before[address:address + 4], "big")
+            self.assertEqual(int.from_bytes(composed[address:address + 4], "big"), VERIFIER.alias_high_ram(original))
+
+    def test_fuel_cut_rejects_a_simulator_stub_overlapping_tested_instructions(self):
+        layout, _, composed, _ = self._fuel_cut_fixture()
+
+        def overlapping_stub(fixture, layout):
+            fixture[VERIFIER.FUEL_CUT_START:VERIFIER.FUEL_CUT_START + 4] = VERIFIER.RETURN_STUB
+            return 1
+
+        with patch.object(VERIFIER, "install_stock_return_stubs", overlapping_stub):
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator fixture changes instructions"):
+                VERIFIER.build_dynamic_fixture(SimpleNamespace(data=bytes(composed)), layout, {})
 
     def test_ram_relocation_changes_only_declared_long_data(self):
         fixture = bytearray(32)
@@ -638,6 +708,76 @@ mov #0x5,r1
             with self.subTest(output=output):
                 with self.assertRaises(TELEMETRY_VERIFIER.VerificationError):
                     TELEMETRY_VERIFIER.marker_cases(output)
+
+    @staticmethod
+    def pc_fixture():
+        image = bytearray(0x300)
+        rows = {
+            "startup_wrapper": ((0x100, 0xd003, "mov.l @(callee,pc),r0"),
+                                (0x102, 0x400b, "jsr @r0"), (0x104, 9, "nop"),
+                                (0x106, 11, "rts"), (0x108, 9, "nop")),
+            "limiter_commit": ((0x200, 0x8b00, "bf done"), (0x202, 9, "nop"),
+                               (0x204, 11, "rts"), (0x206, 9, "nop")),
+        }
+        parsed = {}
+        for key, instructions in rows.items():
+            for address, word, _text in instructions:
+                image[address:address + 2] = word.to_bytes(2, "big")
+            statements = tuple(
+                assembly_model.SourceStatement(index, address, "instruction", text, 2)
+                for index, (address, word, text) in enumerate(instructions)
+            )
+            if key == "startup_wrapper":
+                image[0x110:0x114] = (0x200).to_bytes(4, "big")
+                statements += (assembly_model.SourceStatement(6, 0x110, "long", "0x200", 4),)
+            parsed[key] = assembly_model.ParsedSource(Path(key), {"done": 0x204, "callee": 0x110}, statements)
+        invokes = {0x4000: 0x400b, 0x4002: 9, 0x4004: 9}
+        prefix = [(0x4000, 0x400b, 0), (0x4002, 9, 1),
+                  (0x100, 0xd003, 0), (0x102, 0x400b, 0), (0x104, 9, 1), (0x200, 0x8b00, 0)]
+        suffix = [(0x204, 11, 0), (0x206, 9, 1),
+                  (0x106, 11, 0), (0x108, 9, 1), (0x4004, 9, 0)]
+        return bytes(image), parsed, invokes, prefix + suffix, prefix + [(0x202, 9, 0)] + suffix
+
+    def test_pc_coverage_requires_both_actual_branch_outcomes(self):
+        image, parsed, invokes, taken, untaken = self.pc_fixture()
+        covered = VERIFIER.require_payload_coverage(taken + untaken, image, parsed, invokes)
+        self.assertEqual(covered, dict(entries=2, instructions=9, outcomes=2,
+                                      delay_slots=3, call_return_paths=2))
+        with self.assertRaisesRegex(VERIFIER.VerificationError,
+                                    "uncovered branch outcome 0x00000200->0x00000202"):
+            VERIFIER.require_payload_coverage(taken, image, parsed, invokes)
+
+    def test_pc_coverage_rejects_wrong_opcode_delay_and_return(self):
+        image, parsed, invokes, taken, untaken = self.pc_fixture()
+        mutations = ((2, (0x100, 9, 0), "executed opcode differs"),
+                     (4, (0x104, 9, 0), "missing executed delay slot"),
+                     (5, (0x210, 0x8b00, 0), "executed call"),
+                     (8, (0x100, 0xd003, 0), "executed return"))
+        for index, replacement, error in mutations:
+            records = list(taken + untaken)
+            records[index] = replacement
+            with self.subTest(error=error), self.assertRaisesRegex(VERIFIER.VerificationError, error):
+                VERIFIER.require_payload_coverage(records, image, parsed, invokes)
+
+    def test_pc_coverage_names_an_omitted_payload_entry(self):
+        image, parsed, invokes, taken, untaken = self.pc_fixture()
+        records = [*taken[:2], (0x200, 0x8b00, 0), *taken[6:8], taken[-1]]
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x00000100"):
+            VERIFIER.require_payload_coverage(records, image, parsed, invokes)
+
+    def test_pc_trace_requires_a_complete_consistent_stream(self):
+        record = "pc=00000100 opcode=0009 delay=0\n"
+        complete = "VQ_SH_PC_TRACE version=1\n" + record + "VQ_SH_PC_TRACE end=complete records=1\n"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "trace"
+            path.write_text(complete)
+            self.assertEqual(VERIFIER.read_pc_trace(path), [(0x100, 9, 0)])
+            for text in (complete.replace("records=1", "records=2"),
+                         complete.rsplit("VQ_SH_PC_TRACE end", 1)[0],
+                         complete + record, complete.replace("delay=0", "delay=2")):
+                path.write_text(text)
+                with self.subTest(text=text), self.assertRaises(VERIFIER.VerificationError):
+                    VERIFIER.read_pc_trace(path)
 
 
 if __name__ == "__main__":

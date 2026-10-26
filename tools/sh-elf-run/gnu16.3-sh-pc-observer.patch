@@ -1,0 +1,166 @@
+--- a/sim/sh/interp.c
++++ b/sim/sh/interp.c
+@@ -95,6 +95,132 @@
+ /* Define the rate at which the simulator should poll the host
+    for a quit. */
+ #define POLL_QUIT_INTERVAL 0x60000
++
++
++/* Optional host-only instruction observation.  No target state is accessed. */
++static FILE *vq_sh_pc_trace_file;
++static unsigned long long vq_sh_pc_trace_records;
++static int vq_sh_pc_trace_checked;
++static unsigned int vq_sh_pc_trace_nranges;
++static struct { unsigned long long low, high; } vq_sh_pc_trace_ranges[8];
++
++static void
++vq_sh_pc_trace_error (const char *reason)
++{
++  int failure_errno = errno;
++  fprintf (stderr, "VQ_SH_PC_TRACE error=%s host_errno=%d\n",
++           reason, failure_errno);
++  _Exit (125);
++}
++
++static void
++vq_sh_pc_trace_close (void)
++{
++  int saved_errno = errno;
++  if (vq_sh_pc_trace_file != NULL)
++    {
++      if (vq_sh_pc_trace_records == 0)
++        vq_sh_pc_trace_error ("no_instruction_records");
++      if (fprintf (vq_sh_pc_trace_file,
++                   "VQ_SH_PC_TRACE end=complete records=%llu\n",
++                   vq_sh_pc_trace_records) < 0
++          || fflush (vq_sh_pc_trace_file) != 0)
++        vq_sh_pc_trace_error ("write_failed");
++      if (fclose (vq_sh_pc_trace_file) != 0)
++        vq_sh_pc_trace_error ("close_failed");
++      vq_sh_pc_trace_file = NULL;
++    }
++  errno = saved_errno;
++}
++
++static void
++vq_sh_pc_trace_init (void)
++{
++  int saved_errno = errno;
++  const char *path;
++  const char *format;
++  const char *ranges;
++  if (vq_sh_pc_trace_checked)
++    return;
++  path = getenv ("VQ_SH_PC_TRACE_FILE");
++  format = getenv ("VQ_SH_PC_TRACE_FORMAT");
++  ranges = getenv ("VQ_SH_PC_TRACE_RANGES");
++  vq_sh_pc_trace_checked = 1;
++  if (path == NULL && format == NULL && ranges == NULL)
++    {
++      errno = saved_errno;
++      return;
++    }
++  if (path == NULL || *path == '\0' || format == NULL
++      || strcmp (format, "v1") != 0)
++    vq_sh_pc_trace_error ("unsupported_request");
++  if (ranges != NULL)
++    {
++      const char *cursor = ranges;
++      do
++        {
++          char *end;
++          unsigned long long low, high;
++          if (vq_sh_pc_trace_nranges == 8
++              || !isxdigit ((unsigned char) *cursor))
++            vq_sh_pc_trace_error ("unsupported_ranges");
++          errno = 0;
++          low = strtoull (cursor, &end, 16);
++          if (errno != 0 || end == cursor || *end != ':')
++            vq_sh_pc_trace_error ("unsupported_ranges");
++          cursor = end + 1;
++          if (!isxdigit ((unsigned char) *cursor))
++            vq_sh_pc_trace_error ("unsupported_ranges");
++          errno = 0;
++          high = strtoull (cursor, &end, 16);
++          if (errno != 0 || end == cursor || low >= high
++              || high > 0x100000000ULL || (*end != '\0' && *end != ','))
++            vq_sh_pc_trace_error ("unsupported_ranges");
++          vq_sh_pc_trace_ranges[vq_sh_pc_trace_nranges].low = low;
++          vq_sh_pc_trace_ranges[vq_sh_pc_trace_nranges].high = high;
++          vq_sh_pc_trace_nranges++;
++          cursor = (*end == ',') ? end + 1 : end;
++          if (*end == ',' && *cursor == '\0')
++            vq_sh_pc_trace_error ("unsupported_ranges");
++        }
++      while (*cursor != '\0');
++    }
++  vq_sh_pc_trace_file = fopen (path, "w");
++  if (vq_sh_pc_trace_file == NULL)
++    vq_sh_pc_trace_error ("open_failed");
++  if (atexit (vq_sh_pc_trace_close) != 0)
++    vq_sh_pc_trace_error ("atexit_failed");
++  if (fputs ("VQ_SH_PC_TRACE version=1\n", vq_sh_pc_trace_file) == EOF
++      || fflush (vq_sh_pc_trace_file) != 0)
++    vq_sh_pc_trace_error ("write_failed");
++  errno = saved_errno;
++}
++
++static void
++vq_sh_pc_trace_observe (unsigned int pc, unsigned int opcode,
++                        unsigned int delay_slot)
++{
++  int saved_errno;
++  unsigned int range;
++  if (vq_sh_pc_trace_file == NULL)
++    return;
++  if (vq_sh_pc_trace_nranges != 0)
++    {
++      for (range = 0; range < vq_sh_pc_trace_nranges; range++)
++        if (pc >= vq_sh_pc_trace_ranges[range].low
++            && pc < vq_sh_pc_trace_ranges[range].high)
++          break;
++      if (range == vq_sh_pc_trace_nranges)
++        return;
++    }
++  saved_errno = errno;
++  if (fprintf (vq_sh_pc_trace_file, "pc=%08x opcode=%04x delay=%u\n",
++               pc, opcode & 0xffff, delay_slot) < 0
++      || fflush (vq_sh_pc_trace_file) != 0)
++    vq_sh_pc_trace_error ("write_failed");
++  vq_sh_pc_trace_records++;
++  errno = saved_errno;
++}
+ 
+ /* TODO: Move into sim_cpu.  */
+ saved_state_type saved_state;
+@@ -677,7 +803,13 @@
+ #define SET_NIP(x) nip = (x); CHECK_INSN_PTR (nip);
+ 
+ static int in_delay_slot = 0;
+-#define Delay_Slot(TEMPPC)  	iword = RIAT (TEMPPC); in_delay_slot = 1; goto top;
++#define Delay_Slot(TEMPPC) \
++do { \
++  iword = RIAT (TEMPPC); \
++  vq_sh_pc_trace_observe ((unsigned int) PH2T (TEMPPC), iword, 1); \
++  in_delay_slot = 1; \
++  goto top; \
++} while (0)
+ 
+ #define CHECK_INSN_PTR(p) \
+ do { \
+@@ -1776,6 +1908,7 @@
+       register unsigned int iword = RIAT (insn_ptr);
+       register unsigned int ult;
+       register unsigned char *nip = insn_ptr + 2;
++      vq_sh_pc_trace_observe ((unsigned int) PH2T (insn_ptr), iword, 0);
+ 
+ #ifndef ACE_FAST
+       insts++;
+@@ -2412,6 +2545,7 @@
+     mem_word.c[i] = i;
+   endianb = mem_word.i >> (target_little_endian ? 0 : 24) & 0xff;
+ 
++  vq_sh_pc_trace_init ();
+   return sd;
+ }
+ 

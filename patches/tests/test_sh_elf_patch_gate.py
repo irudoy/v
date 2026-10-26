@@ -33,9 +33,11 @@ def pipeline(driver, monkeypatch, tmp_path):
     audit = SimpleNamespace(instructions=3, delayed_transfers=5, pc_relative_references=7,
                            direct_branches=11, indirect_transfers=13)
     monkeypatch.setattr(driver.assembly_model, 'validate_instruction_semantics', lambda *args: audit)
-    monkeypatch.setattr(driver, 'require_composition', lambda *args: SimpleNamespace(sha256='composition'))
+    monkeypatch.setattr(driver, 'require_composition', lambda *args: SimpleNamespace(sha256='composition', data=b''))
+    monkeypatch.setattr(driver, 'verify_fuel_cut_consumer_binding',
+                        lambda *args: events.append('fuel_cut_binding'))
     monkeypatch.setattr(driver, 'build_dynamic_fixture', lambda *args: (b'', 0, 0, ()))
-    monkeypatch.setattr(driver, 'build_and_run_dynamic_harness', lambda *args: 'CONTROLLED_MAP_PASS')
+    monkeypatch.setattr(driver, 'build_and_run_dynamic_harness', lambda *args, **kwargs: 'CONTROLLED_MAP_PASS')
     monkeypatch.setattr(driver, 'verify_delay_slot_incident', lambda *args: 'controlled signal')
     temporary = driver.tempfile.TemporaryDirectory
     monkeypatch.setattr(driver.tempfile, 'TemporaryDirectory',
@@ -64,8 +66,20 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
         ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
         ('pipeline', 'relocated_runtime_targets'),
     ]
-    assert events == ['verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
+    assert events == ['fuel_cut_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
     assert 'VQ_SH_ELF_VERIFY status=PASS' in report and 'stock_code_' not in report
+
+
+def test_failed_fuel_cut_binding_prevents_execution(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+
+    def fail(*args):
+        raise driver.VerificationError('controlled fuel-cut byte mismatch')
+
+    monkeypatch.setattr(driver, 'verify_fuel_cut_consumer_binding', fail)
+    assert driver.main([]) == 1
+    assert events == []
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in capsys.readouterr().out
 
 
 @pytest.mark.parametrize('stage', ('verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets'))

@@ -42,6 +42,32 @@ The canonical and relocated runtime verifiers:
   inputs. Capability-specific target harnesses retain their own assertions.
 - Execute the original unsafe delayed-branch pair and a safe control fixture.
 
+The canonical JK08A map-switching harness measures executed PCs and opcodes
+for `startup_wrapper` and `limiter_commit`. Its observer records the actual
+delay-slot execution order. The verifier requires every instruction, both
+conditional outcomes, and matched calls and returns in this scope. It binds
+the trace to the independently assembled payload, the composed ROM, and the
+final ELF; simulator RAM-literal translations preserve instruction words.
+The ordinary GNU toolchain includes the optional host observer. Trace requests
+remain local to the canonical harness, with no target-state instrumentation.
+The stock initializer retains its existing RTS/NOP fixture stub; this coverage
+does not qualify the initializer's original body.
+
+A negative build suppresses the actual `run_limiter_cases()` call while
+retaining the same ROM bytes and the old semantic PASS marker. Execution must
+then fail coverage with the omitted startup entry. Coverage of the remaining
+payloads, targets, and SH7058 limiter-pointer consumers remains outside this
+bounded check. Case and entry totals printed by the other harnesses do not
+establish instruction coverage.
+
+The canonical JK08A harness also executes the fuel-cut state-machine consumer
+of the redirected limiter pointer. Its independent assembly binds the original
+instruction window and operand pools before execution. The fixture translates
+only the bound state-base, threshold-pointer and RPM-base RAM words; all tested
+instructions and their original addresses remain intact. Cases populate the
+selected shadow through the real limiter entry and check thresholds, state,
+timer, return value, stack, GBR and memory guards.
+
 The ignition-consumer verifier reconstructs each declared stock call window
 and its operands independently. It then executes the real composed lookup
 literal through the injected adapter. Its C harness checks complete callee and

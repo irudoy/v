@@ -517,7 +517,7 @@ static void read_bytes(
         target[index] = source[index];
 }
 
-#ifdef TARGET_VQ37
+#if defined(TARGET_VQ37) || defined(VERIFY_7MFK_FUEL_CUT)
 static uint16_t read_be16(const volatile uint8_t *source)
 {
     return (uint16_t)(((uint16_t)source[0] << 8) | source[1]);
@@ -742,6 +742,169 @@ static int run_limiter_cases(void)
     return 1;
 }
 
+#ifdef VERIFY_7MFK_FUEL_CUT
+/* The composed pointer is bound before the three declared RAM translations.
+   Mutable calibration data supplies boundary inputs; instructions stay intact. */
+#define FUEL_CUT_CONSUMER 0x0004f282U
+#define FUEL_CUT_STATE 0xffff2497U
+#define FUEL_CUT_TIMER 0xffff24f1U
+#define FUEL_CUT_RPM 0xffff11bcU
+#define FUEL_CUT_GUARD 0xffff2440U
+#define FUEL_CUT_GUARD_SIZE 0xc0U
+
+static int run_fuel_cut_consumer_case(
+    uint8_t requested, unsigned pair, uint16_t activation, uint16_t release,
+    uint16_t rpm, uint8_t initial, uint8_t timer, uint8_t delay,
+    unsigned missing_gate, size_t *cases)
+{
+    static const uint8_t empty_state[8] = {0};
+    static const unsigned activation_offsets[] = {0, 2, 8};
+    static const unsigned release_offsets[] = {4, 6, 10};
+    uint8_t expected[FUEL_CUT_GUARD_SIZE];
+    uint8_t shadows[RAM_SENTINEL_SIZE];
+    uint8_t saved_stock[12];
+    uint8_t saved_slot[8];
+    uint8_t saved_configuration = rom_pointer(0x8b38U)[0];
+    uint8_t saved_delay = rom_pointer(0x8c69U)[0];
+    uint8_t expected_state = initial;
+    uint8_t expected_timer = timer;
+    uint32_t saved_gbr, after_gbr, before_sp, after_sp, returned;
+    uint32_t sentinel_gbr = 0x13579bdfU;
+    unsigned normalized = requested < ARRAY_SIZE(fuel_slots) ? requested : 0;
+    uint32_t source = fuel_slots[normalized];
+
+    read_bytes(saved_stock, rom_pointer(FUEL_STOCK), sizeof(saved_stock));
+    read_bytes(saved_slot, rom_pointer(source), sizeof(saved_slot));
+    /* Each bank has distinct words, including the two fallback pairs. */
+    write_be16(rom_pointer(source), (uint16_t)(0x6000U + normalized * 0x100U));
+    write_be16(rom_pointer(source + 2U), (uint16_t)(0x7000U + normalized * 0x100U));
+    write_be16(rom_pointer(source + 4U), (uint16_t)(0x5000U + normalized * 0x100U));
+    write_be16(rom_pointer(source + 6U), (uint16_t)(0x5800U + normalized * 0x100U));
+    write_be16(rom_pointer(FUEL_STOCK + 8U), 0x8001U);
+    write_be16(rom_pointer(FUEL_STOCK + 10U), 0x7fffU);
+    write_be16(
+        rom_pointer(pair == 2 ? FUEL_STOCK + 8U : source + activation_offsets[pair]),
+        activation);
+    write_be16(
+        rom_pointer(pair == 2 ? FUEL_STOCK + 10U : source + release_offsets[pair]),
+        release);
+
+    seed_ram(empty_state);
+    if (invoke_r4(LIMITER_COMMIT, requested) != normalized)
+        return fail_value("fuel_cut_consumer", "selected_bank", requested, normalized);
+    read_bytes(shadows, ram_pointer(RAM_SENTINEL_BASE), sizeof(shadows));
+    /* Contradictory old-table values make each redirected read observable. */
+    write_be16(rom_pointer(FUEL_STOCK), 0xffffU);
+    write_be16(rom_pointer(FUEL_STOCK + 2U), 0xffffU);
+    write_be16(rom_pointer(FUEL_STOCK + 4U), 0);
+    write_be16(rom_pointer(FUEL_STOCK + 6U), 0);
+    write_be16(rom_pointer(FUEL_STOCK + 8U), 0xffffU);
+    write_be16(rom_pointer(FUEL_STOCK + 10U), 0);
+
+    fill_bytes(ram_pointer(FUEL_CUT_GUARD), FUEL_CUT_GUARD_SIZE, 0xa5);
+    ram_pointer(0xffff2468U)[0] = pair == 1 ? 0x10U : 0;
+    ram_pointer(0xffff2499U)[0] = missing_gate == 1 ? 0 : 0x02U;
+    ram_pointer(0xffff2494U)[0] = missing_gate == 2 ? 0 : 0x20U;
+    ram_pointer(0xffff244fU)[0] = missing_gate == 3 ? 0 : 0x04U;
+    rom_pointer(0x8b38U)[0] = (uint8_t)(saved_configuration & 0x7fU)
+        | ((pair == 2 || missing_gate) ? 0x80U : 0);
+    rom_pointer(0x8c69U)[0] = delay;
+    ram_pointer(FUEL_CUT_STATE)[0] = initial;
+    ram_pointer(FUEL_CUT_TIMER)[0] = timer;
+    write_be16(ram_pointer(FUEL_CUT_RPM), rpm);
+    read_bytes(expected, ram_pointer(FUEL_CUT_GUARD), sizeof(expected));
+    if (initial & 0x04U) {
+        if (rpm < release)
+            expected_state &= 0xf9U;
+    } else if (rpm < activation) {
+        expected_state &= 0xfdU;
+    } else {
+        if (!(initial & 0x02U)) {
+            expected_timer = delay;
+            expected_state |= 0x02U;
+        }
+        if (!expected_timer)
+            expected_state |= 0x04U;
+    }
+    expected[FUEL_CUT_STATE - FUEL_CUT_GUARD] = expected_state;
+    expected[FUEL_CUT_TIMER - FUEL_CUT_GUARD] = expected_timer;
+    __asm__ volatile (
+        "stc gbr,%0\n\tmov r15,%1\n\tldc %2,gbr"
+        : "=&r" (saved_gbr), "=&r" (before_sp) : "r" (sentinel_gbr) : "memory");
+    returned = invoke_r0(FUEL_CUT_CONSUMER);
+    __asm__ volatile (
+        "stc gbr,%0\n\tmov r15,%1\n\tldc %2,gbr"
+        : "=&r" (after_gbr), "=&r" (after_sp) : "r" (saved_gbr) : "memory");
+    write_bytes(rom_pointer(FUEL_STOCK), saved_stock, sizeof(saved_stock));
+    write_bytes(rom_pointer(source), saved_slot, sizeof(saved_slot));
+    rom_pointer(0x8b38U)[0] = saved_configuration;
+    rom_pointer(0x8c69U)[0] = saved_delay;
+    ++*cases;
+    if (after_gbr != sentinel_gbr)
+        return fail_value("fuel_cut_consumer", "gbr", after_gbr, sentinel_gbr);
+    if (after_sp != before_sp)
+        return fail_value("fuel_cut_consumer", "stack", after_sp, before_sp);
+    if (returned != ((expected_state & 4U) != 0))
+        return fail_value("fuel_cut_consumer", "return", returned, (expected_state & 4U) != 0);
+    if (read_be16(ram_pointer(FUEL_CUT_RPM)) != rpm)
+        return fail_value("fuel_cut_consumer", "rpm_guard", read_be16(ram_pointer(FUEL_CUT_RPM)), rpm);
+    return fail_bytes("fuel_cut_consumer", "state_and_guards",
+            ram_pointer(FUEL_CUT_GUARD), expected, sizeof(expected))
+        && fail_bytes("fuel_cut_consumer", "shadow_read_only",
+            ram_pointer(RAM_SENTINEL_BASE), shadows, sizeof(shadows));
+}
+
+static int run_fuel_cut_consumer_cases(void)
+{
+    static const uint8_t requested[] = {0, 1, 2, 3, 4, 5, 0xff};
+    static const uint16_t wide[] = {0, 0x7fffU, 0x8000U, 0xffffU};
+    size_t bank, cases = 0;
+    unsigned pair, boundary, pending, timer, delay, gate, threshold, sample;
+
+    for (bank = 0; bank < ARRAY_SIZE(requested); ++bank) {
+        for (pair = 0; pair < 3; ++pair) {
+            uint16_t activation = (uint16_t)(0x8001U + bank * 13U + pair * 7U);
+            uint16_t release = (uint16_t)(0x7fffU - bank * 17U - pair * 5U);
+            for (boundary = 0; boundary < 3; ++boundary) {
+                for (pending = 0; pending < 2; ++pending)
+                    for (timer = 0; timer < 2; ++timer)
+                        for (delay = 0; delay < 2; ++delay)
+                            if (!run_fuel_cut_consumer_case(
+                                    requested[bank], pair, activation, release,
+                                    (uint16_t)(activation - 1U + boundary),
+                                    (uint8_t)(0xa1U | pending * 2U),
+                                    (uint8_t)(timer * 0x80U), (uint8_t)(delay * 0x80U),
+                                    0, &cases))
+                                return 0;
+                if (!run_fuel_cut_consumer_case(
+                        requested[bank], pair, activation, release,
+                        (uint16_t)(release - 1U + boundary), 0xe7U, 0x55U, 0x80U,
+                        0, &cases))
+                    return 0;
+            }
+        }
+    }
+    /* Each short-circuit gate must fall back to each normal pair. */
+    for (gate = 1; gate <= 3; ++gate)
+        for (pair = 0; pair < 2; ++pair)
+            if (!run_fuel_cut_consumer_case(
+                    4, pair, 0x8000U, 0x7fffU, 0x8000U,
+                    0xa1U, 0, 0, gate, &cases))
+                return 0;
+    for (pair = 0; pair < 3; ++pair)
+        for (threshold = 0; threshold < ARRAY_SIZE(wide); ++threshold)
+            for (sample = 0; sample < ARRAY_SIZE(wide); ++sample)
+                for (pending = 0; pending < 2; ++pending)
+                    if (!run_fuel_cut_consumer_case(
+                            3, pair, wide[threshold], wide[threshold], wide[sample],
+                            pending ? 0xe7U : 0xa1U, 0, 0, 0, &cases))
+                        return 0;
+    printf("VQ_SH_ELF_MAP_SWITCHING_FUEL_CUT status=PASS cases=%lu entries=1\n",
+        (unsigned long)cases);
+    return 1;
+}
+#endif
+
 #ifdef TARGET_VQ37
 static int verify_native_fuel_cut(
     const char *field, uint16_t rpm, uint32_t expected_return,
@@ -953,6 +1116,10 @@ int main(void)
         return 1;
     if (!run_limiter_cases())
         return 1;
+#ifdef VERIFY_7MFK_FUEL_CUT
+    if (!run_fuel_cut_consumer_cases())
+        return 1;
+#endif
 #ifdef TARGET_VQ37
     if (!run_native_fuel_cut_cases())
         return 1;
