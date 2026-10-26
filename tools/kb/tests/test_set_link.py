@@ -157,6 +157,43 @@ def test_archiving_cannot_adopt_an_earlier_property_change(baseline):
     refuse(baseline, OP, op, docs=docs, text='original relation and evidence')
 
 
+def ambiguous_archive_operation(baseline):
+    docs, op = archive_operation(baseline)
+    second = copy.deepcopy(native_writer(docs[SP]))
+    second['slot'] = 'bit6'
+    docs[SP]['link'].append(second)
+    return docs, {**op, 'selector': {'slot': 'bit6'}}
+
+
+def test_archiving_preserves_an_existing_ambiguous_ledger_selector(baseline):
+    docs, op = ambiguous_archive_operation(baseline)
+    _, texts, result = plan(baseline, op, docs=docs)
+    expected = copy.deepcopy(docs[SP])
+    next(link for link in expected['link'] if link.get('slot') == 'bit6')[
+        'evidence'] = op['keys']['evidence']
+    assert texts == {SP: store.render('ram', expected)}
+    assert result.overlay[FP] == baseline[0].overlay[FP]
+    assert write._issues(result) == {}
+    refuse(baseline, {**OP, 'selector': {'slot': 'bit6'}}, docs=docs,
+           text='ledger dependency needs one relation, found 2')
+
+
+@pytest.mark.parametrize('changed', ('added', 'removed', 'property'))
+def test_archiving_cannot_change_another_relation_in_the_group(baseline, changed):
+    docs, op = ambiguous_archive_operation(baseline)
+    if changed == 'added':
+        late = {'cmd': 'link', 'meaning': STATE, 'type': 'writer', 'to': FUNCTION,
+                'keys': {'slot': 'bit7', 'layouts': ['7mfk']}}
+    elif changed == 'removed':
+        op['selector'] = {}
+        late = {'cmd': 'unlink', 'meaning': STATE, 'type': 'writer', 'to': FUNCTION,
+                'keys': {'slot': 'bit6'}}
+    else:
+        late = {'cmd': 'link', 'meaning': STATE, 'type': 'writer', 'to': FUNCTION,
+                'keys': {'via': [FUNCTION]}}
+    refuse(baseline, op, late, docs=docs, text='does not retain')
+
+
 def test_unset_preserves_evidence_identity_and_other_properties(baseline):
     _, docs = baseline
     _, texts, _ = plan(baseline, {**OP, 'keys': {}, 'unset': ['note']})

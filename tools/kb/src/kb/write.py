@@ -865,11 +865,13 @@ class Change:
                      copy.deepcopy(marker["dependency"]))
                     for marker in document.get("ledger", ()) if "dependency" in marker]
 
-        selectors = {
-            Path(src): dependencies(store.load(self.root, Path(src), self.model.overlay))
+        owned = {
+            Path(src): store.load(self.root, Path(src), self.model.overlay)
             for owner, src in self.model.files.values()
             if src is not None and (owner is meaning or owner is to)}
+        selectors = {src: dependencies(document) for src, document in owned.items()}
         claims = []
+        archive_claims = []
         for owner, src in self.model.files.values():
             if src is None or (owner is not meaning and owner is not to):
                 continue
@@ -883,8 +885,13 @@ class Change:
                             == held.get("offset", 0 if type_ == "base" else None)):
                         claim = (owner.key, marker["registry"], marker["order"],
                                  copy.deepcopy(item))
-                        _selection(self.model, *claim)
-                        claims.append(claim)
+                        if archive:
+                            _, symbol, _, _ = _selection_row(self.model, *claim[:3])
+                            projected = ledger_projection.dependency(self.model, symbol, item)
+                            archive_claims.append((claim, projected))
+                        else:
+                            _selection(self.model, *claim)
+                            claims.append(claim)
         for key in unset:
             del held[key]
         held.update(keys)
@@ -899,9 +906,22 @@ class Change:
                     return f"{meaning.key}: updated native link is not retained"
                 for claim in claims:
                     _selection(result, *claim)
+                for claim, projected in archive_claims:
+                    _, symbol, _, _ = _selection_row(result, *claim[:3])
+                    if ledger_projection.dependency(result, symbol, claim[3]) != projected:
+                        return f"{meaning.key}: set-link does not retain ledger claims"
                 for src, before in selectors.items():
-                    if dependencies(store.load(self.root, src, result.overlay)) != before:
+                    current = store.load(self.root, src, result.overlay)
+                    if dependencies(current) != before:
                         return f"{meaning.key}: set-link does not retain ledger dependencies"
+                    if archive:
+                        previous, updated = owned[src].get("link", []), current.get("link", [])
+                        if len(previous) != len(updated) or any(
+                            set(old) != set(new) or not evidence_ref.archive_equivalent(
+                                {**old, "evidence": old.get("evidence", [])},
+                                {**new, "evidence": new.get("evidence", [])})
+                            for old, new in zip(previous, updated)):
+                            return f"{meaning.key}: set-link does not retain native relations"
             except (KbError, OSError, TypeError, AttributeError, KeyError):
                 return f"{meaning.key}: set-link does not retain its owned documents"
             return None
