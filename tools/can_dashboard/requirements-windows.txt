@@ -1,2 +1,4 @@
+pip==26.2.2
 python-can[pcan]==4.6.1
+setuptools==84.2.1
 tzdata==2026.3

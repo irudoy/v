@@ -54,13 +54,14 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `can_dashboard/widgets.py` | Responsive flow, grid, scroll, copyable status, and tool button widgets |
 | `can_dashboard/icons.py` | Vector button icons drawn on a Tk canvas at the caption size |
 | `can_dashboard/package_windows.py` | Reproducible portable Windows source-package generator |
+| `can_dashboard/package_locks.py` | Hash-locked dependency sets of the dashboard packages, resolved per platform from their requirement files |
 | `can_dashboard/package_macos.py` | Native arm64 macOS application and ZIP generator |
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
 | `romviz/architecture.py` | Firmware architecture gate, model export, and block, impact, path, and chain queries |
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
-| `version_index.py` | Validate execution-image bindings and provide version readers used by packagers |
+| `version_index.py` | Validate execution-image bindings and dashboard locks, and provide version readers used by packagers |
 | `single_source.py` | Check executable constants and ROM registry bindings against their machine owners |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
@@ -86,6 +87,9 @@ This table describes the local deployment and tool locations.
 | PyInstaller | 6.21.0 | `can_dashboard/requirements-macos-build.txt` |
 | `python-can` | 4.6.1 | The three `can_dashboard/requirements-*.txt` pins |
 | `tzdata` | 2026.3 | `can_dashboard/requirements-windows.txt` |
+| `setuptools` | 84.2.1 | `can_dashboard/requirements-windows.txt` and `requirements-macos-build.txt`; builds the `uptime` source distribution |
+| `pip` | 26.2.2 | `can_dashboard/requirements-windows.txt`; installs the Windows lock |
+| Dashboard dependency locks | Generated | `can_dashboard/requirements-*.lock` from `can_dashboard/package_locks.py --write` |
 | External npkern source | Revision locked by `run-npkern.sh` | Default `../../oss/npkern` |
 
 ## Local services and ports

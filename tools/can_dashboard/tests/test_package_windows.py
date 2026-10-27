@@ -43,7 +43,12 @@ class WindowsPackageTest(unittest.TestCase):
                 ).decode("utf-8")
                 self.assertEqual(
                     requirements.splitlines(),
-                    ["python-can[pcan]==4.6.1", "tzdata==2026.3"],
+                    [
+                        "pip==26.2.2",
+                        "python-can[pcan]==4.6.1",
+                        "setuptools==84.2.1",
+                        "tzdata==2026.3",
+                    ],
                 )
                 launchers = {
                     name[len(prefix):]

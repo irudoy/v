@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check execution image tags and provide packaging version readers."""
+"""Check execution image tags and dashboard locks, and read packaging pins."""
 
 import argparse
 import re
@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 IMAGE_SCRIPTS = (
     "tools/sh-elf-run/run.sh",
@@ -68,20 +70,43 @@ def check_execution_image():
             )
 
 
+def check_dashboard_locks():
+    """Require every dashboard lock to follow its declared requirements."""
+    from tools.can_dashboard import package_locks as locks
+
+    python = python_version()
+    problems = []
+    for target in locks.TARGETS:
+        problems.extend(
+            locks.check_lock(
+                target, _text(target.requirements), _text(target.lock), python
+            )
+        )
+    if problems:
+        raise VersionError("; ".join(problems))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--check",
         action="store_true",
-        help="validate execution image tags against the simulator version",
+        help=(
+            "validate execution image tags against the simulator version and "
+            "dashboard locks against their requirements"
+        ),
     )
     parser.parse_args(argv)
     try:
         check_execution_image()
+        check_dashboard_locks()
     except VersionError as error:
         print(f"version index: {error}", file=sys.stderr)
         return 1
-    print("version pins: execution image tags match the simulator")
+    print(
+        "version pins: execution image tags match the simulator; "
+        "dashboard locks match their requirements"
+    )
     return 0
 
 

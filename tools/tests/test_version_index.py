@@ -40,3 +40,19 @@ def test_the_windows_installer_and_the_macos_build_read_their_pins():
     assert package_macos.PYINSTALLER_VERSION == version_index.requirement_pin(
         package_macos.BUILD_REQUIREMENTS, "pyinstaller"
     )
+
+
+def test_dashboard_locks_follow_their_requirements(monkeypatch):
+    from tools.can_dashboard import package_locks as locks
+
+    read = version_index._text
+    target = locks.TARGETS[0]
+
+    def changed(name):
+        text = read(name)
+        return text + "wrapt==1.17.3\n" if name == target.requirements else text
+
+    version_index.check_dashboard_locks()
+    monkeypatch.setattr(version_index, "_text", changed)
+    with pytest.raises(version_index.VersionError, match=target.lock):
+        version_index.check_dashboard_locks()
