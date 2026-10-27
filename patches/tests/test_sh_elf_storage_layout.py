@@ -119,13 +119,13 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
 
     monkeypatch.setattr(base, 'run_command', command)
 
-    class MapStorageAccepted(Exception):
+    class StorageAccepted(Exception):
         pass
 
-    if route == 'map':
+    if route in ('map', 'rolling'):
         def after_storage(*args):
-            raise MapStorageAccepted
-        monkeypatch.setattr(module, '_invoke_trace_bindings', after_storage)
+            raise StorageAccepted
+        monkeypatch.setattr(base, '_invoke_trace_bindings', after_storage)
 
     def execute():
         if route.startswith('relocated-'):
@@ -139,15 +139,28 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
             return module.build_and_run_dynamic_harness(
                 b'controlled fixture', tmp_path, parsed_by_unit=parsed,
                 composed_image=b'controlled fixture', layout=SimpleNamespace())
+        if route == 'rolling':
+            regions = {key: SimpleNamespace(entry=index)
+                       for index, key in enumerate(module.WRAPPER_REGIONS)}
+            base_layout = SimpleNamespace(hooks=(
+                SimpleNamespace(key='selector_host_call', stock=4),
+                SimpleNamespace(key='startup_initializer', stock=8)))
+            rolling_layout = SimpleNamespace(code_region_by_key=regions,
+                hook_by_key={'displaced_periodic_task': SimpleNamespace(stock=12)})
+            return module.build_and_run_dynamic_harness(
+                b'controlled fixture', tmp_path,
+                parsed_by_unit={'wrappers': SimpleNamespace(statements=())},
+                composed_image=b'controlled fixture', base_layout=base_layout,
+                rolling_layout=rolling_layout)
         return module.build_and_run_dynamic_harness(b'controlled fixture', tmp_path)
 
     if overlap or layout in ('malformed', 'missing'):
         with pytest.raises(module.VerificationError, match='ELF storage separation'):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
-    elif route == 'map':
+    elif route in ('map', 'rolling'):
         # Reach the next real stage after accepting ELF storage, before RUN.
-        with pytest.raises(MapStorageAccepted):
+        with pytest.raises(StorageAccepted):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
     else:

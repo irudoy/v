@@ -86,6 +86,21 @@ payload. These R4 observations use the fixture's invoke helper. Canonical case
 totals do not gate acceptance; relocated targets retain their existing matrices
 and checks.
 
+The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
+`selector_arbiter`, and `startup_wrapper` with the same host PC observer. Typed
+instruction statements define this scope; pools and fill bytes do not count
+as instructions. Exact composed instructions and control literals survive the
+declared fixture translations and match the final ELF and invoke code. Each
+wrapper invocation retains its originating invoke frame through calls and
+selector tail transfers, and qualifies its return only after its declared
+stock RTS/NOP boundary. These boundaries do not qualify the stock bodies.
+
+A Rolling Launch negative build calls the engine directly instead of the
+periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
+marker. Measured coverage must reject the omitted periodic entry. Coverage of
+the engine, ignition payloads, threshold helper and feedback arbiter remains
+outside this wrapper scope.
+
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original
 instruction window and operand pools before execution. The fixture translates

@@ -1096,5 +1096,124 @@ mov #0x5,r1
                     VERIFIER.read_pc_trace(path)
 
 
+class RollingWrapperCoverageTest(unittest.TestCase):
+    @staticmethod
+    def fixture():
+        image = bytearray(0x400)
+        rows = [
+            (0x100, "mov.l @(periodic_stock,pc),r0"), (0x102, "jsr @r0"),
+            (0x104, "nop"), (0x106, "rts"), (0x108, "nop"),
+            (0x140, "bt selector_other"), (0x142, "mov.l @(selector_stock,pc),r0"),
+            (0x144, "jmp @r0"), (0x146, "nop"),
+            (0x14A, "mov.l @(selector_other_stock,pc),r0"), (0x14C, "jmp @r0"), (0x14E, "nop"),
+            (0x180, "dt r2"), (0x182, "bf clear_loop"),
+            (0x184, "mov.l @(startup_stock,pc),r0"), (0x186, "jsr @r0"),
+            (0x188, "nop"), (0x18A, "rts"), (0x18C, "nop"),
+        ]
+        labels = {"periodic_stock": 0x110, "selector_stock": 0x160,
+                  "selector_other_stock": 0x164, "startup_stock": 0x19C,
+                  "selector_other": 0x14A, "clear_loop": 0x180}
+        fixed = {"nop": 9, "rts": 11, "jsr @r0": 0x400B, "jmp @r0": 0x402B,
+                 "dt r2": 0x4210, "bt selector_other": 0x8903, "bf clear_loop": 0x8BFD}
+        statements = []
+        for index, (pc, text) in enumerate(rows):
+            if text.startswith("mov.l"):
+                label = text.split("@(")[1].split(",")[0]
+                word = 0xD000 | (labels[label] - ((pc + 4) & ~3)) // 4
+            else:
+                word = fixed[text]
+            image[pc:pc + 2] = word.to_bytes(2, "big")
+            statements.append(assembly_model.SourceStatement(index + 1, pc, "instruction", text, 2))
+        for pool, target in ((0x110, 0x300), (0x160, 0x304), (0x164, 0x304), (0x19C, 0x308)):
+            image[pool:pool + 4] = target.to_bytes(4, "big")
+            statements.append(assembly_model.SourceStatement(30, pool, "long", hex(target), 4))
+        for target in (0x300, 0x304, 0x308, 0x30C):
+            image[target:target + 4] = bytes.fromhex("000b0009")
+        parsed = assembly_model.ParsedSource(Path("wrappers.s"), labels, tuple(statements))
+        regions = {key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
+                   for key, entry, end in (("periodic_wrapper", 0x100, 0x120),
+                                           ("selector_arbiter", 0x140, 0x170),
+                                           ("startup_wrapper", 0x180, 0x1A0))}
+        boundaries = {0x100: 0x300, 0x140: 0x304, 0x180: 0x308}
+        invokes = {0x4000: 0x400B, 0x4002: 9, 0x4004: 9, 0x4006: 9}
+
+        def event(pc, delay=0):
+            return pc, invokes[pc] if pc in invokes else int.from_bytes(image[pc:pc + 2], "big"), delay
+
+        prefix, suffix = [event(0x4000), event(0x4002, 1)], [event(0x4004)]
+        traces = [
+            prefix + [event(0x100), event(0x102), event(0x104, 1), event(0x300),
+                      event(0x302, 1), event(0x106), event(0x108, 1)] + suffix,
+            prefix + [event(0x140), event(0x142), event(0x144), event(0x146, 1),
+                      event(0x304), event(0x306, 1)] + suffix,
+            prefix + [event(0x140), event(0x14A), event(0x14C), event(0x14E, 1),
+                      event(0x304), event(0x306, 1)] + suffix,
+            prefix + [event(0x180), event(0x182), event(0x180), event(0x182),
+                      event(0x184), event(0x186), event(0x188, 1), event(0x308),
+                      event(0x30A, 1), event(0x18A), event(0x18C, 1)] + suffix,
+        ]
+        return bytes(image), parsed, regions, boundaries, invokes, traces
+
+    def test_each_entry_branch_delay_and_return_is_measured(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        result = ROLLING_VERIFIER.require_wrapper_coverage(
+            sum(traces, []), image, parsed, regions, boundaries, invokes)
+        self.assertEqual(result, dict(entries=3, instructions=19, outcomes=4,
+                                      delay_slots=6, call_return_paths=5, tail_paths=2))
+
+    def test_omission_and_single_outcome_cannot_pass(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        for selected, reason in ((traces[1:], "uncovered wrapper entry 0x00000100"),
+                                  ([traces[0], *traces[2:]], "uncovered wrapper branch")):
+            with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                ROLLING_VERIFIER.require_wrapper_coverage(
+                    sum(selected, []), image, parsed, regions, boundaries, invokes)
+
+    def test_wrong_opcode_slot_call_tail_and_return_are_rejected(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        records = sum(traces, [])
+        mutations = ((2, (0x100, 9, 0), "opcode differs"),
+                     (4, (0x104, 9, 0), "missing executed delay slot"),
+                     (5, (0x304, 11, 0), "wrapper JSR differs"),
+                     (9, (0x4006, 9, 0), "wrapper return differs"),
+                     (16, (0x30C, 11, 0), "wrapper JMP differs"))
+        for index, replacement, reason in mutations:
+            changed = list(records)
+            changed[index] = replacement
+            with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                ROLLING_VERIFIER.require_wrapper_coverage(changed, image, parsed, regions, boundaries, invokes)
+
+    def test_origin_stock_boundary_and_noninstruction_bytes_are_required(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "originating invoke frame"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                traces[0][2:] + sum(traces[1:], []), image, parsed, regions, boundaries, invokes)
+        changed = bytearray(image)
+        changed[0x160:0x164] = (0x30C).to_bytes(4, "big")
+        records = sum(traces, [])
+        records[16:18] = [(0x30C, 11, 0), (0x30E, 9, 1)]
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "stock return boundary"):
+            ROLLING_VERIFIER.require_wrapper_coverage(records, changed, parsed, regions, boundaries, invokes)
+        records = traces[0] + [(0x110, 0, 0)] + sum(traces[1:], [])
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "executed wrapper data"):
+            ROLLING_VERIFIER.require_wrapper_coverage(records, image, parsed, regions, boundaries, invokes)
+
+    def test_fixture_instruction_and_control_literal_mutations_fail_before_linking(self):
+        image, parsed, _regions, _boundaries, _invokes, _traces = self.fixture()
+        for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal")):
+            changed = bytearray(image)
+            changed[address] ^= 1
+            with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
+                build_dir = Path(directory)
+                with patch.object(ROLLING_VERIFIER, "build_rom_object", return_value=build_dir / "rom.o"), \
+                        patch.object(ROLLING_VERIFIER.base_verifier, "run_command") as command, \
+                        self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                    ROLLING_VERIFIER.build_and_run_dynamic_harness(
+                        bytes(changed), build_dir, parsed_by_unit={"wrappers": parsed},
+                        composed_image=image, base_layout=None, rolling_layout=None)
+                self.assertNotIn(ROLLING_VERIFIER.base_verifier.GCC,
+                                 [call.args[0][0] for call in command.call_args_list])
+
+
 if __name__ == "__main__":
     unittest.main()
