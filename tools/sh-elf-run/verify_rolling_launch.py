@@ -248,8 +248,12 @@ def bind_ignition_adapter_windows(fixture, composed, parsed, regions, stock):
     return entry, *jumps
 
 
-def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry, ignition_stock_entry, *, serializer_stub=None):
+def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry, ignition_stock_entry, *, serializer_stub=None, coverage_regions=None, coverage_units=None):
     """Measure the declared Rolling Launch regions on one layout."""
+    if coverage_regions is None:
+        coverage_regions = COVERAGE_REGIONS
+    if coverage_units is None:
+        coverage_units = COVERAGE_UNITS
     wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
     helper = regions["threshold_helper"].entry
     arbiter = regions["feedback_arbiter"].entry
@@ -261,14 +265,18 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     engine, engine_call = bind_threshold_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     entries.add(engine)
+    fuel_entry = (regions["fuel_cut_wrapper"].entry
+                  if "fuel_cut_wrapper" in coverage_regions else None)
+    if fuel_entry is not None:
+        entries.add(fuel_entry)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
-    for unit in COVERAGE_UNITS:
+    for unit in coverage_units:
         parsed = parsed_by_unit[unit]
         for row in parsed.statements:
             if row.kind != "instruction":
                 continue
             pc = row.address
-            owner = [regions[key].entry for key in COVERAGE_REGIONS
+            owner = [regions[key].entry for key in coverage_regions
                      if regions[key].span.start <= pc < regions[key].span.end]
             if len(owner) != 1:
                 raise VerificationError(f"wrapper instruction lacks its declared region at {pc:#010x}")
@@ -347,7 +355,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     else invoke_words.get(pc))
         if expected is None or word != expected:
             raise VerificationError(f"executed wrapper-trace opcode differs at {pc:#010x}")
-        if any(regions[key].span.start <= pc < regions[key].span.end for key in COVERAGE_REGIONS) and pc not in instructions:
+        if any(regions[key].span.start <= pc < regions[key].span.end for key in coverage_regions) and pc not in instructions:
             raise VerificationError(f"executed wrapper data at {pc:#010x}")
         frame = previous_frame if delay else (frames[-1] if frames else None)
         if not delay:
@@ -430,6 +438,10 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     raise VerificationError("threshold helper lacks its bound engine or invoke origin")
             elif not frames and target == engine and pc in invoke_words:
                 origin = {"entry": engine, "stock_return": False}
+            elif fuel_entry is not None and target == fuel_entry:
+                if frames or pc not in invoke_words:
+                    raise VerificationError("fuel wrapper lacks its originating invoke call")
+                origin = {"entry": fuel_entry, "stock_return": False}
             elif frames:
                 origin = frames[-1]["origin"]
                 if target == engine and (pc not in transfers or owners[pc] != regions["periodic_wrapper"].entry):
@@ -479,6 +491,8 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     raise VerificationError("threshold helper return lacks its divider return and native RTS")
                 returned.add(entry)
             elif entry == engine:
+                returned.add(entry)
+            elif fuel_entry is not None and entry == fuel_entry:
                 returned.add(entry)
             elif entry in wrapper_entries:
                 if not origin["stock_return"]:

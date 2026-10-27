@@ -61,6 +61,7 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
 MEASURED_ROLLING_ROMS = ("JK00C", "JK00D")
+MEASURED_VQ37_ROLLING_ROMS = ("JK78C",)
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -463,9 +464,23 @@ def _rolling_serializer_stub(target):
     return serializer, _feedback_serializer_stub(serializer, status_alias)
 
 
-def _require_rolling_fixture_bytes(rom, fixture, composed, parsed_by_unit):
+def _rolling_measured(rom):
+    return rom in MEASURED_ROLLING_ROMS or rom in MEASURED_VQ37_ROLLING_ROMS
+
+
+def _rolling_coverage_names(layout):
+    """Regions and units measured for one layout, including a VQ37 fuel wrapper."""
+    regions = list(rolling_verifier.COVERAGE_REGIONS)
+    units = list(rolling_verifier.COVERAGE_UNITS)
+    if "fuel_cut_wrapper" in layout.code_region_by_key:
+        regions.append("fuel_cut_wrapper")
+        units.append("fuel_cut_wrapper")
+    return tuple(regions), tuple(units)
+
+
+def _require_rolling_fixture_bytes(rom, fixture, composed, parsed_by_unit, units):
     """Bind measured Rolling Launch words to the composed image."""
-    for unit in rolling_verifier.COVERAGE_UNITS:
+    for unit in units:
         parsed = parsed_by_unit[unit]
         for row in parsed.statements:
             if row.kind != "instruction":
@@ -598,10 +613,11 @@ def _measure_rolling_launch(
 ):
     """Trace one relocated Rolling Launch harness and require its measured regions."""
     rom = target.rom
-    _require_rolling_fixture_bytes(rom, fixture, composed, parsed)
+    region_names, unit_names = _rolling_coverage_names(target.rolling_layout)
+    _require_rolling_fixture_bytes(rom, fixture, composed, parsed, unit_names)
     regions = {
         key: target.rolling_layout.code_region_by_key[key]
-        for key in rolling_verifier.COVERAGE_REGIONS
+        for key in region_names
     }
     boundaries = _rolling_boundaries(target, regions)
     serializer, stub = _rolling_serializer_stub(target)
@@ -639,6 +655,7 @@ def _measure_rolling_launch(
             return rolling_verifier.require_wrapper_coverage(
                 records, fixture, parsed, regions, boundaries, invokes,
                 serializer, ignition, serializer_stub=stub,
+                coverage_regions=region_names, coverage_units=unit_names,
             )
         except rolling_verifier.VerificationError as error:
             raise VerificationError(f"{rom} rolling coverage: {error}") from error
@@ -695,7 +712,7 @@ def _measure_rolling_launch(
         )
     if source.read_text(encoding="utf-8") != snapshot:
         raise VerificationError(f"{rom} rendered rolling source changes during execution")
-    scope = ",".join(rolling_verifier.COVERAGE_REGIONS)
+    scope = ",".join(region_names)
     report = (
         f"VQ_SH_ELF_RUNTIME_ROLLING_COVERAGE status=PASS rom={rom} scope={scope} "
         + " ".join(f"{key}={value}" for key, value in covered.items())
@@ -756,7 +773,7 @@ def _compile_and_run(
         require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"{target.rom}.{name}: ELF storage separation: {error}") from error
-    if name == "rolling-launch" and target.rom in MEASURED_ROLLING_ROMS:
+    if name == "rolling-launch" and _rolling_measured(target.rom):
         if rolling_parsed is None or fixture is None or composed_image is None:
             raise VerificationError(
                 f"{target.rom} rolling coverage requires typed/composed/fixture context"
@@ -916,6 +933,12 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, rolling_parsed, co
             target.rolling_layout.variant == "vq37-fuel-coordinator"
         )
         rolling_marker = (
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=144 "
+            "structural=11 gates=32 config=24 threshold=4 activation=6 "
+            "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
+            "fuel_coordinator=3 hold=11 entries=9"
+            if vq37_rolling and target.rom in MEASURED_VQ37_ROLLING_ROMS
+            else
             "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=142 "
             "structural=11 gates=32 config=24 threshold=4 activation=6 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
@@ -952,7 +975,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, rolling_parsed, co
                 else ()
             ) + (
                 ("MEASURE_ROLLING_COVERAGE",)
-                if target.rom in MEASURED_ROLLING_ROMS
+                if _rolling_measured(target.rom)
                 else ()
             ) + (
                 (VQ37_MAP_HARNESS_BY_VARIANT[target.map_layout.variant][0],)
@@ -962,7 +985,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, rolling_parsed, co
         )
         markers.append(rolling_output)
         if (
-            target.rom in MEASURED_ROLLING_ROMS
+            _rolling_measured(target.rom)
             and f"VQ_SH_ELF_RUNTIME_ROLLING_COVERAGE status=PASS rom={target.rom} "
             not in rolling_output
         ):

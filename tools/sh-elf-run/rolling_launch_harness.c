@@ -1929,6 +1929,17 @@ int main(void)
         return 1;
     if (!run_hold_cases())
         return 1;
+#ifdef MEASURE_ROLLING_COVERAGE
+    if (case_count != 144U)
+        return fail_value("summary", "case_count", case_count, 144);
+
+    printf(
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
+        "structural=11 gates=32 config=24 threshold=4 activation=6 "
+        "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
+        "fuel_coordinator=3 hold=11 entries=9\n",
+        (unsigned long)case_count);
+#else
     if (case_count != 142U)
         return fail_value("summary", "case_count", case_count, 142);
 
@@ -1938,6 +1949,7 @@ int main(void)
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 hold=11 entries=9\n",
         (unsigned long)case_count);
+#endif
 #elif defined(VERIFY_CANONICAL_ROLLING)
     if (case_count != 136U)
         return fail_value("summary", "case_count", case_count, 136);
