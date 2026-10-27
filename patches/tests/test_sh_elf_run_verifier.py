@@ -886,21 +886,32 @@ mov #0x5,r1
         evaluator = TELEMETRY_VERIFIER.knock_evaluator_stub(0x310)
         image[0x310:0x310 + len(evaluator)] = evaluator
         layout.hook_by_key = {"knock_margin_latch": SimpleNamespace(stock=0x310)}
+        request_rows = (
+            (0x3b0, 0xb006, "bsr telemetry_request_page"), (0x3b2, 9, "nop"), (0x3b4, 9, "nop"),
+            (0x3c0, 0x2008, "tst r0,r0"), (0x3c2, 0x8901, "bt request_join"),
+            (0x3c4, 0xa000, "bra request_join"), (0x3c6, 9, "nop"),
+            (0x3c8, 0x8bfe, "bf request_loop"), (0x3ca, 11, "rts"), (0x3cc, 9, "nop"))
+        for pc, word, text in request_rows:
+            image[pc:pc + 2] = word.to_bytes(2, "big")
         parsed["capture"] = assembly_model.ParsedSource(Path("CAN-capture.s"),
-            {"margin_callee": 0x2c8, "margin_done": 0x2bc},
+            {"margin_callee": 0x2c8, "margin_done": 0x2bc, "telemetry_request_page": 0x3c0,
+             "request_join": 0x3c8, "request_loop": 0x3c8},
             tuple(assembly_model.SourceStatement(index, pc, "instruction", text, 2)
-                  for index, (pc, word, text) in enumerate(margin_rows))
+                  for index, (pc, word, text) in enumerate(margin_rows + request_rows))
             + (assembly_model.SourceStatement(40, 0x2c8, "long", "0x310", 4),))
         layout.assembly_unit_by_key["capture"] = SimpleNamespace(
             code_regions=("capture", "build_bank", "knock_margin_wrapper", "request_page"))
         layout.code_region_by_key.update(
             knock_margin_wrapper=SimpleNamespace(entry=0x2b0, span=SimpleNamespace(start=0x2b0, end=0x2d0)),
             capture=SimpleNamespace(entry=0x3a0), build_bank=SimpleNamespace(entry=0x3a2),
-            request_page=SimpleNamespace(entry=0x3a4))
+            request_page=SimpleNamespace(entry=0x3c0, span=SimpleNamespace(start=0x3c0, end=0x3ce)))
         for take in (True, False):
             pcs = (0x2b0, 0x2b2, 0x2b4, *range(0x310, 0x328, 2), 0x2b6)
             pcs += (0x2bc, 0x2be) if take else (0x2b8, 0x2ba, 0x2bc, 0x2be)
             controls[0x2b0, take] = prefix + events(pcs, {0x2b4, 0x326, 0x2be}) + suffix
+        bank_tail = (0x3c8, 0x3c8, 0x3ca, 0x3cc)
+        controls[0x3c0, True] = prefix + events((0x3c0, 0x3c2, *bank_tail), {0x3cc}) + suffix
+        controls[0x3c0, False] = prefix + events((0x3c0, 0x3c2, 0x3c4, 0x3c6, *bank_tail), {0x3c6, 0x3cc}) + suffix
         return image, layout, parsed, invokes, main, knock, startup, controls
 
     def test_can_wrapper_coverage_requires_entries_instructions_and_loop_outcomes(self):
@@ -908,7 +919,7 @@ mov #0x5,r1
         control_records = [row for trace in controls.values() for row in trace]
         require = lambda records: TELEMETRY_VERIFIER.require_wrapper_coverage(records + control_records, image, layout, parsed, invokes)
         self.assertEqual(require(main + knock + startup), dict(
-            entries=7, instructions=42, outcomes=6, delay_slots=15, call_return_paths=12, config_return_paths=4))
+            entries=8, instructions=49, outcomes=10, delay_slots=17, call_return_paths=13, config_return_paths=4))
         for records, message in ((knock + startup, "uncovered CAN wrapper entry 0x00000100"),
                                  (main + knock + startup[:2] + startup[3:], "uncovered CAN wrapper outcome"),
                                  ([row for row in main if row[0] != 0x102] + knock + startup, "uncovered CAN wrapper instruction 0x00000102")):
@@ -1017,8 +1028,9 @@ mov #0x5,r1
         image, layout, parsed, invokes, main, knock, startup, controls = self.can_wrapper_pc_fixture()
         records = main + knock + startup + [row for trace in controls.values() for row in trace]
         require = lambda rows: TELEMETRY_VERIFIER.require_wrapper_coverage(rows, image, layout, parsed, invokes)
-        self.assertEqual(require(records)["entries"], 7)
+        self.assertEqual(require(records)["entries"], 8)
         self.assertFalse({0x3a0, 0x3a2, 0x3a4} & {row[0] for row in records})
+        self.assertIn(0x3c0, {row[0] for row in records})
         missing = main + knock + startup + [row for key, trace in controls.items() if key[0] != 0x2b0 for row in trace]
         with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "uncovered CAN wrapper entry 0x000002b0"):
             require(missing)
@@ -1034,12 +1046,21 @@ mov #0x5,r1
 
     def test_can_margin_admission_binds_selected_words_and_call_pool_only(self):
         image, layout, parsed, invokes, main, knock, startup, controls = self.can_wrapper_pc_fixture()
+        measured = {
+            row.address for row in TELEMETRY_VERIFIER._measured_statements(
+                "capture", parsed["capture"], layout)
+            if row.kind == "instruction"
+        }
+        callers = {address for address, _pool in TELEMETRY_VERIFIER._request_page_callers(parsed)}
         for row in parsed["capture"].statements:
             changed = bytearray(image)
             changed[row.address] ^= 1
             with self.subTest(pc=hex(row.address)):
-                if row.kind == "instruction" and row.address < 0x2d0:
+                if row.kind == "instruction" and row.address in measured:
                     with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "simulator changes CAN wrapper instruction"):
+                        TELEMETRY_VERIFIER.require_wrapper_instruction_bytes(changed, image, parsed, layout)
+                elif any(start <= row.address < start + 4 for start in callers):
+                    with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "simulator changes request page caller"):
                         TELEMETRY_VERIFIER.require_wrapper_instruction_bytes(changed, image, parsed, layout)
                 elif row.kind == "long":
                     changed[row.address:row.address + 4] = (0x300).to_bytes(4, "big")
@@ -1067,6 +1088,23 @@ mov #0x5,r1
         altered[0x310] ^= 1
         with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "CAN knock evaluator stand-in differs"):
             TELEMETRY_VERIFIER.require_wrapper_coverage(full, altered, layout, parsed, invokes)
+
+    def test_can_request_page_requires_harness_invoke_return(self):
+        image, layout, parsed, invokes, main, knock, startup, controls = self.can_wrapper_pc_fixture()
+        captured = []
+        for take in (True, False):
+            body = (0x3c0, 0x3c2, 0x3c8, 0x3c8, 0x3ca, 0x3cc) if take else (
+                0x3c0, 0x3c2, 0x3c4, 0x3c6, 0x3c8, 0x3c8, 0x3ca, 0x3cc)
+            delays = {0x3b2, 0x3cc} if take else {0x3b2, 0x3c6, 0x3cc}
+            captured.append([
+                (pc, int.from_bytes(image[pc:pc + 2], "big"), int(pc in delays))
+                for pc in (0x3b0, 0x3b2, *body, 0x3b4)])
+        base = main + knock + startup + [
+            row for key, trace in controls.items() if key[0] != 0x3c0 for row in trace]
+        with self.assertRaisesRegex(
+                TELEMETRY_VERIFIER.VerificationError, "uncovered CAN request invoke return 0x000003c0"):
+            TELEMETRY_VERIFIER.require_wrapper_coverage(
+                base + [row for trace in captured for row in trace], image, layout, parsed, invokes)
 
     def _throttle_cluster_fixture(self):
         layout = layout_model.load_layout()

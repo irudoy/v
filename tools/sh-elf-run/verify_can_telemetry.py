@@ -46,6 +46,7 @@ DYNAMIC_MARKER_PATTERN = (
     r"profiles=1 contexts=10 isr_rte=5$"
 )
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture")
+CAPTURE_MEASURED_REGIONS = ("knock_margin_wrapper", "request_page")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -264,12 +265,44 @@ def build_rom_object(fixture, build_dir):
     return object_path
 
 
+def _request_page_callers(parsed_by_unit):
+    """Return call sites into request_page without qualifying their bodies."""
+    found = []
+    for parsed in parsed_by_unit.values():
+        statements = getattr(parsed, "statements", ())
+        if not statements:
+            continue
+        by_address = parsed.statement_by_address
+        for row in statements:
+            if row.kind != "instruction":
+                continue
+            pool = None
+            if row.text == "jsr @r0":
+                previous = by_address.get(row.address - 2)
+                if not (previous and previous.kind == "instruction"
+                        and previous.text == "mov.l @(telemetry_completion_request_page,pc),r0"):
+                    continue
+                pool = parsed.labels["telemetry_completion_request_page"]
+            elif row.text != "bsr telemetry_request_page":
+                continue
+            delay = by_address.get(row.address + 2)
+            if delay is None or delay.kind != "instruction" or delay.text != "nop":
+                raise VerificationError("request page caller lacks its delay nop")
+            found.append((row.address, pool))
+    return tuple(found)
+
+
 def _measured_statements(key, parsed, layout):
-    """Select the fixed margin region without qualifying other capture entries."""
+    """Select the measured capture regions without qualifying the other entries."""
     if key != "capture" or not parsed.statements:
         return parsed.statements
-    span = layout.code_region_by_key["knock_margin_wrapper"].span
-    return tuple(row for row in parsed.statements if span.start <= row.address < span.end)
+    spans = tuple(
+        layout.code_region_by_key[name].span for name in CAPTURE_MEASURED_REGIONS
+    )
+    return tuple(
+        row for row in parsed.statements
+        if any(span.start <= row.address < span.end for span in spans)
+    )
 
 
 def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit, layout):
@@ -294,6 +327,11 @@ def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit, layout)
                 raise VerificationError(f"CAN wrapper call pool is not one typed long at {pool:#010x}")
             if fixture[pool:pool + 4] != composed[pool:pool + 4]:
                 raise VerificationError(f"simulator changes CAN wrapper control literal at {pool:#010x}")
+    for address, pool in _request_page_callers(parsed_by_unit):
+        if fixture[address:address + 4] != composed[address:address + 4]:
+            raise VerificationError("simulator changes request page caller")
+        if pool is not None and fixture[pool:pool + 4] != composed[pool:pool + 4]:
+            raise VerificationError("simulator changes request page caller")
 
 
 def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words):
@@ -311,7 +349,7 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
-        regions = ("knock_margin_wrapper",) if key == "capture" else layout.assembly_unit_by_key[key].code_regions
+        regions = CAPTURE_MEASURED_REGIONS if key == "capture" else layout.assembly_unit_by_key[key].code_regions
         entries.update(layout.code_region_by_key[name].entry for name in regions)
         for row in _measured_statements(key, parsed, layout):
             if row.kind != "instruction":
@@ -348,6 +386,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     expected_config_returns = {(call, config_entry, returned, call + 4)
                                for call in config_calls for returned in private_returns}
     observed_config_returns = set()
+    request_entry = layout.code_region_by_key["request_page"].entry
+    request_callers = {address for address, _pool in _request_page_callers(parsed_by_unit)}
     seen, observed_outcomes, observed_slots, returned, call_returns = set(), set(), set(), set(), set()
     frames = []
     for index, (pc, word, delay) in enumerate(records):
@@ -383,7 +423,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                 raise VerificationError(f"executed CAN callee differs at {pc:#010x}")
             if target == config_entry and pc not in config_calls:
                 raise VerificationError(f"unbound CAN config caller at {pc:#010x}")
-            if not frames and target in entries and pc not in invoke_words:
+            if (not frames and target in entries and pc not in invoke_words
+                    and pc not in request_callers):
                 raise VerificationError(f"CAN wrapper origin is outside bound invoke code at {pc:#010x}")
             if frames or target in entries:
                 frames.append((pc, target, pc + 4))
@@ -419,6 +460,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
         raise VerificationError("uncovered CAN wrapper call/return path")
     for missing in sorted(slots - observed_slots):
         raise VerificationError(f"uncovered CAN wrapper delay slot {missing:#010x}")
+    if not any(call in invoke_words and entry == request_entry for call, entry, _continuation in call_returns):
+        raise VerificationError(f"uncovered CAN request invoke return {request_entry:#010x}")
     return dict(entries=len(entries & seen), instructions=len(instructions.keys() & seen),
                 outcomes=len(outcomes & observed_outcomes), delay_slots=len(slots & observed_slots),
                 call_return_paths=len(call_returns), config_return_paths=len(observed_config_returns & expected_config_returns))
@@ -489,24 +532,39 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     zero_target = map_switching_assembly._validate_direct_branch_encoding(
         margin, zero, int.from_bytes(fixture[zero.address:zero.address + 2], "big"))
     evaluator = layout.hook_by_key["knock_margin_latch"].stock
+    request_entry = layout.code_region_by_key["request_page"].entry
+    request_copy = (
+        "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
+        "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
+    )
     omissions = (
-        ("main", main_call, "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);",
+        ("main", ((main_call, "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);"),),
          f"uncovered CAN wrapper entry {layout.code_region_by_key['main_wrapper'].entry:#010x}",
          "VQ_SH_ELF_CAN_WRAPPER_COVERAGE_NEGATIVE"),
-        ("config-magic", config_call,
-         "mutate_configuration(mutation);\n    if (mutation != CONFIG_MAGIC)\n        (void)invoke_r4(CONTROL_POLL, 0);",
+        ("config-magic", ((config_call,
+         "mutate_configuration(mutation);\n    if (mutation != CONFIG_MAGIC)\n        (void)invoke_r4(CONTROL_POLL, 0);"),),
          f"uncovered CAN wrapper outcome {magic.address:#010x}->{target:#010x}",
          "VQ_SH_ELF_CAN_CONTROL_COVERAGE_NEGATIVE"),
-        ("margin-zero", "(void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);",
-         f"(void)invoke_r4((selector == 0 && primary == 0 && channel == 0) ? {evaluator:#010x}U : KNOCK_MARGIN_WRAPPER, 0);",
+        ("margin-zero", (("(void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);",
+         f"(void)invoke_r4((selector == 0 && primary == 0 && channel == 0) ? {evaluator:#010x}U : KNOCK_MARGIN_WRAPPER, 0);"),),
          f"uncovered CAN wrapper outcome {zero.address:#010x}->{zero_target:#010x}",
          "VQ_SH_ELF_CAN_MARGIN_COVERAGE_NEGATIVE"),
+        ("request-page", (
+            ("(void)invoke_r4(REQUEST_PAGE, 0);\n    if (!expect_bytes(\n            \"request-a\"",
+             request_copy.format(bank="BANK_A", offset=80) + "\n    if (!expect_bytes(\n            \"request-a\""),
+            ("(void)invoke_r4(REQUEST_PAGE, 0);\n    if (!expect_bytes(\n            \"request-b\"",
+             request_copy.format(bank="BANK_B", offset=32) + "\n    if (!expect_bytes(\n            \"request-b\""),
+        ),
+         f"uncovered CAN request invoke return {request_entry:#010x}",
+         "VQ_SH_ELF_CAN_REQUEST_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
-    for name, call, replacement, reason, prefix in omissions:
-        if source.count(call) != 1:
-            raise VerificationError(f"CAN negative lacks its unique {name} invocation")
-        negative_text = source.replace(call, replacement)
+    for name, edits, reason, prefix in omissions:
+        negative_text = source
+        for call, replacement in edits:
+            if negative_text.count(call) != 1:
+                raise VerificationError(f"CAN negative lacks its unique {name} invocation")
+            negative_text = negative_text.replace(call, replacement)
         negative_source = build_dir / f"can-telemetry-bypass-{name}.c"
         negative_source.write_text(negative_text, encoding="utf-8")
         negative_sources.append((negative_source, negative_text))
@@ -531,7 +589,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
             or positive_source.read_text(encoding="utf-8") != source
             or any(path.read_text(encoding="utf-8") != text for path, text in negative_sources)):
         raise VerificationError("CAN harness source changes during verification")
-    marker = "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control,knock_margin_wrapper "
+    marker = (
+        "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control,"
+        + ",".join(CAPTURE_MEASURED_REGIONS) + " "
+    )
     marker += " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), marker, *negative_markers))
 

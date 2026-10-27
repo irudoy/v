@@ -223,7 +223,8 @@ absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
 The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
-`control` units and the `knock_margin_wrapper` region of `capture`. Entries come
+`control` units and the `knock_margin_wrapper` and `request_page` regions of
+`capture`. Entries come
 from the telemetry layout and the named internal configuration-validator label.
 Typed instruction statements define coverage;
 source tables, pools and fill remain data. Independent GNU assembly, composed
@@ -254,10 +255,18 @@ assertions. One bypasses `MAIN_WRAPPER` with real `CONTROL_POLL` and `CAPTURE`
 calls. Another skips only the invalid-magic poll invocation while retaining its
 case count and no-side-effect assertions. A margin build invokes the evaluator
 stand-in directly for the ignored zero-channel case, retaining its actual call,
-case count and unchanged-state assertions. Coverage must reject the missing
-main entry, configuration-magic outcome or zero-channel margin outcome.
+case count and unchanged-state assertions. A request build copies the eight
+mailbox bytes in the harness instead of either direct `request_page` invoke.
+Coverage must reject the missing main entry, configuration-magic outcome,
+zero-channel margin outcome or request invoke return.
 
-The `capture`, `build_bank` and `request_page` entries, completion, lower startup
+`request_page` accepts that direct invoke, the capture idle-publish BSR, and
+the completion JSRs that load its entry. Those call instructions, their delay
+nops and the completion entry literal stay bound to the composed image. The
+surrounding capture and completion bodies are not qualified. Both bank
+selections, the eight-byte copy loop and the return delay slot must execute.
+
+The `capture` and `build_bank` entries, completion, lower startup
 and stock callee bodies remain outside CAN instruction qualification. Existing
 TRAPA/RTE cases execute as separate harness calls; exception behavior receives
 no additional qualification from this scope.
