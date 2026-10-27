@@ -75,7 +75,7 @@ def test_invalid_declared_ram_fails(tmp_path,ranges):
     with pytest.raises(ELFStorageError):require_separate_storage(path,ranges)
 
 
-@pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059'])
+@pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059', 'relocated-jk00c'])
 @pytest.mark.parametrize('layout', ['data', 'bss', 'virtual', 'physical', 'before', 'after', 'malformed', 'missing'])
 def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monkeypatch, route, layout):
     import importlib
@@ -86,6 +86,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         'telemetry': 'verify_can_telemetry',
         'relocated-sh7058': 'verify_runtime_targets',
         'relocated-sh7059': 'verify_runtime_targets',
+        'relocated-jk00c': 'verify_runtime_targets',
     }
     module = importlib.import_module(modules[route])
     base = module if route == 'map' else module.base_verifier
@@ -122,12 +123,24 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
     class StorageAccepted(Exception):
         pass
 
-    if route in ('map', 'rolling', 'telemetry'):
-        def after_storage(*args):
+    if route in ('map', 'rolling', 'telemetry', 'relocated-jk00c'):
+        def after_storage(*args, **kwargs):
             raise StorageAccepted
         monkeypatch.setattr(base, '_invoke_trace_bindings', after_storage)
 
     def execute():
+        if route == 'relocated-jk00c':
+            keys = base.PC_COVERAGE_UNITS + base.ADAPTER_COVERAGE_UNITS + ('secondary_cvtc_adapter',)
+            map_layout = SimpleNamespace(assembly_unit_by_key={
+                key: SimpleNamespace(code_regions=()) for key in keys}, code_region_by_key={})
+            target = SimpleNamespace(rom='JK00C', stock_image=SimpleNamespace(data=bytes(0x100000)),
+                                     map_layout=map_layout)
+            parsed = {key: SimpleNamespace(statements=()) for key in keys}
+            source = tmp_path / 'harness.c'
+            source.write_text('controlled storage-only fixture')
+            return module._compile_and_run(target, 'map-switching', source, tmp_path / 'rom.o',
+                [tmp_path / 'invoke.o'], tmp_path, marker, map_parsed=parsed,
+                fixture=bytes(0x100000), composed_image=bytes(0x100000))
         if route.startswith('relocated-'):
             size = 0x180000 if route.endswith('sh7059') else 0x100000
             target = SimpleNamespace(rom='CONTROLLED', stock_image=SimpleNamespace(data=bytes(size)))
@@ -138,7 +151,9 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
                       for key in module.PC_COVERAGE_UNITS + module.ADAPTER_COVERAGE_UNITS}
             return module.build_and_run_dynamic_harness(
                 b'controlled fixture', tmp_path, parsed_by_unit=parsed,
-                composed_image=b'controlled fixture', layout=SimpleNamespace())
+                composed_image=b'controlled fixture', layout=SimpleNamespace(
+                    assembly_unit_by_key={key: SimpleNamespace(code_regions=()) for key in parsed},
+                    code_region_by_key={}))
         if route == 'rolling':
             regions = {key: SimpleNamespace(entry=index)
                        for index, key in enumerate(module.WRAPPER_REGIONS)}
@@ -162,7 +177,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         with pytest.raises(module.VerificationError, match='ELF storage separation'):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
-    elif route in ('map', 'rolling', 'telemetry'):
+    elif route in ('map', 'rolling', 'telemetry', 'relocated-jk00c'):
         # Reach the next real stage after accepting ELF storage, before RUN.
         with pytest.raises(StorageAccepted):
             execute()

@@ -86,6 +86,17 @@ ADAPTER_COVERAGE_UNITS = (
 )
 
 
+def _map_coverage_units(layout):
+    return tuple(layout.assembly_unit_by_key) if layout is not None else PC_COVERAGE_UNITS
+
+
+def _adapter_coverage_units(layout):
+    return ADAPTER_COVERAGE_UNITS + (
+        ("secondary_cvtc_adapter",)
+        if layout is not None and "secondary_cvtc_adapter" in layout.assembly_unit_by_key else ()
+    )
+
+
 class VerificationError(RuntimeError):
     """Raised when a tool or an executable verification contract fails."""
 
@@ -607,11 +618,52 @@ def _trace_successor(records, index, delayed):
     return records[following][0]
 
 
-def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, throttle_cluster=False, adapter_layout=None):
+def require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, layout):
+    """Bind map instructions and ROM control operands before any execution."""
+    if len(fixture) != len(composed_image):
+        raise VerificationError("map fixture and composed image extents differ")
+
+    def control_pool(parsed, statement, register):
+        literal = assembly_model.PC_RELATIVE_RE.fullmatch(statement.text) if statement else None
+        if literal is None or literal.group("width") != "l" or literal.group("register") != register:
+            raise VerificationError("unbound map ROM control operand")
+        pool = parsed.labels[literal.group("label")]
+        expected = composed_image[pool:pool + 4]
+        if len(expected) != 4 or fixture[pool:pool + 4] != expected:
+            raise VerificationError(f"map ROM control pool differs at {pool:#010x}")
+
+    for key in _map_coverage_units(layout):
+        if key not in parsed_by_unit:
+            raise VerificationError(f"missing typed map unit: {key}")
+        parsed = parsed_by_unit[key]
+        rows = [row for row in parsed.statements if row.kind == "instruction"]
+        for row in rows:
+            pc = row.address
+            if fixture[pc:pc + 2] != composed_image[pc:pc + 2]:
+                raise VerificationError(f"simulator changes payload instruction at {pc:#010x}")
+            mnemonic = assembly_model._mnemonic(row)
+            if mnemonic in {"jsr", "jmp"} and row.text in {"jsr @r0", "jmp @r0"}:
+                control_pool(parsed, parsed.statement_by_address.get(pc - 2), "r0")
+        if layout is not None and key in _adapter_coverage_units(layout):
+            unit = layout.assembly_unit_by_key[key]
+            for region_key in unit.code_regions:
+                if region_key == "adapter_select_helper":
+                    continue
+                region = layout.code_region_by_key[region_key]
+                first = parsed.statement_by_address.get(region.entry)
+                literal = assembly_model.PC_RELATIVE_RE.fullmatch(first.text) if first else None
+                if literal is None or literal.group("width") != "l" or literal.group("register") != "r3":
+                    raise VerificationError(f"adapter lacks its entry R3 binding at {region.entry:#010x}")
+                control_pool(parsed, first, "r3")
+
+
+def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, composed_image, throttle_cluster=False, adapter_layout=None):
     """Measure the declared JK08A payload entries and optional bounded prefix."""
+    require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, adapter_layout)
     instructions, entries, outcomes, slots, call_targets = {}, set(), set(), set(), {}
     direct_targets, jump_targets, adapter_owners, stock_targets = {}, {}, {}, {}
-    units = PC_COVERAGE_UNITS + (ADAPTER_COVERAGE_UNITS if adapter_layout is not None else ())
+    units = _map_coverage_units(adapter_layout)
+    adapter_units = _adapter_coverage_units(adapter_layout)
     helper_entry = None
     if adapter_layout is not None:
         helper_entry = adapter_layout.code_region_by_key["adapter_select_helper"].entry
@@ -624,7 +676,7 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
             unit = adapter_layout.assembly_unit_by_key[key]
             regions = [adapter_layout.code_region_by_key[name] for name in unit.code_regions]
             entries.update(region.entry for region in regions)
-            if key in ADAPTER_COVERAGE_UNITS:
+            if key in adapter_units:
                 for region in regions:
                     owned = [row for row in rows if region.span.start <= row.address < region.span.end]
                     adapter_owners.update((row.address, region.entry) for row in owned)
@@ -637,7 +689,7 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                                 or literal.group("width") != "l" or literal.group("register") != "r3"):
                             raise VerificationError(f"adapter lacks its entry R3 binding at {region.entry:#010x}")
                         pool = parsed.labels[literal.group("label")]
-                        stock_targets[region.entry] = int.from_bytes(fixture[pool:pool + 4], "big")
+                        stock_targets[region.entry] = int.from_bytes(composed_image[pool:pool + 4], "big")
                         if fixture[stock_targets[region.entry]:stock_targets[region.entry] + 4] != RETURN_STUB:
                             raise VerificationError("adapter stock boundary is not the declared RTS/NOP stub")
                         checked = owned[1:]
@@ -652,7 +704,7 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                 slots.add(pc + 2)
             if mnemonic == "bra":
                 direct_targets[pc] = assembly_model._validate_direct_branch_encoding(parsed, row, instructions[pc])
-            if key in ADAPTER_COVERAGE_UNITS and adapter_layout is not None:
+            if key in adapter_units and adapter_layout is not None:
                 if mnemonic in {"jsr", "bsr", "bsrf", "braf", "rts", "rte"}:
                     raise VerificationError(f"unsupported adapter transfer at {pc:#010x}")
                 if mnemonic == "jmp":
@@ -664,7 +716,7 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                         if literal is None or literal.group("width") != "l" or literal.group("register") != "r0":
                             raise VerificationError(f"unbound adapter tail target at {pc:#010x}")
                         pool = parsed.labels[literal.group("label")]
-                        target = int.from_bytes(fixture[pool:pool + 4], "big")
+                        target = int.from_bytes(composed_image[pool:pool + 4], "big")
                         if target != helper_entry:
                             raise VerificationError(f"adapter tail does not target its helper at {pc:#010x}")
                         jump_targets[pc] = target
@@ -680,7 +732,7 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                         or literal.group("register") != "r0" or row.text != "jsr @r0"):
                     raise VerificationError(f"unbound call target in bounded payload at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
-                call_targets[pc] = int.from_bytes(fixture[pool:pool + 4], "big")
+                call_targets[pc] = int.from_bytes(composed_image[pool:pool + 4], "big")
     fixture_boundary_pcs = set()
     if throttle_cluster:
         entries.add(0x7584E)
@@ -773,8 +825,9 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
     return covered
 
 
-def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
-    """Bind the final ELF ROM and invoke instructions to independently built bytes."""
+def _invoke_trace_bindings(elf, invoke, fixture, build_dir, *, composed_image, parsed_by_unit, layout):
+    """Bind control operands, final ELF ROM and independently built invokes."""
+    require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, layout)
     def section(path, name):
         output = build_dir / f"{path.stem}-{name}.raw"
         run_command([OBJCOPY, "-O", "binary", "--only-section", f".{name}", path, output])
@@ -816,12 +869,7 @@ def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
 
 def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, composed_image, layout):
     """Execute all map-switching behavior cases in the GNU simulator."""
-    for key in PC_COVERAGE_UNITS + ADAPTER_COVERAGE_UNITS:
-        for statement in parsed_by_unit[key].statements:
-            if statement.kind == "instruction":
-                address = statement.address
-                if fixture[address:address + 2] != composed_image[address:address + 2]:
-                    raise VerificationError(f"simulator changes payload instruction at {address:#010x}")
+    require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, layout)
     rom_object = build_rom_object(fixture, build_dir)
     invoke_object = build_dir / "invoke.o"
     harness_elf = build_dir / "map-switching-harness.elf"
@@ -844,7 +892,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-DVERIFY_7MFK_FUEL_CUT",
             "-DVERIFY_7MFK_THROTTLE_SCALAR",
             "-DVERIFY_7MFK_THROTTLE_CLUSTER",
-            "-DVERIFY_7MFK_SELECTOR_FEEDBACK",
+            "-DVERIFY_SELECTOR_FEEDBACK_GUARDS",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -859,7 +907,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"map-switching: ELF storage separation: {error}") from error
     def execute(elf):
-        ranges, invoke_words = _invoke_trace_bindings(elf, invoke_object, fixture, build_dir)
+        ranges, invoke_words = _invoke_trace_bindings(
+            elf, invoke_object, fixture, build_dir, composed_image=composed_image,
+            parsed_by_unit=parsed_by_unit, layout=layout)
         trace = build_dir / f"{elf.stem}.pc-trace"
         environment = {
             **os.environ,
@@ -877,7 +927,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         return result, read_pc_trace(trace), invoke_words
 
     result, records, invoke_words = execute(harness_elf)
-    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True, adapter_layout=layout)
+    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words,
+                                       composed_image=composed_image, throttle_cluster=True, adapter_layout=layout)
     marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
     if marker not in result.stdout:
         raise VerificationError(
@@ -931,7 +982,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             raise VerificationError("negative harness does not preserve the existing semantic PASS marker")
         try:
             require_payload_coverage(records, fixture, parsed_by_unit, invoke_words,
-                                     throttle_cluster=True, adapter_layout=layout)
+                                     composed_image=composed_image, throttle_cluster=True, adapter_layout=layout)
         except VerificationError as error:
             if str(error) != expected_reason:
                 raise VerificationError(f"negative harness fails outside its omitted entry: {error}") from error

@@ -426,7 +426,7 @@ static const struct selector_case selector_cases[] = {
         "invalid-index", {0xff, 1, 2, 9, 3, 1, 4, 0}, 8, 0, 0,
         {0, 0, 0, 0, 0, 0, 0, 0}, 1,
     },
-#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+#ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
     {
         "feedback-off-blocks", {2, 1, 2, 9, 3, 2, 4, 0}, 8, 0, 0,
         {2, 0, 0, 0, 3, 2, 4, 0}, 0,
@@ -551,7 +551,7 @@ static const struct feedback_case feedback_cases[] = {
         idle_statuses, ARRAY_SIZE(idle_statuses),
         {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
-#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+#ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
     {
         "on-zero-pulses", 0x0202, {2, 1, 2, 9, 0, 1, 7, 0x7e},
         idle_statuses, ARRAY_SIZE(idle_statuses),
@@ -1285,7 +1285,7 @@ static int run_selector_cases(void)
                 test->expected, sizeof(test->expected)))
             return 0;
         active = test->expected[0];
-#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+#ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
         expected_write = test->expected_limiter_write;
         if (returned != (uint32_t)active)
             return fail_value(test->name, "selector_return", returned, (uint32_t)active);
@@ -1324,7 +1324,7 @@ static int run_feedback_cases(size_t *invocations)
             size_t byte_index;
 
             uint32_t returned = invoke_r4(FEEDBACK_WRAPPER, 0);
-#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+#ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
             uint32_t expected_return = test->expected_status_pointer
                 ? (uint32_t)(uintptr_t)ram_pointer(PAYLOAD + 5U) : 0;
             if (returned != expected_return)
@@ -1389,7 +1389,7 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-#ifndef VERIFY_7MFK_SELECTOR_FEEDBACK
+#ifndef VERIFY_SELECTOR_FEEDBACK_GUARDS
 #ifdef TARGET_1ND
     if (total_cases != 197U)
         return fail_value("summary", "case_count", total_cases, 197);

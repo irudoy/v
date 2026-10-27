@@ -175,6 +175,7 @@ mov #0x5,r1
             with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator fixture changes instructions"):
                 VERIFIER.build_dynamic_fixture(SimpleNamespace(data=bytes(composed)), layout, {})
 
+    @patch.object(VERIFIER, "require_map_fixture_bindings", lambda *args, **kwargs: None)
     def test_throttle_scalar_invoke_binding_rejects_changed_or_missing_helper(self):
         with tempfile.TemporaryDirectory() as directory:
             build = Path(directory)
@@ -203,16 +204,19 @@ mov #0x5,r1
                 raise AssertionError(arguments)
 
             with patch.object(VERIFIER, "run_command", command):
-                ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+                ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
+                    composed_image=image, parsed_by_unit={}, layout=None)
                 self.assertEqual(ranges[-1], (0x110008, 0x11000c))
                 self.assertIn(0x11000a, words)
                 linked[10] ^= 1
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "linked invoke instructions differ: _invoke_throttle_scalar"):
-                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
+                    composed_image=image, parsed_by_unit={}, layout=None)
                 linked[:] = original
                 missing = True
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "exact invoke function extents"):
-                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
+                    composed_image=image, parsed_by_unit={}, layout=None)
 
     def _fuel_cut_fixture(self):
         layout = layout_model.load_layout()
@@ -999,7 +1003,7 @@ mov #0x5,r1
         sentinel = entry + events(range(0x7584e, 0x7587a, 2)) + tail
         enabled = entry + events(range(0x7584e, 0x75870, 2)) + events((0x7587a, 0x7587c)) + tail
         require = lambda records: VERIFIER.require_payload_coverage(
-            records, fixture, parsed, invokes, throttle_cluster=True)
+            records, fixture, parsed, invokes, throttle_cluster=True, composed_image=bytes(fixture))
         result = require(base + sentinel + enabled)
         self.assertEqual(result["instructions"], 9 + sum(
             (end - start) // 2 for start, end in VERIFIER.THROTTLE_CLUSTER_WINDOWS))
@@ -1016,7 +1020,7 @@ mov #0x5,r1
             with self.subTest(pc=hex(pc)), self.assertRaisesRegex(VERIFIER.VerificationError, "missing executed delay slot"):
                 require(records)
 
-    def adapter_pc_fixture(self):
+    def adapter_pc_fixture(self, *, secondary=False):
         original, parsed, invokes, taken, untaken = self.pc_fixture()
         image = bytearray(original.ljust(0x500, b"\0"))
         regions, units = {}, {}
@@ -1031,6 +1035,8 @@ mov #0x5,r1
         regions["adapter_select_helper"] = SimpleNamespace(entry=helper, span=SimpleNamespace(start=helper, end=helper + 4))
         units["adapter_select_helper"] = SimpleNamespace(code_regions=("adapter_select_helper",))
         names = ("overrun_adapter", "ignition_adapter", "fuel_compensation_adapter", "cvtc_target_adapter", "full_dfco_adapter", "idle_ignition_adapter")
+        if secondary:
+            names += ("secondary_cvtc_target_adapter",)
         traces = {}
         def event(pc, delay=0):
             word = invokes[pc] if pc in invokes else int.from_bytes(image[pc:pc + 2], "big")
@@ -1038,6 +1044,8 @@ mov #0x5,r1
         for number, name in enumerate(names):
             entry, stock = 0x240 + number * 0x20, 0x340 + number * 4
             key = "lookup_adapters" if number < 4 else name
+            if name == "secondary_cvtc_target_adapter":
+                key = "secondary_cvtc_adapter"
             region = SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=entry + 0x20))
             regions[name] = region
             groups = list(units[key].code_regions) if key in units else []
@@ -1050,6 +1058,8 @@ mov #0x5,r1
             if name == "idle_ignition_adapter":
                 rows += [(entry + 8, mov_long(entry + 8, entry + 0x14, 0), "mov.l @(helper,pc),r0"),
                          (entry + 10, 0x402b, "jmp @r0"), (entry + 12, 9, "nop")]
+            elif name == "secondary_cvtc_target_adapter":
+                rows += [(entry + 8, 0x432b, "jmp @r3"), (entry + 10, 9, "nop")]
             else:
                 rows += [(entry + 8, 0xa000 | ((helper - (entry + 12)) // 2 & 0xfff), "bra helper"),
                          (entry + 10, 9, "nop")]
@@ -1078,18 +1088,113 @@ mov #0x5,r1
             passthrough = prefix + [event(entry + 4), event(entry + 6, 1)] + suffix
             if name == "idle_ignition_adapter":
                 selected = prefix + [event(entry + 8), event(entry + 10), event(entry + 12, 1)]
+            elif name == "secondary_cvtc_target_adapter":
+                selected = prefix + [event(entry + 8), event(entry + 10, 1)]
             else:
                 selected = prefix + [event(entry + 8), event(entry + 10, 1)]
-            selected += [event(helper), event(helper + 2, 1)] + suffix
+            if name != "secondary_cvtc_target_adapter":
+                selected += [event(helper), event(helper + 2, 1)]
+            selected += suffix
             traces[entry] = passthrough + selected
         layout = SimpleNamespace(code_region_by_key=regions, assembly_unit_by_key=units)
         return image, parsed, invokes, taken + untaken, traces, layout
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
+    def test_declared_secondary_adapter_requires_its_local_tail_paths(self):
+        image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture(secondary=True)
+        records = base + [row for trace in traces.values() for row in trace]
+        result = VERIFIER.require_payload_coverage(
+            records, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+        self.assertEqual(result["entries"], len(layout.code_region_by_key))
+        missing = base + [row for entry, trace in traces.items() if entry != 0x300 for row in trace]
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x00000300"):
+            VERIFIER.require_payload_coverage(
+                missing, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+        del parsed["secondary_cvtc_adapter"]
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "missing typed map unit: secondary_cvtc_adapter"):
+            VERIFIER.require_map_fixture_bindings(image, image, parsed, layout)
+
+    def _jk00c_map_fixture(self):
+        target = runtime_targets.load_runtime_target("JK00C")
+        parsed = assembly_model.validate_assembly_sources(target.map_layout)
+        composition = VERIFIER.composer.compose(
+            layout=target.map_layout, image=target.stock_image, blobs=dict(target.map_payloads))
+        fixture = bytearray(composition.data)
+        VERIFIER.relocate_assembly_ram_literals(fixture, parsed)
+        return target, parsed, composition.data, fixture
+
+    def test_jk00c_binding_allows_declared_ram_aliases_and_binds_secondary_words(self):
+        target, parsed, composed, fixture = self._jk00c_map_fixture()
+        VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
+        self.assertNotEqual(fixture, composed)
+        entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
+        fixture[entry] ^= 1
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator changes payload instruction"):
+            VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
+
+    def test_control_pool_mutations_with_unchanged_opcodes_refuse_before_commands(self):
+        target, parsed, composed, fixture = self._jk00c_map_fixture()
+        sites = []
+        for key, transfer in (("startup_wrapper", "jsr @r0"), ("idle_ignition_adapter", "jmp @r0")):
+            unit = parsed[key]
+            row = next(row for row in unit.statements if row.kind == "instruction" and row.text == transfer)
+            sites.append((key, unit, unit.statement_by_address[row.address - 2]))
+        unit = parsed["secondary_cvtc_adapter"]
+        entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
+        sites.append(("secondary R3", unit, unit.statement_by_address[entry]))
+        base = RUNTIME_VERIFIER.base_verifier
+        with tempfile.TemporaryDirectory() as directory:
+            build = Path(directory)
+            for name, unit, load in sites:
+                pool = unit.labels[assembly_model.PC_RELATIVE_RE.fullmatch(load.text).group("label")]
+                changed = bytearray(fixture)
+                changed[pool + 3] ^= 2
+                self.assertEqual(changed[load.address:load.address + 2], fixture[load.address:load.address + 2])
+                with self.subTest(operand=name), patch.object(base, "run_command") as command:
+                    with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "map ROM control pool differs"):
+                        RUNTIME_VERIFIER._compile_and_run(
+                            target, "map-switching", build / "source.c", build / "rom.o",
+                            [build / "invoke.o"], build, "semantic marker",
+                            map_parsed=parsed, fixture=changed, composed_image=composed)
+                    command.assert_not_called()
+
+    def test_jk00c_has_no_marker_only_fallback_without_binding_context(self):
+        target = SimpleNamespace(rom="JK00C")
+        with patch.object(RUNTIME_VERIFIER.base_verifier, "run_command") as command:
+            with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "requires typed/composed/fixture context"):
+                RUNTIME_VERIFIER._compile_and_run(
+                    target, "map-switching", Path("source.c"), Path("rom.o"),
+                    [Path("invoke.o")], Path("."), "semantic marker")
+            command.assert_not_called()
+
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
+    def test_canonical_control_pool_mutation_refuses_before_commands(self):
+        image, parsed, _, _, _ = self.pc_fixture()
+        changed = bytearray(image)
+        changed[0x113] ^= 2
+        layout = SimpleNamespace(assembly_unit_by_key={
+            key: SimpleNamespace(code_regions=()) for key in parsed})
+        with patch.object(VERIFIER, "run_command") as command:
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "map ROM control pool differs"):
+                VERIFIER.build_and_run_dynamic_harness(
+                    changed, Path("."), parsed_by_unit=parsed, composed_image=image, layout=layout)
+            command.assert_not_called()
+
+    def test_jk00c_dispatch_rejects_a_marker_only_map_terminal(self):
+        target = SimpleNamespace(rom="JK00C", map_layout=SimpleNamespace(variant="dual-cvtc"))
+        with patch.object(RUNTIME_VERIFIER, "_build_rom_object", return_value=Path("rom.o")), \
+             patch.object(RUNTIME_VERIFIER, "_build_invoke_objects", return_value=(Path("invoke.o"), Path("exception.o"))), \
+             patch.object(RUNTIME_VERIFIER, "_render_harness", return_value=Path("source.c")), \
+             patch.object(RUNTIME_VERIFIER, "_compile_and_run", return_value="VQ_SH_ELF_MAP_SWITCHING status=PASS "):
+            with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "lacks its measured coverage terminal"):
+                RUNTIME_VERIFIER._run_harnesses(
+                    target, b"fixture", Path("."), map_parsed={}, composed_image=b"fixture")
+
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_binds_multiple_entries_and_tail_returns(self):
         image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture()
         records = base + [row for trace in traces.values() for row in trace]
-        result = VERIFIER.require_payload_coverage(records, image, parsed, invokes, adapter_layout=layout)
+        result = VERIFIER.require_payload_coverage(records, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
         self.assertEqual(result["entries"], len(layout.code_region_by_key))
         self.assertEqual(result["instructions"], sum(
             row.kind == "instruction" for unit in parsed.values() for row in unit.statements))
@@ -1097,7 +1202,7 @@ mov #0x5,r1
                                   (0x260, "uncovered entry 0x00000260")):
             records = base + [row for entry, trace in traces.items() if omitted is not None and entry != omitted for row in trace]
             with self.subTest(omitted=omitted), self.assertRaisesRegex(VERIFIER.VerificationError, message):
-                VERIFIER.require_payload_coverage(records, image, parsed, invokes, adapter_layout=layout)
+                VERIFIER.require_payload_coverage(records, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_rejects_wrong_tail_targets_and_continuations(self):
@@ -1113,14 +1218,14 @@ mov #0x5,r1
             word = invokes[target] if target in invokes else int.from_bytes(image[target:target + 2], "big")
             changed[index + 2] = (target, word, 0)
             with self.subTest(previous=hex(previous)), self.assertRaisesRegex(VERIFIER.VerificationError, message):
-                VERIFIER.require_payload_coverage(changed, image, parsed, invokes, adapter_layout=layout)
+                VERIFIER.require_payload_coverage(changed, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
         changed = bytearray(image)
         changed[0x250:0x254] = (0x344).to_bytes(4, "big")
-        with self.assertRaisesRegex(VERIFIER.VerificationError, "executed adapter JMP"):
-            VERIFIER.require_payload_coverage(records, changed, parsed, invokes, adapter_layout=layout)
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "map ROM control pool differs"):
+            VERIFIER.require_payload_coverage(records, changed, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
         direct_helper = [(0x4000, 0x400b, 0), (0x4002, 9, 1), (0x220, 0x432b, 0)]
         with self.assertRaisesRegex(VERIFIER.VerificationError, "originating invoke frame"):
-            VERIFIER.require_payload_coverage(direct_helper, image, parsed, invokes, adapter_layout=layout)
+            VERIFIER.require_payload_coverage(direct_helper, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_rejects_unsupported_r3_and_jump_forms(self):
@@ -1134,7 +1239,7 @@ mov #0x5,r1
                 assembly_model.SourceStatement(row.line_number, row.address, row.kind,
                     text if row.address == address else row.text, row.size) for row in original.statements))
             with self.subTest(text=text), self.assertRaisesRegex(VERIFIER.VerificationError, message):
-                VERIFIER.require_payload_coverage(base, image, changed, invokes, adapter_layout=layout)
+                VERIFIER.require_payload_coverage(base, image, changed, invokes, adapter_layout=layout, composed_image=bytes(image))
 
     @staticmethod
     def pc_fixture():
@@ -1169,12 +1274,12 @@ mov #0x5,r1
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_requires_both_actual_branch_outcomes(self):
         image, parsed, invokes, taken, untaken = self.pc_fixture()
-        covered = VERIFIER.require_payload_coverage(taken + untaken, image, parsed, invokes)
+        covered = VERIFIER.require_payload_coverage(taken + untaken, image, parsed, invokes, composed_image=bytes(image))
         self.assertEqual(covered, dict(entries=2, instructions=9, outcomes=2,
                                       delay_slots=3, call_return_paths=2))
         with self.assertRaisesRegex(VERIFIER.VerificationError,
                                     "uncovered branch outcome 0x00000200->0x00000202"):
-            VERIFIER.require_payload_coverage(taken, image, parsed, invokes)
+            VERIFIER.require_payload_coverage(taken, image, parsed, invokes, composed_image=bytes(image))
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_rejects_wrong_opcode_delay_and_return(self):
@@ -1187,14 +1292,14 @@ mov #0x5,r1
             records = list(taken + untaken)
             records[index] = replacement
             with self.subTest(error=error), self.assertRaisesRegex(VERIFIER.VerificationError, error):
-                VERIFIER.require_payload_coverage(records, image, parsed, invokes)
+                VERIFIER.require_payload_coverage(records, image, parsed, invokes, composed_image=bytes(image))
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_names_an_omitted_payload_entry(self):
         image, parsed, invokes, taken, untaken = self.pc_fixture()
         records = [*taken[:2], (0x200, 0x8b00, 0), *taken[6:8], taken[-1]]
         with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x00000100"):
-            VERIFIER.require_payload_coverage(records, image, parsed, invokes)
+            VERIFIER.require_payload_coverage(records, image, parsed, invokes, composed_image=bytes(image))
 
     def test_pc_trace_requires_a_complete_consistent_stream(self):
         record = "pc=00000100 opcode=0009 delay=0\n"
