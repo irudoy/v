@@ -2,17 +2,20 @@
 """Rebuild MLVLG record times from the telemetry tick channel.
 
 The producer emits one telemetry group per tick at a fixed period, so the tick
-channel is the sample index of a recording. A host clock that timestamps a
-frame when the application dequeues it collapses a drained burst onto a single
-10 us block timestamp; the tick index restores the true spacing. The result is
+channel is the sample index of a running stream. A host clock that timestamps
+a frame when the application dequeues it collapses a drained burst onto a
+single 10 us block timestamp; the tick index restores the true spacing. STOP
+holds the tick, so a stream pause keeps its recorded duration. The result is
 written to a new file: block timestamps and the `Date` and `Elapsed` channels
-follow the tick index, and every other recorded value is copied unchanged.
+follow the tick index and the pauses, and every other recorded value is copied
+unchanged.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import itertools
 import math
 import os
 from pathlib import Path
@@ -25,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.can_dashboard.model import BASE_TICK_SECONDS
 from tools.logs import can_telemetry
 from tools.logs import mlvlg
 
@@ -33,6 +37,7 @@ ELAPSED_CHANNEL = "Elapsed"
 DATE_CHANNEL = "Date"
 TICK_MODULUS = 0x10000
 OUTPUT_SUFFIX = "-retimed"
+PERIOD_ITERATIONS = 8
 
 
 @dataclass(frozen=True)
@@ -42,6 +47,8 @@ class RetimeSummary:
     records: int
     period_seconds: float
     span_seconds: float
+    pauses: int
+    pause_seconds: float
     collapsed_before: int
     collapsed_after: int
     written: bool
@@ -91,6 +98,26 @@ def unwrap_ticks(values) -> list[int]:
         unwrapped.append(offset + tick)
         previous = tick
     return unwrapped
+
+
+def measure_period(ticks, recorded) -> float:
+    """Return the tick period over the running snapshots of a recording.
+
+    The pause floors depend on the period, so the measurement starts from the
+    nominal tick and repeats with the measured period until it settles.
+    """
+
+    period = BASE_TICK_SECONDS
+    for _ in range(PERIOD_ITERATIONS):
+        pauses = can_telemetry.stream_pauses(ticks, recorded, period)
+        measured = (recorded[-1] - recorded[0] - sum(pauses)) / (
+            ticks[-1] - ticks[0]
+        )
+        settled = measured == period
+        period = measured
+        if settled:
+            break
+    return period
 
 
 def retime(
@@ -155,12 +182,14 @@ def retime(
     )
 
     if period_seconds is None:
-        period_seconds = (recorded[-1] - recorded[0]) / (ticks[-1] - ticks[0])
+        period_seconds = measure_period(ticks, recorded)
     if not math.isfinite(period_seconds) or period_seconds <= 0:
         raise mlvlg.MlvlgError(f"tick period must be positive: {period_seconds!r}")
+    pauses = can_telemetry.stream_pauses(ticks, recorded, period_seconds)
 
     times = [
-        recorded[0] + (value - ticks[0]) * period_seconds for value in ticks
+        recorded[0] + (value - ticks[0]) * period_seconds + offset
+        for value, offset in zip(ticks, itertools.accumulate(pauses))
     ]
     collapsed_after = sum(
         1
@@ -196,6 +225,8 @@ def retime(
         records=len(starts),
         period_seconds=period_seconds,
         span_seconds=times[-1] - times[0],
+        pauses=sum(1 for pause in pauses if pause),
+        pause_seconds=sum(pauses),
         collapsed_before=collapsed_before,
         collapsed_after=collapsed_after,
         written=not dry_run,
@@ -234,7 +265,7 @@ def main(argv=None) -> int:
     parser.add_argument(
         "--period-ms",
         type=float,
-        help="telemetry tick period; measured over the log when omitted",
+        help="telemetry tick period; measured over running snapshots when omitted",
     )
     parser.add_argument(
         "--dry-run",
@@ -259,7 +290,9 @@ def main(argv=None) -> int:
                 f"{summary.source}: {state} {summary.output.name}, "
                 f"{summary.records} records, "
                 f"period {summary.period_seconds * 1000:.4f} ms, "
-                f"span {summary.span_seconds:.3f} s"
+                f"span {summary.span_seconds:.3f} s, "
+                f"{summary.pauses} stream pauses of "
+                f"{summary.pause_seconds:.3f} s"
             )
             print(
                 f"  records sharing a block timestamp: "

@@ -699,9 +699,11 @@ recording of an earlier profile into the current channel layout.
 
 `mlg_retime.py` rebuilds record times from the `Telemetry tick` channel. The
 producer emits one telemetry group per tick at a fixed period, so the tick is
-the sample index of a recording: a host clock that stamps a frame when the
+the sample index of a running stream: a host clock that stamps a frame when the
 application dequeues it collapses a drained burst onto one 10 us block
-timestamp, and the tick index restores the true spacing.
+timestamp, and the tick index restores the true spacing. STOP holds the tick,
+so a stream pause keeps its recorded duration; the stream-pause rule of the
+telemetry decoder above tells it from a drained host stall.
 
 ```bash
 python3 tools/logs/mlg_retime.py --dry-run tmp/drive.mlg
@@ -709,10 +711,13 @@ python3 tools/logs/mlg_retime.py tmp/drive.mlg --output tmp/drive-retimed.mlg
 ```
 
 The tool writes a new file and never edits the source. Block timestamps and the
-`Date` and `Elapsed` channels follow the tick index; every other recorded value
-is copied unchanged. The tick period is measured across the log unless
-`--period-ms` provides it, and the first record keeps its recorded offset from
-the start of the recording, so the reconstructed span matches the recorded one.
+`Date` and `Elapsed` channels follow the tick index and the stream pauses; every
+other recorded value is copied unchanged. The tick period is measured over the
+running snapshots unless `--period-ms` provides it. The pause floors depend on
+the period, so the measurement starts from the nominal tick of the dashboard
+model and repeats with the measured period until it settles. The first record
+keeps its recorded offset from the start of the recording, so the
+reconstructed span matches the recorded one.
 A log whose records repeat a tick, such as one holding bridge records, is
 refused: the tick index cannot order them. A log that spans a producer restart
 is refused for the same reason: the tick index restarts with the controller and

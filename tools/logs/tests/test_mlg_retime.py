@@ -40,6 +40,41 @@ def collapsed_log(path, records=8, first_tick=65530):
     return times
 
 
+# Host queueing delays each frame by a few milliseconds and never advances it.
+QUEUE_DELAYS = (0.0, 0.004, 0.001, 0.007, 0.002)
+
+
+def stream_log(path, records=601, pause=None, stall=None):
+    """Write a log of ticks 1..records with a STOP pause and a host stall.
+
+    ``pause`` (index, seconds) stops the stream before that record; ``stall``
+    (index, length) holds that many records in the host queue until the next
+    one arrives and drains them as one burst.
+    """
+
+    times = []
+    stopped = 0.0
+    for index in range(records):
+        if pause is not None and index == pause[0]:
+            stopped += pause[1]
+        times.append(0.02 + index * PERIOD + stopped + QUEUE_DELAYS[index % 5])
+    if stall is not None:
+        first, length = stall
+        times[first : first + length] = [times[first + length]] * length
+    with path.open("wb") as stream:
+        writer = mlvlg.StreamWriter(stream, SPECS, START_EPOCH)
+        for index, elapsed in enumerate(times):
+            writer.write(
+                (START_EPOCH + int(elapsed), elapsed, float(index + 1), 900.0),
+                elapsed,
+            )
+    mlvlg.validate_mlg(path)
+
+
+def steps(rows):
+    return [b["Elapsed"] - a["Elapsed"] for a, b in zip(rows, rows[1:])]
+
+
 def channels(path):
     specs = mlvlg.read_fields(path)
     data = Path(path).read_bytes()
@@ -134,6 +169,47 @@ class MlgRetimeTest(unittest.TestCase):
             self.assertAlmostEqual(
                 summary.span_seconds, times[-1] - times[0], places=6
             )
+
+    def test_a_stream_pause_keeps_its_recorded_duration(self):
+        for period in (None, PERIOD):
+            with self.subTest(period=period), tempfile.TemporaryDirectory() as directory:
+                source = Path(directory) / "paused.mlg"
+                output = Path(directory) / "retimed.mlg"
+                stream_log(source, pause=(300, 5.0))
+                before, _stamps = channels(source)
+
+                summary = mlg_retime.retime(source, output, period_seconds=period)
+
+                self.assertAlmostEqual(summary.period_seconds, PERIOD, places=8)
+                self.assertEqual(summary.pauses, 1)
+                self.assertAlmostEqual(summary.pause_seconds, 5.0, places=5)
+                after, _stamps = channels(output)
+                self.assertAlmostEqual(after[0]["Elapsed"], before[0]["Elapsed"])
+                self.assertAlmostEqual(
+                    after[-1]["Elapsed"], before[-1]["Elapsed"], places=5
+                )
+                for index, step in enumerate(steps(after)):
+                    with self.subTest(step=index):
+                        expected = PERIOD + (5.0 if index == 299 else 0.0)
+                        self.assertAlmostEqual(step, expected, delta=2e-6)
+
+    def test_a_drained_host_stall_is_retimed_without_a_pause(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "stalled.mlg"
+            output = Path(directory) / "retimed.mlg"
+            stream_log(source, stall=(300, 30))
+            before, _stamps = channels(source)
+            self.assertGreater(before[300]["Elapsed"] - before[299]["Elapsed"], 0.3)
+
+            summary = mlg_retime.retime(source, output)
+
+            self.assertEqual(summary.pauses, 0)
+            self.assertEqual(summary.pause_seconds, 0.0)
+            self.assertAlmostEqual(summary.period_seconds, PERIOD, places=8)
+            after, _stamps = channels(output)
+            for index, step in enumerate(steps(after)):
+                with self.subTest(step=index):
+                    self.assertAlmostEqual(step, PERIOD, delta=2e-6)
 
     def test_repeated_ticks_are_refused(self):
         with tempfile.TemporaryDirectory() as directory:
