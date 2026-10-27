@@ -46,7 +46,7 @@ DYNAMIC_MARKER_PATTERN = (
     r"profiles=1 contexts=10 isr_rte=5$"
 )
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture")
-CAPTURE_MEASURED_REGIONS = ("build_bank", "knock_margin_wrapper", "request_page")
+CAPTURE_MEASURED_REGIONS = ("capture", "build_bank", "knock_margin_wrapper", "request_page")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -346,6 +346,9 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     private_returns = {row.address for row in control.statements if row.kind == "instruction"
                        and row.address >= config_entry and map_switching_assembly._mnemonic(row) == "rts"}
     entries = {config_entry}
+    request_entry = layout.code_region_by_key["request_page"].entry
+    build_entry = layout.code_region_by_key["build_bank"].entry
+    capture_callees = {request_entry, build_entry}
     instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
@@ -367,10 +370,13 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                 elif mnemonic == "bra":
                     direct_targets[pc] = target
                 else:
-                    if key != "control" or target != config_entry:
+                    if key == "control" and target == config_entry:
+                        call_targets[pc] = target
+                        config_calls.add(pc)
+                    elif target in capture_callees:
+                        call_targets[pc] = target
+                    else:
                         raise VerificationError(f"unsupported CAN BSR target at {pc:#010x}")
-                    call_targets[pc] = target
-                    config_calls.add(pc)
             if mnemonic in {"jsr", "rts", "bra", "bsr"}:
                 slots.add(pc + 2)
             if mnemonic == "jsr":
@@ -386,8 +392,6 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     expected_config_returns = {(call, config_entry, returned, call + 4)
                                for call in config_calls for returned in private_returns}
     observed_config_returns = set()
-    request_entry = layout.code_region_by_key["request_page"].entry
-    build_entry = layout.code_region_by_key["build_bank"].entry
     bounded_callers = {address for address, _pool in _bounded_capture_callers(parsed_by_unit)}
     seen, observed_outcomes, observed_slots, returned, call_returns = set(), set(), set(), set(), set()
     frames = []
@@ -536,8 +540,15 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         margin, zero, int.from_bytes(fixture[zero.address:zero.address + 2], "big"))
     evaluator = layout.hook_by_key["knock_margin_latch"].stock
     request_entry = layout.code_region_by_key["request_page"].entry
-    clamp = next(row for row in _measured_statements("capture", parsed_by_unit["capture"], layout)
+    measured_capture = _measured_statements("capture", parsed_by_unit["capture"], layout)
+    clamp = next(row for row in measured_capture
                  if row.kind == "instruction" and row.text == "bf telemetry_build_context_valid")
+    magic_fail = min((row for row in measured_capture
+                      if row.kind == "instruction" and row.text == "bf telemetry_capture_return"),
+                     key=lambda row: row.address)
+    magic_target = map_switching_assembly._validate_direct_branch_encoding(
+        parsed_by_unit["capture"], magic_fail,
+        int.from_bytes(fixture[magic_fail.address:magic_fail.address + 2], "big"))
     request_copy = (
         "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
         "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
@@ -565,6 +576,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         ("build-clamp", (("    state[6] = 0xff;\n", "    state[6] = 0;\n"),),
          f"uncovered CAN wrapper outcome {clamp.address:#010x}->{clamp.address + 2:#010x}",
          "VQ_SH_ELF_CAN_BUILD_COVERAGE_NEGATIVE"),
+        ("capture-magic", (
+            ("        mutate_configuration(mutation);\n        (void)invoke_r4(CAPTURE, 0);",
+             "        mutate_configuration(mutation);\n"
+             "        if (mutation != CONFIG_MAGIC)\n"
+             "            (void)invoke_r4(CAPTURE, 0);"),
+        ),
+         f"uncovered CAN wrapper outcome {magic_fail.address:#010x}->{magic_target:#010x}",
+         "VQ_SH_ELF_CAN_CAPTURE_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
     for name, edits, reason, prefix in omissions:

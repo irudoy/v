@@ -879,7 +879,7 @@ mov #0x5,r1
                        (0x2b2, 0x400b, "jsr @r0"), (0x2b4, 9, "nop"),
                        (0x2b6, 0x8901, "bt margin_done"), (0x2b8, 0xe001, "mov #1,r0"),
                        (0x2ba, 9, "nop"), (0x2bc, 11, "rts"), (0x2be, 9, "nop"),
-                       (0x3a0, 9, "nop"), (0x3a2, 9, "nop"), (0x3a4, 9, "nop"))
+                       (0x3a0, 11, "rts"), (0x3a2, 9, "nop"), (0x3a4, 9, "nop"))
         for pc, word, text in margin_rows:
             image[pc:pc + 2] = word.to_bytes(2, "big")
         image[0x2c8:0x2cc] = (0x310).to_bytes(4, "big")
@@ -907,7 +907,7 @@ mov #0x5,r1
             code_regions=("capture", "build_bank", "knock_margin_wrapper", "request_page"))
         layout.code_region_by_key.update(
             knock_margin_wrapper=SimpleNamespace(entry=0x2b0, span=SimpleNamespace(start=0x2b0, end=0x2d0)),
-            capture=SimpleNamespace(entry=0x3a0),
+            capture=SimpleNamespace(entry=0x3a0, span=SimpleNamespace(start=0x3a0, end=0x3a4)),
             build_bank=SimpleNamespace(entry=0x3d0, span=SimpleNamespace(start=0x3d0, end=0x3d8)),
             request_page=SimpleNamespace(entry=0x3c0, span=SimpleNamespace(start=0x3c0, end=0x3ce)))
         for take in (True, False):
@@ -919,6 +919,7 @@ mov #0x5,r1
         controls[0x3c0, False] = prefix + events((0x3c0, 0x3c2, 0x3c4, 0x3c6, *bank_tail), {0x3c6, 0x3cc}) + suffix
         controls[0x3d0, True] = prefix + events((0x3d0, 0x3d4, 0x3d6), {0x3d6}) + suffix
         controls[0x3d0, False] = prefix + events((0x3d0, 0x3d2, 0x3d4, 0x3d6), {0x3d6}) + suffix
+        controls[0x3a0, True] = prefix + events((0x3a0, 0x3a2), {0x3a2}) + suffix
         return image, layout, parsed, invokes, main, knock, startup, controls
 
     def test_can_wrapper_coverage_requires_entries_instructions_and_loop_outcomes(self):
@@ -926,7 +927,7 @@ mov #0x5,r1
         control_records = [row for trace in controls.values() for row in trace]
         require = lambda records: TELEMETRY_VERIFIER.require_wrapper_coverage(records + control_records, image, layout, parsed, invokes)
         self.assertEqual(require(main + knock + startup), dict(
-            entries=9, instructions=53, outcomes=12, delay_slots=18, call_return_paths=14, config_return_paths=4))
+            entries=10, instructions=55, outcomes=12, delay_slots=19, call_return_paths=15, config_return_paths=4))
         for records, message in ((knock + startup, "uncovered CAN wrapper entry 0x00000100"),
                                  (main + knock + startup[:2] + startup[3:], "uncovered CAN wrapper outcome"),
                                  ([row for row in main if row[0] != 0x102] + knock + startup, "uncovered CAN wrapper instruction 0x00000102")):
@@ -1035,8 +1036,9 @@ mov #0x5,r1
         image, layout, parsed, invokes, main, knock, startup, controls = self.can_wrapper_pc_fixture()
         records = main + knock + startup + [row for trace in controls.values() for row in trace]
         require = lambda rows: TELEMETRY_VERIFIER.require_wrapper_coverage(rows, image, layout, parsed, invokes)
-        self.assertEqual(require(records)["entries"], 9)
-        self.assertFalse({0x3a0, 0x3a2, 0x3a4} & {row[0] for row in records})
+        self.assertEqual(require(records)["entries"], 10)
+        self.assertFalse({0x3a4} & {row[0] for row in records})
+        self.assertIn(0x3a0, {row[0] for row in records})
         self.assertIn(0x3c0, {row[0] for row in records})
         missing = main + knock + startup + [row for key, trace in controls.items() if key[0] != 0x2b0 for row in trace]
         with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "uncovered CAN wrapper entry 0x000002b0"):

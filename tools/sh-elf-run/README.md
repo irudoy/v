@@ -223,8 +223,8 @@ absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
 The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
-`control` units and the `build_bank`, `knock_margin_wrapper` and `request_page`
-regions of `capture`. Entries come
+`control` units and the `capture`, `build_bank`, `knock_margin_wrapper` and
+`request_page` regions of `capture`. Entries come
 from the telemetry layout and the named internal configuration-validator label.
 Typed instruction statements define coverage;
 source tables, pools and fill remain data. Independent GNU assembly, composed
@@ -259,9 +259,11 @@ case count and unchanged-state assertions. A request build copies the eight
 mailbox bytes in the harness instead of either direct `request_page` invoke.
 A bank build keeps the direct call but supplies context 0 instead of the
 saturated context, so the clamp that clears a context of 5 or more does not
-execute. Coverage must reject the missing main entry, configuration-magic
-outcome, zero-channel margin outcome, request invoke return or that clamp
-outcome.
+execute. A capture build skips the call whose configuration magic is wrong,
+so the first validation branch to the shared return does not execute.
+Coverage must reject the missing main entry, configuration-magic
+outcome, zero-channel margin outcome, request invoke return, the context
+clamp outcome or that capture validation outcome.
 
 `request_page` accepts that direct invoke, the capture idle-publish BSR, and
 the completion JSRs that load its entry. `build_bank` accepts its direct
@@ -272,7 +274,7 @@ must execute both page and byte loops, both context seeks, the margin rearm
 and both context-clamp outcomes. `request_page` must execute both bank
 selections, the eight-byte copy loop and the return delay slot.
 
-The `capture` entry, completion, lower startup
+Completion, lower startup
 and stock callee bodies remain outside CAN instruction qualification. Existing
 TRAPA/RTE cases execute as separate harness calls; exception behavior receives
 no additional qualification from this scope.
