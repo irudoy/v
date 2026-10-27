@@ -21,6 +21,7 @@ INPUT ?=
 OUTPUT ?=
 PROFILE ?=
 CALIBRATION ?=
+REPLACE_SETTINGS ?=
 CORRESPONDENCE_SOURCE_EXPORT ?=
 CORRESPONDENCE_TARGET_EXPORT ?=
 CORRESPONDENCE_OUTPUT ?=
@@ -31,7 +32,7 @@ CALIBRATION_OPTION = $(if $(strip $(CALIBRATION)),--calibration "$(CALIBRATION)"
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
 .PHONY: test-python-fast test-full
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build rom-extract
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate
 
 help:
 	@printf '%s\n' \
@@ -61,6 +62,7 @@ help:
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'  rom-extract       Extract the calibration and build profile of a ROM; requires INPUT.' \
+		'  rom-calibrate     Apply a calibration file over a fresh build; requires INPUT, CALIBRATION, and OUTPUT.' \
 		'' \
 		'Variables:' \
 		'  ROM               Exact ROM or auto detection for ROM builds (default: auto).' \
@@ -70,10 +72,11 @@ help:
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
-		'  INPUT             Input ROM path for rom-verify, rom-build, and rom-extract.' \
-		'  OUTPUT            Output ROM path for rom-build.' \
+		'  INPUT             Input ROM path for rom-verify, rom-build, rom-extract, and rom-calibrate.' \
+		'  OUTPUT            Output ROM path for rom-build and rom-calibrate.' \
 		'  PROFILE           Local unified-builder profile: optional rom-build input, rom-extract output.' \
-		'  CALIBRATION       Local calibration file: rom-extract output.' \
+		'  CALIBRATION       Local calibration file: rom-extract output, rom-calibrate input.' \
+		'  REPLACE_SETTINGS  Non-empty to let rom-calibrate replace the extracted settings.' \
 		'  CORRESPONDENCE_SOURCE_EXPORT  Source export directory, such as l0/<layout>.' \
 		'  CORRESPONDENCE_TARGET_EXPORT  Target export directory, such as l0/<layout>.' \
 		'  CORRESPONDENCE_OUTPUT  Optional function-correspondence CSV path.' \
@@ -194,3 +197,9 @@ rom-build:
 rom-extract:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
 	$(PYTHON) patches/extract_calibration.py "$(INPUT)" --rom "$(ROM)" $(CALIBRATION_OPTION) $(PROFILE_OPTION)
+
+rom-calibrate:
+	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
+	@test -n "$(strip $(CALIBRATION))" || { printf '%s\n' 'CALIBRATION is required' >&2; exit 2; }
+	@test -n "$(strip $(OUTPUT))" || { printf '%s\n' 'OUTPUT is required' >&2; exit 2; }
+	$(PYTHON) patches/apply_calibration.py "$(INPUT)" --calibration "$(CALIBRATION)" --output "$(OUTPUT)"$(if $(strip $(REPLACE_SETTINGS)), --replace-settings,)
