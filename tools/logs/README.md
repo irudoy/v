@@ -93,11 +93,17 @@ adjacent, so the audits below skip pairs that cross a restart.
 STOP disables the producer and holds `tick16`, so the snapshot after START
 carries the next tick and the tick does not count the time of the pause. The
 time-based audits time snapshots by tick inside a running stream, where the
-recorded frame time carries host queueing jitter, and by recorded frame time
-across a pause. A recorded step longer than `STREAM_GAP_SECONDS` of
-`can_telemetry.py` (0.1 s) between snapshots of one run is a pause: the audits
-keep its recorded duration and never treat the snapshots on its two sides as
-adjacent.
+recorded frame time carries host queueing jitter, and add the recorded time of
+each pause. A recorded step longer than `STREAM_GAP_SECONDS` of
+`can_telemetry.py` (0.1 s) between snapshots of one run is a candidate. Host
+queueing only delays a frame, so the lowest recorded time less tick time near
+a candidate follows the stream clock: a pause raises it by the pause duration,
+while a host stall that the application drains as one burst returns to the
+level before it. The floor before a candidate spans `STREAM_FLOOR_SECONDS`
+(1 s) of ticks, and the floor after it spans the recorded step plus that time,
+which reaches past a drained burst. A candidate whose floor rises by more than
+`STREAM_GAP_SECONDS` is a pause of that rise: the audits keep its duration and
+never treat the snapshots on its two sides as adjacent.
 
 The final stderr marker reports complete, incomplete, malformed, and
 schema-mismatch counts together with the number of producer restarts. The

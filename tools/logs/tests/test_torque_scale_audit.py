@@ -137,26 +137,37 @@ class KinematicsTest(unittest.TestCase):
         self.assertAlmostEqual(segments[0][0], 0.0)
         self.assertAlmostEqual(segments[0][1], 199 * STEP)
 
+    FULL_PEDAL = dict(
+        speed_kmh=None, stock_rpm=None, rpm_raw=0, app1_raw=940, timing_raw=30,
+        torque_raw=2500, bfs_raw=20000, selector=None, actual_word=None,
+    )
+
     def test_a_stream_pause_keeps_its_time_and_splits_segments(self):
         pause = 5.0
-        fields = dict(
-            speed_kmh=None, stock_rpm=None, rpm_raw=0, app1_raw=940, timing_raw=30,
-            torque_raw=2500, bfs_raw=20000, selector=None, actual_word=None,
-        )
         # STOP holds the tick, so the snapshot after START is the next tick.
         rows = [
-            (0, tick, tick * 0.0102 + (pause if tick > 300 else 0.0), fields)
+            (0, tick, tick * STEP + (pause if tick > 300 else 0.0), self.FULL_PEDAL)
             for tick in range(1, 601)
         ]
         samples = audit.timed_samples(rows)
         self.assertEqual([index for index, s in enumerate(samples) if s.paused], [300])
         self.assertEqual(samples[0].seconds, STEP)
-        self.assertAlmostEqual(samples[300].seconds - samples[299].seconds, 0.0102 + pause)
+        self.assertAlmostEqual(samples[300].seconds - samples[299].seconds, STEP + pause)
         self.assertAlmostEqual(samples[-1].seconds - samples[300].seconds, 299 * STEP)
         segments = audit.full_pedal_segments(list(samples))
         self.assertEqual(len(segments), 2)
         self.assertAlmostEqual(segments[0][1], samples[299].seconds)
         self.assertAlmostEqual(segments[1][0], samples[300].seconds)
+
+    def test_a_drained_host_stall_keeps_tick_time_and_one_segment(self):
+        times = [tick * STEP for tick in range(1, 601)]
+        # Snapshots 300..329 leave the host queue together with snapshot 330.
+        times[300:330] = [times[330]] * 30
+        rows = [(0, tick, times[tick - 1], self.FULL_PEDAL) for tick in range(1, 601)]
+        samples = audit.timed_samples(rows)
+        self.assertFalse(any(s.paused for s in samples))
+        self.assertEqual([s.seconds for s in samples], [tick * STEP for tick in range(1, 601)])
+        self.assertEqual(len(audit.full_pedal_segments(list(samples))), 1)
 
     def test_locked_ratio_keeps_steady_windows_only(self):
         steady = [sample(index * STEP, speed=80.0, rpm=80.0 * LOCKED_RPM_PER_KMH) for index in range(300)]

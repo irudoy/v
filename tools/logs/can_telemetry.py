@@ -53,34 +53,51 @@ def is_producer_restart(previous_tick16, tick16):
 # jitter of the interface clock. The tick holds while streaming is stopped, so
 # a longer step of recorded time between two snapshots is a stream pause.
 STREAM_GAP_SECONDS = 0.1
+STREAM_FLOOR_SECONDS = 1.0
 
 
-def stream_pauses(times):
-    """Flag each snapshot whose recorded time follows a stream pause."""
-
-    return [
-        index > 0 and times[index] - times[index - 1] > STREAM_GAP_SECONDS
-        for index in range(len(times))
-    ]
-
-
-def pause_offsets(ticks, times, tick_seconds):
+def stream_pauses(ticks, times, tick_seconds):
     """Return the recorded pause time that precedes each snapshot.
 
-    The tick times the snapshots of a running stream. Across a pause the held
-    tick does not count the stopped time, so the recorded step replaces the
-    tick step there and tick time plus this offset keeps the elapsed time.
+    STOP holds the tick, so the tick times the snapshots of a running stream
+    and does not count a pause. A recorded step longer than STREAM_GAP_SECONDS
+    is a candidate. Host queueing only delays a frame, so the floor of recorded
+    time less tick time near a candidate is the stream clock there: a pause
+    raises it by its duration, while a host stall drained as a burst returns to
+    the floor before it. The floor before a candidate spans
+    STREAM_FLOOR_SECONDS of ticks, and the floor after it spans the recorded
+    step plus STREAM_FLOOR_SECONDS, which reaches past the drained burst. A
+    candidate whose floor rises by more than STREAM_GAP_SECONDS is a pause of
+    that rise.
     """
 
-    offsets = []
-    offset = 0.0
-    for index, paused in enumerate(stream_pauses(times)):
-        if paused:
-            offset += (times[index] - times[index - 1]) - (
-                ticks[index] - ticks[index - 1]
-            ) * tick_seconds
-        offsets.append(offset)
-    return offsets
+    count = len(times)
+    lag = [time - tick * tick_seconds for tick, time in zip(ticks, times)]
+    candidates = [
+        index
+        for index in range(1, count)
+        if times[index] - times[index - 1] > STREAM_GAP_SECONDS
+    ]
+    pauses = [0.0] * count
+    stream_start = 0
+    for position, start in enumerate(candidates):
+        end = candidates[position + 1] if position + 1 < len(candidates) else count
+        first = start - 1
+        while (
+            first > stream_start
+            and (ticks[start - 1] - ticks[first - 1]) * tick_seconds
+            <= STREAM_FLOOR_SECONDS
+        ):
+            first -= 1
+        span = times[start] - times[start - 1] + STREAM_FLOOR_SECONDS
+        last = start + 1
+        while last < end and (ticks[last] - ticks[start]) * tick_seconds <= span:
+            last += 1
+        rise = min(lag[start:last]) - min(lag[first:start])
+        if rise > STREAM_GAP_SECONDS:
+            pauses[start] = rise
+            stream_start = start
+    return pauses
 
 
 class DecodeError(ValueError):

@@ -252,13 +252,13 @@ def timed_samples(rows):
         group = list(group)
         ticks = [tick for _run, tick, _time, _fields in group]
         times = [time for _run, _tick, time, _fields in group]
-        pauses = can_telemetry.stream_pauses(times)
-        offsets = can_telemetry.pause_offsets(ticks, times, BASE_TICK_SECONDS)
-        for (_run, tick, _time, values), paused, offset in zip(group, pauses, offsets):
+        pauses = can_telemetry.stream_pauses(ticks, times, BASE_TICK_SECONDS)
+        offsets = itertools.accumulate(pauses)
+        for (_run, tick, _time, values), pause, offset in zip(group, pauses, offsets):
             samples.append(Sample(
                 seconds=tick * BASE_TICK_SECONDS + offset,
                 run=run,
-                paused=paused,
+                paused=pause > 0,
                 **values,
             ))
     return tuple(samples)

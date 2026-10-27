@@ -46,6 +46,31 @@ def feed_group(decoder, group):
     return snapshot
 
 
+TICK_SECONDS = 0.01024
+# Host queueing delays each frame by a few milliseconds and never advances it.
+QUEUE_DELAYS = (0.0, 0.004, 0.001, 0.007, 0.002)
+
+
+def stream_times(count, pauses=None, stalls=()):
+    """Recorded times of ticks 1..count with STOP pauses and host stalls.
+
+    ``pauses`` maps the first tick after START to the stopped seconds; a stall
+    (index, length) holds that many snapshots until the next one arrives and
+    drains them as one burst.
+    """
+    pauses = pauses or {}
+    ticks = list(range(1, count + 1))
+    stopped = 0.0
+    times = []
+    for index, tick in enumerate(ticks):
+        stopped += pauses.get(tick, 0.0)
+        times.append(tick * TICK_SECONDS + stopped + QUEUE_DELAYS[index % 5])
+    for index, length in stalls:
+        for held in range(index, index + length):
+            times[held] = times[index + length]
+    return ticks, times
+
+
 class CanTelemetryDecoderTest(unittest.TestCase):
     def test_schema_crc_rejects_a_changed_wire_contract(self):
         document = json.loads(
@@ -718,6 +743,41 @@ class HostContractTest(unittest.TestCase):
             rows[2]["engineering"]["active_map_index"],
             rows[2]["active_map_index"] + 1,
         )
+
+
+class StreamPauseTest(unittest.TestCase):
+    def pauses(self, ticks, times):
+        return can_telemetry.stream_pauses(ticks, times, TICK_SECONDS)
+
+    def test_a_running_stream_has_no_pause(self):
+        self.assertEqual(set(self.pauses(*stream_times(600))), {0.0})
+
+    def test_a_stop_pause_keeps_its_recorded_time(self):
+        pauses = self.pauses(*stream_times(600, pauses={301: 5.0}))
+        self.assertAlmostEqual(pauses[300], 5.0, places=9)
+        self.assertEqual(sum(1 for pause in pauses if pause), 1)
+
+    def test_a_drained_host_stall_is_not_a_pause(self):
+        ticks, times = stream_times(600, stalls=((300, 30),))
+        self.assertGreater(times[300] - times[299], can_telemetry.STREAM_GAP_SECONDS)
+        self.assertEqual(set(self.pauses(ticks, times)), {0.0})
+
+    def test_a_stall_after_start_keeps_the_pause_time(self):
+        ticks, times = stream_times(600, pauses={301: 5.0}, stalls=((300, 30),))
+        pauses = self.pauses(ticks, times)
+        self.assertAlmostEqual(pauses[300], 5.0, places=9)
+        self.assertEqual(sum(1 for pause in pauses if pause), 1)
+
+    def test_pauses_and_stalls_are_told_apart_in_one_stream(self):
+        ticks, times = stream_times(
+            1200, pauses={301: 2.0, 901: 0.5}, stalls=((600, 40), (1000, 15))
+        )
+        pauses = self.pauses(ticks, times)
+        self.assertEqual(
+            [index for index, pause in enumerate(pauses) if pause], [300, 900]
+        )
+        self.assertAlmostEqual(pauses[300], 2.0, places=9)
+        self.assertAlmostEqual(pauses[900], 0.5, places=9)
 
 
 if __name__ == "__main__":

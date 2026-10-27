@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from tools.can_dashboard import recording
+from tools.logs import can_telemetry
 from tools.logs import ltft_publication_audit as audit
 from tools.logs import mlvlg
 from tools.mapkit import rom as romkit
@@ -75,8 +76,12 @@ def synthetic_row(tick):
     }
 
 
-def write_log(path, pause_tick=None, pause_seconds=0.0):
-    """Write the synthetic MLG; a pause holds the tick for pause_seconds."""
+def write_log(path, pause_tick=None, pause_seconds=0.0, stall=None):
+    """Write the synthetic MLG; a pause holds the tick for pause_seconds.
+
+    A stall (first tick, length) holds that many snapshots in the host queue
+    until the next one arrives.
+    """
     bindings = recording.build_bindings("tuning")
     specs = [binding.spec for binding in bindings]
     rows = [dict(synthetic_row(FIRST_TICK - 1), schema_verified=0)]
@@ -90,6 +95,8 @@ def write_log(path, pause_tick=None, pause_seconds=0.0):
             elapsed = (values["tick16"] - ELAPSED_ORIGIN) * audit.TICK_SECONDS
             if pause_tick is not None and values["tick16"] >= pause_tick:
                 elapsed += pause_seconds
+            if stall is not None and 0 <= values["tick16"] - stall[0] < stall[1]:
+                elapsed = (stall[0] + stall[1] - ELAPSED_ORIGIN) * audit.TICK_SECONDS
             row = []
             for binding in bindings:
                 if binding.source == "date":
@@ -280,6 +287,25 @@ class LtftPublicationAuditTest(unittest.TestCase):
         # snapshots apart in time.
         self.assertEqual(
             paused["learned_pair_count"], running["learned_pair_count"] - 1
+        )
+
+    def test_a_drained_host_stall_is_not_a_stream_pause(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "synthetic.mlg"
+            write_log(path)
+            running = audit.audit(path, self.calibration)
+            write_log(path, stall=(136, 15))
+            stalled = audit.audit(path, self.calibration)
+            snapshots = audit.read_snapshots(path)
+        index = snapshots.ticks.index(136)
+        elapsed = snapshots.columns["elapsed"]
+        self.assertGreater(
+            elapsed[index] - elapsed[index - 1], can_telemetry.STREAM_GAP_SECONDS
+        )
+        self.assertTrue(snapshots.contiguous(index))
+        self.assertEqual(
+            {key: value for key, value in stalled.items() if key != "capture_sha256"},
+            {key: value for key, value in running.items() if key != "capture_sha256"},
         )
 
 

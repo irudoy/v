@@ -49,6 +49,7 @@ from collections import Counter
 from dataclasses import dataclass
 from functools import cached_property
 import hashlib
+import itertools
 import math
 from pathlib import Path
 import statistics
@@ -142,23 +143,23 @@ class Snapshots:
         return len(self.ticks)
 
     @cached_property
+    def pauses(self) -> tuple[float, ...]:
+        """Recorded stream pause time that precedes each snapshot."""
+        return tuple(
+            can_telemetry.stream_pauses(
+                self.ticks, self.columns["elapsed"], TICK_SECONDS
+            )
+        )
+
+    @cached_property
     def segments(self) -> tuple[int, ...]:
         """Stream segment of each snapshot; a stream pause starts a new one."""
-        result = []
-        segment = 0
-        for paused in can_telemetry.stream_pauses(self.columns["elapsed"]):
-            segment += paused
-            result.append(segment)
-        return tuple(result)
+        return tuple(itertools.accumulate(int(pause > 0) for pause in self.pauses))
 
     @cached_property
     def pause_offsets(self) -> tuple[float, ...]:
         """Recorded pause time that the held tick does not count."""
-        return tuple(
-            can_telemetry.pause_offsets(
-                self.ticks, self.columns["elapsed"], TICK_SECONDS
-            )
-        )
+        return tuple(itertools.accumulate(self.pauses))
 
     def contiguous(self, index: int) -> bool:
         """Whether a snapshot directly follows the previous one in one stream."""
