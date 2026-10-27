@@ -140,6 +140,26 @@ void function. An unchanged request on the enabled path establishes only the
 absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
+The canonical JK08A CAN telemetry gate also measures the existing `wrappers`
+unit. Its entries come from the telemetry layout, and only typed instruction
+statements contribute instruction requirements. The observer binds executed
+words to independent GNU assembly, the composed ROM, the simulator fixture and
+the final ELF. It requires both outcomes of the startup clear and margin-arm
+loops, every wrapper delay slot, exact pool-bound JSR targets and matched
+returns to the originating invoke continuation.
+
+A private negative harness bypasses `MAIN_WRAPPER` with real `CONTROL_POLL` and
+`CAPTURE` calls. The same linked ROM, existing semantic assertions and case
+counter must still produce the original PASS marker, while measured coverage
+rejects the omitted main-wrapper entry. The original C harness and assembly
+supply the positive run.
+
+Control, capture, lower startup and stock callees remain outside CAN wrapper
+instruction qualification. Existing TRAPA/RTE cases execute as separate harness
+calls; exception behavior receives no additional qualification from this scope.
+Unsupported transfers during an active monitored wrapper frame fail verification.
+The telemetry source tables, literal pools and fill bytes remain data.
+
 The ignition-consumer verifier reconstructs each declared stock call window
 and its operands independently. It then executes the real composed lookup
 literal through the injected adapter. Its C harness checks complete callee and

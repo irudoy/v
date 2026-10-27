@@ -122,7 +122,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
     class StorageAccepted(Exception):
         pass
 
-    if route in ('map', 'rolling'):
+    if route in ('map', 'rolling', 'telemetry'):
         def after_storage(*args):
             raise StorageAccepted
         monkeypatch.setattr(base, '_invoke_trace_bindings', after_storage)
@@ -152,13 +152,17 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
                 parsed_by_unit={'wrappers': SimpleNamespace(statements=())},
                 composed_image=b'controlled fixture', base_layout=base_layout,
                 rolling_layout=rolling_layout)
+        if route == 'telemetry':
+            return module.build_and_run_dynamic_harness(
+                b'controlled fixture', tmp_path, parsed_by_unit={'wrappers': SimpleNamespace(statements=())},
+                composed_image=b'controlled fixture', layout=SimpleNamespace())
         return module.build_and_run_dynamic_harness(b'controlled fixture', tmp_path)
 
     if overlap or layout in ('malformed', 'missing'):
         with pytest.raises(module.VerificationError, match='ELF storage separation'):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
-    elif route in ('map', 'rolling'):
+    elif route in ('map', 'rolling', 'telemetry'):
         # Reach the next real stage after accepting ELF storage, before RUN.
         with pytest.raises(StorageAccepted):
             execute()
