@@ -1724,15 +1724,16 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=6, instructions=47, outcomes=10,
-                                      delay_slots=15, call_return_paths=12, tail_paths=3))
+        self.assertEqual(result, dict(entries=7, instructions=54, outcomes=10,
+                                      delay_slots=17, call_return_paths=12, tail_paths=5))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         for selected, reason in ((traces[1:], "uncovered wrapper entry 0x00000100"),
                                   (traces[:4] + traces[6:], "uncovered wrapper entry 0x00000200"),
                                   (traces[:6] + traces[8:], "uncovered wrapper entry 0x00000240"),
-                                  (traces[:8], "uncovered wrapper entry 0x000003c0"),
+                                  (traces[:8], "uncovered wrapper entry 0x000003a0"),
+                                  (traces[:8] + traces[10:], "uncovered wrapper entry 0x000003c0"),
                                   (traces[:6] + traces[7:], "uncovered wrapper branch 0x00000246"),
                                   (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
@@ -1774,6 +1775,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal"),
                                 (0x200, "wrapper instruction"), (0x23C, "wrapper control literal"),
                                 (0x240, "wrapper instruction"), (0x278, "wrapper control literal"),
+                                (0x3A0, "wrapper instruction"), (0x3B0, "wrapper control literal"),
                                 (0x3C0, "wrapper instruction"), (0x3F0, "wrapper control literal"),
                                 (0x3F4, "wrapper control literal")):
             changed = bytearray(image)

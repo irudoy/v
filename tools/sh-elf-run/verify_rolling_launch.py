@@ -43,8 +43,8 @@ FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper")
-COVERAGE_UNITS = ("wrappers", "threshold_helper", "feedback_arbiter", "ignition_controller")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper", "feedback_arbiter", "ignition_controller")
+COVERAGE_UNITS = ("wrappers", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
 
 
 class VerificationError(RuntimeError):
@@ -257,6 +257,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     entries = wrapper_entries | {helper, arbiter, controller}
     adapter, adapter_controller_tail, adapter_stock_tail = bind_ignition_adapter_windows(
         fixture, fixture, parsed_by_unit["ignition_adapter"], regions, ignition_stock_entry)
+    entries.add(adapter)
     engine, engine_call = bind_threshold_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
@@ -289,7 +290,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 register = "r3" if (unit == "threshold_helper" or unit == "ignition_controller" and mnemonic == "jsr") else "r0"
                 if (literal is None or literal.group("width") != "l"
                         or literal.group("register") != register or row.text != f"{mnemonic} @{register}"
-                        or unit not in {"wrappers", "ignition_controller"} and mnemonic != "jsr"):
+                        or unit not in {"wrappers", "ignition_controller", "ignition_adapter"} and mnemonic != "jsr"):
                     raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
@@ -339,7 +340,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             raise VerificationError(f"executed wrapper data at {pc:#010x}")
         frame = previous_frame if delay else (frames[-1] if frames else None)
         if not delay:
-            previous_frame = frame
+            previous_frame = dict(frame) if frame is not None else None
         if pc in instructions:
             if frame is None or frame["entry"] != owners[pc]:
                 raise VerificationError(f"wrapper lacks its originating invoke frame at {pc:#010x}")
@@ -453,6 +454,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             elif entry == adapter:
                 if pc != ignition_stock_entry or not origin["adapter_stock_tail"]:
                     raise VerificationError("ignition adapter return lacks its declared stock tail boundary")
+                returned.add(entry)
             elif entry == arbiter:
                 if pc != arbiter_return or not origin["base_feedback_return"]:
                     raise VerificationError("feedback arbiter return lacks its Map return and native RTS")
@@ -635,16 +637,58 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             raise VerificationError(f"controller bypass fails outside its omitted outcome: {error}") from error
     else:
         raise VerificationError("controller coverage accepts the real zero-band bypass")
+    idle_case = (
+        "    set_ignition_state(PHASE_IDLE, MODE_OBSERVE, 0);\n"
+        "    if (!invoke_ignition(\"ign-inactive\", 110, 316, 110))"
+    )
+    if source.count(idle_case) != 1:
+        raise VerificationError("adapter negative lacks its unique idle case")
+    adapter_negative_text = source.replace(
+        idle_case,
+        "    set_ignition_state(PHASE_ACTIVE, MODE_OBSERVE, 0);\n"
+        "    if (!invoke_ignition(\"ign-inactive\", 110, 316, 110))",
+    )
+    adapter_parsed = parsed_by_unit["ignition_adapter"]
+    phase_edge = next(
+        row for row in adapter_parsed.statements
+        if row.kind == "instruction" and row.text == "bf rl_ign_tail"
+        and adapter_parsed.statement_by_address[row.address - 2].text == "cmp/eq 0x1,r0")
+    phase_target = map_switching_assembly._validate_direct_branch_encoding(
+        adapter_parsed, phase_edge,
+        int.from_bytes(fixture[phase_edge.address:phase_edge.address + 2], "big"))
+    adapter_expected = f"uncovered wrapper branch {phase_edge.address:#010x}->{phase_target:#010x}"
+    adapter_negative_source = build_dir / "rolling-launch-bypass-adapter-idle.c"
+    adapter_negative_source.write_text(adapter_negative_text, encoding="utf-8")
+    adapter_negative_elf = build_dir / "rolling-launch-bypass-adapter-idle.elf"
+    adapter_negative_command = list(command)
+    adapter_negative_command[adapter_negative_command.index("-o") + 1] = adapter_negative_elf
+    adapter_negative_command[adapter_negative_command.index(positive)] = adapter_negative_source
+    base_verifier.run_command(adapter_negative_command, timeout=120)
+    require_separate_storage(adapter_negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+    adapter_negative, records, invoke_words = execute(adapter_negative_elf)
+    if marker not in adapter_negative.stdout:
+        raise VerificationError("adapter bypass does not preserve the semantic PASS marker")
+    try:
+        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
+                                 base_hooks["cruise_feedback_serializer"].stock,
+                                 rolling_layout.hook_by_key["primary_ignition_command"].stock)
+    except VerificationError as error:
+        if str(error) != adapter_expected:
+            raise VerificationError(f"adapter bypass fails outside its omitted outcome: {error}") from error
+    else:
+        raise VerificationError("adapter coverage accepts the real idle bypass")
     if (source_path.read_text(encoding="utf-8") != source
             or positive.read_text(encoding="utf-8") != source
             or negative_source.read_text(encoding="utf-8") != negative_text
-            or controller_negative_source.read_text(encoding="utf-8") != controller_negative_text):
+            or controller_negative_source.read_text(encoding="utf-8") != controller_negative_text
+            or adapter_negative_source.read_text(encoding="utf-8") != adapter_negative_text):
         raise VerificationError("Rolling Launch harness source changes during verification")
     measured = "VQ_SH_ELF_ROLLING_WRAPPER_COVERAGE status=PASS scope=JK08A:"
     measured += ",".join(COVERAGE_REGIONS) + " " + " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), measured,
                       f"VQ_SH_ELF_ROLLING_WRAPPER_NEGATIVE status=PASS {expected}",
-                      f"VQ_SH_ELF_ROLLING_CONTROLLER_NEGATIVE status=PASS {controller_expected}"))
+                      f"VQ_SH_ELF_ROLLING_CONTROLLER_NEGATIVE status=PASS {controller_expected}",
+                      f"VQ_SH_ELF_ROLLING_ADAPTER_NEGATIVE status=PASS {adapter_expected}"))
 
 
 def verify(verbose=False, check_toolchain=True):
