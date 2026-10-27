@@ -21,20 +21,24 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
-from tools.version_index import requirement_pin
+from tools.can_dashboard.package_locks import (
+    TARGET_BY_NAME,
+    bootstrap_text,
+    normalize,
+    parse_lock,
+)
+from tools.version_index import python_version, requirement_pin
 
 
 APP_NAME = PRODUCT_NAME
 APP_BUNDLE_NAME = f"{APP_NAME}.app"
 BUNDLE_IDENTIFIER = f"com.github.irudoy.vhrev.{PRODUCT_SLUG}"
 TARGET_ARCHITECTURE = "arm64"
-BUILD_REQUIREMENTS = "tools/can_dashboard/requirements-macos-build.txt"
+LOCK_TARGET = TARGET_BY_NAME["macos-build"]
+BUILD_REQUIREMENTS = LOCK_TARGET.requirements
 PYINSTALLER_VERSION = requirement_pin(BUILD_REQUIREMENTS, "pyinstaller")
 ENTRY_POINT = ROOT / "tools/can_dashboard/app.py"
-DATA_FILES = (
-    (ROOT / "patches/can-telemetry-profile.toml", "patches"),
-    (ROOT / "patches/can-telemetry-schema.json", "patches"),
-)
+DATA_FILES = ((ROOT / "patches/can-telemetry-schema.json", "patches"),)
 
 
 def pyinstaller_arguments(dist_path, work_path, spec_path):
@@ -71,9 +75,90 @@ def pyinstaller_arguments(dist_path, work_path, spec_path):
     return arguments
 
 
+def install_commands(interpreter, bootstrap):
+    """Return the uv commands that install the build lock into an environment.
+
+    The bootstrap wheels install first, so the pinned setuptools builds the
+    source builds of the lock without build isolation; nothing is resolved
+    beyond the lock.
+    """
+    common = (
+        "uv",
+        "pip",
+        "install",
+        "--no-config",
+        "--python",
+        str(interpreter),
+        "--require-hashes",
+        "--no-deps",
+        "--only-binary",
+        ":all:",
+    )
+    sources = []
+    for name in LOCK_TARGET.sources:
+        sources.extend(("--no-binary", name))
+    return [
+        (*common, "-r", str(bootstrap)),
+        (
+            *common,
+            "--no-build-isolation",
+            *sources,
+            "-r",
+            str(ROOT / LOCK_TARGET.lock),
+        ),
+    ]
+
+
+def prepare_environment(path):
+    """Create the build environment from the macOS build lock."""
+    path = Path(path).resolve()
+    if path.exists() or path.is_symlink():
+        if not (path / "pyvenv.cfg").is_file():
+            raise FileExistsError(f"not a virtual environment: {path}")
+        shutil.rmtree(path)
+    _run(("uv", "venv", "--no-config", "--python", python_version(), path))
+    bootstrap = path / "bootstrap-requirements.txt"
+    lock = (ROOT / LOCK_TARGET.lock).read_text(encoding="utf-8")
+    bootstrap.write_text(bootstrap_text(LOCK_TARGET, lock), encoding="utf-8")
+    interpreter = path / "bin/python"
+    for command in install_commands(interpreter, bootstrap):
+        _run(command)
+    return interpreter
+
+
+def environment_differences(installed, lock_text):
+    """Describe how installed distributions differ from the lock entries."""
+    locked = {
+        name: entry.version for name, entry in parse_lock(lock_text).items()
+    }
+    differences = []
+    for name in sorted(set(locked) | set(installed)):
+        if name not in installed:
+            differences.append(f"missing {name} {locked[name]}")
+        elif name not in locked:
+            differences.append(f"unlocked {name} {installed[name]}")
+        elif installed[name] != locked[name]:
+            differences.append(
+                f"{name} {installed[name]} instead of {locked[name]}"
+            )
+    return differences
+
+
+def _installed_distributions():
+    return {
+        normalize(distribution.metadata["Name"]): distribution.version
+        for distribution in metadata.distributions()
+    }
+
+
 def _require_build_environment():
     if sys.platform != "darwin":
         raise RuntimeError("the macOS application must be built on macOS")
+    running = f"{sys.version_info.major}.{sys.version_info.minor}"
+    if running != python_version():
+        raise RuntimeError(
+            f"Python {python_version()} is required, found {running}"
+        )
     try:
         installed = metadata.version("pyinstaller")
     except metadata.PackageNotFoundError as error:
@@ -83,6 +168,15 @@ def _require_build_environment():
     if installed != PYINSTALLER_VERSION:
         raise RuntimeError(
             f"PyInstaller {PYINSTALLER_VERSION} is required, found {installed}"
+        )
+    differences = environment_differences(
+        _installed_distributions(),
+        (ROOT / LOCK_TARGET.lock).read_text(encoding="utf-8"),
+    )
+    if differences:
+        raise RuntimeError(
+            f"the build environment differs from {LOCK_TARGET.lock}: "
+            + "; ".join(differences)
         )
     for source, _destination in DATA_FILES:
         if not source.is_file():
@@ -309,11 +403,23 @@ def main(argv=None):
         action="version",
         version=f"%(prog)s {__version__}",
     )
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--prepare-environment",
+        type=Path,
+        metavar="PATH",
+        help="create the build environment from the build lock and exit",
+    )
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--app-output", type=Path)
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--skip-smoke-test", action="store_true")
     args = parser.parse_args(argv)
+    if args.prepare_environment is not None:
+        interpreter = prepare_environment(args.prepare_environment)
+        print(f"status=PASS environment={interpreter}")
+        return 0
+    if args.output is None:
+        parser.error("--output is required")
     output = build_package(
         args.output,
         app_output=args.app_output,

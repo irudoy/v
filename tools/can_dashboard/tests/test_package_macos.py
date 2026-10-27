@@ -52,6 +52,60 @@ class MacosPackageTest(unittest.TestCase):
         for source, destination in package_macos.DATA_FILES:
             self.assertIn(f"{source}:{destination}", arguments)
 
+    def test_the_build_environment_installs_the_lock_without_resolving(self):
+        bootstrap, lock = package_macos.install_commands(
+            Path("env/bin/python"), Path("env/bootstrap-requirements.txt")
+        )
+        for command in (bootstrap, lock):
+            self.assertEqual(command[:3], ("uv", "pip", "install"))
+            self.assertIn("--require-hashes", command)
+            self.assertIn("--no-deps", command)
+            self.assertEqual(command[command.index("--only-binary") + 1], ":all:")
+            self.assertEqual(command[command.index("--python") + 1], "env/bin/python")
+        self.assertEqual(bootstrap[-2:], ("-r", "env/bootstrap-requirements.txt"))
+        self.assertIn("--no-build-isolation", lock)
+        self.assertEqual(lock[lock.index("--no-binary") + 1], "uptime")
+        self.assertEqual(
+            lock[-2:],
+            ("-r", str(package_macos.ROOT / package_macos.LOCK_TARGET.lock)),
+        )
+
+    def test_the_build_environment_must_match_the_lock(self):
+        hash_ = "--hash=sha256:" + "a" * 64
+        lock = (
+            f"altgraph==0.17.5 {hash_}\n"
+            f"pyinstaller==6.21.0 {hash_}\n"
+            f"uptime==3.0.1 {hash_}\n"
+        )
+        installed = {"altgraph": "0.17.5", "pyinstaller": "6.21.0", "uptime": "3.0.1"}
+        self.assertEqual(package_macos.environment_differences(installed, lock), [])
+        installed = {"pyinstaller": "6.20.0", "uptime": "3.0.1", "pip": "26.2.2"}
+        self.assertEqual(
+            package_macos.environment_differences(installed, lock),
+            [
+                "missing altgraph 0.17.5",
+                "unlocked pip 26.2.2",
+                "pyinstaller 6.20.0 instead of 6.21.0",
+            ],
+        )
+
+    def test_preparing_an_environment_never_removes_another_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "build"
+            target.mkdir()
+            (target / "keep.txt").write_text("keep\n", encoding="ascii")
+            with mock.patch.object(package_macos, "_run") as run:
+                with self.assertRaises(FileExistsError):
+                    package_macos.prepare_environment(target)
+            run.assert_not_called()
+            self.assertTrue((target / "keep.txt").is_file())
+
+    def test_the_bundle_carries_the_wire_schema_only(self):
+        self.assertEqual(
+            [source.relative_to(package_macos.ROOT).as_posix() for source, _ in package_macos.DATA_FILES],
+            ["patches/can-telemetry-schema.json"],
+        )
+
     def test_archive_preserves_bundle_modes_and_symlinks(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

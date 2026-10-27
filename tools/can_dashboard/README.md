@@ -158,9 +158,14 @@ ignored `tmp/` ZIP for transfer whose name carries the dashboard version and
 the arm64 architecture. `CAN_DASHBOARD_MACOS_APP_OUTPUT=<path>` and
 `CAN_DASHBOARD_MACOS_OUTPUT=<path>` select other paths.
 
-The build uses the PyInstaller pinned in `requirements-macos-build.txt` in
-`onedir`, `windowed` mode. It embeds the tested Python/Tk runtime and all
-Python dependencies, preserves bundle symlinks in the ZIP, records the
+The target first creates the build environment
+`CAN_DASHBOARD_MACOS_BUILD_ENV`, by default an ignored `tmp/` directory, from
+`requirements-macos-build.lock` with `--require-hashes --no-deps`: the pinned
+setuptools installs first and builds the `uptime` source distribution without
+build isolation, and every other distribution is a wheel. The packager refuses
+an environment whose distributions differ from the lock. The build uses the
+PyInstaller of that lock in `onedir`, `windowed` mode. It embeds the tested
+Python/Tk runtime and all Python dependencies, preserves bundle symlinks in the ZIP, records the
 dashboard version in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
@@ -218,7 +223,7 @@ py -3.11 -m tools.can_dashboard.app --settings bench-settings.json
 On macOS with `libPCBUSB` already installed, the equivalent repository run is:
 
 ```bash
-uv run --with-requirements tools/can_dashboard/requirements-macos.txt \
+uv run --with-requirements tools/can_dashboard/requirements-macos.lock \
   python -m tools.can_dashboard.app \
   --channel PCAN_USBBUS1 --bitrate 500000 \
   --can-id 0x6F0 --profile tuning --tick-divisor 1 \

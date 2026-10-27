@@ -17,6 +17,7 @@ CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tool
 CAN_DASHBOARD_OUTPUT ?= tmp/$(CAN_DASHBOARD_SLUG)-v$(CAN_DASHBOARD_VERSION)-windows.zip
 CAN_DASHBOARD_MACOS_OUTPUT ?= tmp/$(CAN_DASHBOARD_SLUG)-v$(CAN_DASHBOARD_VERSION)-macos-arm64.zip
 CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/$(CAN_DASHBOARD_NAME).app
+CAN_DASHBOARD_MACOS_BUILD_ENV ?= tmp/$(CAN_DASHBOARD_SLUG)-macos-build-env
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
@@ -72,6 +73,7 @@ help:
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
+		'  CAN_DASHBOARD_MACOS_BUILD_ENV  macOS build environment created from the build lock.' \
 		'  INPUT             Input ROM path for rom-verify, rom-build, rom-extract, and rom-calibrate.' \
 		'  OUTPUT            Output ROM path for rom-build and rom-calibrate.' \
 		'  PROFILE           Local unified-builder profile: optional rom-build input, rom-extract output.' \
@@ -160,8 +162,9 @@ dashboard-package:
 dashboard-package-macos:
 	@test -n "$(strip $(CAN_DASHBOARD_MACOS_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_MACOS_OUTPUT is required' >&2; exit 2; }
 	@test -n "$(strip $(CAN_DASHBOARD_MACOS_APP_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_MACOS_APP_OUTPUT is required' >&2; exit 2; }
-	$(UV) run --with-requirements tools/can_dashboard/requirements-macos-build.txt \
-		python tools/can_dashboard/package_macos.py --force \
+	@test -n "$(strip $(CAN_DASHBOARD_MACOS_BUILD_ENV))" || { printf '%s\n' 'CAN_DASHBOARD_MACOS_BUILD_ENV is required' >&2; exit 2; }
+	$(PYTHON) tools/can_dashboard/package_macos.py --prepare-environment "$(CAN_DASHBOARD_MACOS_BUILD_ENV)"
+	"$(CAN_DASHBOARD_MACOS_BUILD_ENV)/bin/python" tools/can_dashboard/package_macos.py --force \
 		--output "$(CAN_DASHBOARD_MACOS_OUTPUT)" \
 		--app-output "$(CAN_DASHBOARD_MACOS_APP_OUTPUT)"
 
