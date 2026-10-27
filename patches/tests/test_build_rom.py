@@ -19,6 +19,7 @@ from patches import can_telemetry_assembly
 from patches import rom_checksums
 from patches import rolling_launch
 from patches import rolling_launch_layout
+from patches import runtime_endpoints
 from patches import runtime_targets
 from tools import rom_homology
 
@@ -450,13 +451,13 @@ class BuildRomTest(unittest.TestCase):
         telemetry_payloads = can_telemetry_assembly.load_payloads(
             telemetry_layout
         )
-        telemetry_state = build_rom._require_coherent_telemetry_endpoint(
+        telemetry_state = runtime_endpoints.require_coherent_telemetry_endpoint(
             self.base_result.data,
             telemetry_layout,
             telemetry_payloads,
             "test runtime",
         )
-        map_only = bytearray(build_rom._strip_telemetry_endpoint(
+        map_only = bytearray(runtime_endpoints.strip_telemetry_endpoint(
             self.base_result.data, telemetry_layout, telemetry_state
         ))
         launch_layout = rolling_launch_layout.load_layout()
@@ -643,7 +644,7 @@ class BuildRomTest(unittest.TestCase):
                     build_rom.sha256(
                         historical[engine.span.start : engine.span.end]
                     ),
-                    build_rom.HISTORICAL_FEEDBACK_ENGINE_SHA256,
+                    runtime_endpoints.HISTORICAL_FEEDBACK_ENGINE_SHA256,
                 )
 
                 result = build_rom.build_image(
@@ -684,7 +685,7 @@ class BuildRomTest(unittest.TestCase):
         controller = layout.assembly_unit_by_key["ignition_controller"]
         historical[controller.span.start:controller.span.end] = GUARDED_CONTROLLER
         historical = checksums.recalculate(historical)
-        endpoint = next(item for item in build_rom.HISTORICAL_ROLLING_ENDPOINTS
+        endpoint = next(item for item in runtime_endpoints.HISTORICAL_ROLLING_ENDPOINTS
                         if item.key == "schema-3-state-6-7-indicators")
         self.assertEqual(
             dict(endpoint.unit_sha256)["feedback_arbiter"],
@@ -707,7 +708,7 @@ class BuildRomTest(unittest.TestCase):
     def test_telemetry_over_unflagged_historical_endpoint_is_rejected(self):
         historical = self._state_6_7_arbiter_image()
         with mock.patch.object(
-            build_rom,
+            runtime_endpoints,
             "TELEMETRY_LOWER_ROLLING_STATES",
             frozenset({"current"}),
         ):
@@ -720,7 +721,7 @@ class BuildRomTest(unittest.TestCase):
 
     def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
         telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        historical = bytearray(build_rom._strip_telemetry_endpoint(
+        historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
             self.base_result.data, telemetry_layout, "current"
         ))
         layout = rolling_launch_layout.load_layout()
@@ -756,7 +757,7 @@ class BuildRomTest(unittest.TestCase):
         source = (self.edited_runtime("JK08A", rolling=True, telemetry=True)
                   if custom else self.base_result.data)
         if not telemetry:
-            source = build_rom._strip_telemetry_endpoint(
+            source = runtime_endpoints.strip_telemetry_endpoint(
                 source, build_rom.can_telemetry_layout.load_layout(), "current")
         historical = bytearray(source)
         unit = rolling_launch_layout.load_layout().assembly_unit_by_key["ignition_controller"]
@@ -835,7 +836,7 @@ class BuildRomTest(unittest.TestCase):
 
     def test_registered_historical_endpoint_can_be_migrated(self):
         telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        historical = bytearray(build_rom._strip_telemetry_endpoint(
+        historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
             self.base_result.data, telemetry_layout, "current"
         ))
         historical[0xD3900] ^= 0x01
@@ -849,8 +850,9 @@ class BuildRomTest(unittest.TestCase):
             "04012c0064737373737300adb3a55a"
         )
         historical = checksums.recalculate(historical)
-        signature = build_rom.RollingEndpointSignature(
+        signature = runtime_endpoints.RollingEndpointSignature(
             key="test-schema-1-endpoint",
+            roms=("JK08A",),
             configuration_schema_version=1,
             unit_sha256=tuple(
                 (
@@ -875,7 +877,7 @@ class BuildRomTest(unittest.TestCase):
             ),
         )
         with mock.patch.object(
-            build_rom, "HISTORICAL_ROLLING_ENDPOINTS", (signature,)
+            runtime_endpoints, "HISTORICAL_ROLLING_ENDPOINTS", (signature,)
         ):
             result = build_rom.build_image(
                 historical, source_name="registered schema-1 runtime"
