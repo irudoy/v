@@ -1112,11 +1112,16 @@ def validate_structure(layout):
         )
 
 
+def erased_rom(layout):
+    """Return the region that every input image keeps erased."""
+    return layout.free_rom if layout.variant == "sh7058-jk78" else layout.claimed_rom
+
+
 def _validate_image_contract(layout, image):
     """Validate byte anchors shared by exact and compatible input images."""
     if layout.free_rom.end > len(image.data):
         raise ValueError("audited free region extends beyond the ROM image")
-    erased = layout.free_rom if layout.variant == "sh7058-jk78" else layout.claimed_rom
+    erased = erased_rom(layout)
     erased_bytes = image.data[erased.start : erased.end]
     if erased_bytes != bytes([0xFF]) * erased.size:
         first = next(
