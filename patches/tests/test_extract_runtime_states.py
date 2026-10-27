@@ -13,6 +13,7 @@ import pytest
 
 from patches import apply_calibration
 from patches import build_rom
+from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
 from patches import rolling_launch
@@ -449,3 +450,39 @@ def test_occupied_telemetry_reserve_is_rejected_by_address():
         match=f"change at {reserve:#x} is outside the calibration ranges",
     ):
         extract(source)
+
+
+@pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
+def test_historical_endpoint_calibration_transfers_to_a_fresh_build(rom):
+    families = target(rom).map_layout.families
+    unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
+    source = bytearray(edited_runtime(rom, rolling=True, telemetry=True))
+    source[unit.span.start : unit.span.end] = guarded_controller_for(rom)
+    for index, family in enumerate(families):
+        source[family.canonical_address] ^= 1 + index
+        source[family.copies[-1] + family.byte_length - 1] ^= 1 + index
+    source = closed(rom, source)
+    extraction = extract_calibration.extract(source, rom=rom)
+    assert state(extraction)["rolling_launch"].startswith("schema-3-guarded-controller")
+    profile = build_rom.parse_profile(
+        extract_calibration.profile_bytes(extraction, "transfer"), "transfer"
+    )
+    fresh = build_rom.build_image(
+        target(rom).stock_image.data, rom=rom, profile=profile
+    ).data
+    result = apply_calibration.apply(fresh, extraction.calibration)
+    assert dict(result.settings) == {
+        "rolling_launch": "matched",
+        "can_telemetry": "matched",
+    }
+    ranges = calibration_ranges.load(rom)
+    differences = {
+        offset for offset, (before, after) in enumerate(zip(source, result.data))
+        if before != after
+    }
+    assert differences
+    assert differences <= ranges.write_offsets | ranges.checksum_offsets
+    assert not differences & ranges.offsets()
+    for layout in (target(rom).rolling_layout, target(rom).telemetry_layout):
+        record = layout.configuration
+        assert result.data[record.start : record.end] == source[record.start : record.end]
