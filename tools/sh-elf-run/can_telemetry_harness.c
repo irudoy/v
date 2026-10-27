@@ -773,7 +773,8 @@ static int run_control_config_probe(enum config_mutation mutation)
     return check_control_probe("control-config-reject", state, mailbox, flags, before, after);
 }
 
-static int run_control_init_probe(uint16_t identifier, uint8_t enabled, int invalid)
+static int run_control_init_probe(uint16_t identifier, uint16_t expected_mailbox_id,
+    uint8_t enabled, int invalid)
 {
     uint8_t state[CONTROL_STATE_BYTES], mailbox[CONTROL_BOX_BYTES];
     uint16_t flags[] = {0x8001U, 0x8002U, 0x4003U, 0x25a5U};
@@ -787,14 +788,14 @@ static int run_control_init_probe(uint16_t identifier, uint8_t enabled, int inva
     snapshot_control(state, ram_pointer(CONTROL_STATE_GUARD), sizeof(state));
     snapshot_control(mailbox, ram_pointer(CONTROL_BOX_GUARD), sizeof(mailbox));
     if (!invalid) {
-        write_u16(mailbox + 4, (uint16_t)((identifier + 1U) << 4));
+        write_u16(mailbox + 4, expected_mailbox_id);
         write_u16(mailbox + 6, 0);
         write_u16(mailbox + 8, 0x0208U);
         write_u16(mailbox + 10, 0);
         write_u16(mailbox + 20, 0);
         write_u16(mailbox + 22, 0);
         flags[0] = flags[1] = flags[2] = CONTROL_MAILBOX_MASK;
-        flags[3] |= CONTROL_MAILBOX_MASK;
+        flags[3] = 0xa5a5U;
     }
     __asm__ volatile ("mov r15,%0" : "=r" (before) : : "memory");
     returned = invoke_r0(HCAN1_INIT_WRAPPER);
@@ -804,7 +805,8 @@ static int run_control_init_probe(uint16_t identifier, uint8_t enabled, int inva
     return check_control_probe("control-init-probe", state, mailbox, flags, before, after);
 }
 
-static int run_control_command_probe(unsigned mode, uint8_t divisor)
+static int run_control_command_probe(unsigned mode, uint8_t divisor,
+    uint8_t expected_divider)
 {
     uint8_t state[CONTROL_STATE_BYTES], mailbox[CONTROL_BOX_BYTES];
     uint16_t flags[] = {0x8001U, 0x0002U, 0x4003U, 0x25a5U};
@@ -838,7 +840,7 @@ static int run_control_command_probe(unsigned mode, uint8_t divisor)
         flags[0] = flags[1] = flags[2] = CONTROL_MAILBOX_MASK;
     if (mode == 7 || mode == 9) {
         state[4 + 11] = 1;
-        state[4 + 10] = (uint8_t)(divisor - 1U);
+        state[4 + 10] = expected_divider;
     } else if (mode == 8) {
         state[4 + 11] = 2;
         state[4 + 10] = 0;
@@ -857,16 +859,16 @@ static int run_canonical_control_cases(void)
     for (mutation = CONFIG_MAGIC; mutation <= CONFIG_INTEGRITY; ++mutation)
         if (mutation != CONFIG_DISABLED && !run_control_config_probe(mutation))
             return 0;
-    if (!run_control_init_probe(0x06f0U, 1, 0)
-        || !run_control_init_probe(1, 1, 0)
-        || !run_control_init_probe(0x07feU, 1, 0)
-        || !run_control_init_probe(0x06f0U, 0, 0)
-        || !run_control_init_probe(0x06f0U, 1, 1))
+    if (!run_control_init_probe(0x06f0U, 0x6f10U, 1, 0)
+        || !run_control_init_probe(1, 0x0020U, 1, 0)
+        || !run_control_init_probe(0x07feU, 0x7ff0U, 1, 0)
+        || !run_control_init_probe(0x06f0U, 0x6f10U, 0, 0)
+        || !run_control_init_probe(0x06f0U, 0x6f10U, 1, 1))
         return 0;
     for (mode = 0; mode < 10; ++mode)
-        if (!run_control_command_probe(mode, 1))
+        if (!run_control_command_probe(mode, 1, 0))
             return 0;
-    return run_control_command_probe(7, 0xffU);
+    return run_control_command_probe(7, 0xffU, 0xfeU);
 }
 #endif
 
