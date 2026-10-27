@@ -133,6 +133,13 @@ JK78C, 1ND0A, 1ND3B and 1ME3B measure the VQ37 fuel-cut wrapper with the project
 engine. Its stock coordinator call is the declared stub, and both
 request outcomes execute.
 
+JK00C and JK00D telemetry measure the projected wrappers, control handler, capture
+regions, completion body and the mailbox-26 SLE1 tail. The tail jumps to the
+stock ISR stub and does not qualify that body. Omitting the main wrapper,
+invalid configuration, zero-channel margin, direct page send, saturated bank
+context, invalid capture configuration, idle acknowledgement or the SLE1
+entry fails at that entry or outcome.
+
 JK78C uses its declared second idle-ignition entry and alternate fuel-compensation
 selection. Its leaf limiter copies the native fuel caps, both curves and the
 throttle scalar. The existing C oracle checks the complete shadows against
