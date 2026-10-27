@@ -19,6 +19,7 @@ from pathlib import Path
 import struct
 
 from tools.can_dashboard import recording
+from tools.can_dashboard.sources import SourceStatus
 from tools.can_dashboard.model import (
     OBSERVED_IDS,
     DriveObserver,
@@ -308,6 +309,25 @@ def load_timeline(
         raise ReplayError(f"{path.name} holds nothing to replay")
     timeline.build_checkpoints()
     return timeline
+
+
+def load_replay(path, can_id, profile, schema_path, emit):
+    """Load one replay file on a worker thread and emit its outcome.
+
+    An exception would end the worker without a status and leave the source
+    loading, so every failure becomes a terminal error status.
+    """
+    try:
+        timeline = load_timeline(path, can_id, profile, schema_path)
+    except ReplayError as error:
+        emit(SourceStatus("error", f"replay failed: {error}"))
+        return
+    except Exception as error:
+        emit(SourceStatus(
+            "error", f"replay failed: {type(error).__name__}: {error}"
+        ))
+        return
+    emit(ReplayLoaded(timeline))
 
 
 class ReplayPlayer:

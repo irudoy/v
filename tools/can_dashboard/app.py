@@ -44,10 +44,9 @@ from tools.can_dashboard.live_feed import LiveFeed, feed_channels, parse_endpoin
 from tools.can_dashboard.presentation import Metric
 from tools.can_dashboard.recording import TelemetryMlgRecorder, recover_recording
 from tools.can_dashboard.replay import (
-    ReplayError,
     ReplayLoaded,
     ReplayPlayer,
-    load_timeline,
+    load_replay,
     next_speed,
 )
 from tools.can_dashboard.sources import (
@@ -1853,21 +1852,16 @@ class DashboardApp:
             return
         self._new_model(can_id)
         path = Path(path)
-        emit = self._source_emitter()
-        profile = self.args.profile
-        schema = self.args.schema
-
-        def load():
-            try:
-                timeline = load_timeline(path, can_id, profile, schema)
-            except (ReplayError, ValueError) as error:
-                emit(SourceStatus("error", f"replay failed: {error}"))
-                return
-            emit(ReplayLoaded(timeline))
-
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
-            target=load,
+            target=load_replay,
+            args=(
+                path,
+                can_id,
+                self.args.profile,
+                self.args.schema,
+                self._source_emitter(),
+            ),
             daemon=True,
             name="replay-loader",
         )

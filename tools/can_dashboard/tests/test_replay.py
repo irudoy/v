@@ -3,8 +3,9 @@ from dataclasses import replace
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
-from tools.can_dashboard import excerpt, model, recording, replay
+from tools.can_dashboard import excerpt, model, recording, replay, sources
 from tools.can_dashboard.replay import ReplayError, ReplayPlayer
 from tools.logs import mlvlg
 
@@ -100,6 +101,38 @@ class LoadTimelineTest(unittest.TestCase):
     def test_a_missing_file_is_a_replay_error(self):
         with self.assertRaises(ReplayError):
             replay.load_timeline(Path("missing-capture.trc"), 0x6F0)
+
+
+class LoadReplayTest(unittest.TestCase):
+    def load(self, outcome):
+        events = []
+        with mock.patch.object(replay, "load_timeline", **outcome):
+            replay.load_replay(
+                Path("capture.trc"), 0x6F0, "tuning", None, events.append
+            )
+        return events
+
+    def test_every_loader_failure_ends_with_an_error_status(self):
+        for error in (
+            ReplayError("nothing to replay"),
+            ValueError("bad value"),
+            OSError("device not ready"),
+            MemoryError(),
+            KeyError("tick16"),
+            RuntimeError("unexpected"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                (event,) = self.load({"side_effect": error})
+                self.assertIsInstance(event, sources.SourceStatus)
+                self.assertEqual(event.state, "error")
+                self.assertTrue(event.detail.startswith("replay failed: "))
+
+    def test_a_loaded_timeline_is_emitted(self):
+        timeline = object()
+        self.assertEqual(
+            self.load({"return_value": timeline}),
+            [replay.ReplayLoaded(timeline)],
+        )
 
 
 class RecordingReplayTest(unittest.TestCase):
