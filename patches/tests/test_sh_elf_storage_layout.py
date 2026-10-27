@@ -75,7 +75,7 @@ def test_invalid_declared_ram_fails(tmp_path,ranges):
     with pytest.raises(ELFStorageError):require_separate_storage(path,ranges)
 
 
-@pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059', 'relocated-jk00c', 'relocated-jk00d'])
+@pytest.mark.parametrize('route', ['map', 'rolling', 'telemetry', 'relocated-sh7058', 'relocated-sh7059', 'relocated-jk00c', 'relocated-jk00d', 'relocated-jk78c'])
 @pytest.mark.parametrize('layout', ['data', 'bss', 'virtual', 'physical', 'before', 'after', 'malformed', 'missing'])
 def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monkeypatch, route, layout):
     import importlib
@@ -88,6 +88,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         'relocated-sh7059': 'verify_runtime_targets',
         'relocated-jk00c': 'verify_runtime_targets',
         'relocated-jk00d': 'verify_runtime_targets',
+        'relocated-jk78c': 'verify_runtime_targets',
     }
     module = importlib.import_module(modules[route])
     base = module if route == 'map' else module.base_verifier
@@ -124,17 +125,20 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
     class StorageAccepted(Exception):
         pass
 
-    if route in ('map', 'rolling', 'telemetry', 'relocated-jk00c', 'relocated-jk00d'):
+    if route in ('map', 'rolling', 'telemetry', 'relocated-jk00c', 'relocated-jk00d', 'relocated-jk78c'):
         def after_storage(*args, **kwargs):
             raise StorageAccepted
         monkeypatch.setattr(base, '_invoke_trace_bindings', after_storage)
 
     def execute():
-        if route in ('relocated-jk00c', 'relocated-jk00d'):
-            keys = base.PC_COVERAGE_UNITS + base.ADAPTER_COVERAGE_UNITS + ('secondary_cvtc_adapter',)
+        if route in ('relocated-jk00c', 'relocated-jk00d', 'relocated-jk78c'):
+            rom = route.rsplit('-', 1)[1].upper()
+            keys = base.PC_COVERAGE_UNITS + base.ADAPTER_COVERAGE_UNITS
+            if rom in ('JK00C', 'JK00D'):
+                keys += ('secondary_cvtc_adapter',)
             map_layout = SimpleNamespace(assembly_unit_by_key={
                 key: SimpleNamespace(code_regions=()) for key in keys}, code_region_by_key={})
-            target = SimpleNamespace(rom=route.rsplit('-', 1)[1].upper(), stock_image=SimpleNamespace(data=bytes(0x100000)),
+            target = SimpleNamespace(rom=rom, stock_image=SimpleNamespace(data=bytes(0x100000)),
                                      map_layout=map_layout)
             parsed = {key: SimpleNamespace(statements=()) for key in keys}
             source = tmp_path / 'harness.c'
@@ -179,7 +183,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         with pytest.raises(module.VerificationError, match='ELF storage separation'):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
-    elif route in ('map', 'rolling', 'telemetry', 'relocated-jk00c', 'relocated-jk00d'):
+    elif route in ('map', 'rolling', 'telemetry', 'relocated-jk00c', 'relocated-jk00d', 'relocated-jk78c'):
         # Reach the next real stage after accepting ELF storage, before RUN.
         with pytest.raises(StorageAccepted):
             execute()

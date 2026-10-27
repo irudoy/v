@@ -466,7 +466,7 @@ def _compile_and_run(
     fixture=None,
     composed_image=None,
 ):
-    measured = target.rom in ("JK00C", "JK00D") and name == "map-switching"
+    measured = target.rom in ("JK00C", "JK00D", "JK78C") and name == "map-switching"
     source_snapshot = None
     if measured:
         if map_parsed is None or fixture is None or composed_image is None:
@@ -628,7 +628,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             f"{target.map_layout.variant!r}"
         )
 
-    if target.rom in ("JK00C", "JK00D"):
+    if target.rom in ("JK00C", "JK00D", "JK78C"):
         map_marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
         map_defines += ("VERIFY_SELECTOR_FEEDBACK_GUARDS",)
 
@@ -645,7 +645,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             map_parsed=map_parsed, fixture=fixture, composed_image=composed_image,
         )
     ]
-    if target.rom in ("JK00C", "JK00D") and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]:
+    if target.rom in ("JK00C", "JK00D", "JK78C") and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]:
         raise VerificationError(f"{target.rom} map lacks its measured coverage terminal")
     if target.rolling_layout is not None:
         rolling_source = _render_harness(

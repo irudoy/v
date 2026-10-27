@@ -55,7 +55,7 @@ adapter entry R3 stock-target pools with the composed image. Control targets
 come from those composed bytes. Declared RAM data operands retain their fixture
 aliases.
 The ordinary GNU toolchain includes the optional host observer. Trace requests
-cover the declared canonical, JK00C and JK00D scopes, with no target-state instrumentation.
+cover the declared canonical, JK00C, JK00D and JK78C scopes, with no target-state instrumentation.
 The displaced stock host, serializer and initializer retain their existing
 RTS/NOP fixture stubs; this coverage does not qualify their original bodies.
 
@@ -81,29 +81,37 @@ invoke frame. Entries visited on that frame qualify their return only when the
 bound stock RTS/NOP stub reaches the original invoke continuation. These stubs
 do not qualify the stock lookup bodies.
 
-The selector matrix used by canonical, JK00C and JK00D builds declares the expected published state, observed R4
+The selector matrix used by canonical, JK00C, JK00D and JK78C builds declares the expected published state, observed R4
 and whether a limiter write is permitted. Blocked and aborted gestures require
 untouched shadows and throttle runtime; normalization commits are explicit.
 Feedback rows declare state, payload and observed R4 independently. Zero-pulse
 feedback clears its own transient state while preserving the selector and stock
 payload. These R4 observations use the fixture's invoke helper. Case totals for
-canonical, JK00C and JK00D builds do not gate acceptance; other relocated targets retain
+canonical, JK00C, JK00D and JK78C builds do not gate acceptance; other relocated targets retain
 their existing matrices and checks.
 
-The relocated map verifier measures JK00C and JK00D through the existing target compile
-and run path. Typed instructions and entries come from every declared map unit
+The relocated map verifier measures JK00C, JK00D and JK78C through the existing
+target compile and run path. Typed instructions and entries come from every declared map unit
 and code region. The secondary CVTC adapter uses its local selection and R3 tail
 paths; it does not require a visit to the shared adapter helper. The target's
 word-copy limiter and state-writing serializer fixture retain their exact
 declared transformations. Guard cases use the rendered target addresses and
 independent state, return and write-effect oracles.
 
-JK00C and JK00D require typed, composed and fixture context, final ELF/invoke binding,
+JK78C uses its declared second idle-ignition entry and alternate fuel-compensation
+selection. Its leaf limiter copies the native fuel caps, both curves and the
+throttle scalar. The existing C oracle checks the complete shadows against
+distinct selected ROM sources and requires the throttle runtime to remain
+untouched. Selector and feedback guards use the target's ASCD mask and addresses.
+Native fuel-cut calls retain their existing state and threshold assertions;
+the stock fuel-cut and interpolation bodies receive no instruction qualification.
+
+JK00C, JK00D and JK78C require typed, composed and fixture context, final ELF/invoke binding,
 complete observer records and the measured coverage terminal. Four actual
 omission builds must fail at their exact target entries despite semantic PASS.
-No canonical stock-consumer window runs on JK00C or JK00D. Other ROMs and feature gates
+No canonical stock-consumer window runs on JK00C, JK00D or JK78C. Other ROMs and feature gates
 retain their existing execution checks and receive no measured qualification
-from these JK00C and JK00D map scopes.
+from these JK00C, JK00D and JK78C map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
 `selector_arbiter`, `startup_wrapper`, `threshold_helper`, and `feedback_arbiter`
