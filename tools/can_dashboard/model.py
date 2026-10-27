@@ -317,9 +317,16 @@ class LiveStats:
     last_snapshot_age: float | None
 
 
-def _window_rate(samples, now, window=2.0):
+RATE_WINDOW_SECONDS = 2.0
+
+
+def _trim_window(samples, now, window=RATE_WINDOW_SECONDS):
     while samples and now - samples[0] > window:
         samples.popleft()
+
+
+def _window_rate(samples, now, window=RATE_WINDOW_SECONDS):
+    _trim_window(samples, now, window)
     if len(samples) < 2:
         return 0.0
     elapsed = samples[-1] - samples[0]
@@ -417,6 +424,9 @@ class DashboardModel:
         if frame.arbitration_id != self.can_id:
             return None
         self._telemetry_frame_times.append(now)
+        # An offline consumer never asks for the rates, so the window is
+        # trimmed as it grows.
+        _trim_window(self._telemetry_frame_times, now)
         snapshot = self.decoder.feed(
             frame.arbitration_id,
             frame.data,
@@ -521,6 +531,7 @@ class DashboardModel:
         self.last_tick = snapshot.unwrapped_tick
         self.last_snapshot_monotonic = now
         self._snapshot_times.append(now)
+        _trim_window(self._snapshot_times, now)
         self.schema_verified = snapshot.schema_verified
         if snapshot.profile_id is not None:
             self.profile_id = snapshot.profile_id

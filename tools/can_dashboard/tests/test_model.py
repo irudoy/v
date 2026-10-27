@@ -490,6 +490,24 @@ class DashboardModelTest(unittest.TestCase):
         self.assertGreaterEqual(stats.malformed_frames, 1)
         self.assertEqual(stats.error_frames, 1)
 
+    def test_rate_windows_stay_bounded_without_stats_requests(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        group_seconds = model.BASE_TICK_SECONDS
+        for tick in range(1, 1001):
+            feed_group(dashboard, generator.group(tick), tick * group_seconds)
+        now = 1000 * group_seconds
+        window = model.RATE_WINDOW_SECONDS
+        self.assertTrue(all(
+            now - value <= window for value in dashboard._snapshot_times
+        ))
+        self.assertTrue(all(
+            now - value <= window + 0.01
+            for value in dashboard._telemetry_frame_times
+        ))
+        stats = dashboard.stats(now)
+        self.assertAlmostEqual(stats.snapshot_hz, 1 / group_seconds, places=6)
+
     def test_divisor_changes_expected_tick_step(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 4)
