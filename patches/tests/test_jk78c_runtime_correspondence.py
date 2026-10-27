@@ -132,13 +132,16 @@ def test_jk78c_native_fuel_cut_evidence_matches_the_exact_registry():
 def test_jk78c_erased_stock_references_remain_outside_runtime_writes():
     target = runtime_targets.project_relocated_target("JK78C")
     writes = map_switching_compose.composition_write_ranges(target.map_layout)
+    writes += rolling_launch_compose.composition_write_ranges(target.rolling_layout)
     writes += can_telemetry_compose.composition_write_ranges(
         target.telemetry_layout
     )
-    stock_references = (0x0001E30C, 0x0001FE00, 0x0001FFFE, 0x0001FFFF)
+    # 0x1E30C feeds CMP/HI at 0xDA35C and 0xDA468, not a ROM dereference.
+    # Disjoint audit values remain candidates without assuming pointer semantics.
+    protected_candidates = (0x0001FE00, 0x0001FFFE, 0x0001FFFF)
     assert all(
         not any(span.start <= address < span.end for span in writes)
-        for address in stock_references
+        for address in protected_candidates
     )
 
 

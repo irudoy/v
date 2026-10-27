@@ -349,9 +349,25 @@ requested-torque column coordinate `0xFFFF1976` come from the target producers
 `0x03BD1C` and `0x073948`. The profile also binds both SUM16 regions and both runtime SUM/XOR
 regions to the independently reproduced stock checksum values.
 
-The complete flash-envelope reference audit found four erased stock targets
-inside the free span. None intersects a generated runtime write. A full
-instruction and p-code RAM audit found no stock access to the claimed RAM
+The flash-envelope audit distinguishes comparison operands from executable
+address references. The reviewed literal loads have these uses:
+
+| Value | Load instructions | Use |
+| --- | --- | --- |
+| `0x1E30C` | `0x0DA356`, `0x0DA462` | Unsigned comparison limit at `0x0DA35C` and `0x0DA468` |
+| `0x1FFFE` | `0x088196` | Saturation comparisons at `0x0881A0` and `0x0881B0` |
+| `0x1FFFF` | `0x001816`, `0x002C98` | Unsigned range bounds at `0x001818` and `0x002C9E` |
+
+These sites compare the loaded values rather than dereferencing them or
+transferring control to them. A numeric operand equal to a flash address does
+not by itself establish a memory access. The reference exclusion check covers
+the combined Map Switching, Rolling Launch, and CAN telemetry write ranges.
+It conservatively preserves the disjoint audit candidates `0x1FE00`,
+`0x1FFFE`, and `0x1FFFF`. The exported 32-bit load query has no exact match for
+`0x1FE00`; its use remains unclassified, and absence of a match does not
+establish absence of runtime access.
+
+A full instruction and p-code RAM audit found no stock access to the claimed RAM
 range. These static results establish software ownership only; JK78C remains
 `UNTESTED` on bench and vehicle hardware.
 
