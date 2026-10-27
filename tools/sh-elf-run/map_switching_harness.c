@@ -94,6 +94,11 @@
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
 
+#ifdef VERIFY_7MFK_THROTTLE_SCALAR
+extern uint32_t invoke_throttle_scalar(
+    uint32_t entry, uint32_t incoming, uint32_t *observed_sr);
+#endif
+
 struct family {
     const char *name;
     uint32_t entry;
@@ -517,7 +522,7 @@ static void read_bytes(
         target[index] = source[index];
 }
 
-#if defined(TARGET_VQ37) || defined(VERIFY_7MFK_FUEL_CUT)
+#if defined(TARGET_VQ37) || defined(VERIFY_7MFK_FUEL_CUT) || defined(VERIFY_7MFK_THROTTLE_SCALAR)
 static uint16_t read_be16(const volatile uint8_t *source)
 {
     return (uint16_t)(((uint16_t)source[0] << 8) | source[1]);
@@ -741,6 +746,94 @@ static int run_limiter_cases(void)
     }
     return 1;
 }
+
+#ifdef VERIFY_7MFK_THROTTLE_SCALAR
+/* The real clamp returns through an observation stub after its delay slot
+   and both branch outcomes, outside [0x77ac0,0x77ace). */
+static int run_throttle_scalar_consumer_case(
+    uint8_t requested, uint16_t threshold, uint32_t incoming, size_t *cases)
+{
+    static const uint8_t empty_state[8] = {0};
+    uint8_t saved_stock[2], saved_slot[2], shadows[RAM_SENTINEL_SIZE];
+    uint8_t runtime[2];
+    uint32_t saved_gbr, after_gbr, before_sp, after_sp, before_sr, observed_sr;
+    uint32_t sentinel_gbr = 0x2468ace0U;
+    uint32_t returned, expected = incoming > threshold ? threshold : incoming;
+    unsigned normalized = requested < ARRAY_SIZE(throttle_slots) ? requested : 0;
+    uint32_t source = throttle_slots[normalized];
+    uint32_t stock_scalar = THROTTLE_STOCK + THROTTLE_SELECTED_OFFSET;
+
+    read_bytes(saved_stock, rom_pointer(stock_scalar), sizeof(saved_stock));
+    read_bytes(saved_slot, rom_pointer(source), sizeof(saved_slot));
+    write_be16(rom_pointer(source), threshold);
+    seed_ram(empty_state);
+    if (invoke_r4(LIMITER_COMMIT, requested) != normalized)
+        return fail_value("throttle_scalar_consumer", "selected_bank", requested, normalized);
+    if (read_be16(ram_pointer(THROTTLE_SHADOW + THROTTLE_SELECTED_OFFSET)) != threshold)
+        return fail_value("throttle_scalar_consumer", "selected_threshold",
+            read_be16(ram_pointer(THROTTLE_SHADOW + THROTTLE_SELECTED_OFFSET)), threshold);
+    read_bytes(shadows, ram_pointer(RAM_SENTINEL_BASE), sizeof(shadows));
+    read_bytes(runtime, ram_pointer(THROTTLE_RUNTIME), sizeof(runtime));
+    /* Read-through of the old calibration word must produce a different limit. */
+    write_be16(rom_pointer(stock_scalar), (uint16_t)(threshold ^ 0xffffU));
+    __asm__ volatile (
+        "stc gbr,%0\n\tmov r15,%1\n\tstc sr,%2\n\tldc %3,gbr"
+        : "=&r" (saved_gbr), "=&r" (before_sp), "=&r" (before_sr)
+        : "r" (sentinel_gbr) : "memory");
+    returned = invoke_throttle_scalar(0x00077ac0U, incoming, &observed_sr);
+    __asm__ volatile (
+        "stc gbr,%0\n\tmov r15,%1\n\tldc %2,gbr"
+        : "=&r" (after_gbr), "=&r" (after_sp) : "r" (saved_gbr) : "memory");
+    write_bytes(rom_pointer(stock_scalar), saved_stock, sizeof(saved_stock));
+    write_bytes(rom_pointer(source), saved_slot, sizeof(saved_slot));
+    ++*cases;
+    if (returned != expected)
+        return fail_value("throttle_scalar_consumer", "clamp_result", returned, expected);
+    if ((observed_sr & 1U) != (incoming > threshold))
+        return fail_value("throttle_scalar_consumer", "unsigned_comparison", observed_sr & 1U, incoming > threshold);
+    if ((observed_sr & ~1U) != (before_sr & ~1U))
+        return fail_value("throttle_scalar_consumer", "preserved_sr", observed_sr & ~1U, before_sr & ~1U);
+    if (after_gbr != sentinel_gbr)
+        return fail_value("throttle_scalar_consumer", "gbr", after_gbr, sentinel_gbr);
+    if (after_sp != before_sp)
+        return fail_value("throttle_scalar_consumer", "stack", after_sp, before_sp);
+    return fail_bytes("throttle_scalar_consumer", "shadow_read_only",
+            ram_pointer(RAM_SENTINEL_BASE), shadows, sizeof(shadows))
+        && fail_bytes("throttle_scalar_consumer", "runtime_read_only",
+            ram_pointer(THROTTLE_RUNTIME), runtime, sizeof(runtime));
+}
+
+static int run_throttle_scalar_consumer_cases(void)
+{
+    static const uint8_t requested[] = {0, 1, 2, 3, 4, 5, 0xff};
+    static const uint16_t thresholds[] = {0, 1, 0x7fffU, 0x8000U, 0xfffeU, 0xffffU};
+    static const uint32_t inputs[] = {
+        0, 1, 0x7fffU, 0x8000U, 0xffffU, 0x10000U,
+        0x7fffffffU, 0x80000000U, 0xffffffffU,
+    };
+    size_t bank, threshold, sample, cases = 0;
+
+    for (bank = 0; bank < ARRAY_SIZE(requested); ++bank)
+        for (threshold = 0; threshold < ARRAY_SIZE(thresholds); ++threshold) {
+            uint16_t limit = thresholds[threshold];
+            for (sample = 0; sample < ARRAY_SIZE(inputs); ++sample)
+                if (!run_throttle_scalar_consumer_case(
+                        requested[bank], limit, inputs[sample], &cases))
+                    return 0;
+            if (limit && !run_throttle_scalar_consumer_case(
+                    requested[bank], limit, (uint32_t)limit - 1U, &cases))
+                return 0;
+            if (!run_throttle_scalar_consumer_case(
+                    requested[bank], limit, limit, &cases)
+                    || !run_throttle_scalar_consumer_case(
+                        requested[bank], limit, (uint32_t)limit + 1U, &cases))
+                return 0;
+        }
+    printf("VQ_SH_ELF_MAP_SWITCHING_THROTTLE_SCALAR status=PASS cases=%lu entries=1\n",
+        (unsigned long)cases);
+    return 1;
+}
+#endif
 
 #ifdef VERIFY_7MFK_FUEL_CUT
 /* The composed pointer is bound before the three declared RAM translations.
@@ -1118,6 +1211,10 @@ int main(void)
         return 1;
 #ifdef VERIFY_7MFK_FUEL_CUT
     if (!run_fuel_cut_consumer_cases())
+        return 1;
+#endif
+#ifdef VERIFY_7MFK_THROTTLE_SCALAR
+    if (!run_throttle_scalar_consumer_cases())
         return 1;
 #endif
 #ifdef TARGET_VQ37

@@ -110,12 +110,116 @@ mov #0x5,r1
         ):
             VERIFIER.alias_high_ram(0xFFFE7FFF)
 
+    def _throttle_scalar_fixture(self):
+        layout = layout_model.load_layout()
+        stock = layout_model.validate_image(layout).data
+        composed = bytearray(stock)
+        for hook in layout.hooks:
+            composed[hook.address:hook.address + hook.width] = hook.replacement.to_bytes(hook.width, "big")
+        reconstructed = bytearray(VERIFIER.THROTTLE_SCALAR_POOL + 4 - VERIFIER.THROTTLE_SCALAR_START)
+        extent = VERIFIER.THROTTLE_SCALAR_END + 4 - VERIFIER.THROTTLE_SCALAR_START
+        reconstructed[:extent] = stock[VERIFIER.THROTTLE_SCALAR_START:VERIFIER.THROTTLE_SCALAR_START + extent]
+        reconstructed[-4:] = stock[VERIFIER.THROTTLE_SCALAR_POOL:VERIFIER.THROTTLE_SCALAR_POOL + 4]
+        return layout, stock, composed, reconstructed
+
+    def test_throttle_scalar_binds_clamp_and_original_return_boundary(self):
+        layout, stock, composed, reconstructed = self._throttle_scalar_fixture()
+        VERIFIER.require_throttle_scalar_consumer_bytes(stock, composed, reconstructed, layout)
+        for name in ("stock", "composed"):
+            for address in range(VERIFIER.THROTTLE_SCALAR_START, VERIFIER.THROTTLE_SCALAR_END + 4, 2):
+                with self.subTest(image=name, address=hex(address)):
+                    changed = bytearray(stock if name == "stock" else composed)
+                    changed[address] ^= 1
+                    with self.assertRaisesRegex(VERIFIER.VerificationError, name + " instructions differ"):
+                        VERIFIER.require_throttle_scalar_consumer_bytes(
+                            changed if name == "stock" else stock,
+                            changed if name == "composed" else composed,
+                            reconstructed, layout,
+                        )
+
+    def test_throttle_scalar_rejects_changed_pointer_and_incomplete_reconstruction(self):
+        layout, stock, composed, reconstructed = self._throttle_scalar_fixture()
+        for name in ("stock", "composed"):
+            changed = bytearray(stock if name == "stock" else composed)
+            changed[VERIFIER.THROTTLE_SCALAR_POOL + 3] ^= 1
+            with self.assertRaisesRegex(VERIFIER.VerificationError, name + " pool differs"):
+                VERIFIER.require_throttle_scalar_consumer_bytes(
+                    changed if name == "stock" else stock,
+                    changed if name == "composed" else composed,
+                    reconstructed, layout,
+                )
+        for changed in (reconstructed[:-1], reconstructed + b"\0"):
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "extent differs"):
+                VERIFIER.require_throttle_scalar_consumer_bytes(stock, composed, changed, layout)
+
+    def test_throttle_scalar_fixture_only_translates_pool_and_outside_return_boundary(self):
+        layout, stock, composed, reconstructed = self._throttle_scalar_fixture()
+        VERIFIER.require_throttle_scalar_consumer_bytes(stock, composed, reconstructed, layout)
+        before = bytes(composed)
+        VERIFIER.prepare_throttle_scalar_fixture(composed)
+        allowed = {address + offset for address in (VERIFIER.THROTTLE_SCALAR_POOL, VERIFIER.THROTTLE_SCALAR_END) for offset in range(4)}
+        self.assertLessEqual({i for i, (a, b) in enumerate(zip(before, composed)) if a != b}, allowed)
+        self.assertEqual(composed[VERIFIER.THROTTLE_SCALAR_START:VERIFIER.THROTTLE_SCALAR_END], stock[VERIFIER.THROTTLE_SCALAR_START:VERIFIER.THROTTLE_SCALAR_END])
+        self.assertEqual(composed[VERIFIER.THROTTLE_SCALAR_END:VERIFIER.THROTTLE_SCALAR_END + 4], VERIFIER.RETURN_STUB)
+        expected = VERIFIER.alias_high_ram(int.from_bytes(before[VERIFIER.THROTTLE_SCALAR_POOL:VERIFIER.THROTTLE_SCALAR_POOL + 4], "big"))
+        self.assertEqual(int.from_bytes(composed[VERIFIER.THROTTLE_SCALAR_POOL:VERIFIER.THROTTLE_SCALAR_POOL + 4], "big"), expected)
+
+    def test_throttle_scalar_rejects_a_simulator_stub_overlapping_the_clamp(self):
+        layout, _, composed, _ = self._throttle_scalar_fixture()
+
+        def overlapping_stub(fixture, layout):
+            fixture[VERIFIER.THROTTLE_SCALAR_START:VERIFIER.THROTTLE_SCALAR_START + 4] = VERIFIER.RETURN_STUB
+            return 1
+
+        with patch.object(VERIFIER, "install_stock_return_stubs", overlapping_stub):
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator fixture changes instructions"):
+                VERIFIER.build_dynamic_fixture(SimpleNamespace(data=bytes(composed)), layout, {})
+
+    def test_throttle_scalar_invoke_binding_rejects_changed_or_missing_helper(self):
+        with tempfile.TemporaryDirectory() as directory:
+            build = Path(directory)
+            elf, invoke = build / "harness.elf", build / "invoke.o"
+            image = b"fixture"
+            original = bytes.fromhex("000b0009000b0009000b0009")
+            linked = bytearray(original)
+            missing = False
+
+            def command(arguments, **kwargs):
+                if arguments[0] == VERIFIER.OBJCOPY:
+                    section = arguments[4]
+                    content = image if section == ".rom" else (
+                        bytes(linked) if arguments[-2] == elf else original)
+                    Path(arguments[-1]).write_bytes(content)
+                    return SimpleNamespace(stdout="")
+                if arguments[0] == VERIFIER.NM:
+                    base = 0x110000 if arguments[-1] == elf else 0
+                    names = ("_invoke_r4", "_invoke_r0", "_invoke_throttle_scalar")
+                    return SimpleNamespace(stdout="\n".join(
+                        f"{base + index * 4:08x} 00000004 T {name}"
+                        for index, name in enumerate(names)
+                        if not (missing and name == "_invoke_throttle_scalar")))
+                if arguments[0] == VERIFIER.OBJDUMP:
+                    return SimpleNamespace(stdout="0 .text 0000000c 00110000 00110000 00000000 2**1")
+                raise AssertionError(arguments)
+
+            with patch.object(VERIFIER, "run_command", command):
+                ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+                self.assertEqual(ranges[-1], (0x110008, 0x11000c))
+                self.assertIn(0x11000a, words)
+                linked[10] ^= 1
+                with self.assertRaisesRegex(VERIFIER.VerificationError, "linked invoke instructions differ: _invoke_throttle_scalar"):
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+                linked[:] = original
+                missing = True
+                with self.assertRaisesRegex(VERIFIER.VerificationError, "exact invoke function extents"):
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
+
     def _fuel_cut_fixture(self):
         layout = layout_model.load_layout()
         stock = layout_model.validate_image(layout).data
         composed = bytearray(stock)
-        hook = next(row for row in layout.hooks if row.key == "rev_fuel_cut_base")
-        composed[hook.address:hook.address + 4] = hook.replacement.to_bytes(4, "big")
+        for hook in layout.hooks:
+            composed[hook.address:hook.address + hook.width] = hook.replacement.to_bytes(hook.width, "big")
         reconstructed = bytearray(VERIFIER.FUEL_CUT_POOLS[-1] + 4 - VERIFIER.FUEL_CUT_ORIGIN)
         for start, end in (
             (VERIFIER.FUEL_CUT_START, VERIFIER.FUEL_CUT_END),

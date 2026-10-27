@@ -36,6 +36,8 @@ def pipeline(driver, monkeypatch, tmp_path):
     monkeypatch.setattr(driver, 'require_composition', lambda *args: SimpleNamespace(sha256='composition', data=b''))
     monkeypatch.setattr(driver, 'verify_fuel_cut_consumer_binding',
                         lambda *args: events.append('fuel_cut_binding'))
+    monkeypatch.setattr(driver, 'verify_throttle_scalar_consumer_binding',
+                        lambda *args: events.append('throttle_scalar_binding'))
     monkeypatch.setattr(driver, 'build_dynamic_fixture', lambda *args: (b'', 0, 0, ()))
     monkeypatch.setattr(driver, 'build_and_run_dynamic_harness', lambda *args, **kwargs: 'CONTROLLED_MAP_PASS')
     monkeypatch.setattr(driver, 'verify_delay_slot_incident', lambda *args: 'controlled signal')
@@ -66,7 +68,7 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
         ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
         ('pipeline', 'relocated_runtime_targets'),
     ]
-    assert events == ['fuel_cut_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
+    assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
     assert 'VQ_SH_ELF_VERIFY status=PASS' in report and 'stock_code_' not in report
 
 
@@ -79,6 +81,18 @@ def test_failed_fuel_cut_binding_prevents_execution(pipeline, monkeypatch, capsy
     monkeypatch.setattr(driver, 'verify_fuel_cut_consumer_binding', fail)
     assert driver.main([]) == 1
     assert events == []
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in capsys.readouterr().out
+
+
+def test_failed_throttle_scalar_binding_prevents_execution(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+
+    def fail(*args):
+        raise driver.VerificationError('controlled throttle scalar byte mismatch')
+
+    monkeypatch.setattr(driver, 'verify_throttle_scalar_consumer_binding', fail)
+    assert driver.main([]) == 1
+    assert events == ['fuel_cut_binding']
     assert 'VQ_SH_ELF_VERIFY status=PASS' not in capsys.readouterr().out
 
 

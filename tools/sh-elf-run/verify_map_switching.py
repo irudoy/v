@@ -60,6 +60,10 @@ FUEL_CUT_START = 0x0004F282
 FUEL_CUT_END = 0x0004F324
 FUEL_CUT_POOLS = tuple(range(0x0004F460, 0x0004F474, 4))
 
+THROTTLE_SCALAR_START = 0x00077AC0
+THROTTLE_SCALAR_END = 0x00077ACE
+THROTTLE_SCALAR_POOL = 0x00077BAC
+
 AS = "sh-elf-as"
 LD = "sh-elf-ld"
 OBJCOPY = "sh-elf-objcopy"
@@ -68,6 +72,7 @@ RUN = "sh-elf-run"
 NM = "sh-elf-nm"
 OBJDUMP = "sh-elf-objdump"
 PC_COVERAGE_UNITS = ("startup_wrapper", "limiter_commit")
+PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar"}
 
 
 class VerificationError(RuntimeError):
@@ -254,6 +259,61 @@ def alias_high_ram(value):
     return TEST_RAM_BASE + (value & 0xFFFF)
 
 
+def assemble_throttle_scalar_consumer(build_dir):
+    """Reconstruct the clamp and the original observation-boundary bytes."""
+    object_path = build_dir / "map-switching-throttle-scalar.o"
+    elf_path = build_dir / "map-switching-throttle-scalar.elf"
+    binary_path = build_dir / "map-switching-throttle-scalar.bin"
+    run_command([
+        AS, "--big", "--isa=sh2e", "-o", object_path,
+        TOOL_DIR / "map_switching_throttle_scalar_consumer.s",
+    ])
+    run_command([
+        LD, "-EB", f"-Ttext={THROTTLE_SCALAR_START:#x}",
+        f"--entry={THROTTLE_SCALAR_START:#x}", "-o", elf_path, object_path,
+    ])
+    run_command([
+        OBJCOPY, "-O", "binary", "--only-section=.text",
+        elf_path, binary_path,
+    ])
+    return binary_path.read_bytes()
+
+
+def require_throttle_scalar_consumer_bytes(stock, composed, reconstructed, layout):
+    """Bind the unchanged clamp and the authoritative changed pool word."""
+    if len(reconstructed) != THROTTLE_SCALAR_POOL + 4 - THROTTLE_SCALAR_START:
+        raise VerificationError("throttle scalar reconstruction extent differs")
+    extent = THROTTLE_SCALAR_END + len(RETURN_STUB) - THROTTLE_SCALAR_START
+    for name, image in (("stock", stock), ("composed", composed)):
+        if image[THROTTLE_SCALAR_START:THROTTLE_SCALAR_START + extent] != reconstructed[:extent]:
+            raise VerificationError(f"throttle scalar {name} instructions differ")
+    hook = next(row for row in layout.hooks if row.key == "rev_throttle_scalar_base")
+    if hook.address != THROTTLE_SCALAR_POOL or hook.width != 4:
+        raise VerificationError("throttle scalar pointer hook differs")
+    offset = THROTTLE_SCALAR_POOL - THROTTLE_SCALAR_START
+    expected = reconstructed[offset:offset + 4]
+    if stock[THROTTLE_SCALAR_POOL:THROTTLE_SCALAR_POOL + 4] != expected:
+        raise VerificationError("throttle scalar stock pool differs")
+    if int.from_bytes(expected, "big") != hook.stock:
+        raise VerificationError("throttle scalar stock pointer differs")
+    if composed[THROTTLE_SCALAR_POOL:THROTTLE_SCALAR_POOL + 4] != hook.replacement.to_bytes(4, "big"):
+        raise VerificationError("throttle scalar composed pool differs")
+
+
+def prepare_throttle_scalar_fixture(fixture):
+    """Translate the bound pointer and install only the outside return boundary."""
+    value = int.from_bytes(fixture[THROTTLE_SCALAR_POOL:THROTTLE_SCALAR_POOL + 4], "big")
+    fixture[THROTTLE_SCALAR_POOL:THROTTLE_SCALAR_POOL + 4] = alias_high_ram(value).to_bytes(4, "big")
+    fixture[THROTTLE_SCALAR_END:THROTTLE_SCALAR_END + len(RETURN_STUB)] = RETURN_STUB
+
+
+def verify_throttle_scalar_consumer_binding(layout, composition, build_dir):
+    require_throttle_scalar_consumer_bytes(
+        layout_model.validate_image(layout).data, composition.data,
+        assemble_throttle_scalar_consumer(build_dir), layout,
+    )
+
+
 def assemble_fuel_cut_consumer(build_dir):
     """Reconstruct the consumer of the changed fuel-cut pointer independently."""
     object_path = build_dir / "map-switching-fuel-cut.o"
@@ -395,6 +455,11 @@ def build_dynamic_fixture(composition, layout, parsed_by_unit):
     relocated += relocate_fuel_cut_consumer_literals(fixture)
     differentiated = differentiate_map_copies(fixture, layout)
     stubs = install_stock_return_stubs(fixture, layout)
+    prepare_throttle_scalar_fixture(fixture)
+    relocated += 1
+    stubs += 1
+    if fixture[THROTTLE_SCALAR_START:THROTTLE_SCALAR_END] != composition.data[THROTTLE_SCALAR_START:THROTTLE_SCALAR_END]:
+        raise VerificationError("throttle scalar simulator fixture changes instructions")
     if fixture[FUEL_CUT_START:FUEL_CUT_END] != composition.data[FUEL_CUT_START:FUEL_CUT_END]:
         raise VerificationError("fuel-cut consumer simulator fixture changes instructions")
     return bytes(fixture), relocated, differentiated, stubs
@@ -548,10 +613,10 @@ def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
     def symbols(path):
         found = {}
         for line in run_command([NM, "-S", "--defined-only", path]).stdout.splitlines():
-            match = re.fullmatch(r"([0-9a-f]+)\s+([0-9a-f]+)\s+\w\s+(_invoke_r[04])", line)
+            match = re.fullmatch(r"([0-9a-f]+)\s+([0-9a-f]+)\s+\w\s+(_invoke_r[04]|_invoke_throttle_scalar)", line)
             if match:
                 found[match.group(3)] = (int(match.group(1), 16), int(match.group(2), 16))
-        if set(found) != {"_invoke_r0", "_invoke_r4"}:
+        if set(found) != PC_INVOKE_SYMBOLS:
             raise VerificationError("ELF lacks exact invoke function extents")
         return found
 
@@ -607,6 +672,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-Wextra",
             "-Werror",
             "-DVERIFY_7MFK_FUEL_CUT",
+            "-DVERIFY_7MFK_THROTTLE_SCALAR",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -655,6 +721,11 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         result.stdout, re.MULTILINE,
     ):
         raise VerificationError("fuel-cut consumer completion marker is missing")
+    if not re.search(
+        r"^VQ_SH_ELF_MAP_SWITCHING_THROTTLE_SCALAR status=PASS cases=[1-9][0-9]* entries=1$",
+        result.stdout, re.MULTILINE,
+    ):
+        raise VerificationError("throttle scalar completion marker is missing")
     call = "if (!run_limiter_cases())"
     if source.count(call) != 1:
         raise VerificationError("negative harness lacks its unique limiter-case call")
@@ -787,6 +858,7 @@ def verify(verbose=False):
             )
             composition = require_composition(layout, blobs)
             verify_fuel_cut_consumer_binding(layout, composition, build_dir)
+            verify_throttle_scalar_consumer_binding(layout, composition, build_dir)
             fixture, relocated, differentiated, stubs = build_dynamic_fixture(
                 composition, layout, parsed_by_unit
             )

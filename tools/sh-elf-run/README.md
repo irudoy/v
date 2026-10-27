@@ -68,6 +68,15 @@ instructions and their original addresses remain intact. Cases populate the
 selected shadow through the real limiter entry and check thresholds, state,
 timer, return value, stack, GBR and memory guards.
 
+The canonical harness executes the redirected throttle-scalar clamp at its
+original instruction addresses. Independent reconstruction binds its unchanged
+instructions, the composed pointer and the original observation-boundary bytes.
+The fixture translates only the bound RAM pointer and replaces instructions
+after the clamp with RTS/NOP to observe R4 and SR. Cases use the selected shadow
+and check unsigned comparisons, results, preserved SR bits, stack, GBR and memory
+guards. The scalar invoke helper is bound to its independently assembled bytes
+in the final ELF. These functional checks do not establish consumer PC coverage.
+
 The ignition-consumer verifier reconstructs each declared stock call window
 and its operands independently. It then executes the real composed lookup
 literal through the injected adapter. Its C harness checks complete callee and
