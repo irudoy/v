@@ -54,11 +54,11 @@ all unlisted calibrations remain single-copy stock data.
 stores a zero-based active index. Map 1 occupies each stock calibration address;
 Maps 2 through 5 occupy layout-owned ROM ranges.
 
-When the production builder receives an unpatched base, it initializes Maps 2
-through 5 from Map 1. When it migrates a complete compatible runtime, it
-preserves every existing Map 2 through Map 5 calibration byte. The builder
-rejects partial runtimes, unknown payloads, mixed hooks, and modifications to
-protected code.
+The production builder starts from the registered stock image and initializes
+Maps 2 through 5 from Map 1. The calibration transfer of `rom-builder.md`
+carries edited Map 1 through Map 5 bytes from an existing image to a fresh
+build. Its extraction rejects partial runtimes, unknown payloads, mixed hooks,
+and modifications to protected code.
 
 The ten adapter-backed families select a ROM base for the active slot before
 entering the displaced stock lookup. The two limiter families use RAM shadows
@@ -277,8 +277,8 @@ frame.
 
 ### Registered earlier engines
 
-`build_rom.py` migrates complete images whose feedback engine is one of the
-registered exact fingerprints that emit state 6: the partial `0x9F` clear mask
+Calibration extraction accepts complete images whose feedback engine is one of
+the registered exact fingerprints that emit state 6: the partial `0x9F` clear mask
 and the full `0x8F` clear mask, each with 10/10, 15/15, or 30/30 phase counts.
 Firmware `1.11` carries the full-mask engine with 30/30, unit SHA-256
 `d64600dd5be497cf49df077956e2ac86159b0366ecc485b33c5633e146b4e66a`.

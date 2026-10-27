@@ -15,11 +15,9 @@ from patches import build_rom
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
 from patches import can_telemetry
-from patches import can_telemetry_assembly
 from patches import rom_checksums
 from patches import rolling_launch
 from patches import rolling_launch_layout
-from patches import runtime_endpoints
 from patches import runtime_targets
 from tools import rom_homology
 
@@ -31,53 +29,6 @@ STOCK = (
     / "23710-JK08A"
     / "1JK08A-20260726-stock.bin"
 )
-
-
-# Exact controller bytes of the registered schema-3 guarded endpoint.
-GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff5d40ffff11bc00021ce0ffff20220002a892ffffffffffffffff"
-)
-EIGHT_MFK_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff6040ffff11ca00021d6cffff11f50002b51affffffffffffffff"
-)
-ND_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40fffe81b600022318fffe81dd0002e464ffffffffffffffff"
-)
-ME3B_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40fffe819e00022394fffe81c3000311b2ffffffffffffffff"
-)
-JK78C_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40ffff11ac00021e0cffff11cf0002d6f6ffffffffffffffff"
-)
-
-
-def guarded_controller_for(rom):
-    if rom in runtime_targets.EXACT_ROMS:
-        return GUARDED_CONTROLLER
-    if rom in runtime_targets.RELOCATED_8MFK_ROMS:
-        return EIGHT_MFK_GUARDED_CONTROLLER
-    if rom in runtime_targets.SH7059_1ND_ROMS:
-        return ND_GUARDED_CONTROLLER
-    if rom in runtime_targets.SH7059_1ME3B_ROMS:
-        return ME3B_GUARDED_CONTROLLER
-    if rom == "JK78C":
-        return JK78C_GUARDED_CONTROLLER
-    raise AssertionError(rom)
 
 
 def profile_text(*, telemetry=None, **overrides):
@@ -142,16 +93,6 @@ class BuildRomTest(unittest.TestCase):
             )
             for rom in runtime_targets.RELOCATED_ROMS
         }
-
-        migrated = bytearray(cls.base_result.data)
-        migrated[0x8725] ^= 0x01
-        for family_index, family in enumerate(cls.map_layout.families):
-            for slot_index, address in enumerate(family.copies):
-                migrated[address] ^= 1 + family_index + slot_index
-        cls.migration_source = bytes(checksums.recalculate(migrated))
-        cls.saved_copies = build_rom._capture_map_copies(
-            cls.migration_source, cls.map_layout
-        )
 
     def test_auto_and_explicit_selection_build_identical_jk08a(self):
         explicit = build_rom.build_image(
@@ -218,19 +159,9 @@ class BuildRomTest(unittest.TestCase):
                             canonical,
                         )
                 output_hashes.add(result.output_sha256)
-                if rom != "JK08A":
-                    rebuilt = build_rom.build_image(
-                        result.data,
-                        source_name=f"complete {rom} runtime",
-                    )
-                    self.assertEqual(
-                        rebuilt.input_state,
-                        "complete-runtime-migration",
-                    )
-                    self.assertEqual(rebuilt.data, result.data)
         self.assertEqual(len(output_hashes), len(runtime_targets.EXACT_ROMS))
 
-    def test_relocated_family_builds_are_target_specific_and_idempotent(self):
+    def test_relocated_family_builds_are_target_specific(self):
         output_hashes = set()
         for rom in runtime_targets.RELOCATED_ROMS:
             with self.subTest(rom=rom):
@@ -338,15 +269,6 @@ class BuildRomTest(unittest.TestCase):
                             result.data[address : address + family.byte_length],
                             canonical,
                         )
-
-                rebuilt = build_rom.build_image(
-                    result.data, source_name=f"complete {rom} runtime"
-                )
-                self.assertEqual(
-                    rebuilt.input_state, "complete-runtime-migration"
-                )
-                self.assertEqual(rebuilt.data, result.data)
-                self.assertEqual(rebuilt.changed_bytes, 0)
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
 
@@ -372,29 +294,6 @@ class BuildRomTest(unittest.TestCase):
                 )
                 self.assertEqual(result.rolling_instruction_count, 892)
 
-    def test_relocated_migration_preserves_alternate_map_bytes(self):
-        rom = "JK00C"
-        target = runtime_targets.load_runtime_target(rom)
-        source = bytearray(self.relocated_results[rom].data)
-        for family_index, family in enumerate(target.map_layout.families):
-            source[family.copies[-1]] ^= family_index + 1
-        source = rom_checksums.recalculate(source, target.checksum_layout)
-        saved = build_rom._capture_map_copies(source, target.map_layout)
-
-        result = build_rom.build_image(
-            source, source_name="JK00C runtime with alternate maps"
-        )
-
-        self.assertEqual(result.input_state, "complete-runtime-migration")
-        self.assertEqual(
-            build_rom._capture_map_copies(result.data, target.map_layout),
-            saved,
-        )
-        self.assertGreater(result.preserved_map_copy_bytes, 0)
-        self.assertTrue(
-            rom_checksums.verify(result.data, target.checksum_layout).valid
-        )
-
     def test_unknown_identity_and_unsupported_rom_are_rejected(self):
         wrong_identity = bytearray(self.stock)
         wrong_identity[
@@ -415,7 +314,9 @@ class BuildRomTest(unittest.TestCase):
             map_switching_layout.COMPATIBLE_IDENTITY_START
         ] ^= 1
         wrong_identity = checksums.recalculate(wrong_identity)
-        with self.assertRaisesRegex(build_rom.BuildError, "identity"):
+        with self.assertRaisesRegex(
+            build_rom.BuildError, "is not the registered JK08A stock image"
+        ):
             build_rom.build_image(wrong_identity, rom="JK08A")
 
     def test_complete_output_is_checksum_valid_and_closed(self):
@@ -437,531 +338,47 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(result.changed_bytes, len(changed))
         self.assertEqual(result.permitted_write_bytes, len(permitted))
 
-    def test_complete_runtime_can_be_rebuilt_idempotently(self):
-        rebuilt = build_rom.build_image(
-            self.base_result.data, source_name="complete current output"
-        )
-        self.assertEqual(
-            rebuilt.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(rebuilt.data, self.base_result.data)
-        self.assertEqual(rebuilt.changed_bytes, 0)
+    def test_every_input_other_than_the_stock_image_is_refused(self):
+        images = {**self.family_results, **self.relocated_results}
+        for rom, result in images.items():
+            target = runtime_targets.load_runtime_target(rom)
+            calibrated = bytearray(target.stock_image.data)
+            calibrated[target.map_layout.families[0].canonical_address] ^= 1
+            corrupt = bytearray(result.data)
+            corrupt[target.rolling_layout.configuration.start] ^= 0xA5
+            cases = {
+                "built image": result.data,
+                "calibrated stock": rom_checksums.recalculate(
+                    bytearray(calibrated), target.checksum_layout
+                ),
+                "corrupt Rolling Launch": rom_checksums.recalculate(
+                    corrupt, target.checksum_layout
+                ),
+                "invalid checksum": calibrated,
+            }
+            for name, source in cases.items():
+                with self.subTest(rom=rom, case=name), mock.patch.object(
+                    build_rom.apply_map_switching, "patch_image"
+                ) as compose:
+                    with self.assertRaisesRegex(
+                        build_rom.BuildError,
+                        f"input is not the registered {rom} stock image",
+                    ):
+                        build_rom.build_image(bytes(source), source_name=name)
+                    compose.assert_not_called()
 
-        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        telemetry_payloads = can_telemetry_assembly.load_payloads(
-            telemetry_layout
-        )
-        telemetry_state = runtime_endpoints.require_coherent_telemetry_endpoint(
-            self.base_result.data,
-            telemetry_layout,
-            telemetry_payloads,
-            "test runtime",
-        )
-        map_only = bytearray(runtime_endpoints.strip_telemetry_endpoint(
-            self.base_result.data, telemetry_layout, telemetry_state
-        ))
-        launch_layout = rolling_launch_layout.load_layout()
-        for span in launch_layout.claimed_rom_ranges:
-            map_only[span.start : span.end] = bytes([0xFF]) * span.size
-        for hook in launch_layout.hooks:
-            map_only[hook.address : hook.address + hook.width] = (
-                hook.stock.to_bytes(hook.width, launch_layout.byte_order)
-            )
-        for diagnostic in launch_layout.diagnostics:
-            map_only[
-                diagnostic.pointer_address : diagnostic.pointer_address + 4
-            ] = diagnostic.stock.to_bytes(4, launch_layout.byte_order)
-        map_only = checksums.recalculate(map_only)
-        rebuilt_map_only = build_rom.build_image(
-            map_only, source_name="complete map-switching endpoint"
-        )
-        self.assertEqual(rebuilt_map_only.data, self.base_result.data)
-
-    def test_migration_preserves_lower_configuration_and_all_map_copies(self):
-        result = build_rom.build_image(
-            self.migration_source,
-            rom="JK08A",
-            source_name="current complete runtime",
-        )
-        self.assertEqual(
-            result.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(result.data[0x8725], self.migration_source[0x8725])
-        self.assertEqual(
-            build_rom._capture_map_copies(result.data, self.map_layout),
-            self.saved_copies,
-        )
-        self.assertGreater(result.preserved_map_copy_bytes, 0)
-        self.assertTrue(checksums.verify(result.data).valid)
-
-    def edited_runtime(self, rom, *, rolling=False, telemetry=False):
-        original = (
-            self.family_results[rom]
-            if rom in self.family_results else self.relocated_results[rom]
-        )
-        target = runtime_targets.load_runtime_target(rom)
-        edited = bytearray(original.data)
-        if rolling:
-            start = target.rolling_layout.configuration.start
-            # Editor fields in the current 32-byte Rolling Launch record.
-            edited[start + 3] = rolling_launch.Mode.RPM_HOLD
-            edited[start + 4] = 0x02  # Map 1 disabled, Map 2 enabled.
-            edited[start + 8] = 0  # Vehicle-speed activation gate disabled.
-            edited[start + 18 : start + 20] = (301).to_bytes(2, "big")
-            edited[start + 22] = 114  # Map 1 target command.
-        if telemetry:
-            layout = target.telemetry_layout
-            start = layout.configuration.start
-            # Editor fields in the current 16-byte telemetry record.
-            edited[start + 3] = 1  # Enable sampling after reset.
-            edited[start + 6] = 7  # Snapshot divisor.
-            edited[start + 8 : start + 10] = (0x6E0).to_bytes(2, "big")
-            configuration = can_telemetry.Configuration.from_bytes(
-                edited[start : layout.configuration.end]
-            )
-            record = layout.mailbox_record_address
-            edited[record : record + 4] = configuration.mailbox_record()
-        return bytes(rom_checksums.recalculate(edited, target.checksum_layout))
-
-    def test_rebuild_requires_a_profile_for_edited_runtime_settings(self):
-        for rom in ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B"):
-            for component in ("rolling", "telemetry"):
-                with self.subTest(rom=rom, component=component):
-                    source = self.edited_runtime(rom, **{component: True})
-                    with self.assertRaises(build_rom.BuildError) as error:
-                        build_rom.build_image(source)
-                    message = str(error.exception)
-                    self.assertIn("--profile", message)
-                    if component == "rolling":
-                        for field in ("enable_mask", "min_speed",
-                                      "run_timeout_ticks", "target_commands"):
-                            self.assertIn(f"rolling_launch.{field}", message)
-                        self.assertNotIn("can_telemetry.", message)
-                    else:
-                        for field in ("enabled", "can_id", "tick_divisor"):
-                            self.assertIn(f"can_telemetry.{field}", message)
-                        self.assertNotIn("rolling_launch.", message)
-
-    def test_no_profile_rejects_the_editor_disabling_only_map1_rpm_hold(self):
-        for rom in ("JK08A", "JK00C"):
-            with self.subTest(rom=rom):
-                original = (
-                    self.family_results[rom]
-                    if rom in self.family_results else self.relocated_results[rom]
-                )
-                target = runtime_targets.load_runtime_target(rom)
-                edited = bytearray(original.data)
-                start = target.rolling_layout.configuration.start
-                self.assertEqual(edited[start + 3], rolling_launch.Mode.RPM_HOLD)
-                self.assertEqual(edited[start + 4] & 1, 1)
-                edited[start + 4] &= ~1
-                source = rom_checksums.recalculate(edited, target.checksum_layout)
-                with mock.patch.object(build_rom.apply_map_switching, "patch_image") as compose:
-                    with self.assertRaisesRegex(build_rom.BuildError, "rolling_launch.enable_mask"):
-                        build_rom.build_image(source)
-                compose.assert_not_called()
-
-    def test_explicit_profile_replaces_edited_settings_and_records_both_sides(self):
-        for rom in ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B"):
-            with self.subTest(rom=rom):
-                source = self.edited_runtime(rom, rolling=True, telemetry=True)
-                target = runtime_targets.load_runtime_target(rom)
-                profile = build_rom.builtin_profile(target.family)
-                result = build_rom.build_image(source, profile=profile)
-                manifest = build_rom.manifest_data(result, "input.bin", "output.bin")
-                before = manifest["input"]["configuration"]
-                after = manifest["output"]["configuration"]
-                launch = target.rolling_layout.configuration
-                telemetry = target.telemetry_layout.configuration
-                self.assertEqual(before["rolling_launch"]["configuration_hex"],
-                                 source[launch.start : launch.end].hex())
-                self.assertEqual(before["can_telemetry"]["configuration_hex"],
-                                 source[telemetry.start : telemetry.end].hex())
-                record = target.telemetry_layout.mailbox_record_address
-                self.assertEqual(before["can_telemetry"]["mailbox_record_hex"],
-                                 source[record : record + 4].hex())
-                self.assertEqual(before["rolling_launch"]["settings"]["mode"],
-                                 "RPM_HOLD")
-                self.assertEqual(before["rolling_launch"]["settings"]["enable_mask"], 2)
-                self.assertEqual(before["rolling_launch"]["settings"]["min_speed"], 0)
-                self.assertEqual(before["can_telemetry"]["settings"], {
-                    "enabled": True, "can_id": 0x6E0,
-                    "profile": "tuning", "tick_divisor": 7,
-                })
-                self.assertEqual(after["rolling_launch"]["configuration_hex"],
-                                 result.configuration.hex())
-                self.assertEqual(after["can_telemetry"]["configuration_hex"],
-                                 result.telemetry_configuration.hex())
-                self.assertEqual(after["rolling_launch"]["settings"]["enable_mask"],
-                                 profile.calibration.enable_mask)
-                self.assertEqual(after["can_telemetry"]["settings"], {
-                    "enabled": False, "can_id": 0x6F0,
-                    "profile": "tuning", "tick_divisor": 1,
-                })
-                self.assertEqual(after["can_telemetry"]["mailbox_record_hex"],
-                                 result.telemetry_mailbox_record.hex())
-                self.assertEqual(result.configuration, profile.calibration.to_bytes())
-                self.assertEqual(result.telemetry_configuration, profile.telemetry.to_bytes())
-                self.assertTrue(rom_checksums.verify(result.data, target.checksum_layout).valid)
-
-    def test_cli_refuses_edited_settings_before_writing_any_artifact(self):
-        source = self.edited_runtime("JK08A", rolling=True, telemetry=True)
+    def test_cli_refuses_a_built_image_before_writing_any_artifact(self):
         with tempfile.TemporaryDirectory() as directory:
             input_path = Path(directory) / "input.bin"
             output_path = Path(directory) / "output.bin"
-            input_path.write_bytes(source)
+            input_path.write_bytes(self.base_result.data)
             error = io.StringIO()
             with contextlib.redirect_stderr(error), self.assertRaises(SystemExit) as stopped:
                 build_rom.main([str(input_path), "--output", str(output_path)])
             self.assertEqual(stopped.exception.code, 2)
-            self.assertIn("rolling_launch.enable_mask", error.getvalue())
-            self.assertIn("can_telemetry.enabled", error.getvalue())
-            self.assertIn("--profile", error.getvalue())
+            self.assertIn("is not the registered JK08A stock image", error.getvalue())
+            self.assertIn("make rom-extract", error.getvalue())
             self.assertEqual(list(Path(directory).iterdir()), [input_path])
-            self.assertEqual(input_path.read_bytes(), source)
-
-    def test_state_6_feedback_endpoints_can_be_migrated(self):
-        engine = self.map_layout.assembly_unit_by_key[
-            "cruise_feedback_engine"
-        ]
-        status_mask_immediate = engine.span.start + 0x41
-        lamp_on_immediate = engine.span.start + 0x4B
-        phase_counts = self.map_layout.feedback.phase_counts_address
-        for status_mask in (0x8F, 0x9F):
-            with self.subTest(status_mask=status_mask):
-                historical = bytearray(self.base_result.data)
-                self.assertEqual(historical[status_mask_immediate], 0x8F)
-                self.assertEqual(historical[lamp_on_immediate], 0x40)
-                self.assertEqual(
-                    historical[phase_counts : phase_counts + 2],
-                    bytes((20, 20)),
-                )
-                historical[status_mask_immediate] = status_mask
-                historical[lamp_on_immediate] = 0x60
-                historical[phase_counts : phase_counts + 2] = bytes((30, 30))
-                historical = checksums.recalculate(historical)
-                self.assertIn(
-                    build_rom.sha256(
-                        historical[engine.span.start : engine.span.end]
-                    ),
-                    runtime_endpoints.HISTORICAL_FEEDBACK_ENGINE_SHA256,
-                )
-
-                result = build_rom.build_image(
-                    historical, source_name="state-6 feedback endpoint"
-                )
-
-                self.assertEqual(
-                    result.input_state, "complete-runtime-migration"
-                )
-                self.assertEqual(result.data, self.base_result.data)
-
-    def test_unregistered_feedback_engine_is_rejected(self):
-        historical = bytearray(self.base_result.data)
-        engine = self.map_layout.assembly_unit_by_key[
-            "cruise_feedback_engine"
-        ]
-        historical[engine.span.start + 0x4B] = 0x50
-        historical = checksums.recalculate(historical)
-
-        with self.assertRaisesRegex(
-            build_rom.BuildError, "cruise_feedback_engine differs"
-        ):
-            build_rom.build_image(
-                historical, source_name="unregistered feedback engine"
-            )
-
-    def _state_6_7_arbiter_image(self):
-        layout = rolling_launch_layout.load_layout()
-        unit = layout.assembly_unit_by_key["feedback_arbiter"]
-        active_immediate = unit.span.start + 0x2D
-        failed_immediate = unit.span.start + 0x41
-        historical = bytearray(self.base_result.data)
-        self.assertEqual(historical[active_immediate], 0x40)
-        self.assertEqual(historical[failed_immediate], 0x50)
-        historical[active_immediate] = 0x70
-        historical[failed_immediate] = 0x60
-        historical = bytearray(checksums.recalculate(historical))
-        controller = layout.assembly_unit_by_key["ignition_controller"]
-        historical[controller.span.start:controller.span.end] = GUARDED_CONTROLLER
-        historical = checksums.recalculate(historical)
-        endpoint = next(item for item in runtime_endpoints.HISTORICAL_ROLLING_ENDPOINTS
-                        if item.key == "schema-3-state-6-7-indicators")
-        self.assertEqual(
-            dict(endpoint.unit_sha256)["feedback_arbiter"],
-            build_rom.sha256(historical[unit.span.start : unit.span.end]),
-        )
-        return historical
-
-    def test_state_6_7_arbiter_endpoint_migrates_under_telemetry(self):
-        historical = self._state_6_7_arbiter_image()
-
-        result = build_rom.build_image(
-            historical, source_name="state-6/7 arbiter endpoint"
-        )
-
-        self.assertEqual(
-            result.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(result.data, self.base_result.data)
-
-    def test_telemetry_over_unflagged_historical_endpoint_is_rejected(self):
-        historical = self._state_6_7_arbiter_image()
-        with mock.patch.object(
-            runtime_endpoints,
-            "TELEMETRY_LOWER_ROLLING_STATES",
-            frozenset({"current"}),
-        ):
-            with self.assertRaisesRegex(
-                build_rom.BuildError, "not layered"
-            ):
-                build_rom.build_image(
-                    historical, source_name="unflagged lower endpoint"
-                )
-
-    def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
-        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
-            self.base_result.data, telemetry_layout, "current"
-        ))
-        layout = rolling_launch_layout.load_layout()
-        unit = layout.assembly_unit_by_key["feedback_arbiter"]
-        historical[unit.span.start : unit.span.end] = (
-            bytes([0xFF]) * unit.span.size
-        )
-        hook = layout.hook_by_key["feedback_arbitration"]
-        self.assertEqual(
-            int.from_bytes(
-                historical[hook.address : hook.address + hook.width],
-                layout.byte_order,
-            ),
-            hook.replacement,
-        )
-        historical[hook.address : hook.address + hook.width] = (
-            hook.stock.to_bytes(hook.width, layout.byte_order)
-        )
-        controller = layout.assembly_unit_by_key["ignition_controller"]
-        historical[controller.span.start:controller.span.end] = GUARDED_CONTROLLER
-        historical = checksums.recalculate(historical)
-
-        result = build_rom.build_image(
-            historical, source_name="pre-feedback-indicator runtime"
-        )
-
-        self.assertEqual(
-            result.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(result.data, self.base_result.data)
-
-    def previous_current_image(self, *, telemetry=True, custom=False):
-        source = (self.edited_runtime("JK08A", rolling=True, telemetry=True)
-                  if custom else self.base_result.data)
-        if not telemetry:
-            source = runtime_endpoints.strip_telemetry_endpoint(
-                source, build_rom.can_telemetry_layout.load_layout(), "current")
-        historical = bytearray(source)
-        unit = rolling_launch_layout.load_layout().assembly_unit_by_key["ignition_controller"]
-        historical[unit.span.start:unit.span.end] = GUARDED_CONTROLLER
-        return bytes(checksums.recalculate(historical))
-
-    def test_previous_current_controller_migrates_with_or_without_telemetry(self):
-        for telemetry in (False, True):
-            with self.subTest(telemetry=telemetry):
-                source = self.previous_current_image(telemetry=telemetry)
-                result = build_rom.build_image(source)
-                self.assertEqual(result.input_state, "complete-runtime-migration")
-                self.assertEqual(result.data, self.base_result.data)
-                self.assertEqual(build_rom.build_image(result.data).data, result.data)
-
-    def test_previous_current_telemetry_migration_preserves_explicit_custom_settings(self):
-        source = self.previous_current_image(custom=True)
-        layout = rolling_launch_layout.load_layout()
-        telemetry = build_rom.can_telemetry_layout.load_layout()
-        calibration = rolling_launch.Calibration.from_bytes(
-            source[layout.configuration.start:layout.configuration.end])
-        configuration = can_telemetry.Configuration.from_bytes(
-            source[telemetry.configuration.start:telemetry.configuration.end])
-        profile = replace(build_rom.builtin_profile(), calibration=calibration,
-                          telemetry=configuration)
-        result = build_rom.build_image(source, profile=profile)
-        self.assertEqual(result.configuration, calibration.to_bytes())
-        self.assertEqual(result.telemetry_configuration, configuration.to_bytes())
-        self.assertEqual(result.data[telemetry.mailbox_record_address:telemetry.mailbox_record_address + 4],
-                         source[telemetry.mailbox_record_address:telemetry.mailbox_record_address + 4])
-        self.assertEqual(build_rom._capture_map_copies(result.data, self.map_layout),
-                         build_rom._capture_map_copies(source, self.map_layout))
-        self.assertEqual(build_rom.build_image(result.data, profile=profile).data, result.data)
-        with self.assertRaisesRegex(build_rom.BuildError, "--profile"):
-            build_rom.build_image(source)
-
-    def test_previous_current_controller_hybrid_and_malformed_endpoint_are_refused(self):
-        layout = rolling_launch_layout.load_layout()
-        for address in (layout.assembly_unit_by_key["ignition_controller"].span.start,
-                        layout.assembly_unit_by_key["engine"].span.start,
-                        layout.configuration.start):
-            source = bytearray(self.previous_current_image())
-            source[address] ^= 1
-            source = checksums.recalculate(source)
-            with self.subTest(address=address), self.assertRaisesRegex(
-                    build_rom.BuildError, "partial or unknown Rolling Launch"):
-                build_rom.build_image(source)
-
-    def test_previous_guarded_controller_migrates_on_every_registered_rom(self):
-        images = {**self.family_results, **self.relocated_results}
-        for rom, current in images.items():
-            with self.subTest(rom=rom):
-                target = runtime_targets.load_runtime_target(rom)
-                layout = target.rolling_layout
-                unit = layout.assembly_unit_by_key["ignition_controller"]
-                source = bytearray(current.data)
-                source[unit.span.start:unit.span.end] = guarded_controller_for(rom)
-                source = rom_checksums.recalculate(source, target.checksum_layout)
-                result = build_rom.build_image(source, rom=rom)
-                self.assertEqual(result.input_state, "complete-runtime-migration")
-                self.assertEqual(result.data, current.data)
-
-    def test_relocated_guarded_controller_hybrid_is_refused(self):
-        for rom in ("JK00C", "1ND0A", "JK78C"):
-            with self.subTest(rom=rom):
-                target = runtime_targets.load_runtime_target(rom)
-                unit = target.rolling_layout.assembly_unit_by_key["ignition_controller"]
-                source = bytearray(self.relocated_results[rom].data)
-                source[unit.span.start:unit.span.end] = guarded_controller_for(rom)
-                source[unit.span.start] ^= 1
-                source = rom_checksums.recalculate(source, target.checksum_layout)
-                with self.assertRaisesRegex(
-                    build_rom.BuildError, "partial or unknown Rolling Launch"
-                ):
-                    build_rom.build_image(source, rom=rom)
-
-    def test_registered_historical_endpoint_can_be_migrated(self):
-        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
-            self.base_result.data, telemetry_layout, "current"
-        ))
-        historical[0xD3900] ^= 0x01
-        layout = rolling_launch_layout.load_layout()
-        controller = layout.assembly_unit_by_key["ignition_controller"]
-        historical[controller.span.start : controller.span.end] = (
-            bytes([0xFF]) * controller.span.size
-        )
-        historical[0xD3F60 : 0xD3F80] = bytes.fromhex(
-            "524c0101050000ff010000a00001001000"
-            "04012c0064737373737300adb3a55a"
-        )
-        historical = checksums.recalculate(historical)
-        signature = runtime_endpoints.RollingEndpointSignature(
-            key="test-schema-1-endpoint",
-            roms=("JK08A",),
-            configuration_schema_version=1,
-            unit_sha256=tuple(
-                (
-                    unit.key,
-                    build_rom.sha256(
-                        historical[unit.span.start : unit.span.end]
-                    ),
-                )
-                for unit in layout.assembly_units
-            ),
-            hook_values=tuple(
-                (
-                    hook.key,
-                    int.from_bytes(
-                        historical[
-                            hook.address : hook.address + hook.width
-                        ],
-                        layout.byte_order,
-                    ),
-                )
-                for hook in layout.hooks
-            ),
-        )
-        with mock.patch.object(
-            runtime_endpoints, "HISTORICAL_ROLLING_ENDPOINTS", (signature,)
-        ):
-            result = build_rom.build_image(
-                historical, source_name="registered schema-1 runtime"
-            )
-        self.assertEqual(
-            result.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(
-            result.configuration,
-            build_rom.builtin_profile().calibration.to_bytes(),
-        )
-        manifest = build_rom.manifest_data(result, "historical.bin", "output.bin")
-        before = manifest["input"]["configuration"]
-        self.assertEqual(before["rolling_launch"]["configuration_hex"],
-                         historical[0xD3F60 : 0xD3F80].hex())
-        self.assertIsNone(before["rolling_launch"]["settings"])
-        self.assertIsNone(before["can_telemetry"])
-
-    def test_partial_and_unknown_rolling_states_are_rejected(self):
-        layout = rolling_launch_layout.load_layout()
-        cases = {}
-
-        unknown_payload = bytearray(self.base_result.data)
-        unknown_payload[0xD3900] ^= 0x01
-        cases["unknown-payload"] = unknown_payload
-
-        partial_hook = bytearray(self.base_result.data)
-        hook = layout.hooks[0]
-        partial_hook[hook.address : hook.address + hook.width] = (
-            hook.stock.to_bytes(hook.width, layout.byte_order)
-        )
-        cases["partial-hook"] = partial_hook
-
-        partial_did = bytearray(self.base_result.data)
-        diagnostic = layout.diagnostics[0]
-        partial_did[
-            diagnostic.pointer_address : diagnostic.pointer_address + 4
-        ] = diagnostic.stock.to_bytes(4, layout.byte_order)
-        cases["partial-did"] = partial_did
-
-        invalid_configuration = bytearray(self.base_result.data)
-        invalid_configuration[layout.configuration.start + 9] = 0
-        cases["framed-invalid-configuration"] = invalid_configuration
-
-        mixed_schema = bytearray(self.base_result.data)
-        mixed_schema[layout.configuration.start : layout.configuration.end] = (
-            bytes.fromhex(
-                "524c0101050000ff010000a00001001000"
-                "04012c0064737373737300adb3a55a"
-            )
-        )
-        cases["current-payload-schema-1"] = mixed_schema
-
-        for name, source in cases.items():
-            with self.subTest(name=name):
-                source = checksums.recalculate(source)
-                with self.assertRaisesRegex(
-                    build_rom.BuildError,
-                    "partial or unknown Rolling Launch state",
-                ):
-                    build_rom.build_image(source, source_name=name)
-
-    def test_partial_map_pointer_state_is_rejected(self):
-        partial = bytearray(self.base_result.data)
-        family = self.map_layout.families[0]
-        partial[family.pointer_table] ^= 1
-        partial = checksums.recalculate(partial)
-        with self.assertRaisesRegex(build_rom.BuildError, "pointer table"):
-            build_rom.build_image(partial)
-
-    def test_unknown_upper_rom_change_is_rejected(self):
-        corrupt = bytearray(self.base_result.data)
-        corrupt[0x30000] ^= 1
-        corrupt = checksums.recalculate(corrupt)
-        with self.assertRaisesRegex(
-            build_rom.BuildError, "protected upper ROM differs"
-        ):
-            build_rom.build_image(corrupt)
-
-    def test_invalid_input_checksum_is_rejected(self):
-        corrupt = bytearray(self.stock)
-        corrupt[0x9000] ^= 1
-        with self.assertRaisesRegex(build_rom.BuildError, "checksum mismatch"):
-            build_rom.build_image(corrupt)
 
     def test_strict_profile_enables_independent_retard_mode(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -1024,33 +441,6 @@ class BuildRomTest(unittest.TestCase):
             for unit in layout.assembly_units
             if unit.key != "tables"
         ))
-
-    def test_partial_can_telemetry_states_are_rejected(self):
-        layout = build_rom.can_telemetry_layout.load_layout()
-        cases = {}
-        damaged_unit = bytearray(self.base_result.data)
-        damaged_unit[layout.assembly_units[0].span.start] ^= 1
-        cases["damaged-unit"] = damaged_unit
-        damaged_hook = bytearray(self.base_result.data)
-        hook = layout.hooks[0]
-        damaged_hook[hook.address : hook.address + hook.width] = (
-            hook.stock.to_bytes(hook.width, layout.byte_order)
-        )
-        cases["damaged-hook"] = damaged_hook
-        damaged_configuration = bytearray(self.base_result.data)
-        damaged_configuration[layout.configuration.start] ^= 1
-        cases["damaged-configuration"] = damaged_configuration
-        damaged_reserve = bytearray(self.base_result.data)
-        damaged_reserve[layout.reserved_rom.start] = 0
-        cases["occupied-future-reserve"] = damaged_reserve
-        for name, source in cases.items():
-            with self.subTest(name=name):
-                source = checksums.recalculate(source)
-                with self.assertRaisesRegex(
-                    build_rom.BuildError,
-                    "partial or unknown CAN telemetry state",
-                ):
-                    build_rom.build_image(source, source_name=name)
 
     def test_profile_accepts_zero_minimum_speed(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -1128,12 +518,12 @@ class BuildArtifactsTest(unittest.TestCase):
             self.assertEqual(output_path.read_bytes(), self.base_result.data)
             manifest_path = Path(f"{output_path}.manifest.json")
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            self.assertEqual(manifest["schema_version"], 3)
+            self.assertEqual(manifest["schema_version"], 4)
             self.assertEqual(manifest["series"], build_rom.ROM_SERIES)
             self.assertEqual(manifest["rom"], "JK08A")
-            self.assertEqual(manifest["input"]["configuration"], {
-                "rolling_launch": None, "can_telemetry": None,
-            })
+            self.assertEqual(
+                set(manifest["input"]), {"path", "sha256", "checksums"}
+            )
             self.assertEqual(manifest["output"]["configuration"]["rolling_launch"]
                              ["configuration_hex"], self.base_result.configuration.hex())
             self.assertEqual(

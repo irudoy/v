@@ -1,9 +1,11 @@
 # Unified ROM builder
 
 `build_rom.py` is the production entry point for constructing a complete ROM.
-It installs every current firmware runtime registered for the selected series,
-recalculates all checksum domains, verifies the final closed write set, and
-creates one ROM with digest sidecars and a machine-readable manifest.
+Its input is the registered stock image of the selected ROM. It installs every
+current firmware runtime registered for the selected series, recalculates all
+checksum domains, verifies the final closed write set, and creates one ROM with
+digest sidecars and a machine-readable manifest. Calibration of an existing
+image moves to a fresh build through the [calibration transfer](#calibration-transfer).
 
 The registered `sh7058_7mfkavn86` exact-code series contains JK00A, JK03A,
 JK03B, and JK08A. JK08A is its canonical address and executable-code profile.
@@ -27,19 +29,20 @@ modules behind them operate in memory without a flashable output path.
 The command has two selection modes:
 
 ```bash
-make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin
-make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK08A
-make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK00C
-make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK78C
-make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=1ND0A
+make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin
+make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin ROM=JK08A
+make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin ROM=JK00C
+make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin ROM=JK78C
+make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin ROM=1ND0A
 ```
 
 The default `--rom auto` mode identifies the exact member from the registered
 image size and immutable identity bytes at `0x8204..0x8219`. It does not inspect
 the file name. An explicit selector bypasses selection ambiguity but does not
-bypass image validation. Both modes require the selected stock identity, valid
-input checksums, target-specific protected regions, and exact address-profile
-anchors where the selected family declares them.
+bypass image validation. Both modes require the input to be byte-identical to
+the registered stock image of the selected member. A built, calibrated, or
+otherwise modified image is rejected before composition, and the message names
+the calibration transfer commands.
 
 Every invocation validates `rom-images/roms.csv` and
 `rom-images/homology.toml`. The selected stock image must match its registered
@@ -49,62 +52,117 @@ Use `--verify-only` to run the complete in-memory composition and verification
 without creating files:
 
 ```bash
-make rom-verify INPUT=INPUT.bin
-make rom-verify INPUT=INPUT.bin ROM=JK00D
+make rom-verify INPUT=STOCK.bin
+make rom-verify INPUT=STOCK.bin ROM=JK00D
 ```
 
 ## Registered-family pipeline
 
 The common handler performs these operations in one invocation:
 
-1. Validate image size, immutable identity, and all six stored checksum values.
+1. Validate image size and immutable identity, require the input to equal the
+   registered stock image, and verify all six stored checksum values.
 2. Validate either the exact-family ownership ledger or the SHA-bound relocated
    address profile, erased allocation, capabilities, and target payload registry.
-3. Classify the image as a compatible unpatched base or a complete runtime that
-   can be migrated. The CAN telemetry layer must be wholly absent or match the
-   exact current payload, configuration, mailbox record, hooks, and erased
-   future reserve. After removing a validated telemetry layer in memory, the
-   Rolling Launch layer, when supported, must be wholly absent, match the exact
-   current payload and configuration schema, or match one registered historical
-   unit fingerprint and its schema contract. A current telemetry layer is
-   accepted only above the current Rolling Launch endpoint or above a
-   registered complete endpoint explicitly marked compatible with that
-   telemetry contract. The previous guarded ignition controller remains a
-   registered endpoint on every ROM that accepts a complete Rolling Launch
-   layer, including the JK08A ASCD state-6/7 arbiter variant. A target without
-   Rolling Launch must contain no Rolling Launch artifacts. Mixed hooks or DIDs, unknown
-   payload bytes, partial pointer tables, invalid configuration records,
-   occupied reserves, and unknown protected-code changes are rejected.
-4. Normalize only the builder-owned Map Switching, optional Rolling Launch,
-   CAN telemetry, and checksum ranges back to bytes from the selected stock
-   member.
-5. Apply the current Map Switching composition from the canonical payload
+3. Apply the current Map Switching composition from the canonical payload
    manifest or the selected target section of
-   `runtime-target-payloads.toml`.
-6. Restore every Map 2 through Map 5 calibration byte when the input already
-   contains a complete runtime. An unpatched base initializes these slots from
-   its Map 1 values.
-7. Apply the current Rolling Launch composition from the applicable payload
+   `runtime-target-payloads.toml`. Each Map 2 through Map 5 slot starts as a
+   copy of the stock Map 1 values.
+4. Apply the current Rolling Launch composition from the applicable payload
    registry and selected local profile when the target supports it. Every
    currently registered family has a target-specific Rolling Launch stage.
-8. Apply the current CAN telemetry composition from the applicable payload
+5. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
    disabled-at-startup mode. All five family layouts use mailbox 31 as the
    control receiver after each HCAN1 initialization and stock-inactive mailbox
    26 for telemetry.
-9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
+6. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
-10. Require every final difference from the input to be inside the union of the
-    enabled component write sets and the checksum fields.
+7. Require every final difference from the input to be inside the union of the
+   enabled component write sets and the checksum fields.
 
-The builder preserves calibration and configuration outside its declared
-ranges, including the Developer Immobilizer bit and the cruise control
-configuration byte of the Cruise Control Switch edited through the matching
-`defs/<ROM>.xml` or `defs/<ROM>.xdf`. Map 1 and every newly initialized Map 2
-through Map 5 copy come from the selected input, never from JK08A. The builder
-does not call an Immobilizer patcher. Historical image identities and hardware
+Calibration edits, including Map 1 through Map 5 tables, the Developer
+Immobilizer bit, and the cruise control configuration byte of the Cruise
+Control Switch, are made on a built image through the matching
+`defs/<ROM>.xml` or `defs/<ROM>.xdf`. Map 1 and the initial Map 2 through Map 5
+copies come from the selected stock image, never from JK08A. The builder does
+not call an Immobilizer patcher. Historical image identities and hardware
 outcomes are retained in `hardware-results.toml`; the production path imports
 only the current composition modules.
+
+## Calibration transfer
+
+Calibration moves from an existing image to a fresh build in two explicit
+steps: extraction into local files, then application over a build of the stock
+image.
+
+```bash
+make rom-extract INPUT=tmp/tuned.bin \
+  CALIBRATION=tmp/tuned-calibration.toml PROFILE=tmp/tuned-profile.toml
+make rom-build INPUT=STOCK.bin OUTPUT=tmp/fresh.bin \
+  PROFILE=tmp/tuned-profile.toml
+make rom-calibrate INPUT=tmp/fresh.bin \
+  CALIBRATION=tmp/tuned-calibration.toml OUTPUT=tmp/calibrated.bin
+```
+
+`calibration_ranges.py` declares the calibration ranges of each registered
+ROM: the compatible window `0x8200..0x20000` without the ROM identity, the
+builder write sets, the checksum fields, and every byte that a build layout
+pins to its stock value, plus each Map 2 through Map 5 slot. The Rolling
+Launch and CAN telemetry configuration records are builder write sets; their
+settings travel in a build profile. Editor elements outside these ranges, such
+as the load axis of the Engine Torque Map, are rejected by address.
+
+`extract_calibration.py` accepts a registered stock image or an image built
+from one: a calibrated stock image, a current builder output, or a registered
+historical runtime endpoint of the selected ROM. It requires valid checksums
+and every difference from the stock image inside the calibration ranges, the
+builder write sets, or the checksum fields; any other difference is rejected
+by address. The builder write sets must hold no runtime or one complete
+runtime. The CAN telemetry layer must be wholly absent or match the exact
+current payload, configuration, mailbox record, and hooks. After removing a
+validated telemetry layer in memory, the Rolling Launch layer, when supported,
+must be wholly absent, match the exact current payload and configuration
+schema, or match one registered historical unit fingerprint and its schema
+contract. A current telemetry layer is accepted only above the current Rolling
+Launch endpoint or above a registered complete endpoint explicitly marked
+compatible with that telemetry contract. The previous guarded ignition
+controller remains a registered endpoint on every ROM that accepts a complete
+Rolling Launch layer, including the JK08A ASCD state-6/7 arbiter variant. A
+target without Rolling Launch must contain no Rolling Launch artifacts. Mixed
+hooks or DIDs, unknown payload bytes, partial pointer tables, and invalid
+configuration records are rejected as partial or unknown states.
+
+The calibration file is local TOML schema 1. It binds the exact ROM and the
+SHA-256 of its registered stock image, records the SHA-256 and runtime states
+of the source, and lists each contiguous run of calibration bytes that differs
+from a fresh stock build: the stock bytes for the window and the Map 1 bytes
+for each Map 2 through Map 5 slot. No run crosses a range boundary. Its
+`[settings]` table holds the SHA-256 of each Rolling Launch and CAN telemetry
+configuration record of the source; it is a check, not a second source. The
+extracted profile carries the settings in the strict profile format below and
+is read back through the profile loader before it is written. A source without
+Rolling Launch settings yields the calibration file only. A historical schema 1
+or schema 2 Rolling Launch record, which the profile schema cannot express, is
+reported with its fields; the command then writes the calibration file only
+and exits with status 3.
+
+`apply_calibration.py` accepts only an image that a rebuild of the registered
+stock image with the settings of its own configuration records reproduces byte
+for byte. Each configuration record that the calibration file binds must hold
+the extracted settings, so a transfer cannot fall back to the built-in profile
+unnoticed; `REPLACE_SETTINGS=1` (`--replace-settings`) replaces them
+explicitly. The command writes the calibration elements, recalculates every
+checksum, requires every difference from the build to lie inside the
+calibration ranges or the checksum fields, and requires the output to remain
+an extraction input. It creates the ROM with SHA-256, MD5, and JSON manifest
+sidecars under the same publication rules as the builder. Its manifest binds
+the input, the calibration file and the result of its settings check, and the
+output, which is marked `hardware_status=UNTESTED`.
+
+Calibration files, profiles, and calibrated images are local artifacts. Both
+commands write only outside the repository or to a path that Git ignores, such
+as `tmp/`.
 
 ## Relocated address profiles
 
@@ -374,7 +432,7 @@ range. These static results establish software ownership only; JK78C remains
 
 ## Rolling Launch profile
 
-For an unpatched input without `--profile`, a Rolling Launch-capable target
+Without `--profile`, a Rolling Launch-capable target
 uses the conservative built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
 ignition retard disabled. A VQ37 target installs its complete Rolling Launch
 stage with the built-in `observe` profile and no enabled maps. A separate local
@@ -434,14 +492,13 @@ configured minimum, at least twice the effective hysteresis, and no wider than
 the RPM offset.
 Concrete profiles remain local and are not versioned.
 
-A rebuild without `--profile` requires the validated current-schema Rolling
-Launch and CAN telemetry settings to match the built-in profile. Differences
-stop the build before composition and list qualified field names, such as
-`rolling_launch.enable_mask` or `can_telemetry.enabled`. Disabling Map 1 RPM
-Hold through an editor therefore requires an explicit profile for a rebuild
-that would otherwise enable it. Supply `--profile` to intentionally replace
-the input settings; its values define the complete output configuration.
-Registered older configuration schemas retain their existing migration behavior.
+Rolling Launch and CAN telemetry settings edited in a built image through an
+editor travel in the extracted profile of the calibration transfer. Application
+of a calibration file refuses a build whose configuration records differ from
+the extracted settings and names the differing components, such as
+`rolling_launch` or `can_telemetry`. Disabling Map 1 RPM Hold through an editor
+therefore carries over only through the extracted profile or an explicit
+replacement.
 
 ## CAN telemetry profile
 
@@ -496,19 +553,18 @@ interruption can leave complete sidecars or temporary files, but cannot expose
 a partially written ROM at its final path. The default output is adjacent to
 the input; inputs under `rom-images/` require an explicit `--output`.
 
-The JSON manifest binds the input, normalized stage, Map Switching stage, Rolling
-Launch stage, both runtime configurations, CAN mailbox record, final output,
-checksum values, write-set counts, and exact instruction audit counts. Manifest
-schema 3 records both the series and exact member. Every new image is marked
+The JSON manifest binds the stock input, Map Switching stage, Rolling Launch
+stage, both runtime configurations, CAN mailbox record, final output, checksum
+values, write-set counts, and exact instruction audit counts. Manifest schema 4
+records both the series and exact member. Every new image is marked
 `hardware_status=UNTESTED`; software verification does not make it eligible for
 flashing without target-specific bench and vehicle gates.
 
 Manifest input and output paths are resolved absolute paths. Relative and
 absolute spellings of the same paths produce byte-identical manifests.
 
-`input.configuration` and `output.configuration` contain the Rolling Launch
-and CAN telemetry records, their decoded current-schema settings, and the
-telemetry mailbox record. An absent runtime is `null`. A registered historical
-Rolling Launch record exposes its original bytes with `settings = null` when
-the current schema cannot decode it as valid; it is not represented as current
-settings. The `profile` section describes the selected output profile.
+The `input` section holds the path, SHA-256, and checksum values of the stock
+image. `output.configuration` contains the Rolling Launch and CAN telemetry
+records, their decoded settings, and the telemetry mailbox record; a target
+without Rolling Launch has `null` in its place. The `profile` section describes
+the selected output profile.

@@ -6,8 +6,8 @@ only in the configuration byte, a selector byte, or ROM8[0x8A23]. Cells outside
 the image read zero until a seed or a store sets them, and each pass seeds the
 input word of the decoder. The static checks bind the tables of the
 specification to the images, the editor definitions, the mailbox tables, the
-DTC group bytes, the monitor instructions, the factory manual, the ROM builder,
-and the documents that cite the switch.
+DTC group bytes, the monitor instructions, the factory manual, the calibration
+transfer of the ROM builder, and the documents that cite the switch.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from pathlib import Path
 import pytest
 
 from kb import match
-from patches import build_rom, rom_checksums
+from patches import apply_calibration, build_rom, extract_calibration, rom_checksums
 from tools.mapkit import rom as romkit
 from tools.mapkit.sh2_interpreter import RETURN, STACK_TOP, Sh2, sext, u16
 
@@ -450,11 +450,16 @@ def test_definitions_list_the_stock_state_first() -> None:
 
 
 @pytest.mark.parametrize("image", BUILDS)
-def test_builder_preserves_the_configuration_byte(image: str) -> None:
+def test_calibration_transfer_carries_the_configuration_byte(image: str) -> None:
     byte = _site(image)[2]
     layout = rom_checksums.layout_for_rom(image)
     data = bytes(rom_checksums.recalculate(_image(image, ICC), layout))
-    result = build_rom.build_image(data, source_name=f"{image} with {ICC}")
+    calibration = extract_calibration.extract(data, source_name=f"{image} with {ICC}").calibration
+    assert [(item.address, item.data) for item in calibration.elements] == [
+        (byte, bytes((STATES[ICC],)))
+    ]
+    build = build_rom.build_image(_image(image), source_name=f"{image} stock")
+    result = apply_calibration.apply(build.data, calibration)
     assert result.rom == image
     assert result.data[byte] == STATES[ICC]
     assert rom_checksums.verify(result.data, layout).valid

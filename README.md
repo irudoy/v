@@ -131,9 +131,10 @@ neither Ghidra nor Memgraph.
    review addressed claims into `defs/` sources.
 3. Generate the editor projections and the map ledger with `make defs-generate`
    and inspect the calibration in RomRaider or TunerPro.
-4. Compose the runtime with `make rom-build`, which applies the capability
-   patches, preserves target calibration state, closes every checksum domain,
-   and emits a build manifest.
+4. Compose the runtime from the stock image with `make rom-build`, which
+   applies the capability patches, closes every checksum domain, and emits a
+   build manifest. `make rom-extract` and `make rom-calibrate` carry the
+   calibration of an earlier image to the new build.
 5. Gate the result with `make verify`: source checks, the complete Python and
    pin-tracer test contracts, and execution of changed instruction bytes
    against independently assembled SH-2E fixtures.
@@ -198,14 +199,20 @@ make dashboard-package-macos
 ```
 
 The unified production builder remains the only complete modified-ROM entry
-point. Map Switching, capability-gated Rolling Launch, CAN telemetry, checksum
-closure, and the final write-set audit run through the same command:
+point. Its input is a registered stock image. Map Switching, capability-gated
+Rolling Launch, CAN telemetry, checksum closure, and the final write-set audit
+run through the same command; calibration moves between images through
+extraction and application:
 
 ```bash
-make rom-verify INPUT=tmp/input.bin
-make rom-build INPUT=tmp/input.bin OUTPUT=tmp/output.bin
-make rom-build INPUT=tmp/input.bin OUTPUT=tmp/output.bin \
+make rom-verify INPUT=STOCK.bin
+make rom-build INPUT=STOCK.bin OUTPUT=tmp/output.bin
+make rom-build INPUT=STOCK.bin OUTPUT=tmp/output.bin \
   PROFILE=tmp/profile.toml
+make rom-extract INPUT=tmp/tuned.bin \
+  CALIBRATION=tmp/tuned-calibration.toml PROFILE=tmp/tuned-profile.toml
+make rom-calibrate INPUT=tmp/output.bin \
+  CALIBRATION=tmp/tuned-calibration.toml OUTPUT=tmp/calibrated.bin
 ```
 
 `make defs-generate` regenerates XML/XDF pairs for every registered target,

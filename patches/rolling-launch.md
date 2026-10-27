@@ -486,11 +486,11 @@ not a prerequisite for runtime correctness.
 
 ## Composition
 
-`build_rom.py` is the production entry point. It starts from an exact compatible
-registered base or a complete migratable runtime, installs the current Map
-Switching composition, applies the target-specific Rolling Launch stage with
-the selected profile, adds the CAN telemetry layer, recalculates all checksum
-domains, and verifies the final closed write set.
+`build_rom.py` is the production entry point. It starts from the registered
+stock image, installs the current Map Switching composition, applies the
+target-specific Rolling Launch stage with the selected profile, adds the CAN
+telemetry layer, recalculates all checksum domains, and verifies the final
+closed write set.
 
 The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.

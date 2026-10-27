@@ -7,13 +7,10 @@ canonical executable profile, while near-code and cross-generation targets use
 explicit address layouts and independently assembled payloads. Each member
 retains its own calibration, identity, capabilities, and checksum layout.
 
-Compatible unpatched inputs retain their calibration and configuration. A
-complete current or historical composition may also be rebuilt: all alternate
-map bytes are preserved while every builder-owned executable span, hook,
-diagnostic pointer, configuration record, and checksum is regenerated. A
-current-schema configuration that differs from the built-in profile requires
-an explicit replacement profile. Unknown or partial patch states are rejected
-before an output is written.
+The input must be byte-identical to the registered stock image of the
+selected ROM; any other image is rejected before composition. Calibration moves
+between images through ``extract_calibration.py`` and ``apply_calibration.py``:
+extraction from an existing image, then application over a fresh build.
 """
 
 from __future__ import annotations
@@ -46,9 +43,7 @@ from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rolling_launch_compose
 from patches import rom_checksums
-from patches import runtime_endpoints
 from patches import runtime_targets
-from tools.mapkit import rom as romkit
 from tools import rom_homology
 
 
@@ -57,7 +52,7 @@ ROM_SERIES = "sh7058_7mfkavn86"
 CANONICAL_ROM = "JK08A"
 SUPPORTED_ROMS = runtime_targets.SUPPORTED_ROMS
 PROFILE_SCHEMA_VERSION = 2
-MANIFEST_SCHEMA_VERSION = 3
+MANIFEST_SCHEMA_VERSION = 4
 TOOL_NAME = "patches/build_rom.py"
 OBSERVE_PROFILE_NAME = "observe"
 
@@ -122,16 +117,11 @@ class BuildResult:
     rom: str
     series: str
     detection: str
-    input_state: str
     profile: Profile
-    input_configuration: bytes
-    input_telemetry_configuration: bytes
-    input_telemetry_mailbox_record: bytes
     configuration: bytes
     telemetry_configuration: bytes
     telemetry_mailbox_record: bytes
     source_sha256: str
-    normalized_sha256: str
     map_stage_sha256: str
     rolling_stage_sha256: str
     output_sha256: str
@@ -141,7 +131,6 @@ class BuildResult:
     changed_bytes: int
     permitted_write_bytes: int
     checksum_changed_bytes: int
-    preserved_map_copy_bytes: int
     map_instruction_count: int
     rolling_instruction_count: int
     rolling_code_entry_count: int
@@ -535,110 +524,23 @@ def _component_offsets(
     return result
 
 
-def _capture_map_copies(source, layout):
-    return {
-        (family.key, address): source[
-            address : address + family.byte_length
-        ]
-        for family in layout.families
-        for address in family.copies
-    }
-
-
-def _restore_map_copies(image, layout, copies, checksum_layout=None):
-    data = bytearray(image)
-    for family in layout.families:
-        for address in family.copies:
-            key = (family.key, address)
-            data[address : address + family.byte_length] = copies[key]
-    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
-    return bytes(rom_checksums.recalculate(data, checksum_layout))
-
-
-def _normalize_runtime(source, source_name, target):
+def _require_stock(source, source_name, target):
+    """Require the registered stock image of ``target`` and return the
+    verification of its checksums."""
     if target.family == runtime_targets.EXACT_FAMILY:
         jk08a_runtime_reservations.load_ledger()
-    map_layout = target.map_layout
-    launch_layout = target.rolling_layout
-    telemetry_layout = target.telemetry_layout
-    checksum_layout = target.checksum_layout
-    stock_image = target.stock_image
-    stock = stock_image.data
-    source = bytes(source)
-
+    if source != target.stock_image.data:
+        raise BuildError(
+            f"{source_name}: input is not the registered {target.rom} stock "
+            f"image (SHA-256 {sha256(source)}); build from the stock image "
+            "and move calibration with make rom-extract and make rom-calibrate"
+        )
     try:
-        source_verification = rom_checksums.require_valid(
-            source, checksum_layout, source_name
+        return rom_checksums.require_valid(
+            source, target.checksum_layout, source_name
         )
     except rom_checksums.ChecksumError as error:
         raise BuildError(str(error)) from error
-
-    map_payloads = target.map_payloads
-    launch_payloads = target.rolling_payloads
-    telemetry_payloads = target.telemetry_payloads
-    component_offsets = _component_offsets(
-        map_layout, launch_layout, telemetry_layout, checksum_layout
-    )
-    is_unpatched = all(
-        source[offset] == stock[offset] for offset in component_offsets
-    )
-    saved_copies = None
-    input_configuration = b""
-    input_telemetry_configuration = b""
-    input_telemetry_mailbox_record = b""
-    if is_unpatched:
-        input_state = "compatible-base"
-    else:
-        classification = runtime_endpoints.classify_runtime(
-            source, target, source_name
-        )
-        telemetry_state = classification.telemetry
-        rolling_state = classification.rolling
-        saved_copies = _capture_map_copies(source, map_layout)
-        if launch_layout is not None and rolling_state != "absent":
-            input_configuration = source[
-                launch_layout.configuration.start : launch_layout.configuration.end
-            ]
-        if telemetry_state == "current":
-            input_telemetry_configuration = source[
-                telemetry_layout.configuration.start : telemetry_layout.configuration.end
-            ]
-            record = telemetry_layout.mailbox_record_address
-            input_telemetry_mailbox_record = source[record : record + 4]
-        input_state = "complete-runtime-migration"
-
-    normalized = bytearray(source)
-    for offset in component_offsets:
-        normalized[offset] = stock[offset]
-    normalized = bytes(rom_checksums.recalculate(
-        normalized, checksum_layout
-    ))
-    try:
-        image = romkit.Image(target.rom, source_name, normalized)
-        map_switching_layout.validate_compatible_image(
-            map_layout, image, stock_image
-        )
-    except ValueError as error:
-        raise BuildError(str(error)) from error
-
-    return (
-        normalized,
-        input_state,
-        saved_copies,
-        source_verification,
-        map_layout,
-        launch_layout,
-        telemetry_layout,
-        map_payloads,
-        launch_payloads,
-        telemetry_payloads,
-        component_offsets,
-        stock_image,
-        checksum_layout,
-        input_configuration,
-        input_telemetry_configuration,
-        input_telemetry_mailbox_record,
-    )
 
 
 def _probe_rom(source, rom, images):
@@ -719,36 +621,6 @@ def _validate_preservation(
     return len(changed), len(permitted), len(changed & checksum_offsets)
 
 
-def _require_profile_for_changed_settings(profile, launch_data, telemetry_data):
-    current_launch = None
-    if launch_data:
-        calibration = rolling_launch.Calibration.from_bytes(launch_data)
-        # Older schemas have their own endpoint validation and no current fields.
-        if calibration.is_valid():
-            current_launch = calibration
-    current_telemetry = (
-        can_telemetry.Configuration.from_bytes(telemetry_data)
-        if telemetry_data else None
-    )
-    changed = []
-    for component, current, expected in (
-        ("rolling_launch", current_launch, profile.calibration),
-        ("can_telemetry", current_telemetry, profile.telemetry),
-    ):
-        if current is not None:
-            changed.extend(
-                f"{component}.{name}"
-                for name, value in asdict(current).items()
-                if value != getattr(expected, name)
-            )
-    if changed:
-        raise BuildError(
-            "input runtime settings differ from the built-in profile: "
-            + ", ".join(changed)
-            + "; supply --profile to explicitly replace these settings"
-        )
-
-
 def build_image(
     source,
     *,
@@ -756,12 +628,17 @@ def build_image(
     profile=None,
     source_name="<memory>",
 ):
-    """Build and verify one complete ROM without writing files."""
+    """Build and verify one complete ROM from its registered stock image
+    without writing files."""
     source = bytes(source)
     selected_rom, detection = select_rom(source, rom)
     context = _series_context(selected_rom)
-    profile_supplied = profile is not None
-    if not profile_supplied:
+    try:
+        target = runtime_targets.load_runtime_target(selected_rom)
+    except runtime_targets.RuntimeTargetError as error:
+        raise BuildError(str(error)) from error
+    source_verification = _require_stock(source, source_name, target)
+    if profile is None:
         profile = builtin_profile(context.key)
     if not isinstance(profile, Profile):
         raise BuildError("profile must be a build_rom.Profile")
@@ -775,61 +652,34 @@ def build_image(
         or not profile.telemetry.is_valid()
     ):
         raise BuildError("profile CAN telemetry configuration is invalid")
-    try:
-        target = runtime_targets.load_runtime_target(selected_rom)
-        if target.rolling_layout is None and (
-            profile.calibration.mode != rolling_launch.Mode.OBSERVE
-            or profile.calibration.enable_mask != 0
-        ):
-            raise BuildError(
-                f"{selected_rom}: Rolling Launch is unsupported; profile "
-                "must use observe mode with no enabled maps"
-            )
-        (
-            normalized,
-            input_state,
-            saved_copies,
-            source_verification,
-            map_layout,
-            launch_layout,
-            telemetry_layout,
-            map_payloads,
-            launch_payloads,
-            telemetry_payloads,
-            component_offsets,
-            stock_image,
-            checksum_layout,
-            input_configuration,
-            input_telemetry_configuration,
-            input_telemetry_mailbox_record,
-        ) = _normalize_runtime(
-            source, source_name, target
+    if target.rolling_layout is None and (
+        profile.calibration.mode != rolling_launch.Mode.OBSERVE
+        or profile.calibration.enable_mask != 0
+    ):
+        raise BuildError(
+            f"{selected_rom}: Rolling Launch is unsupported; profile "
+            "must use observe mode with no enabled maps"
         )
-        if not profile_supplied:
-            _require_profile_for_changed_settings(
-                profile, input_configuration, input_telemetry_configuration
-            )
-
+    map_layout = target.map_layout
+    launch_layout = target.rolling_layout
+    telemetry_layout = target.telemetry_layout
+    map_payloads = target.map_payloads
+    launch_payloads = target.rolling_payloads
+    telemetry_payloads = target.telemetry_payloads
+    checksum_layout = target.checksum_layout
+    try:
+        component_offsets = _component_offsets(
+            map_layout, launch_layout, telemetry_layout, checksum_layout
+        )
         map_result = apply_map_switching.patch_image(
-            normalized,
+            source,
             layout=map_layout,
             blobs=map_payloads,
-            source_name=f"{source_name} normalized {selected_rom}",
-            stock_image=stock_image,
+            source_name=f"{source_name} {selected_rom}",
+            stock_image=target.stock_image,
             checksum_layout=checksum_layout,
         )
         map_stage = map_result.data
-        preserved_map_copy_bytes = 0
-        if saved_copies is not None:
-            map_stage = _restore_map_copies(
-                map_stage, map_layout, saved_copies, checksum_layout
-            )
-            preserved_map_copy_bytes = sum(
-                len(blob) for blob in saved_copies.values()
-            )
-            rom_checksums.require_valid(
-                map_stage, checksum_layout, "restored map stage"
-            )
 
         launch_result = None
         if launch_layout is not None:
@@ -880,28 +730,19 @@ def build_image(
     changed, permitted, checksum_changed = _validate_preservation(
         source, telemetry_result.data, component_offsets, checksum_layout
     )
-    if saved_copies is not None:
-        final_copies = _capture_map_copies(telemetry_result.data, map_layout)
-        if final_copies != saved_copies:
-            raise BuildError("final image changes preserved alternate maps")
 
     return BuildResult(
         data=telemetry_result.data,
         rom=selected_rom,
         series=context.key,
         detection=detection,
-        input_state=input_state,
         profile=profile,
-        input_configuration=input_configuration,
-        input_telemetry_configuration=input_telemetry_configuration,
-        input_telemetry_mailbox_record=input_telemetry_mailbox_record,
         configuration=(
             b"" if launch_result is None else launch_result.configuration
         ),
         telemetry_configuration=telemetry_result.configuration,
         telemetry_mailbox_record=telemetry_result.mailbox_record,
         source_sha256=sha256(source),
-        normalized_sha256=sha256(normalized),
         map_stage_sha256=sha256(map_stage),
         rolling_stage_sha256=sha256(rolling_stage),
         output_sha256=sha256(telemetry_result.data),
@@ -911,7 +752,6 @@ def build_image(
         changed_bytes=changed,
         permitted_write_bytes=permitted,
         checksum_changed_bytes=checksum_changed,
-        preserved_map_copy_bytes=preserved_map_copy_bytes,
         map_instruction_count=map_layout.assembled_instruction_count,
         rolling_instruction_count=(
             0 if launch_result is None else launch_result.instruction_count
@@ -967,14 +807,8 @@ def manifest_data(result, input_path, output_path):
         "detection": result.detection,
         "input": {
             "path": str(Path(input_path).resolve()),
-            "state": result.input_state,
             "sha256": result.source_sha256,
             "checksums": _checksum_dict(result.source_checksums),
-            "configuration": _runtime_configuration_data(
-                result.input_configuration,
-                result.input_telemetry_configuration,
-                result.input_telemetry_mailbox_record,
-            ),
         },
         "profile": {
             "name": result.profile.name,
@@ -999,7 +833,6 @@ def manifest_data(result, input_path, output_path):
             },
         },
         "stages": {
-            "normalized_sha256": result.normalized_sha256,
             "map_switching_sha256": result.map_stage_sha256,
             "rolling_launch_sha256": result.rolling_stage_sha256,
             "can_telemetry_sha256": result.output_sha256,
@@ -1020,7 +853,6 @@ def manifest_data(result, input_path, output_path):
             "changed_bytes": result.changed_bytes,
             "permitted_write_bytes": result.permitted_write_bytes,
             "checksum_changed_bytes": result.checksum_changed_bytes,
-            "preserved_map_copy_bytes": result.preserved_map_copy_bytes,
             "map_instruction_count": result.map_instruction_count,
             "rolling_instruction_count": result.rolling_instruction_count,
             "rolling_code_entry_count": result.rolling_code_entry_count,
@@ -1113,8 +945,7 @@ def main(argv=None):
     calibration = result.profile.calibration
     print(
         f"status=PASS series={result.series} rom={result.rom} "
-        f"detection={result.detection} "
-        f"input_state={result.input_state}"
+        f"detection={result.detection}"
     )
     print(
         f"source={args.input} source_sha256={result.source_sha256} "
@@ -1135,7 +966,6 @@ def main(argv=None):
         f"mailbox_record={result.telemetry_mailbox_record.hex()}"
     )
     print(
-        f"normalized_sha256={result.normalized_sha256} "
         f"map_stage_sha256={result.map_stage_sha256} "
         f"rolling_stage_sha256={result.rolling_stage_sha256}"
     )
@@ -1146,8 +976,7 @@ def main(argv=None):
     print(
         f"changed_bytes={result.changed_bytes} "
         f"permitted_write_bytes={result.permitted_write_bytes} "
-        f"checksum_changed_bytes={result.checksum_changed_bytes} "
-        f"preserved_map_copy_bytes={result.preserved_map_copy_bytes}"
+        f"checksum_changed_bytes={result.checksum_changed_bytes}"
     )
 
     if args.verify_only:

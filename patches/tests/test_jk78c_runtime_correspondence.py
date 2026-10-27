@@ -7,6 +7,7 @@ import pytest
 from patches import build_rom
 from patches import can_telemetry_compose
 from patches import can_telemetry_profile
+from patches import extract_calibration
 from patches import map_switching_compose
 from patches import rolling_launch_compose
 from patches import rom_checksums
@@ -153,10 +154,18 @@ def jk78c_inputs():
     return target, {"base": stock, "runtime": result.data}, result.data
 
 
-@pytest.mark.parametrize("state", ("base", "runtime"))
-def test_jk78c_erased_envelope_accepts_stock_and_complete_runtime(jk78c_inputs, state):
+def test_jk78c_builder_accepts_only_the_stock_image(jk78c_inputs):
     _target, images, expected = jk78c_inputs
-    assert build_rom.build_image(images[state], rom="JK78C").data == expected
+    assert build_rom.build_image(images["base"], rom="JK78C").data == expected
+    with pytest.raises(build_rom.BuildError, match="not the registered JK78C stock"):
+        build_rom.build_image(images["runtime"], rom="JK78C")
+
+
+@pytest.mark.parametrize("state", ("base", "runtime"))
+def test_jk78c_erased_envelope_extracts_stock_and_complete_runtime(jk78c_inputs, state):
+    _target, images, _expected = jk78c_inputs
+    extraction = extract_calibration.extract(images[state], rom="JK78C")
+    assert extraction.calibration.elements == ()
 
 
 @pytest.mark.parametrize("state", ("base", "runtime"))
@@ -172,7 +181,8 @@ def test_jk78c_rejects_foreign_bytes_outside_runtime_writes(jk78c_inputs, state,
     assert source[address] == 0xFF
     source[address] = 0x00
     source = rom_checksums.recalculate(source, target.checksum_layout)
-    with pytest.raises(build_rom.BuildError) as rejected:
-        build_rom.build_image(source, rom="JK78C")
-    if address == 0x0001CAB0 or state == "base":
-        assert str(rejected.value) == f"free ROM is not erased at {address:#x}"
+    with pytest.raises(
+        extract_calibration.ExtractionError,
+        match=f"change at {address:#x} is outside the calibration ranges of JK78C",
+    ):
+        extract_calibration.extract(bytes(source), rom="JK78C")
