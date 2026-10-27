@@ -615,6 +615,61 @@ static int run_gate_cases(void)
         if (!verify_state_guards(test->name))
             return 0;
     }
+
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    write_u16(rom_pointer(RL_CONFIG), 0);
+    ram_pointer(SELECTOR_STATE)[0] = 5;
+    run_engine();
+    if (!expect_phase_reason(
+            "gate-config-and-map-index", PHASE_IDLE, REASON_CONFIG_INVALID))
+        return 0;
+    if (!verify_state_guards("gate-config-and-map-index"))
+        return 0;
+
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    write_u16(rom_pointer(RL_CONFIG), 0);
+    ram_pointer(SELECTOR_STATE)[1] = 1;
+    run_engine();
+    if (!expect_phase_reason(
+            "gate-config-and-selector", PHASE_IDLE, REASON_CONFIG_INVALID))
+        return 0;
+    if (!verify_state_guards("gate-config-and-selector"))
+        return 0;
+
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    write_u16(rom_pointer(RL_CONFIG), 0);
+    ram_pointer(SELECTOR_STATE)[4] = 1;
+    run_engine();
+    if (!expect_phase_reason(
+            "gate-config-and-feedback", PHASE_IDLE, REASON_CONFIG_INVALID))
+        return 0;
+    if (!verify_state_guards("gate-config-and-feedback"))
+        return 0;
+
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    write_u16(rom_pointer(RL_CONFIG), 0);
+    ram_pointer(ASCD_STATUS)[0] = ASCD_MAIN;
+    run_engine();
+    if (!expect_phase_reason(
+            "gate-config-and-ascd", PHASE_IDLE, REASON_CONFIG_INVALID))
+        return 0;
+    if (!verify_state_guards("gate-config-and-ascd"))
+        return 0;
+
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    write_u16(rom_pointer(RL_CONFIG), 0);
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
+    run_engine();
+    if (!expect_phase_reason(
+            "gate-config-and-button", PHASE_IDLE, REASON_CONFIG_INVALID))
+        return 0;
+    if (!verify_state_guards("gate-config-and-button"))
+        return 0;
     return 1;
 }
 
@@ -1873,32 +1928,32 @@ int main(void)
         return 1;
     if (!run_hold_cases())
         return 1;
-    if (case_count != 137U)
-        return fail_value("summary", "case_count", case_count, 137);
+    if (case_count != 142U)
+        return fail_value("summary", "case_count", case_count, 142);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=27 config=24 threshold=4 activation=6 "
+        "structural=11 gates=32 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 hold=11 entries=9\n",
         (unsigned long)case_count);
 #elif defined(VERIFY_CANONICAL_ROLLING)
-    if (case_count != 131U)
-        return fail_value("summary", "case_count", case_count, 131);
+    if (case_count != 136U)
+        return fail_value("summary", "case_count", case_count, 136);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=27 config=24 threshold=9 activation=6 "
+        "structural=11 gates=32 config=24 threshold=9 activation=6 "
         "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 "
         "entries=8\n",
         (unsigned long)case_count);
 #else
-    if (case_count != 123U)
-        return fail_value("summary", "case_count", case_count, 123);
+    if (case_count != 128U)
+        return fail_value("summary", "case_count", case_count, 128);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=27 config=24 threshold=4 activation=6 "
+        "structural=11 gates=32 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "entries=8\n",
         (unsigned long)case_count);

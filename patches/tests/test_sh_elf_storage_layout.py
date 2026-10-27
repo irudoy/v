@@ -97,8 +97,8 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
     marker = {
         'map': ('VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 '
                 'adapters=91 limiter=14 feedback=9 feedback_invocations=17 entries=12'),
-        'rolling': ('VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=131 '
-                    'structural=11 gates=27 config=24 threshold=9 activation=6 '
+        'rolling': ('VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=136 '
+                    'structural=11 gates=32 config=24 threshold=9 activation=6 '
                     'active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 entries=8'),
         'telemetry': getattr(module, 'REQUIRED_DYNAMIC_MARKER', ''),
     }.get(route, 'controlled relocated feature marker')

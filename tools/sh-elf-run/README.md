@@ -122,8 +122,8 @@ retain their existing execution checks and receive no measured qualification
 from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, `startup_wrapper`, `threshold_helper`, `feedback_arbiter`,
-and `ignition_controller`
+`selector_arbiter`, `startup_wrapper`, `engine`, `threshold_helper`,
+`feedback_arbiter`, `ignition_adapter`, and `ignition_controller`
 with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
@@ -137,8 +137,8 @@ engine call window on an active engine frame. Its R3 divider load binds the
 composed control pool before execution. Each helper invocation requires the
 actual divider call and return followed by its native RTS to the original
 continuation. Both outcomes of every helper branch and its delay slots must
-execute; the engine and stock divider bodies receive no instruction-coverage
-qualification.
+execute. The stock divider body receives no instruction-coverage
+qualification. The engine body is in the measured scope.
 
 The canonical-only `VERIFY_CANONICAL_ROLLING` build adds boundary
 inputs for the exact floor, rounding transition, wide ramp and saturated upper
@@ -179,12 +179,17 @@ that real controller path while preserving its semantic assertions and case
 count. Coverage must reject the omitted zero-band outcome. An adapter build
 keeps the idle case count and stock-command result, but stages an active
 phase so the idle phase check does not branch to the stock tail. Coverage
-must reject that omitted outcome.
+must reject that omitted outcome. An engine build keeps the invalid-config
+case and its idle result, but leaves the map index valid, so the held
+config reason does not skip the map-index update. Coverage must reject
+that omitted outcome.
 
 A Rolling Launch negative build calls the engine directly instead of the
 periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
-marker. Measured coverage must reject the omitted periodic entry. Coverage of
-the engine body remains outside this bounded scope.
+marker. Measured coverage must reject the omitted periodic entry. Calls
+into the threshold helper, the limiter commit and the internal gate
+helpers stay paired with their returns. Stock callee bodies stay outside
+this qualification.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

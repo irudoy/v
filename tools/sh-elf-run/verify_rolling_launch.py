@@ -37,14 +37,14 @@ EXPECTED_COMPOSITION_WRITE_BYTES = 2328
 EXPECTED_INSTRUCTION_COUNT = 876
 EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 131
+EXPECTED_DYNAMIC_CASES = 136
 RETURN_STUB = bytes.fromhex("000b0009")
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper")
-COVERAGE_UNITS = ("wrappers", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
+COVERAGE_UNITS = ("wrappers", "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
 
 
 class VerificationError(RuntimeError):
@@ -260,6 +260,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     entries.add(adapter)
     engine, engine_call = bind_threshold_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
+    entries.add(engine)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
     for unit in COVERAGE_UNITS:
         parsed = parsed_by_unit[unit]
@@ -274,8 +275,14 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             owners[pc] = owner[0]
             instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
             mnemonic = map_switching_assembly._mnemonic(row)
-            if mnemonic in {"bsr", "braf", "bsrf", "rte", "trapa"}:
+            if mnemonic in {"braf", "bsrf", "rte", "trapa"} or mnemonic == "bsr" and unit != "engine":
                 raise VerificationError(f"unsupported measured control form at {pc:#010x}")
+            if mnemonic == "bsr":
+                target = map_switching_assembly._validate_direct_branch_encoding(
+                    parsed, row, instructions[pc])
+                span = regions["engine"].span
+                if not span.start <= target < span.end:
+                    raise VerificationError(f"unsupported measured control form at {pc:#010x}")
             if mnemonic in map_switching_assembly.DELAYED_CONTROL_MNEMONICS:
                 slots.add(pc + 2)
             if mnemonic in {"bt", "bf", "bt/s", "bf/s", "bra"}:
@@ -342,7 +349,11 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
         if not delay:
             previous_frame = dict(frame) if frame is not None else None
         if pc in instructions:
-            if frame is None or frame["entry"] != owners[pc]:
+            engine_span = regions["engine"].span
+            same_engine = (engine_span.start <= pc < engine_span.end
+                           and frame is not None
+                           and engine_span.start <= frame["entry"] < engine_span.end)
+            if frame is None or frame["entry"] != owners[pc] and not same_engine:
                 raise VerificationError(f"wrapper lacks its originating invoke frame at {pc:#010x}")
             seen.add(pc)
         if delay:
@@ -463,6 +474,8 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 if pc != helper_return or not frame["divider_return"]:
                     raise VerificationError("threshold helper return lacks its divider return and native RTS")
                 returned.add(entry)
+            elif entry == engine:
+                returned.add(entry)
             elif entry in wrapper_entries:
                 if not origin["stock_return"]:
                     raise VerificationError("wrapper return lacks its stock return boundary")
@@ -572,8 +585,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                                        base_hooks["cruise_feedback_serializer"].stock,
                                        rolling_layout.hook_by_key["primary_ignition_command"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=131 "
-        "structural=11 gates=27 config=24 threshold=9 activation=6 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=136 "
+        "structural=11 gates=32 config=24 threshold=9 activation=6 "
         "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 entries=8"
     )
     if marker not in result.stdout:
@@ -677,18 +690,66 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             raise VerificationError(f"adapter bypass fails outside its omitted outcome: {error}") from error
     else:
         raise VerificationError("adapter coverage accepts the real idle bypass")
+    held_map = (
+        "    write_u16(rom_pointer(RL_CONFIG), 0);\n"
+        "    ram_pointer(SELECTOR_STATE)[0] = 5;\n"
+        "    run_engine();\n"
+        "    if (!expect_phase_reason(\n"
+        "            \"gate-config-and-map-index\", PHASE_IDLE, REASON_CONFIG_INVALID))"
+    )
+    if source.count(held_map) != 1:
+        raise VerificationError("engine negative lacks its unique held-map case")
+    engine_negative_text = source.replace(
+        held_map,
+        "    write_u16(rom_pointer(RL_CONFIG), 0);\n"
+        "    ram_pointer(SELECTOR_STATE)[0] = 0;\n"
+        "    run_engine();\n"
+        "    if (!expect_phase_reason(\n"
+        "            \"gate-config-and-map-index\", PHASE_IDLE, REASON_CONFIG_INVALID))",
+    )
+    engine_parsed = parsed_by_unit["engine"]
+    map_edge = next(
+        row for row in engine_parsed.statements
+        if row.kind == "instruction" and row.text == "bf rl_gate_selector"
+        and engine_parsed.statement_by_address[row.address + 2].text == "mov #0x2,r0")
+    map_target = map_switching_assembly._validate_direct_branch_encoding(
+        engine_parsed, map_edge,
+        int.from_bytes(fixture[map_edge.address:map_edge.address + 2], "big"))
+    engine_expected = f"uncovered wrapper branch {map_edge.address:#010x}->{map_target:#010x}"
+    engine_negative_source = build_dir / "rolling-launch-bypass-engine-map.c"
+    engine_negative_source.write_text(engine_negative_text, encoding="utf-8")
+    engine_negative_elf = build_dir / "rolling-launch-bypass-engine-map.elf"
+    engine_negative_command = list(command)
+    engine_negative_command[engine_negative_command.index("-o") + 1] = engine_negative_elf
+    engine_negative_command[engine_negative_command.index(positive)] = engine_negative_source
+    base_verifier.run_command(engine_negative_command, timeout=120)
+    require_separate_storage(engine_negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+    engine_negative, records, invoke_words = execute(engine_negative_elf)
+    if marker not in engine_negative.stdout:
+        raise VerificationError("engine bypass does not preserve the semantic PASS marker")
+    try:
+        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
+                                 base_hooks["cruise_feedback_serializer"].stock,
+                                 rolling_layout.hook_by_key["primary_ignition_command"].stock)
+    except VerificationError as error:
+        if str(error) != engine_expected:
+            raise VerificationError(f"engine bypass fails outside its omitted outcome: {error}") from error
+    else:
+        raise VerificationError("engine coverage accepts the real held-map bypass")
     if (source_path.read_text(encoding="utf-8") != source
             or positive.read_text(encoding="utf-8") != source
             or negative_source.read_text(encoding="utf-8") != negative_text
             or controller_negative_source.read_text(encoding="utf-8") != controller_negative_text
-            or adapter_negative_source.read_text(encoding="utf-8") != adapter_negative_text):
+            or adapter_negative_source.read_text(encoding="utf-8") != adapter_negative_text
+            or engine_negative_source.read_text(encoding="utf-8") != engine_negative_text):
         raise VerificationError("Rolling Launch harness source changes during verification")
     measured = "VQ_SH_ELF_ROLLING_WRAPPER_COVERAGE status=PASS scope=JK08A:"
     measured += ",".join(COVERAGE_REGIONS) + " " + " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), measured,
                       f"VQ_SH_ELF_ROLLING_WRAPPER_NEGATIVE status=PASS {expected}",
                       f"VQ_SH_ELF_ROLLING_CONTROLLER_NEGATIVE status=PASS {controller_expected}",
-                      f"VQ_SH_ELF_ROLLING_ADAPTER_NEGATIVE status=PASS {adapter_expected}"))
+                      f"VQ_SH_ELF_ROLLING_ADAPTER_NEGATIVE status=PASS {adapter_expected}",
+                      f"VQ_SH_ELF_ROLLING_ENGINE_NEGATIVE status=PASS {engine_expected}"))
 
 
 def verify(verbose=False, check_toolchain=True):

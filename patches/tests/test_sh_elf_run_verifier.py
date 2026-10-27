@@ -1724,8 +1724,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=7, instructions=54, outcomes=10,
-                                      delay_slots=17, call_return_paths=12, tail_paths=5))
+        self.assertEqual(result, dict(entries=8, instructions=60, outcomes=10,
+                                      delay_slots=19, call_return_paths=13, tail_paths=5))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
@@ -1804,7 +1804,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         cases.append((wrong_return, "wrapper return differs"))
         cases.append((helper[:3] + helper[7:], "divider return and native RTS"))
         # A call from the engine window without an actual engine parent is foreign.
-        cases.append((engine[3:], "bound engine or invoke origin"))
+        cases.append((engine[3:], "originating invoke frame"))
         foreign = list(engine)
         foreign[4:6] = [(0x102, 0x400B, 0), (0x104, 9, 1)]
         cases.append((foreign, "originating invoke frame"))
@@ -1860,7 +1860,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         wrong_slot = list(feedback)
         wrong_slot[4] = (0x244, 9, 0)
         cases.append((wrong_slot, "missing executed delay slot"))
-        cases.append((feedback[:3] + [(0x280, 9, 0)] + feedback[3:], "bound R0 load"))
+        cases.append((feedback[:3] + [(0x302, 9, 0)] + feedback[3:], "bound R0 load"))
         for records, reason in cases:
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(

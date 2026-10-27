@@ -655,14 +655,14 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             target.rolling_layout.variant == "vq37-fuel-coordinator"
         )
         rolling_marker = (
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=137 "
-            "structural=11 gates=27 config=24 threshold=4 activation=6 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=142 "
+            "structural=11 gates=32 config=24 threshold=4 activation=6 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "fuel_coordinator=3 hold=11 entries=9"
             if vq37_rolling
             else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=123 "
-            "structural=11 gates=27 config=24 threshold=4 activation=6 "
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=128 "
+            "structural=11 gates=32 config=24 threshold=4 activation=6 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "entries=8"
         )
