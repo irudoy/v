@@ -44,6 +44,7 @@ class ConversionSummary:
 
 
 def trace_start_epoch(trace, timezone_name: str) -> float:
+    """Return the UTC epoch of the $STARTTIME of a trace or its header."""
     if trace.start_time is None:
         raise ConversionError(
             f"{trace.path}: TRC does not declare $STARTTIME"
@@ -119,17 +120,21 @@ def convert_trace(
             f"{output}: output already exists; use --force to replace it"
         )
     try:
-        trace = peak_trc_audit.load_trace(source)
+        header = peak_trc_audit.read_header(source)
     except peak_trc_audit.TraceError as error:
         raise ConversionError(str(error)) from error
-    start_epoch = trace_start_epoch(trace, timezone_name)
+    start_epoch = trace_start_epoch(header, timezone_name)
     model = DashboardModel(profile, can_id, tick_divisor, schema_path)
     recorder = None
     first_snapshot_seconds = None
+    source_frames = 0
     telemetry_frames = 0
 
     try:
-        for frame in trace.frames:
+        for frame in peak_trc_audit.iter_records(source):
+            if isinstance(frame, peak_trc_audit.StatusRecord):
+                continue
+            source_frames += 1
             timestamp = frame.offset_ms / 1000.0
             if frame.can_id == can_id and not frame.extended:
                 telemetry_frames += 1
@@ -164,6 +169,10 @@ def convert_trace(
             )
         recording = recorder.close()
         recorder = None
+    except peak_trc_audit.TraceError as error:
+        if recorder is not None:
+            recorder.abort()
+        raise ConversionError(str(error)) from error
     except Exception:
         if recorder is not None:
             recorder.abort()
@@ -172,7 +181,7 @@ def convert_trace(
     return ConversionSummary(
         source=source,
         output=output,
-        source_frames=len(trace.frames),
+        source_frames=source_frames,
         telemetry_frames=telemetry_frames,
         complete_snapshots=model.decoder.completed_groups,
         mlg_fields=recording.fields,

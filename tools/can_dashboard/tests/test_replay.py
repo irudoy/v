@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from tools.can_dashboard import model, recording, replay
+from tools.can_dashboard import excerpt, model, recording, replay
 from tools.can_dashboard.replay import ReplayError, ReplayPlayer
 from tools.logs import mlvlg
 
@@ -67,6 +67,19 @@ class LoadTimelineTest(unittest.TestCase):
         self.assertEqual(frame.received_monotonic, 4.5)
         self.assertFalse(frame.is_error_frame)
         self.assertTrue(timeline.item(2).is_error_frame)
+
+    def test_a_cp1251_header_comment_replays_and_survives_an_excerpt(self):
+        comment = "; \u0417\u0430\u043f\u0438\u0441\u044c \u0441\u0442\u0435\u043d\u0434\u0430\n"
+        content = PEAK_TRC.replace(";\n", comment, 1).encode("cp1251")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.trc"
+            path.write_bytes(content)
+            timeline = replay.load_timeline(path, 0x6F0)
+            self.assertEqual(list(timeline.ids), [0x180, 0x6F0, 0])
+            output = Path(directory) / "excerpt.trc"
+            saved = excerpt.save_excerpt(timeline, 0.0, 0.0128, output)
+            self.assertEqual(saved.records, 3)
+            self.assertIn(comment.encode("cp1251"), output.read_bytes())
 
     def test_candump_times_start_at_the_first_line(self):
         timeline = self.load(

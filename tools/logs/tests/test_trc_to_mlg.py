@@ -3,9 +3,12 @@ from datetime import datetime
 from pathlib import Path
 import struct
 import tempfile
+import tracemalloc
 from types import SimpleNamespace
 import unittest
 from zoneinfo import ZoneInfo
+
+import pytest
 
 from tools.can_dashboard import model
 from tools.logs import mlvlg, trc_to_mlg
@@ -88,6 +91,23 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertEqual(summary.complete_snapshots, 8)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(ticks, [900, 901, 902, 903, 1, 2, 3, 4])
+
+    @pytest.mark.slow
+    def test_conversion_memory_does_not_grow_with_the_capture(self):
+        peaks = []
+        with tempfile.TemporaryDirectory() as directory:
+            for ticks in (1_200, 6_000):
+                source = Path(directory) / f"{ticks}.trc"
+                output = Path(directory) / f"{ticks}.mlg"
+                write_trace(source, ticks=range(1, ticks + 1))
+                tracemalloc.start()
+                try:
+                    summary = trc_to_mlg.convert_trace(source, output)
+                    peaks.append(tracemalloc.get_traced_memory()[1])
+                finally:
+                    tracemalloc.stop()
+                self.assertEqual(summary.mlg_records, ticks)
+        self.assertLess(peaks[1], peaks[0] + 64 * 1024)
 
     def test_conversion_preserves_snapshots_and_field_identity(self):
         with tempfile.TemporaryDirectory() as directory:

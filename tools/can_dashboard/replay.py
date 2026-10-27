@@ -191,14 +191,9 @@ class _FrameColumns:
 
 
 def _load_trc(path, can_id):
-    trace = peak_trc_audit.load_trace(path)
     kept = {can_id, *OBSERVED_IDS}
     columns = _FrameColumns()
-    records = sorted(
-        (*trace.frames, *trace.status_records),
-        key=lambda record: record.number,
-    )
-    for record in records:
+    for record in peak_trc_audit.iter_records(path):
         time = record.offset_ms / 1000.0
         if isinstance(record, peak_trc_audit.StatusRecord):
             if record.kind == "Error":

@@ -9,6 +9,12 @@ warning, and error records; checks a candidate telemetry ID; and estimates
 average and rolling-window bus load. The parser follows the official
 [PEAK trace format specification](https://www.peak-system.com/produktcd/Develop/PC%20interfaces/Windows/PCAN-Basic%20API/PCAN-Parameter_Documentation.pdf#page=130).
 
+The reader streams one row at a time: `iter_records` checks numbering and
+timestamp order as rows arrive, so conversion and replay memory does not grow
+with the capture. Record rows are strict ASCII. Comment rows are decoded as
+CP1251, the Windows code page that PCAN-View writes on a Cyrillic system, and
+an undecodable comment byte never rejects the capture.
+
 TRC 1.1 does not record the configured nominal bitrate. Load calculation is
 therefore disabled unless the bitrate is supplied explicitly:
 
