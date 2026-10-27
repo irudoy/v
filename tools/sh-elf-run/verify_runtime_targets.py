@@ -466,18 +466,18 @@ def _compile_and_run(
     fixture=None,
     composed_image=None,
 ):
-    measured = target.rom == "JK00C" and name == "map-switching"
+    measured = target.rom in ("JK00C", "JK00D") and name == "map-switching"
     source_snapshot = None
     if measured:
         if map_parsed is None or fixture is None or composed_image is None:
-            raise VerificationError("JK00C map coverage requires typed/composed/fixture context")
+            raise VerificationError(f"{target.rom} map coverage requires typed/composed/fixture context")
         if len(fixture) != len(target.stock_image.data):
-            raise VerificationError("JK00C map fixture extent differs from the owned image")
+            raise VerificationError(f"{target.rom} map fixture extent differs from the owned image")
         try:
             base_verifier.require_map_fixture_bindings(
                 fixture, composed_image, map_parsed, target.map_layout)
         except base_verifier.VerificationError as error:
-            raise VerificationError(f"JK00C map binding: {error}") from error
+            raise VerificationError(f"{target.rom} map binding: {error}") from error
         source_snapshot = source.read_text(encoding="utf-8")
     output = build_dir / f"{target.rom.lower()}-{name}.elf"
     driver_text_base = max(
@@ -534,10 +534,10 @@ def _compile_and_run(
                 [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", elf],
                 timeout=180, env=environment)
             if elf.read_bytes() != before:
-                raise VerificationError("JK00C map ELF changes during execution")
+                raise VerificationError(f"{target.rom} map ELF changes during execution")
             records = base_verifier.read_pc_trace(trace)
         except base_verifier.VerificationError as error:
-            raise VerificationError(f"JK00C map execution binding: {error}") from error
+            raise VerificationError(f"{target.rom} map execution binding: {error}") from error
         return result, records, invokes
 
     def coverage(records, invokes):
@@ -549,9 +549,9 @@ def _compile_and_run(
     try:
         covered = coverage(records, invokes)
     except base_verifier.VerificationError as error:
-        raise VerificationError(f"JK00C map coverage: {error}") from error
+        raise VerificationError(f"{target.rom} map coverage: {error}") from error
     if marker not in result.stdout:
-        raise VerificationError("JK00C map lacks its semantic PASS marker")
+        raise VerificationError(f"{target.rom} map lacks its semantic PASS marker")
     layout = target.map_layout
     def entry(key):
         return min(layout.code_region_by_key[region].entry
@@ -566,11 +566,11 @@ def _compile_and_run(
     negatives = []
     for omitted, call, expected_entry in omissions:
         if source_snapshot.count(call) != 1:
-            raise VerificationError(f"JK00C negative lacks its unique {omitted} call")
-        negative_source = build_dir / f"jk00c-no-{omitted}-cases.c"
+            raise VerificationError(f"{target.rom} negative lacks its unique {omitted} call")
+        negative_source = build_dir / f"{target.rom.lower()}-no-{omitted}-cases.c"
         negative_text = source_snapshot.replace(call, call.replace("if (", "if (0 && ", 1))
         negative_source.write_text(negative_text, encoding="utf-8")
-        negative_elf = build_dir / f"jk00c-no-{omitted}-cases.elf"
+        negative_elf = build_dir / f"{target.rom.lower()}-no-{omitted}-cases.elf"
         negative_command = list(command)
         negative_command[negative_command.index("-o") + 1] = negative_elf
         negative_command[negative_command.index(source)] = negative_source
@@ -578,25 +578,25 @@ def _compile_and_run(
         try:
             require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
         except (ELFStorageError, OSError) as error:
-            raise VerificationError(f"JK00C negative ELF storage separation: {error}") from error
+            raise VerificationError(f"{target.rom} negative ELF storage separation: {error}") from error
         negative, records, invokes = execute(negative_elf)
         if marker not in negative.stdout:
-            raise VerificationError("JK00C negative loses its semantic PASS marker")
+            raise VerificationError(f"{target.rom} negative loses its semantic PASS marker")
         expected_reason = f"uncovered entry {expected_entry:#010x}"
         try:
             coverage(records, invokes)
         except base_verifier.VerificationError as error:
             if str(error) != expected_reason:
-                raise VerificationError(f"JK00C negative fails outside its omitted entry: {error}") from error
+                raise VerificationError(f"{target.rom} negative fails outside its omitted entry: {error}") from error
         else:
-            raise VerificationError(f"JK00C coverage accepts the omitted {omitted} cases")
+            raise VerificationError(f"{target.rom} coverage accepts the omitted {omitted} cases")
         if negative_source.read_text(encoding="utf-8") != negative_text:
-            raise VerificationError("JK00C negative source changes during execution")
-        negatives.append(f"VQ_SH_ELF_RUNTIME_MAP_NEGATIVE status=PASS rom=JK00C omitted={omitted} {expected_reason}")
+            raise VerificationError(f"{target.rom} negative source changes during execution")
+        negatives.append(f"VQ_SH_ELF_RUNTIME_MAP_NEGATIVE status=PASS rom={target.rom} omitted={omitted} {expected_reason}")
     if source.read_text(encoding="utf-8") != source_snapshot:
-        raise VerificationError("JK00C rendered source changes during execution")
+        raise VerificationError(f"{target.rom} rendered source changes during execution")
     scope = ",".join(layout.assembly_unit_by_key)
-    report = f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom=JK00C scope={scope} "
+    report = f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} scope={scope} "
     report += " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), report, *negatives))
 
@@ -628,7 +628,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             f"{target.map_layout.variant!r}"
         )
 
-    if target.rom == "JK00C":
+    if target.rom in ("JK00C", "JK00D"):
         map_marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
         map_defines += ("VERIFY_SELECTOR_FEEDBACK_GUARDS",)
 
@@ -645,8 +645,8 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             map_parsed=map_parsed, fixture=fixture, composed_image=composed_image,
         )
     ]
-    if target.rom == "JK00C" and "VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom=JK00C " not in markers[0]:
-        raise VerificationError("JK00C map lacks its measured coverage terminal")
+    if target.rom in ("JK00C", "JK00D") and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]:
+        raise VerificationError(f"{target.rom} map lacks its measured coverage terminal")
     if target.rolling_layout is not None:
         rolling_source = _render_harness(
             target, "rolling_launch_harness.c", build_dir

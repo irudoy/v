@@ -1169,8 +1169,8 @@ mov #0x5,r1
         with self.assertRaisesRegex(VERIFIER.VerificationError, "missing typed map unit: secondary_cvtc_adapter"):
             VERIFIER.require_map_fixture_bindings(image, image, parsed, layout)
 
-    def _jk00c_map_fixture(self):
-        target = runtime_targets.load_runtime_target("JK00C")
+    def _dual_cvtc_map_fixture(self, rom="JK00C"):
+        target = runtime_targets.load_runtime_target(rom)
         parsed = assembly_model.validate_assembly_sources(target.map_layout)
         composition = VERIFIER.composer.compose(
             layout=target.map_layout, image=target.stock_image, blobs=dict(target.map_payloads))
@@ -1178,49 +1178,52 @@ mov #0x5,r1
         VERIFIER.relocate_assembly_ram_literals(fixture, parsed)
         return target, parsed, composition.data, fixture
 
-    def test_jk00c_binding_allows_declared_ram_aliases_and_binds_secondary_words(self):
-        target, parsed, composed, fixture = self._jk00c_map_fixture()
-        VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
-        self.assertNotEqual(fixture, composed)
-        entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
-        fixture[entry] ^= 1
-        with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator changes payload instruction"):
+    def test_dual_cvtc_binding_allows_declared_ram_aliases_and_binds_secondary_words(self):
+        for rom in ("JK00C", "JK00D"):
+            target, parsed, composed, fixture = self._dual_cvtc_map_fixture(rom)
             VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
+            self.assertNotEqual(fixture, composed)
+            entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
+            fixture[entry] ^= 1
+            with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator changes payload instruction"):
+                VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
 
     def test_control_pool_mutations_with_unchanged_opcodes_refuse_before_commands(self):
-        target, parsed, composed, fixture = self._jk00c_map_fixture()
-        sites = []
-        for key, transfer in (("startup_wrapper", "jsr @r0"), ("idle_ignition_adapter", "jmp @r0")):
-            unit = parsed[key]
-            row = next(row for row in unit.statements if row.kind == "instruction" and row.text == transfer)
-            sites.append((key, unit, unit.statement_by_address[row.address - 2]))
-        unit = parsed["secondary_cvtc_adapter"]
-        entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
-        sites.append(("secondary R3", unit, unit.statement_by_address[entry]))
-        base = RUNTIME_VERIFIER.base_verifier
-        with tempfile.TemporaryDirectory() as directory:
-            build = Path(directory)
-            for name, unit, load in sites:
-                pool = unit.labels[assembly_model.PC_RELATIVE_RE.fullmatch(load.text).group("label")]
-                changed = bytearray(fixture)
-                changed[pool + 3] ^= 2
-                self.assertEqual(changed[load.address:load.address + 2], fixture[load.address:load.address + 2])
-                with self.subTest(operand=name), patch.object(base, "run_command") as command:
-                    with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "map ROM control pool differs"):
-                        RUNTIME_VERIFIER._compile_and_run(
-                            target, "map-switching", build / "source.c", build / "rom.o",
-                            [build / "invoke.o"], build, "semantic marker",
-                            map_parsed=parsed, fixture=changed, composed_image=composed)
-                    command.assert_not_called()
+        for rom in ("JK00C", "JK00D"):
+            target, parsed, composed, fixture = self._dual_cvtc_map_fixture(rom)
+            sites = []
+            for key, transfer in (("startup_wrapper", "jsr @r0"), ("idle_ignition_adapter", "jmp @r0")):
+                unit = parsed[key]
+                row = next(row for row in unit.statements if row.kind == "instruction" and row.text == transfer)
+                sites.append((key, unit, unit.statement_by_address[row.address - 2]))
+            unit = parsed["secondary_cvtc_adapter"]
+            entry = target.map_layout.code_region_by_key["secondary_cvtc_target_adapter"].entry
+            sites.append(("secondary R3", unit, unit.statement_by_address[entry]))
+            base = RUNTIME_VERIFIER.base_verifier
+            with tempfile.TemporaryDirectory() as directory:
+                build = Path(directory)
+                for name, unit, load in sites:
+                    pool = unit.labels[assembly_model.PC_RELATIVE_RE.fullmatch(load.text).group("label")]
+                    changed = bytearray(fixture)
+                    changed[pool + 3] ^= 2
+                    self.assertEqual(changed[load.address:load.address + 2], fixture[load.address:load.address + 2])
+                    with self.subTest(rom=rom, operand=name), patch.object(base, "run_command") as command:
+                        with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, f"{rom} map binding: map ROM control pool differs"):
+                            RUNTIME_VERIFIER._compile_and_run(
+                                target, "map-switching", build / "source.c", build / "rom.o",
+                                [build / "invoke.o"], build, "semantic marker",
+                                map_parsed=parsed, fixture=changed, composed_image=composed)
+                        command.assert_not_called()
 
-    def test_jk00c_has_no_marker_only_fallback_without_binding_context(self):
-        target = SimpleNamespace(rom="JK00C")
-        with patch.object(RUNTIME_VERIFIER.base_verifier, "run_command") as command:
-            with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "requires typed/composed/fixture context"):
-                RUNTIME_VERIFIER._compile_and_run(
-                    target, "map-switching", Path("source.c"), Path("rom.o"),
-                    [Path("invoke.o")], Path("."), "semantic marker")
-            command.assert_not_called()
+    def test_dual_cvtc_has_no_marker_only_fallback_without_binding_context(self):
+        for rom in ("JK00C", "JK00D"):
+            target = SimpleNamespace(rom=rom)
+            with patch.object(RUNTIME_VERIFIER.base_verifier, "run_command") as command:
+                with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, f"{rom} map coverage requires typed/composed/fixture context"):
+                    RUNTIME_VERIFIER._compile_and_run(
+                        target, "map-switching", Path("source.c"), Path("rom.o"),
+                        [Path("invoke.o")], Path("."), "semantic marker")
+                command.assert_not_called()
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_canonical_control_pool_mutation_refuses_before_commands(self):
@@ -1235,15 +1238,19 @@ mov #0x5,r1
                     changed, Path("."), parsed_by_unit=parsed, composed_image=image, layout=layout)
             command.assert_not_called()
 
-    def test_jk00c_dispatch_rejects_a_marker_only_map_terminal(self):
-        target = SimpleNamespace(rom="JK00C", map_layout=SimpleNamespace(variant="dual-cvtc"))
-        with patch.object(RUNTIME_VERIFIER, "_build_rom_object", return_value=Path("rom.o")), \
-             patch.object(RUNTIME_VERIFIER, "_build_invoke_objects", return_value=(Path("invoke.o"), Path("exception.o"))), \
-             patch.object(RUNTIME_VERIFIER, "_render_harness", return_value=Path("source.c")), \
-             patch.object(RUNTIME_VERIFIER, "_compile_and_run", return_value="VQ_SH_ELF_MAP_SWITCHING status=PASS "):
-            with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "lacks its measured coverage terminal"):
-                RUNTIME_VERIFIER._run_harnesses(
-                    target, b"fixture", Path("."), map_parsed={}, composed_image=b"fixture")
+    def test_dual_cvtc_dispatch_rejects_marker_only_and_wrong_rom_terminals(self):
+        for rom in ("JK00C", "JK00D"):
+            other = "JK00D" if rom == "JK00C" else "JK00C"
+            for terminal in ("VQ_SH_ELF_MAP_SWITCHING status=PASS ",
+                             f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={other} "):
+                target = SimpleNamespace(rom=rom, map_layout=SimpleNamespace(variant="dual-cvtc"))
+                with patch.object(RUNTIME_VERIFIER, "_build_rom_object", return_value=Path("rom.o")), \
+                     patch.object(RUNTIME_VERIFIER, "_build_invoke_objects", return_value=(Path("invoke.o"), Path("exception.o"))), \
+                     patch.object(RUNTIME_VERIFIER, "_render_harness", return_value=Path("source.c")), \
+                     patch.object(RUNTIME_VERIFIER, "_compile_and_run", return_value=terminal):
+                    with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, "lacks its measured coverage terminal"):
+                        RUNTIME_VERIFIER._run_harnesses(
+                            target, b"fixture", Path("."), map_parsed={}, composed_image=b"fixture")
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_binds_multiple_entries_and_tail_returns(self):
