@@ -46,7 +46,7 @@ DYNAMIC_MARKER_PATTERN = (
     r"profiles=1 contexts=10 isr_rte=5$"
 )
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture")
-CAPTURE_MEASURED_REGIONS = ("knock_margin_wrapper", "request_page")
+CAPTURE_MEASURED_REGIONS = ("build_bank", "knock_margin_wrapper", "request_page")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -265,8 +265,8 @@ def build_rom_object(fixture, build_dir):
     return object_path
 
 
-def _request_page_callers(parsed_by_unit):
-    """Return call sites into request_page without qualifying their bodies."""
+def _bounded_capture_callers(parsed_by_unit):
+    """Return call sites into measured capture leaves without qualifying their bodies."""
     found = []
     for parsed in parsed_by_unit.values():
         statements = getattr(parsed, "statements", ())
@@ -283,11 +283,11 @@ def _request_page_callers(parsed_by_unit):
                         and previous.text == "mov.l @(telemetry_completion_request_page,pc),r0"):
                     continue
                 pool = parsed.labels["telemetry_completion_request_page"]
-            elif row.text != "bsr telemetry_request_page":
+            elif row.text not in {"bsr telemetry_request_page", "bsr telemetry_build_bank"}:
                 continue
             delay = by_address.get(row.address + 2)
             if delay is None or delay.kind != "instruction" or delay.text != "nop":
-                raise VerificationError("request page caller lacks its delay nop")
+                raise VerificationError("bounded capture caller lacks its delay nop")
             found.append((row.address, pool))
     return tuple(found)
 
@@ -327,11 +327,11 @@ def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit, layout)
                 raise VerificationError(f"CAN wrapper call pool is not one typed long at {pool:#010x}")
             if fixture[pool:pool + 4] != composed[pool:pool + 4]:
                 raise VerificationError(f"simulator changes CAN wrapper control literal at {pool:#010x}")
-    for address, pool in _request_page_callers(parsed_by_unit):
+    for address, pool in _bounded_capture_callers(parsed_by_unit):
         if fixture[address:address + 4] != composed[address:address + 4]:
-            raise VerificationError("simulator changes request page caller")
+            raise VerificationError("simulator changes bounded capture caller")
         if pool is not None and fixture[pool:pool + 4] != composed[pool:pool + 4]:
-            raise VerificationError("simulator changes request page caller")
+            raise VerificationError("simulator changes bounded capture caller")
 
 
 def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words):
@@ -387,7 +387,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                                for call in config_calls for returned in private_returns}
     observed_config_returns = set()
     request_entry = layout.code_region_by_key["request_page"].entry
-    request_callers = {address for address, _pool in _request_page_callers(parsed_by_unit)}
+    build_entry = layout.code_region_by_key["build_bank"].entry
+    bounded_callers = {address for address, _pool in _bounded_capture_callers(parsed_by_unit)}
     seen, observed_outcomes, observed_slots, returned, call_returns = set(), set(), set(), set(), set()
     frames = []
     for index, (pc, word, delay) in enumerate(records):
@@ -424,7 +425,7 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             if target == config_entry and pc not in config_calls:
                 raise VerificationError(f"unbound CAN config caller at {pc:#010x}")
             if (not frames and target in entries and pc not in invoke_words
-                    and pc not in request_callers):
+                    and pc not in bounded_callers):
                 raise VerificationError(f"CAN wrapper origin is outside bound invoke code at {pc:#010x}")
             if frames or target in entries:
                 frames.append((pc, target, pc + 4))
@@ -460,8 +461,10 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
         raise VerificationError("uncovered CAN wrapper call/return path")
     for missing in sorted(slots - observed_slots):
         raise VerificationError(f"uncovered CAN wrapper delay slot {missing:#010x}")
-    if not any(call in invoke_words and entry == request_entry for call, entry, _continuation in call_returns):
-        raise VerificationError(f"uncovered CAN request invoke return {request_entry:#010x}")
+    for name, entry in (("request", request_entry), ("build", build_entry)):
+        if not any(call in invoke_words and returned_entry == entry
+                   for call, returned_entry, _continuation in call_returns):
+            raise VerificationError(f"uncovered CAN {name} invoke return {entry:#010x}")
     return dict(entries=len(entries & seen), instructions=len(instructions.keys() & seen),
                 outcomes=len(outcomes & observed_outcomes), delay_slots=len(slots & observed_slots),
                 call_return_paths=len(call_returns), config_return_paths=len(observed_config_returns & expected_config_returns))
@@ -533,6 +536,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         margin, zero, int.from_bytes(fixture[zero.address:zero.address + 2], "big"))
     evaluator = layout.hook_by_key["knock_margin_latch"].stock
     request_entry = layout.code_region_by_key["request_page"].entry
+    clamp = next(row for row in _measured_statements("capture", parsed_by_unit["capture"], layout)
+                 if row.kind == "instruction" and row.text == "bf telemetry_build_context_valid")
     request_copy = (
         "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
         "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
@@ -557,6 +562,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         ),
          f"uncovered CAN request invoke return {request_entry:#010x}",
          "VQ_SH_ELF_CAN_REQUEST_COVERAGE_NEGATIVE"),
+        ("build-clamp", (("    state[6] = 0xff;\n", "    state[6] = 0;\n"),),
+         f"uncovered CAN wrapper outcome {clamp.address:#010x}->{clamp.address + 2:#010x}",
+         "VQ_SH_ELF_CAN_BUILD_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
     for name, edits, reason, prefix in omissions:
