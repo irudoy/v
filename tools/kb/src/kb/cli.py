@@ -291,7 +291,8 @@ def _answer(args, command, build, root=repo.ROOT):
 
 
 def command_at(args, root=repo.ROOT):
-    return _answer(args, "at", lambda g: read.at(g, args.ref, args.layout, root), root)
+    return _answer(args, "at", lambda g: read.at(
+        g, args.ref, args.layout, root, literal=args.literal), root)
 
 
 def command_show(args, root=repo.ROOT):
@@ -623,8 +624,10 @@ def build_parser():
         return command
 
     reference = ("ref", "a reference (tools/kb/SPEC.md, section 5.2)")
-    reader("at", "the symbol at an address and the L0 facts there", reference) \
-        .set_defaults(handler=command_at)
+    at = reader("at", "the symbol at an address and the L0 facts there", reference)
+    at.add_argument("--literal", action="store_true",
+                    help="also list exact exported 32-bit load values equal to the address")
+    at.set_defaults(handler=command_at)
     reader("show", "an entity with its symbols, links, and evidence", reference) \
         .set_defaults(handler=command_show)
     reader("where", "the symbol or status of a meaning on every layout", reference,

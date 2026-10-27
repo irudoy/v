@@ -1312,6 +1312,12 @@ codes. Tests bind those declarations to the parser and MCP command list.
 
 ### 12.2 Read commands
 
+`kb at --literal` adds a separate view of exact exported 32-bit ROM load
+values equal to the requested location's numeric value. Matches retain the
+function, instruction, ordinal, pool address, width, raw bytes and reference
+type. Their use is unclassified: a matching value does not establish a memory
+access, and zero matches do not establish absence of runtime access. The
+default address view and its structured output retain their existing contract.
 
 ### 12.3 Write commands
 

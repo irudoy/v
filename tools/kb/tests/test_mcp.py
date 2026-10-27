@@ -1,9 +1,11 @@
+import contextlib
 import io
 import json
 import unittest
 from unittest import mock
 
 from kb import cli, mcp
+from kb.answer import Answer
 
 # Commands that change state or serve, and so are no MCP read tools.
 NOT_READ = {"sync", "instance", "guard", "mcp", "project", "fmt", "new", "set", "bind", "absent",
@@ -46,6 +48,22 @@ class ToolTest(unittest.TestCase):
         self.assertEqual(tools["kb_audit"]["properties"]["section"]["items"]["enum"],
                          ["disagreements", "names", "untyped", "levels", "chain-notes", "research"])
         self.assertNotIn("required", tools["kb_brief"])
+
+    def test_literal_values_use_the_at_reader_and_json_through_mcp(self):
+        schema = {tool["name"]: tool["inputSchema"] for tool in mcp.tools()}["kb_at"]
+        self.assertEqual(schema["properties"]["literal"]["type"], "boolean")
+        self.assertEqual(mcp.argv("at", {"ref": "jk78c:0001e30c", "literal": True}),
+                         ["at", "jk78c:0001e30c", "--literal"])
+        answer = Answer("unused")
+        answer.data = {"l0": {"literal": {"value_hex": "0001e30c", "matches": []}}}
+        with mock.patch.object(cli.reader, "graph_session", return_value=contextlib.nullcontext("graph")) as session, \
+                mock.patch.object(cli.read, "at", return_value=answer) as at:
+            code, text = mcp.call("at", {"ref": "jk78c:0001e30c", "literal": True,
+                                         "json": True, "no_sync": True})
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(text), answer.data)
+        session.assert_called_once_with(cli.repo.ROOT, True)
+        at.assert_called_once_with("graph", "jk78c:0001e30c", None, cli.repo.ROOT, literal=True)
 
     def test_a_call_gives_the_command_line_of_its_command(self):
         self.assertEqual(mcp.argv("find", {"words": "knock threshold", "limit": 5}),

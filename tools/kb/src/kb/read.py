@@ -394,6 +394,24 @@ def references_to(layout, address, root=repo.ROOT):
             for found in pattern.finditer(data)]
 
 
+def literal_references_to(layout, value, root=repo.ROOT):
+    """Exact exported 32-bit ROM load values, without interpreting their use."""
+    expected = f"{value:08x}"
+    found = {}
+    with (root / repo.L0 / layout / "function_references.csv").open(
+            newline="", encoding="utf-8") as source:
+        for row in csv.DictReader(source):
+            if (row["width"] != "4" or row["ref_type"] != "read"
+                    or row["mnemonic"] != "mov.l" or row["value_hex"].lower() != expected):
+                continue
+            key = (int(row["func_addr"], 16), int(row["ins_addr"], 16),
+                   int(row["ordinal"]), row["mnemonic"], int(row["ref_addr"], 16))
+            found[key] = {"function": key[0], "site": key[1], "ordinal": key[2],
+                          "mnemonic": key[3], "pool": key[4], "width": 4,
+                          "value_hex": expected, "ref_type": row["ref_type"]}
+    return [found[key] for key in sorted(found)]
+
+
 def containing_datum(graph, layout, address):
     """A table, axis, or constant symbol whose extent covers the address."""
     rows = graph.run(
@@ -452,7 +470,7 @@ def _location_of(graph, ref, root):
     return ref.layout, ref.address
 
 
-def at(graph, text, layout=None, root=repo.ROOT):
+def at(graph, text, layout=None, root=repo.ROOT, *, literal=False):
     found = refs.resolve(graph, text, layout, root, many=True)
     first = found[0] if isinstance(found, list) else found
     layout, address = _location_of(graph, first, root)
@@ -505,6 +523,18 @@ def at(graph, text, layout=None, root=repo.ROOT):
             f"  [l0] function entry: {node.get('size')} bytes, {node.get('instructions')} "
             f"instructions, {facts['callers']} callers, {facts['callees']} callees, "
             f"{facts['locations']} locations"])
+    if literal:
+        matches = literal_references_to(layout, address, root)
+        data["l0"]["literal"] = {"value_hex": f"{address:08x}", "width": 4,
+                                  "classification": "unclassified", "matches": matches}
+        answer.section(None, FACTS, [
+            f"  [l0] literal value {address:#010x}: {len(matches)} exported 32-bit read matches",
+            "  value use is unclassified; zero matches do not establish absence of runtime access"])
+        answer.section(None, DETAIL, [
+            f"  function {location_ref(layout, item['function'])} "
+            f"site {item['site']:08x} pool {item['pool']:08x} ordinal {item['ordinal']} "
+            f"{item['mnemonic']} width {item['width']} raw {item['value_hex']} "
+            f"ref_type {item['ref_type']}" for item in matches])
     answer.data = data
     return answer
 

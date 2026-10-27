@@ -435,6 +435,73 @@ class AllocationTest(unittest.TestCase):
         self.assertEqual(read.allocations_at(store, "jk00d", 0xFFFF5D40), [])
 
 
+class LiteralReferenceTest(unittest.TestCase):
+    VALUE = 0x1E30C
+    MATCH = {"function": 0x200, "site": 0x204, "ordinal": 2, "mnemonic": "mov.l",
+             "pool": 0x240, "width": 4, "value_hex": "0001e30c", "ref_type": "read"}
+
+    def setUp(self):
+        scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(scratch.cleanup)
+        self.root = Path(scratch.name)
+        source = self.root / "l0" / "jk78c" / "function_references.csv"
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "func_addr,ins_addr,ordinal,mnemonic,ref_addr,width,value_hex,ref_type\n"
+            "00000300,00000306,3,mov.l,00000340,4,0001e30c,read\n"
+            "00000200,00000204,2,mov.l,00000240,4,0001e30c,read\n"
+            "00000200,00000204,2,mov.l,00000240,4,0001e30c,read\n"
+            "00000200,00000208,4,mov.w,00000244,2,e30c,read\n"
+            "00000200,0000020a,5,mov.b,00000246,1,0c,read\n"
+            "00000200,0000020c,6,mov.l,00000248,4,0001e30d,read\n"
+            "00000200,00000210,8,mov.l,0000024c,4,0001e30c,write\n"
+            "00000200,00000214,10,mov.l,00000250,4,0001e30c,data\n"
+            "00000200,00000218,12,mov.l,00000254,4,,read\n"
+            "00000200,0000021c,14,mov.l,0001e30c,4,12345678,read\n",
+            encoding="utf-8")
+
+    def test_exact_loads_preserve_provenance_and_deduplicate_in_stable_order(self):
+        matches = read.literal_references_to("jk78c", self.VALUE, self.root)
+        self.assertEqual(matches, [self.MATCH, {**self.MATCH, "function": 0x300,
+                                               "site": 0x306, "ordinal": 3, "pool": 0x340}])
+        self.assertEqual(read.literal_references_to("jk78c", 0x1E30E, self.root), [])
+
+    def test_pool_addresses_and_narrow_values_are_not_loaded_value_matches(self):
+        self.assertEqual(read.literal_references_to("jk78c", 0x240, self.root), [])
+        self.assertEqual(read.literal_references_to("jk78c", 0xE30C, self.root), [])
+        self.assertEqual(read.literal_references_to("jk78c", 0x0C, self.root), [])
+        direct = read.references_to("jk78c", self.VALUE, self.root)
+        self.assertEqual([(item["site"], item["value"]) for item in direct], [(0x21C, "12345678")])
+
+    def at(self, literal=False, value=VALUE):
+        location = Ref("location", layout="jk78c", address=value)
+        with mock.patch.object(read.refs, "resolve", return_value=location), \
+                mock.patch.object(read, "symbols_at", return_value=[]), \
+                mock.patch.object(read, "_space", return_value="rom"), \
+                mock.patch.object(read, "allocations_at", return_value=[]), \
+                mock.patch.object(read, "_containing", return_value=[]), \
+                mock.patch.object(read, "location_node", return_value=None), \
+                mock.patch.object(read, "function_facts", return_value=None):
+            return read.at(None, "jk78c:0001e30c", root=self.root, literal=literal)
+
+    def test_literal_matches_are_opt_in_and_separate_from_address_facts(self):
+        with mock.patch.object(read, "literal_references_to", side_effect=AssertionError("not opt-in")):
+            baseline = self.at()
+        self.assertEqual(baseline.data, {"location": "jk78c:0001e30c", "space": "rom",
+                                        "symbols": [], "l0": {}, "allocations": []})
+        answer = self.at(literal=True)
+        self.assertEqual({key: value for key, value in answer.data.items() if key != "l0"},
+                         {key: value for key, value in baseline.data.items() if key != "l0"})
+        literal = answer.data["l0"]["literal"]
+        self.assertEqual((literal["value_hex"], literal["width"], literal["classification"]),
+                         ("0001e30c", 4, "unclassified"))
+        self.assertEqual(literal["matches"][0], self.MATCH)
+        self.assertNotIn("references", answer.data)
+        empty = self.at(literal=True, value=0x1E30E)
+        self.assertEqual(empty.data["l0"]["literal"]["matches"], [])
+        self.assertIn("zero matches do not establish absence of runtime access", empty.text())
+
+
 class StepTest(unittest.TestCase):
     def test_a_step_reads_with_its_chain_from_a_meaning_and_with_via_in_its_chain(self):
         row = {"chain": "engine_speed/chain", "order": 4, "from": "tooth_time/ram",

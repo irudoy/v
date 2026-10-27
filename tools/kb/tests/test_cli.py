@@ -1,10 +1,12 @@
 from argparse import Namespace
 import contextlib
 import io
+import json
 import unittest
 from unittest import mock
 
 from kb import cli, repo
+from kb.answer import Answer
 from kb.refs import Ref
 from kb.repo import KbError
 
@@ -34,6 +36,25 @@ class LocationTest(unittest.TestCase):
         with self.assertRaises(KbError) as outside:
             cli.containing_function(layout, 0x8000)
         self.assertEqual(outside.exception.code, 5)
+
+
+class AtCommandTest(unittest.TestCase):
+    def test_literal_flag_uses_the_same_reader_session_and_json_contract(self):
+        answer = Answer("unused")
+        answer.data = {"l0": {"literal": {"value_hex": "0001e30c", "matches": []}}}
+        for literal in (False, True):
+            with self.subTest(literal=literal):
+                output = io.StringIO()
+                arguments = ["at", "jk78c:0001e30c", "--json", "--no-sync"]
+                if literal:
+                    arguments.append("--literal")
+                with mock.patch.object(cli.reader, "graph_session", return_value=contextlib.nullcontext("graph")) as session, \
+                        mock.patch.object(cli.read, "at", return_value=answer) as at, \
+                        contextlib.redirect_stdout(output):
+                    self.assertEqual(cli.main(arguments), 0)
+                session.assert_called_once_with(repo.ROOT, True)
+                at.assert_called_once_with("graph", "jk78c:0001e30c", None, repo.ROOT, literal=literal)
+                self.assertEqual(json.loads(output.getvalue()), answer.data)
 
 
 class CodeTargetTest(unittest.TestCase):
