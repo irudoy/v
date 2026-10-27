@@ -1156,7 +1156,7 @@ mov #0x5,r1
             with self.subTest(pc=hex(pc)), self.assertRaisesRegex(VERIFIER.VerificationError, "missing executed delay slot"):
                 require(records)
 
-    def adapter_pc_fixture(self, *, secondary=False):
+    def adapter_pc_fixture(self, *, local_adapter=None):
         original, parsed, invokes, taken, untaken = self.pc_fixture()
         image = bytearray(original.ljust(0x500, b"\0"))
         regions, units = {}, {}
@@ -1171,8 +1171,8 @@ mov #0x5,r1
         regions["adapter_select_helper"] = SimpleNamespace(entry=helper, span=SimpleNamespace(start=helper, end=helper + 4))
         units["adapter_select_helper"] = SimpleNamespace(code_regions=("adapter_select_helper",))
         names = ("overrun_adapter", "ignition_adapter", "fuel_compensation_adapter", "cvtc_target_adapter", "full_dfco_adapter", "idle_ignition_adapter")
-        if secondary:
-            names += ("secondary_cvtc_target_adapter",)
+        if local_adapter:
+            names += (local_adapter,)
         traces = {}
         def event(pc, delay=0):
             word = invokes[pc] if pc in invokes else int.from_bytes(image[pc:pc + 2], "big")
@@ -1194,7 +1194,7 @@ mov #0x5,r1
             if name == "idle_ignition_adapter":
                 rows += [(entry + 8, mov_long(entry + 8, entry + 0x14, 0), "mov.l @(helper,pc),r0"),
                          (entry + 10, 0x402b, "jmp @r0"), (entry + 12, 9, "nop")]
-            elif name == "secondary_cvtc_target_adapter":
+            elif name == local_adapter:
                 rows += [(entry + 8, 0x432b, "jmp @r3"), (entry + 10, 9, "nop")]
             else:
                 rows += [(entry + 8, 0xa000 | ((helper - (entry + 12)) // 2 & 0xfff), "bra helper"),
@@ -1224,11 +1224,11 @@ mov #0x5,r1
             passthrough = prefix + [event(entry + 4), event(entry + 6, 1)] + suffix
             if name == "idle_ignition_adapter":
                 selected = prefix + [event(entry + 8), event(entry + 10), event(entry + 12, 1)]
-            elif name == "secondary_cvtc_target_adapter":
+            elif name == local_adapter:
                 selected = prefix + [event(entry + 8), event(entry + 10, 1)]
             else:
                 selected = prefix + [event(entry + 8), event(entry + 10, 1)]
-            if name != "secondary_cvtc_target_adapter":
+            if name != local_adapter:
                 selected += [event(helper), event(helper + 2, 1)]
             selected += suffix
             traces[entry] = passthrough + selected
@@ -1236,19 +1236,35 @@ mov #0x5,r1
         return image, parsed, invokes, taken + untaken, traces, layout
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
-    def test_declared_secondary_adapter_requires_its_local_tail_paths(self):
-        image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture(secondary=True)
-        records = base + [row for trace in traces.values() for row in trace]
-        result = VERIFIER.require_payload_coverage(
-            records, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
-        self.assertEqual(result["entries"], len(layout.code_region_by_key))
-        missing = base + [row for entry, trace in traces.items() if entry != 0x300 for row in trace]
-        with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x00000300"):
-            VERIFIER.require_payload_coverage(
-                missing, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
-        del parsed["secondary_cvtc_adapter"]
-        with self.assertRaisesRegex(VERIFIER.VerificationError, "missing typed map unit: secondary_cvtc_adapter"):
-            VERIFIER.require_map_fixture_bindings(image, image, parsed, layout)
+    def test_declared_local_adapters_require_their_tail_paths(self):
+        for key, region in (("secondary_cvtc_adapter", "secondary_cvtc_target_adapter"),
+                            ("ignition_state_adapter", "ignition_state_adapter")):
+            with self.subTest(unit=key):
+                image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture(local_adapter=region)
+                records = base + [row for trace in traces.values() for row in trace]
+                result = VERIFIER.require_payload_coverage(
+                    records, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+                self.assertEqual(result["entries"], len(layout.code_region_by_key))
+                missing = base + [row for entry, trace in traces.items() if entry != 0x300 for row in trace]
+                with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x00000300"):
+                    VERIFIER.require_payload_coverage(
+                        missing, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+                for previous, successor, reason in ((0x308, 0x340, "executed adapter JMP"),
+                                                     (0x358, 0x4000, "executed return")):
+                    changed = list(records)
+                    index = next(index for index, row in enumerate(changed) if row[0] == previous)
+                    word = invokes[successor] if successor in invokes else int.from_bytes(image[successor:successor + 2], "big")
+                    changed[index + 2] = (successor, word, 0)
+                    with self.subTest(previous=hex(previous)), self.assertRaisesRegex(VERIFIER.VerificationError, reason):
+                        VERIFIER.require_payload_coverage(
+                            changed, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+                missing_origin = missing + traces[0x300][2:]
+                with self.assertRaisesRegex(VERIFIER.VerificationError, "adapter lacks its originating invoke frame"):
+                    VERIFIER.require_payload_coverage(
+                        missing_origin, image, parsed, invokes, adapter_layout=layout, composed_image=bytes(image))
+                del parsed[key]
+                with self.assertRaisesRegex(VERIFIER.VerificationError, f"missing typed map unit: {key}"):
+                    VERIFIER.require_map_fixture_bindings(image, image, parsed, layout)
 
     def _relocated_map_fixture(self, rom="JK00C"):
         target = runtime_targets.load_runtime_target(rom)
@@ -1270,32 +1286,38 @@ mov #0x5,r1
                 VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
 
     def test_native_curve_binding_allows_ram_aliases_and_binds_limiter_and_pool_2(self):
-        target, parsed, composed, fixture = self._relocated_map_fixture("JK78C")
-        VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
-        self.assertNotEqual(fixture, composed)
-        sites = (
-            parsed["limiter_commit"].labels["fuel_cap_copy_loop"],
-            parsed["limiter_commit"].labels["fuel_curve_copy_loop"],
-            target.map_layout.code_region_by_key["idle_ignition_pool_2_adapter"].entry,
-        )
-        for entry in sites:
-            changed = bytearray(fixture)
-            changed[entry] ^= 1
-            with self.subTest(entry=hex(entry)), self.assertRaisesRegex(
-                    VERIFIER.VerificationError, "simulator changes payload instruction"):
-                VERIFIER.require_map_fixture_bindings(changed, composed, parsed, target.map_layout)
+        for rom in ("JK78C", "1ND0A", "1ND3B"):
+            target, parsed, composed, fixture = self._relocated_map_fixture(rom)
+            VERIFIER.require_map_fixture_bindings(fixture, composed, parsed, target.map_layout)
+            self.assertNotEqual(fixture, composed)
+            sites = [
+                parsed["limiter_commit"].labels["fuel_cap_copy_loop"],
+                parsed["limiter_commit"].labels["fuel_curve_copy_loop"],
+                target.map_layout.code_region_by_key["idle_ignition_pool_2_adapter"].entry,
+            ]
+            if "ignition_state_adapter" in parsed:
+                sites.append(target.map_layout.code_region_by_key["ignition_state_adapter"].entry)
+            for entry in sites:
+                changed = bytearray(fixture)
+                changed[entry] ^= 1
+                with self.subTest(rom=rom, entry=hex(entry)), self.assertRaisesRegex(
+                        VERIFIER.VerificationError, "simulator changes payload instruction"):
+                    VERIFIER.require_map_fixture_bindings(changed, composed, parsed, target.map_layout)
 
     def test_control_pool_mutations_with_unchanged_opcodes_refuse_before_commands(self):
-        for rom in ("JK00C", "JK00D", "JK78C"):
+        for rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"):
             target, parsed, composed, fixture = self._relocated_map_fixture(rom)
             sites = []
             for key, transfer in (("startup_wrapper", "jsr @r0"), ("idle_ignition_adapter", "jmp @r0")):
                 unit = parsed[key]
                 row = next(row for row in unit.statements if row.kind == "instruction" and row.text == transfer)
                 sites.append((key, unit, unit.statement_by_address[row.address - 2]))
-            unit_key, region_key = (
-                ("lookup_adapters", "idle_ignition_pool_2_adapter") if rom == "JK78C"
-                else ("secondary_cvtc_adapter", "secondary_cvtc_target_adapter"))
+            if "ignition_state_adapter" in parsed:
+                unit_key = region_key = "ignition_state_adapter"
+            elif rom == "JK78C":
+                unit_key, region_key = "lookup_adapters", "idle_ignition_pool_2_adapter"
+            else:
+                unit_key, region_key = "secondary_cvtc_adapter", "secondary_cvtc_target_adapter"
             unit = parsed[unit_key]
             entry = target.map_layout.code_region_by_key[region_key].entry
             sites.append((f"{region_key} R3", unit, unit.statement_by_address[entry]))
@@ -1316,7 +1338,7 @@ mov #0x5,r1
                         command.assert_not_called()
 
     def test_measured_relocated_map_has_no_marker_only_fallback_without_binding_context(self):
-        for rom in ("JK00C", "JK00D", "JK78C"):
+        for rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"):
             target = SimpleNamespace(rom=rom)
             with patch.object(RUNTIME_VERIFIER.base_verifier, "run_command") as command:
                 with self.assertRaisesRegex(RUNTIME_VERIFIER.VerificationError, f"{rom} map coverage requires typed/composed/fixture context"):
@@ -1339,11 +1361,11 @@ mov #0x5,r1
             command.assert_not_called()
 
     def test_measured_relocated_map_dispatch_rejects_marker_only_and_wrong_rom_terminals(self):
-        for rom in ("JK00C", "JK00D", "JK78C"):
-            other = "JK00D" if rom == "JK00C" else "JK00C"
+        for rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"):
+            other = "1ND3B" if rom == "1ND0A" else "1ND0A" if rom == "1ND3B" else "JK00D" if rom == "JK00C" else "JK00C"
             for terminal in ("VQ_SH_ELF_MAP_SWITCHING status=PASS ",
                              f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={other} "):
-                variant = "sh7058-jk78" if rom == "JK78C" else "dual-cvtc"
+                variant = "sh7059-1nd" if rom in ("1ND0A", "1ND3B") else "sh7058-jk78" if rom == "JK78C" else "dual-cvtc"
                 target = SimpleNamespace(rom=rom, map_layout=SimpleNamespace(variant=variant))
                 with patch.object(RUNTIME_VERIFIER, "_build_rom_object", return_value=Path("rom.o")), \
                      patch.object(RUNTIME_VERIFIER, "_build_invoke_objects", return_value=(Path("invoke.o"), Path("exception.o"))), \

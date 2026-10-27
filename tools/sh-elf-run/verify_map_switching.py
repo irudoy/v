@@ -91,9 +91,9 @@ def _map_coverage_units(layout):
 
 
 def _adapter_coverage_units(layout):
-    return ADAPTER_COVERAGE_UNITS + (
-        ("secondary_cvtc_adapter",)
-        if layout is not None and "secondary_cvtc_adapter" in layout.assembly_unit_by_key else ()
+    return ADAPTER_COVERAGE_UNITS + tuple(
+        key for key in ("secondary_cvtc_adapter", "ignition_state_adapter")
+        if layout is not None and key in layout.assembly_unit_by_key
     )
 
 
