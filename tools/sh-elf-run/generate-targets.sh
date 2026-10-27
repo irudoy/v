@@ -11,7 +11,9 @@ unset DOCKER_HOST
 
 inputs_label=$(python3 "$tool_dir/image_inputs.py")
 docker build --tag "$image_name" --label "$inputs_label" "$tool_dir"
+# Generated sources and bytecode caches belong to the invoking user.
 docker run --rm \
+    --user "$(id -u):$(id -g)" \
     --mount "type=bind,src=$repo_root,dst=/workspace" \
     --entrypoint python3 \
     "$image_name" \

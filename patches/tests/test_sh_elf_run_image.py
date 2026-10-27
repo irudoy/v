@@ -110,7 +110,7 @@ def test_image_inputs_cover_every_local_build_source(image_inputs):
     assert len(image_inputs.INPUTS) == len(set(image_inputs.INPUTS))
 
 
-def test_runtime_generation_labels_its_build(tmp_path, image_inputs):
+def test_runtime_generation_labels_its_build_and_runs_as_the_invoking_user(tmp_path, image_inputs):
     directory = tmp_path / 'bin'
     directory.mkdir()
     calls = tmp_path / 'docker-calls.jsonl'
@@ -131,6 +131,7 @@ def test_runtime_generation_labels_its_build(tmp_path, image_inputs):
     assert build['args'] == ['build', '--tag', 'controlled-image',
                              '--label', image_inputs.label(), str(TOOL)]
     assert run['args'][:2] == ['run', '--rm']
+    assert run['args'][run['args'].index('--user') + 1] == f'{os.getuid()}:{os.getgid()}'
     assert f'type=bind,src={ROOT},dst=/workspace' in run['args']
     assert run['args'][-3:] == ['controlled-image', 'tools/sh-elf-run/generate_runtime_targets.py',
                                 '--check']

@@ -45,7 +45,9 @@ this label from one inspection. An absent or different label refuses the run
 with `VQ_SH_ELF_LIFECYCLE status=REFUSE kind=stale`, also when the build is
 skipped; otherwise the container starts from that image ID.
 
-`generate-targets.sh` builds the same labeled image for the target generator.
+`generate-targets.sh` builds the same labeled image and runs the target
+generator with the invoking user's UID and GID, so the files that it writes in
+the checkout belong to that user.
 
 ## Executable boundary
 
