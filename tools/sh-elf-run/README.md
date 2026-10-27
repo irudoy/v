@@ -121,7 +121,7 @@ word-copy limiter and state-writing serializer fixture retain their exact
 declared transformations. Guard cases use the rendered target addresses and
 independent state, return and write-effect oracles.
 
-JK00C Rolling Launch measures the projected wrappers, engine, threshold
+JK00C and JK00D Rolling Launch measure the projected wrappers, engine, threshold
 helper, feedback arbiter, ignition adapter and ignition controller. The
 feedback serializer stub keeps the canonical prefix and its RTS at offset 6;
 the status literal is that target's alias. Omitting the periodic call, the

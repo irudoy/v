@@ -60,7 +60,7 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_5": 0x0000F690,
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
-MEASURED_ROLLING_ROMS = ("JK00C",)
+MEASURED_ROLLING_ROMS = ("JK00C", "JK00D")
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
