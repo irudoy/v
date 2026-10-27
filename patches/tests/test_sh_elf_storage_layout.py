@@ -97,9 +97,9 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
     marker = {
         'map': ('VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 '
                 'adapters=91 limiter=14 feedback=9 feedback_invocations=17 entries=12'),
-        'rolling': ('VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=129 '
+        'rolling': ('VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=131 '
                     'structural=11 gates=27 config=24 threshold=9 activation=6 '
-                    'active=9 cooldown=5 ignition=24 wrappers=6 feedback=8 entries=8'),
+                    'active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 entries=8'),
         'telemetry': getattr(module, 'REQUIRED_DYNAMIC_MARKER', ''),
     }.get(route, 'controlled relocated feature marker')
     overlap = layout in ('data', 'bss', 'virtual', 'physical')
@@ -166,13 +166,16 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
                     code_region_by_key={}))
         if route == 'rolling':
             regions = {key: SimpleNamespace(entry=index)
-                       for index, key in enumerate((*module.COVERAGE_REGIONS, "engine"))}
+                       for index, key in enumerate((*module.COVERAGE_REGIONS, "engine", "ignition_adapter"))}
             base_layout = SimpleNamespace(hooks=(
                 SimpleNamespace(key='selector_host_call', stock=4),
                 SimpleNamespace(key='startup_initializer', stock=8),
                 SimpleNamespace(key='cruise_feedback_serializer', stock=16)))
             rolling_layout = SimpleNamespace(code_region_by_key=regions,
-                hook_by_key={'displaced_periodic_task': SimpleNamespace(stock=12)})
+                hook_by_key={
+                    'displaced_periodic_task': SimpleNamespace(stock=12),
+                    'primary_ignition_command': SimpleNamespace(stock=20),
+                })
             return module.build_and_run_dynamic_harness(
                 b'controlled fixture', tmp_path,
                 parsed_by_unit={key: SimpleNamespace(statements=()) for key in module.COVERAGE_UNITS},

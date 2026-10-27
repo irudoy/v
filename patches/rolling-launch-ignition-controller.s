@@ -4,9 +4,12 @@
 // command cap, with r4 < r2. The controller reads the lower ramp boundary
 // captured by the adaptive-threshold helper. It leaves the stock command
 // unchanged at or below that boundary, linearly blends toward the cap inside
-// the band, and applies the cap at or above Cut. The exact stock unsigned
-// divider at 0x21CE0 receives r0=divisor and r1=dividend. It preserves r2/r3;
-// this wrapper saves and restores the incoming PR around the call.
+// the band, and applies the cap at or above Cut. The comparisons that reach
+// the blend require a strict interior RPM, so the unsigned difference
+// Cut - band is at least 2. The exact stock unsigned divider at 0x21CE0
+// receives r0=divisor and r1=dividend and is called without a zero test.
+// It preserves r2/r3; this wrapper saves and restores the incoming PR
+// around the call.
 
 .org 0x000D40C0
 rolling_launch_ignition_controller:
@@ -30,8 +33,6 @@ cmp/hs r0,r1
 bt rl_ctrl_full
 sub r3,r1
 sub r3,r0
-tst r0,r0
-bt rl_ctrl_tail
 mulu.w r2,r1
 sts macl,r1
 mov.l @(rl_ctrl_unsigned_divide,pc),r3

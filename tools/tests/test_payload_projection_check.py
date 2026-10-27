@@ -13,21 +13,29 @@ import generate_runtime_targets as generator
 CONTENT = '# payload fixture\nschema_version = 1\n[units]\nentry = "0009000b"\n'
 
 
-@pytest.fixture(params=['runtime', 'telemetry'])
+@pytest.fixture(params=['runtime', 'telemetry', 'rolling'])
 def manifest(request, tmp_path, monkeypatch):
     path = tmp_path / 'payloads.toml'
     calls = []
     if request.param == 'telemetry':
         monkeypatch.setattr(generator.can_telemetry_assembly, 'DEFAULT_PAYLOADS', path)
         monkeypatch.setattr(generator, 'build_telemetry', lambda: calls.append('telemetry') or CONTENT)
+        monkeypatch.setattr(generator, 'build_rolling', lambda: pytest.fail('wrong payload family'))
         monkeypatch.setattr(generator, 'build_locks', lambda rom: pytest.fail('wrong payload family'))
         flags = ['--telemetry']
+    elif request.param == 'rolling':
+        monkeypatch.setattr(generator.rolling_launch_assembly, 'DEFAULT_PAYLOADS', path)
+        monkeypatch.setattr(generator, 'build_rolling', lambda: calls.append('rolling') or CONTENT)
+        monkeypatch.setattr(generator, 'build_telemetry', lambda: pytest.fail('wrong payload family'))
+        monkeypatch.setattr(generator, 'build_locks', lambda rom: pytest.fail('wrong payload family'))
+        flags = ['--rolling']
     else:
         monkeypatch.setattr(generator.runtime_targets, 'DEFAULT_PAYLOADS', path)
         monkeypatch.setattr(generator.runtime_targets, 'RELOCATED_ROMS', ('FIRST', 'SECOND'))
         monkeypatch.setattr(generator, 'build_locks', lambda rom: calls.append(rom) or rom)
         monkeypatch.setattr(generator, 'render', lambda locks: CONTENT if locks == ['FIRST', 'SECOND'] else '')
         monkeypatch.setattr(generator, 'build_telemetry', lambda: pytest.fail('wrong payload family'))
+        monkeypatch.setattr(generator, 'build_rolling', lambda: pytest.fail('wrong payload family'))
         flags = []
     return path, flags, calls
 
@@ -39,7 +47,11 @@ def test_exact_manifest_passes_without_writing(manifest, capsys):
     assert generator.main(flags + ['--check']) == 0
     assert path.read_bytes() == CONTENT.encode()
     assert path.stat().st_mtime_ns == before
-    assert calls == (['telemetry'] if flags else ['FIRST', 'SECOND'])
+    assert calls == (
+        ['telemetry'] if '--telemetry' in flags
+        else ['rolling'] if '--rolling' in flags
+        else ['FIRST', 'SECOND']
+    )
     assert 'status=PASS' in capsys.readouterr().out
 
 
@@ -97,7 +109,13 @@ def test_reconstruction_failure_cannot_publish_or_replace_output(manifest, monke
     def fail(*args):
         raise generator.verify_map_switching.VerificationError('GNU assembly failure')
 
-    monkeypatch.setattr(generator, 'build_telemetry' if flags else 'build_locks', fail)
+    monkeypatch.setattr(
+        generator,
+        'build_telemetry' if '--telemetry' in flags
+        else 'build_rolling' if '--rolling' in flags
+        else 'build_locks',
+        fail,
+    )
     with pytest.raises(generator.verify_map_switching.VerificationError, match='GNU assembly failure'):
         generator.main(flags + ['--check'])
     assert path.read_bytes() == b'previous\n'
@@ -177,3 +195,57 @@ def test_telemetry_locks_precede_manifest_publication(refuse, monkeypatch):
         assert generator.build_telemetry() == CONTENT
         assert calls == stages
     assert all(not directory.exists() for directory in build_directory)
+
+
+@pytest.mark.parametrize('refuse', [None, 'structure', 'source', 'assembly', 'instructions', 'composition', 'render'])
+def test_rolling_locks_precede_manifest_publication(refuse, monkeypatch):
+    layout = object()
+    parsed = object()
+    blobs = object()
+    calls = []
+    build_directory = []
+
+    def step(name, value):
+        calls.append(name)
+        if name == refuse:
+            raise ValueError(f'{name} lock fails')
+        return value
+
+    monkeypatch.setattr(generator.rolling_launch_layout, 'load_layout', lambda: layout)
+    monkeypatch.setattr(generator.rolling_launch_layout, 'validate_structure',
+                        lambda actual: step('structure', None) if actual is layout else pytest.fail())
+    monkeypatch.setattr(generator.rolling_launch_assembly, 'validate_assembly_sources',
+                        lambda actual: step('source', parsed) if actual is layout else pytest.fail())
+
+    def assemble(actual, instructions, directory, *, canonical):
+        assert actual is layout and instructions is parsed
+        assert canonical is True
+        assert directory.is_dir()
+        build_directory.append(directory)
+        return step('assembly', blobs)
+
+    monkeypatch.setattr(generator, '_assemble', assemble)
+    monkeypatch.setattr(generator.rolling_launch_assembly, 'validate_instruction_semantics',
+                        lambda actual, instructions, data: step('instructions', None)
+                        if (actual is layout and instructions is parsed and data is blobs) else pytest.fail())
+    monkeypatch.setattr(generator.rolling_launch_compose, 'compose',
+                        lambda **values: step('composition', None)
+                        if values == dict(layout=layout, blobs=blobs) else pytest.fail())
+    monkeypatch.setattr(generator.rolling_launch_assembly, 'render_payloads',
+                        lambda actual, data: step('render', CONTENT)
+                        if actual is layout and data is blobs else pytest.fail())
+    stages = ['structure', 'source', 'assembly', 'instructions', 'composition', 'render']
+    if refuse:
+        with pytest.raises(ValueError, match=f'{refuse} lock fails'):
+            generator.build_rolling()
+        assert calls == stages[:stages.index(refuse) + 1]
+    else:
+        assert generator.build_rolling() == CONTENT
+        assert calls == stages
+    assert all(not directory.exists() for directory in build_directory)
+
+
+def test_rolling_and_telemetry_modes_are_mutually_exclusive():
+    with pytest.raises(SystemExit) as error:
+        generator.main(['--rolling', '--telemetry', '--check'])
+    assert error.value.code == 2

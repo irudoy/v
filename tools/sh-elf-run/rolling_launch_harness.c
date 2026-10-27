@@ -1170,9 +1170,59 @@ static int invoke_ignition(
     volatile uint8_t *state = ram_pointer(RL_STATE);
     uint32_t returned;
 
+#ifdef VERIFY_CANONICAL_ROLLING
+    uint8_t expected_state[RL_STATE_SIZE];
+    struct ignition_preserved_buffer {
+        uint32_t address;
+        size_t size;
+        uint8_t bytes[32];
+    } buffers[] = {
+        {SELECTOR_STATE, 8, {0}}, {FUEL_SHADOW, FUEL_SHADOW_SIZE, {0}},
+        {THROTTLE_SHADOW, THROTTLE_SHADOW_SIZE, {0}}, {THROTTLE_RUNTIME, 2, {0}},
+        {PAYLOAD, 8, {0}}, {BUTTON_CODE, 2, {0}}, {ASCD_STATUS, 1, {0}},
+        {SPEED, 1, {0}}, {RPM, 2, {0}}, {PEDAL, 2, {0}}, {COOLANT, 1, {0}},
+        {FORMER_BRAKE_STATUS, 1, {0}}, {FUEL_CUT_STATUS, 1, {0}},
+        {APC_MODE_SNAPSHOT, 1, {0}},
+    };
+    uint8_t expected_configuration[32];
+    uint32_t sp_before, sp_after, gbr_before, gbr_after;
+    size_t index, byte;
+#endif
     write_u16(ram_pointer(RPM), rpm);
     ram_pointer(IGNITION_OUTPUT)[0] = stock;
+#ifdef VERIFY_CANONICAL_ROLLING
+    for (byte = 0; byte < sizeof(expected_state); ++byte)
+        expected_state[byte] = state[byte];
+    expected_state[16] = stock;
+    expected_state[17] = expected;
+    for (byte = 0; byte < sizeof(expected_configuration); ++byte)
+        expected_configuration[byte] = rom_pointer(RL_CONFIG)[byte];
+    for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+        for (byte = 0; byte < buffers[index].size; ++byte)
+            buffers[index].bytes[byte] = ram_pointer(buffers[index].address)[byte];
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
+#endif
     returned = invoke_r4(IGNITION_ADAPTER, stock);
+#ifdef VERIFY_CANONICAL_ROLLING
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
+    if (sp_after != sp_before)
+        return fail_value(name, "stack_pointer", sp_after, sp_before);
+    if (gbr_after != gbr_before)
+        return fail_value(name, "gbr", gbr_after, gbr_before);
+    if (!fail_bytes(name, "complete_state", state, expected_state, sizeof(expected_state))
+            || !fail_bytes(name, "configuration", rom_pointer(RL_CONFIG),
+                           expected_configuration, sizeof(expected_configuration)))
+        return 0;
+    for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+        if (!fail_bytes(name, "preserved_buffer", ram_pointer(buffers[index].address),
+                        buffers[index].bytes, buffers[index].size))
+            return 0;
+    if (!verify_state_guards(name))
+        return 0;
+#endif
+
     if (returned != expected)
         return fail_value(name, "returned", returned, expected);
     if (ram_pointer(IGNITION_OUTPUT)[0] != expected)
@@ -1318,6 +1368,24 @@ static int run_ignition_cases(void)
     write_u16(ram_pointer(RL_STATE) + 18, 0xfff8);
     if (!invoke_ignition("ign-saturated-band", 110, 0xfffc, 112))
         return 0;
+
+#ifdef VERIFY_CANONICAL_ROLLING
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    write_u16(ram_pointer(RL_STATE) + 18, 0);
+    if (!invoke_ignition("ign-zero-band-start", 110, 308, 110))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    write_u16(ram_pointer(RL_STATE) + 10, 1);
+    write_u16(ram_pointer(RL_STATE) + 12, 3);
+    write_u16(ram_pointer(RL_STATE) + 18, 1);
+    if (!invoke_ignition("ign-minimum-interior-band", 110, 2, 112))
+        return 0;
+#endif
 
     for (index = 0; index < ARRAY_SIZE(invalid); ++index) {
         count_case();
@@ -1815,13 +1883,13 @@ int main(void)
         "fuel_coordinator=3 hold=11 entries=9\n",
         (unsigned long)case_count);
 #elif defined(VERIFY_CANONICAL_ROLLING)
-    if (case_count != 129U)
-        return fail_value("summary", "case_count", case_count, 129);
+    if (case_count != 131U)
+        return fail_value("summary", "case_count", case_count, 131);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=27 config=24 threshold=9 activation=6 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=8 "
+        "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 "
         "entries=8\n",
         (unsigned long)case_count);
 #else

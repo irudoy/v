@@ -68,10 +68,11 @@ The common handler performs these operations in one invocation:
    current payload and configuration schema, or match one registered historical
    unit fingerprint and its schema contract. A current telemetry layer is
    accepted only above the current Rolling Launch endpoint or above a
-   registered endpoint whose hooks and non-arbiter units equal the current
-   ones; the JK08A endpoint whose arbiter emits ASCD states 6 and 7 is the one
-   such registration. A target without Rolling Launch
-   must contain no Rolling Launch artifacts. Mixed hooks or DIDs, unknown
+   registered complete endpoint explicitly marked compatible with that
+   telemetry contract. The previous guarded ignition controller remains a
+   registered endpoint on every ROM that accepts a complete Rolling Launch
+   layer, including the JK08A ASCD state-6/7 arbiter variant. A target without
+   Rolling Launch must contain no Rolling Launch artifacts. Mixed hooks or DIDs, unknown
    payload bytes, partial pointer tables, invalid configuration records,
    occupied reserves, and unknown protected-code changes are rejected.
 4. Normalize only the builder-owned Map Switching, optional Rolling Launch,

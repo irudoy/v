@@ -139,6 +139,72 @@ CURRENT_ROLLING_HOOK_VALUES = (
     ("primary_ignition_command", 0x000D3EA0),
     ("feedback_arbitration", 0x000D41E0),
 )
+# Hook replacements of the guarded ignition-controller endpoint. JK00C and
+# JK00D share these replacements. 1ND0A and 1ND3B share one fingerprint.
+GUARDED_8MFK_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x000DFF60),
+    ("selector_arbitration", 0x000DFF80),
+    ("startup_state_clear", 0x000DFFA0),
+    ("primary_ignition_command", 0x000E05A0),
+    ("feedback_arbitration", 0x000E08E0),
+)
+GUARDED_1ND_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x00133860),
+    ("selector_arbitration", 0x00133880),
+    ("startup_state_clear", 0x001338A0),
+    ("primary_ignition_command", 0x00133EA0),
+    ("feedback_arbitration", 0x001341E0),
+    ("fuel_cut_coordinator", 0x00135000),
+)
+GUARDED_1ME3B_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x0013C860),
+    ("selector_arbitration", 0x0013C880),
+    ("startup_state_clear", 0x0013C8A0),
+    ("primary_ignition_command", 0x0013CEA0),
+    ("feedback_arbitration", 0x0013D1E0),
+    ("fuel_cut_coordinator", 0x0013E000),
+)
+GUARDED_JK78C_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x0001E260),
+    ("selector_arbitration", 0x0001E280),
+    ("startup_state_clear", 0x0001E2A0),
+    ("primary_ignition_command", 0x0001E8A0),
+    ("feedback_arbitration", 0x0001EBE0),
+    ("fuel_cut_coordinator", 0x0001FA00),
+)
+# Hook replacements of the guarded ignition-controller endpoint. JK00C and
+# JK00D share these replacements. 1ND0A and 1ND3B share one fingerprint.
+GUARDED_8MFK_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x000DFF60),
+    ("selector_arbitration", 0x000DFF80),
+    ("startup_state_clear", 0x000DFFA0),
+    ("primary_ignition_command", 0x000E05A0),
+    ("feedback_arbitration", 0x000E08E0),
+)
+GUARDED_1ND_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x00133860),
+    ("selector_arbitration", 0x00133880),
+    ("startup_state_clear", 0x001338A0),
+    ("primary_ignition_command", 0x00133EA0),
+    ("feedback_arbitration", 0x001341E0),
+    ("fuel_cut_coordinator", 0x00135000),
+)
+GUARDED_1ME3B_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x0013C860),
+    ("selector_arbitration", 0x0013C880),
+    ("startup_state_clear", 0x0013C8A0),
+    ("primary_ignition_command", 0x0013CEA0),
+    ("feedback_arbitration", 0x0013D1E0),
+    ("fuel_cut_coordinator", 0x0013E000),
+)
+GUARDED_JK78C_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x0001E260),
+    ("selector_arbitration", 0x0001E280),
+    ("startup_state_clear", 0x0001E2A0),
+    ("primary_ignition_command", 0x0001E8A0),
+    ("feedback_arbitration", 0x0001EBE0),
+    ("fuel_cut_coordinator", 0x0001FA00),
+)
 ERASED_FEEDBACK_ARBITER_SHA256 = (
     "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539"
 )
@@ -261,8 +327,9 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
     # The arbiter of this endpoint emits ASCD state 6 for a failed held attempt
-    # and state 7 for ACTIVE. Every other unit and every hook equals the
-    # current endpoint, so the current CAN telemetry layer is valid above it.
+    # and state 7 for ACTIVE. It pairs that arbiter with the guarded ignition
+    # controller and the schema-3 hooks. The CAN telemetry layer is compatible
+    # with this complete registered lower endpoint.
     RollingEndpointSignature(
         key="schema-3-state-6-7-indicators",
         configuration_schema_version=3,
@@ -293,6 +360,93 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ),
         ),
         hook_values=CURRENT_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45"),
+            ("engine", "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"),
+            ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
+            ("ignition_controller", "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7"),
+            ("threshold_helper", "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"),
+            ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+        ),
+        hook_values=CURRENT_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller-jk00c",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "9b074d50e81cc5533e821162b0f5556cca76e31d331a8e0a89c802bc09fa756b"),
+            ("engine", "0f0e4b2516a6e053461907ab4d0cf56dc762ddb12384e9f0b79c891d0ea6df4c"),
+            ("ignition_adapter", "bff5c6db69e2caefa8854872ec25e7009ccbc99a1015a05bf2e94abf76e9ca59"),
+            ("ignition_controller", "04000548306a11fdfca439b35aade01fc86285825070f7f7d39db5eba7e782c9"),
+            ("threshold_helper", "758f8afebd5f2ee4c1a215b3050e812725a87b857721cb59a3c549815ea335d1"),
+            ("feedback_arbiter", "403e4dd5d83113b686a7a3263c6a4ad70f3a517184f371109bfe4a4202e12812"),
+        ),
+        hook_values=GUARDED_8MFK_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller-jk00d",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "327dee94b2da1136e5bfde5c8af435c71c487c700d2f322b63c338533ac8afd4"),
+            ("engine", "2d49a53e6c8297004f25183e1dad64f178120878aa8a648b1fe5925e30b9e30b"),
+            ("ignition_adapter", "8dd2b45ce4ae212a42164b325f1738a445d70c3809050c1c2ca60e996c2f9dec"),
+            ("ignition_controller", "04000548306a11fdfca439b35aade01fc86285825070f7f7d39db5eba7e782c9"),
+            ("threshold_helper", "758f8afebd5f2ee4c1a215b3050e812725a87b857721cb59a3c549815ea335d1"),
+            ("feedback_arbiter", "e5c67bebf1dae242e23c45fe71dadee05bb1542bedb3935bb139d96129e6ca60"),
+        ),
+        hook_values=GUARDED_8MFK_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller-1nd",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "ffdee88666ff1be1224958f268a8f4728b52b4cbc0528faa07c16a07d6f6a6ad"),
+            ("engine", "f1e942a9adbef91eceffc1203152746d6074749943a1686fe59f2801e25acd23"),
+            ("ignition_adapter", "85e7229fea475feed77b3aa2660f75691eb995eb24c6ad0ee3c8c335f008b1d5"),
+            ("ignition_controller", "d11c4aec800c07d150ffc37d22be00ac3a47fab611fc3c8815a6fd5021a4bbb3"),
+            ("threshold_helper", "5590ae5e72d71d4d46b682a7fd341932024f2218e4bf3e88ff5888b5d20e53bc"),
+            ("feedback_arbiter", "8273aab1e5125fa3292cd6518c903bde5bc232c638d44762bf28b61f014314b5"),
+            ("fuel_cut_wrapper", "20d097b7ea89880bdbffe864664a2f79f372172b87115dbafb7ee749fa160af3"),
+        ),
+        hook_values=GUARDED_1ND_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller-1me3b",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "9c90f6368c7b7588c88d6729405d4ac3b5911c5580deb903553f228d1debcbc1"),
+            ("engine", "1b6f0d728f0ff1343a26cd9608c597dd4c7793880abdaa8765a6d9cf4518785f"),
+            ("ignition_adapter", "74e9aa85342a80bd5d399e21e91d255649b2d580c7314494f68c285e25d42aa2"),
+            ("ignition_controller", "3d12f3b8eb249df24dda941946145e872dc876fdc097f5ab5e3d662bbec30d24"),
+            ("threshold_helper", "48c88000a6800d248485a50970a5a5a564554e6284ca4b28fac4254f211db0ae"),
+            ("feedback_arbiter", "8a227bf72e03b84ed26549697b915acffc5aa73cc32f69d52829e414c8777019"),
+            ("fuel_cut_wrapper", "baba169f1fb16f07f8c80b5d96b302f5d0da982f0bb3407aad392b87e2d69a20"),
+        ),
+        hook_values=GUARDED_1ME3B_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-guarded-controller-jk78c",
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "a8b128f0e5031d232500c8b70845ccf8ef86605ddd2c94114377fbf3e52fe5d4"),
+            ("engine", "54e2f92fa190b4163eb1ece9892d8c33e6d3adb612907309d771edbfbd8fff02"),
+            ("ignition_adapter", "57b3ce3a0c6ba71a2d283f8330a2dfbba0cb229dc8ceb6f0b2b500100b0cea6d"),
+            ("ignition_controller", "866a2d6422d181338c94f3d568bddca7a538a3a7f378f09811dd4b2f33564eb8"),
+            ("threshold_helper", "decabd126f34358184a6998b980fa53e510ece4d59a55c8faac3b62623875a4f"),
+            ("feedback_arbiter", "84d7525f5daf9e2a316a6f08b342b34a2784987324c3a67fe901de1ac9b627ad"),
+            ("fuel_cut_wrapper", "776d2fd3473434b63dd9bf4638c54883af0412ec14a8bb2656c60bf4cbaba432"),
+        ),
+        hook_values=GUARDED_JK78C_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
     ),
 )
@@ -740,6 +894,43 @@ def _historical_configuration_is_valid(configuration, schema_version):
     ))
 
 
+def _historical_endpoint_binding(endpoint, layout):
+    """Return hash and hook maps when a signature fits this layout.
+
+    A signature for another unit set or hook address space is skipped. Every
+    signature must still name unique units and hooks and use lowercase SHA-256
+    text, including signatures that do not apply to the layout under test.
+    """
+    expected_hashes = dict(endpoint.unit_sha256)
+    expected_hooks = dict(endpoint.hook_values)
+    if (
+        len(expected_hashes) != len(endpoint.unit_sha256)
+        or len(expected_hooks) != len(endpoint.hook_values)
+        or any(
+            len(digest) != 64
+            or any(
+                character not in "0123456789abcdef"
+                for character in digest
+            )
+            for digest in expected_hashes.values()
+        )
+    ):
+        raise BuildError(
+            f"internal historical Rolling Launch endpoint "
+            f"{endpoint.key!r} is invalid"
+        )
+    if (
+        set(expected_hashes) != set(layout.assembly_unit_by_key)
+        or set(expected_hooks) != set(layout.hook_by_key)
+        or any(
+            expected_hooks[hook.key] not in (hook.stock, hook.replacement)
+            for hook in layout.hooks
+        )
+    ):
+        return None
+    return expected_hashes, expected_hooks
+
+
 def _require_coherent_rolling_endpoint(
     source, layout, payloads, context
 ):
@@ -808,31 +999,10 @@ def _require_coherent_rolling_endpoint(
             key: sha256(value) for key, value in unit_bytes.items()
         }
         for endpoint in HISTORICAL_ROLLING_ENDPOINTS:
-            expected_hashes = dict(endpoint.unit_sha256)
-            expected_hooks = dict(endpoint.hook_values)
-            if (
-                len(expected_hashes) != len(endpoint.unit_sha256)
-                or set(expected_hashes) != expected_units
-                or any(
-                    len(digest) != 64
-                    or any(
-                        character not in "0123456789abcdef"
-                        for character in digest
-                    )
-                    for digest in expected_hashes.values()
-                )
-                or len(expected_hooks) != len(endpoint.hook_values)
-                or set(expected_hooks) != set(layout.hook_by_key)
-                or any(
-                    expected_hooks[hook.key]
-                    not in (hook.stock, hook.replacement)
-                    for hook in layout.hooks
-                )
-            ):
-                raise BuildError(
-                    f"internal historical Rolling Launch endpoint "
-                    f"{endpoint.key!r} is invalid"
-                )
+            binding = _historical_endpoint_binding(endpoint, layout)
+            if binding is None:
+                continue
+            expected_hashes, expected_hooks = binding
             if (
                 actual_hashes == expected_hashes
                 and hook_values == expected_hooks

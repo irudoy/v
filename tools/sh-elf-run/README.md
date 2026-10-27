@@ -122,7 +122,8 @@ retain their existing execution checks and receive no measured qualification
 from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, `startup_wrapper`, `threshold_helper`, and `feedback_arbiter`
+`selector_arbiter`, `startup_wrapper`, `threshold_helper`, `feedback_arbiter`,
+and `ignition_controller`
 with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
@@ -162,10 +163,25 @@ buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
 pattern. The existing case counter reports both canonical boundary matrices;
 relocated feedback rows and assertions retain their original behavior.
 
+The ignition controller inherits only the original invoke frame of the bound
+ignition-adapter entry and its exact literal tail window. The controller's R3
+divider call must return before its final stock tail, whose declared RTS/NOP
+stub returns to that original invoke continuation. The adapter's alternate
+stock tail has its own bound window; neither its other instructions nor the
+stock divider body receive additional instruction qualification. Every typed
+controller instruction and conditional outcome must execute. Inside the blend
+path, BandStart < RPM < Cut implies Cut - BandStart >= 2.
+
+Canonical ignition cases use independent literal output commands and check the
+complete state, concrete buffers, configuration, SP and GBR. A negative build
+sets the existing APC fallback input only for the zero-band case, bypassing
+that real controller path while preserving its semantic assertions and case
+count. Coverage must reject the omitted zero-band outcome.
+
 A Rolling Launch negative build calls the engine directly instead of the
 periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
 marker. Measured coverage must reject the omitted periodic entry. Coverage of
-the engine and ignition payload bodies remains outside this bounded scope.
+the engine and ignition-adapter bodies remains outside this bounded scope.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

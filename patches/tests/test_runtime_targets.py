@@ -194,7 +194,7 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     ).instructions == 453
     assert rolling_launch_assembly.validate_instruction_semantics(
         target.rolling_layout, rolling_parsed, target.rolling_payloads
-    ).instructions == 878
+    ).instructions == 876
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 690
@@ -340,7 +340,7 @@ def test_vq37_sources_encode_target_variants(rom):
     ).instructions == (696 if rom == "1ME3B" else 690)
     assert rolling_launch_assembly.validate_instruction_semantics(
         target.rolling_layout, rolling_parsed, target.rolling_payloads
-    ).instructions == 894
+    ).instructions == 892
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():

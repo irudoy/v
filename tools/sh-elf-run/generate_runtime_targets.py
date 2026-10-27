@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independently assemble and lock telemetry or relocated runtime payloads."""
+"""Independently assemble and lock Rolling Launch, telemetry, or relocated payloads."""
 
 from __future__ import annotations
 
@@ -41,6 +41,18 @@ def _assemble(layout, parsed_by_unit, build_dir, *, canonical=False):
             source_text=None if canonical else source_texts[unit.key],
         )
     return result
+
+
+def build_rolling():
+    """Reconstruct the canonical manifest with the existing GNU unit assembler."""
+    layout = rolling_launch_layout.load_layout()
+    rolling_launch_layout.validate_structure(layout)
+    parsed = rolling_launch_assembly.validate_assembly_sources(layout)
+    with tempfile.TemporaryDirectory(prefix="vq-rolling-payloads-") as directory:
+        blobs = _assemble(layout, parsed, Path(directory), canonical=True)
+    rolling_launch_assembly.validate_instruction_semantics(layout, parsed, blobs)
+    rolling_launch_compose.compose(layout=layout, blobs=blobs)
+    return rolling_launch_assembly.render_payloads(layout, blobs)
 
 
 def build_telemetry():
@@ -224,12 +236,22 @@ def main(argv=None):
         "--telemetry", action="store_true",
         help="reconstruct canonical JK08A telemetry instead of relocated targets",
     )
+    parser.add_argument(
+        "--rolling", action="store_true",
+        help="reconstruct canonical JK08A Rolling Launch instead of relocated targets",
+    )
     args = parser.parse_args(argv)
+    if args.rolling and args.telemetry:
+        parser.error("--rolling and --telemetry are mutually exclusive")
     output = args.output or (
-        can_telemetry_assembly.DEFAULT_PAYLOADS if args.telemetry
+        rolling_launch_assembly.DEFAULT_PAYLOADS if args.rolling
+        else can_telemetry_assembly.DEFAULT_PAYLOADS if args.telemetry
         else runtime_targets.DEFAULT_PAYLOADS
     )
-    if args.telemetry:
+    if args.rolling:
+        content = build_rolling()
+        scope = "family=rolling"
+    elif args.telemetry:
         content = build_telemetry()
         scope = "family=telemetry"
     else:

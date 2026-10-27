@@ -19,6 +19,36 @@ from patches import rolling_launch_layout as layout_model
 
 
 DEFAULT_PAYLOADS = Path(__file__).with_name("rolling-launch-payloads.toml")
+
+
+def render_payloads(layout, blobs):
+    """Render the canonical payload manifest from assembled unit bytes."""
+    expected = set(layout.assembly_unit_by_key)
+    if set(blobs) != expected:
+        raise ValueError(
+            f"payload set differs; missing={sorted(expected - set(blobs))}; "
+            f"extra={sorted(set(blobs) - expected)}"
+        )
+    lines = [
+        "# SHA-locked GNU SH-2E payloads for exact JK08A Rolling Launch.",
+        "# Each value covers the complete assembly-unit span, including 0xFF fill.",
+        "",
+        "schema_version = 1",
+        "",
+        "[units]",
+    ]
+    for unit in layout.assembly_units:
+        blob = layout_model.validate_assembled_blob(unit, blobs[unit.key])
+        encoded = blob.hex()
+        lines.append(f'{unit.key} = """')
+        lines.extend(
+            encoded[index : index + 64]
+            for index in range(0, len(encoded), 64)
+        )
+        lines.append('"""')
+    return "\n".join(lines) + "\n"
+
+
 SOURCE_LABELS = {
     "periodic_wrapper": "rolling_launch_periodic_wrapper",
     "selector_arbiter": "rolling_launch_selector_arbiter",
