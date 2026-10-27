@@ -75,7 +75,8 @@ def synthetic_row(tick):
     }
 
 
-def write_log(path):
+def write_log(path, pause_tick=None, pause_seconds=0.0):
+    """Write the synthetic MLG; a pause holds the tick for pause_seconds."""
     bindings = recording.build_bindings("tuning")
     specs = [binding.spec for binding in bindings]
     rows = [dict(synthetic_row(FIRST_TICK - 1), schema_verified=0)]
@@ -87,6 +88,8 @@ def write_log(path):
         writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
         for values in rows:
             elapsed = (values["tick16"] - ELAPSED_ORIGIN) * audit.TICK_SECONDS
+            if pause_tick is not None and values["tick16"] >= pause_tick:
+                elapsed += pause_seconds
             row = []
             for binding in bindings:
                 if binding.source == "date":
@@ -249,6 +252,35 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(result["final_gear_p_stft_b1_median_raw"], STFT)
         self.assertEqual(result["warm_gear_p_seconds"], round(20 * audit.TICK_SECONDS, 3))
         self.assertEqual(result["gear_d_full_fuel_inhibit_interval_count"], 1)
+
+    def test_a_stream_pause_keeps_its_time_and_splits_intervals(self):
+        pause_tick = 125
+        pause = 5.0
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "synthetic.mlg"
+            write_log(path)
+            running = audit.audit(path, self.calibration)
+            write_log(path, pause_tick, pause)
+            paused = audit.audit(path, self.calibration)
+            snapshots = audit.read_snapshots(path)
+        index = snapshots.ticks.index(pause_tick)
+        self.assertFalse(snapshots.contiguous(index))
+        self.assertTrue(snapshots.contiguous(index + 1))
+        self.assertEqual(
+            paused["warm_capture_seconds"],
+            round((LAST_TICK - WARM_TICK + 1) * audit.TICK_SECONDS + pause, 3),
+        )
+        self.assertEqual(
+            paused["longest_gear_d_seconds"],
+            round((pause_tick - FIRST_TICK) * audit.TICK_SECONDS, 3),
+        )
+        self.assertEqual(paused["speed_band_interval_count"], 2)
+        self.assertEqual(paused["speed_band_seconds"], running["speed_band_seconds"])
+        # The tag-0 pair across the pause compares values that are not five
+        # snapshots apart in time.
+        self.assertEqual(
+            paused["learned_pair_count"], running["learned_pair_count"] - 1
+        )
 
 
 if __name__ == "__main__":

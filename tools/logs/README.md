@@ -90,6 +90,15 @@ outside that window is still rejected as a stale group, and a 16-bit wrap stays
 inside the current run. Snapshots of different runs are never treated as
 adjacent, so the audits below skip pairs that cross a restart.
 
+STOP disables the producer and holds `tick16`, so the snapshot after START
+carries the next tick and the tick does not count the time of the pause. The
+time-based audits time snapshots by tick inside a running stream, where the
+recorded frame time carries host queueing jitter, and by recorded frame time
+across a pause. A recorded step longer than `STREAM_GAP_SECONDS` of
+`can_telemetry.py` (0.1 s) between snapshots of one run is a pause: the audits
+keep its recorded duration and never treat the snapshots on its two sides as
+adjacent.
+
 The final stderr marker reports complete, incomplete, malformed, and
 schema-mismatch counts together with the number of producer restarts. The
 decoder never fills a missing page, combines different sequence groups, or
@@ -410,7 +419,9 @@ selector `FUN 0005796C` of the calibration image. Context tag 0 carries the
 selected bank 1 learned cell `0xFFFF2306` and the adjustment term
 `0xFFFF5648`, and tag 2 the published words `0xFFFF2302` and `0xFFFF2304`. The
 tag phase is the tick residue on which front A/F word `0xFFFF2780` changes; a
-recording with more than one residue is refused.
+recording with more than one residue is refused. Brackets, learned pairs,
+cell visits, and intervals lie inside one running stream; the capture seconds
+include the recorded duration of stream pauses.
 
 - Publication: a tag-2 refresh is bracketed when the tag-0 refreshes two
   ticks before and three ticks after it predict the same word
@@ -570,7 +581,8 @@ python3 tools/logs/torque_scale_audit.py \
   five-count interval, over samples with APP1 of 600 raw or more, a timing
   command of 20 or more, and no fuel inhibit.
 - A segment is an interval of APP1 at 900 raw or more that lasts at least
-  1.5 s. Points lie 0.1 s apart and use line fits over 0.2 s on each side. A
+  1.5 s inside a running stream; a stream pause ends it, as it ends a neutral
+  coast. Points lie 0.1 s apart and use line fits over 0.2 s on each side. A
   point needs a turbine-to-engine speed ratio of 0.90..1.00 in one gear, the
   gear of the manual selector position when one is engaged, a timing command
   of 15 or more, no fuel inhibit, and 2500 RPM or more. A fall of engine speed

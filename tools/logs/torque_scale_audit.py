@@ -131,6 +131,9 @@ class Sample:
     selector: int | None
     actual_word: int | None
     fuel_inhibit_mask: int = 0
+    # The snapshot follows a stream pause, so no sample covers the time since
+    # the previous one.
+    paused: bool = False
 
 
 @dataclass(frozen=True)
@@ -238,11 +241,34 @@ def new_tick_records(ticks):
         yield index, run, offset + tick
 
 
+def timed_samples(rows):
+    """Samples of (run, tick, recorded seconds, fields) rows in capture order.
+
+    The tick times the samples of a running stream; a stream pause keeps its
+    recorded duration.
+    """
+    samples = []
+    for run, group in itertools.groupby(rows, key=lambda row: row[0]):
+        group = list(group)
+        ticks = [tick for _run, tick, _time, _fields in group]
+        times = [time for _run, _tick, time, _fields in group]
+        pauses = can_telemetry.stream_pauses(times)
+        offsets = can_telemetry.pause_offsets(ticks, times, BASE_TICK_SECONDS)
+        for (_run, tick, _time, values), paused, offset in zip(group, pauses, offsets):
+            samples.append(Sample(
+                seconds=tick * BASE_TICK_SECONDS + offset,
+                run=run,
+                paused=paused,
+                **values,
+            ))
+    return tuple(samples)
+
+
 def read_mlg(path: Path) -> Capture:
     recording_ = mlg_relation_audit.read_recording(path)
     columns = recording_.columns
     required = (
-        "tick16", "schema_verified", "app1_raw", "final_timing_raw",
+        "tick16", "elapsed", "schema_verified", "app1_raw", "final_timing_raw",
         "engine_torque_state_raw", "bfs_raw", "vehicle_speed_kmh", "stock_rpm",
         "gear_raw", "fuel_inhibit_mask",
     )
@@ -252,27 +278,23 @@ def read_mlg(path: Path) -> Capture:
         missing.append("engine speed")
     if missing:
         raise ValueError(f"{path}: missing channels {', '.join(missing)}")
-    samples = []
+    rows = []
     for index, run, tick in new_tick_records(columns["tick16"]):
         if columns["schema_verified"][index] != 1 or rpm[index] is None:
             continue
-        samples.append(
-            Sample(
-                seconds=tick * BASE_TICK_SECONDS,
-                run=run,
-                speed_kmh=_optional(columns["vehicle_speed_kmh"][index], float),
-                stock_rpm=_optional(columns["stock_rpm"][index], float),
-                rpm_raw=rpm[index],
-                app1_raw=int(columns["app1_raw"][index]),
-                timing_raw=int(columns["final_timing_raw"][index]),
-                torque_raw=int(columns["engine_torque_state_raw"][index]),
-                bfs_raw=int(columns["bfs_raw"][index]),
-                selector=_optional(columns["gear_raw"][index], int),
-                actual_word=None,
-                fuel_inhibit_mask=int(columns["fuel_inhibit_mask"][index]),
-            )
-        )
-    return Capture(Path(path), recording_.sha256, tuple(samples))
+        rows.append((run, tick, float(columns["elapsed"][index]), dict(
+            speed_kmh=_optional(columns["vehicle_speed_kmh"][index], float),
+            stock_rpm=_optional(columns["stock_rpm"][index], float),
+            rpm_raw=rpm[index],
+            app1_raw=int(columns["app1_raw"][index]),
+            timing_raw=int(columns["final_timing_raw"][index]),
+            torque_raw=int(columns["engine_torque_state_raw"][index]),
+            bfs_raw=int(columns["bfs_raw"][index]),
+            selector=_optional(columns["gear_raw"][index], int),
+            actual_word=None,
+            fuel_inhibit_mask=int(columns["fuel_inhibit_mask"][index]),
+        )))
+    return Capture(Path(path), recording_.sha256, timed_samples(rows))
 
 
 def actual_torque_word(data: bytes) -> int:
@@ -283,13 +305,14 @@ def actual_torque_word(data: bytes) -> int:
 def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> Capture:
     """Replay a PEAK TRC into snapshots with the latest 0x180 actual-torque word."""
     path = Path(path)
-    trace = peak_trc_audit.load_trace(path)
     model = DashboardModel(profile, can_id, tick_divisor)
     names = ("app1_raw", "final_timing_raw", "engine_torque_state_raw", "bfs_raw",
              "fuel_inhibit_mask")
-    samples = []
+    rows = []
     word = None
-    for frame in trace.frames:
+    for frame in peak_trc_audit.iter_records(path):
+        if isinstance(frame, peak_trc_audit.StatusRecord):
+            continue
         if frame.can_id == ACTUAL_TORQUE_ID and not frame.remote and len(frame.data) >= 4:
             word = actual_torque_word(bytes(frame.data))
         timestamp = frame.offset_ms / 1000.0
@@ -311,25 +334,21 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
         rpm_raw = model.engine_speed_counts
         if rpm_raw is None:
             continue
-        samples.append(
-            Sample(
-                seconds=snapshot.unwrapped_tick * BASE_TICK_SECONDS,
-                run=snapshot.run,
-                speed_kmh=model.vehicle_speed_kmh,
-                stock_rpm=model.stock_rpm,
-                rpm_raw=rpm_raw,
-                app1_raw=int(model.raw["app1_raw"]),
-                timing_raw=int(model.raw["final_timing_raw"]),
-                torque_raw=int(model.raw["engine_torque_state_raw"]),
-                bfs_raw=int(model.raw["bfs_raw"]),
-                selector=model.gear_raw,
-                actual_word=word,
-                fuel_inhibit_mask=int(model.raw["fuel_inhibit_mask"]),
-            )
-        )
-    if not samples:
+        rows.append((snapshot.run, snapshot.unwrapped_tick, timestamp, dict(
+            speed_kmh=model.vehicle_speed_kmh,
+            stock_rpm=model.stock_rpm,
+            rpm_raw=rpm_raw,
+            app1_raw=int(model.raw["app1_raw"]),
+            timing_raw=int(model.raw["final_timing_raw"]),
+            torque_raw=int(model.raw["engine_torque_state_raw"]),
+            bfs_raw=int(model.raw["bfs_raw"]),
+            selector=model.gear_raw,
+            actual_word=word,
+            fuel_inhibit_mask=int(model.raw["fuel_inhibit_mask"]),
+        )))
+    if not rows:
         raise ValueError(f"{path}: no verified snapshot of telemetry profile {profile!r}")
-    return Capture(path, sha256_file(path), tuple(samples))
+    return Capture(path, sha256_file(path), timed_samples(rows))
 
 
 def read_capture(path: Path) -> Capture:
@@ -390,6 +409,18 @@ def runs(flags):
     return result
 
 
+def stream_runs(samples, flags):
+    """Maximal half-open index runs where the flag is set and the stream did not pause."""
+    result = []
+    for start, stop in runs(flags):
+        for index in range(start + 1, stop):
+            if samples[index].paused:
+                result.append((start, index))
+                start = index
+        result.append((start, stop))
+    return result
+
+
 def run_samples(capture: Capture):
     by_run = {}
     for sample in capture.samples:
@@ -400,7 +431,7 @@ def run_samples(capture: Capture):
 def full_pedal_segments(samples, app1_min=FULL_PEDAL_APP1, min_seconds=MIN_SEGMENT_SECONDS):
     """(start, end) seconds of full-pedal intervals of one producer run."""
     result = []
-    for start, stop in runs([s.app1_raw >= app1_min for s in samples]):
+    for start, stop in stream_runs(samples, [s.app1_raw >= app1_min for s in samples]):
         first, last = samples[start].seconds, samples[stop - 1].seconds
         if last - first >= min_seconds:
             result.append((first, last))
@@ -593,7 +624,7 @@ def coast_grades(samples, vehicle: Vehicle = NOMINAL):
         for s in samples
     ]
     result = []
-    for start, stop in runs(flags):
+    for start, stop in stream_runs(samples, flags):
         block = samples[start:stop]
         if block[-1].seconds - block[0].seconds < COAST_MIN_SECONDS:
             continue

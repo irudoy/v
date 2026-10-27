@@ -49,6 +49,40 @@ def is_producer_restart(previous_tick16, tick16):
     return delta >= 0x8000 and tick16 <= PRODUCER_RUN_TICK_MAX
 
 
+# Consecutive snapshots of a running stream arrive one tick apart within the
+# jitter of the interface clock. The tick holds while streaming is stopped, so
+# a longer step of recorded time between two snapshots is a stream pause.
+STREAM_GAP_SECONDS = 0.1
+
+
+def stream_pauses(times):
+    """Flag each snapshot whose recorded time follows a stream pause."""
+
+    return [
+        index > 0 and times[index] - times[index - 1] > STREAM_GAP_SECONDS
+        for index in range(len(times))
+    ]
+
+
+def pause_offsets(ticks, times, tick_seconds):
+    """Return the recorded pause time that precedes each snapshot.
+
+    The tick times the snapshots of a running stream. Across a pause the held
+    tick does not count the stopped time, so the recorded step replaces the
+    tick step there and tick time plus this offset keeps the elapsed time.
+    """
+
+    offsets = []
+    offset = 0.0
+    for index, paused in enumerate(stream_pauses(times)):
+        if paused:
+            offset += (times[index] - times[index - 1]) - (
+                ticks[index] - ticks[index - 1]
+            ) * tick_seconds
+        offsets.append(offset)
+    return offsets
+
+
 class DecodeError(ValueError):
     """Raised when a selected wire profile or frame is invalid."""
 

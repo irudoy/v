@@ -47,6 +47,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from dataclasses import dataclass
+from functools import cached_property
 import hashlib
 import math
 from pathlib import Path
@@ -57,7 +58,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.logs import mlg_relation_audit, mlg_retime  # noqa: E402
+from tools.logs import can_telemetry, mlg_relation_audit, mlg_retime  # noqa: E402
 from tools.mapkit import rom as romkit  # noqa: E402
 
 
@@ -139,6 +140,42 @@ class Snapshots:
 
     def __len__(self) -> int:
         return len(self.ticks)
+
+    @cached_property
+    def segments(self) -> tuple[int, ...]:
+        """Stream segment of each snapshot; a stream pause starts a new one."""
+        result = []
+        segment = 0
+        for paused in can_telemetry.stream_pauses(self.columns["elapsed"]):
+            segment += paused
+            result.append(segment)
+        return tuple(result)
+
+    @cached_property
+    def pause_offsets(self) -> tuple[float, ...]:
+        """Recorded pause time that the held tick does not count."""
+        return tuple(
+            can_telemetry.pause_offsets(
+                self.ticks, self.columns["elapsed"], TICK_SECONDS
+            )
+        )
+
+    def contiguous(self, index: int) -> bool:
+        """Whether a snapshot directly follows the previous one in one stream."""
+        return (
+            index > 0
+            and self.ticks[index] - self.ticks[index - 1] == 1
+            and self.segments[index] == self.segments[index - 1]
+        )
+
+    def seconds(self, first: int, last: int) -> float:
+        """Elapsed time from snapshot first through the tick of snapshot last."""
+        return round(
+            (self.ticks[last] - self.ticks[first] + 1) * TICK_SECONDS
+            + self.pause_offsets[last]
+            - self.pause_offsets[first],
+            3,
+        )
 
 
 def load_calibration(rom: str = "JK08A", image: Path | None = None) -> Calibration:
@@ -265,7 +302,9 @@ def publication_relation(
         before = position.get(tick - BRACKET_BEFORE)
         after = position.get(tick + BRACKET_AFTER)
         pairs = [
-            (learned[i], adjustment[i]) for i in (before, after) if i is not None
+            (learned[i], adjustment[i])
+            for i in (before, after)
+            if i is not None and snapshots.segments[i] == snapshots.segments[index]
         ]
         if len(pairs) != 2 or any(None in pair for pair in pairs):
             result["unbracketed"] += 1
@@ -322,8 +361,7 @@ def replay_cells(snapshots: Snapshots, calibration: Calibration) -> list[int | N
     for index in range(len(snapshots)):
         bfs = snapshots.columns["bfs_raw"][index]
         rpm = snapshots.columns["rpm_raw"][index]
-        contiguous = index == 0 or snapshots.ticks[index] - snapshots.ticks[index - 1] == 1
-        if not contiguous:
+        if not snapshots.contiguous(index):
             prior = None
         if bfs is None or rpm is None:
             cells.append(None)
@@ -349,13 +387,14 @@ def learning_changes(
 ) -> dict:
     columns = snapshots.columns
     ticks = snapshots.ticks
+    segments = snapshots.segments
     learned = columns["ltft_learned_b1_raw"]
     stft = columns["stft_b1_raw"]
     gear = columns["gear_raw"]
     samples = [i for i in refreshes(snapshots, phase, LEARNED_TAG) if learned[i] is not None]
     pairs = changes = park_pairs = park_changes = 0
     for first, second in zip(samples, samples[1:]):
-        if ticks[second] - ticks[first] == TAG_COUNT:
+        if ticks[second] - ticks[first] == TAG_COUNT and segments[second] == segments[first]:
             pairs += 1
             changes += learned[first] != learned[second]
             if gear[first] == GEAR_P and gear[second] == GEAR_P:
@@ -365,9 +404,7 @@ def learning_changes(
     stable = []
     visit_start = 0
     for index in range(len(snapshots)):
-        if index and (
-            cells[index] != cells[index - 1] or ticks[index] - ticks[index - 1] != 1
-        ):
+        if index and (cells[index] != cells[index - 1] or not snapshots.contiguous(index)):
             visit_start = index
         if (
             ticks[index] % TAG_COUNT == phase[LEARNED_TAG]
@@ -382,6 +419,7 @@ def learning_changes(
         if (
             cells[first] != cells[second]
             or ticks[second] - ticks[first] != TAG_COUNT
+            or segments[second] != segments[first]
             or learned[first] == learned[second]
         ):
             continue
@@ -410,11 +448,11 @@ def learning_changes(
     }
 
 
-def _intervals(flags: list[bool], ticks: tuple[int, ...]) -> list[tuple[int, int]]:
+def _intervals(flags: list[bool], snapshots: Snapshots) -> list[tuple[int, int]]:
     out = []
     start = None
     for index, flag in enumerate(flags):
-        contiguous = index > 0 and ticks[index] - ticks[index - 1] == 1
+        contiguous = snapshots.contiguous(index)
         if flag and (start is None or not contiguous):
             if start is not None:
                 out.append((start, index - 1))
@@ -427,9 +465,8 @@ def _intervals(flags: list[bool], ticks: tuple[int, ...]) -> list[tuple[int, int
     return out
 
 
-def _seconds(interval: tuple[int, int], ticks: tuple[int, ...]) -> float:
-    first, last = interval
-    return round((ticks[last] - ticks[first] + 1) * TICK_SECONDS, 3)
+def _seconds(interval: tuple[int, int], snapshots: Snapshots) -> float:
+    return snapshots.seconds(*interval)
 
 
 def warm_window(
@@ -452,6 +489,9 @@ def warm_window(
     closed_loop = 0
     changed_at = None
     for index in range(first, len(snapshots)):
+        if index and snapshots.segments[index] != snapshots.segments[index - 1]:
+            # Closed loop is unknown after a pause until STFT moves again.
+            changed_at = None
         if index and stft[index] != stft[index - 1]:
             changed_at = ticks[index]
         closed_loop += (
@@ -468,7 +508,7 @@ def warm_window(
     )
     return {
         "warm_elapsed_seconds": round(columns["elapsed"][first], 3),
-        "warm_capture_seconds": _seconds((first, len(snapshots) - 1), ticks),
+        "warm_capture_seconds": _seconds((first, len(snapshots) - 1), snapshots),
         "warm_gear_d_seconds": round(in_d * TICK_SECONDS, 3),
         "warm_closed_loop_seconds": round(closed_loop * TICK_SECONDS, 3),
         "warm_gear_p_seconds": round(
@@ -483,26 +523,25 @@ def warm_window(
 def drive_profile(snapshots: Snapshots, band: tuple[float, float]) -> dict:
     """Report the longest D interval, the speed band inside D, and the final P."""
     columns = snapshots.columns
-    ticks = snapshots.ticks
     gear = columns["gear_raw"]
     speed = columns["vehicle_speed_kmh"]
     low, high = band
-    d_runs = _intervals([value == GEAR_D for value in gear], ticks)
-    p_runs = _intervals([value == GEAR_P for value in gear], ticks)
+    d_runs = _intervals([value == GEAR_D for value in gear], snapshots)
+    p_runs = _intervals([value == GEAR_P for value in gear], snapshots)
     band_runs = _intervals(
         [
             gear[index] == GEAR_D and speed[index] is not None and low <= speed[index] <= high
             for index in range(len(snapshots))
         ],
-        ticks,
+        snapshots,
     )
     result = {
         "speed_band_kmh": [low, high],
-        "longest_gear_d_seconds": max((_seconds(run, ticks) for run in d_runs), default=0.0),
-        "speed_band_seconds": round(sum(_seconds(run, ticks) for run in band_runs), 3),
+        "longest_gear_d_seconds": max((_seconds(run, snapshots) for run in d_runs), default=0.0),
+        "speed_band_seconds": round(sum(_seconds(run, snapshots) for run in band_runs), 3),
         "speed_band_interval_count": len(band_runs),
         "speed_band_longest_seconds": max(
-            (_seconds(run, ticks) for run in band_runs), default=0.0
+            (_seconds(run, snapshots) for run in band_runs), default=0.0
         ),
         "final_gear_p_seconds": 0.0,
         "final_gear_p_stft_b1_median_raw": None,
@@ -514,14 +553,14 @@ def drive_profile(snapshots: Snapshots, band: tuple[float, float]) -> dict:
             for value in columns["stft_b1_raw"][first : last + 1]
             if value is not None
         ]
-        result["final_gear_p_seconds"] = _seconds(p_runs[-1], ticks)
+        result["final_gear_p_seconds"] = _seconds(p_runs[-1], snapshots)
         result["final_gear_p_stft_b1_median_raw"] = statistics.median_low(stft) if stft else None
     full_mask = _intervals(
         [
             gear[index] == GEAR_D and columns["fuel_inhibit_mask"][index] == FULL_FUEL_INHIBIT_MASK
             for index in range(len(snapshots))
         ],
-        ticks,
+        snapshots,
     )
     result["gear_d_full_fuel_inhibit_interval_count"] = len(full_mask)
     return result
