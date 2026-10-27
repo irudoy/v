@@ -371,7 +371,10 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     isr_span = layout.code_region_by_key["sle1_isr"].span
     completion_entry = layout.code_region_by_key["completion"].entry
     capture_callees = {request_entry, build_entry}
-    instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
+    tail_chain = getattr(layout, "variant", "") == "mailbox26-tail-chain"
+    stock_isr = layout.hook_by_key["hcan1_sle1_vector"].stock if tail_chain else None
+    instructions, outcomes, slots, call_targets, direct_targets, tail_targets, config_calls = (
+        {}, set(), set(), {}, {}, {}, set())
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
         regions = _measured_regions(key)
@@ -384,6 +387,19 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             pc = row.address
             instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
             mnemonic = map_switching_assembly._mnemonic(row)
+            if mnemonic == "jmp":
+                if not (tail_chain and isr_span.start <= pc < isr_span.end and row.text == "jmp @r0"):
+                    raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
+                previous = parsed.statement_by_address.get(pc - 2)
+                literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
+                if (literal is None or literal.group("width") != "l" or literal.group("register") != "r0"):
+                    raise VerificationError(f"unbound CAN wrapper call at {pc:#010x}")
+                pool = parsed.labels[literal.group("label")]
+                if int.from_bytes(fixture[pool:pool + 4], "big") != stock_isr:
+                    raise VerificationError(f"SLE1 tail does not target the stock ISR at {pc:#010x}")
+                tail_targets[pc] = stock_isr
+                slots.add(pc + 2)
+                continue
             if mnemonic == "rte" and not (isr_span.start <= pc < isr_span.end):
                 raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
             if mnemonic in (map_switching_assembly.DIRECT_BRANCH_MNEMONICS
@@ -449,6 +465,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             base_verifier._trace_successor(records, index, True)
         if pc in direct_targets and base_verifier._trace_successor(records, index, True) != direct_targets[pc]:
             raise VerificationError(f"executed CAN BRA successor differs at {pc:#010x}")
+        if pc in tail_targets and base_verifier._trace_successor(records, index, True) != tail_targets[pc]:
+            raise VerificationError(f"executed CAN SLE1 tail differs at {pc:#010x}")
         is_call = word & 0xf0ff == 0x400b or word & 0xf000 == 0xb000
         if is_call:
             target = base_verifier._trace_successor(records, index, True)
@@ -491,9 +509,17 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                 returned.add(entry)
             if entry in entries or call in call_targets:
                 call_returns.add((call, entry, continuation))
+        elif word == 0x002b and tail_chain and pc == stock_isr:
+            following = index + 1
+            if following >= len(records) or records[following][0::2] != (pc + 2, 1):
+                raise VerificationError(f"missing executed delay slot at {pc + 2:#010x}")
+            if frames != [(None, isr_entry, None)]:
+                raise VerificationError(f"CAN exception return leaves frame at {pc:#010x}")
+            frames.pop()
+            returned.add(isr_entry)
         elif word == 0x002b and pc not in instructions and frames:
             raise VerificationError(f"unsupported transfer in active CAN wrapper frame at {pc:#010x}")
-        elif frames and (word & 0xff00 == 0xc300
+        elif frames and pc not in tail_targets and (word & 0xff00 == 0xc300
                          or word & 0xf0ff in {0x0003, 0x0023, 0x402b}):
             raise VerificationError(f"unsupported transfer in active CAN wrapper frame at {pc:#010x}")
     for missing in sorted(entries - seen):

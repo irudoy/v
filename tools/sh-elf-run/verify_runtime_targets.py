@@ -62,6 +62,7 @@ IGNITION_STATE_HARNESS_BASES = {
 }
 MEASURED_ROLLING_ROMS = ("JK00C", "JK00D")
 MEASURED_VQ37_ROLLING_ROMS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+MEASURED_CAN_ROMS = ("JK00C",)
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -720,6 +721,215 @@ def _measure_rolling_launch(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
+def _can_omissions(layout, parsed, fixture):
+    """Shared harness edits that each remove one measured telemetry outcome."""
+    control = parsed["control"]
+    config_entry = control.labels["telemetry_control_config_valid"]
+    magic = next(
+        row for row in control.statements
+        if row.kind == "instruction" and row.address >= config_entry
+        and map_switching_assembly._mnemonic(row) == "bf"
+    )
+    magic_word = int.from_bytes(fixture[magic.address:magic.address + 2], "big")
+    magic_target = map_switching_assembly._validate_direct_branch_encoding(
+        control, magic, magic_word
+    )
+    capture = parsed["capture"]
+    measured_capture = can_verifier._measured_statements("capture", capture, layout)
+    zero = next(
+        row for row in measured_capture
+        if row.kind == "instruction" and row.text == "bt telemetry_margin_return"
+        and capture.statement_by_address[row.address - 2].text == "tst r4,r4"
+    )
+    zero_word = int.from_bytes(fixture[zero.address:zero.address + 2], "big")
+    zero_target = map_switching_assembly._validate_direct_branch_encoding(
+        capture, zero, zero_word
+    )
+    clamp = next(
+        row for row in measured_capture
+        if row.kind == "instruction" and row.text == "bf telemetry_build_context_valid"
+    )
+    capture_fail = min(
+        (row for row in measured_capture
+         if row.kind == "instruction" and row.text == "bf telemetry_capture_return"),
+        key=lambda row: row.address,
+    )
+    capture_word = int.from_bytes(fixture[capture_fail.address:capture_fail.address + 2], "big")
+    capture_target = map_switching_assembly._validate_direct_branch_encoding(
+        capture, capture_fail, capture_word
+    )
+    completion = parsed["completion"]
+    measured_completion = can_verifier._measured_statements("completion", completion, layout)
+    idle_ack = next(
+        row for row in measured_completion
+        if row.kind == "instruction" and row.text == "bt telemetry_completion_busy_valid"
+    )
+    request_entry = layout.code_region_by_key["request_page"].entry
+    request_copy = (
+        "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
+        "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
+    )
+    isr_standin = (
+        "{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
+        "            registers[index] = (uint32_t)index + 1U;\n"
+        "        if (((txack | aback) & MAILBOX26_MASK) != 0)\n"
+        "            write_u16(ram_pointer(IRR1), 0x0100);\n    }"
+    )
+    def one(name, old, new, reason):
+        return name, ((old, new),), reason
+
+    return (
+        one("main",
+            "(void)invoke_r4(MAIN_WRAPPER, 0);",
+            "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);",
+            f"uncovered CAN wrapper entry {layout.code_region_by_key['main_wrapper'].entry:#010x}"),
+        one("config-magic",
+            "mutate_configuration(mutation);\n    (void)invoke_r4(CONTROL_POLL, 0);",
+            "mutate_configuration(mutation);\n    if (mutation != CONFIG_MAGIC)\n"
+            "        (void)invoke_r4(CONTROL_POLL, 0);",
+            f"uncovered CAN wrapper outcome {magic.address:#010x}->{magic_target:#010x}"),
+        one("margin-zero",
+            "(void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);",
+            "(void)invoke_r4((selector == 0 && primary == 0 && channel == 0) ? "
+            f"{layout.hook_by_key['knock_margin_latch'].stock:#010x}U : KNOCK_MARGIN_WRAPPER, 0);",
+            f"uncovered CAN wrapper outcome {zero.address:#010x}->{zero_target:#010x}"),
+        ("request-page", (
+            ("(void)invoke_r4(REQUEST_PAGE, 0);\n    if (!expect_bytes(\n            \"request-a\"",
+             request_copy.format(bank="BANK_A", offset=80)
+             + "\n    if (!expect_bytes(\n            \"request-a\""),
+            ("(void)invoke_r4(REQUEST_PAGE, 0);\n    if (!expect_bytes(\n            \"request-b\"",
+             request_copy.format(bank="BANK_B", offset=32)
+             + "\n    if (!expect_bytes(\n            \"request-b\""),
+        ), f"uncovered CAN request invoke return {request_entry:#010x}"),
+        one("build-clamp",
+            "    state[6] = 0xFF;\n",
+            "    state[6] = 0;\n",
+            f"uncovered CAN wrapper outcome {clamp.address:#010x}->{clamp.address + 2:#010x}"),
+        one("capture-magic",
+            "        mutate_configuration(mutation);\n        (void)invoke_r4(CAPTURE, 0);",
+            "        mutate_configuration(mutation);\n"
+            "        if (mutation != CONFIG_MAGIC)\n"
+            "            (void)invoke_r4(CAPTURE, 0);",
+            f"uncovered CAN wrapper outcome {capture_fail.address:#010x}->{capture_target:#010x}"),
+        one("ack-idle",
+            "    state[3] = 4;\n    signal_ack(MAILBOX26_MASK);\n"
+            "    (void)invoke_r4(COMPLETION, 0);\n",
+            "    state[3] = 4;\n    signal_ack(MAILBOX26_MASK);\n",
+            f"uncovered CAN wrapper outcome {idle_ack.address:#010x}->{idle_ack.address + 2:#010x}"),
+        one("sle1-entry",
+            "    invoke_exception_probe(registers);",
+            "    " + isr_standin,
+            f"uncovered CAN wrapper entry {layout.code_region_by_key['sle1_isr'].entry:#010x}"),
+    )
+
+
+def _measure_can_telemetry(
+    target, source, command, invoke, elf, fixture, composed, parsed, build_dir, marker,
+):
+    """Trace one relocated telemetry harness and require its measured regions."""
+    rom = target.rom
+    layout = target.telemetry_layout
+    can_verifier.require_wrapper_instruction_bytes(fixture, composed, parsed, layout)
+    snapshot = source.read_text(encoding="utf-8")
+
+    def execute(path):
+        try:
+            ranges, invokes = base_verifier._invoke_trace_bindings(
+                path, invoke, fixture, build_dir
+            )
+            trace = build_dir / f"{path.stem}.pc-trace"
+            environment = {
+                **os.environ,
+                "VQ_SH_PC_TRACE_FILE": str(trace),
+                "VQ_SH_PC_TRACE_FORMAT": "v1",
+                "VQ_SH_PC_TRACE_RANGES": ",".join(
+                    f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)
+                ),
+            }
+            before = path.read_bytes()
+            result = base_verifier.run_command(
+                [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", path],
+                timeout=180, env=environment,
+            )
+            if path.read_bytes() != before:
+                raise VerificationError(f"{rom} telemetry ELF changes during execution")
+            records = base_verifier.read_pc_trace(trace)
+        except base_verifier.VerificationError as error:
+            raise VerificationError(f"{rom} telemetry execution binding: {error}") from error
+        return result, records, invokes
+
+    def coverage(records, invokes):
+        try:
+            return can_verifier.require_wrapper_coverage(
+                records, fixture, layout, parsed, invokes
+            )
+        except can_verifier.VerificationError as error:
+            raise VerificationError(f"{rom} telemetry coverage: {error}") from error
+
+    result, records, invokes = execute(elf)
+    covered = coverage(records, invokes)
+    if marker not in result.stdout:
+        detail = result.stdout.rstrip()
+        raise VerificationError(
+            f"{rom} telemetry lacks its semantic PASS marker"
+            + (f"\n{detail}" if detail else "")
+        )
+    negatives = []
+    for name, edits, reason in _can_omissions(layout, parsed, fixture):
+        text = snapshot
+        for old, new in edits:
+            if text.count(old) != 1:
+                raise VerificationError(f"{rom} telemetry negative lacks its unique {name} edit")
+            text = text.replace(old, new, 1)
+        negative_source = build_dir / f"{rom.lower()}-can-no-{name}.c"
+        negative_source.write_text(text, encoding="utf-8")
+        negative_elf = build_dir / f"{rom.lower()}-can-no-{name}.elf"
+        negative_command = list(command)
+        negative_command[negative_command.index("-o") + 1] = negative_elf
+        negative_command[negative_command.index(source)] = negative_source
+        base_verifier.run_command(negative_command, timeout=120)
+        try:
+            require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+        except (ELFStorageError, OSError) as error:
+            raise VerificationError(
+                f"{rom} telemetry negative ELF storage separation: {error}"
+            ) from error
+        negative, records, invokes = execute(negative_elf)
+        if marker not in negative.stdout:
+            detail = negative.stdout.rstrip()
+            raise VerificationError(
+                f"{rom} telemetry negative loses its semantic PASS marker"
+                + (f"\n{detail}" if detail else "")
+            )
+        try:
+            coverage(records, invokes)
+        except VerificationError as error:
+            if str(error) != f"{rom} telemetry coverage: {reason}":
+                raise VerificationError(
+                    f"{rom} telemetry negative fails outside its omitted outcome: {error}"
+                ) from error
+        else:
+            raise VerificationError(f"{rom} telemetry coverage accepts the omitted {name} case")
+        if negative_source.read_text(encoding="utf-8") != text:
+            raise VerificationError(f"{rom} telemetry negative source changes during execution")
+        negatives.append(
+            f"VQ_SH_ELF_RUNTIME_CAN_NEGATIVE status=PASS rom={rom} "
+            f"omitted={name} {reason}"
+        )
+    if source.read_text(encoding="utf-8") != snapshot:
+        raise VerificationError(f"{rom} rendered telemetry source changes during execution")
+    scope = ",".join((
+        "wrappers", "control",
+        *can_verifier.CAPTURE_MEASURED_REGIONS,
+        *can_verifier.COMPLETION_MEASURED_REGIONS,
+    ))
+    report = (
+        f"VQ_SH_ELF_RUNTIME_CAN_COVERAGE status=PASS rom={rom} scope={scope} "
+        + " ".join(f"{key}={value}" for key, value in covered.items())
+    )
+    return "\n".join((result.stdout.strip(), report, *negatives))
+
+
 def _compile_and_run(
     target,
     name,
@@ -732,6 +942,7 @@ def _compile_and_run(
     *,
     map_parsed=None,
     rolling_parsed=None,
+    can_parsed=None,
     fixture=None,
     composed_image=None,
 ):
@@ -781,6 +992,15 @@ def _compile_and_run(
         return _measure_rolling_launch(
             target, source, command, objects[0], output, fixture, composed_image,
             rolling_parsed, build_dir, marker,
+        )
+    if name == "can-telemetry" and target.rom in MEASURED_CAN_ROMS:
+        if can_parsed is None or fixture is None or composed_image is None:
+            raise VerificationError(
+                f"{target.rom} telemetry coverage requires typed/composed/fixture context"
+            )
+        return _measure_can_telemetry(
+            target, source, command, objects[0], output, fixture, composed_image,
+            can_parsed, build_dir, marker,
         )
     if not measured:
         result = base_verifier.run_command(
@@ -879,7 +1099,7 @@ def _compile_and_run(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
-def _run_harnesses(target, fixture, build_dir, *, map_parsed, rolling_parsed, composed_image):
+def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, rolling_parsed=None, can_parsed=None):
     rom_object = _build_rom_object(target.rom, fixture, build_dir)
     invoke, exception = _build_invoke_objects(build_dir)
     map_source = _render_harness(
@@ -999,20 +1219,29 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, rolling_parsed, co
         if target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT
         else ()
     )
-    markers.append(
-        _compile_and_run(
-            target,
-            "can-telemetry",
-            can_source,
-            rom_object,
-            (invoke, exception),
-            build_dir,
-            "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
-            f"cases={89 if target.rom == '1ME3B' else 83} entries=11 "
-            "profiles=1 contexts=10 isr_rte=5",
-            defines=can_defines,
-        )
+    can_output = _compile_and_run(
+        target,
+        "can-telemetry",
+        can_source,
+        rom_object,
+        (invoke, exception),
+        build_dir,
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
+        f"cases={115 if target.rom in MEASURED_CAN_ROMS else 90 if target.rom == '1ME3B' else 84} entries=11 "
+        "profiles=1 contexts=10 isr_rte=5",
+        defines=can_defines + (
+            ("MEASURE_CAN_TELEMETRY",) if target.rom in MEASURED_CAN_ROMS else ()
+        ),
+        can_parsed=can_parsed,
+        fixture=fixture,
+        composed_image=composed_image,
     )
+    markers.append(can_output)
+    if (
+        target.rom in MEASURED_CAN_ROMS
+        and f"VQ_SH_ELF_RUNTIME_CAN_COVERAGE status=PASS rom={target.rom} " not in can_output
+    ):
+        raise VerificationError(f"{target.rom} telemetry lacks its measured coverage terminal")
     return tuple(markers)
 
 
@@ -1083,7 +1312,7 @@ def verify_target(rom, locks, verbose=False):
         )
         markers = _run_harnesses(target, fixture, build_dir,
                                  map_parsed=map_parsed, rolling_parsed=rolling_parsed,
-                                 composed_image=composition.data)
+                                 can_parsed=can_parsed, composed_image=composition.data)
         if rom == "1ME3B":
             import verify_ignition_consumers
             markers = (*markers, verify_ignition_consumers.verify(

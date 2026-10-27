@@ -641,6 +641,16 @@ static int run_control_cases(void)
 
     count_case();
     reset_case();
+    seed_control_command(start_command, 8);
+    ram_pointer(CONTROL_MAILBOX_DATA)[0] ^= 1;
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-invalid-magic", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+
+    count_case();
+    reset_case();
     seed_control_command(start_command, 7);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
@@ -716,7 +726,7 @@ static int run_control_cases(void)
     return 1;
 }
 
-#ifdef VERIFY_7MFK_CAN_CONTROL
+#if defined(VERIFY_7MFK_CAN_CONTROL) || defined(MEASURE_CAN_TELEMETRY)
 #define CONTROL_STATE_GUARD (TELEMETRY_STATE - 4U)
 #define CONTROL_STATE_BYTES (TELEMETRY_ACTIVE_SIZE + 8U)
 #define CONTROL_BOX_GUARD (CONTROL_MAILBOX - 4U)
@@ -1221,7 +1231,7 @@ static int run_knock_margin_cases(void)
             "margin-wide-positive", 0, 1, 2, 1, 65535,
             0U, 600, 600))
         return 0;
-#ifdef VERIFY_7MFK_CAN_MARGIN
+#if defined(VERIFY_7MFK_CAN_MARGIN) || defined(MEASURE_CAN_TELEMETRY)
     if (!run_margin_case(
             "margin-exceeded-limit", 0, 4, 1, 4, 0,
             0x80008000U, (uint16_t)-500, 0x8000U))
@@ -1495,7 +1505,7 @@ int main(void)
         return 1;
     if (!run_abort_cases())
         return 1;
-#ifdef VERIFY_7MFK_CAN_CONTROL
+#if defined(VERIFY_7MFK_CAN_CONTROL) || defined(MEASURE_CAN_TELEMETRY)
     if (!run_canonical_control_cases())
         return 1;
 #endif
