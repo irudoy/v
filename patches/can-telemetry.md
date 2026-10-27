@@ -592,6 +592,7 @@ CAN, ECU, sensor, or actuator validation.
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
 | `can-telemetry-*.s` | wrappers, capture, control receiver, queue, ISR, and generated tables |
 | `can-telemetry-payloads.toml` | SHA-locked independently assembled bytes |
+| `can_telemetry_locks.py` | unit and composition locks of the layout, derived from the assembled bytes |
 | `can_telemetry.py` | fail-closed configuration and mailbox encoding |
 | `can_telemetry_compose.py` | deterministic non-flashable composition |
 | `apply_can_telemetry.py` | checksum-closing application stage |
