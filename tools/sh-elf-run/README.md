@@ -28,6 +28,16 @@ Dockerfile. `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` retains the supported timeout
 settings for the bounded ignition-consumer invocation; the script validates the
 value before starting Docker. Compiler and assembler limits remain separate.
 
+## Image inputs
+
+`Dockerfile` binds the base image to a multi-platform index digest. Every stage
+resolves packages from fixed `snapshot.debian.org` snapshots of the Debian and
+Debian security archives. The toolchain stage installs exact versions of
+binutils, GCC, newlib and Python, and the observer stage builds the simulator
+from a checksummed GDB release. A rebuild without the layer cache resolves the
+same packages. A package version changes together with the snapshot timestamps
+that provide it.
+
 ## Executable boundary
 
 The canonical and relocated runtime verifiers:
