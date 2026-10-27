@@ -424,6 +424,23 @@ def test_stale_or_unlabeled_image_is_refused_before_a_container(lifecycle, tmp_p
     assert saved['image_inputs'] == gate.inputs
 
 
+def test_identify_prints_only_the_current_image_id(lifecycle, monkeypatch, capsys):
+    found = {}
+    monkeypatch.setattr(lifecycle.Docker, 'image_identity',
+                        lambda self, image: (IDENTITY, found.get(image)))
+    found['selected-tag'] = lifecycle.image_inputs.fingerprint()
+    assert lifecycle.main(['--identify', '--image', 'selected-tag']) == 0
+    assert capsys.readouterr().out == IDENTITY + '\n'
+    found['selected-tag'] = 'sha256:' + 'e' * 64
+    assert lifecycle.main(['--identify', '--image', 'selected-tag']) == 3
+    assert lifecycle.main(['--identify', '--image', 'unlabeled-tag']) == 3
+    output = capsys.readouterr()
+    assert output.out == '' and output.err.count('status=REFUSE kind=stale') == 2
+    with pytest.raises(SystemExit) as error:
+        lifecycle.main(['--image', 'selected-tag'])
+    assert error.value.code == 2
+
+
 def test_image_inputs_follow_the_build_context(lifecycle, tmp_path):
     for name in lifecycle.image_inputs.INPUTS:
         (tmp_path / name).write_bytes((ROOT / 'tools/sh-elf-run' / name).read_bytes())

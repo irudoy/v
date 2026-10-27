@@ -53,6 +53,15 @@ def utc():
     return datetime.now(timezone.utc).isoformat()
 
 
+def current_image(docker, image, inputs):
+    """Return the ID of the selected image only when it carries the current inputs."""
+    image_id, found = docker.image_identity(image)
+    if found != inputs:
+        raise StaleImage(f'{image} is stale: its inputs are {found or "unlabeled"}, '
+                         f'the current inputs are {inputs}')
+    return image_id
+
+
 def write_json(path, value):
     temporary = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
     try:
@@ -216,10 +225,7 @@ class Lifecycle:
                         return code
                 # Recheck after a potentially long build, before creating a child.
                 self.check(owner)
-                image_id, inputs = self.docker.image_identity(image)
-                if inputs != self.inputs:
-                    raise StaleImage(f'{image} is stale: its inputs are {inputs or "unlabeled"}, '
-                                     f'the current inputs are {self.inputs}')
+                image_id = current_image(self.docker, image, self.inputs)
                 command = ['run', '--rm', '--pull=never', '--cidfile', str(cidfile),
                     '--name', 'vq-sh-elf-run-' + owner,
                     '--label', OWNER_LABEL + '=' + owner,
@@ -264,12 +270,19 @@ class Lifecycle:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--image', required=True)
-    parser.add_argument('--stock-timeout', required=True, type=int, choices=(120, 240))
+    parser.add_argument('--identify', action='store_true',
+                        help='print the ID of the image built from the current inputs and exit')
+    parser.add_argument('--stock-timeout', type=int, choices=(120, 240))
     parser.add_argument('--skip-build', action='store_true')
     parser.add_argument('arguments', nargs=argparse.REMAINDER)
     args = parser.parse_args(argv)
+    if not args.identify and args.stock_timeout is None:
+        parser.error('the following arguments are required: --stock-timeout')
     arguments = args.arguments[1:] if args.arguments[:1] == ['--'] else args.arguments
     try:
+        if args.identify:
+            print(current_image(Docker(ROOT), args.image, image_inputs.fingerprint()))
+            return 0
         code = Lifecycle(ROOT).execute(args.image, args.stock_timeout, arguments,
                                       skip_build=args.skip_build)
         return 128 - code if code < 0 else code

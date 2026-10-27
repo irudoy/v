@@ -110,7 +110,8 @@ def test_image_inputs_cover_every_local_build_source(image_inputs):
     assert len(image_inputs.INPUTS) == len(set(image_inputs.INPUTS))
 
 
-def test_runtime_generation_labels_its_build_and_runs_as_the_invoking_user(tmp_path, image_inputs):
+def generate(tmp_path, label):
+    """Run generate-targets.sh against a Docker stand-in whose image has `label`."""
     directory = tmp_path / 'bin'
     directory.mkdir()
     calls = tmp_path / 'docker-calls.jsonl'
@@ -119,20 +120,46 @@ def test_runtime_generation_labels_its_build_and_runs_as_the_invoking_user(tmp_p
         'import json,os,sys\n'
         "with open(os.environ['VQ_GENERATE_TEST_CALLS'],'a') as out:\n"
         " out.write(json.dumps(dict(args=sys.argv[1:],context=os.environ.get('DOCKER_CONTEXT'),"
-        "host=os.environ.get('DOCKER_HOST')))+'\\n')\n")
+        "host=os.environ.get('DOCKER_HOST')))+'\\n')\n"
+        "args=sys.argv[1:]\nif args[:2]==['--context','default']: args=args[2:]\n"
+        "label=os.environ.get('VQ_GENERATE_TEST_LABEL')\n"
+        "if args[0]=='image': print(json.dumps(dict(id='sha256:'+'d'*64,"
+        "config=dict(Labels=dict([label.split('=',1)]) if label else None))))\n")
     fake.chmod(0o755)
     environment = dict(os.environ, PATH=str(directory) + os.pathsep + os.environ['PATH'],
         VQ_GENERATE_TEST_CALLS=str(calls), VQ_SH_ELF_IMAGE='controlled-image',
         DOCKER_CONTEXT='unrelated-context', DOCKER_HOST='unrelated-host')
+    environment.pop('VQ_GENERATE_TEST_LABEL', None)
+    if label is not None:
+        environment['VQ_GENERATE_TEST_LABEL'] = label
     result = subprocess.run([str(TOOL / 'generate-targets.sh'), '--check'], env=environment,
         capture_output=True, text=True, timeout=30)
+    rows = [json.loads(line) for line in calls.read_text().splitlines()]
+    assert all(row['context'] == 'default' and row['host'] is None for row in rows)
+    return result, [row['args'] for row in rows]
+
+
+IMAGE_INSPECTION = ['--context', 'default', 'image', 'inspect', '--format',
+                    '{"id":{{json .Id}},"config":{{json .Config}}}', 'controlled-image']
+
+
+def test_runtime_generation_runs_the_verified_image_as_the_invoking_user(tmp_path, image_inputs):
+    result, (build, inspect, run) = generate(tmp_path, image_inputs.label())
     assert result.returncode == 0, result.stderr
-    build, run = [json.loads(line) for line in calls.read_text().splitlines()]
-    assert build['args'] == ['build', '--tag', 'controlled-image',
-                             '--label', image_inputs.label(), str(TOOL)]
-    assert run['args'][:2] == ['run', '--rm']
-    assert run['args'][run['args'].index('--user') + 1] == f'{os.getuid()}:{os.getgid()}'
-    assert f'type=bind,src={ROOT},dst=/workspace' in run['args']
-    assert run['args'][-3:] == ['controlled-image', 'tools/sh-elf-run/generate_runtime_targets.py',
-                                '--check']
-    assert all(row['context'] == 'default' and row['host'] is None for row in (build, run))
+    assert build == ['build', '--tag', 'controlled-image',
+                     '--label', image_inputs.label(), str(TOOL)]
+    assert inspect == IMAGE_INSPECTION
+    assert run[:2] == ['run', '--rm']
+    assert run[run.index('--user') + 1] == f'{os.getuid()}:{os.getgid()}'
+    assert f'type=bind,src={ROOT},dst=/workspace' in run
+    assert run[-3:] == ['sha256:' + 'd' * 64, 'tools/sh-elf-run/generate_runtime_targets.py',
+                        '--check']
+
+
+@pytest.mark.parametrize('label', [None, 'vhrev.sh-elf-run.inputs=sha256:' + 'e' * 64])
+def test_runtime_generation_refuses_a_stale_or_unlabeled_image(tmp_path, label):
+    result, commands = generate(tmp_path, label)
+    assert result.returncode == 3
+    assert 'VQ_SH_ELF_LIFECYCLE status=REFUSE kind=stale' in result.stderr
+    assert [command[0] for command in commands] == ['build', '--context']
+    assert commands[1] == IMAGE_INSPECTION
