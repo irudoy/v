@@ -292,8 +292,16 @@ def load_profile(path):
     path = Path(path)
     try:
         raw_bytes = path.read_bytes()
+    except OSError as error:
+        raise BuildError(f"{path}: cannot load profile: {error}") from error
+    return parse_profile(raw_bytes, path)
+
+
+def parse_profile(raw_bytes, path):
+    """Parse the bytes of one strict local TOML profile named by ``path``."""
+    try:
         raw = tomllib.loads(raw_bytes.decode("utf-8"))
-    except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
+    except (UnicodeError, tomllib.TOMLDecodeError) as error:
         raise BuildError(f"{path}: cannot load profile: {error}") from error
 
     if not isinstance(raw, dict):
@@ -439,6 +447,55 @@ def load_profile(path):
         source=str(path),
         sha256=sha256(raw_bytes),
     )
+
+
+def profile_text(name, rom, calibration, telemetry=None):
+    """Return a strict local TOML profile; ``telemetry=None`` omits the
+    optional CAN telemetry table."""
+    mode_names = {mode: key for key, mode in MODE_NAMES.items()}
+    enabled_maps = [
+        slot for slot in range(1, rolling_launch.SLOT_COUNT + 1)
+        if calibration.enable_mask & (1 << (slot - 1))
+    ]
+    lines = [
+        f"schema_version = {PROFILE_SCHEMA_VERSION}",
+        f"rom = {json.dumps(rom)}",
+        f"name = {json.dumps(name)}",
+        "",
+        "[rolling_launch]",
+        f"mode = {json.dumps(mode_names[calibration.mode])}",
+        f"enabled_maps = {json.dumps(enabled_maps)}",
+    ]
+    lines += [
+        f"{key} = {getattr(calibration, key)}"
+        for key in (
+            "coolant_min",
+            "coolant_max",
+            "min_speed",
+            "retard_ramp_native",
+            "min_rpm_native",
+            "min_pedal",
+            "rpm_offset_native",
+            "min_hysteresis_native",
+            "max_hysteresis_native",
+            "hysteresis_ratio_tenths",
+            "run_timeout_ticks",
+            "rearm_ticks",
+        )
+    ]
+    lines.append(
+        f"target_commands = {json.dumps(list(calibration.target_commands))}"
+    )
+    if telemetry is not None:
+        lines += [
+            "",
+            "[can_telemetry]",
+            f"enabled = {str(telemetry.enabled).lower()}",
+            f"can_id = 0x{telemetry.can_id:03X}",
+            f"profile = {json.dumps(telemetry.profile)}",
+            f"tick_divisor = {telemetry.tick_divisor}",
+        ]
+    return "\n".join(lines) + "\n"
 
 
 def _range_offsets(ranges):

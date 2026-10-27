@@ -378,6 +378,35 @@ def _expected_pointer_table(layout, family):
     )
 
 
+def historical_configuration_fields(configuration, schema_version):
+    """Return the named settings of a valid schema 1 or 2 Rolling Launch
+    record, which the current profile schema cannot express."""
+    if schema_version not in (1, 2) or not historical_configuration_is_valid(
+        configuration, schema_version
+    ):
+        raise EndpointError(
+            f"no valid schema {schema_version} Rolling Launch record"
+        )
+    values = struct.unpack(">H8B6H5sBHH", bytes(configuration))
+    return {
+        "mode": rolling_launch.Mode(values[2]).name.lower(),
+        "enable_mask": values[3],
+        "coolant_min": values[5],
+        "coolant_max": values[6],
+        "min_speed": values[7],
+        ("speed_padding" if schema_version == 1 else "retard_ramp_native"): (
+            values[8]
+        ),
+        "min_rpm_native": values[9],
+        "min_pedal": values[10],
+        "rpm_offset_native": values[11],
+        "hysteresis_native": values[12],
+        "run_timeout_ticks": values[13],
+        "rearm_ticks": values[14],
+        "target_commands": tuple(values[15]),
+    }
+
+
 def historical_configuration_is_valid(configuration, schema_version):
     if schema_version == rolling_launch.CONFIG_SCHEMA_VERSION:
         try:

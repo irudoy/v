@@ -20,16 +20,18 @@ CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/$(CAN_DASHBOARD_NAME).app
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
+CALIBRATION ?=
 CORRESPONDENCE_SOURCE_EXPORT ?=
 CORRESPONDENCE_TARGET_EXPORT ?=
 CORRESPONDENCE_OUTPUT ?=
 CORRESPONDENCE_ARGS ?=
 
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
+CALIBRATION_OPTION = $(if $(strip $(CALIBRATION)),--calibration "$(CALIBRATION)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
 .PHONY: test-python-fast test-full
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build rom-extract
 
 help:
 	@printf '%s\n' \
@@ -58,6 +60,7 @@ help:
 		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence from L0.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
+		'  rom-extract       Extract the calibration and build profile of a ROM; requires INPUT.' \
 		'' \
 		'Variables:' \
 		'  ROM               Exact ROM or auto detection for ROM builds (default: auto).' \
@@ -67,9 +70,10 @@ help:
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
-		'  INPUT             Input ROM path for rom-verify and rom-build.' \
+		'  INPUT             Input ROM path for rom-verify, rom-build, and rom-extract.' \
 		'  OUTPUT            Output ROM path for rom-build.' \
-		'  PROFILE           Optional local unified-builder profile.' \
+		'  PROFILE           Local unified-builder profile: optional rom-build input, rom-extract output.' \
+		'  CALIBRATION       Local calibration file: rom-extract output.' \
 		'  CORRESPONDENCE_SOURCE_EXPORT  Source export directory, such as l0/<layout>.' \
 		'  CORRESPONDENCE_TARGET_EXPORT  Target export directory, such as l0/<layout>.' \
 		'  CORRESPONDENCE_OUTPUT  Optional function-correspondence CSV path.' \
@@ -186,3 +190,7 @@ rom-build:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
 	@test -n "$(strip $(OUTPUT))" || { printf '%s\n' 'OUTPUT is required' >&2; exit 2; }
 	$(PYTHON) patches/build_rom.py "$(INPUT)" --rom "$(ROM)" $(PROFILE_OPTION) --output "$(OUTPUT)"
+
+rom-extract:
+	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
+	$(PYTHON) patches/extract_calibration.py "$(INPUT)" --rom "$(ROM)" $(CALIBRATION_OPTION) $(PROFILE_OPTION)
