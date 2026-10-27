@@ -62,7 +62,7 @@ IGNITION_STATE_HARNESS_BASES = {
 }
 MEASURED_ROLLING_ROMS = ("JK00C", "JK00D")
 MEASURED_VQ37_ROLLING_ROMS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
-MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B")
+MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -1227,7 +1227,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ro
         (invoke, exception),
         build_dir,
         "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
-        f"cases={115 if target.rom in MEASURED_CAN_ROMS else 90 if target.rom == '1ME3B' else 84} entries=11 "
+        f"cases={105 if target.rom == '1ME3B' else 115 if target.rom in MEASURED_CAN_ROMS else 84} entries=11 "
         "profiles=1 contexts=10 isr_rte=5",
         defines=can_defines + (
             ("MEASURE_CAN_TELEMETRY",) if target.rom in MEASURED_CAN_ROMS else ()

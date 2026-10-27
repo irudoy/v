@@ -133,7 +133,7 @@ JK78C, 1ND0A, 1ND3B and 1ME3B measure the VQ37 fuel-cut wrapper with the project
 engine. Its stock coordinator call is the declared stub, and both
 request outcomes execute.
 
-JK00C, JK00D, JK78C and 1ND0A telemetry measure the projected wrappers, control handler, capture
+JK00C, JK00D, JK78C, 1ND0A, 1ND3B and 1ME3B telemetry measure the projected wrappers, control handler, capture
 regions, completion body and the mailbox-26 SLE1 tail. The tail jumps to the
 stock ISR stub and does not qualify that body. Omitting the main wrapper,
 invalid configuration, zero-channel margin, direct page send, saturated bank

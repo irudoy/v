@@ -783,6 +783,7 @@ static int run_control_config_probe(enum config_mutation mutation)
     return check_control_probe("control-config-reject", state, mailbox, flags, before, after);
 }
 
+#ifndef TARGET_1ME3B
 static int run_control_init_probe(uint16_t identifier, uint16_t expected_mailbox_id,
     uint8_t enabled, int invalid)
 {
@@ -814,7 +815,9 @@ static int run_control_init_probe(uint16_t identifier, uint16_t expected_mailbox
         return fail_value("control-init-probe", "stock_result", returned, 1);
     return check_control_probe("control-init-probe", state, mailbox, flags, before, after);
 }
+#endif
 
+#ifndef TARGET_1ME3B
 static int run_control_command_probe(unsigned mode, uint8_t divisor,
     uint8_t expected_divider)
 {
@@ -861,14 +864,16 @@ static int run_control_command_probe(unsigned mode, uint8_t divisor,
     __asm__ volatile ("mov r15,%0" : "=r" (after) : : "memory");
     return check_control_probe("control-command-probe", state, mailbox, flags, before, after);
 }
+#endif
 
 static int run_canonical_control_cases(void)
 {
     enum config_mutation mutation;
-    unsigned mode;
     for (mutation = CONFIG_MAGIC; mutation <= CONFIG_INTEGRITY; ++mutation)
         if (mutation != CONFIG_DISABLED && !run_control_config_probe(mutation))
             return 0;
+#ifndef TARGET_1ME3B
+    unsigned mode;
     if (!run_control_init_probe(0x06f0U, 0x6f10U, 1, 0)
         || !run_control_init_probe(1, 0x0020U, 1, 0)
         || !run_control_init_probe(0x07feU, 0x7ff0U, 1, 0)
@@ -879,6 +884,9 @@ static int run_canonical_control_cases(void)
         if (!run_control_command_probe(mode, 1, 0))
             return 0;
     return run_control_command_probe(7, 0xffU, 0xfeU);
+#else
+    return 1;
+#endif
 }
 #endif
 
