@@ -2,9 +2,14 @@ import csv
 from pathlib import Path
 import re
 
+import pytest
+
+from patches import build_rom
 from patches import can_telemetry_compose
 from patches import can_telemetry_profile
 from patches import map_switching_compose
+from patches import rolling_launch_compose
+from patches import rom_checksums
 from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
 
@@ -135,3 +140,36 @@ def test_jk78c_erased_stock_references_remain_outside_runtime_writes():
         not any(span.start <= address < span.end for span in writes)
         for address in stock_references
     )
+
+
+@pytest.fixture(scope="module")
+def jk78c_inputs():
+    target = runtime_targets.project_relocated_target("JK78C")
+    stock = target.stock_image.data
+    result = build_rom.build_image(stock, rom="JK78C")
+    return target, {"base": stock, "runtime": result.data}, result.data
+
+
+@pytest.mark.parametrize("state", ("base", "runtime"))
+def test_jk78c_erased_envelope_accepts_stock_and_complete_runtime(jk78c_inputs, state):
+    _target, images, expected = jk78c_inputs
+    assert build_rom.build_image(images[state], rom="JK78C").data == expected
+
+
+@pytest.mark.parametrize("state", ("base", "runtime"))
+@pytest.mark.parametrize("address", (0x0001CAB0, 0x0001FFFF))
+def test_jk78c_rejects_foreign_bytes_outside_runtime_writes(jk78c_inputs, state, address):
+    target, images, _expected = jk78c_inputs
+    writes = map_switching_compose.composition_write_ranges(target.map_layout)
+    writes += rolling_launch_compose.composition_write_ranges(target.rolling_layout)
+    writes += can_telemetry_compose.composition_write_ranges(target.telemetry_layout)
+    assert target.map_layout.free_rom.start <= address < target.map_layout.free_rom.end
+    assert not any(span.start <= address < span.end for span in writes)
+    source = bytearray(images[state])
+    assert source[address] == 0xFF
+    source[address] = 0x00
+    source = rom_checksums.recalculate(source, target.checksum_layout)
+    with pytest.raises(build_rom.BuildError) as rejected:
+        build_rom.build_image(source, rom="JK78C")
+    if address == 0x0001CAB0 or state == "base":
+        assert str(rejected.value) == f"free ROM is not erased at {address:#x}"

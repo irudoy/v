@@ -1116,14 +1116,15 @@ def _validate_image_contract(layout, image):
     """Validate byte anchors shared by exact and compatible input images."""
     if layout.free_rom.end > len(image.data):
         raise ValueError("audited free region extends beyond the ROM image")
-    claimed = image.data[layout.claimed_rom.start : layout.claimed_rom.end]
-    if claimed != bytes([0xFF]) * layout.claimed_rom.size:
+    erased = layout.free_rom if layout.variant == "sh7058-jk78" else layout.claimed_rom
+    erased_bytes = image.data[erased.start : erased.end]
+    if erased_bytes != bytes([0xFF]) * erased.size:
         first = next(
-            index for index, value in enumerate(claimed) if value != 0xFF
+            index for index, value in enumerate(erased_bytes) if value != 0xFF
         )
+        region = "free" if layout.variant == "sh7058-jk78" else "claimed"
         raise ValueError(
-            "claimed ROM is not erased at "
-            f"{layout.claimed_rom.start + first:#x}"
+            f"{region} ROM is not erased at {erased.start + first:#x}"
         )
 
     for anchor in layout.anchors:
@@ -1216,7 +1217,8 @@ def validate_compatible_image(layout=None, image=None, stock_image=None):
     partition. The vector prefix, complete upper partition, all patch anchors,
     the ROM identity, and the claimed erased region must still match the
     selected stock image. A supplied baseline must itself retain the protected
-    ranges declared by the selected target layout.
+    ranges declared by the selected target layout. JK78C requires the complete
+    audited free region to remain erased.
     """
     layout = layout or load_layout()
     if image is None:
