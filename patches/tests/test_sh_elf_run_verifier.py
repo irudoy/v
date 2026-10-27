@@ -836,6 +836,9 @@ mov #0x5,r1
             image[pc:pc + 4] = target.to_bytes(4, "big")
             image[target:target + 4] = TELEMETRY_VERIFIER.RETURN_STUB
             statements.append(assembly_model.SourceStatement(30, pc, "long", hex(target), 4))
+        labels["ram_operand"] = 0x230
+        image[0x230:0x234] = (0xffff5e00).to_bytes(4, "big")
+        statements.append(assembly_model.SourceStatement(31, 0x230, "long", "0xffff5e00", 4))
         parsed = {"wrappers": assembly_model.ParsedSource(Path("CAN-wrappers.s"), labels, tuple(statements))}
         names = dict(main_wrapper=0x100, knock_wrapper=0x180, startup_wrapper=0x200)
         layout = SimpleNamespace(
@@ -897,8 +900,20 @@ mov #0x5,r1
                 if row.kind == "instruction":
                     with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "simulator changes CAN wrapper instruction"):
                         TELEMETRY_VERIFIER.require_wrapper_instruction_bytes(changed, image, parsed)
-                else:
+                elif row.address == parsed["wrappers"].labels["ram_operand"]:
+                    changed[row.address:row.address + 4] = VERIFIER.alias_high_ram(0xffff5e00).to_bytes(4, "big")
                     TELEMETRY_VERIFIER.require_wrapper_instruction_bytes(changed, image, parsed)
+                else:
+                    original_target = int.from_bytes(image[row.address:row.address + 4], "big")
+                    other_target = 0x304 if original_target != 0x304 else 0x300
+                    changed[row.address:row.address + 4] = other_target.to_bytes(4, "big")
+                    self.assertTrue(all(changed[item.address:item.address + 2] == image[item.address:item.address + 2]
+                                        for item in parsed["wrappers"].statements if item.kind == "instruction"))
+                    with tempfile.TemporaryDirectory() as directory, patch.object(TELEMETRY_VERIFIER.base_verifier, "run_command") as command:
+                        with self.assertRaisesRegex(TELEMETRY_VERIFIER.VerificationError, "simulator changes CAN wrapper control literal"):
+                            TELEMETRY_VERIFIER.build_and_run_dynamic_harness(
+                                changed, Path(directory), layout=layout, parsed_by_unit=parsed, composed_image=image)
+                        command.assert_not_called()
         original = parsed["wrappers"]
         for pc, text, message in ((0x104, "jsr @r2", "unbound CAN wrapper call"),
                                   (0x108, "rte", "unsupported CAN wrapper transfer")):

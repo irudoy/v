@@ -264,10 +264,26 @@ def build_rom_object(fixture, build_dir):
 
 
 def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit):
-    """Preserve every independently assembled wrapper word after all stubs."""
-    for row in parsed_by_unit["wrappers"].statements:
-        if row.kind == "instruction" and fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
+    """Bind wrapper instruction words and ROM call operands after all stubs."""
+    parsed = parsed_by_unit["wrappers"]
+    for row in parsed.statements:
+        if row.kind != "instruction":
+            continue
+        if fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
             raise VerificationError(f"simulator changes CAN wrapper instruction at {row.address:#010x}")
+        if map_switching_assembly._mnemonic(row) != "jsr":
+            continue
+        previous = parsed.statement_by_address.get(row.address - 2)
+        literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous and previous.kind == "instruction" else None
+        if (row.text != "jsr @r0" or literal is None or literal.group("width") != "l"
+                or literal.group("register") != "r0"):
+            raise VerificationError(f"unbound CAN wrapper call at {row.address:#010x}")
+        pool = parsed.labels[literal.group("label")]
+        operand = parsed.statement_by_address.get(pool)
+        if operand is None or operand.kind != "long" or operand.size != 4:
+            raise VerificationError(f"CAN wrapper call pool is not one typed long at {pool:#010x}")
+        if fixture[pool:pool + 4] != composed[pool:pool + 4]:
+            raise VerificationError(f"simulator changes CAN wrapper control literal at {pool:#010x}")
 
 
 def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words):
