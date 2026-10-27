@@ -224,7 +224,7 @@ and its final request remain outside this executable scope.
 
 The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
 `control` units, the `capture`, `build_bank`, `knock_margin_wrapper` and
-`request_page` regions, and the `sle1_isr` region. Entries come
+`request_page` regions, and the `sle1_isr` and `completion` regions. Entries come
 from the telemetry layout and the named internal configuration-validator label.
 Typed instruction statements define coverage;
 source tables, pools and fill remain data. Independent GNU assembly, composed
@@ -262,23 +262,28 @@ saturated context, so the clamp that clears a context of 5 or more does not
 execute. A capture build skips the call whose configuration magic is wrong,
 so the first validation branch to the shared return does not execute.
 An ISR build clears both mailbox-28 abort sources, so the abort
-fall-through does not execute. The ISR enters from the TRAPA vector and leaves with
+fall-through does not execute. A completion build keeps the idle-ack
+assertions but omits that call, so the busy check does not fall through.
+The ISR enters from the TRAPA vector and leaves with
 RTE; the following harness instruction is outside the ROM trace. Its BSR
-into the completion body does not qualify that body. Coverage must reject
+into completion is a measured call and return. Coverage must reject
 the missing main entry, configuration-magic outcome, zero-channel margin
 outcome, request invoke return, the context clamp outcome, the capture
-validation outcome or the ISR abort outcome.
+validation outcome, the ISR abort outcome or the idle-ack outcome.
 
 `request_page` accepts that direct invoke, the capture idle-publish BSR, and
 the completion JSRs that load its entry. `build_bank` accepts its direct
 invoke and the two capture BSRs. Those call instructions, their delay nops
-and the completion entry literal stay bound to the composed image. The
-surrounding capture and completion bodies are not qualified. `build_bank`
+and the completion entry literal stay bound to the composed image. `build_bank`
 must execute both page and byte loops, both context seeks, the margin rearm
 and both context-clamp outcomes. `request_page` must execute both bank
 selections, the eight-byte copy loop and the return delay slot.
+The completion body must execute both ack and abort outcomes, including an
+ack while idle, an abort while not busy, and an abort of a corrupt queue.
+Its queue check and bank toggle are in the same measured span. Direct
+completion invokes must return to an invoke word.
 
-Completion, lower startup
+Lower startup
 and stock callee bodies remain outside CAN instruction qualification. Existing
 TRAPA/RTE cases execute as separate harness calls; exception behavior receives
 no additional qualification from this scope.

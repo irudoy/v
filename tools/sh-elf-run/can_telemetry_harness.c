@@ -1322,6 +1322,16 @@ static int run_completion_cases(void)
     if (state[2] != 1)
         return fail_value("completion-no-flags", "busy", state[2], 1);
 
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[2] = 0;
+    state[3] = 4;
+    signal_ack(MAILBOX26_MASK);
+    (void)invoke_r4(COMPLETION, 0);
+    if (state[2] != 0 || state[3] != 4)
+        return fail_value("ack-idle", "page", state[3], 4);
+
     for (page = 0; page < 4; ++page) {
         count_case();
         reset_case();
@@ -1376,6 +1386,27 @@ static int run_abort_cases(void)
     (void)invoke_r4(COMPLETION, 0);
     if (state[15] != 0xff)
         return fail_value("abort-saturates", "counter", state[15], 0xff);
+
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[2] = 0;
+    state[3] = 3;
+    signal_abort(MAILBOX26_MASK);
+    (void)invoke_r4(COMPLETION, 0);
+    if (state[2] != 0 || state[3] != 3 || state[7] != 2 || state[15] != 1)
+        return fail_value("abort-not-busy", "counter", state[15], 1);
+
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[0] = 2;
+    state[2] = 1;
+    state[4] = 11;
+    signal_abort(MAILBOX26_MASK);
+    (void)invoke_r4(COMPLETION, 0);
+    if (state[0] != 2 || state[2] != 0 || state[7] != 2 || state[15] != 1)
+        return fail_value("abort-corrupt", "busy", state[2], 0);
     return 1;
 }
 

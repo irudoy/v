@@ -47,7 +47,7 @@ DYNAMIC_MARKER_PATTERN = (
 )
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture", "completion")
 CAPTURE_MEASURED_REGIONS = ("capture", "build_bank", "knock_margin_wrapper", "request_page")
-COMPLETION_MEASURED_REGIONS = ("sle1_isr",)
+COMPLETION_MEASURED_REGIONS = ("sle1_isr", "completion")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -293,6 +293,15 @@ def _bounded_capture_callers(parsed_by_unit):
     return tuple(found)
 
 
+def _in_measured_region(address, layout):
+    for key in ("capture", "completion"):
+        for name in _measured_regions(key):
+            span = layout.code_region_by_key[name].span
+            if span.start <= address < span.end:
+                return True
+    return False
+
+
 def _measured_regions(key):
     if key == "capture":
         return CAPTURE_MEASURED_REGIONS
@@ -390,10 +399,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                     if key == "control" and target == config_entry:
                         call_targets[pc] = target
                         config_calls.add(pc)
-                    elif target in capture_callees:
+                    elif target in capture_callees or _in_measured_region(target, layout):
                         call_targets[pc] = target
-                    elif key == "completion" and target == completion_entry:
-                        pass
                     else:
                         raise VerificationError(f"unsupported CAN BSR target at {pc:#010x}")
             if mnemonic in {"jsr", "rts", "bra", "bsr", "rte"}:
@@ -452,7 +459,7 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             if (not frames and target in entries and pc not in invoke_words
                     and pc not in bounded_callers):
                 raise VerificationError(f"CAN wrapper origin is outside bound invoke code at {pc:#010x}")
-            if target != completion_entry and (frames or target in entries):
+            if frames or target in entries or pc in call_targets:
                 frames.append((pc, target, pc + 4))
         elif word == 0x002b and pc in instructions:
             following = index + 1
@@ -501,7 +508,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
         raise VerificationError("uncovered CAN wrapper call/return path")
     for missing in sorted(slots - observed_slots):
         raise VerificationError(f"uncovered CAN wrapper delay slot {missing:#010x}")
-    for name, entry in (("request", request_entry), ("build", build_entry)):
+    for name, entry in (("request", request_entry), ("build", build_entry),
+                        ("completion", completion_entry)):
         if not any(call in invoke_words and returned_entry == entry
                    for call, returned_entry, _continuation in call_returns):
             raise VerificationError(f"uncovered CAN {name} invoke return {entry:#010x}")
@@ -585,9 +593,12 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     magic_target = map_switching_assembly._validate_direct_branch_encoding(
         parsed_by_unit["capture"], magic_fail,
         int.from_bytes(fixture[magic_fail.address:magic_fail.address + 2], "big"))
-    measured_isr = _measured_statements("completion", parsed_by_unit["completion"], layout)
-    abort_edge = next(row for row in measured_isr
+    measured_completion = _measured_statements("completion", parsed_by_unit["completion"], layout)
+    abort_edge = next(row for row in measured_completion
                       if row.kind == "instruction" and row.text == "bt telemetry_isr_restore")
+    idle_ack = next(row for row in measured_completion
+                    if row.kind == "instruction"
+                    and row.text == "bt telemetry_completion_busy_valid")
     request_copy = (
         "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
         "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
@@ -633,6 +644,13 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         ),
          f"uncovered CAN wrapper outcome {abort_edge.address:#010x}->{abort_edge.address + 2:#010x}",
          "VQ_SH_ELF_CAN_ISR_COVERAGE_NEGATIVE"),
+        ("ack-idle", (
+            ("    state[3] = 4;\n    signal_ack(MAILBOX26_MASK);\n"
+             "    (void)invoke_r4(COMPLETION, 0);\n",
+             "    state[3] = 4;\n    signal_ack(MAILBOX26_MASK);\n"),
+        ),
+         f"uncovered CAN wrapper outcome {idle_ack.address:#010x}->{idle_ack.address + 2:#010x}",
+         "VQ_SH_ELF_CAN_COMPLETION_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
     for name, edits, reason, prefix in omissions:

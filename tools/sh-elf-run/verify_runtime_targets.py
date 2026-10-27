@@ -704,7 +704,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image):
             (invoke, exception),
             build_dir,
             "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
-            f"cases={86 if target.rom == '1ME3B' else 80} entries=11 "
+            f"cases={89 if target.rom == '1ME3B' else 83} entries=11 "
             "profiles=1 contexts=10 isr_rte=5",
             defines=can_defines,
         )
