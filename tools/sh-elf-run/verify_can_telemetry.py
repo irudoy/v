@@ -45,7 +45,7 @@ DYNAMIC_MARKER_PATTERN = (
     r"^VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=[1-9][0-9]* entries=11 "
     r"profiles=1 contexts=10 isr_rte=5$"
 )
-CAN_COVERAGE_UNITS = ("wrappers", "control")
+CAN_COVERAGE_UNITS = ("wrappers", "control", "capture")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -264,11 +264,19 @@ def build_rom_object(fixture, build_dir):
     return object_path
 
 
-def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit):
+def _measured_statements(key, parsed, layout):
+    """Select the fixed margin region without qualifying other capture entries."""
+    if key != "capture" or not parsed.statements:
+        return parsed.statements
+    span = layout.code_region_by_key["knock_margin_wrapper"].span
+    return tuple(row for row in parsed.statements if span.start <= row.address < span.end)
+
+
+def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit, layout):
     """Bind wrapper instruction words and ROM call operands after all stubs."""
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
-        for row in parsed.statements:
+        for row in _measured_statements(key, parsed, layout):
             if row.kind != "instruction":
                 continue
             if fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
@@ -290,6 +298,11 @@ def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit):
 
 def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words):
     """Measure only canonical CAN wrapper entries, loops and call/return paths."""
+    evaluator = layout.hook_by_key["knock_margin_latch"].stock
+    evaluator_return = evaluator + len(EVALUATOR_STUB_CODE) - 4
+    stub = knock_evaluator_stub(evaluator)
+    if fixture[evaluator:evaluator + len(stub)] != stub:
+        raise VerificationError("CAN knock evaluator stand-in differs")
     control = parsed_by_unit["control"]
     config_entry = control.labels["telemetry_control_config_valid"]
     private_returns = {row.address for row in control.statements if row.kind == "instruction"
@@ -298,9 +311,9 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
-        entries.update(layout.code_region_by_key[name].entry
-                       for name in layout.assembly_unit_by_key[key].code_regions)
-        for row in parsed.statements:
+        regions = ("knock_margin_wrapper",) if key == "capture" else layout.assembly_unit_by_key[key].code_regions
+        entries.update(layout.code_region_by_key[name].entry for name in regions)
+        for row in _measured_statements(key, parsed, layout):
             if row.kind != "instruction":
                 continue
             pc = row.address
@@ -381,6 +394,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             call, entry, continuation = frames.pop()
             if target != continuation:
                 raise VerificationError(f"executed CAN return differs at {pc:#010x}")
+            if entry == evaluator and pc != evaluator_return:
+                raise VerificationError(f"unsupported CAN evaluator return path at {pc:#010x}")
             if entry == config_entry:
                 if call not in config_calls or pc not in private_returns:
                     raise VerificationError(f"unsupported CAN config return path at {pc:#010x}")
@@ -410,7 +425,7 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
 
 
 def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit, composed_image):
-    require_wrapper_instruction_bytes(fixture, composed_image, parsed_by_unit)
+    require_wrapper_instruction_bytes(fixture, composed_image, parsed_by_unit, layout)
     rom_object = build_rom_object(fixture, build_dir)
     invoke_object = build_dir / "can-telemetry-invoke.o"
     exception_object = build_dir / "can-telemetry-exception.o"
@@ -426,7 +441,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     ])
     command = [
         base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
-        "-DVERIFY_7MFK_CAN_CONTROL",
+        "-DVERIFY_7MFK_CAN_CONTROL", "-DVERIFY_7MFK_CAN_MARGIN",
         "-I", HARNESS_INCLUDE_DIR,
         f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}", "-Wl,--section-start=.rom=0",
         "-o", harness_elf, positive_source, invoke_object, exception_object, rom_object,
@@ -467,6 +482,13 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
                  and row.address >= config_entry and map_switching_assembly._mnemonic(row) == "bf")
     target = map_switching_assembly._validate_direct_branch_encoding(
         control, magic, int.from_bytes(fixture[magic.address:magic.address + 2], "big"))
+    margin = parsed_by_unit["capture"]
+    zero = next(row for row in _measured_statements("capture", margin, layout)
+                if row.kind == "instruction" and row.text == "bt telemetry_margin_return"
+                and margin.statement_by_address[row.address - 2].text == "tst r4,r4")
+    zero_target = map_switching_assembly._validate_direct_branch_encoding(
+        margin, zero, int.from_bytes(fixture[zero.address:zero.address + 2], "big"))
+    evaluator = layout.hook_by_key["knock_margin_latch"].stock
     omissions = (
         ("main", main_call, "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);",
          f"uncovered CAN wrapper entry {layout.code_region_by_key['main_wrapper'].entry:#010x}",
@@ -475,6 +497,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
          "mutate_configuration(mutation);\n    if (mutation != CONFIG_MAGIC)\n        (void)invoke_r4(CONTROL_POLL, 0);",
          f"uncovered CAN wrapper outcome {magic.address:#010x}->{target:#010x}",
          "VQ_SH_ELF_CAN_CONTROL_COVERAGE_NEGATIVE"),
+        ("margin-zero", "(void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);",
+         f"(void)invoke_r4((selector == 0 && primary == 0 && channel == 0) ? {evaluator:#010x}U : KNOCK_MARGIN_WRAPPER, 0);",
+         f"uncovered CAN wrapper outcome {zero.address:#010x}->{zero_target:#010x}",
+         "VQ_SH_ELF_CAN_MARGIN_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
     for name, call, replacement, reason, prefix in omissions:
@@ -505,7 +531,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
             or positive_source.read_text(encoding="utf-8") != source
             or any(path.read_text(encoding="utf-8") != text for path, text in negative_sources)):
         raise VerificationError("CAN harness source changes during verification")
-    marker = "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control "
+    marker = "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control,knock_margin_wrapper "
     marker += " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), marker, *negative_markers))
 

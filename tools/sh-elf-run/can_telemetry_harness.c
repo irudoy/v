@@ -1097,6 +1097,10 @@ static int run_margin_case(
     volatile uint8_t *stage = (volatile uint8_t *)(uintptr_t)EVALUATOR_STAGE;
     uint8_t stock_selector = rom_pointer(KNOCK_SELECTOR)[0];
     size_t index;
+#ifdef VERIFY_7MFK_CAN_MARGIN
+    uint8_t expected_state[TELEMETRY_ACTIVE_SIZE];
+    uint32_t before_sp, after_sp;
+#endif
 
     count_case();
     reset_case();
@@ -1122,7 +1126,21 @@ static int run_margin_case(
     }
     write_u32(stage + 4, metric);
     write_u32(stage + 8, 0);
+#ifdef VERIFY_7MFK_CAN_MARGIN
+    for (index = 0; index < sizeof(expected_state); ++index)
+        expected_state[index] = state[index];
+    if (channel >= 1 && channel <= 6)
+        write_u16(expected_state + KNOCK_MARGIN_STATE + (channel - 1U) * 2U, expected);
+    __asm__ volatile ("mov r15,%0" : "=r" (before_sp) : : "memory");
+#endif
     (void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);
+#ifdef VERIFY_7MFK_CAN_MARGIN
+    __asm__ volatile ("mov r15,%0" : "=r" (after_sp) : : "memory");
+    if (before_sp != after_sp)
+        return fail_value(name, "stack", after_sp, before_sp);
+    if (!expect_bytes(name, "allocated_state", state, expected_state, sizeof(expected_state)))
+        return 0;
+#endif
     rom_pointer(KNOCK_SELECTOR)[0] = stock_selector;
     if (read_u32(stage + 8) != 1)
         return fail_value(name, "stock_calls", read_u32(stage + 8), 1);
@@ -1203,6 +1221,16 @@ static int run_knock_margin_cases(void)
             "margin-wide-positive", 0, 1, 2, 1, 65535,
             0U, 600, 600))
         return 0;
+#ifdef VERIFY_7MFK_CAN_MARGIN
+    if (!run_margin_case(
+            "margin-exceeded-limit", 0, 4, 1, 4, 0,
+            0x80008000U, (uint16_t)-500, 0x8000U))
+        return 0;
+    if (!run_margin_case(
+            "margin-equal-keeps", 0, 2, 1, 2, 1000,
+            0x80000190U, 600, 600))
+        return 0;
+#endif
     return 1;
 }
 

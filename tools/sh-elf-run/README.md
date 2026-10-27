@@ -199,8 +199,9 @@ absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
 The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
-`control` units. Entries come from the telemetry layout and the named internal
-configuration-validator label. Typed instruction statements define coverage;
+`control` units and the `knock_margin_wrapper` region of `capture`. Entries come
+from the telemetry layout and the named internal configuration-validator label.
+Typed instruction statements define coverage;
 source tables, pools and fill remain data. Independent GNU assembly, composed
 ROM, simulator fixture, final ELF and invoke code bind the measured PCs.
 ROM call pools are checked against the composition before tool execution;
@@ -209,21 +210,33 @@ declared RAM operand aliases remain permitted.
 The local checker requires every instruction, both BT/BF outcomes, exact
 BRA/BSR/JSR targets, real delay slots and matched invoke continuations. The
 internal configuration validator must return from each of its typed RTS sites
-to each parsed BSR caller. Canonical probes check exact allowed state and mailbox
-deltas, preserved neighboring bytes, mixed flag sentinels, init result and stack.
+to each parsed BSR caller. The margin evaluator call must reach its bound ROM
+target and return from the declared simulator stand-in's RTS to the wrapper.
+Canonical probes check exact allowed state and mailbox deltas, preserved
+neighboring bytes, mixed flag sentinels, init result and stack.
 Alias-memory flag checks observe the written values, without modeling hardware
 write-one-to-clear behavior. The existing C case counter reports all canonical
 probes; measured execution provides instruction qualification.
 
+Margin probes stage the evaluator metric independently and compare literal
+expected latch values for selector choices, channel bounds, threshold equality,
+signed minima and clamp boundaries. They check the complete allocated telemetry
+state and restored stack. The evaluator stand-in writes the staged metric,
+clobbers caller-saved registers and counts its actual invocation; its bytes and
+return site bind the call without qualifying the stock evaluator body.
+
 Private negative harnesses preserve the same linked ROM, semantic output and
 assertions. One bypasses `MAIN_WRAPPER` with real `CONTROL_POLL` and `CAPTURE`
 calls. Another skips only the invalid-magic poll invocation while retaining its
-case count and no-side-effect assertions. Coverage must reject the missing main
-entry or configuration-magic branch outcome respectively.
+case count and no-side-effect assertions. A margin build invokes the evaluator
+stand-in directly for the ignored zero-channel case, retaining its actual call,
+case count and unchanged-state assertions. Coverage must reject the missing
+main entry, configuration-magic outcome or zero-channel margin outcome.
 
-Capture, lower startup and stock callees remain outside CAN instruction
-qualification. Existing TRAPA/RTE cases execute as separate harness calls;
-exception behavior receives no additional qualification from this scope.
+The `capture`, `build_bank` and `request_page` entries, completion, lower startup
+and stock callee bodies remain outside CAN instruction qualification. Existing
+TRAPA/RTE cases execute as separate harness calls; exception behavior receives
+no additional qualification from this scope.
 Unsupported transfers during an active monitored frame fail verification.
 
 The ignition-consumer verifier reconstructs each declared stock call window
