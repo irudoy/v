@@ -1424,14 +1424,15 @@ static int run_ignition_cases(void)
     if (!invoke_ignition("ign-saturated-band", 110, 0xfffc, 112))
         return 0;
 
-#ifdef VERIFY_CANONICAL_ROLLING
+#if defined(VERIFY_CANONICAL_ROLLING) || defined(MEASURE_ROLLING_COVERAGE)
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
     write_u16(ram_pointer(RL_STATE) + 18, 0);
     if (!invoke_ignition("ign-zero-band-start", 110, 308, 110))
         return 0;
-
+#endif
+#ifdef VERIFY_CANONICAL_ROLLING
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
@@ -1468,7 +1469,7 @@ static const struct feedback_case feedback_cases[] = {
         "feedback-idle-released", PHASE_IDLE, REASON_RPM_LOW, 0,
         {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
     },
-#ifdef VERIFY_CANONICAL_ROLLING
+#if defined(VERIFY_CANONICAL_ROLLING) || defined(MEASURE_ROLLING_COVERAGE)
     {
         "feedback-idle-clear-held", PHASE_IDLE, REASON_NONE,
         FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
@@ -1945,6 +1946,16 @@ int main(void)
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=32 config=24 threshold=9 activation=6 "
         "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 "
+        "entries=8\n",
+        (unsigned long)case_count);
+#elif defined(MEASURE_ROLLING_COVERAGE)
+    if (case_count != 130U)
+        return fail_value("summary", "case_count", case_count, 130);
+
+    printf(
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
+        "structural=11 gates=32 config=24 threshold=4 activation=6 "
+        "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
         "entries=8\n",
         (unsigned long)case_count);
 #else

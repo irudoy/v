@@ -248,8 +248,8 @@ def bind_ignition_adapter_windows(fixture, composed, parsed, regions, stock):
     return entry, *jumps
 
 
-def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry, ignition_stock_entry):
-    """Measure the fixed canonical wrapper, threshold and feedback scope."""
+def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry, ignition_stock_entry, *, serializer_stub=None):
+    """Measure the declared Rolling Launch regions on one layout."""
     wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
     helper = regions["threshold_helper"].entry
     arbiter = regions["feedback_arbiter"].entry
@@ -312,7 +312,11 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
         raise VerificationError("feedback arbiter lacks its unique Map call and native RTS")
     arbiter_call, arbiter_return = arbiter_calls[0], arbiter_returns[0]
     base_feedback = transfers[arbiter_call][2]
-    if fixture[serializer_entry:serializer_entry + len(FEEDBACK_SERIALIZER_STUB)] != FEEDBACK_SERIALIZER_STUB:
+    if serializer_stub is None:
+        serializer_stub = FEEDBACK_SERIALIZER_STUB
+    if len(serializer_stub) < 8 or serializer_stub[6:8] != b"\x00\x0b":
+        raise VerificationError("feedback serializer stub lacks its RTS at offset 6")
+    if fixture[serializer_entry:serializer_entry + len(serializer_stub)] != serializer_stub:
         raise VerificationError("feedback serializer boundary differs from its declared fixture stub")
     controller_calls = [pc for pc in transfers if owners[pc] == controller and transfers[pc][0] == "jsr"]
     controller_tails = [pc for pc in transfers if owners[pc] == controller and transfers[pc][0] == "jmp"]

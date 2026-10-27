@@ -121,6 +121,15 @@ word-copy limiter and state-writing serializer fixture retain their exact
 declared transformations. Guard cases use the rendered target addresses and
 independent state, return and write-effect oracles.
 
+JK00C Rolling Launch measures the projected wrappers, engine, threshold
+helper, feedback arbiter, ignition adapter and ignition controller. The
+feedback serializer stub keeps the canonical prefix and its RTS at offset 6;
+the status literal is that target's alias. Omitting the periodic call, the
+idle ignition phase, or the invalid map index on an already invalid
+configuration, the zero band start, or an idle feedback phase with no
+abort reason, fails at that entry or branch.
+The stock divider and limiter bodies stay outside this qualification.
+
 JK78C uses its declared second idle-ignition entry and alternate fuel-compensation
 selection. Its leaf limiter copies the native fuel caps, both curves and the
 throttle scalar. The existing C oracle checks the complete shadows against
