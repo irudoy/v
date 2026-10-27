@@ -129,8 +129,9 @@ idle ignition phase, or the invalid map index on an already invalid
 configuration, the zero band start, or an idle feedback phase with no
 abort reason, fails at that entry or branch.
 The stock divider and limiter bodies stay outside this qualification.
-JK78C adds the VQ37 fuel-cut wrapper. Its stock coordinator call is the
-declared stub, and both request outcomes execute.
+JK78C and 1ND0A measure the VQ37 fuel-cut wrapper with the projected
+engine. Its stock coordinator call is the declared stub, and both
+request outcomes execute.
 
 JK78C uses its declared second idle-ignition entry and alternate fuel-compensation
 selection. Its leaf limiter copies the native fuel caps, both curves and the
