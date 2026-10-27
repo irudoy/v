@@ -773,6 +773,84 @@ static int verify_active_state(
     return verify_state_guards(name);
 }
 
+#ifdef VERIFY_CANONICAL_ROLLING_THRESHOLD
+static int run_canonical_threshold_case(
+    const char *name, uint16_t captured, uint16_t cut,
+    uint16_t expected_restore, uint16_t expected_band_start,
+    uint8_t minimum, uint8_t maximum, uint8_t ramp,
+    uint16_t offset, uint8_t ratio, uint16_t minimum_rpm)
+{
+    struct preserved_buffer {
+        uint32_t address;
+        size_t size;
+        uint8_t bytes[28];
+    } buffers[] = {
+        {SELECTOR_STATE, 8, {0}}, {FUEL_SHADOW, FUEL_SHADOW_SIZE, {0}},
+        {THROTTLE_SHADOW, THROTTLE_SHADOW_SIZE, {0}},
+        {THROTTLE_RUNTIME, 2, {0}}, {BUTTON_CODE, 2, {0}},
+        {ASCD_STATUS, 1, {0}}, {SPEED, 1, {0}}, {RPM, 2, {0}},
+        {PEDAL, 2, {0}}, {COOLANT, 1, {0}}, {FORMER_BRAKE_STATUS, 1, {0}},
+        {FUEL_CUT_STATUS, 1, {0}}, {IGNITION_OUTPUT, 1, {0}},
+        {APC_MODE_SNAPSHOT, 1, {0}}, {PAYLOAD, 8, {0}},
+    };
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    volatile uint8_t *configuration = rom_pointer(RL_CONFIG);
+    uint8_t expected_state[RL_STATE_SIZE], expected_configuration[32];
+    uint32_t sp_before, sp_after, gbr_before, gbr_after, observed_r4;
+    size_t index, byte;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    configuration[9] = ramp;
+    write_u16(configuration + 10, minimum_rpm);
+    write_u16(configuration + 14, offset);
+    configuration[16] = minimum;
+    configuration[17] = maximum;
+    configuration[27] = ratio;
+    write_u16(state + 10, captured);
+    write_u16(state + 12, cut);
+    for (byte = 0; byte < sizeof(expected_state); ++byte)
+        expected_state[byte] = state[byte];
+    write_u16(expected_state + 14, expected_restore);
+    write_u16(expected_state + 18, expected_band_start);
+    for (byte = 0; byte < sizeof(expected_configuration); ++byte)
+        expected_configuration[byte] = configuration[byte];
+    for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+        for (byte = 0; byte < buffers[index].size; ++byte)
+            buffers[index].bytes[byte] = ram_pointer(buffers[index].address)[byte];
+
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
+    observed_r4 = invoke_r4(THRESHOLD_HELPER, 0);
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
+    if (sp_after != sp_before)
+        return fail_value(name, "stack_pointer", sp_after, sp_before);
+    if (gbr_after != gbr_before)
+        return fail_value(name, "gbr", gbr_after, gbr_before);
+    /* invoke_r4 observes the helper's configuration-register role. */
+    if (observed_r4 != RL_CONFIG)
+        return fail_value(name, "configuration_r4", observed_r4, RL_CONFIG);
+    if (!fail_bytes(name, "complete_state", state, expected_state, sizeof(expected_state))
+            || !fail_bytes(name, "configuration", configuration,
+                           expected_configuration, sizeof(expected_configuration)))
+        return 0;
+    for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+        if (!fail_bytes(name, "preserved_buffer", ram_pointer(buffers[index].address),
+                        buffers[index].bytes, buffers[index].size))
+            return 0;
+    return verify_state_guards(name);
+}
+
+static int run_threshold_helper_case(
+    const char *name, uint16_t captured, uint16_t cut,
+    uint16_t expected_restore, uint16_t expected_band_start)
+{
+    return run_canonical_threshold_case(
+        name, captured, cut, expected_restore, expected_band_start,
+        4, 12, 8, 16, 20, 100);
+}
+#else
 static int run_threshold_helper_case(
     const char *name,
     uint16_t captured,
@@ -799,6 +877,8 @@ static int run_threshold_helper_case(
     return verify_state_guards(name);
 }
 
+#endif
+
 static int run_threshold_helper_cases(void)
 {
     if (!run_threshold_helper_case(
@@ -813,6 +893,21 @@ static int run_threshold_helper_cases(void)
     if (!run_threshold_helper_case(
             "threshold-saturated", 0xfff8, 0xffff, 0xfff3, 0xfff8))
         return 0;
+#ifdef VERIFY_CANONICAL_ROLLING_THRESHOLD
+    if (!run_threshold_helper_case("threshold-exact-floor", 200, 216, 212, 208))
+        return 0;
+    if (!run_threshold_helper_case("threshold-rounding-low", 324, 340, 334, 328))
+        return 0;
+    if (!run_threshold_helper_case("threshold-rounding-high", 325, 341, 334, 327))
+        return 0;
+    if (!run_canonical_threshold_case(
+            "threshold-low-wide", 1, 257, 253, 2, 4, 12, 255, 256, 255, 1))
+        return 0;
+    if (!run_canonical_threshold_case(
+            "threshold-upper", 0xffff, 0xffff, 0xff00, 0xffff,
+            4, 255, 8, 256, 255, 100))
+        return 0;
+#endif
     return 1;
 }
 
@@ -1652,6 +1747,16 @@ int main(void)
         "structural=11 gates=27 config=24 threshold=4 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 hold=11 entries=9\n",
+        (unsigned long)case_count);
+#elif defined(VERIFY_CANONICAL_ROLLING_THRESHOLD)
+    if (case_count != 128U)
+        return fail_value("summary", "case_count", case_count, 128);
+
+    printf(
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
+        "structural=11 gates=27 config=24 threshold=9 activation=6 "
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+        "entries=8\n",
         (unsigned long)case_count);
 #else
     if (case_count != 123U)

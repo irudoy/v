@@ -1368,18 +1368,52 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                       event(0x184), event(0x186), event(0x188, 1), event(0x308),
                       event(0x30A, 1), event(0x18A), event(0x18C, 1)] + suffix,
         ]
-        return bytes(image), parsed, regions, boundaries, invokes, traces
+        units = {"wrappers": parsed}
+        helper_rows = ((0x200, "mov.l @(rl_threshold_unsigned_divide,pc),r3", 0xD30E),
+                       (0x202, "jsr @r3", 0x430B), (0x204, "nop", 9),
+                       (0x206, "bt helper_high", 0x8901), (0x208, "mov #1,r0", 0xE001),
+                       (0x20A, "bra helper_return", 0xA000), (0x20C, "mov #2,r0", 0xE002),
+                       (0x20E, "rts", 11), (0x210, "nop", 9))
+        engine_rows = ((0x280, "nop", 9),
+                       (0x282, "mov.l @(rl_threshold_helper_entry,pc),r0", 0xD005),
+                       (0x284, "jsr @r0", 0x400B), (0x286, "nop", 9),
+                       (0x288, "rts", 11), (0x28A, "nop", 9))
+        for unit, rows, labels in (
+                ("threshold_helper", helper_rows,
+                 {"rl_threshold_unsigned_divide": 0x23C, "helper_high": 0x20C, "helper_return": 0x20E}),
+                ("engine", engine_rows, {"rl_threshold_helper_entry": 0x298})):
+            statements = []
+            for pc, text, word in rows:
+                image[pc:pc + 2] = word.to_bytes(2, "big")
+                statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
+            units[unit] = assembly_model.ParsedSource(Path(unit + ".s"), labels, tuple(statements))
+        image[0x23C:0x240] = (0x310).to_bytes(4, "big")
+        image[0x298:0x29C] = (0x200).to_bytes(4, "big")
+        image[0x310:0x314] = bytes.fromhex("000b0009")
+        regions.update({key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
+                        for key, entry, end in (("threshold_helper", 0x200, 0x240),
+                                                ("engine", 0x280, 0x2A0))})
+        helper_prefix = [event(0x200), event(0x202), event(0x204, 1),
+                         event(0x310), event(0x312, 1), event(0x206)]
+        helper_suffix = [event(0x20E), event(0x210, 1)]
+        traces.extend((prefix + helper_prefix + [event(0x20C)] + helper_suffix + suffix,
+                       prefix + [event(0x280), event(0x282), event(0x284), event(0x286, 1)]
+                       + helper_prefix + [event(0x208), event(0x20A), event(0x20C, 1)]
+                       + helper_suffix + [event(0x288), event(0x28A, 1)] + suffix))
+        return bytes(image), units, regions, boundaries, invokes, traces
 
     def test_each_entry_branch_delay_and_return_is_measured(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes)
-        self.assertEqual(result, dict(entries=3, instructions=19, outcomes=4,
-                                      delay_slots=6, call_return_paths=5, tail_paths=2))
+        self.assertEqual(result, dict(entries=4, instructions=28, outcomes=6,
+                                      delay_slots=9, call_return_paths=8, tail_paths=2))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         for selected, reason in ((traces[1:], "uncovered wrapper entry 0x00000100"),
+                                  (traces[:4], "uncovered wrapper entry 0x00000200"),
+                                  (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(
@@ -1416,7 +1450,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
 
     def test_fixture_instruction_and_control_literal_mutations_fail_before_linking(self):
         image, parsed, _regions, _boundaries, _invokes, _traces = self.fixture()
-        for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal")):
+        for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal"),
+                                (0x200, "wrapper instruction"), (0x23C, "wrapper control literal")):
             changed = bytearray(image)
             changed[address] ^= 1
             with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
@@ -1425,10 +1460,55 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                         patch.object(ROLLING_VERIFIER.base_verifier, "run_command") as command, \
                         self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                     ROLLING_VERIFIER.build_and_run_dynamic_harness(
-                        bytes(changed), build_dir, parsed_by_unit={"wrappers": parsed},
+                        bytes(changed), build_dir, parsed_by_unit=parsed,
                         composed_image=image, base_layout=None, rolling_layout=None)
                 self.assertNotIn(ROLLING_VERIFIER.base_verifier.GCC,
                                  [call.args[0][0] for call in command.call_args_list])
+
+    def test_helper_requires_bound_origin_divider_return_and_native_rts(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        helper = traces[4]
+        engine = traces[5]
+        cases = []
+        wrong_target = list(helper)
+        wrong_target[5:7] = [(0x30C, 11, 0), (0x30E, 9, 1)]
+        cases.append((wrong_target, "wrapper JSR differs"))
+        wrong_return = list(helper)
+        wrong_return[7] = (0x208, 0xE001, 0)
+        cases.append((wrong_return, "wrapper return differs"))
+        cases.append((helper[:3] + helper[7:], "divider return and native RTS"))
+        # A call from the engine window without an actual engine parent is foreign.
+        cases.append((engine[3:], "bound engine or invoke origin"))
+        foreign = list(engine)
+        foreign[4:6] = [(0x102, 0x400B, 0), (0x104, 9, 1)]
+        cases.append((foreign, "originating invoke frame"))
+        for records, reason in cases:
+            with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                ROLLING_VERIFIER.require_wrapper_coverage(
+                    sum(traces[:4], []) + records, image, parsed, regions, boundaries, invokes)
+
+    def test_engine_window_instruction_and_literal_are_bound_before_execution(self):
+        image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()
+        for address in (0x280, 0x282, 0x284, 0x286, 0x298):
+            changed = bytearray(image)
+            changed[address] ^= 1
+            with self.subTest(address=address), self.assertRaisesRegex(
+                    ROLLING_VERIFIER.VerificationError, "engine call binding"):
+                ROLLING_VERIFIER.bind_threshold_engine_window(changed, image, parsed["engine"], regions)
+        changed = bytearray(image)
+        changed[0x298:0x29C] = (0x204).to_bytes(4, "big")
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "differs from its source"):
+            ROLLING_VERIFIER.bind_threshold_engine_window(changed, changed, parsed["engine"], regions)
+
+    def test_unknown_helper_transfer_form_is_rejected(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        helper = parsed["threshold_helper"]
+        rows = tuple(assembly_model.SourceStatement(row.line_number, row.address, row.kind,
+                     "jsr @r0" if row.address == 0x202 else row.text, row.size)
+                     for row in helper.statements)
+        parsed["threshold_helper"] = assembly_model.ParsedSource(helper.path, helper.labels, rows)
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unbound wrapper transfer"):
+            ROLLING_VERIFIER.require_wrapper_coverage(sum(traces, []), image, parsed, regions, boundaries, invokes)
 
 
 if __name__ == "__main__":

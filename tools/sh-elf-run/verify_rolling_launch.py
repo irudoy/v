@@ -37,12 +37,14 @@ EXPECTED_COMPOSITION_WRITE_BYTES = 2328
 EXPECTED_INSTRUCTION_COUNT = 878
 EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 123
+EXPECTED_DYNAMIC_CASES = 128
 RETURN_STUB = bytes.fromhex("000b0009")
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper")
+COVERAGE_UNITS = ("wrappers", "threshold_helper")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper")
 
 
 class VerificationError(RuntimeError):
@@ -196,43 +198,81 @@ def build_rom_object(fixture, build_dir):
     return object_path
 
 
-def require_wrapper_coverage(records, fixture, parsed, regions, stock_boundaries, invoke_words):
-    """Measure the canonical wrappers and their originating invoke frames."""
-    entries = {regions[key].entry for key in WRAPPER_REGIONS}
-    low = min(regions[key].span.start for key in WRAPPER_REGIONS)
-    high = max(regions[key].span.end for key in WRAPPER_REGIONS)
+def bind_threshold_engine_window(fixture, composed, parsed, regions):
+    """Bind only the engine entry and its exact helper call window."""
+    loads = [row for row in parsed.statements if row.kind == "instruction"
+             and row.text == "mov.l @(rl_threshold_helper_entry,pc),r0"]
+    if len(loads) != 1:
+        raise VerificationError("threshold helper lacks its unique engine call window")
+    load = loads[0].address
+    rows = parsed.statement_by_address
+    if (rows.get(load + 2) is None or rows.get(load + 4) is None
+            or rows[load + 2].text != "jsr @r0" or rows[load + 4].text != "nop"
+            or not regions["engine"].span.start <= load < load + 6 <= regions["engine"].span.end):
+        raise VerificationError("unsupported threshold engine call window")
+    pool = parsed.labels["rl_threshold_helper_entry"]
+    entry = regions["engine"].entry
+    for start, size in ((entry, 2), (load, 6), (pool, 4)):
+        if fixture[start:start + size] != composed[start:start + size]:
+            raise VerificationError("simulator changes threshold engine call binding")
+    if (int.from_bytes(fixture[pool:pool + 4], "big") != regions["threshold_helper"].entry
+            or int.from_bytes(fixture[load:load + 2], "big") !=
+            0xD000 | ((pool - ((load + 4) & ~3)) // 4)
+            or fixture[load + 2:load + 6] != bytes.fromhex("400b0009")):
+        raise VerificationError("threshold engine call window differs from its source")
+    return entry, load + 2
+
+
+def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words):
+    """Measure the fixed canonical wrapper and threshold-helper scope."""
+    wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
+    helper = regions["threshold_helper"].entry
+    entries = wrapper_entries | {helper}
+    engine, engine_call = bind_threshold_engine_window(
+        fixture, fixture, parsed_by_unit["engine"], regions)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
-    for row in parsed.statements:
-        if row.kind != "instruction":
-            continue
-        pc = row.address
-        owner = [region.entry for region in regions.values()
-                 if region.span.start <= pc < region.span.end]
-        if len(owner) != 1:
-            raise VerificationError(f"wrapper instruction lacks its declared region at {pc:#010x}")
-        owners[pc] = owner[0]
-        instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
-        mnemonic = map_switching_assembly._mnemonic(row)
-        if mnemonic in map_switching_assembly.DELAYED_CONTROL_MNEMONICS:
-            slots.add(pc + 2)
-        if mnemonic in {"bt", "bf", "bt/s", "bf/s", "bra"}:
-            target = map_switching_assembly._validate_direct_branch_encoding(parsed, row, instructions[pc])
-            if mnemonic == "bra":
-                direct[pc] = target
-            else:
-                outcomes.update(((pc, target), (pc, pc + (4 if mnemonic.endswith("/s") else 2))))
-        if mnemonic in {"jsr", "jmp"}:
-            previous = parsed.statement_by_address.get(pc - 2)
-            literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
-            if (literal is None or literal.group("width") != "l"
-                    or literal.group("register") != "r0" or row.text != f"{mnemonic} @r0"):
-                raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
-            pool = parsed.labels[literal.group("label")]
-            transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
+    for unit in COVERAGE_UNITS:
+        parsed = parsed_by_unit[unit]
+        for row in parsed.statements:
+            if row.kind != "instruction":
+                continue
+            pc = row.address
+            owner = [regions[key].entry for key in COVERAGE_REGIONS
+                     if regions[key].span.start <= pc < regions[key].span.end]
+            if len(owner) != 1:
+                raise VerificationError(f"wrapper instruction lacks its declared region at {pc:#010x}")
+            owners[pc] = owner[0]
+            instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
+            mnemonic = map_switching_assembly._mnemonic(row)
+            if mnemonic in {"bsr", "braf", "bsrf", "rte", "trapa"}:
+                raise VerificationError(f"unsupported measured control form at {pc:#010x}")
+            if mnemonic in map_switching_assembly.DELAYED_CONTROL_MNEMONICS:
+                slots.add(pc + 2)
+            if mnemonic in {"bt", "bf", "bt/s", "bf/s", "bra"}:
+                target = map_switching_assembly._validate_direct_branch_encoding(parsed, row, instructions[pc])
+                if mnemonic == "bra":
+                    direct[pc] = target
+                else:
+                    outcomes.update(((pc, target), (pc, pc + (4 if mnemonic.endswith("/s") else 2))))
+            if mnemonic in {"jsr", "jmp"}:
+                previous = parsed.statement_by_address.get(pc - 2)
+                literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
+                register = "r3" if unit == "threshold_helper" else "r0"
+                if (literal is None or literal.group("width") != "l"
+                        or literal.group("register") != register or row.text != f"{mnemonic} @{register}"
+                        or unit == "threshold_helper" and mnemonic != "jsr"):
+                    raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
+                pool = parsed.labels[literal.group("label")]
+                transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
+    helper_calls = [pc for pc in transfers if owners[pc] == helper]
+    helper_returns = [pc for pc, word in instructions.items() if owners[pc] == helper and word == 11]
+    if len(helper_calls) != 1 or len(helper_returns) != 1:
+        raise VerificationError("threshold helper lacks its unique divider call and native RTS")
+    divider_call, helper_return = helper_calls[0], helper_returns[0]
     for entry, boundary in stock_boundaries.items():
-        if entry not in entries or fixture[boundary:boundary + 4] != RETURN_STUB:
+        if entry not in wrapper_entries or fixture[boundary:boundary + 4] != RETURN_STUB:
             raise VerificationError("wrapper stock return boundary is not its RTS/NOP stub")
-    if set(stock_boundaries) != entries:
+    if set(stock_boundaries) != wrapper_entries:
         raise VerificationError("wrapper stock return boundaries are incomplete")
 
     def successor(index, delayed):
@@ -243,19 +283,19 @@ def require_wrapper_coverage(records, fixture, parsed, regions, stock_boundaries
 
     seen, branches, delayed_slots, returned, calls, tails = set(), set(), set(), set(), set(), set()
     frames = []
-    previous_origin = None
+    previous_frame = None
     for index, (pc, word, delay) in enumerate(records):
         expected = (int.from_bytes(fixture[pc:pc + 2], "big") if 0 <= pc < len(fixture) - 1
                     else invoke_words.get(pc))
         if expected is None or word != expected:
             raise VerificationError(f"executed wrapper-trace opcode differs at {pc:#010x}")
-        if low <= pc < high and pc not in instructions:
+        if any(regions[key].span.start <= pc < regions[key].span.end for key in COVERAGE_REGIONS) and pc not in instructions:
             raise VerificationError(f"executed wrapper data at {pc:#010x}")
-        origin = previous_origin if delay else (frames[-1][3] if frames else None)
+        frame = previous_frame if delay else (frames[-1] if frames else None)
         if not delay:
-            previous_origin = origin
+            previous_frame = frame
         if pc in instructions:
-            if origin is None or origin["entry"] != owners[pc]:
+            if frame is None or frame["entry"] != owners[pc]:
                 raise VerificationError(f"wrapper lacks its originating invoke frame at {pc:#010x}")
             seen.add(pc)
         if delay:
@@ -271,6 +311,8 @@ def require_wrapper_coverage(records, fixture, parsed, regions, stock_boundaries
             raise VerificationError(f"executed wrapper BRA differs at {pc:#010x}")
         if pc in transfers:
             kind, _pool, target = transfers[pc]
+            if pc == divider_call and (not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
+                raise VerificationError("threshold divider call lacks its bound R3 load")
             if successor(index, True) != target:
                 raise VerificationError(f"executed wrapper {kind.upper()} differs at {pc:#010x}")
             if kind == "jmp":
@@ -278,28 +320,49 @@ def require_wrapper_coverage(records, fixture, parsed, regions, stock_boundaries
         is_call = word & 0xF0FF == 0x400B or word & 0xF000 == 0xB000
         if is_call:
             target = successor(index, True)
-            if target in entries:
+            if target in wrapper_entries:
                 if frames or pc not in invoke_words:
                     raise VerificationError("wrapper entry lacks its originating invoke call")
                 origin = {"entry": target, "stock_return": False}
+            elif target == helper:
+                if not frames and pc in invoke_words:
+                    origin = {"entry": helper, "stock_return": False}
+                elif frames and frames[-1]["entry"] == engine and pc == engine_call:
+                    if not index or records[index - 1][0] != pc - 2 or records[index - 1][2]:
+                        raise VerificationError("threshold engine call lacks its bound load")
+                    origin = frames[-1]["origin"]
+                else:
+                    raise VerificationError("threshold helper lacks its bound engine or invoke origin")
+            elif not frames and target == engine and pc in invoke_words:
+                origin = {"entry": engine, "stock_return": False}
             elif frames:
-                origin = frames[-1][3]
+                origin = frames[-1]["origin"]
+                if target == engine and (pc not in transfers or owners[pc] != regions["periodic_wrapper"].entry):
+                    raise VerificationError("threshold engine lacks its bound parent call")
             else:
                 continue
-            frames.append((pc, target, pc + 4, origin))
+            frames.append(dict(call=pc, entry=target, continuation=pc + 4,
+                               origin=origin, divider_return=False))
         elif word == 0x000B and (frames or pc in instructions):
             target = successor(index, True)
             if not frames:
                 raise VerificationError("wrapper return lacks its originating call")
-            call, entry, continuation, origin = frames.pop()
+            frame = frames.pop()
+            call, entry, continuation, origin = (frame[key] for key in ("call", "entry", "continuation", "origin"))
             if target != continuation:
                 raise VerificationError(f"executed wrapper return differs at {pc:#010x}")
-            if pc == stock_boundaries[origin["entry"]]:
+            if origin["entry"] in stock_boundaries and pc == stock_boundaries[origin["entry"]]:
                 origin["stock_return"] = True
-            if entry in entries:
+            if entry == helper:
+                if pc != helper_return or not frame["divider_return"]:
+                    raise VerificationError("threshold helper return lacks its divider return and native RTS")
+                returned.add(entry)
+            elif entry in wrapper_entries:
                 if not origin["stock_return"]:
                     raise VerificationError("wrapper return lacks its stock return boundary")
                 returned.add(entry)
+            if call == divider_call and frames and frames[-1]["entry"] == helper:
+                frames[-1]["divider_return"] = True
             if entry in entries or call in instructions:
                 calls.add((call, entry, continuation))
     for missing in sorted(entries - seen):
@@ -330,18 +393,19 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         invoke_object,
         TOOL_DIR / "invoke.s",
     ])
-    parsed = parsed_by_unit["wrappers"]
-    for row in parsed.statements:
-        if row.kind == "instruction" and fixture[row.address:row.address + 2] != composed_image[row.address:row.address + 2]:
-            raise VerificationError(f"simulator changes wrapper instruction at {row.address:#010x}")
-        if row.kind == "instruction" and map_switching_assembly._mnemonic(row) in {"jsr", "jmp"}:
-            previous = parsed.statement_by_address[row.address - 2]
-            literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text)
-            if literal is None:
-                raise VerificationError("wrapper transfer lacks its source literal")
-            pool = parsed.labels[literal.group("label")]
-            if fixture[pool:pool + 4] != composed_image[pool:pool + 4]:
-                raise VerificationError("simulator changes wrapper control literal")
+    for unit in COVERAGE_UNITS:
+        parsed = parsed_by_unit[unit]
+        for row in parsed.statements:
+            if row.kind == "instruction" and fixture[row.address:row.address + 2] != composed_image[row.address:row.address + 2]:
+                raise VerificationError(f"simulator changes wrapper instruction at {row.address:#010x}")
+            if row.kind == "instruction" and map_switching_assembly._mnemonic(row) in {"jsr", "jmp"}:
+                previous = parsed.statement_by_address[row.address - 2]
+                literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text)
+                if literal is None:
+                    raise VerificationError("wrapper transfer lacks its source literal")
+                pool = parsed.labels[literal.group("label")]
+                if fixture[pool:pool + 4] != composed_image[pool:pool + 4]:
+                    raise VerificationError("simulator changes wrapper control literal")
     source_path = TOOL_DIR / "rolling_launch_harness.c"
     source = source_path.read_text(encoding="utf-8")
     positive = build_dir / "rolling-launch-positive.c"
@@ -351,6 +415,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-m2e",
             "-mb",
             "-std=c11",
+            "-DVERIFY_CANONICAL_ROLLING_THRESHOLD=1",
             "-O2",
             "-Wall",
             "-Wextra",
@@ -371,6 +436,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     def execute(elf):
         try:
             ranges, invoke_words = base_verifier._invoke_trace_bindings(elf, invoke_object, fixture, build_dir)
+            bind_threshold_engine_window(fixture, composed_image, parsed_by_unit["engine"], regions)
             trace = build_dir / f"{elf.stem}.pc-trace"
             environment = {**os.environ, "VQ_SH_PC_TRACE_FILE": str(trace),
                            "VQ_SH_PC_TRACE_FORMAT": "v1",
@@ -386,7 +452,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         except base_verifier.VerificationError as error:
             raise VerificationError(str(error)) from error
 
-    regions = {key: rolling_layout.code_region_by_key[key] for key in WRAPPER_REGIONS}
+    regions = {key: rolling_layout.code_region_by_key[key] for key in (*COVERAGE_REGIONS, "engine")}
     base_hooks = {hook.key: hook for hook in base_layout.hooks}
     boundaries = {
         regions["periodic_wrapper"].entry: rolling_layout.hook_by_key["displaced_periodic_task"].stock,
@@ -394,10 +460,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         regions["startup_wrapper"].entry: base_hooks["startup_initializer"].stock,
     }
     result, records, invoke_words = execute(harness_elf)
-    covered = require_wrapper_coverage(records, fixture, parsed, regions, boundaries, invoke_words)
+    covered = require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=123 "
-        "structural=11 gates=27 config=24 threshold=4 activation=6 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=128 "
+        "structural=11 gates=27 config=24 threshold=9 activation=6 "
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 entries=8"
     )
     if marker not in result.stdout:
@@ -422,7 +488,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         raise VerificationError("periodic bypass does not preserve the semantic PASS marker")
     expected = f"uncovered wrapper entry {regions['periodic_wrapper'].entry:#010x}"
     try:
-        require_wrapper_coverage(records, fixture, parsed, regions, boundaries, invoke_words)
+        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words)
     except VerificationError as error:
         if str(error) != expected:
             raise VerificationError(f"periodic bypass fails outside its omitted entry: {error}") from error
@@ -433,7 +499,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             or negative_source.read_text(encoding="utf-8") != negative_text):
         raise VerificationError("Rolling Launch harness source changes during verification")
     measured = "VQ_SH_ELF_ROLLING_WRAPPER_COVERAGE status=PASS scope=JK08A:"
-    measured += ",".join(WRAPPER_REGIONS) + " " + " ".join(f"{key}={value}" for key, value in covered.items())
+    measured += ",".join(COVERAGE_REGIONS) + " " + " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), measured,
                       f"VQ_SH_ELF_ROLLING_WRAPPER_NEGATIVE status=PASS {expected}"))
 

@@ -106,19 +106,36 @@ retain their existing execution checks and receive no measured qualification
 from this JK00C map scope.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, and `startup_wrapper` with the same host PC observer. Typed
-instruction statements define this scope; pools and fill bytes do not count
-as instructions. Exact composed instructions and control literals survive the
-declared fixture translations and match the final ELF and invoke code. Each
-wrapper invocation retains its originating invoke frame through calls and
-selector tail transfers, and qualifies its return only after its declared
-stock RTS/NOP boundary. These boundaries do not qualify the stock bodies.
+`selector_arbiter`, `startup_wrapper`, and `threshold_helper` with the same host
+PC observer. Typed instruction statements define this scope; pools and fill
+bytes do not count as instructions. Exact composed instructions and control
+literals survive the declared fixture translations and match the final ELF
+and invoke code. Each wrapper invocation retains its originating invoke frame
+through calls and selector tail transfers, and qualifies its return only after
+its declared stock RTS/NOP boundary. These boundaries do not qualify the stock
+bodies.
+
+The threshold helper accepts an originating invoke call or the exact bound
+engine call window on an active engine frame. Its R3 divider load binds the
+composed control pool before execution. Each helper invocation requires the
+actual divider call and return followed by its native RTS to the original
+continuation. Both outcomes of every helper branch and its delay slots must
+execute; the engine and stock divider bodies receive no instruction-coverage
+qualification.
+
+The canonical-only `VERIFY_CANONICAL_ROLLING_THRESHOLD` build adds boundary
+inputs for the exact floor, rounding transition, wide ramp and saturated upper
+limit. Independent literal results specify the two output words. The complete
+state, configuration, selector, shadows, runtime words, named input/output
+buffers, stack pointer and GBR must otherwise remain intact. The observed R4
+retains the configuration-pointer role exposed by `invoke_r4`; it is not a C
+return-value contract. Relocated harness matrices and assertions are unchanged.
 
 A Rolling Launch negative build calls the engine directly instead of the
 periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
 marker. Measured coverage must reject the omitted periodic entry. Coverage of
-the engine, ignition payloads, threshold helper and feedback arbiter remains
-outside this wrapper scope.
+the engine body, ignition payloads and feedback arbiter remains outside this
+bounded scope.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original
