@@ -15,15 +15,20 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
+from tools.can_dashboard.package_locks import TARGET_BY_NAME, bootstrap_text
 from tools.version_index import python_version
 
 PYTHON_VERSION = python_version()
+LOCK_TARGET = TARGET_BY_NAME["windows"]
+SOURCE_BUILDS = ",".join(LOCK_TARGET.sources)
 
 PACKAGE_ROOT = f"{PRODUCT_SLUG}-v{__version__}"
+# The modules that the two launchers import, the wire schema they read, and
+# the dashboard documentation.
+ENTRY_POINTS = ("tools/can_dashboard/app.py", "tools/logs/trc_to_mlg.py")
+DATA_FILES = ("patches/can-telemetry-schema.json",)
+DOCUMENTATION = ("tools/can_dashboard/README.md",)
 SOURCE_FILES = (
-    "patches/__init__.py",
-    "patches/can_telemetry_profile.py",
-    "patches/can-telemetry-profile.toml",
     "patches/can-telemetry-schema.json",
     "tools/logs/__init__.py",
     "tools/logs/can_telemetry.py",
@@ -63,9 +68,11 @@ if errorlevel 1 (
 )
 py -{PYTHON_VERSION} -m venv .venv
 if errorlevel 1 goto :failed
-".venv\Scripts\python.exe" -m pip install --upgrade pip
+".venv\Scripts\python.exe" -m pip install --disable-pip-version-check --require-hashes --no-deps --only-binary :all: -r bootstrap-requirements.txt
 if errorlevel 1 goto :failed
-".venv\Scripts\python.exe" -m pip install -r requirements.txt
+".venv\Scripts\python.exe" -m pip install --disable-pip-version-check --require-hashes --no-deps --no-build-isolation --only-binary :all: --no-binary {SOURCE_BUILDS} -r requirements.txt
+if errorlevel 1 goto :failed
+".venv\Scripts\python.exe" -m pip check
 if errorlevel 1 goto :failed
 echo.
 echo Installation complete. Run run-dashboard.cmd.
@@ -136,11 +143,10 @@ def build_package(output, *, force=False):
                 if not source.is_file():
                     raise FileNotFoundError(source)
                 _write_member(archive, relative, source.read_bytes())
-            requirements = (
-                ROOT / "tools/can_dashboard/requirements-windows.txt"
-            ).read_text(encoding="utf-8")
+            lock = (ROOT / LOCK_TARGET.lock).read_text(encoding="utf-8")
             generated = {
-                "requirements.txt": requirements,
+                "requirements.txt": lock,
+                "bootstrap-requirements.txt": bootstrap_text(LOCK_TARGET, lock),
                 "install.cmd": INSTALL_CMD,
                 "run-dashboard.cmd": RUN_CMD,
                 "convert-trc-to-mlg.cmd": CONVERT_TRC_CMD,

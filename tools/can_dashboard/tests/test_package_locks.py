@@ -10,6 +10,7 @@ TARGET = locks.LockTarget(
     "requirements-example.lock",
     "x86_64-pc-windows-msvc",
     ("setuptools",),
+    ("uptime",),
 )
 REQUIREMENTS = "python-can[pcan]==4.6.1\n# builds the source distribution\nsetuptools==84.2.1\n"
 HASH_A = "sha256:" + "a" * 64
@@ -70,6 +71,13 @@ class LockTest(unittest.TestCase):
         self.assertEqual(
             problems,
             ["requirements-example.txt does not declare bootstrap setuptools"],
+        )
+
+    def test_a_source_build_must_be_locked(self):
+        text = lock_text().split("uptime==")[0]
+        problems = locks.check_lock(TARGET, REQUIREMENTS, text, "3.11")
+        self.assertEqual(
+            problems, ["requirements-example.lock does not lock source build uptime"]
         )
 
     def test_unhashed_and_inexact_entries_are_refused(self):

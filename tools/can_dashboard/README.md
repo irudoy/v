@@ -70,7 +70,20 @@ make dashboard-package
 ```
 
 The target writes an ignored `tmp/` archive whose name carries the dashboard
-version. `CAN_DASHBOARD_OUTPUT=<path>` selects another path.
+version. `CAN_DASHBOARD_OUTPUT=<path>` selects another path. The archive holds
+the modules that `app.py` and `trc_to_mlg.py` import, the wire schema, this
+document, the launchers, and the Windows lock `requirements-windows.lock` as
+`requirements.txt` with its pip and setuptools entries as
+`bootstrap-requirements.txt`.
+
+`package_locks.py --write` resolves the lock for 64-bit Windows and the project
+Python, with sha256 hashes for every distribution. The installer installs the
+bootstrap entries first and then the lock with `--require-hashes --no-deps`,
+so it resolves nothing beyond the lock. Every distribution is a wheel except
+the `uptime` source distribution, which the pinned setuptools builds without
+build isolation. The install from the lock has not been run on Windows
+itself: its selection is checked on macOS with `pip download --platform
+win_amd64` and the installer options.
 
 On the Windows laptop:
 
@@ -79,7 +92,8 @@ On the Windows laptop:
 2. Install 64-bit Python from python.org with the `py` launcher. `install.cmd`
    names the required version and stops without it.
 3. Extract the complete ZIP to a writable directory.
-4. Run `install.cmd` once. It creates `.venv` and installs `python-can`.
+4. Run `install.cmd` once. It creates `.venv`, installs the pinned pip and
+   setuptools, installs the locked distributions, and runs `pip check`.
 5. Run `run-dashboard.cmd`. It opens the adapter in active/ACK mode, which
    START/STOP control requires and which gives an isolated ECU its CAN ACK.
    The `DEMO` button runs the UI without CAN hardware.

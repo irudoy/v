@@ -5,8 +5,9 @@ Each target resolves its declared requirement file for one platform and the
 project Python into a lock that pins every distribution with its hashes. The
 installers and the macOS build install a lock with `--require-hashes` and
 `--no-deps`, so they resolve nothing beyond it. `uptime`, which the `pcan`
-extra of python-can requires, is published only as a source distribution;
-the bootstrap distributions of a target are installed first, so the pinned
+extra of python-can requires, is published only as a source distribution.
+A target names it among its source builds and installs every other entry as
+a wheel; its bootstrap distributions are installed first, so the pinned
 setuptools builds it without build isolation.
 """
 
@@ -36,6 +37,7 @@ class LockTarget:
     lock: str
     platform: str
     bootstrap: tuple[str, ...]
+    sources: tuple[str, ...]
 
 
 TARGETS = (
@@ -45,6 +47,7 @@ TARGETS = (
         "tools/can_dashboard/requirements-windows.lock",
         "x86_64-pc-windows-msvc",
         ("pip", "setuptools"),
+        ("uptime",),
     ),
     LockTarget(
         "macos",
@@ -52,6 +55,7 @@ TARGETS = (
         "tools/can_dashboard/requirements-macos.lock",
         "aarch64-apple-darwin",
         (),
+        ("uptime",),
     ),
     LockTarget(
         "macos-build",
@@ -59,6 +63,7 @@ TARGETS = (
         "tools/can_dashboard/requirements-macos-build.lock",
         "aarch64-apple-darwin",
         ("setuptools",),
+        ("uptime",),
     ),
 )
 TARGET_BY_NAME = {target.name: target for target in TARGETS}
@@ -176,6 +181,9 @@ def check_lock(
             problems.append(
                 f"{target.requirements} does not declare bootstrap {name}"
             )
+    for name in target.sources:
+        if name not in entries:
+            problems.append(f"{target.lock} does not lock source build {name}")
     return problems
 
 
