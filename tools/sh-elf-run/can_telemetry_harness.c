@@ -716,6 +716,160 @@ static int run_control_cases(void)
     return 1;
 }
 
+#ifdef VERIFY_7MFK_CAN_CONTROL
+#define CONTROL_STATE_GUARD (TELEMETRY_STATE - 4U)
+#define CONTROL_STATE_BYTES (TELEMETRY_ACTIVE_SIZE + 8U)
+#define CONTROL_BOX_GUARD (CONTROL_MAILBOX - 4U)
+#define CONTROL_BOX_BYTES 28U
+
+static void snapshot_control(uint8_t *target, const volatile uint8_t *source, size_t size)
+{
+    size_t index;
+    for (index = 0; index < size; ++index)
+        target[index] = source[index];
+}
+
+static void seed_control_probe(void)
+{
+    reset_case();
+    fill_bytes(ram_pointer(CONTROL_STATE_GUARD), CONTROL_STATE_BYTES, 0x6d);
+    fill_bytes(ram_pointer(CONTROL_BOX_GUARD), CONTROL_BOX_BYTES, 0xa7);
+    write_u16(ram_pointer(RXPR1), 0x8001U);
+    write_u16(ram_pointer(RFPR1), 0x8002U);
+    write_u16(ram_pointer(UMSR1), 0x4003U);
+    write_u16(ram_pointer(MBIMR1), 0x25a5U);
+}
+
+static int check_control_probe(const char *name, const uint8_t *state,
+    const uint8_t *mailbox, const uint16_t *flags, uint32_t before, uint32_t after)
+{
+    static const uint32_t addresses[] = {RXPR1, RFPR1, UMSR1, MBIMR1};
+    size_t index;
+    if (before != after)
+        return fail_value(name, "stack", after, before);
+    for (index = 0; index < 4; ++index)
+        if (read_u16(ram_pointer(addresses[index])) != flags[index])
+            return fail_value(name, "flag_write", read_u16(ram_pointer(addresses[index])), flags[index]);
+    return expect_bytes(name, "state_and_guards", ram_pointer(CONTROL_STATE_GUARD), state, CONTROL_STATE_BYTES)
+        && expect_bytes(name, "mailbox_and_guards", ram_pointer(CONTROL_BOX_GUARD), mailbox, CONTROL_BOX_BYTES);
+}
+
+static int run_control_config_probe(enum config_mutation mutation)
+{
+    uint8_t state[CONTROL_STATE_BYTES], mailbox[CONTROL_BOX_BYTES];
+    const uint16_t flags[] = {0x8001U, 0x8002U, 0x4003U, 0x25a5U};
+    uint32_t before, after;
+    count_case();
+    seed_control_probe();
+    seed_control_command(start_command, 8);
+    write_u16(ram_pointer(CONTROL_MAILBOX), 0x6f10U);
+    write_u16(ram_pointer(RXPR1), flags[0]);
+    snapshot_control(state, ram_pointer(CONTROL_STATE_GUARD), sizeof(state));
+    snapshot_control(mailbox, ram_pointer(CONTROL_BOX_GUARD), sizeof(mailbox));
+    __asm__ volatile ("mov r15,%0" : "=r" (before) : : "memory");
+    mutate_configuration(mutation);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    __asm__ volatile ("mov r15,%0" : "=r" (after) : : "memory");
+    return check_control_probe("control-config-reject", state, mailbox, flags, before, after);
+}
+
+static int run_control_init_probe(uint16_t identifier, uint8_t enabled, int invalid)
+{
+    uint8_t state[CONTROL_STATE_BYTES], mailbox[CONTROL_BOX_BYTES];
+    uint16_t flags[] = {0x8001U, 0x8002U, 0x4003U, 0x25a5U};
+    uint32_t before, after, returned;
+    count_case();
+    seed_control_probe();
+    write_u16(rom_pointer(CONFIG) + 8, identifier);
+    rom_pointer(CONFIG)[3] = enabled;
+    if (invalid)
+        mutate_configuration(CONFIG_CRC);
+    snapshot_control(state, ram_pointer(CONTROL_STATE_GUARD), sizeof(state));
+    snapshot_control(mailbox, ram_pointer(CONTROL_BOX_GUARD), sizeof(mailbox));
+    if (!invalid) {
+        write_u16(mailbox + 4, (uint16_t)((identifier + 1U) << 4));
+        write_u16(mailbox + 6, 0);
+        write_u16(mailbox + 8, 0x0208U);
+        write_u16(mailbox + 10, 0);
+        write_u16(mailbox + 20, 0);
+        write_u16(mailbox + 22, 0);
+        flags[0] = flags[1] = flags[2] = CONTROL_MAILBOX_MASK;
+        flags[3] |= CONTROL_MAILBOX_MASK;
+    }
+    __asm__ volatile ("mov r15,%0" : "=r" (before) : : "memory");
+    returned = invoke_r0(HCAN1_INIT_WRAPPER);
+    __asm__ volatile ("mov r15,%0" : "=r" (after) : : "memory");
+    if (returned != 1)
+        return fail_value("control-init-probe", "stock_result", returned, 1);
+    return check_control_probe("control-init-probe", state, mailbox, flags, before, after);
+}
+
+static int run_control_command_probe(unsigned mode, uint8_t divisor)
+{
+    uint8_t state[CONTROL_STATE_BYTES], mailbox[CONTROL_BOX_BYTES];
+    uint16_t flags[] = {0x8001U, 0x0002U, 0x4003U, 0x25a5U};
+    uint32_t before, after;
+    count_case();
+    seed_control_probe();
+    seed_control_command(mode == 8 ? stop_command : start_command, 8);
+    write_u16(ram_pointer(CONTROL_MAILBOX), mode == 2 ? 0x6f18U : 0x6f10U);
+    rom_pointer(CONFIG)[6] = divisor;
+    ram_pointer(TELEMETRY_STATE)[1] = 1;
+    ram_pointer(TELEMETRY_STATE)[2] = 1;
+    ram_pointer(TELEMETRY_STATE)[10] = 0x7f;
+    ram_pointer(TELEMETRY_STATE)[11] = 0;
+    if (mode == 0 || mode == 1)
+        flags[0] = 1;
+    if (mode == 1 || mode == 2 || mode == 9)
+        flags[1] = 0x8002U;
+    write_u16(ram_pointer(RXPR1), flags[0]);
+    write_u16(ram_pointer(RFPR1), flags[1]);
+    if (mode == 3 || mode == 4)
+        ram_pointer(CONTROL_MAILBOX)[5] = mode == 3 ? 7 : 9;
+    if (mode == 5)
+        ram_pointer(CONTROL_MAILBOX_DATA)[0] ^= 1;
+    if (mode == 6)
+        ram_pointer(CONTROL_MAILBOX_DATA)[7] ^= 1;
+    if (mode == 7 || mode == 9)
+        rom_pointer(CONFIG)[3] = 0;
+    snapshot_control(state, ram_pointer(CONTROL_STATE_GUARD), sizeof(state));
+    snapshot_control(mailbox, ram_pointer(CONTROL_BOX_GUARD), sizeof(mailbox));
+    if (mode != 0)
+        flags[0] = flags[1] = flags[2] = CONTROL_MAILBOX_MASK;
+    if (mode == 7 || mode == 9) {
+        state[4 + 11] = 1;
+        state[4 + 10] = (uint8_t)(divisor - 1U);
+    } else if (mode == 8) {
+        state[4 + 11] = 2;
+        state[4 + 10] = 0;
+        state[4 + 1] = 0;
+    }
+    __asm__ volatile ("mov r15,%0" : "=r" (before) : : "memory");
+    (void)invoke_r4(CONTROL_POLL, 0);
+    __asm__ volatile ("mov r15,%0" : "=r" (after) : : "memory");
+    return check_control_probe("control-command-probe", state, mailbox, flags, before, after);
+}
+
+static int run_canonical_control_cases(void)
+{
+    enum config_mutation mutation;
+    unsigned mode;
+    for (mutation = CONFIG_MAGIC; mutation <= CONFIG_INTEGRITY; ++mutation)
+        if (mutation != CONFIG_DISABLED && !run_control_config_probe(mutation))
+            return 0;
+    if (!run_control_init_probe(0x06f0U, 1, 0)
+        || !run_control_init_probe(1, 1, 0)
+        || !run_control_init_probe(0x07feU, 1, 0)
+        || !run_control_init_probe(0x06f0U, 0, 0)
+        || !run_control_init_probe(0x06f0U, 1, 1))
+        return 0;
+    for (mode = 0; mode < 10; ++mode)
+        if (!run_control_command_probe(mode, 1))
+            return 0;
+    return run_control_command_probe(7, 0xffU);
+}
+#endif
+
 static int run_capture_cases(void)
 {
     volatile uint8_t *state;
@@ -1280,6 +1434,10 @@ int main(void)
         return 1;
     if (!run_abort_cases())
         return 1;
+#ifdef VERIFY_7MFK_CAN_CONTROL
+    if (!run_canonical_control_cases())
+        return 1;
+#endif
     if (!run_isr_cases())
         return 1;
     printf(

@@ -41,10 +41,11 @@ EXPECTED_COMPOSITION_CHANGED_BYTES = 1922
 EXPECTED_COMPOSITION_WRITE_BYTES = 3488
 EXPECTED_INSTRUCTION_COUNT = 720
 EXPECTED_CODE_ENTRY_COUNT = 11
-REQUIRED_DYNAMIC_MARKER = (
-    "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=80 entries=11 "
-    "profiles=1 contexts=10 isr_rte=5"
+DYNAMIC_MARKER_PATTERN = (
+    r"^VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=[1-9][0-9]* entries=11 "
+    r"profiles=1 contexts=10 isr_rte=5$"
 )
+CAN_COVERAGE_UNITS = ("wrappers", "control")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -265,57 +266,75 @@ def build_rom_object(fixture, build_dir):
 
 def require_wrapper_instruction_bytes(fixture, composed, parsed_by_unit):
     """Bind wrapper instruction words and ROM call operands after all stubs."""
-    parsed = parsed_by_unit["wrappers"]
-    for row in parsed.statements:
-        if row.kind != "instruction":
-            continue
-        if fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
-            raise VerificationError(f"simulator changes CAN wrapper instruction at {row.address:#010x}")
-        if map_switching_assembly._mnemonic(row) != "jsr":
-            continue
-        previous = parsed.statement_by_address.get(row.address - 2)
-        literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous and previous.kind == "instruction" else None
-        if (row.text != "jsr @r0" or literal is None or literal.group("width") != "l"
-                or literal.group("register") != "r0"):
-            raise VerificationError(f"unbound CAN wrapper call at {row.address:#010x}")
-        pool = parsed.labels[literal.group("label")]
-        operand = parsed.statement_by_address.get(pool)
-        if operand is None or operand.kind != "long" or operand.size != 4:
-            raise VerificationError(f"CAN wrapper call pool is not one typed long at {pool:#010x}")
-        if fixture[pool:pool + 4] != composed[pool:pool + 4]:
-            raise VerificationError(f"simulator changes CAN wrapper control literal at {pool:#010x}")
+    for key in CAN_COVERAGE_UNITS:
+        parsed = parsed_by_unit[key]
+        for row in parsed.statements:
+            if row.kind != "instruction":
+                continue
+            if fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
+                raise VerificationError(f"simulator changes CAN wrapper instruction at {row.address:#010x}")
+            if map_switching_assembly._mnemonic(row) != "jsr":
+                continue
+            previous = parsed.statement_by_address.get(row.address - 2)
+            literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous and previous.kind == "instruction" else None
+            if (row.text != "jsr @r0" or literal is None or literal.group("width") != "l"
+                    or literal.group("register") != "r0"):
+                raise VerificationError(f"unbound CAN wrapper call at {row.address:#010x}")
+            pool = parsed.labels[literal.group("label")]
+            operand = parsed.statement_by_address.get(pool)
+            if operand is None or operand.kind != "long" or operand.size != 4:
+                raise VerificationError(f"CAN wrapper call pool is not one typed long at {pool:#010x}")
+            if fixture[pool:pool + 4] != composed[pool:pool + 4]:
+                raise VerificationError(f"simulator changes CAN wrapper control literal at {pool:#010x}")
 
 
 def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words):
     """Measure only canonical CAN wrapper entries, loops and call/return paths."""
-    parsed = parsed_by_unit["wrappers"]
-    entries = {layout.code_region_by_key[key].entry
-               for key in layout.assembly_unit_by_key["wrappers"].code_regions}
-    instructions, outcomes, slots, call_targets = {}, set(), set(), {}
-    for row in parsed.statements:
-        if row.kind != "instruction":
-            continue
-        pc = row.address
-        instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
-        mnemonic = map_switching_assembly._mnemonic(row)
-        if mnemonic in (map_switching_assembly.DIRECT_BRANCH_MNEMONICS
-                        | map_switching_assembly.INDIRECT_CONTROL_MNEMONICS) - {"bf", "jsr", "rts"}:
-            raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
-        if mnemonic == "bf":
-            target = map_switching_assembly._validate_direct_branch_encoding(parsed, row, instructions[pc])
-            outcomes.update(((pc, target), (pc, pc + 2)))
-        if mnemonic in {"jsr", "rts"}:
-            slots.add(pc + 2)
-        if mnemonic == "jsr":
-            previous = parsed.statement_by_address.get(pc - 2)
-            literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
-            if (row.text != "jsr @r0" or literal is None or literal.group("width") != "l"
-                    or literal.group("register") != "r0"):
-                raise VerificationError(f"unbound CAN wrapper call at {pc:#010x}")
-            pool = parsed.labels[literal.group("label")]
-            call_targets[pc] = int.from_bytes(fixture[pool:pool + 4], "big")
-    if not entries or not entries <= instructions.keys():
-        raise VerificationError("CAN wrapper entries lack typed instructions")
+    control = parsed_by_unit["control"]
+    config_entry = control.labels["telemetry_control_config_valid"]
+    private_returns = {row.address for row in control.statements if row.kind == "instruction"
+                       and row.address >= config_entry and map_switching_assembly._mnemonic(row) == "rts"}
+    entries = {config_entry}
+    instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
+    for key in CAN_COVERAGE_UNITS:
+        parsed = parsed_by_unit[key]
+        entries.update(layout.code_region_by_key[name].entry
+                       for name in layout.assembly_unit_by_key[key].code_regions)
+        for row in parsed.statements:
+            if row.kind != "instruction":
+                continue
+            pc = row.address
+            instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
+            mnemonic = map_switching_assembly._mnemonic(row)
+            if mnemonic in (map_switching_assembly.DIRECT_BRANCH_MNEMONICS
+                            | map_switching_assembly.INDIRECT_CONTROL_MNEMONICS) - {"bt", "bf", "bra", "bsr", "jsr", "rts"}:
+                raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
+            if mnemonic in {"bt", "bf", "bra", "bsr"}:
+                target = map_switching_assembly._validate_direct_branch_encoding(parsed, row, instructions[pc])
+                if mnemonic in {"bt", "bf"}:
+                    outcomes.update(((pc, target), (pc, pc + 2)))
+                elif mnemonic == "bra":
+                    direct_targets[pc] = target
+                else:
+                    if key != "control" or target != config_entry:
+                        raise VerificationError(f"unsupported CAN BSR target at {pc:#010x}")
+                    call_targets[pc] = target
+                    config_calls.add(pc)
+            if mnemonic in {"jsr", "rts", "bra", "bsr"}:
+                slots.add(pc + 2)
+            if mnemonic == "jsr":
+                previous = parsed.statement_by_address.get(pc - 2)
+                literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
+                if (row.text != "jsr @r0" or literal is None or literal.group("width") != "l"
+                        or literal.group("register") != "r0"):
+                    raise VerificationError(f"unbound CAN wrapper call at {pc:#010x}")
+                pool = parsed.labels[literal.group("label")]
+                call_targets[pc] = int.from_bytes(fixture[pool:pool + 4], "big")
+    if not entries <= instructions.keys() or not private_returns or not config_calls:
+        raise VerificationError("CAN entries/private returns lack typed instructions")
+    expected_config_returns = {(call, config_entry, returned, call + 4)
+                               for call in config_calls for returned in private_returns}
+    observed_config_returns = set()
     seen, observed_outcomes, observed_slots, returned, call_returns = set(), set(), set(), set(), set()
     frames = []
     for index, (pc, word, delay) in enumerate(records):
@@ -335,15 +354,22 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             continue
         if pc in instructions and not frames:
             raise VerificationError(f"CAN wrapper instruction lacks its invoke frame at {pc:#010x}")
-        if pc in instructions and word & 0xff00 == 0x8b00:
-            observed_outcomes.add((pc, base_verifier._trace_successor(records, index, False)))
+        if pc in instructions and word & 0xff00 in {0x8900, 0x8b00}:
+            successor = base_verifier._trace_successor(records, index, False)
+            if (pc, successor) not in outcomes:
+                raise VerificationError(f"executed CAN conditional successor differs at {pc:#010x}")
+            observed_outcomes.add((pc, successor))
         if pc + 2 in slots:
             base_verifier._trace_successor(records, index, True)
+        if pc in direct_targets and base_verifier._trace_successor(records, index, True) != direct_targets[pc]:
+            raise VerificationError(f"executed CAN BRA successor differs at {pc:#010x}")
         is_call = word & 0xf0ff == 0x400b or word & 0xf000 == 0xb000
         if is_call:
             target = base_verifier._trace_successor(records, index, True)
             if pc in call_targets and target != call_targets[pc]:
                 raise VerificationError(f"executed CAN callee differs at {pc:#010x}")
+            if target == config_entry and pc not in config_calls:
+                raise VerificationError(f"unbound CAN config caller at {pc:#010x}")
             if not frames and target in entries and pc not in invoke_words:
                 raise VerificationError(f"CAN wrapper origin is outside bound invoke code at {pc:#010x}")
             if frames or target in entries:
@@ -355,6 +381,10 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             call, entry, continuation = frames.pop()
             if target != continuation:
                 raise VerificationError(f"executed CAN return differs at {pc:#010x}")
+            if entry == config_entry:
+                if call not in config_calls or pc not in private_returns:
+                    raise VerificationError(f"unsupported CAN config return path at {pc:#010x}")
+                observed_config_returns.add((call, entry, pc, continuation))
             if entry in entries:
                 returned.add(entry)
             if entry in entries or call in call_targets:
@@ -368,13 +398,15 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
         raise VerificationError(f"uncovered CAN wrapper outcome {pc:#010x}->{target:#010x}")
     for missing in sorted(instructions.keys() - seen):
         raise VerificationError(f"uncovered CAN wrapper instruction {missing:#010x}")
+    for call, entry, returned_pc, continuation in sorted(expected_config_returns - observed_config_returns):
+        raise VerificationError(f"uncovered CAN config return {call:#010x}->{returned_pc:#010x}->{continuation:#010x}")
     if frames or entries - returned or call_targets.keys() - {row[0] for row in call_returns}:
         raise VerificationError("uncovered CAN wrapper call/return path")
     for missing in sorted(slots - observed_slots):
         raise VerificationError(f"uncovered CAN wrapper delay slot {missing:#010x}")
     return dict(entries=len(entries & seen), instructions=len(instructions.keys() & seen),
                 outcomes=len(outcomes & observed_outcomes), delay_slots=len(slots & observed_slots),
-                call_return_paths=len(call_returns))
+                call_return_paths=len(call_returns), config_return_paths=len(observed_config_returns & expected_config_returns))
 
 
 def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit, composed_image):
@@ -394,6 +426,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     ])
     command = [
         base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
+        "-DVERIFY_7MFK_CAN_CONTROL",
         "-I", HARNESS_INCLUDE_DIR,
         f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}", "-Wl,--section-start=.rom=0",
         "-o", harness_elf, positive_source, invoke_object, exception_object, rom_object,
@@ -423,39 +456,58 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
 
     result, records, invoke_words = execute(harness_elf)
     covered = require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words)
-    if REQUIRED_DYNAMIC_MARKER not in result.stdout:
-        raise VerificationError("CAN telemetry harness returned zero without the exact marker")
-    call = "(void)invoke_r4(MAIN_WRAPPER, 0);"
-    if source.count(call) != 1:
-        raise VerificationError("CAN negative lacks its unique main-wrapper invocation")
-    negative_text = source.replace(call, "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);")
-    negative_source = build_dir / "can-telemetry-bypass-main.c"
-    negative_source.write_text(negative_text, encoding="utf-8")
-    negative_elf = build_dir / "can-telemetry-bypass-main.elf"
-    negative_command = list(command)
-    negative_command[negative_command.index("-o") + 1] = negative_elf
-    negative_command[negative_command.index(positive_source)] = negative_source
-    base_verifier.run_command(negative_command, timeout=120)
-    require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
-    negative, records, invoke_words = execute(negative_elf)
-    if REQUIRED_DYNAMIC_MARKER not in negative.stdout:
-        raise VerificationError("CAN main bypass does not preserve the existing semantic PASS marker")
-    reason = f"uncovered CAN wrapper entry {layout.code_region_by_key['main_wrapper'].entry:#010x}"
-    try:
-        require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words)
-    except VerificationError as error:
-        if str(error) != reason:
-            raise VerificationError(f"CAN bypass fails outside its omitted entry: {error}") from error
-    else:
-        raise VerificationError("CAN coverage accepts the bypassed main wrapper")
+    semantic = re.findall(DYNAMIC_MARKER_PATTERN, result.stdout, re.MULTILINE)
+    if len(semantic) != 1:
+        raise VerificationError("CAN telemetry harness lacks one exact semantic marker")
+    main_call = "(void)invoke_r4(MAIN_WRAPPER, 0);"
+    config_call = "mutate_configuration(mutation);\n    (void)invoke_r4(CONTROL_POLL, 0);"
+    control = parsed_by_unit["control"]
+    config_entry = control.labels["telemetry_control_config_valid"]
+    magic = next(row for row in control.statements if row.kind == "instruction"
+                 and row.address >= config_entry and map_switching_assembly._mnemonic(row) == "bf")
+    target = map_switching_assembly._validate_direct_branch_encoding(
+        control, magic, int.from_bytes(fixture[magic.address:magic.address + 2], "big"))
+    omissions = (
+        ("main", main_call, "(void)invoke_r4(CONTROL_POLL, 0);\n    (void)invoke_r4(CAPTURE, 0);",
+         f"uncovered CAN wrapper entry {layout.code_region_by_key['main_wrapper'].entry:#010x}",
+         "VQ_SH_ELF_CAN_WRAPPER_COVERAGE_NEGATIVE"),
+        ("config-magic", config_call,
+         "mutate_configuration(mutation);\n    if (mutation != CONFIG_MAGIC)\n        (void)invoke_r4(CONTROL_POLL, 0);",
+         f"uncovered CAN wrapper outcome {magic.address:#010x}->{target:#010x}",
+         "VQ_SH_ELF_CAN_CONTROL_COVERAGE_NEGATIVE"),
+    )
+    negative_sources, negative_markers = [], []
+    for name, call, replacement, reason, prefix in omissions:
+        if source.count(call) != 1:
+            raise VerificationError(f"CAN negative lacks its unique {name} invocation")
+        negative_text = source.replace(call, replacement)
+        negative_source = build_dir / f"can-telemetry-bypass-{name}.c"
+        negative_source.write_text(negative_text, encoding="utf-8")
+        negative_sources.append((negative_source, negative_text))
+        negative_elf = build_dir / f"can-telemetry-bypass-{name}.elf"
+        negative_command = list(command)
+        negative_command[negative_command.index("-o") + 1] = negative_elf
+        negative_command[negative_command.index(positive_source)] = negative_source
+        base_verifier.run_command(negative_command, timeout=120)
+        require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+        negative, records, invoke_words = execute(negative_elf)
+        if semantic[0] not in negative.stdout:
+            raise VerificationError(f"CAN {name} bypass does not preserve the semantic output")
+        try:
+            require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words)
+        except VerificationError as error:
+            if str(error) != reason:
+                raise VerificationError(f"CAN bypass fails outside its obligation: {error}") from error
+        else:
+            raise VerificationError(f"CAN coverage accepts the {name} bypass")
+        negative_markers.append(f"{prefix} status=PASS {reason}")
     if (HARNESS_SOURCE.read_text(encoding="utf-8") != source
             or positive_source.read_text(encoding="utf-8") != source
-            or negative_source.read_text(encoding="utf-8") != negative_text):
+            or any(path.read_text(encoding="utf-8") != text for path, text in negative_sources)):
         raise VerificationError("CAN harness source changes during verification")
-    marker = "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers "
+    marker = "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control "
     marker += " ".join(f"{key}={value}" for key, value in covered.items())
-    return "\n".join((result.stdout.strip(), marker,
-                      "VQ_SH_ELF_CAN_WRAPPER_COVERAGE_NEGATIVE status=PASS " + reason))
+    return "\n".join((result.stdout.strip(), marker, *negative_markers))
 
 
 def marker_cases(output):

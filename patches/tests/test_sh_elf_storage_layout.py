@@ -169,7 +169,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
                 rolling_layout=rolling_layout)
         if route == 'telemetry':
             return module.build_and_run_dynamic_harness(
-                b'controlled fixture', tmp_path, parsed_by_unit={'wrappers': SimpleNamespace(statements=())},
+                b'controlled fixture', tmp_path, parsed_by_unit={key: SimpleNamespace(statements=()) for key in module.CAN_COVERAGE_UNITS},
                 composed_image=b'controlled fixture', layout=SimpleNamespace())
         return module.build_and_run_dynamic_harness(b'controlled fixture', tmp_path)
 

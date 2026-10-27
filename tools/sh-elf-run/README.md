@@ -176,25 +176,33 @@ void function. An unchanged request on the enabled path establishes only the
 absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
-The canonical JK08A CAN telemetry gate also measures the existing `wrappers`
-unit. Its entries come from the telemetry layout, and only typed instruction
-statements contribute instruction requirements. The observer binds executed
-words to independent GNU assembly, the composed ROM, the simulator fixture and
-the final ELF. It requires both outcomes of the startup clear and margin-arm
-loops, every wrapper delay slot, exact pool-bound JSR targets and matched
-returns to the originating invoke continuation.
+The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
+`control` units. Entries come from the telemetry layout and the named internal
+configuration-validator label. Typed instruction statements define coverage;
+source tables, pools and fill remain data. Independent GNU assembly, composed
+ROM, simulator fixture, final ELF and invoke code bind the measured PCs.
+ROM call pools are checked against the composition before tool execution;
+declared RAM operand aliases remain permitted.
 
-A private negative harness bypasses `MAIN_WRAPPER` with real `CONTROL_POLL` and
-`CAPTURE` calls. The same linked ROM, existing semantic assertions and case
-counter must still produce the original PASS marker, while measured coverage
-rejects the omitted main-wrapper entry. The original C harness and assembly
-supply the positive run.
+The local checker requires every instruction, both BT/BF outcomes, exact
+BRA/BSR/JSR targets, real delay slots and matched invoke continuations. The
+internal configuration validator must return from each of its typed RTS sites
+to each parsed BSR caller. Canonical probes check exact allowed state and mailbox
+deltas, preserved neighboring bytes, mixed flag sentinels, init result and stack.
+Alias-memory flag checks observe the written values, without modeling hardware
+write-one-to-clear behavior. The existing C case counter reports all canonical
+probes; measured execution provides instruction qualification.
 
-Control, capture, lower startup and stock callees remain outside CAN wrapper
-instruction qualification. Existing TRAPA/RTE cases execute as separate harness
-calls; exception behavior receives no additional qualification from this scope.
-Unsupported transfers during an active monitored wrapper frame fail verification.
-The telemetry source tables, literal pools and fill bytes remain data.
+Private negative harnesses preserve the same linked ROM, semantic output and
+assertions. One bypasses `MAIN_WRAPPER` with real `CONTROL_POLL` and `CAPTURE`
+calls. Another skips only the invalid-magic poll invocation while retaining its
+case count and no-side-effect assertions. Coverage must reject the missing main
+entry or configuration-magic branch outcome respectively.
+
+Capture, lower startup and stock callees remain outside CAN instruction
+qualification. Existing TRAPA/RTE cases execute as separate harness calls;
+exception behavior receives no additional qualification from this scope.
+Unsupported transfers during an active monitored frame fail verification.
 
 The ignition-consumer verifier reconstructs each declared stock call window
 and its operands independently. It then executes the real composed lookup
