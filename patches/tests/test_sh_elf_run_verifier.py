@@ -920,6 +920,18 @@ mov #0x5,r1
         controls[0x3d0, True] = prefix + events((0x3d0, 0x3d4, 0x3d6), {0x3d6}) + suffix
         controls[0x3d0, False] = prefix + events((0x3d0, 0x3d2, 0x3d4, 0x3d6), {0x3d6}) + suffix
         controls[0x3a0, True] = prefix + events((0x3a0, 0x3a2), {0x3a2}) + suffix
+        for pc, word, text in ((0x1e0, 0x002b, "rte"), (0x1e2, 9, "nop")):
+            image[pc:pc + 2] = word.to_bytes(2, "big")
+        parsed["completion"] = assembly_model.ParsedSource(
+            Path("CAN-completion.s"), {"telemetry_handle_completion": 0x1e8},
+            (assembly_model.SourceStatement(0, 0x1e0, "instruction", "rte", 2),
+             assembly_model.SourceStatement(1, 0x1e2, "instruction", "nop", 2)))
+        layout.assembly_unit_by_key["completion"] = SimpleNamespace(
+            code_regions=("sle1_isr", "completion"))
+        layout.code_region_by_key.update(
+            sle1_isr=SimpleNamespace(entry=0x1e0, span=SimpleNamespace(start=0x1e0, end=0x1e4)),
+            completion=SimpleNamespace(entry=0x1e8, span=SimpleNamespace(start=0x1e8, end=0x1e8)))
+        controls[0x1e0, True] = events((0x1e0, 0x1e2), {0x1e2})
         return image, layout, parsed, invokes, main, knock, startup, controls
 
     def test_can_wrapper_coverage_requires_entries_instructions_and_loop_outcomes(self):
@@ -927,7 +939,7 @@ mov #0x5,r1
         control_records = [row for trace in controls.values() for row in trace]
         require = lambda records: TELEMETRY_VERIFIER.require_wrapper_coverage(records + control_records, image, layout, parsed, invokes)
         self.assertEqual(require(main + knock + startup), dict(
-            entries=10, instructions=55, outcomes=12, delay_slots=19, call_return_paths=15, config_return_paths=4))
+            entries=11, instructions=57, outcomes=12, delay_slots=20, call_return_paths=15, config_return_paths=4))
         for records, message in ((knock + startup, "uncovered CAN wrapper entry 0x00000100"),
                                  (main + knock + startup[:2] + startup[3:], "uncovered CAN wrapper outcome"),
                                  ([row for row in main if row[0] != 0x102] + knock + startup, "uncovered CAN wrapper instruction 0x00000102")):
@@ -1036,7 +1048,7 @@ mov #0x5,r1
         image, layout, parsed, invokes, main, knock, startup, controls = self.can_wrapper_pc_fixture()
         records = main + knock + startup + [row for trace in controls.values() for row in trace]
         require = lambda rows: TELEMETRY_VERIFIER.require_wrapper_coverage(rows, image, layout, parsed, invokes)
-        self.assertEqual(require(records)["entries"], 10)
+        self.assertEqual(require(records)["entries"], 11)
         self.assertFalse({0x3a4} & {row[0] for row in records})
         self.assertIn(0x3a0, {row[0] for row in records})
         self.assertIn(0x3c0, {row[0] for row in records})

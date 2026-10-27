@@ -45,8 +45,9 @@ DYNAMIC_MARKER_PATTERN = (
     r"^VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=[1-9][0-9]* entries=11 "
     r"profiles=1 contexts=10 isr_rte=5$"
 )
-CAN_COVERAGE_UNITS = ("wrappers", "control", "capture")
+CAN_COVERAGE_UNITS = ("wrappers", "control", "capture", "completion")
 CAPTURE_MEASURED_REGIONS = ("capture", "build_bank", "knock_margin_wrapper", "request_page")
+COMPLETION_MEASURED_REGIONS = ("sle1_isr",)
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -292,13 +293,22 @@ def _bounded_capture_callers(parsed_by_unit):
     return tuple(found)
 
 
+def _measured_regions(key):
+    if key == "capture":
+        return CAPTURE_MEASURED_REGIONS
+    if key == "completion":
+        return COMPLETION_MEASURED_REGIONS
+    return None
+
+
 def _measured_statements(key, parsed, layout):
-    """Select the measured capture regions without qualifying the other entries."""
-    if key != "capture" or not parsed.statements:
+    """Select fixed regions without qualifying the other entries of a unit."""
+    if not parsed.statements:
         return parsed.statements
-    spans = tuple(
-        layout.code_region_by_key[name].span for name in CAPTURE_MEASURED_REGIONS
-    )
+    regions = _measured_regions(key)
+    if regions is None:
+        return parsed.statements
+    spans = tuple(layout.code_region_by_key[name].span for name in regions)
     return tuple(
         row for row in parsed.statements
         if any(span.start <= row.address < span.end for span in spans)
@@ -348,11 +358,16 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
     entries = {config_entry}
     request_entry = layout.code_region_by_key["request_page"].entry
     build_entry = layout.code_region_by_key["build_bank"].entry
+    isr_entry = layout.code_region_by_key["sle1_isr"].entry
+    isr_span = layout.code_region_by_key["sle1_isr"].span
+    completion_entry = layout.code_region_by_key["completion"].entry
     capture_callees = {request_entry, build_entry}
     instructions, outcomes, slots, call_targets, direct_targets, config_calls = {}, set(), set(), {}, {}, set()
     for key in CAN_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
-        regions = CAPTURE_MEASURED_REGIONS if key == "capture" else layout.assembly_unit_by_key[key].code_regions
+        regions = _measured_regions(key)
+        if regions is None:
+            regions = layout.assembly_unit_by_key[key].code_regions
         entries.update(layout.code_region_by_key[name].entry for name in regions)
         for row in _measured_statements(key, parsed, layout):
             if row.kind != "instruction":
@@ -360,8 +375,10 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             pc = row.address
             instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
             mnemonic = map_switching_assembly._mnemonic(row)
+            if mnemonic == "rte" and not (isr_span.start <= pc < isr_span.end):
+                raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
             if mnemonic in (map_switching_assembly.DIRECT_BRANCH_MNEMONICS
-                            | map_switching_assembly.INDIRECT_CONTROL_MNEMONICS) - {"bt", "bf", "bra", "bsr", "jsr", "rts"}:
+                            | map_switching_assembly.INDIRECT_CONTROL_MNEMONICS) - {"bt", "bf", "bra", "bsr", "jsr", "rts", "rte"}:
                 raise VerificationError(f"unsupported CAN wrapper transfer at {pc:#010x}")
             if mnemonic in {"bt", "bf", "bra", "bsr"}:
                 target = map_switching_assembly._validate_direct_branch_encoding(parsed, row, instructions[pc])
@@ -375,9 +392,11 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                         config_calls.add(pc)
                     elif target in capture_callees:
                         call_targets[pc] = target
+                    elif key == "completion" and target == completion_entry:
+                        pass
                     else:
                         raise VerificationError(f"unsupported CAN BSR target at {pc:#010x}")
-            if mnemonic in {"jsr", "rts", "bra", "bsr"}:
+            if mnemonic in {"jsr", "rts", "bra", "bsr", "rte"}:
                 slots.add(pc + 2)
             if mnemonic == "jsr":
                 previous = parsed.statement_by_address.get(pc - 2)
@@ -410,6 +429,8 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                 raise VerificationError(f"orphan CAN delay slot at {pc:#010x}")
             observed_slots.add(pc)
             continue
+        if pc == isr_entry and not frames:
+            frames.append((None, isr_entry, None))
         if pc in instructions and not frames:
             raise VerificationError(f"CAN wrapper instruction lacks its invoke frame at {pc:#010x}")
         if pc in instructions and word & 0xff00 in {0x8900, 0x8b00}:
@@ -417,7 +438,7 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             if (pc, successor) not in outcomes:
                 raise VerificationError(f"executed CAN conditional successor differs at {pc:#010x}")
             observed_outcomes.add((pc, successor))
-        if pc + 2 in slots:
+        if pc + 2 in slots and word != 0x002b:
             base_verifier._trace_successor(records, index, True)
         if pc in direct_targets and base_verifier._trace_successor(records, index, True) != direct_targets[pc]:
             raise VerificationError(f"executed CAN BRA successor differs at {pc:#010x}")
@@ -431,14 +452,27 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
             if (not frames and target in entries and pc not in invoke_words
                     and pc not in bounded_callers):
                 raise VerificationError(f"CAN wrapper origin is outside bound invoke code at {pc:#010x}")
-            if frames or target in entries:
+            if target != completion_entry and (frames or target in entries):
                 frames.append((pc, target, pc + 4))
+        elif word == 0x002b and pc in instructions:
+            following = index + 1
+            if following >= len(records) or records[following][0::2] != (pc + 2, 1):
+                raise VerificationError(f"missing executed delay slot at {pc + 2:#010x}")
+            if not frames:
+                raise VerificationError(f"CAN exception return lacks its frame at {pc:#010x}")
+            call, entry, continuation = frames.pop()
+            if entry != isr_entry or continuation is not None or call is not None:
+                raise VerificationError(f"CAN exception return leaves frame {entry:#010x}")
+            returned.add(entry)
         elif word == 0x000b and (frames or pc in instructions):
             target = base_verifier._trace_successor(records, index, True)
+            if (pc not in instructions and len(frames) == 1 and frames[0][1] == isr_entry
+                    and frames[0][2] is None):
+                continue
             if not frames:
                 raise VerificationError(f"CAN wrapper return lacks its invoke frame at {pc:#010x}")
             call, entry, continuation = frames.pop()
-            if target != continuation:
+            if continuation is None or target != continuation:
                 raise VerificationError(f"executed CAN return differs at {pc:#010x}")
             if entry == evaluator and pc != evaluator_return:
                 raise VerificationError(f"unsupported CAN evaluator return path at {pc:#010x}")
@@ -450,7 +484,9 @@ def require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_wo
                 returned.add(entry)
             if entry in entries or call in call_targets:
                 call_returns.add((call, entry, continuation))
-        elif frames and (word == 0x002b or word & 0xff00 == 0xc300
+        elif word == 0x002b and pc not in instructions and frames:
+            raise VerificationError(f"unsupported transfer in active CAN wrapper frame at {pc:#010x}")
+        elif frames and (word & 0xff00 == 0xc300
                          or word & 0xf0ff in {0x0003, 0x0023, 0x402b}):
             raise VerificationError(f"unsupported transfer in active CAN wrapper frame at {pc:#010x}")
     for missing in sorted(entries - seen):
@@ -549,6 +585,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     magic_target = map_switching_assembly._validate_direct_branch_encoding(
         parsed_by_unit["capture"], magic_fail,
         int.from_bytes(fixture[magic_fail.address:magic_fail.address + 2], "big"))
+    measured_isr = _measured_statements("completion", parsed_by_unit["completion"], layout)
+    abort_edge = next(row for row in measured_isr
+                      if row.kind == "instruction" and row.text == "bt telemetry_isr_restore")
     request_copy = (
         "{{\n        size_t index;\n        for (index = 0; index < 8; ++index)\n"
         "            ram_pointer(MAILBOX_DATA)[index] = ram_pointer({bank})[{offset} + index];\n    }}"
@@ -584,6 +623,16 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         ),
          f"uncovered CAN wrapper outcome {magic_fail.address:#010x}->{magic_target:#010x}",
          "VQ_SH_ELF_CAN_CAPTURE_COVERAGE_NEGATIVE"),
+        ("isr-abort", (
+            ('if (!run_isr_case("isr-stock-abort", 0, MAILBOX28_MASK, 0))',
+             'if (!run_isr_case("isr-stock-abort", 0, 0, 0))'),
+            ('if (!run_isr_case(\n            "isr-simultaneous-ack",\n'
+             '            MAILBOX26_MASK, MAILBOX28_MASK, 1))',
+             'if (!run_isr_case(\n            "isr-simultaneous-ack",\n'
+             '            MAILBOX26_MASK, 0, 1))'),
+        ),
+         f"uncovered CAN wrapper outcome {abort_edge.address:#010x}->{abort_edge.address + 2:#010x}",
+         "VQ_SH_ELF_CAN_ISR_COVERAGE_NEGATIVE"),
     )
     negative_sources, negative_markers = [], []
     for name, edits, reason, prefix in omissions:
@@ -618,7 +667,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         raise VerificationError("CAN harness source changes during verification")
     marker = (
         "VQ_SH_ELF_CAN_WRAPPER_COVERAGE status=PASS scope=JK08A:wrappers,control,"
-        + ",".join(CAPTURE_MEASURED_REGIONS) + " "
+        + ",".join((*CAPTURE_MEASURED_REGIONS, *COMPLETION_MEASURED_REGIONS)) + " "
     )
     marker += " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), marker, *negative_markers))

@@ -223,8 +223,8 @@ absence of a write before the boundary. The remaining enabled body, its calls
 and its final request remain outside this executable scope.
 
 The canonical JK08A CAN telemetry gate measures the existing `wrappers` and
-`control` units and the `capture`, `build_bank`, `knock_margin_wrapper` and
-`request_page` regions of `capture`. Entries come
+`control` units, the `capture`, `build_bank`, `knock_margin_wrapper` and
+`request_page` regions, and the `sle1_isr` region. Entries come
 from the telemetry layout and the named internal configuration-validator label.
 Typed instruction statements define coverage;
 source tables, pools and fill remain data. Independent GNU assembly, composed
@@ -261,9 +261,13 @@ A bank build keeps the direct call but supplies context 0 instead of the
 saturated context, so the clamp that clears a context of 5 or more does not
 execute. A capture build skips the call whose configuration magic is wrong,
 so the first validation branch to the shared return does not execute.
-Coverage must reject the missing main entry, configuration-magic
-outcome, zero-channel margin outcome, request invoke return, the context
-clamp outcome or that capture validation outcome.
+An ISR build clears both mailbox-28 abort sources, so the abort
+fall-through does not execute. The ISR enters from the TRAPA vector and leaves with
+RTE; the following harness instruction is outside the ROM trace. Its BSR
+into the completion body does not qualify that body. Coverage must reject
+the missing main entry, configuration-magic outcome, zero-channel margin
+outcome, request invoke return, the context clamp outcome, the capture
+validation outcome or the ISR abort outcome.
 
 `request_page` accepts that direct invoke, the capture idle-publish BSR, and
 the completion JSRs that load its entry. `build_bank` accepts its direct
