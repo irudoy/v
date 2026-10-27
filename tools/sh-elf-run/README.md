@@ -129,7 +129,7 @@ idle ignition phase, or the invalid map index on an already invalid
 configuration, the zero band start, or an idle feedback phase with no
 abort reason, fails at that entry or branch.
 The stock divider and limiter bodies stay outside this qualification.
-JK78C and 1ND0A measure the VQ37 fuel-cut wrapper with the projected
+JK78C, 1ND0A and 1ND3B measure the VQ37 fuel-cut wrapper with the projected
 engine. Its stock coordinator call is the declared stub, and both
 request outcomes execute.
 
