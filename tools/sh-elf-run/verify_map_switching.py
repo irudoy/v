@@ -78,6 +78,10 @@ NM = "sh-elf-nm"
 OBJDUMP = "sh-elf-objdump"
 PC_COVERAGE_UNITS = ("startup_wrapper", "limiter_commit")
 PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar"}
+ADAPTER_COVERAGE_UNITS = (
+    "adapter_select_helper", "lookup_adapters", "full_dfco_adapter",
+    "idle_ignition_adapter",
+)
 
 
 class VerificationError(RuntimeError):
@@ -601,19 +605,69 @@ def _trace_successor(records, index, delayed):
     return records[following][0]
 
 
-def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, throttle_cluster=False):
+def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, throttle_cluster=False, adapter_layout=None):
     """Measure the declared JK08A payload entries and optional bounded prefix."""
     instructions, entries, outcomes, slots, call_targets = {}, set(), set(), set(), {}
-    for key in PC_COVERAGE_UNITS:
+    direct_targets, jump_targets, adapter_owners, stock_targets = {}, {}, {}, {}
+    units = PC_COVERAGE_UNITS + (ADAPTER_COVERAGE_UNITS if adapter_layout is not None else ())
+    helper_entry = None
+    if adapter_layout is not None:
+        helper_entry = adapter_layout.code_region_by_key["adapter_select_helper"].entry
+    for key in units:
         parsed = parsed_by_unit[key]
         rows = [row for row in parsed.statements if row.kind == "instruction"]
-        entries.add(min(row.address for row in rows))
+        if adapter_layout is None:
+            entries.add(min(row.address for row in rows))
+        else:
+            unit = adapter_layout.assembly_unit_by_key[key]
+            regions = [adapter_layout.code_region_by_key[name] for name in unit.code_regions]
+            entries.update(region.entry for region in regions)
+            if key in ADAPTER_COVERAGE_UNITS:
+                for region in regions:
+                    owned = [row for row in rows if region.span.start <= row.address < region.span.end]
+                    adapter_owners.update((row.address, region.entry) for row in owned)
+                    if region.entry == helper_entry:
+                        checked = owned
+                    else:
+                        first = owned[0]
+                        literal = assembly_model.PC_RELATIVE_RE.fullmatch(first.text)
+                        if (first.address != region.entry or literal is None
+                                or literal.group("width") != "l" or literal.group("register") != "r3"):
+                            raise VerificationError(f"adapter lacks its entry R3 binding at {region.entry:#010x}")
+                        pool = parsed.labels[literal.group("label")]
+                        stock_targets[region.entry] = int.from_bytes(fixture[pool:pool + 4], "big")
+                        if fixture[stock_targets[region.entry]:stock_targets[region.entry] + 4] != RETURN_STUB:
+                            raise VerificationError("adapter stock boundary is not the declared RTS/NOP stub")
+                        checked = owned[1:]
+                    for row in checked:
+                        if "r3" in assembly_model.REGISTER_RE.findall(row.text) and row.text != "jmp @r3":
+                            raise VerificationError(f"unsupported adapter R3 use at {row.address:#010x}")
         for row in rows:
             pc = row.address
             instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
             mnemonic = assembly_model._mnemonic(row)
             if mnemonic in assembly_model.DELAYED_CONTROL_MNEMONICS:
                 slots.add(pc + 2)
+            if mnemonic == "bra":
+                direct_targets[pc] = assembly_model._validate_direct_branch_encoding(parsed, row, instructions[pc])
+            if key in ADAPTER_COVERAGE_UNITS and adapter_layout is not None:
+                if mnemonic in {"jsr", "bsr", "bsrf", "braf", "rts", "rte"}:
+                    raise VerificationError(f"unsupported adapter transfer at {pc:#010x}")
+                if mnemonic == "jmp":
+                    if row.text == "jmp @r3":
+                        jump_targets[pc] = None  # Inherited from the exact original adapter entry.
+                    elif row.text == "jmp @r0":
+                        previous = parsed.statement_by_address.get(pc - 2)
+                        literal = assembly_model.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
+                        if literal is None or literal.group("width") != "l" or literal.group("register") != "r0":
+                            raise VerificationError(f"unbound adapter tail target at {pc:#010x}")
+                        pool = parsed.labels[literal.group("label")]
+                        target = int.from_bytes(fixture[pool:pool + 4], "big")
+                        if target != helper_entry:
+                            raise VerificationError(f"adapter tail does not target its helper at {pc:#010x}")
+                        jump_targets[pc] = target
+                    else:
+                        raise VerificationError(f"unsupported adapter JMP at {pc:#010x}")
             if mnemonic in {"bt", "bf", "bt/s", "bf/s"}:
                 target = assembly_model._validate_direct_branch_encoding(parsed, row, instructions[pc])
                 outcomes.update(((pc, target), (pc, pc + (4 if mnemonic.endswith("/s") else 2))))
@@ -652,6 +706,14 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                 raise VerificationError(f"orphan executed delay slot at {pc:#010x}")
             observed_slots.add(pc)
             continue
+        if pc in adapter_owners:
+            owner = adapter_owners[pc]
+            if not frames or frames[-1][4] not in stock_targets:
+                raise VerificationError(f"adapter lacks its originating invoke frame at {pc:#010x}")
+            if owner != helper_entry and owner != frames[-1][4]:
+                raise VerificationError(f"adapter enters a different R3 owner at {pc:#010x}")
+            if pc in entries:
+                frames[-1][3].add(pc)
         conditional = word & 0xFF00 in {0x8900, 0x8B00, 0x8D00, 0x8F00}
         if pc in instructions and conditional:
             observed_outcomes.add((pc, _trace_successor(records, index, word & 0xFF00 in {0x8D00, 0x8F00})))
@@ -659,22 +721,35 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
             successor = _trace_successor(records, index, True)
             if throttle_cluster and pc in (0x75876, 0x7587A) and successor != 0x75C32:
                 raise VerificationError(f"throttle-cluster boundary successor differs at {pc:#x}")
+        if pc in direct_targets:
+            target = _trace_successor(records, index, True)
+            if target != direct_targets[pc]:
+                raise VerificationError(f"executed BRA successor differs at {pc:#010x}")
+        if pc in jump_targets:
+            target = _trace_successor(records, index, True)
+            expected = jump_targets[pc]
+            if expected is None:
+                expected = stock_targets[frames[-1][4]]
+            if target != expected:
+                raise VerificationError(f"executed adapter JMP at {pc:#010x} reaches {target:#010x}, expected {expected:#010x}")
         is_call = word & 0xF0FF == 0x400B or word & 0xF000 == 0xB000
         if is_call:
             target = _trace_successor(records, index, True)
             if pc in call_targets and target != call_targets[pc]:
                 raise VerificationError(f"executed call at {pc:#010x} reaches {target:#010x}, expected {call_targets[pc]:#010x}")
             if frames or pc in instructions or target in entries:
-                frames.append((pc, target, pc + 4))
+                frames.append((pc, target, pc + 4, {target} & entries,
+                               target if target in stock_targets else None))
         elif word == 0x000B and (frames or pc in instructions):
             target = _trace_successor(records, index, True)
             if not frames:
                 raise VerificationError(f"payload return lacks its executed call at {pc:#010x}")
-            call, entry, continuation = frames.pop()
+            call, entry, continuation, visited, adapter_origin = frames.pop()
+            if adapter_origin is not None and pc != stock_targets[adapter_origin]:
+                raise VerificationError(f"adapter tail returns outside its stock boundary at {pc:#010x}")
             if target != continuation:
                 raise VerificationError(f"executed return at {pc:#010x} reaches {target:#010x}, expected {continuation:#010x}")
-            if entry in entries:
-                returned.add(entry)
+            returned.update(visited)
             if entry in entries or call in instructions:
                 call_returns.add((call, entry, continuation))
     for missing in sorted(entries - seen):
@@ -737,9 +812,9 @@ def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
     return ranges, words
 
 
-def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, composed_image):
+def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, composed_image, layout):
     """Execute all map-switching behavior cases in the GNU simulator."""
-    for key in PC_COVERAGE_UNITS:
+    for key in PC_COVERAGE_UNITS + ADAPTER_COVERAGE_UNITS:
         for statement in parsed_by_unit[key].statements:
             if statement.kind == "instruction":
                 address = statement.address
@@ -799,7 +874,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         return result, read_pc_trace(trace), invoke_words
 
     result, records, invoke_words = execute(harness_elf)
-    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True)
+    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True, adapter_layout=layout)
     marker = (
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 "
         "adapters=91 limiter=14 feedback=9 feedback_invocations=17 "
@@ -825,37 +900,47 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         result.stdout, re.MULTILINE,
     ):
         raise VerificationError("throttle-cluster prefix completion marker is missing")
-    call = "if (!run_limiter_cases())"
-    if source.count(call) != 1:
-        raise VerificationError("negative harness lacks its unique limiter-case call")
-    negative_source = build_dir / "map-switching-no-limiter-cases.c"
-    negative_text = source.replace(call, "if (0 && !run_limiter_cases())")
-    negative_source.write_text(negative_text, encoding="utf-8")
-    negative_elf = build_dir / "map-switching-no-limiter-cases.elf"
-    negative_command = list(command)
-    negative_command[negative_command.index("-o") + 1] = negative_elf
-    negative_command[negative_command.index(positive_source)] = negative_source
-    run_command(negative_command, timeout=120)
-    require_separate_storage(negative_elf, ((TEST_RAM_BASE, 65536),))
-    negative, records, invoke_words = execute(negative_elf)
-    if marker not in negative.stdout:
-        raise VerificationError("negative harness does not preserve the existing semantic PASS marker")
-    try:
-        require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True)
-    except VerificationError as error:
-        negative_reason = str(error)
-        if "uncovered entry 0x000d22a0" not in negative_reason:
-            raise VerificationError(f"negative harness fails outside its omitted entry: {error}") from error
-    else:
-        raise VerificationError("PC coverage accepts the omitted limiter cases")
+    omissions = [("limiter", "if (!run_limiter_cases())", "uncovered entry 0x000d22a0",
+                  "VQ_SH_ELF_PAYLOAD_COVERAGE_NEGATIVE")]
+    omissions.append(("adapters", "if (!run_adapter_cases())",
+                      f"uncovered entry {layout.code_region_by_key['adapter_select_helper'].entry:#010x}",
+                      "VQ_SH_ELF_ADAPTER_COVERAGE_NEGATIVE"))
+    negative_markers, negative_sources = [], []
+    for name, call, expected_reason, prefix in omissions:
+        if source.count(call) != 1:
+            raise VerificationError(f"negative harness lacks its unique {name}-case call")
+        negative_source = build_dir / f"map-switching-no-{name}-cases.c"
+        negative_text = source.replace(call, call.replace("if (", "if (0 && ", 1))
+        negative_source.write_text(negative_text, encoding="utf-8")
+        negative_sources.append((negative_source, negative_text))
+        negative_elf = build_dir / f"map-switching-no-{name}-cases.elf"
+        negative_command = list(command)
+        negative_command[negative_command.index("-o") + 1] = negative_elf
+        negative_command[negative_command.index(positive_source)] = negative_source
+        run_command(negative_command, timeout=120)
+        require_separate_storage(negative_elf, ((TEST_RAM_BASE, 65536),))
+        negative, records, invoke_words = execute(negative_elf)
+        if marker not in negative.stdout:
+            raise VerificationError("negative harness does not preserve the existing semantic PASS marker")
+        try:
+            require_payload_coverage(records, fixture, parsed_by_unit, invoke_words,
+                                     throttle_cluster=True, adapter_layout=layout)
+        except VerificationError as error:
+            if str(error) != expected_reason:
+                raise VerificationError(f"negative harness fails outside its omitted entry: {error}") from error
+        else:
+            raise VerificationError(f"PC coverage accepts the omitted {name} cases")
+        if negative_source.read_text(encoding="utf-8") != negative_text:
+            raise VerificationError("negative harness source changes during verification")
+        negative_markers.append(f"{prefix} status=PASS {expected_reason}")
     if (source_path.read_text(encoding="utf-8") != source
             or positive_source.read_text(encoding="utf-8") != source
-            or negative_source.read_text(encoding="utf-8") != negative_text):
+            or any(path.read_text(encoding="utf-8") != expected for path, expected in negative_sources)):
         raise VerificationError("harness source changes during verification")
-    coverage_marker = "VQ_SH_ELF_PAYLOAD_COVERAGE status=PASS scope=JK08A:startup_wrapper,limiter_commit,throttle_cluster_prefix "
+    scope = ",".join((*PC_COVERAGE_UNITS, *ADAPTER_COVERAGE_UNITS, "throttle_cluster_prefix"))
+    coverage_marker = f"VQ_SH_ELF_PAYLOAD_COVERAGE status=PASS scope=JK08A:{scope} "
     coverage_marker += " ".join(f"{key}={value}" for key, value in covered.items())
-    return "\n".join((result.stdout.strip(), coverage_marker,
-                      "VQ_SH_ELF_PAYLOAD_COVERAGE_NEGATIVE status=PASS " + negative_reason))
+    return "\n".join((result.stdout.strip(), coverage_marker, *negative_markers))
 
 
 def build_delay_slot_probe(slot_word, name, build_dir):
@@ -965,7 +1050,7 @@ def verify(verbose=False):
         with stage('map_switching'):
             dynamic_marker = build_and_run_dynamic_harness(
                 fixture, build_dir, parsed_by_unit=parsed_by_unit,
-                composed_image=composition.data,
+                composed_image=composition.data, layout=layout,
             )
         with stage('delay_slot_probe'):
             incident_signal = verify_delay_slot_incident(build_dir)

@@ -43,8 +43,9 @@ The canonical and relocated runtime verifiers:
 - Execute the original unsafe delayed-branch pair and a safe control fixture.
 
 The canonical JK08A map-switching harness measures executed PCs and opcodes
-for `startup_wrapper`, `limiter_commit`, and the bounded throttle-cluster prefix. Its observer records the actual
-delay-slot execution order. The verifier requires every instruction, both
+for `startup_wrapper`, `limiter_commit`, the canonical lookup adapters and their
+shared helper, and the bounded throttle-cluster prefix. Its observer records the
+actual delay-slot execution order. The verifier requires every instruction, both
 conditional outcomes, and matched calls and returns in this scope. It binds
 the trace to the independently assembled payload, the composed ROM, and the
 final ELF; simulator RAM-literal translations preserve instruction words.
@@ -59,6 +60,24 @@ then fail coverage with the omitted startup entry. Coverage of the remaining
 payloads, targets, and other SH7058 limiter-pointer consumers remains outside this
 bounded check. Case and entry totals printed by the other harnesses do not
 establish instruction coverage.
+
+The adapter scope uses entries from the layout's existing code regions,
+including each entry inside the shared lookup-adapter assembly unit. Instruction
+requirements use typed instruction statements alone; pools, pointer tables and
+fill bytes do not contribute to instruction coverage. The checker validates
+actual BRA and JMP successors against the independently bound operands.
+
+Each adapter binds R3 through its entry's original PC-relative stock-wrapper
+load. The shared helper inherits that exact origin; other R3 uses or unsupported
+transfer forms fail verification. A tail transfer preserves the originating
+invoke frame. Entries visited on that frame qualify their return only when the
+bound stock RTS/NOP stub reaches the original invoke continuation. These stubs
+do not qualify the stock lookup bodies.
+
+A second negative build suppresses the actual `run_adapter_cases()` call while
+preserving the same ROM and existing semantic PASS marker. It must fail measured
+coverage at the omitted helper entry. Selector and feedback payload coverage
+remain outside this scope.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

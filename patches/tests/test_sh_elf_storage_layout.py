@@ -119,16 +119,35 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
 
     monkeypatch.setattr(base, 'run_command', command)
 
+    class MapStorageAccepted(Exception):
+        pass
+
+    if route == 'map':
+        def after_storage(*args):
+            raise MapStorageAccepted
+        monkeypatch.setattr(module, '_invoke_trace_bindings', after_storage)
+
     def execute():
         if route.startswith('relocated-'):
             size = 0x180000 if route.endswith('sh7059') else 0x100000
             target = SimpleNamespace(rom='CONTROLLED', stock_image=SimpleNamespace(data=bytes(size)))
             return module._compile_and_run(target, 'feature', tmp_path / 'harness.c',
                 tmp_path / 'rom.o', [tmp_path / 'invoke.o'], tmp_path, marker)
+        if route == 'map':
+            parsed = {key: SimpleNamespace(statements=())
+                      for key in module.PC_COVERAGE_UNITS + module.ADAPTER_COVERAGE_UNITS}
+            return module.build_and_run_dynamic_harness(
+                b'controlled fixture', tmp_path, parsed_by_unit=parsed,
+                composed_image=b'controlled fixture', layout=SimpleNamespace())
         return module.build_and_run_dynamic_harness(b'controlled fixture', tmp_path)
 
     if overlap or layout in ('malformed', 'missing'):
         with pytest.raises(module.VerificationError, match='ELF storage separation'):
+            execute()
+        assert base.RUN not in [args[0] for args, _ in calls]
+    elif route == 'map':
+        # Reach the next real stage after accepting ELF storage, before RUN.
+        with pytest.raises(MapStorageAccepted):
             execute()
         assert base.RUN not in [args[0] for args, _ in calls]
     else:
