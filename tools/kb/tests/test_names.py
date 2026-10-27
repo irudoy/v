@@ -6,6 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pytest
+
 from kb import names, repo, vocab
 from kb.names import Row
 
@@ -53,6 +55,7 @@ class FileTest(unittest.TestCase):
             self.assertEqual(sorted(names.read(root)), sorted(rows))
 
 
+@pytest.mark.slow
 def test_saved_name_compilation_does_not_import_optional_generators(monkeypatch):
     from kb import compile
     from kb.model import SymbolKey

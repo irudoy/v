@@ -387,6 +387,7 @@ def test_vq37_reserve_starts_after_the_last_injected_block(
     )
 
 
+@pytest.mark.slow
 def test_all_relocated_stage_hashes_recompose_exactly():
     targets = runtime_targets.validate_all_relocated_targets()
 

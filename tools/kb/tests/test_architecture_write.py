@@ -121,6 +121,7 @@ def condition():
             'keys': {'slot': 'probe', 'note': 'Use the alternate input while the probe is set.'}}
 
 
+@pytest.mark.slow
 def test_step_replacement_preserves_call_order_and_removes_held_steps(model, document):
     keys = replacement(document)
     _, texts, result = plan(model, assign(keys))

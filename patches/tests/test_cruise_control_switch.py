@@ -380,6 +380,7 @@ def _exit(data: bytes, pc: int) -> int:
     return _branch(pc + 8, words[4])
 
 
+@pytest.mark.slow
 def test_dtc_group_byte_and_the_monitors_that_read_it() -> None:
     layouts = {site[1]: site for site in SITES}
     for image, layout, _, _, _ in SITES:

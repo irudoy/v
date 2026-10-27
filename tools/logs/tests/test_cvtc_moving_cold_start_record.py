@@ -5,6 +5,8 @@ from pathlib import Path
 import tomllib
 import unittest
 
+import pytest
+
 from tools.can_dashboard import model
 from tools.logs import cvtc_intake_state_audit as state_audit
 from tools.logs import cvtc_target_audit, mlg_relation_audit
@@ -718,6 +720,7 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
                         {128, 148},
                     )
 
+    @pytest.mark.slow
     @unittest.skipUnless(
         LOGS.is_dir() and IMAGE.is_file(), "road captures are local and untracked"
     )

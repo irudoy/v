@@ -4,6 +4,8 @@ import copy
 import unittest
 from types import SimpleNamespace
 
+import pytest
+
 from kb import compile, ledger_projection, match, repo, tokens, vocab
 from kb.adapters import ledgers
 from kb.model import Builder, SymbolKey
@@ -67,6 +69,7 @@ class NormalizationTest(unittest.TestCase):
                 ledger_projection.validate_conversion("probe.csv", old, changed)
 
 
+@pytest.mark.slow
 class OwnedProjectionTest(unittest.TestCase):
     def test_the_owned_model_reproduces_every_ledger_byte_and_curated_alias(self):
         m = compile.cached(repo.ROOT)

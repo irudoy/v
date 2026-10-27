@@ -1,9 +1,12 @@
 """The architecture snapshot retains every source call its symbols can render."""
 
+import pytest
+
 from kb import graph, lock, repo
 from tools.romviz import graph_atlas
 
 
+@pytest.mark.slow
 def test_current_snapshot_retains_every_renderable_source_call():
     knowledge = graph_atlas.snapshot()
     keys = knowledge.symbol_keys

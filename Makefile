@@ -28,6 +28,7 @@ CORRESPONDENCE_ARGS ?=
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
+.PHONY: test-python-fast test-full
 .PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build
 
 help:
@@ -40,11 +41,13 @@ help:
 		'  check             Validate versions, tracked sources, L0 exports, projections, and the' \
 		'                    firmware architecture model, and rebuild the ROM atlas from them.' \
 		'  test-python       Run the complete Python test contract.' \
+		'  test-python-fast  Run Python tests without the slow marker.' \
 		'  test-js           Run the pin-tracer test contract.' \
-		'  test              Run the Python and JavaScript test contracts.' \
+		'  test              Run fast Python tests and the JavaScript contract.' \
+		'  test-full         Run the complete Python and JavaScript contracts.' \
 		'  verify-firmware   Run the repository-contained GNU SH-2E executable gate.' \
 		'  verify-npkern     Run the optional exact-revision external npkern gate.' \
-		'  verify            Qualify firmware evidence, then run check and test.' \
+		'  verify            Qualify firmware evidence, then run check and test-full.' \
 		'  vendor-catalog    Rebuild the machine-readable vendor catalog.' \
 		'  romviz            Rebuild the self-contained ROM atlas HTML.' \
 		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
@@ -114,10 +117,15 @@ check:
 test-python:
 	$(PYTEST) -q
 
+test-python-fast:
+	$(PYTEST) -q -m "not slow"
+
 test-js:
 	$(NPM) --prefix tools/pin-tracer test
 
-test: test-python test-js
+test: test-python-fast test-js
+
+test-full: test-python test-js
 
 verify-firmware:
 	tools/sh-elf-run/run.sh --verbose
@@ -131,7 +139,7 @@ vendor-catalog:
 verify:
 	+$(MAKE) verify-firmware
 	+$(MAKE) check
-	+$(MAKE) test
+	+$(MAKE) test-full
 
 romviz:
 	@test -n "$(strip $(ROMVIZ_OUTPUT))" || { printf '%s\n' 'ROMVIZ_OUTPUT is required' >&2; exit 2; }

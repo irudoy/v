@@ -155,6 +155,7 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, code, str(caught.exception))
         return str(caught.exception)
 
+    @pytest.mark.slow
     def test_bind_extends_an_unnamed_meaning_and_preserves_its_owned_home(self):
         change, texts, result = self.plan(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"))
         path = Path("kb/tbl/astute-toad.toml")
@@ -178,6 +179,7 @@ class PlanTest(unittest.TestCase):
             f"bind {bound['name']}/tbl/jk00c-{TABLE_JK00C:08x}: masked-match at jk00c:0004820a "
             "to 7mfk:00047282 count 1 value 40"])
 
+    @pytest.mark.slow
     def test_bind_of_a_named_meaning_keeps_the_owned_former_references(self):
         _, texts, result = self.plan(bind(SELECTOR, f"jk78c:{SELECTOR_JK78C:08x}", note="probe",
                                           level="candidate"))
@@ -199,6 +201,7 @@ class PlanTest(unittest.TestCase):
                               'keys': {'block': 'missing/block'}})
         self.assertIn('is not a declared block', error)
 
+    @pytest.mark.slow
     def test_a_batch_writes_the_statuses_of_one_meaning_into_its_file(self):
         change, texts, result = self.plan(
             {"cmd": "unresolved", "meaning": INHIBIT, "layout": "1nd"},
@@ -218,6 +221,7 @@ class PlanTest(unittest.TestCase):
             "0 matches",
             f"absent {INHIBIT} on 1me3b: spec path tools/kb/SPEC.md"])
 
+    @pytest.mark.slow
     def test_a_repeated_search_keeps_the_note_of_its_status(self):
         path = Path("kb/ram/alpha_n_flow.toml")
         held = next(entry for entry in tomllib.loads((repo.ROOT / path).read_text())["status"]
@@ -241,6 +245,7 @@ class PlanTest(unittest.TestCase):
         self.assertNotIn("note", status(method="masked-match", target=f"7mfk:{FLOW_HOME:08x}",
                                         count=2))
 
+    @pytest.mark.slow
     def test_the_checks_of_the_result_refuse_evidence_that_l0_refutes(self):
         message = self.refused(bind(THROTTLE, "jk78c:ffff17a6", evidence=[{
             **TABLE_EVIDENCE, "at": "jk78c:0002ffb8", "to": "7mfk:0002ce62", "value": 12}]))
@@ -249,6 +254,7 @@ class PlanTest(unittest.TestCase):
                       "masked-match evidence", message)
         self.assertIn("which stores ffff17a4, not ffff17a6", message)
 
+    @pytest.mark.slow
     def test_a_status_of_a_registry_refuses_a_symbol_on_its_layout(self):
         # The compiler with the adapter of the address profiles, whose
         # correspondence rows state the statuses of the telemetry sources.
@@ -441,6 +447,7 @@ class NewTest(unittest.TestCase):
                 files.assert_not_called()
                 graph.assert_not_called()
 
+    @pytest.mark.slow
     def test_a_symbol_without_a_row_draws_its_generated_name(self):
         held = {key.address for key in self.base.symbols
                 if (key.layout, key.kind) == ("7mfk", "fn")}
@@ -524,6 +531,7 @@ def merge(meaning, other, **keys):
     return {"cmd": "merge", "meaning": meaning, "other": other, **keys}
 
 
+@pytest.mark.slow
 class MergeTest(unittest.TestCase):
     """Merges over a base that splits the JK00C symbol of EVALUATOR out into the
     unnamed meaning CAPUCHIN, as the conversion of the targets of the knock
@@ -678,6 +686,7 @@ class SetTest(unittest.TestCase):
         [target] = tomllib.loads(texts[self.PROBE_FILE])["target"]
         return target
 
+    @pytest.mark.slow
     def test_set_writes_the_bits_of_a_meaning_and_the_override_of_a_symbol(self):
         change, texts, result = write.plan([
             assign(INHIBIT, {"bit": [{"bit": 2, "name": "active", "level": "pattern"}]}),
@@ -806,6 +815,7 @@ class LinkTest(unittest.TestCase):
     def links(self, texts, to):
         return [item for item in tomllib.loads(texts[self.RPM_FILE])["link"] if item["to"] == to]
 
+    @pytest.mark.slow
     def test_link_extends_the_converted_file_without_losing_its_facts(self):
         path = store.path_of("fn", "accelerator_pedal_pair_selector")
         held = store.load(repo.ROOT, path)
@@ -885,6 +895,7 @@ class LinkTest(unittest.TestCase):
                 self.assertIn(token, old[key]["evidence"])
                 self.assertNotIn(token, new[key]["evidence"])
 
+    @pytest.mark.slow
     def test_a_write_refuses_an_evidence_index_that_its_ledger_still_selects(self):
         with self.assertRaises(KbError) as caught:
             self.plan(assign(self.RPM, {"evidence": [SPEC]}, layout="7mfk"))
@@ -892,6 +903,7 @@ class LinkTest(unittest.TestCase):
         self.assertIn("ledgers:", str(caught.exception))
         self.assertIn("invalid evidence selection", str(caught.exception))
 
+    @pytest.mark.slow
     def test_unlink_can_remove_a_word_base_relation_to_its_own_group(self):
         word = self.base.symbols[SymbolKey("7mfk", "ram", 0xFFFF120E)]
         _, _, result = self.plan(link(word.meaning.key, "base", word.meaning.key,
@@ -933,6 +945,7 @@ def move(symbol, to, **keys):
     return {"cmd": "move", "symbol": symbol, "to": to, **keys}
 
 
+@pytest.mark.slow
 class MoveTest(unittest.TestCase):
     """`move` over a base whose file states the JK78C symbol of THROTTLE two
     bytes above the counterpart that the search from its 7mfk symbol finds,
@@ -1038,6 +1051,7 @@ class RenameMeaningTest(unittest.TestCase):
         self.assertRegex(change.lines[0],
                          rf"^rename {TABLE} to probe_table/tbl; \d+ references? rewritten$")
 
+    @pytest.mark.slow
     def test_rename_of_a_named_meaning_keeps_its_name_as_a_former_name(self):
         path = store.path_of("ram", "throttle_runtime")
         held = tomllib.loads((repo.ROOT / path).read_text(encoding="utf-8"))
@@ -1057,6 +1071,7 @@ class RenameMeaningTest(unittest.TestCase):
         self.assertRegex(change.lines[0],
                          rf"^rename {THROTTLE} to throttle_state/ram; \d+ references rewritten$")
 
+    @pytest.mark.slow
     def test_rename_of_a_converted_curated_function_projects_its_name_and_reserves_the_former(self):
         before = ledger_projection.render(self.base)["tools/ghidra/symbols/7mfk.csv"]
         _, _, result = self.plan(rename(SELECTOR, "probe_selector"))
@@ -1069,6 +1084,7 @@ class RenameMeaningTest(unittest.TestCase):
         self.assertIn("accelerator_pedal_pair_selector",
                       [name for name, _, _ in meaning.other_names])
 
+    @pytest.mark.slow
     def test_rename_preserves_a_word_base_relation_to_its_own_group(self):
         word = self.base.symbols[SymbolKey("7mfk", "ram", 0xFFFF120E)]
         before = ledger_projection.render(self.base)
@@ -1114,6 +1130,7 @@ class RenameMeaningTest(unittest.TestCase):
                          "probe")
 
 
+@pytest.mark.slow
 class MoveMeaningTest(unittest.TestCase):
     """`move` of a symbol into another meaning over a base whose file of
     INHIBIT states the JK78C counterpart of THROTTLE, which the search from

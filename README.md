@@ -134,9 +134,9 @@ neither Ghidra nor Memgraph.
 4. Compose the runtime with `make rom-build`, which applies the capability
    patches, preserves target calibration state, closes every checksum domain,
    and emits a build manifest.
-5. Gate the result: `make check`, `make test`, and `make verify-firmware`
-   execute the changed instruction bytes against independently assembled
-   SH-2E fixtures.
+5. Gate the result with `make verify`: source checks, the complete Python and
+   pin-tracer test contracts, and execution of changed instruction bytes
+   against independently assembled SH-2E fixtures.
 6. Flash the built image with the external tool, then validate on a bench and
    in the vehicle. Software gates do not establish hardware behavior.
 
@@ -156,9 +156,16 @@ make test
 make verify
 ```
 
-`make verify` includes the repository-contained GNU SH-2E Docker gate. The
-direct Python test contract remains `uv run pytest -q`; the pin-tracer contract
-is documented beside that tool.
+`make test` runs Python tests without the `slow` marker and the pin-tracer
+contract. `make test-full` includes the complete Python and pin-tracer
+contracts. `make test-python` and direct `uv run pytest -q` include every
+Python test. `make test-python-fast` selects the same Python tests as
+`make test`.
+
+`make verify` runs firmware qualification, source checks, and `make test-full`.
+It includes the repository-contained GNU SH-2E Docker gate and is required
+before flashing or closing an engineering track. The pin-tracer contract is
+documented beside that tool.
 
 `make runtime-targets-generate` regenerates the tracked JK00C, JK00D, JK78C,
 1ND0A, 1ND3B, and 1ME3B GNU SH-2E payload locks and capability-specific stage hashes

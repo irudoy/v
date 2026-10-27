@@ -5,6 +5,8 @@ from pathlib import Path
 import tomllib
 import unittest
 
+import pytest
+
 from kb import targets as kb_targets
 
 from patches import map_switching_layout as layout_model
@@ -488,6 +490,7 @@ class MapFeedbackVehicle20260922Test(unittest.TestCase):
         )
         self.assertIn("TCM behavior is not observed", self.result["evidence_boundary"])
 
+    @pytest.mark.slow
     @unittest.skipUnless(LOGS_2026_09_22.is_dir(), "road captures are local and untracked")
     def test_trace_reproduces_the_record(self):
         result = self.result

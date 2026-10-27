@@ -430,6 +430,7 @@ def test_no_owned_file_cannot_be_created_by_property_edit(baseline):
         write.plan([OP], shallow, write.model_resolver(shallow), shallow.root)
 
 
+@pytest.mark.slow
 def test_full_repository_plan_retains_every_untouched_document():
     model = compile.build(repo.ROOT)
     operation = {**OP, 'keys': {'note': 'Controlled existing-link planning contract.'}}

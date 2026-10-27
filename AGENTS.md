@@ -71,9 +71,12 @@ in local results and Git.
 
 ## Gates and commits
 
-- `make check` validates tracked sources and projections, `make test` runs the
-  Python and pin-tracer contracts, and `make verify-firmware` runs the
-  repository-contained GNU SH-2E execution gate. `make verify` runs all three.
+- `make check` validates tracked sources and projections. `make test` runs
+  Python tests without the `slow` marker and the pin-tracer contract.
+  `make test-full` runs the complete Python and pin-tracer contracts;
+  `make test-python` and direct `uv run pytest -q` include every Python test.
+  `make verify-firmware` runs the repository-contained GNU SH-2E execution gate.
+  `make verify` runs firmware qualification, source checks, and `make test-full`.
 - Run affected checks for each small package. Changes to instruction bytes,
   address profiles, or runtime allocation require `make verify` for acceptance.
   Full checks also run before flashing and before track closure. A local

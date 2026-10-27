@@ -76,6 +76,7 @@ def test_unasserted_native_conversion_preserves_identity_and_hypothesis(ref):
             assert "Origin:" in note
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("level, reason", [("candidate", "lacks evidence"),
                                           ("code", "lacks grounding")])
 def test_identity_cannot_ground_a_restored_native_scale(monkeypatch, level, reason):

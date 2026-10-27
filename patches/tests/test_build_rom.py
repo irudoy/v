@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from unittest import mock
 
+import pytest
+
 from patches import build_rom
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
@@ -64,6 +66,7 @@ def profile_text(*, telemetry=None, **overrides):
     return result
 
 
+@pytest.mark.slow
 class BuildRomTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

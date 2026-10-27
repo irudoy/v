@@ -5,6 +5,8 @@ import re
 import tempfile
 import unittest
 
+import pytest
+
 from tools import rom_homology
 
 
@@ -134,6 +136,7 @@ class RomImagesLayoutTest(unittest.TestCase):
         }
         self.assertEqual(set(registered_paths), stock_sources)
 
+    @pytest.mark.slow
     def test_homology_report_matches_registered_stock_images(self):
         expected = rom_homology.build_report()
         self.assertEqual(

@@ -191,6 +191,7 @@ def native_model():
     return compile.build(repo.ROOT)
 
 
+@pytest.mark.slow
 def test_native_selected_positive_negative_and_restored_results_match(native_model):
     symbol = next(symbol for symbol in native_model.symbols.values()
                   if symbol.meaning.key == 'vvel_command_shaft_angle/tbl')

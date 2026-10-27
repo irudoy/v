@@ -222,6 +222,7 @@ def test_census_ledger_mutations_are_rejected(ledger):
         census_homology.validate_ledger(contradicted, "1ND0A", "1ME3B")
 
 
+@pytest.mark.slow
 def test_check_requires_the_ledger_that_l0_produces(tmp_path, capsys):
     tracked = census_homology.ledger_path("1ND0A", "1ME3B")
     ledger = tmp_path / tracked.name

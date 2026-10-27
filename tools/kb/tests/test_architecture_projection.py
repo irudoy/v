@@ -21,6 +21,7 @@ def source():
     return (repo.ROOT / architecture.ARCHITECTURE).read_text(encoding='utf-8')
 
 
+@pytest.mark.slow
 def test_every_architecture_fact_and_step_survives_projection(tracked):
     rendered = projection.render(projection.document(tracked))
     projection.validate_conversion(source(), rendered, tracked)
@@ -30,6 +31,7 @@ def test_every_architecture_fact_and_step_survives_projection(tracked):
     assert sum(len(chain['step']) for chain in generated['chain']) == 387
 
 
+@pytest.mark.slow
 def test_the_architecture_gate_reproduces_placements_and_flows(tmp_path, tracked):
     current = romviz.load()
     projected = tmp_path / 'JK08A.architecture.toml'
@@ -50,6 +52,7 @@ def test_the_architecture_gate_reproduces_placements_and_flows(tmp_path, tracked
                    for step in chain.steps]) for chain in current.chains]
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('change', ['arithmetic', 'order', 'kind', 'via'])
 def test_a_fact_change_refuses_the_projection(tracked, change):
     document = projection.document(tracked)

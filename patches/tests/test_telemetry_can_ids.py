@@ -68,6 +68,7 @@ def test_receive_and_extended_records_reject_both_ids(rom, identifier, mailbox, 
     assert f"stock HCAN1 mailbox {mailbox} ({direction}," in str(caught.value)
 
 
+@pytest.mark.slow
 def test_inactive_ids_are_image_local_within_an_exact_code_family():
     result = build(runtime_targets.load_runtime_target("JK00A"), 0x239)
     assert result.profile.telemetry.can_id == 0x239

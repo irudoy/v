@@ -39,3 +39,4 @@ testpaths = [
 python_files = ["test_*.py"]
 addopts = ["--import-mode=importlib"]
 pythonpath = ["."]
+markers = ["slow: integration checks included by full test entry points"]

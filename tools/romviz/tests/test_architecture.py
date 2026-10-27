@@ -103,6 +103,7 @@ def _node_id(tracked, addr, kinds=("map", "axis")):
     )
 
 
+@pytest.mark.slow
 def test_tracked_source_passes_the_gate(tracked):
     assert tracked.errors == []
     assert tracked.rom == "JK08A"
@@ -115,6 +116,7 @@ def test_tracked_source_passes_the_gate(tracked):
     assert supports.count("ledger") > supports.count("specification") > 0
 
 
+@pytest.mark.slow
 def test_every_reviewed_function_is_placed_once(tracked):
     placed = [node_id for block in tracked.blocks for node_id in block.functions]
     reviewed = {
@@ -124,6 +126,7 @@ def test_every_reviewed_function_is_placed_once(tracked):
     assert set(placed) == reviewed
 
 
+@pytest.mark.slow
 def test_native_placed_maf_states_without_legacy_rows_are_reviewed(tracked):
     native = compile.cached(repo.ROOT)
     addresses = ("ffff1e00", "ffff1e02", "ffff1e08", "ffff1e0a", "ffff1e10",
@@ -140,12 +143,14 @@ def test_native_placed_maf_states_without_legacy_rows_are_reviewed(tracked):
     assert tracked.nodes["signal:ffff1e02"].confidence == "candidate"
 
 
+@pytest.mark.slow
 def test_native_placement_does_not_admit_an_unowned_signal(tmp_path):
     text = _source_text().replace('"ffff1e00"', '"ffffdead"', 1)
     broken = _rewritten(tmp_path, text)
     assert any("ffffdead is not a reviewed" in item for item in broken.errors)
 
 
+@pytest.mark.slow
 def test_a_function_without_a_block_fails_the_gate(tmp_path, tracked):
     text = _source_text()
     addr = _singly_named_function(tracked, text)
@@ -154,6 +159,7 @@ def test_a_function_without_a_block_fails_the_gate(tmp_path, tracked):
     assert any("suggest" in item for item in broken.errors)
 
 
+@pytest.mark.slow
 def test_an_address_outside_the_ledgers_fails_the_gate(tmp_path, tracked):
     text = _source_text()
     addr = _singly_named_function(tracked, text)
@@ -161,6 +167,7 @@ def test_an_address_outside_the_ledgers_fails_the_gate(tmp_path, tracked):
     assert any("0000dead is not a reviewed" in item for item in broken.errors)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     ("confidence", "role", "fails"),
     (
@@ -184,6 +191,7 @@ def test_a_code_confidence_map_without_a_block_fails_the_gate(
     assert len(extended.errors) == 2 * int(fails)
 
 
+@pytest.mark.slow
 def test_a_pinned_map_passes_the_gate(tmp_path, tracked):
     existing_maps = set(tracked.block("crank-cam").maps)
     assert f"map:{FREE_MAP}" not in existing_maps
@@ -199,6 +207,7 @@ def test_a_pinned_map_passes_the_gate(tmp_path, tracked):
     assert set(extended.block("crank-cam").maps) == existing_maps | {f"map:{FREE_MAP}"}
 
 
+@pytest.mark.slow
 def test_specification_support_is_load_bearing(tmp_path, tracked):
     """Every step that no ledger relation covers names a specification."""
     text = _source_text()
@@ -216,6 +225,7 @@ def test_specification_support_is_load_bearing(tmp_path, tracked):
     assert broken.errors == unsupported
 
 
+@pytest.mark.slow
 def test_a_step_cycle_fails_the_gate(tmp_path, tracked):
     # An appended step table belongs to the last chain of the source.
     chain = tracked.chains[-1]
@@ -243,6 +253,7 @@ def test_sign_composition():
     assert architecture.merge_signs([]) is None
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("chain_id, addr, sign", IMPACT_CLAIMS)
 def test_chain_impact_states_the_direction(tracked, chain_id, addr, sign):
     chain = next(item for item in tracked.chains if item.id == chain_id)
@@ -252,11 +263,13 @@ def test_chain_impact_states_the_direction(tracked, chain_id, addr, sign):
     assert steps and all(step.effect in architecture.EFFECTS for step in steps)
 
 
+@pytest.mark.slow
 def test_the_output_carries_no_impact_of_its_own(tracked):
     for chain in tracked.chains:
         assert chain.output not in chain.impact
 
 
+@pytest.mark.slow
 def test_atlas_ships_the_gated_architecture(atlas, tracked):
     assert set(atlas['architectures']) == set(ROM_BINDINGS)
     home = atlas['architectures']['JK08A']
@@ -270,6 +283,7 @@ def test_atlas_ships_the_gated_architecture(atlas, tracked):
     assert "arch-canvas" in document
 
 
+@pytest.mark.slow
 def test_every_rom_binds_the_architecture(atlas):
     bindings = {rom["id"]: rom["architecture"] for rom in atlas["roms"]}
     assert set(bindings) == set(ROM_BINDINGS)
@@ -288,6 +302,7 @@ def test_every_rom_binds_the_architecture(atlas):
                 assert chain['id'] not in {item['id'] for item in view['chains']}
 
 
+@pytest.mark.slow
 def test_same_layout_images_keep_exact_mode_byte_applicability(atlas):
     for rom in ('JK08A', 'JK00A', 'JK03A', 'JK03B'):
         view = atlas['architectures'][rom]
@@ -319,6 +334,7 @@ def test_manifest_architecture_table_is_validated():
             model._check_architecture_table("manifest.toml", table)
 
 
+@pytest.mark.slow
 def test_a_manifest_cannot_borrow_another_layout(tmp_path):
     manifest = model.ROOT / "tools" / "romviz" / "roms" / "JK00A.toml"
     text = manifest.read_text(encoding="utf-8")
@@ -340,6 +356,7 @@ def test_an_unavailable_graph_refuses_the_atlas_without_a_legacy_fallback(monkey
         model.build_rom_model(model.resolve_manifest('JK78C'))
 
 
+@pytest.mark.slow
 def test_command_line_reports_the_model(capsys, tracked):
     assert architecture.main(["check"]) == 0
     printed = capsys.readouterr().out
@@ -363,6 +380,7 @@ def test_command_line_reports_the_model(capsys, tracked):
     )
 
 
+@pytest.mark.slow
 def test_command_line_states_the_effect_of_a_table(capsys):
     assert architecture.main(["impact", "0x991a"]) == 0
     printed = capsys.readouterr().out
@@ -370,18 +388,21 @@ def test_command_line_states_the_effect_of_a_table(capsys):
     assert "positive" in printed
 
 
+@pytest.mark.slow
 def test_command_line_walks_a_relation_path(capsys):
     assert architecture.main(["path", "0003de4c", "ffff1702"]) == 0
     printed = capsys.readouterr().out
     assert "-data/writes-> signal ffff1702" in printed
 
 
+@pytest.mark.slow
 def test_command_line_ranks_blocks_for_a_function(capsys):
     assert architecture.main(["suggest", "0003de4c"]) == 0
     printed = capsys.readouterr().out
     assert "engine-speed" in printed
 
 
+@pytest.mark.slow
 def test_command_line_exports_the_model(tmp_path, capsys):
     target = tmp_path / "architecture.json"
     assert architecture.main(["json", "--output", str(target)]) == 0

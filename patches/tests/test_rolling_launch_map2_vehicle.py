@@ -3,6 +3,8 @@ import re
 import tomllib
 import unittest
 
+import pytest
+
 from patches import rolling_launch
 from patches import rolling_launch_layout
 from tools.can_dashboard import model
@@ -673,6 +675,7 @@ class RollingLaunchMap2VehicleTest(unittest.TestCase):
             self.document,
         )
 
+    @pytest.mark.slow
     @unittest.skipUnless(LOGS.is_dir() and IMAGE.is_file(), "road captures are local and untracked")
     def test_audit_reproduces_the_record(self):
         from tools.logs import rolling_launch_audit as audit

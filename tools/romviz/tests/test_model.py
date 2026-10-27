@@ -47,6 +47,7 @@ def test_all_selection_covers_every_registered_flash_rom():
         model.expand_manifest_values(["all", "JK08A"])
 
 
+@pytest.mark.slow
 def test_all_models_build_with_exact_registered_identities():
     atlas = model.build_atlas(["all"])
     by_id = {rom["id"]: rom for rom in atlas["roms"]}
@@ -75,6 +76,7 @@ def test_all_models_build_with_exact_registered_identities():
         assert by_id[rom_id]["counts"]["maps"] == 134
 
 
+@pytest.mark.slow
 def test_1me3b_model_carries_definition_structure_and_checksum_layers(architecture_cache):
     """The Branch D image publishes its projection beside its own structure."""
     rom = model.build_rom_model(model.resolve_manifest("1ME3B"), architecture_cache)
@@ -165,6 +167,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("rom_id", REGISTERED_ROMS)
 def test_every_registered_rom_carries_its_dtc_registry(rom_id, architecture_cache):
     """The DTC layer precedes analysis, so no target leaves it undeclared."""
@@ -185,6 +188,7 @@ def test_every_registered_rom_carries_its_dtc_registry(rom_id, architecture_cach
             assert row["dtc"] in item["label"]
 
 
+@pytest.mark.slow
 def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK78C"), architecture_cache)
     by_id = {item["id"]: item for item in rom["objects"]}
@@ -230,6 +234,7 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
 
+@pytest.mark.slow
 def test_jk08a_model_covers_reviewed_sources_and_composed_patches(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
 
@@ -252,6 +257,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches(architecture_c
     assert by_id["checksum-field:sum16_a"]["start"] == 0x8200
 
 
+@pytest.mark.slow
 def test_jk08a_object_ids_and_ranges_are_valid(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     ids = [item["id"] for item in rom["objects"]]
@@ -261,6 +267,7 @@ def test_jk08a_object_ids_and_ranges_are_valid(architecture_cache):
     assert all(item["layer"] in {entry[0] for entry in model.LAYERS} for item in rom["objects"])
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("rom_id", ("1ND0A", "1ND3B"))
 def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest(rom_id), architecture_cache)
@@ -341,6 +348,7 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
     }
 
 
+@pytest.mark.slow
 def test_exact_family_materializes_only_explicit_target_tokens(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK00A"), architecture_cache)
     switch = next(
@@ -354,6 +362,7 @@ def test_exact_family_materializes_only_explicit_target_tokens(architecture_cach
     assert switch["source"] == "defs/JK08A.overrides.toml"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     ("rom_id", "intake_address", "exhaust_address"),
     (("JK00C", 0x0B7BE, 0x0B6BE), ("JK00D", 0x0B7CE, 0x0B6CE)),
@@ -391,6 +400,7 @@ def test_relocated_definitions_use_target_map_addresses(
     assert any(item["id"] == "checksum-field:sum16_a" for item in rom["objects"])
 
 
+@pytest.mark.slow
 def test_map_and_axis_extents_are_derived_from_geometry(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     by_id = {item["id"]: item for item in rom["objects"]}
@@ -406,6 +416,7 @@ def test_map_and_axis_extents_are_derived_from_geometry(architecture_cache):
     assert rpm_axis["end"] - rpm_axis["start"] == 16
 
 
+@pytest.mark.slow
 def test_generated_document_is_self_contained(tmp_path):
     output = tmp_path / "atlas.html"
     written, atlas = build.write_atlas(["JK08A"], output)
@@ -427,6 +438,7 @@ def test_generated_document_is_self_contained(tmp_path):
     assert payload["roms"][0]["objects"]
 
 
+@pytest.mark.slow
 def test_telemetry_layout_is_labeled_composed(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     telemetry = [item for item in rom["objects"] if item["patch"] == "can-telemetry"]
@@ -434,6 +446,7 @@ def test_telemetry_layout_is_labeled_composed(architecture_cache):
     assert {item["patchStatus"] for item in telemetry} == {"composed"}
 
 
+@pytest.mark.slow
 def test_custom_map_copies_remain_visible_as_patch_allocations_and_maps(architecture_cache):
     rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
     custom_maps = [item for item in rom["objects"] if item["kind"] == "custom-map"]

@@ -2,6 +2,8 @@ from pathlib import Path
 import tomllib
 import unittest
 
+import pytest
+
 from tools.can_dashboard import model
 from tools.logs import rolling_launch_audit as audit
 
@@ -91,6 +93,7 @@ class StockSpeedBracketRecordTest(unittest.TestCase):
     # The inside and excursion figures compare the stock frames with the
     # coordinate that the recorded profile published, which the recordings
     # converted to the current profile no longer carry; they remain the record.
+    @pytest.mark.slow
     @unittest.skipUnless(LOGS.is_dir(), "road captures are local and untracked")
     def test_captures_reproduce_the_snapshot_counts(self):
         paths = [
@@ -109,6 +112,7 @@ class StockSpeedBracketRecordTest(unittest.TestCase):
                     len(capture.samples), record["capture_snapshot_count"][index]
                 )
 
+    @pytest.mark.slow
     def test_stock_frame_audit_spans_the_recorded_rolling_launch_result(self):
         published = self.rolling_launch
         path = LOGS / Path(published["capture_name"]).with_suffix(".mlg").name

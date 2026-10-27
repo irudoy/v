@@ -2,6 +2,8 @@ from functools import lru_cache
 import os
 import unittest
 
+import pytest
+
 from kb import compile, fingerprint, graph, l0graph, names, repo
 from kb.model import Builder, SymbolKey
 
@@ -22,6 +24,7 @@ def accesses(rows, func, location):
             if (access["from"], access["to"]) == (func, location)}
 
 
+@pytest.mark.slow
 class L0RowsTest(unittest.TestCase):
     def test_functions_and_calls_follow_the_l0_files(self):
         rows = l0("7mfk")

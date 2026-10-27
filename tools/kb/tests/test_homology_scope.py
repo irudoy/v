@@ -202,6 +202,7 @@ def native_model():
     return compile.build(repo.ROOT)
 
 
+@pytest.mark.slow
 def test_same_complete_native_model_retains_non_owned_terminal_failure(native_model):
     symbol = next(s for s in native_model.symbols.values() if not checks._owned(native_model, s))
     original = symbol.evidence
@@ -213,6 +214,7 @@ def test_same_complete_native_model_retains_non_owned_terminal_failure(native_mo
         symbol.evidence = original
 
 
+@pytest.mark.slow
 def test_same_complete_native_model_retains_external_donor_failure(native_model):
     owner, donor = native_model.symbols[OWNER], native_model.symbols[DONOR]
     before = owner.evidence, donor.evidence, owner.props

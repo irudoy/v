@@ -2,6 +2,8 @@ from pathlib import Path
 import tomllib
 import unittest
 
+import pytest
+
 from tools.logs import ltft_publication_audit as audit
 from tools.mapkit import rom as romkit
 
@@ -286,6 +288,7 @@ class LtftLearningRecordTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, text)
 
+    @pytest.mark.slow
     @unittest.skipUnless(LOGS.is_dir() and IMAGE.is_file(), "road captures are local and untracked")
     def test_audit_reproduces_the_record(self):
         result = self.result

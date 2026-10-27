@@ -95,6 +95,7 @@ def test_nonstandard_buffers_and_native_widths_keep_the_scalar_reader(width):
             assert checksums._runtime32(bytes(data), 0, len(data)) == (xor_value, expected)
 
 
+@pytest.mark.slow
 def test_registered_image_domains_match_scalar_words_and_stored_references():
     images = rom_homology.load_images()
     for name, image in images.items():

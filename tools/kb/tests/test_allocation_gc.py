@@ -140,6 +140,7 @@ def test_overlapping_thread_requests_preserve_the_callers_enabled_mode():
         (gc.enable if original_mode else gc.disable)()
 
 
+@pytest.mark.slow
 def test_native_models_keep_facts_frozen_callers_and_cycle_release():
     source = '''
 import gc

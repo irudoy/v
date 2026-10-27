@@ -132,6 +132,7 @@ class SelectTest(unittest.TestCase):
         return next(entry for entry in documents[STATE_PATH]["link"]
                     if entry["type"] == "writer" and entry["to"] == FUNCTION)
 
+    @pytest.mark.slow
     def test_both_claiming_ends_add_only_the_exact_selected_claims(self):
         change, texts, result = self.plan(*OPS)
         self.assertEqual(set(texts), {STATE_PATH, FUNCTION_PATH})

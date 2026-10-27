@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from kb import compile, repo, targets
 from kb.repo import KbError
 
@@ -11,6 +13,7 @@ def model():
 class TargetsTest(unittest.TestCase):
     """The reads of the patch build equal the compiled model."""
 
+    @pytest.mark.slow
     def test_the_canonical_key_tables_are_the_symbols_of_the_7mfk_targets(self):
         m = model()
         for feature in ("map_switching", "rolling_launch", "can_telemetry"):

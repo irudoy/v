@@ -42,6 +42,7 @@ def _drift(monkeypatch, path, old, new):
     monkeypatch.setattr(single_source, "_text", drifted)
 
 
+@pytest.mark.slow
 def test_the_tree_matches_its_machine_sources():
     assert single_source.check_graph_endpoint() > 0
     assert single_source.check_export_root() == "~/tools/ghidra-projects"

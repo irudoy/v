@@ -55,6 +55,7 @@ def test_index_load_restores_caller_gc_state_on_every_path(tmp_path, monkeypatch
         (gc.enable if original_mode else gc.disable)()
 
 
+@pytest.mark.slow
 def test_public_native_index_keeps_frozen_caller_cycles_and_releases_new_model():
     source = '''
 import gc

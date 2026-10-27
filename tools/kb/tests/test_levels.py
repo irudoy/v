@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
 
+import pytest
+
 from kb import checks, compile, levels, match, repo, vocab
 from kb.model import Builder, SymbolKey
 
@@ -279,6 +281,7 @@ class DependencyTest(unittest.TestCase):
                                  "7mfk-ffff1002/ram), declared candidate"})
 
 
+@pytest.mark.slow
 class InterpolationIdentityTest(unittest.TestCase):
     ENTRIES = (0x26740, 0x26984, 0x26A60, 0x26AF8, 0x26B84, 0x26C1C)
 
@@ -327,6 +330,7 @@ class InterpolationIdentityTest(unittest.TestCase):
         self.assertTrue(subjects <= missing)
 
 
+@pytest.mark.slow
 class MailboxIdentityTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

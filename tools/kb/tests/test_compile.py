@@ -9,6 +9,8 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+import pytest
+
 from kb import adapters, checks, compile, derive, levels, match, names, repo, tokens, vocab
 from kb.adapters import (architecture, curated, definitions, interp, ledgers, native, overrides,
                          profiles, signals, telemetry)
@@ -156,6 +158,7 @@ class ExplicitLedgerTokenTest(unittest.TestCase):
                          ("base", 0x10, "structure"))
 
 
+@pytest.mark.slow
 class RamStructureEvidenceTest(unittest.TestCase):
     PATH = "tools/kb/tests/test_ram_structure.py"
     # Fixed expectations bind the ledger items, not values inferred from ROM.
@@ -372,6 +375,7 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
         self.assertFalse([i for i in levels.check(m)
                           if "the structure of 7mfk-ffff196c/ram," in i.message])
 
+    @pytest.mark.slow
     def test_ratio_base_and_direct_references_are_independent_structural_routes(self):
         from kb import sites
         m = compile.build()
@@ -506,6 +510,7 @@ class DtcLedgerAdapterTest(unittest.TestCase):
         tables.assert_called_once_with(root)
         image.assert_called_once_with(repo.layout("7mfk"), root)
 
+    @pytest.mark.slow
     def test_console_entrypoint_compiles_without_a_pythonpath_override(self):
         completed = subprocess.run(["uv", "run", "kb", "project",
                                     "defs/JK08A.architecture.toml", "--check"],
@@ -779,6 +784,7 @@ class DefinitionAdapterTest(unittest.TestCase):
                          (definitions.HOMOLOGOUS, "call-ordinal", "7mfk:000734d4"))
         self.assertIsNone(match.verify(m, symbol, item))
 
+    @pytest.mark.slow
     def test_a_reviewed_target_is_an_anchor_of_the_source_meaning(self):
         m = model()
         meaning = m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000B43A))
@@ -1724,6 +1730,7 @@ class ArchitectureAdapterTest(unittest.TestCase):
                           ("schema", "chain.c.step.2", "effect 'guesses'")])
 
 
+@pytest.mark.slow
 class StageTwoChecksTest(unittest.TestCase):
     def test_the_model_checks_pass(self):
         m = model()

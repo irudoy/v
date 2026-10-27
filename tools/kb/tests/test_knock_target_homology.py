@@ -279,6 +279,7 @@ def test_knock_target_homology_refuses_owner_binding_or_scope_mutations(layout, 
         _owner_contract(symbol, layout)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('layout', ('1nd', '1me3b'))
 def test_knock_target_homology_refuses_wrong_owner_table_address(layout):
     symbol = copy(compile.cached(repo.ROOT).meaning_of(HOME).symbols[layout])

@@ -5,6 +5,8 @@ import hashlib
 import json
 import random
 
+import pytest
+
 from kb import graph
 from tools.romviz import graph_atlas, model
 
@@ -62,6 +64,7 @@ def test_copy_ownership_and_edge_inventory_agree_for_equivalent_row_orders():
         assert canonical(actual) == expected
 
 
+@pytest.mark.slow
 def test_fresh_complete_atlases_agree_for_reversed_and_shuffled_graph_rows(monkeypatch):
     original = graph.Graph.run
     fingerprints, digests, query_counts = [], [], []
