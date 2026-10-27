@@ -867,6 +867,7 @@ mov #0x5,r1
                     VERIFIER.build_dynamic_fixture(SimpleNamespace(data=before), layout, {},
                         throttle_reconstruction=reconstructed)
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_throttle_cluster_trace_requires_both_successors_and_real_delay_slots(self):
         _layout, _stock, fixture, reconstructed = self._throttle_cluster_fixture()
         VERIFIER.install_throttle_cluster_fixture(fixture, reconstructed)
@@ -969,6 +970,7 @@ mov #0x5,r1
         layout = SimpleNamespace(code_region_by_key=regions, assembly_unit_by_key=units)
         return image, parsed, invokes, taken + untaken, traces, layout
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_binds_multiple_entries_and_tail_returns(self):
         image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture()
         records = base + [row for trace in traces.values() for row in trace]
@@ -982,6 +984,7 @@ mov #0x5,r1
             with self.subTest(omitted=omitted), self.assertRaisesRegex(VERIFIER.VerificationError, message):
                 VERIFIER.require_payload_coverage(records, image, parsed, invokes, adapter_layout=layout)
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_rejects_wrong_tail_targets_and_continuations(self):
         image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture()
         records = base + [row for trace in traces.values() for row in trace]
@@ -1004,6 +1007,7 @@ mov #0x5,r1
         with self.assertRaisesRegex(VERIFIER.VerificationError, "originating invoke frame"):
             VERIFIER.require_payload_coverage(direct_helper, image, parsed, invokes, adapter_layout=layout)
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_adapter_coverage_rejects_unsupported_r3_and_jump_forms(self):
         image, parsed, invokes, base, traces, layout = self.adapter_pc_fixture()
         original = parsed["idle_ignition_adapter"]
@@ -1019,6 +1023,7 @@ mov #0x5,r1
 
     @staticmethod
     def pc_fixture():
+        """Model two payload units; callers explicitly isolate this test scope."""
         image = bytearray(0x300)
         rows = {
             "startup_wrapper": ((0x100, 0xd003, "mov.l @(callee,pc),r0"),
@@ -1046,6 +1051,7 @@ mov #0x5,r1
                   (0x106, 11, 0), (0x108, 9, 1), (0x4004, 9, 0)]
         return bytes(image), parsed, invokes, prefix + suffix, prefix + [(0x202, 9, 0)] + suffix
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_requires_both_actual_branch_outcomes(self):
         image, parsed, invokes, taken, untaken = self.pc_fixture()
         covered = VERIFIER.require_payload_coverage(taken + untaken, image, parsed, invokes)
@@ -1055,6 +1061,7 @@ mov #0x5,r1
                                     "uncovered branch outcome 0x00000200->0x00000202"):
             VERIFIER.require_payload_coverage(taken, image, parsed, invokes)
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_rejects_wrong_opcode_delay_and_return(self):
         image, parsed, invokes, taken, untaken = self.pc_fixture()
         mutations = ((2, (0x100, 9, 0), "executed opcode differs"),
@@ -1067,6 +1074,7 @@ mov #0x5,r1
             with self.subTest(error=error), self.assertRaisesRegex(VERIFIER.VerificationError, error):
                 VERIFIER.require_payload_coverage(records, image, parsed, invokes)
 
+    @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))
     def test_pc_coverage_names_an_omitted_payload_entry(self):
         image, parsed, invokes, taken, untaken = self.pc_fixture()
         records = [*taken[:2], (0x200, 0x8b00, 0), *taken[6:8], taken[-1]]

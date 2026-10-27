@@ -120,6 +120,7 @@ struct selector_case {
     uint8_t current;
     uint8_t ascd;
     uint8_t expected[8];
+    uint8_t expected_limiter_write;
 };
 
 struct feedback_case {
@@ -129,6 +130,7 @@ struct feedback_case {
     const uint8_t *statuses;
     size_t status_count;
     uint8_t expected[8];
+    uint8_t expected_status_pointer;
 };
 
 static const struct family adapter_families[] = {
@@ -353,77 +355,147 @@ static const uint32_t throttle_slots[] = {
 static const struct selector_case selector_cases[] = {
     {
         "idle", {0, 0, 0, 0, 0, 0, 0, 0}, 0x20, 0x20, 0,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "arm", {0, 0, 0, 0, 0, 0, 0, 0}, 0x20, 8, 0,
-        {0, 1, 0, 1, 0, 0, 0, 0},
+        {0, 1, 0, 1, 0, 0, 0, 0}, 0,
     },
     {
         "set-held", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 8, 0,
-        {1, 1, 2, 8, 0, 0, 0, 0},
+        {1, 1, 2, 8, 0, 0, 0, 0}, 0,
     },
     {
         "set-to-cancel", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 2, 0,
-        {1, 2, 2, 8, 0, 0, 0, 0},
+        {1, 2, 2, 8, 0, 0, 0, 0}, 0,
     },
     {
         "cancel-held", {2, 2, 3, 9, 0, 0, 0, 0}, 2, 2, 0,
-        {2, 2, 3, 10, 0, 0, 0, 0},
+        {2, 2, 3, 10, 0, 0, 0, 0}, 0,
     },
     {
         "cancel-to-set", {2, 2, 3, 9, 0, 0, 0, 0}, 2, 8, 0,
-        {2, 1, 4, 10, 0, 0, 0, 0},
+        {2, 1, 4, 10, 0, 0, 0, 0}, 0,
     },
     {
         "commit-map-1", {3, 1, 1, 9, 0, 0, 0, 0}, 8, 0x20, 0,
-        {0, 0, 0, 0, 1, 1, 0, 0},
+        {0, 0, 0, 0, 1, 1, 0, 0}, 1,
     },
     {
         "commit-map-5", {1, 1, 5, 9, 0, 0, 0, 0}, 8, 0x20, 0,
-        {4, 0, 0, 0, 5, 1, 0, 0},
+        {4, 0, 0, 0, 5, 1, 0, 0}, 1,
     },
     {
         "release-zero-abort", {3, 1, 0, 9, 0, 0, 0, 0}, 8, 0, 0,
-        {3, 0, 0, 0, 0, 0, 0, 0},
+        {3, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "sixth-pulse-abort", {2, 2, 5, 9, 0, 0, 0, 0}, 2, 8, 0,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "timeout-abort", {2, 1, 2, 99, 0, 0, 0, 0}, 8, 8, 0,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "ascd-abort", {2, 1, 2, 9, 0, 0, 0, 0}, 8, 8, ASCD_MAIN,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "ascd-foreign-flags", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 8,
         ASCD_FOREIGN_FLAGS,
-        {1, 1, 2, 8, 0, 0, 0, 0},
+        {1, 1, 2, 8, 0, 0, 0, 0}, 0,
     },
     {
         "feedback-blocks", {2, 1, 2, 9, 3, 1, 4, 0}, 8, 0, 0,
-        {2, 0, 0, 0, 3, 1, 4, 0},
+        {2, 0, 0, 0, 3, 1, 4, 0}, 0,
     },
     {
         "feedback-corrupt", {2, 1, 2, 9, 6, 1, 4, 0}, 8, 0, 0,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "idle-feedback-corrupt", {2, 1, 2, 9, 0, 0, 1, 0}, 8, 0, 0,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "selector-corrupt", {2, 3, 2, 9, 0, 0, 0, 0}, 8, 0, 0,
-        {2, 0, 0, 0, 0, 0, 0, 0},
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "invalid-index", {0xff, 1, 2, 9, 3, 1, 4, 0}, 8, 0, 0,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 1,
     },
+#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+    {
+        "feedback-off-blocks", {2, 1, 2, 9, 3, 2, 4, 0}, 8, 0, 0,
+        {2, 0, 0, 0, 3, 2, 4, 0}, 0,
+    },
+    {
+        "feedback-phase-three", {2, 1, 2, 9, 3, 3, 4, 0}, 8, 0, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "feedback-on-zero-pulses", {2, 1, 2, 9, 0, 1, 4, 0}, 8, 0, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "feedback-off-zero-pulses", {2, 1, 2, 9, 0, 2, 4, 0}, 8, 0, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "count-six", {2, 1, 6, 9, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "count-ff", {2, 1, 0xff, 9, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "ticks-one-hundred", {2, 1, 2, 100, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "ticks-ff", {2, 1, 2, 0xff, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "armed-set-zero-ticks", {2, 1, 2, 0, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "armed-cancel-zero-ticks", {2, 2, 2, 0, 0, 0, 0, 0}, 2, 2, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "idle-with-count", {2, 0, 1, 0, 0, 0, 0, 0}, 0x20, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "idle-with-ticks", {2, 0, 0, 1, 0, 0, 0, 0}, 0x20, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "idle-held-set", {2, 0, 0, 0, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "set-wrong-previous", {2, 1, 2, 9, 0, 0, 0, 0}, 2, 0x20, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "cancel-wrong-previous", {2, 2, 2, 9, 0, 0, 0, 0}, 8, 8, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "cancel-invalid-current", {2, 2, 2, 9, 0, 0, 0, 0}, 2, 0x20, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+    {
+        "set-release-zero-count", {2, 1, 0, 9, 0, 0, 0, 0}, 8, 0x20, 0,
+        {2, 0, 0, 0, 0, 0, 0, 0}, 0,
+    },
+#endif
 };
 
 static const uint8_t disabled_statuses[] = {0xb5};
@@ -437,48 +509,60 @@ static const struct feedback_case feedback_cases[] = {
     {
         "disabled", 0x0000, {0, 0, 0, 0, 1, 1, 0, 0},
         disabled_statuses, ARRAY_SIZE(disabled_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "two-pulses-2x2", 0x0202, {0, 0, 0, 0, 2, 1, 0, 0},
         two_pulse_statuses, ARRAY_SIZE(two_pulse_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 1,
     },
     {
         "one-pulse-1x1", 0x0101, {0, 0, 0, 0, 1, 1, 0, 0},
         one_pulse_statuses, ARRAY_SIZE(one_pulse_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 1,
     },
     {
         "idle", 0x0202, {0, 0, 0, 0, 0, 0, 0, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "corrupt-pulses", 0x0202, {0, 0, 0, 0, 6, 1, 0, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "corrupt-phase", 0x0202, {0, 0, 0, 0, 1, 3, 0, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "corrupt-idle", 0x0202, {0, 0, 0, 0, 0, 0, 1, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "missing-off-count", 0x0200, {0, 0, 0, 0, 1, 1, 0, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
     {
         "missing-on-count", 0x0002, {0, 0, 0, 0, 1, 1, 0, 0},
         idle_statuses, ARRAY_SIZE(idle_statuses),
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}, 0,
     },
+#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+    {
+        "on-zero-pulses", 0x0202, {2, 1, 2, 9, 0, 1, 7, 0x7e},
+        idle_statuses, ARRAY_SIZE(idle_statuses),
+        {2, 1, 2, 9, 0, 0, 0, 0}, 0,
+    },
+    {
+        "off-zero-pulses", 0x0202, {2, 1, 2, 9, 0, 2, 7, 0x7e},
+        idle_statuses, ARRAY_SIZE(idle_statuses),
+        {2, 1, 2, 9, 0, 0, 0, 0}, 0,
+    },
+#endif
 };
 
 static const uint8_t payload_seed[] = {
@@ -1138,7 +1222,8 @@ static int all_value(
     return 1;
 }
 
-static int verify_optional_selector_shadows(const char *name, int active)
+static int verify_optional_selector_shadows(
+    const char *name, int active, int expected_write)
 {
     uint8_t expected[RAM_SENTINEL_SIZE];
     uint8_t runtime[2];
@@ -1150,6 +1235,10 @@ static int verify_optional_selector_shadows(const char *name, int active)
             ram_pointer(THROTTLE_SHADOW), THROTTLE_SHADOW_SIZE, 0xa5)
         && all_value(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
 
+    if (expected_write == 0 && !untouched)
+        return fail_value(name, "unexpected_limiter_write", 1, 0);
+    if (expected_write == 1 && untouched)
+        return fail_value(name, "missing_limiter_write", 0, 1);
     if (untouched)
         return 1;
     active = active < 5 ? active : 0;
@@ -1181,6 +1270,8 @@ static int run_selector_cases(void)
         const struct selector_case *test = &selector_cases[index];
         uint8_t expected_diagnostic;
         int active;
+        int expected_write = -1;
+        uint32_t returned;
 
         seed_ram(test->initial);
         fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
@@ -1188,12 +1279,19 @@ static int run_selector_cases(void)
         ram_pointer(CURRENT_CODE)[1] = test->previous;
         ram_pointer(ASCD_STATUS)[0] = test->ascd;
         ram_pointer(DIAGNOSTIC_STATUS)[0] = 0x25;
-        (void)invoke_r4(SELECTOR_HOST, 0);
+        returned = invoke_r4(SELECTOR_HOST, 0);
         if (!fail_bytes(
                 test->name, "selector_state", ram_pointer(SELECTOR_STATE),
                 test->expected, sizeof(test->expected)))
             return 0;
         active = test->expected[0];
+#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+        expected_write = test->expected_limiter_write;
+        if (returned != (uint32_t)active)
+            return fail_value(test->name, "selector_return", returned, (uint32_t)active);
+#else
+        (void)returned;
+#endif
         expected_diagnostic =
             (uint8_t)(0x25U & 0x7fU) | (active == 0 ? 0U : 0x80U);
         if (ram_pointer(DIAGNOSTIC_STATUS)[0] != expected_diagnostic)
@@ -1202,7 +1300,7 @@ static int run_selector_cases(void)
                 ram_pointer(DIAGNOSTIC_STATUS)[0], expected_diagnostic);
         if (!verify_ram_guards(test->name))
             return 0;
-        if (!verify_optional_selector_shadows(test->name, active))
+        if (!verify_optional_selector_shadows(test->name, active, expected_write))
             return 0;
     }
     return 1;
@@ -1225,7 +1323,15 @@ static int run_feedback_cases(size_t *invocations)
         for (invocation = 0; invocation < test->status_count; ++invocation) {
             size_t byte_index;
 
-            (void)invoke_r4(FEEDBACK_WRAPPER, 0);
+            uint32_t returned = invoke_r4(FEEDBACK_WRAPPER, 0);
+#ifdef VERIFY_7MFK_SELECTOR_FEEDBACK
+            uint32_t expected_return = test->expected_status_pointer
+                ? (uint32_t)(uintptr_t)ram_pointer(PAYLOAD + 5U) : 0;
+            if (returned != expected_return)
+                return fail_value(test->name, "feedback_return", returned, expected_return);
+#else
+            (void)returned;
+#endif
             for (byte_index = 0; byte_index < sizeof(payload_seed);
                  ++byte_index) {
                 uint8_t expected = byte_index == 5
@@ -1250,7 +1356,7 @@ static int run_feedback_cases(size_t *invocations)
 
 int main(void)
 {
-    size_t feedback_invocations;
+    size_t feedback_invocations = 0;
     size_t total_cases = ARRAY_SIZE(adapter_families) * 7U
         + ARRAY_SIZE(pass_throughs) + 14U + ARRAY_SIZE(selector_cases)
         + ARRAY_SIZE(feedback_cases);
@@ -1283,6 +1389,7 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
+#ifndef VERIFY_7MFK_SELECTOR_FEEDBACK
 #ifdef TARGET_1ND
     if (total_cases != 197U)
         return fail_value("summary", "case_count", total_cases, 197);
@@ -1302,26 +1409,29 @@ int main(void)
     if (feedback_invocations != 17U)
         return fail_value(
             "summary", "feedback_invocations", feedback_invocations, 17);
+#endif
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu "
-        "selector=18 "
+        "selector=%lu "
 #ifdef TARGET_1ND
-        "adapters=136 limiter=14 native_fuel=20 feedback=9 "
+        "adapters=136 limiter=14 native_fuel=20 feedback=%lu "
         "feedback_invocations=%lu entries=14\n",
 #elif defined(TARGET_1ME3B)
-        "adapters=134 limiter=14 native_fuel=20 feedback=9 "
+        "adapters=134 limiter=14 native_fuel=20 feedback=%lu "
         "feedback_invocations=%lu entries=14\n",
 #elif defined(TARGET_VQ37)
-        "adapters=107 limiter=14 native_fuel=20 feedback=9 "
+        "adapters=107 limiter=14 native_fuel=20 feedback=%lu "
         "feedback_invocations=%lu entries=13\n",
 #elif defined(TARGET_DUAL_CVTC)
-        "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "
+        "adapters=99 limiter=14 feedback=%lu feedback_invocations=%lu "
         "entries=13\n",
 #else
-        "adapters=91 limiter=14 feedback=9 feedback_invocations=%lu "
+        "adapters=91 limiter=14 feedback=%lu feedback_invocations=%lu "
         "entries=12\n",
 #endif
-        (unsigned long)total_cases, (unsigned long)feedback_invocations);
+        (unsigned long)total_cases, (unsigned long)ARRAY_SIZE(selector_cases),
+        (unsigned long)ARRAY_SIZE(feedback_cases),
+        (unsigned long)feedback_invocations);
     return 0;
 }

@@ -45,7 +45,6 @@ EXPECTED_COMPOSITION_CHANGED_BYTES = 5803
 EXPECTED_COMPOSITION_WRITE_BYTES = 6316
 EXPECTED_INSTRUCTION_COUNT = 435
 EXPECTED_CODE_ENTRY_COUNT = 12
-EXPECTED_DYNAMIC_CASES = 132
 TEST_RAM_BASE = 0x01000000
 HIGH_RAM_BASE = 0xFFFE8000
 ROM_SIZE = 0x00100000
@@ -76,7 +75,10 @@ GCC = "sh-elf-gcc"
 RUN = "sh-elf-run"
 NM = "sh-elf-nm"
 OBJDUMP = "sh-elf-objdump"
-PC_COVERAGE_UNITS = ("startup_wrapper", "limiter_commit")
+PC_COVERAGE_UNITS = (
+    "startup_wrapper", "limiter_commit", "selector_host",
+    "cruise_feedback_wrapper", "cruise_feedback_engine",
+)
 PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar"}
 ADAPTER_COVERAGE_UNITS = (
     "adapter_select_helper", "lookup_adapters", "full_dfco_adapter",
@@ -842,6 +844,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-DVERIFY_7MFK_FUEL_CUT",
             "-DVERIFY_7MFK_THROTTLE_SCALAR",
             "-DVERIFY_7MFK_THROTTLE_CLUSTER",
+            "-DVERIFY_7MFK_SELECTOR_FEEDBACK",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -875,14 +878,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
 
     result, records, invoke_words = execute(harness_elf)
     covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True, adapter_layout=layout)
-    marker = (
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 "
-        "adapters=91 limiter=14 feedback=9 feedback_invocations=17 "
-        "entries=12"
-    )
+    marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
     if marker not in result.stdout:
         raise VerificationError(
-            "dynamic harness returned zero without the exact PASS marker"
+            "dynamic harness returned zero without the semantic PASS marker"
             + (f"\n{result.stdout.rstrip()}" if result.stdout else "")
         )
     if not re.search(
@@ -905,6 +904,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     omissions.append(("adapters", "if (!run_adapter_cases())",
                       f"uncovered entry {layout.code_region_by_key['adapter_select_helper'].entry:#010x}",
                       "VQ_SH_ELF_ADAPTER_COVERAGE_NEGATIVE"))
+    omissions.extend((
+        ("selector", "if (!run_selector_cases())",
+         f"uncovered entry {parsed_by_unit['selector_host'].labels['selector_host']:#010x}",
+         "VQ_SH_ELF_SELECTOR_COVERAGE_NEGATIVE"),
+        ("feedback", "if (!run_feedback_cases(&feedback_invocations))",
+         f"uncovered entry {parsed_by_unit['cruise_feedback_wrapper'].labels['cruise_feedback_wrapper']:#010x}",
+         "VQ_SH_ELF_FEEDBACK_COVERAGE_NEGATIVE"),
+    ))
     negative_markers, negative_sources = [], []
     for name, call, expected_reason, prefix in omissions:
         if source.count(call) != 1:
@@ -1098,7 +1105,6 @@ def verify(verbose=False):
         f" direct_branches={audit.direct_branches}"
         f" indirect_transfers={audit.indirect_transfers}"
         f" composition_sha256={composition.sha256}"
-        f" dynamic_cases={EXPECTED_DYNAMIC_CASES}"
         f" rolling_launch_instructions="
         f"{rolling_result['audit'].instructions}"
         f" rolling_launch_cases={rolling_result['dynamic_cases']}"

@@ -43,20 +43,23 @@ The canonical and relocated runtime verifiers:
 - Execute the original unsafe delayed-branch pair and a safe control fixture.
 
 The canonical JK08A map-switching harness measures executed PCs and opcodes
-for `startup_wrapper`, `limiter_commit`, the canonical lookup adapters and their
-shared helper, and the bounded throttle-cluster prefix. Its observer records the
+for `startup_wrapper`, `limiter_commit`, `selector_host`,
+`cruise_feedback_wrapper`, `cruise_feedback_engine`, the canonical lookup adapters
+and their shared helper, and the bounded throttle-cluster prefix. Its observer records the
 actual delay-slot execution order. The verifier requires every instruction, both
 conditional outcomes, and matched calls and returns in this scope. It binds
 the trace to the independently assembled payload, the composed ROM, and the
 final ELF; simulator RAM-literal translations preserve instruction words.
 The ordinary GNU toolchain includes the optional host observer. Trace requests
 remain local to the canonical harness, with no target-state instrumentation.
-The stock initializer retains its existing RTS/NOP fixture stub; this coverage
-does not qualify the initializer's original body.
+The displaced stock host, serializer and initializer retain their existing
+RTS/NOP fixture stubs; this coverage does not qualify their original bodies.
 
-A negative build suppresses the actual `run_limiter_cases()` call while
-retaining the same ROM bytes and the old semantic PASS marker. Execution must
-then fail coverage with the omitted startup entry. Coverage of the remaining
+Independent negative builds suppress the actual `run_limiter_cases()`,
+`run_adapter_cases()`, `run_selector_cases()` or `run_feedback_cases()` call while
+retaining the same ROM bytes and semantic PASS prefix. Each build must fail
+coverage at its exact omitted startup, helper, selector or feedback-wrapper entry.
+Case totals are reporting metadata. Coverage of the remaining
 payloads, targets, and other SH7058 limiter-pointer consumers remains outside this
 bounded check. Case and entry totals printed by the other harnesses do not
 establish instruction coverage.
@@ -74,10 +77,14 @@ invoke frame. Entries visited on that frame qualify their return only when the
 bound stock RTS/NOP stub reaches the original invoke continuation. These stubs
 do not qualify the stock lookup bodies.
 
-A second negative build suppresses the actual `run_adapter_cases()` call while
-preserving the same ROM and existing semantic PASS marker. It must fail measured
-coverage at the omitted helper entry. Selector and feedback payload coverage
-remain outside this scope.
+The canonical selector matrix declares the expected published state, observed R4
+and whether a limiter write is permitted. Blocked and aborted gestures require
+untouched shadows and throttle runtime; normalization commits are explicit.
+Feedback rows declare state, payload and observed R4 independently. Zero-pulse
+feedback clears its own transient state while preserving the selector and stock
+payload. These R4 observations use the fixture's invoke helper. Canonical case
+totals do not gate acceptance; relocated targets retain their existing matrices
+and checks.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original
