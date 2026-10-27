@@ -106,8 +106,8 @@ retain their existing execution checks and receive no measured qualification
 from these JK00C and JK00D map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, `startup_wrapper`, and `threshold_helper` with the same host
-PC observer. Typed instruction statements define this scope; pools and fill
+`selector_arbiter`, `startup_wrapper`, `threshold_helper`, and `feedback_arbiter`
+with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
 and invoke code. Each wrapper invocation retains its originating invoke frame
@@ -123,7 +123,7 @@ continuation. Both outcomes of every helper branch and its delay slots must
 execute; the engine and stock divider bodies receive no instruction-coverage
 qualification.
 
-The canonical-only `VERIFY_CANONICAL_ROLLING_THRESHOLD` build adds boundary
+The canonical-only `VERIFY_CANONICAL_ROLLING` build adds boundary
 inputs for the exact floor, rounding transition, wide ramp and saturated upper
 limit. Independent literal results specify the two output words. The complete
 state, configuration, selector, shadows, runtime words, named input/output
@@ -131,11 +131,25 @@ buffers, stack pointer and GBR must otherwise remain intact. The observed R4
 retains the configuration-pointer role exposed by `invoke_r4`; it is not a C
 return-value contract. Relocated harness matrices and assertions are unchanged.
 
+The feedback arbiter accepts only a bound invoke origin. Its literal R0 call
+runs the existing Map Switching feedback wrapper before applying Rolling Launch
+status. That call must return to its original continuation after an actual
+nested call and return through the declared stock serializer fixture stub.
+The arbiter must then execute its own native RTS and delay slot. These call
+boundaries do not qualify the Map Switching or original stock function bodies.
+
+Canonical feedback rows retain independent literal status and map-feedback
+results, including an IDLE case with no failure reason and a held button.
+They check every payload byte, the complete Rolling Launch and selector state,
+configuration, pulse-count constants, concrete shadows and input/output
+buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
+pattern. The existing case counter reports both canonical boundary matrices;
+relocated feedback rows and assertions retain their original behavior.
+
 A Rolling Launch negative build calls the engine directly instead of the
 periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
 marker. Measured coverage must reject the omitted periodic entry. Coverage of
-the engine body, ignition payloads and feedback arbiter remains outside this
-bounded scope.
+the engine and ignition payload bodies remains outside this bounded scope.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

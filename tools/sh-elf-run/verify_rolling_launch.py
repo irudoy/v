@@ -37,14 +37,14 @@ EXPECTED_COMPOSITION_WRITE_BYTES = 2328
 EXPECTED_INSTRUCTION_COUNT = 878
 EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 128
+EXPECTED_DYNAMIC_CASES = 129
 RETURN_STUB = bytes.fromhex("000b0009")
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper")
-COVERAGE_UNITS = ("wrappers", "threshold_helper")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper")
+COVERAGE_UNITS = ("wrappers", "threshold_helper", "feedback_arbiter")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "threshold_helper", "feedback_arbiter")
 
 
 class VerificationError(RuntimeError):
@@ -223,11 +223,12 @@ def bind_threshold_engine_window(fixture, composed, parsed, regions):
     return entry, load + 2
 
 
-def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words):
-    """Measure the fixed canonical wrapper and threshold-helper scope."""
+def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry):
+    """Measure the fixed canonical wrapper, threshold and feedback scope."""
     wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
     helper = regions["threshold_helper"].entry
-    entries = wrapper_entries | {helper}
+    arbiter = regions["feedback_arbiter"].entry
+    entries = wrapper_entries | {helper, arbiter}
     engine, engine_call = bind_threshold_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
@@ -260,7 +261,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 register = "r3" if unit == "threshold_helper" else "r0"
                 if (literal is None or literal.group("width") != "l"
                         or literal.group("register") != register or row.text != f"{mnemonic} @{register}"
-                        or unit == "threshold_helper" and mnemonic != "jsr"):
+                        or unit != "wrappers" and mnemonic != "jsr"):
                     raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
@@ -269,6 +270,14 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     if len(helper_calls) != 1 or len(helper_returns) != 1:
         raise VerificationError("threshold helper lacks its unique divider call and native RTS")
     divider_call, helper_return = helper_calls[0], helper_returns[0]
+    arbiter_calls = [pc for pc in transfers if owners[pc] == arbiter]
+    arbiter_returns = [pc for pc, word in instructions.items() if owners[pc] == arbiter and word == 11]
+    if len(arbiter_calls) != 1 or len(arbiter_returns) != 1:
+        raise VerificationError("feedback arbiter lacks its unique Map call and native RTS")
+    arbiter_call, arbiter_return = arbiter_calls[0], arbiter_returns[0]
+    base_feedback = transfers[arbiter_call][2]
+    if fixture[serializer_entry:serializer_entry + len(FEEDBACK_SERIALIZER_STUB)] != FEEDBACK_SERIALIZER_STUB:
+        raise VerificationError("feedback serializer boundary differs from its declared fixture stub")
     for entry, boundary in stock_boundaries.items():
         if entry not in wrapper_entries or fixture[boundary:boundary + 4] != RETURN_STUB:
             raise VerificationError("wrapper stock return boundary is not its RTS/NOP stub")
@@ -311,6 +320,9 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             raise VerificationError(f"executed wrapper BRA differs at {pc:#010x}")
         if pc in transfers:
             kind, _pool, target = transfers[pc]
+            if pc == arbiter_call and (frame is None or frame["entry"] != arbiter
+                    or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
+                raise VerificationError("feedback Map call lacks its bound R0 load and arbiter frame")
             if pc == divider_call and (not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
                 raise VerificationError("threshold divider call lacks its bound R3 load")
             if successor(index, True) != target:
@@ -324,6 +336,11 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 if frames or pc not in invoke_words:
                     raise VerificationError("wrapper entry lacks its originating invoke call")
                 origin = {"entry": target, "stock_return": False}
+            elif target == arbiter:
+                if frames or pc not in invoke_words:
+                    raise VerificationError("feedback arbiter lacks its originating invoke call")
+                origin = {"entry": arbiter, "stock_return": False,
+                          "serializer_return": False, "base_feedback_return": False}
             elif target == helper:
                 if not frames and pc in invoke_words:
                     origin = {"entry": helper, "stock_return": False}
@@ -353,7 +370,22 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 raise VerificationError(f"executed wrapper return differs at {pc:#010x}")
             if origin["entry"] in stock_boundaries and pc == stock_boundaries[origin["entry"]]:
                 origin["stock_return"] = True
-            if entry == helper:
+            if origin["entry"] == arbiter:
+                if entry == serializer_entry:
+                    if pc != serializer_entry + 6 or not any(
+                            parent["call"] == arbiter_call and parent["entry"] == base_feedback
+                            and parent["origin"] is origin for parent in frames):
+                        raise VerificationError("feedback serializer return lacks its bound Map parent and RTS")
+                    origin["serializer_return"] = True
+                if call == arbiter_call:
+                    if entry != base_feedback or not origin["serializer_return"]:
+                        raise VerificationError("feedback Map return lacks its serializer return boundary")
+                    origin["base_feedback_return"] = True
+            if entry == arbiter:
+                if pc != arbiter_return or not origin["base_feedback_return"]:
+                    raise VerificationError("feedback arbiter return lacks its Map return and native RTS")
+                returned.add(entry)
+            elif entry == helper:
                 if pc != helper_return or not frame["divider_return"]:
                     raise VerificationError("threshold helper return lacks its divider return and native RTS")
                 returned.add(entry)
@@ -415,7 +447,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-m2e",
             "-mb",
             "-std=c11",
-            "-DVERIFY_CANONICAL_ROLLING_THRESHOLD=1",
+            "-DVERIFY_CANONICAL_ROLLING=1",
             "-O2",
             "-Wall",
             "-Wextra",
@@ -460,11 +492,12 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         regions["startup_wrapper"].entry: base_hooks["startup_initializer"].stock,
     }
     result, records, invoke_words = execute(harness_elf)
-    covered = require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words)
+    covered = require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
+                                       base_hooks["cruise_feedback_serializer"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=128 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=129 "
         "structural=11 gates=27 config=24 threshold=9 activation=6 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 entries=8"
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=8 entries=8"
     )
     if marker not in result.stdout:
         raise VerificationError(
@@ -488,7 +521,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         raise VerificationError("periodic bypass does not preserve the semantic PASS marker")
     expected = f"uncovered wrapper entry {regions['periodic_wrapper'].entry:#010x}"
     try:
-        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words)
+        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
+                                       base_hooks["cruise_feedback_serializer"].stock)
     except VerificationError as error:
         if str(error) != expected:
             raise VerificationError(f"periodic bypass fails outside its omitted entry: {error}") from error

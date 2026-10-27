@@ -1466,24 +1466,52 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                        prefix + [event(0x280), event(0x282), event(0x284), event(0x286, 1)]
                        + helper_prefix + [event(0x208), event(0x20A), event(0x20C, 1)]
                        + helper_suffix + [event(0x288), event(0x28A, 1)] + suffix))
+        feedback_rows = ((0x240, "mov.l @(rl_feedback_base_wrapper,pc),r0", 0xD00D),
+                         (0x242, "jsr @r0", 0x400B), (0x244, "nop", 9),
+                         (0x246, "bt feedback_other", 0x8901), (0x248, "mov #1,r0", 0xE001),
+                         (0x24A, "bra feedback_return", 0xA000),
+                         (0x24C, "mov #2,r0", 0xE002), (0x24E, "rts", 11), (0x250, "nop", 9))
+        statements = []
+        for pc, text, word in feedback_rows:
+            image[pc:pc + 2] = word.to_bytes(2, "big")
+            statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
+        units["feedback_arbiter"] = assembly_model.ParsedSource(Path("feedback.s"),
+            {"rl_feedback_base_wrapper": 0x278, "feedback_other": 0x24C, "feedback_return": 0x24E},
+            tuple(statements))
+        image[0x278:0x27C] = (0x340).to_bytes(4, "big")
+        image[0x340:0x34A] = bytes.fromhex("d002400b0009000b0009")
+        image[0x34C:0x350] = (0x350).to_bytes(4, "big")
+        image[0x350:0x350 + len(ROLLING_VERIFIER.FEEDBACK_SERIALIZER_STUB)] = ROLLING_VERIFIER.FEEDBACK_SERIALIZER_STUB
+        regions["feedback_arbiter"] = SimpleNamespace(
+            entry=0x240, span=SimpleNamespace(start=0x240, end=0x280))
+        feedback_prefix = [event(0x240), event(0x242), event(0x244, 1),
+                           event(0x340), event(0x342), event(0x344, 1),
+                           event(0x350), event(0x352), event(0x354), event(0x356), event(0x358, 1),
+                           event(0x346), event(0x348, 1), event(0x246)]
+        feedback_suffix = [event(0x24E), event(0x250, 1)]
+        traces.extend((prefix + feedback_prefix + [event(0x24C)] + feedback_suffix + suffix,
+                       prefix + feedback_prefix + [event(0x248), event(0x24A), event(0x24C, 1)]
+                       + feedback_suffix + suffix))
         return bytes(image), units, regions, boundaries, invokes, traces
 
     def test_each_entry_branch_delay_and_return_is_measured(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
-            sum(traces, []), image, parsed, regions, boundaries, invokes)
-        self.assertEqual(result, dict(entries=4, instructions=28, outcomes=6,
-                                      delay_slots=9, call_return_paths=8, tail_paths=2))
+            sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350)
+        self.assertEqual(result, dict(entries=5, instructions=37, outcomes=8,
+                                      delay_slots=12, call_return_paths=10, tail_paths=2))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         for selected, reason in ((traces[1:], "uncovered wrapper entry 0x00000100"),
-                                  (traces[:4], "uncovered wrapper entry 0x00000200"),
+                                  (traces[:4] + traces[6:], "uncovered wrapper entry 0x00000200"),
+                                  (traces[:6], "uncovered wrapper entry 0x00000240"),
+                                  (traces[:6] + traces[7:], "uncovered wrapper branch 0x00000246"),
                                   (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(
-                    sum(selected, []), image, parsed, regions, boundaries, invokes)
+                    sum(selected, []), image, parsed, regions, boundaries, invokes, 0x350)
 
     def test_wrong_opcode_slot_call_tail_and_return_are_rejected(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
@@ -1497,27 +1525,28 @@ class RollingWrapperCoverageTest(unittest.TestCase):
             changed = list(records)
             changed[index] = replacement
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
-                ROLLING_VERIFIER.require_wrapper_coverage(changed, image, parsed, regions, boundaries, invokes)
+                ROLLING_VERIFIER.require_wrapper_coverage(changed, image, parsed, regions, boundaries, invokes, 0x350)
 
     def test_origin_stock_boundary_and_noninstruction_bytes_are_required(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "originating invoke frame"):
             ROLLING_VERIFIER.require_wrapper_coverage(
-                traces[0][2:] + sum(traces[1:], []), image, parsed, regions, boundaries, invokes)
+                traces[0][2:] + sum(traces[1:], []), image, parsed, regions, boundaries, invokes, 0x350)
         changed = bytearray(image)
         changed[0x160:0x164] = (0x30C).to_bytes(4, "big")
         records = sum(traces, [])
         records[16:18] = [(0x30C, 11, 0), (0x30E, 9, 1)]
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "stock return boundary"):
-            ROLLING_VERIFIER.require_wrapper_coverage(records, changed, parsed, regions, boundaries, invokes)
+            ROLLING_VERIFIER.require_wrapper_coverage(records, changed, parsed, regions, boundaries, invokes, 0x350)
         records = traces[0] + [(0x110, 0, 0)] + sum(traces[1:], [])
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "executed wrapper data"):
-            ROLLING_VERIFIER.require_wrapper_coverage(records, image, parsed, regions, boundaries, invokes)
+            ROLLING_VERIFIER.require_wrapper_coverage(records, image, parsed, regions, boundaries, invokes, 0x350)
 
     def test_fixture_instruction_and_control_literal_mutations_fail_before_linking(self):
         image, parsed, _regions, _boundaries, _invokes, _traces = self.fixture()
         for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal"),
-                                (0x200, "wrapper instruction"), (0x23C, "wrapper control literal")):
+                                (0x200, "wrapper instruction"), (0x23C, "wrapper control literal"),
+                                (0x240, "wrapper instruction"), (0x278, "wrapper control literal")):
             changed = bytearray(image)
             changed[address] ^= 1
             with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
@@ -1551,7 +1580,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         for records, reason in cases:
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(
-                    sum(traces[:4], []) + records, image, parsed, regions, boundaries, invokes)
+                    sum(traces[:4], []) + records, image, parsed, regions, boundaries, invokes, 0x350)
 
     def test_engine_window_instruction_and_literal_are_bound_before_execution(self):
         image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()
@@ -1566,15 +1595,55 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "differs from its source"):
             ROLLING_VERIFIER.bind_threshold_engine_window(changed, changed, parsed["engine"], regions)
 
-    def test_unknown_helper_transfer_form_is_rejected(self):
+    def test_unknown_helper_and_feedback_transfer_forms_are_rejected(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
-        helper = parsed["threshold_helper"]
-        rows = tuple(assembly_model.SourceStatement(row.line_number, row.address, row.kind,
-                     "jsr @r0" if row.address == 0x202 else row.text, row.size)
-                     for row in helper.statements)
-        parsed["threshold_helper"] = assembly_model.ParsedSource(helper.path, helper.labels, rows)
-        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unbound wrapper transfer"):
-            ROLLING_VERIFIER.require_wrapper_coverage(sum(traces, []), image, parsed, regions, boundaries, invokes)
+        for unit, pc, transfer in (("threshold_helper", 0x202, "jsr @r0"),
+                                   ("feedback_arbiter", 0x242, "jmp @r0")):
+            source = parsed[unit]
+            rows = tuple(assembly_model.SourceStatement(row.line_number, row.address, row.kind,
+                         transfer if row.address == pc else row.text, row.size)
+                         for row in source.statements)
+            changed = {**parsed, unit: assembly_model.ParsedSource(source.path, source.labels, rows)}
+            with self.subTest(unit=unit), self.assertRaisesRegex(
+                    ROLLING_VERIFIER.VerificationError, "unbound wrapper transfer"):
+                ROLLING_VERIFIER.require_wrapper_coverage(
+                    sum(traces, []), image, changed, regions, boundaries, invokes, 0x350)
+
+    def test_feedback_requires_invoke_map_and_serializer_returns(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        feedback = traces[6]
+        cases = [(feedback[2:], "originating invoke frame")]
+        missing_serializer = feedback[:6] + feedback[13:]
+        cases.append((missing_serializer, "serializer return boundary"))
+        # Reach the native arbiter RTS without executing its Map call.
+        cases.append((feedback[:3] + feedback[-3:], "Map return and native RTS"))
+        missing_map_return = feedback[:13] + feedback[15:]
+        cases.append((missing_map_return, "wrapper return differs"))
+        wrong_target = list(feedback)
+        wrong_target[5] = (0x30C, 11, 0)
+        cases.append((wrong_target, "wrapper JSR differs"))
+        wrong_return = list(feedback)
+        wrong_return[15] = (0x248, 0xE001, 0)
+        cases.append((wrong_return, "wrapper return differs"))
+        wrong_slot = list(feedback)
+        wrong_slot[4] = (0x244, 9, 0)
+        cases.append((wrong_slot, "missing executed delay slot"))
+        cases.append((feedback[:3] + [(0x280, 9, 0)] + feedback[3:], "bound R0 load"))
+        for records, reason in cases:
+            with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                ROLLING_VERIFIER.require_wrapper_coverage(
+                    sum(traces[:6], []) + records, image, parsed, regions, boundaries, invokes, 0x350)
+
+    def test_feedback_serializer_stub_and_noninstruction_bytes_are_bound(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        changed = bytearray(image)
+        changed[0x354] ^= 1
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "serializer boundary differs"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []), changed, parsed, regions, boundaries, invokes, 0x350)
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "executed wrapper data"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []) + [(0x278, 0, 0)], image, parsed, regions, boundaries, invokes, 0x350)
 
 
 if __name__ == "__main__":

@@ -773,7 +773,7 @@ static int verify_active_state(
     return verify_state_guards(name);
 }
 
-#ifdef VERIFY_CANONICAL_ROLLING_THRESHOLD
+#ifdef VERIFY_CANONICAL_ROLLING
 static int run_canonical_threshold_case(
     const char *name, uint16_t captured, uint16_t cut,
     uint16_t expected_restore, uint16_t expected_band_start,
@@ -893,7 +893,7 @@ static int run_threshold_helper_cases(void)
     if (!run_threshold_helper_case(
             "threshold-saturated", 0xfff8, 0xffff, 0xfff3, 0xfff8))
         return 0;
-#ifdef VERIFY_CANONICAL_ROLLING_THRESHOLD
+#ifdef VERIFY_CANONICAL_ROLLING
     if (!run_threshold_helper_case("threshold-exact-floor", 200, 216, 212, 208))
         return 0;
     if (!run_threshold_helper_case("threshold-rounding-low", 324, 340, 334, 328))
@@ -1345,6 +1345,12 @@ static const struct feedback_case feedback_cases[] = {
         "feedback-idle-released", PHASE_IDLE, REASON_RPM_LOW, 0,
         {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
     },
+#ifdef VERIFY_CANONICAL_ROLLING
+    {
+        "feedback-idle-clear-held", PHASE_IDLE, REASON_NONE,
+        FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
+    },
+#endif
     {
         "feedback-failed-held", PHASE_IDLE, REASON_RPM_LOW,
         FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xd5, {0, 0, 0, 0},
@@ -1384,6 +1390,27 @@ static int run_feedback_cases(void)
         volatile uint8_t *state;
         size_t index;
 
+#ifdef VERIFY_CANONICAL_ROLLING
+        struct preserved_feedback_buffer {
+            uint32_t address;
+            size_t size;
+            uint8_t bytes[28];
+        } buffers[] = {
+            {FUEL_SHADOW, FUEL_SHADOW_SIZE, {0}},
+            {THROTTLE_SHADOW, THROTTLE_SHADOW_SIZE, {0}},
+            {THROTTLE_RUNTIME, 2, {0}}, {BUTTON_CODE, 2, {0}},
+            {ASCD_STATUS, 1, {0}}, {SPEED, 1, {0}}, {RPM, 2, {0}},
+            {PEDAL, 2, {0}}, {COOLANT, 1, {0}}, {FORMER_BRAKE_STATUS, 1, {0}},
+            {FUEL_CUT_STATUS, 1, {0}}, {IGNITION_OUTPUT, 1, {0}},
+            {APC_MODE_SNAPSHOT, 1, {0}},
+        };
+        uint8_t expected_state[RL_STATE_SIZE], expected_selector[8];
+        uint8_t expected_configuration[32];
+        const uint8_t expected_counts[2] = {1, 1};
+        uint32_t sp_before, sp_after, gbr_before, gbr_after;
+        size_t byte;
+#endif
+
         count_case();
         reset_case(MODE_OBSERVE, 0x01);
         selector = ram_pointer(SELECTOR_STATE);
@@ -1397,7 +1424,46 @@ static int run_feedback_cases(void)
         rom_pointer(FEEDBACK_COUNTS)[0] = 1;
         rom_pointer(FEEDBACK_COUNTS)[1] = 1;
 
+#ifdef VERIFY_CANONICAL_ROLLING
+        /* The arbiter consumes only phase, reason and flags. Preserve the
+           remaining state bytes without relying on their reset zeros. */
+        fill_bytes(state + 4, RL_STATE_SIZE - 4U, 0x5a);
+        for (byte = 0; byte < sizeof(expected_state); ++byte)
+            expected_state[byte] = state[byte];
+        for (byte = 0; byte < sizeof(expected_selector); ++byte)
+            expected_selector[byte] = byte < 4
+                ? selector[byte] : test->expected_map_feedback[byte - 4];
+        for (byte = 0; byte < sizeof(expected_configuration); ++byte)
+            expected_configuration[byte] = rom_pointer(RL_CONFIG)[byte];
+        for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+            for (byte = 0; byte < buffers[index].size; ++byte)
+                buffers[index].bytes[byte] = ram_pointer(buffers[index].address)[byte];
+        __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
+        __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
+#endif
         (void)invoke_r4(FEEDBACK_ARBITER, 0);
+#ifdef VERIFY_CANONICAL_ROLLING
+        __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
+        __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
+        if (sp_after != sp_before)
+            return fail_value(test->name, "stack_pointer", sp_after, sp_before);
+        if (gbr_after != gbr_before)
+            return fail_value(test->name, "gbr", gbr_after, gbr_before);
+        if (!fail_bytes(test->name, "complete_state", state,
+                        expected_state, sizeof(expected_state))
+                || !fail_bytes(test->name, "complete_selector", selector,
+                               expected_selector, sizeof(expected_selector))
+                || !fail_bytes(test->name, "configuration", rom_pointer(RL_CONFIG),
+                               expected_configuration, sizeof(expected_configuration))
+                || !fail_bytes(test->name, "feedback_counts", rom_pointer(FEEDBACK_COUNTS),
+                               expected_counts, sizeof(expected_counts)))
+            return 0;
+        for (index = 0; index < ARRAY_SIZE(buffers); ++index)
+            if (!fail_bytes(test->name, "preserved_buffer", ram_pointer(buffers[index].address),
+                            buffers[index].bytes, buffers[index].size))
+                return 0;
+#endif
+
 
         for (index = 0; index < sizeof(payload_seed); ++index) {
             uint8_t expected = index == 5
@@ -1748,14 +1814,14 @@ int main(void)
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "fuel_coordinator=3 hold=11 entries=9\n",
         (unsigned long)case_count);
-#elif defined(VERIFY_CANONICAL_ROLLING_THRESHOLD)
-    if (case_count != 128U)
-        return fail_value("summary", "case_count", case_count, 128);
+#elif defined(VERIFY_CANONICAL_ROLLING)
+    if (case_count != 129U)
+        return fail_value("summary", "case_count", case_count, 129);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=27 config=24 threshold=9 activation=6 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=8 "
         "entries=8\n",
         (unsigned long)case_count);
 #else
