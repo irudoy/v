@@ -825,9 +825,8 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
     return covered
 
 
-def _invoke_trace_bindings(elf, invoke, fixture, build_dir, *, composed_image, parsed_by_unit, layout):
-    """Bind control operands, final ELF ROM and independently built invokes."""
-    require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, layout)
+def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
+    """Bind the final ELF ROM and invoke instructions to independently built bytes."""
     def section(path, name):
         output = build_dir / f"{path.stem}-{name}.raw"
         run_command([OBJCOPY, "-O", "binary", "--only-section", f".{name}", path, output])
@@ -907,9 +906,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"map-switching: ELF storage separation: {error}") from error
     def execute(elf):
-        ranges, invoke_words = _invoke_trace_bindings(
-            elf, invoke_object, fixture, build_dir, composed_image=composed_image,
-            parsed_by_unit=parsed_by_unit, layout=layout)
+        require_map_fixture_bindings(fixture, composed_image, parsed_by_unit, layout)
+        ranges, invoke_words = _invoke_trace_bindings(elf, invoke_object, fixture, build_dir)
         trace = build_dir / f"{elf.stem}.pc-trace"
         environment = {
             **os.environ,

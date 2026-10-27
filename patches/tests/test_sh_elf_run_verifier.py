@@ -175,7 +175,6 @@ mov #0x5,r1
             with self.assertRaisesRegex(VERIFIER.VerificationError, "simulator fixture changes instructions"):
                 VERIFIER.build_dynamic_fixture(SimpleNamespace(data=bytes(composed)), layout, {})
 
-    @patch.object(VERIFIER, "require_map_fixture_bindings", lambda *args, **kwargs: None)
     def test_throttle_scalar_invoke_binding_rejects_changed_or_missing_helper(self):
         with tempfile.TemporaryDirectory() as directory:
             build = Path(directory)
@@ -204,19 +203,16 @@ mov #0x5,r1
                 raise AssertionError(arguments)
 
             with patch.object(VERIFIER, "run_command", command):
-                ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
-                    composed_image=image, parsed_by_unit={}, layout=None)
+                ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
                 self.assertEqual(ranges[-1], (0x110008, 0x11000c))
                 self.assertIn(0x11000a, words)
                 linked[10] ^= 1
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "linked invoke instructions differ: _invoke_throttle_scalar"):
-                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
-                    composed_image=image, parsed_by_unit={}, layout=None)
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
                 linked[:] = original
                 missing = True
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "exact invoke function extents"):
-                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build,
-                    composed_image=image, parsed_by_unit={}, layout=None)
+                    VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
 
     def _fuel_cut_fixture(self):
         layout = layout_model.load_layout()

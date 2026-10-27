@@ -518,9 +518,9 @@ def _compile_and_run(
 
     def execute(elf):
         try:
-            ranges, invokes = base_verifier._invoke_trace_bindings(
-                elf, objects[0], fixture, build_dir, composed_image=composed_image,
-                parsed_by_unit=map_parsed, layout=target.map_layout)
+            base_verifier.require_map_fixture_bindings(
+                fixture, composed_image, map_parsed, target.map_layout)
+            ranges, invokes = base_verifier._invoke_trace_bindings(elf, objects[0], fixture, build_dir)
             trace = build_dir / f"{elf.stem}.pc-trace"
             environment = {
                 **os.environ,
