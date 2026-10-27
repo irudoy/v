@@ -43,7 +43,7 @@ The canonical and relocated runtime verifiers:
 - Execute the original unsafe delayed-branch pair and a safe control fixture.
 
 The canonical JK08A map-switching harness measures executed PCs and opcodes
-for `startup_wrapper` and `limiter_commit`. Its observer records the actual
+for `startup_wrapper`, `limiter_commit`, and the bounded throttle-cluster prefix. Its observer records the actual
 delay-slot execution order. The verifier requires every instruction, both
 conditional outcomes, and matched calls and returns in this scope. It binds
 the trace to the independently assembled payload, the composed ROM, and the
@@ -56,7 +56,7 @@ does not qualify the initializer's original body.
 A negative build suppresses the actual `run_limiter_cases()` call while
 retaining the same ROM bytes and the old semantic PASS marker. Execution must
 then fail coverage with the omitted startup entry. Coverage of the remaining
-payloads, targets, and SH7058 limiter-pointer consumers remains outside this
+payloads, targets, and other SH7058 limiter-pointer consumers remains outside this
 bounded check. Case and entry totals printed by the other harnesses do not
 establish instruction coverage.
 
@@ -76,6 +76,28 @@ after the clamp with RTS/NOP to observe R4 and SR. Cases use the selected shadow
 and check unsigned comparisons, results, preserved SR bits, stack, GBR and memory
 guards. The scalar invoke helper is bound to its independently assembled bytes
 in the final ELF. These functional checks do not establish consumer PC coverage.
+
+The redirected `rev_throttle_cluster_base` consumer executes its original
+prologue and prefix at `[0x7584e,0x7587a)` and epilogue at
+`[0x75c32,0x75c48)`. Independent assembly binds both instruction windows and
+four original operand pools to the stock and composed images. Only the bound
+request-base and cluster-pointer data words receive simulator RAM aliases.
+A GNU-assembled BRA/NOP boundary at `[0x7587a,0x7587e)` replaces the first two
+enabled-body instructions and reaches the original epilogue without changing R0.
+All tested instruction bytes and the boundary are checked after other stubs.
+The coverage result counts payload and original consumer words as `instructions`.
+It reports executed simulator-only boundary words separately as
+`fixture_boundary_instructions`; both sets retain their execution requirements.
+
+Cases commit each selected bank through the real limiter entry, preseed the
+shadow with the opposite sentinel and make the old ROM source contradict the
+committed word. They check the prefix's R0 probe, request and memory guards,
+read-only shadow and restored stack. The PC checker requires both actual BF
+successors and the non-NOP store and register-pop delay slots. R0 observes the
+stopped prefix's caller-saved register; it is not a return value of the stock
+void function. An unchanged request on the enabled path establishes only the
+absence of a write before the boundary. The remaining enabled body, its calls
+and its final request remain outside this executable scope.
 
 The ignition-consumer verifier reconstructs each declared stock call window
 and its operands independently. It then executes the real composed lookup

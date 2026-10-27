@@ -998,6 +998,60 @@ static int run_fuel_cut_consumer_cases(void)
 }
 #endif
 
+#ifdef VERIFY_7MFK_THROTTLE_CLUSTER
+/* R0 observes the stopped prefix, not a return value of the stock void function.
+   The enabled body is outside the fixture's qualified instruction windows. */
+static int run_throttle_cluster_cases(void)
+{
+    static const uint8_t empty_state[8] = {0};
+    static const uint8_t requested[] = {0, 1, 2, 3, 4, 5, 0xff};
+    static const uint16_t words[] = {0, 1, 0x074cU, 0x7fffU, 0x8000U, 0xfffeU, 0xffffU};
+    uint8_t saved[5][2], shadows[RAM_SENTINEL_SIZE], expected[8];
+    size_t bank, sample, index, cases = 0;
+    for (index = 0; index < ARRAY_SIZE(throttle_slots); ++index)
+        read_bytes(saved[index], rom_pointer(throttle_slots[index]), 2);
+    for (bank = 0; bank < ARRAY_SIZE(requested); ++bank) {
+        unsigned normalized = requested[bank] < 5 ? requested[bank] : 0;
+        for (sample = 0; sample < ARRAY_SIZE(words); ++sample) {
+            uint16_t selected = words[sample];
+            uint32_t observed, before_sp, after_sp;
+            uint32_t probe = selected == 0xffffU ? 0x074cU : (uint32_t)(int32_t)(int16_t)selected;
+            for (index = 0; index < ARRAY_SIZE(throttle_slots); ++index)
+                write_be16(rom_pointer(throttle_slots[index]), (uint16_t)(0x2100U + index * 0x101U));
+            write_be16(rom_pointer(throttle_slots[normalized]), selected);
+            seed_ram(empty_state);
+            write_be16(ram_pointer(THROTTLE_SHADOW + 8U), selected == 0xffffU ? 0 : 0xffffU);
+            if (invoke_r4(LIMITER_COMMIT, requested[bank]) != normalized)
+                return fail_value("throttle_cluster", "selected_bank", requested[bank], normalized);
+            read_bytes(shadows, ram_pointer(RAM_SENTINEL_BASE), sizeof(shadows));
+            /* The old ROM source contradicts the committed shadow for every case. */
+            write_be16(rom_pointer(THROTTLE_STOCK + 8U), selected == 0xffffU ? 0 : 0xffffU);
+            fill_bytes(ram_pointer(0xffff19d4U), sizeof(expected), 0xa5);
+            read_bytes(expected, ram_pointer(0xffff19d4U), sizeof(expected));
+            if (selected == 0xffffU) {
+                expected[4] = 0x7f;
+                expected[5] = 0xff;
+            }
+            __asm__ volatile ("mov r15,%0" : "=r" (before_sp) : : "memory");
+            observed = invoke_r0(0x0007584eU);
+            __asm__ volatile ("mov r15,%0" : "=r" (after_sp) : : "memory");
+            ++cases;
+            if (after_sp != before_sp)
+                return fail_value("throttle_cluster", "stack", after_sp, before_sp);
+            if (observed != probe)
+                return fail_value("throttle_cluster", "prefix_r0_probe", observed, probe);
+            if (!fail_bytes("throttle_cluster", "request_and_guards", ram_pointer(0xffff19d4U), expected, sizeof(expected))
+                || !fail_bytes("throttle_cluster", "shadow_read_only", ram_pointer(RAM_SENTINEL_BASE), shadows, sizeof(shadows)))
+                return 0;
+        }
+    }
+    for (index = 0; index < ARRAY_SIZE(throttle_slots); ++index)
+        write_bytes(rom_pointer(throttle_slots[index]), saved[index], 2);
+    printf("VQ_SH_ELF_MAP_SWITCHING_THROTTLE_CLUSTER status=PASS cases=%lu entries=1\n", (unsigned long)cases);
+    return 1;
+}
+#endif
+
 #ifdef TARGET_VQ37
 static int verify_native_fuel_cut(
     const char *field, uint16_t rpm, uint32_t expected_return,
@@ -1215,6 +1269,10 @@ int main(void)
 #endif
 #ifdef VERIFY_7MFK_THROTTLE_SCALAR
     if (!run_throttle_scalar_consumer_cases())
+        return 1;
+#endif
+#ifdef VERIFY_7MFK_THROTTLE_CLUSTER
+    if (!run_throttle_cluster_cases())
         return 1;
 #endif
 #ifdef TARGET_VQ37

@@ -38,7 +38,9 @@ def pipeline(driver, monkeypatch, tmp_path):
                         lambda *args: events.append('fuel_cut_binding'))
     monkeypatch.setattr(driver, 'verify_throttle_scalar_consumer_binding',
                         lambda *args: events.append('throttle_scalar_binding'))
-    monkeypatch.setattr(driver, 'build_dynamic_fixture', lambda *args: (b'', 0, 0, ()))
+    monkeypatch.setattr(driver, 'verify_throttle_cluster_binding',
+                        lambda *args: events.append('throttle_cluster_binding'))
+    monkeypatch.setattr(driver, 'build_dynamic_fixture', lambda *args, **kwargs: (b'', 0, 0, ()))
     monkeypatch.setattr(driver, 'build_and_run_dynamic_harness', lambda *args, **kwargs: 'CONTROLLED_MAP_PASS')
     monkeypatch.setattr(driver, 'verify_delay_slot_incident', lambda *args: 'controlled signal')
     temporary = driver.tempfile.TemporaryDirectory
@@ -68,7 +70,7 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
         ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
         ('pipeline', 'relocated_runtime_targets'),
     ]
-    assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
+    assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'throttle_cluster_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
     assert 'VQ_SH_ELF_VERIFY status=PASS' in report and 'stock_code_' not in report
 
 

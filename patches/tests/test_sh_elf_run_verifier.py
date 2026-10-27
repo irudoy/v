@@ -813,6 +813,93 @@ mov #0x5,r1
                 with self.assertRaises(TELEMETRY_VERIFIER.VerificationError):
                     TELEMETRY_VERIFIER.marker_cases(output)
 
+    def _throttle_cluster_fixture(self):
+        layout = layout_model.load_layout()
+        stock = layout_model.validate_image(layout).data
+        composed = bytearray(stock)
+        for hook in layout.hooks:
+            composed[hook.address:hook.address + hook.width] = hook.replacement.to_bytes(hook.width, "big")
+        reconstructed = bytearray(0x75c48 - VERIFIER.THROTTLE_CLUSTER_ORIGIN)
+        for start, end in (*VERIFIER.THROTTLE_CLUSTER_WINDOWS,
+                           *((pc, pc + width) for pc, width in VERIFIER.THROTTLE_CLUSTER_POOLS)):
+            reconstructed[start - VERIFIER.THROTTLE_CLUSTER_ORIGIN:end - VERIFIER.THROTTLE_CLUSTER_ORIGIN] = stock[start:end]
+        offset = VERIFIER.THROTTLE_CLUSTER_BOUNDARY - VERIFIER.THROTTLE_CLUSTER_ORIGIN
+        reconstructed[offset:offset + 4] = bytes.fromhex("a1da0009")
+        return layout, stock, composed, reconstructed
+
+    def test_throttle_cluster_rejects_instruction_and_operand_drift(self):
+        layout, stock, composed, reconstructed = self._throttle_cluster_fixture()
+        VERIFIER.require_throttle_cluster_bytes(stock, composed, reconstructed, layout)
+        addresses = [(pc, "instructions") for start, end in VERIFIER.THROTTLE_CLUSTER_WINDOWS
+                     for pc in range(start, end, 2)]
+        addresses += [(pc, "pool") for pc, width in VERIFIER.THROTTLE_CLUSTER_POOLS]
+        for name, original in (("stock", stock), ("composed", composed)):
+            for pc, kind in addresses:
+                changed = bytearray(original)
+                changed[pc] ^= 1
+                with self.subTest(image=name, pc=hex(pc)), self.assertRaisesRegex(
+                        VERIFIER.VerificationError, name + " " + kind + " differ"):
+                    VERIFIER.require_throttle_cluster_bytes(
+                        changed if name == "stock" else stock,
+                        changed if name == "composed" else composed, reconstructed, layout)
+        for offset in (0, 2):
+            changed = bytearray(reconstructed)
+            changed[0x7587a - VERIFIER.THROTTLE_CLUSTER_ORIGIN + offset] ^= 1
+            with self.subTest(boundary=offset), self.assertRaisesRegex(
+                    VERIFIER.VerificationError, "assembled boundary differs"):
+                VERIFIER.require_throttle_cluster_bytes(stock, composed, changed, layout)
+
+    def test_throttle_cluster_translation_preserves_windows_and_checks_final_stubs(self):
+        layout, stock, composed, reconstructed = self._throttle_cluster_fixture()
+        before = bytes(composed)
+        VERIFIER.install_throttle_cluster_fixture(composed, reconstructed)
+        allowed = set(range(0x7587a, 0x7587e)) | set(range(0x75958, 0x7595c)) | set(range(0x75964, 0x75968))
+        self.assertLessEqual({i for i, (a, b) in enumerate(zip(before, composed)) if a != b}, allowed)
+        self.assertEqual(composed[0x75958:0x7595c], bytes.fromhex("0100128c"))
+        self.assertEqual(composed[0x75964:0x75968], bytes.fromhex("01005d20"))
+        self.assertEqual(composed[0x7587a:0x7587e], bytes.fromhex("a1da0009"))
+        for pc in (0x7584e, 0x75c46, 0x7587a):
+            def overlap(fixture, layout, pc=pc):
+                fixture[pc:pc + 2] = b"\0\0"
+                return 1
+            with patch.object(VERIFIER, "install_stock_return_stubs", overlap), self.subTest(pc=hex(pc)):
+                with self.assertRaisesRegex(VERIFIER.VerificationError, "throttle-cluster simulator"):
+                    VERIFIER.build_dynamic_fixture(SimpleNamespace(data=before), layout, {},
+                        throttle_reconstruction=reconstructed)
+
+    def test_throttle_cluster_trace_requires_both_successors_and_real_delay_slots(self):
+        _layout, _stock, fixture, reconstructed = self._throttle_cluster_fixture()
+        VERIFIER.install_throttle_cluster_fixture(fixture, reconstructed)
+        payload, parsed, old_invokes, taken, untaken = self.pc_fixture()
+        fixture[:len(payload)] = payload
+        rebase = lambda pc: pc + 0x10c000 if pc in old_invokes else pc
+        invokes = {rebase(pc): word for pc, word in old_invokes.items()}
+        base = [(rebase(pc), word, delay) for pc, word, delay in taken + untaken]
+        def events(pcs):
+            return [(pc, int.from_bytes(fixture[pc:pc + 2], "big"),
+                     int(pc in (0x75878, 0x7587c, 0x75c46))) for pc in pcs]
+        entry = [(0x110000, 0x400b, 0), (0x110002, 9, 1)]
+        tail = events(range(0x75c32, 0x75c48, 2)) + [(0x110004, 9, 0)]
+        sentinel = entry + events(range(0x7584e, 0x7587a, 2)) + tail
+        enabled = entry + events(range(0x7584e, 0x75870, 2)) + events((0x7587a, 0x7587c)) + tail
+        require = lambda records: VERIFIER.require_payload_coverage(
+            records, fixture, parsed, invokes, throttle_cluster=True)
+        result = require(base + sentinel + enabled)
+        self.assertEqual(result["instructions"], 9 + sum(
+            (end - start) // 2 for start, end in VERIFIER.THROTTLE_CLUSTER_WINDOWS))
+        self.assertEqual(result["fixture_boundary_instructions"], 2)
+        self.assertEqual(result["outcomes"], 4)
+        self.assertEqual(result["delay_slots"], 6)
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered branch outcome 0x0007586e->0x0007587a"):
+            require(base + sentinel)
+        with self.assertRaisesRegex(VERIFIER.VerificationError, "uncovered entry 0x0007584e"):
+            require(base)
+        for pc in (0x75878, 0x75c46):
+            records = [(address, word, 0 if address == pc else delay)
+                       for address, word, delay in base + sentinel + enabled]
+            with self.subTest(pc=hex(pc)), self.assertRaisesRegex(VERIFIER.VerificationError, "missing executed delay slot"):
+                require(records)
+
     @staticmethod
     def pc_fixture():
         image = bytearray(0x300)

@@ -55,6 +55,11 @@ INCIDENT_ADDRESS = 0x000D2314
 INCIDENT_BRANCH_WORD = 0xAFAC
 INCIDENT_UNSAFE_SLOT_WORD = 0xD304
 INCIDENT_SAFE_SLOT_WORD = 0x0009
+THROTTLE_CLUSTER_ORIGIN = 0x0007584C
+THROTTLE_CLUSTER_WINDOWS = ((0x0007584E, 0x0007587A), (0x00075C32, 0x00075C48))
+THROTTLE_CLUSTER_POOLS = ((0x00075938, 2), (0x0007593A, 2), (0x00075958, 4), (0x00075964, 4))
+THROTTLE_CLUSTER_BOUNDARY = 0x0007587A
+
 FUEL_CUT_ORIGIN = 0x0004F280
 FUEL_CUT_START = 0x0004F282
 FUEL_CUT_END = 0x0004F324
@@ -378,6 +383,66 @@ def verify_fuel_cut_consumer_binding(layout, composition, build_dir):
     )
 
 
+def verify_throttle_cluster_binding(layout, composition, build_dir):
+    """Independently assemble the bounded prefix, epilogue and boundary branch."""
+    obj = build_dir / "throttle-cluster.o"
+    elf = build_dir / "throttle-cluster.elf"
+    binary = build_dir / "throttle-cluster.bin"
+    run_command([AS, "--big", "--isa=sh2e", "-o", obj,
+                 TOOL_DIR / "map_switching_throttle_cluster.s"])
+    run_command([LD, "-EB", f"-Ttext={THROTTLE_CLUSTER_ORIGIN:#x}",
+                 "--entry=0x7584e", "-o", elf, obj])
+    run_command([OBJCOPY, "-O", "binary", "--only-section=.text", elf, binary])
+    reconstructed = binary.read_bytes()
+    require_throttle_cluster_bytes(layout_model.validate_image(layout).data,
+                                   composition.data, reconstructed, layout)
+    return reconstructed
+
+
+def require_throttle_cluster_bytes(stock, composed, reconstructed, layout):
+    """Bind original instructions and operands, keeping the boundary separate."""
+    if len(reconstructed) != 0x75C48 - THROTTLE_CLUSTER_ORIGIN:
+        raise VerificationError("throttle-cluster reconstruction extent differs")
+    for start, end in THROTTLE_CLUSTER_WINDOWS:
+        expected = reconstructed[start - THROTTLE_CLUSTER_ORIGIN:end - THROTTLE_CLUSTER_ORIGIN]
+        for name, image in (("stock", stock), ("composed", composed)):
+            if image[start:end] != expected:
+                raise VerificationError(f"throttle-cluster {name} instructions differ at {start:#x}")
+    hook = next(row for row in layout.hooks if row.key == "rev_throttle_cluster_base")
+    if (hook.address, hook.width, hook.stock, hook.replacement) != (0x75964, 4, 0x9424, 0xFFFF5D20):
+        raise VerificationError("throttle-cluster pointer hook differs")
+    for address, width in THROTTLE_CLUSTER_POOLS:
+        offset = address - THROTTLE_CLUSTER_ORIGIN
+        expected = reconstructed[offset:offset + width]
+        if stock[address:address + width] != expected:
+            raise VerificationError(f"throttle-cluster stock pool differs at {address:#x}")
+        if address == hook.address:
+            expected = hook.replacement.to_bytes(width, "big")
+        if composed[address:address + width] != expected:
+            raise VerificationError(f"throttle-cluster composed pool differs at {address:#x}")
+    address = THROTTLE_CLUSTER_BOUNDARY
+    for image in (stock, composed):
+        if image[address:address + 4] != bytes.fromhex("dc3be015"):
+            raise VerificationError("throttle-cluster original boundary differs")
+    boundary = reconstructed[address - THROTTLE_CLUSTER_ORIGIN:address + 4 - THROTTLE_CLUSTER_ORIGIN]
+    word = int.from_bytes(boundary[:2], "big")
+    displacement = word & 0xFFF
+    if displacement & 0x800:
+        displacement -= 0x1000
+    if word >> 12 != 0xA or address + 4 + displacement * 2 != 0x75C32 or boundary[2:] != bytes.fromhex("0009"):
+        raise VerificationError("throttle-cluster assembled boundary differs")
+
+
+def install_throttle_cluster_fixture(fixture, reconstructed):
+    """Translate bound data operands and install the sole enabled-body boundary."""
+    for address in (0x75958, 0x75964):
+        original = int.from_bytes(fixture[address:address + 4], "big")
+        fixture[address:address + 4] = alias_high_ram(original).to_bytes(4, "big")
+    address = THROTTLE_CLUSTER_BOUNDARY
+    offset = address - THROTTLE_CLUSTER_ORIGIN
+    fixture[address:address + 4] = reconstructed[offset:offset + 4]
+
+
 def relocate_assembly_ram_literals(fixture, parsed_by_unit):
     """Relocate only validated assembly data literals, never instructions."""
     relocated = 0
@@ -444,7 +509,7 @@ def install_stock_return_stubs(fixture, layout):
     return len(targets)
 
 
-def build_dynamic_fixture(composition, layout, parsed_by_unit):
+def build_dynamic_fixture(composition, layout, parsed_by_unit, *, throttle_reconstruction=None):
     """Create a simulator-only fixture after the exact composition passes."""
     fixture = bytearray(composition.data)
     if len(fixture) != ROM_SIZE:
@@ -454,14 +519,26 @@ def build_dynamic_fixture(composition, layout, parsed_by_unit):
     relocated = relocate_assembly_ram_literals(fixture, parsed_by_unit)
     relocated += relocate_fuel_cut_consumer_literals(fixture)
     differentiated = differentiate_map_copies(fixture, layout)
+    if throttle_reconstruction is not None:
+        install_throttle_cluster_fixture(fixture, throttle_reconstruction)
+        relocated += 2
     stubs = install_stock_return_stubs(fixture, layout)
     prepare_throttle_scalar_fixture(fixture)
     relocated += 1
     stubs += 1
     if fixture[THROTTLE_SCALAR_START:THROTTLE_SCALAR_END] != composition.data[THROTTLE_SCALAR_START:THROTTLE_SCALAR_END]:
         raise VerificationError("throttle scalar simulator fixture changes instructions")
+    if throttle_reconstruction is not None:
+        for start, end in THROTTLE_CLUSTER_WINDOWS:
+            if fixture[start:end] != composition.data[start:end]:
+                raise VerificationError("throttle-cluster simulator fixture changes instructions")
     if fixture[FUEL_CUT_START:FUEL_CUT_END] != composition.data[FUEL_CUT_START:FUEL_CUT_END]:
         raise VerificationError("fuel-cut consumer simulator fixture changes instructions")
+    if throttle_reconstruction is not None:
+        address = THROTTLE_CLUSTER_BOUNDARY
+        offset = address - THROTTLE_CLUSTER_ORIGIN
+        if fixture[address:address + 4] != throttle_reconstruction[offset:offset + 4]:
+            raise VerificationError("throttle-cluster simulator boundary differs after stubs")
     return bytes(fixture), relocated, differentiated, stubs
 
 
@@ -524,8 +601,8 @@ def _trace_successor(records, index, delayed):
     return records[following][0]
 
 
-def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words):
-    """Measure only the two declared JK08A payload entries and their paths."""
+def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, throttle_cluster=False):
+    """Measure the declared JK08A payload entries and optional bounded prefix."""
     instructions, entries, outcomes, slots, call_targets = {}, set(), set(), set(), {}
     for key in PC_COVERAGE_UNITS:
         parsed = parsed_by_unit[key]
@@ -548,6 +625,16 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words):
                     raise VerificationError(f"unbound call target in bounded payload at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 call_targets[pc] = int.from_bytes(fixture[pool:pool + 4], "big")
+    fixture_boundary_pcs = set()
+    if throttle_cluster:
+        entries.add(0x7584E)
+        for start, end in (*THROTTLE_CLUSTER_WINDOWS, (0x7587A, 0x7587E)):
+            for pc in range(start, end, 2):
+                instructions[pc] = int.from_bytes(fixture[pc:pc + 2], "big")
+                if start == THROTTLE_CLUSTER_BOUNDARY:
+                    fixture_boundary_pcs.add(pc)
+        outcomes.update(((0x7586E, 0x75870), (0x7586E, 0x7587A)))
+        slots.update((0x75878, 0x7587C, 0x75C46))
     seen, observed_outcomes, observed_slots, returned, call_returns = set(), set(), set(), set(), set()
     frames = []
     for index, (pc, word, delay) in enumerate(records):
@@ -569,7 +656,9 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words):
         if pc in instructions and conditional:
             observed_outcomes.add((pc, _trace_successor(records, index, word & 0xFF00 in {0x8D00, 0x8F00})))
         if pc + 2 in slots:
-            _trace_successor(records, index, True)
+            successor = _trace_successor(records, index, True)
+            if throttle_cluster and pc in (0x75876, 0x7587A) and successor != 0x75C32:
+                raise VerificationError(f"throttle-cluster boundary successor differs at {pc:#x}")
         is_call = word & 0xF0FF == 0x400B or word & 0xF000 == 0xB000
         if is_call:
             target = _trace_successor(records, index, True)
@@ -598,9 +687,13 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words):
         raise VerificationError("uncovered payload call/return path")
     for missing in sorted(slots - observed_slots):
         raise VerificationError(f"uncovered delay slot {missing:#010x}")
-    return dict(entries=len(entries & seen), instructions=len(instructions.keys() & seen),
-                outcomes=len(outcomes & observed_outcomes), delay_slots=len(slots & observed_slots),
-                call_return_paths=len(call_returns))
+    covered = dict(entries=len(entries & seen),
+                   instructions=len((instructions.keys() - fixture_boundary_pcs) & seen),
+                   outcomes=len(outcomes & observed_outcomes), delay_slots=len(slots & observed_slots),
+                   call_return_paths=len(call_returns))
+    if fixture_boundary_pcs:
+        covered["fixture_boundary_instructions"] = len(fixture_boundary_pcs & seen)
+    return covered
 
 
 def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
@@ -673,6 +766,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-Werror",
             "-DVERIFY_7MFK_FUEL_CUT",
             "-DVERIFY_7MFK_THROTTLE_SCALAR",
+            "-DVERIFY_7MFK_THROTTLE_CLUSTER",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -705,7 +799,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         return result, read_pc_trace(trace), invoke_words
 
     result, records, invoke_words = execute(harness_elf)
-    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words)
+    covered = require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True)
     marker = (
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=132 selector=18 "
         "adapters=91 limiter=14 feedback=9 feedback_invocations=17 "
@@ -726,6 +820,11 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         result.stdout, re.MULTILINE,
     ):
         raise VerificationError("throttle scalar completion marker is missing")
+    if not re.search(
+        r"^VQ_SH_ELF_MAP_SWITCHING_THROTTLE_CLUSTER status=PASS cases=[1-9][0-9]* entries=1$",
+        result.stdout, re.MULTILINE,
+    ):
+        raise VerificationError("throttle-cluster prefix completion marker is missing")
     call = "if (!run_limiter_cases())"
     if source.count(call) != 1:
         raise VerificationError("negative harness lacks its unique limiter-case call")
@@ -742,7 +841,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     if marker not in negative.stdout:
         raise VerificationError("negative harness does not preserve the existing semantic PASS marker")
     try:
-        require_payload_coverage(records, fixture, parsed_by_unit, invoke_words)
+        require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, throttle_cluster=True)
     except VerificationError as error:
         negative_reason = str(error)
         if "uncovered entry 0x000d22a0" not in negative_reason:
@@ -753,7 +852,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             or positive_source.read_text(encoding="utf-8") != source
             or negative_source.read_text(encoding="utf-8") != negative_text):
         raise VerificationError("harness source changes during verification")
-    coverage_marker = "VQ_SH_ELF_PAYLOAD_COVERAGE status=PASS scope=JK08A:startup_wrapper,limiter_commit "
+    coverage_marker = "VQ_SH_ELF_PAYLOAD_COVERAGE status=PASS scope=JK08A:startup_wrapper,limiter_commit,throttle_cluster_prefix "
     coverage_marker += " ".join(f"{key}={value}" for key, value in covered.items())
     return "\n".join((result.stdout.strip(), coverage_marker,
                       "VQ_SH_ELF_PAYLOAD_COVERAGE_NEGATIVE status=PASS " + negative_reason))
@@ -859,8 +958,9 @@ def verify(verbose=False):
             composition = require_composition(layout, blobs)
             verify_fuel_cut_consumer_binding(layout, composition, build_dir)
             verify_throttle_scalar_consumer_binding(layout, composition, build_dir)
+            throttle_reconstruction = verify_throttle_cluster_binding(layout, composition, build_dir)
             fixture, relocated, differentiated, stubs = build_dynamic_fixture(
-                composition, layout, parsed_by_unit
+                composition, layout, parsed_by_unit, throttle_reconstruction=throttle_reconstruction
             )
         with stage('map_switching'):
             dynamic_marker = build_and_run_dynamic_harness(
