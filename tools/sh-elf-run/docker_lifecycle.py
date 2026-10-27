@@ -16,6 +16,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 import gate_paths as local_paths
+import image_inputs
 
 OWNER_LABEL = 'vhrev.sh-elf-run.owner'
 ROOT_LABEL = 'vhrev.sh-elf-run.checkout'
@@ -28,6 +29,8 @@ INSPECT = ('{"id":{{json .Id}},"labels":{{json .Config.Labels}},'
            '"mounts":{{json .Mounts}},"status":{{json .State.Status}},'
            '"running":{{json .State.Running}},'
            '"restart":{{json .HostConfig.RestartPolicy.Name}}}')
+# An image without labels has no Config.Labels key, so the whole Config is read.
+IMAGE_INSPECT = '{"id":{{json .Id}},"config":{{json .Config}}}'
 
 
 class LifecycleError(RuntimeError):
@@ -40,6 +43,10 @@ class DockerStateUnknown(LifecycleError):
 
 class SurvivingGate(LifecycleError):
     kind = 'live'
+
+
+class StaleImage(LifecycleError):
+    kind = 'stale'
 
 
 def utc():
@@ -98,13 +105,19 @@ class Docker:
         return rows
 
     def image_identity(self, image):
+        """Read the image ID and its build-input label from one inspection."""
         try:
-            identity = json.loads(self.capture(['image', 'inspect', '--format', '{{json .Id}}', image]))
-            if type(identity) is not str or IMAGE.fullmatch(identity) is None:
+            value = json.loads(self.capture(['image', 'inspect', '--format', IMAGE_INSPECT, image]))
+            identity, labels = value['id'], value['config'].get('Labels')
+            if (type(identity) is not str or IMAGE.fullmatch(identity) is None
+                    or labels is not None and not isinstance(labels, dict)):
                 raise ValueError('invalid image identity')
-        except (ValueError, TypeError) as error:
+            inputs = (labels or {}).get(image_inputs.LABEL)
+            if inputs is not None and type(inputs) is not str:
+                raise ValueError('invalid image inputs label')
+        except (ValueError, TypeError, KeyError, AttributeError) as error:
             raise DockerStateUnknown('Docker image identity is unknown') from error
-        return identity
+        return identity, inputs
 
     def run(self, arguments):
         try:
@@ -122,6 +135,7 @@ class Lifecycle:
             raise LifecycleError(str(error)) from error
         self.docker = docker or Docker(self.root)
         self.checkout = hashlib.sha256(str(self.root).encode()).hexdigest()
+        self.inputs = image_inputs.fingerprint()
 
     @contextmanager
     def locked(self):
@@ -183,7 +197,8 @@ class Lifecycle:
             path = self.directory / (token + '.json')
             cidfile = self.directory / (token + '.cid')
             record = dict(schema=1, owner=owner, checkout=self.checkout, attempt=token,
-                repository=str(self.root), image=image, stock_timeout=stock_timeout,
+                repository=str(self.root), image=image, image_inputs=self.inputs,
+                stock_timeout=stock_timeout,
                 arguments=list(arguments), cidfile=str(cidfile), started_utc=utc(), status='prepared')
             write_json(path, record)
 
@@ -193,13 +208,18 @@ class Lifecycle:
 
             try:
                 if not skip_build:
-                    code = self.docker.run(['build', '--tag', image, str(self.root / 'tools/sh-elf-run')])
+                    code = self.docker.run(['build', '--tag', image,
+                        '--label', image_inputs.LABEL + '=' + self.inputs,
+                        str(self.root / 'tools/sh-elf-run')])
                     if code:
                         save('build-failed', client_exit_code=code)
                         return code
                 # Recheck after a potentially long build, before creating a child.
                 self.check(owner)
-                image_id = self.docker.image_identity(image)
+                image_id, inputs = self.docker.image_identity(image)
+                if inputs != self.inputs:
+                    raise StaleImage(f'{image} is stale: its inputs are {inputs or "unlabeled"}, '
+                                     f'the current inputs are {self.inputs}')
                 command = ['run', '--rm', '--pull=never', '--cidfile', str(cidfile),
                     '--name', 'vq-sh-elf-run-' + owner,
                     '--label', OWNER_LABEL + '=' + owner,
@@ -231,7 +251,7 @@ class Lifecycle:
                          'stopped' if any(row['id'] == cid for row in retained) else 'absent'),
                      retained_stopped_containers=[row['id'] for row in retained], finished_utc=utc())
                 runtime = {key: record[key] for key in ('schema', 'owner', 'checkout', 'attempt',
-                    'image', 'image_id', 'arguments', 'client_exit_code', 'container_id',
+                    'image', 'image_id', 'image_inputs', 'arguments', 'client_exit_code', 'container_id',
                     'current_container_state', 'status')}
                 print(RUNTIME_PREFIX + json.dumps(runtime, sort_keys=True), flush=True)
                 return code

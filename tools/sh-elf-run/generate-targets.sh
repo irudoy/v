@@ -9,7 +9,8 @@ DOCKER_CONTEXT=default
 export DOCKER_CONTEXT
 unset DOCKER_HOST
 
-docker build --tag "$image_name" "$tool_dir"
+inputs_label=$(python3 "$tool_dir/image_inputs.py")
+docker build --tag "$image_name" --label "$inputs_label" "$tool_dir"
 docker run --rm \
     --mount "type=bind,src=$repo_root,dst=/workspace" \
     --entrypoint python3 \

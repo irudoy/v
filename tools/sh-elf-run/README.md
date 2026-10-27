@@ -22,9 +22,9 @@ ROM registry. It has no knowledge-package, graph, TEST witness or stock-proof
 qualification dependency. Its successful terminal reports the patch stages and
 executed cases. It does not publish evidence receipts or change canonical facts.
 
-`VQ_SH_ELF_IMAGE` selects a compatible local image. Set
-`VQ_SH_ELF_SKIP_BUILD=1` only when that image is already built from the current
-Dockerfile. `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` retains the supported timeout
+`VQ_SH_ELF_IMAGE` selects the local image tag. `VQ_SH_ELF_SKIP_BUILD=1` reuses
+that tag without building it; the image input check below still applies.
+`VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` retains the supported timeout
 settings for the bounded ignition-consumer invocation; the script validates the
 value before starting Docker. Compiler and assembler limits remain separate.
 
@@ -37,6 +37,15 @@ binutils, GCC, newlib and Python, and the observer stage builds the simulator
 from a checksummed GDB release. A rebuild without the layer cache resolves the
 same packages. A package version changes together with the snapshot timestamps
 that provide it.
+
+`image_inputs.py` names the Dockerfile and every local file that it copies. Their
+SHA-256 fingerprint is the `vhrev.sh-elf-run.inputs` image label, and every gate
+build applies it. Before creating a container, the runner reads the image ID and
+this label from one inspection. An absent or different label refuses the run
+with `VQ_SH_ELF_LIFECYCLE status=REFUSE kind=stale`, also when the build is
+skipped; otherwise the container starts from that image ID.
+
+`generate-targets.sh` builds the same labeled image for the target generator.
 
 ## Executable boundary
 

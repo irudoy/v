@@ -36,6 +36,7 @@ class ControlledDocker:
         self.cid = 'c' * 64
         self.write_cid = True
         self.retained = None
+        self.inputs = module.image_inputs.fingerprint()
 
     def inventory(self):
         self.reads += 1
@@ -44,7 +45,7 @@ class ControlledDocker:
         return deepcopy(self.rows)
 
     def image_identity(self, image):
-        return 'sha256:' + 'd' * 64
+        return 'sha256:' + 'd' * 64, self.inputs
 
     def run(self, arguments):
         self.commands.append(arguments)
@@ -73,7 +74,8 @@ def test_normal_completion_binds_unique_identity_and_keeps_primary_arguments(lif
     assert gate.execute('controlled-image', 240, ['--can-copy-witness', '--sid22-witness']) == 0
     assert docker.reads == 3
     build, run = docker.commands
-    assert build == ['build', '--tag', 'controlled-image', str(tmp_path / 'tools/sh-elf-run')]
+    assert build == ['build', '--tag', 'controlled-image',
+                     '--label', lifecycle.image_inputs.label(), str(tmp_path / 'tools/sh-elf-run')]
     owner = gate.owner()
     assert run[:2] == ['run', '--rm']
     assert '--pull=never' in run
@@ -85,6 +87,7 @@ def test_normal_completion_binds_unique_identity_and_keeps_primary_arguments(lif
     assert saved['status'] == 'succeeded' and saved['client_exit_code'] == 0
     assert saved['container_id'] == 'c' * 64
     assert saved['image'] == 'controlled-image' and saved['image_id'] == 'sha256:' + 'd' * 64
+    assert saved['image_inputs'] == lifecycle.image_inputs.fingerprint()
     assert saved['current_container_state'] == 'absent'
     assert saved['owner'] == owner
     assert saved['retained_stopped_containers'] == []
@@ -291,10 +294,11 @@ import json,os,signal,sys
 from pathlib import Path
 sys.path.insert(0,{str(ROOT / 'tools/sh-elf-run')!r})
 from docker_lifecycle import Lifecycle
+import image_inputs
 root=Path({str(tmp_path)!r}); state=Path({str(state)!r})
 class Controlled:
  def inventory(self): return json.loads(state.read_text()) if state.exists() else []
- def image_identity(self,image): return 'sha256:'+'d'*64
+ def image_identity(self,image): return 'sha256:'+'d'*64,image_inputs.fingerprint()
  def run(self,args):
   assert args[0]=='run'
   labels=dict(args[i+1].split('=',1) for i,v in enumerate(args) if v=='--label')
@@ -372,18 +376,63 @@ def test_docker_query_timeout_is_unknown(lifecycle, tmp_path, monkeypatch):
         lifecycle.Docker(tmp_path).inventory()
 
 
-@pytest.mark.parametrize('output', ['"sha256:' + 'd' * 64 + '"\n', 'unknown', 'null',
-                                  '"sha256:short"', '[]'])
-def test_image_identity_is_exact_or_unknown(lifecycle, tmp_path, monkeypatch, output):
+IDENTITY = 'sha256:' + 'd' * 64
+INPUTS = 'vhrev.sh-elf-run.inputs'
+
+
+@pytest.mark.parametrize('output,expected', [
+    (dict(id=IDENTITY, config=dict(Labels={INPUTS: 'sha256:' + 'e' * 64, 'other': 'x'})),
+     (IDENTITY, 'sha256:' + 'e' * 64)),
+    (dict(id=IDENTITY, config=dict(Labels=None)), (IDENTITY, None)),
+    (dict(id=IDENTITY, config=dict(Cmd=['sh'])), (IDENTITY, None)),
+    (dict(id=IDENTITY, config=dict(Labels={'other': 'x'})), (IDENTITY, None)),
+    (dict(id='sha256:short', config={}), None),
+    (dict(id=IDENTITY, config=dict(Labels=[])), None),
+    (dict(id=IDENTITY, config=dict(Labels={INPUTS: 7})), None),
+    (dict(id=IDENTITY, config=None), None),
+    (dict(id=IDENTITY), None),
+    ('"' + IDENTITY + '"', None), ('unknown', None), ('null', None), ('[]', None),
+])
+def test_image_identity_and_inputs_are_exact_or_unknown(lifecycle, tmp_path, monkeypatch,
+                                                        output, expected):
     docker = lifecycle.Docker(tmp_path)
     calls = []
-    monkeypatch.setattr(docker, 'capture', lambda args: calls.append(args) or output)
-    if output.startswith('"sha256:') and len(output.strip()) == 73:
-        assert docker.image_identity('selected-tag') == 'sha256:' + 'd' * 64
+    text = output if isinstance(output, str) else json.dumps(output) + '\n'
+    monkeypatch.setattr(docker, 'capture', lambda args: calls.append(args) or text)
+    if expected is not None:
+        assert docker.image_identity('selected-tag') == expected
     else:
         with pytest.raises(lifecycle.DockerStateUnknown):
             docker.image_identity('selected-tag')
-    assert calls == [['image', 'inspect', '--format', '{{json .Id}}', 'selected-tag']]
+    assert calls == [['image', 'inspect', '--format',
+                      '{"id":{{json .Id}},"config":{{json .Config}}}', 'selected-tag']]
+
+
+@pytest.mark.parametrize('skip_build', [True, False])
+@pytest.mark.parametrize('inputs', [None, 'sha256:' + 'e' * 64])
+def test_stale_or_unlabeled_image_is_refused_before_a_container(lifecycle, tmp_path,
+                                                                skip_build, inputs):
+    docker = ControlledDocker(lifecycle, tmp_path)
+    docker.inputs = inputs
+    gate = lifecycle.Lifecycle(tmp_path, docker)
+    with pytest.raises(lifecycle.StaleImage, match='controlled-image is stale') as error:
+        gate.execute('controlled-image', 120, [], skip_build=skip_build)
+    assert error.value.kind == 'stale' and gate.inputs in str(error.value)
+    assert [command[0] for command in docker.commands] == ([] if skip_build else ['build'])
+    saved, = attempts(gate)
+    assert saved['status'] == 'unresolved' and saved['refusal_kind'] == 'stale'
+    assert saved['image_inputs'] == gate.inputs
+
+
+def test_image_inputs_follow_the_build_context(lifecycle, tmp_path):
+    for name in lifecycle.image_inputs.INPUTS:
+        (tmp_path / name).write_bytes((ROOT / 'tools/sh-elf-run' / name).read_bytes())
+    assert lifecycle.image_inputs.fingerprint(tmp_path) == lifecycle.image_inputs.fingerprint()
+    for name in lifecycle.image_inputs.INPUTS:
+        original = (tmp_path / name).read_bytes()
+        (tmp_path / name).write_bytes(original + b'\n')
+        assert lifecycle.image_inputs.fingerprint(tmp_path) != lifecycle.image_inputs.fingerprint()
+        (tmp_path / name).write_bytes(original)
 
 
 def test_unknown_image_cannot_start_a_container(lifecycle, tmp_path, monkeypatch):
