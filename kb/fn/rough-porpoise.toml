@@ -1,6 +1,12 @@
 summary = """
-Saturating addition that returns INT_MIN/INT_MAX on overflow; reads no \
-tables. One of four non-table entries in the region, with 11 slots."""
+Instruction-derived signed R4/R5 arithmetic. For R5>=0, ADDV returns the \
+low32 sum or 7FFFFFFF on positive overflow. For -2147483647<=R5<0, NEG forms \
+its positive magnitude and SUBV returns the low32 sum or 80000000 on \
+negative overflow. For R5=80000000, NEG retains that word: negative R4 \
+returns R4+2147483648, while nonnegative R4 returns 80000000. Thus \
+(-1,80000000) returns 7FFFFFFF and (80000000,80000000) returns 0. No caller \
+operand bound or executable qualification is implied. Reads no tables. One \
+of four non-table entries in the region, with 11 slots."""
 level = "code"
 role = "service"
 block = "library/block"

@@ -1,26 +1,33 @@
 title = "Classify DFCO remain-cut and restore state"
 summary = """
-DFCO restore classifier. It always interpolates upper/intermediate threshold \
-0001298c and lower/full-restore threshold 00012818 by coolant index \
-ffff106f, applies an RPM-drop-class-dependent floor and runtime floors, \
-stores adjusted values in ffff1778 and ffff16aa, and compares them with \
-RPM/25 ffff11b3. Return 0 permits or maintains cut, 1 is master inhibit or \
-absent upstream mode, 2 is intermediate restore, and 3 is full restore."""
+Instruction-derived DFCO restore classifier. Diagnostic-record byte2.bit5 \
+predicates for ids 0129 and 012a and runtime mode gates admit the lookup \
+path. It interpolates upper/intermediate threshold 0001298c and \
+lower/full-restore threshold 00012818 by coolant index ffff106f, then \
+applies RPM-drop-class and runtime floors. A rejected gate skips both \
+lookups and selects ROM8[00008a3e] for both thresholds. Both paths publish \
+ffff1778 and ffff16aa at 000501aa/000501ae before classifying RPM/25 \
+ffff11b3. Return 0 permits or maintains cut, 2 is intermediate restore, and \
+3 is full restore. Clear ffff2458.bit5 returns 1 only after the \
+ffff2468.bit6 gate; set ffff2468.bit6 returns 0. Both early returns set \
+ffff249d.bit7. Executable qualification of these conditional paths is not \
+claimed."""
 note = [
     """
-Scheduled RPM-drop byte ffff106a selects class 0, 1, 2, or 3 at breakpoints \
-4, 8, and 12; byte 32 is present after them but is not compared by this \
-four-class loop. The classes select RPM/25 floors 36, 48, 54, and 62, equal \
-to 900, 1200, 1350, and 1550 RPM. Below coarse vehicle speed 4 the exact \
-classification is RPM<=lower -> 3, lower<RPM<=upper -> 2, and RPM>upper -> \
-0. At speed 4 or above, every branch reachable with stock \
-ROM8[00008b3f].bit7=0 and ROM8[0000870c].bit7=0 ignores the upper threshold \
-and returns class 3 at or below the effective lower threshold, then class 0 \
-only strictly above it. A warm moving target-vehicle capture changes the \
-restore pair while retaining stock cut-request thresholds; because all \
-selected samples use this moving branch, the elimination of full inhibit \
-isolates 00012818 as the operational veto. Table 0001298c remains live only \
-for the low-speed intermediate band under stock flags.""",
+On the admitted lookup path, scheduled RPM-drop byte ffff106a selects class \
+0, 1, 2, or 3 at breakpoints 4, 8, and 12; byte 32 is present after them but \
+is not compared by this four-class loop. The classes select RPM/25 floors \
+36, 48, 54, and 62, equal to 900, 1200, 1350, and 1550 RPM. Below coarse \
+vehicle speed 4 the exact classification is RPM<=lower -> 3, \
+lower<RPM<=upper -> 2, and RPM>upper -> 0. At speed 4 or above, every branch \
+reachable with stock ROM8[00008b3f].bit7=0 and ROM8[0000870c].bit7=0 ignores \
+the upper threshold and returns class 3 at or below the effective lower \
+threshold, then class 0 only strictly above it. A warm moving target-vehicle \
+capture changes the restore pair while retaining stock cut-request \
+thresholds; because all selected samples use this moving branch, the \
+elimination of full inhibit isolates 00012818 as the operational veto. Table \
+0001298c remains live only for the low-speed intermediate band under stock \
+flags.""",
 ]
 level = "code"
 role = "accessor"
