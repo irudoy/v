@@ -24,8 +24,8 @@ telemetry_profile = "tuning"
 layout = "1me3b"
 status = "supported"
 note = """
-Mailbox 26 tail-chain type A3 feedback record and five unavailable fields \
-require explicit variants"""
+Mailbox 26 tail-chain type A3 feedback record and unavailable fields require \
+explicit variants"""
 feedback_payload_offset = 322
 mailbox_index = 26
 mailbox_mask = 1024
@@ -103,8 +103,8 @@ stock_sle1_isr = "stock_sle1_isr/fn"
 layout = "1nd"
 status = "supported"
 note = """
-Mailbox 26 tail-chain type A3 feedback record and one unavailable Q8 field \
-require explicit variants"""
+Mailbox 26 tail-chain type A3 feedback record and unavailable fields require \
+explicit variants"""
 feedback_payload_offset = 322
 mailbox_index = 26
 mailbox_mask = 1024
@@ -406,8 +406,8 @@ stock_sle1_isr = "stock_sle1_isr/fn"
 layout = "jk78c"
 status = "supported"
 note = """
-Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field \
-require explicit target bindings"""
+Mailbox 26 tail-chain type 03 feedback record requires explicit target \
+bindings"""
 feedback_payload_offset = 42
 mailbox_index = 26
 mailbox_mask = 1024

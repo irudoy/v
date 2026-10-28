@@ -181,4 +181,4 @@ telemetry,secondary_tps_b2_raw,ffff2864,fffe9952,,,mapped,Aligned diagnostic poi
 telemetry,af_adjustment_b2_raw,ffff45a2,fffebdfc,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables two ignition hooks one state-code ignition hook native fuel-cut caps and curves and a throttle-scalar commit
 capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock final-mask coordinator without modifying VQ37 map storage
-capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type A3 feedback record and five unavailable fields require explicit variants
+capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type A3 feedback record and unavailable fields require explicit variants

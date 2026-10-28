@@ -176,4 +176,4 @@ telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,mapped,Aligned diagnostic poi
 telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
 capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
 capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage
-capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field require explicit target bindings
+capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record requires explicit target bindings
