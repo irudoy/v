@@ -340,6 +340,12 @@ class MlgRelationAuditTest(unittest.TestCase):
         self.assertEqual(result, {"intake_duty_b1_pair_available": False,
                                   "intake_duty_b2_pair_available": False})
 
+    def test_rotating_injection_angle_reports_only_observed_range(self):
+        source = mlg_relation_audit.Recording(Path("rotating.mlg"), "0" * 64, (),
+            {"injection_end_angle_raw": [float("nan"), 300.0, 300.0, 330.0]}, 4)
+        self.assertEqual(mlg_relation_audit.audit_states(source),
+                         {"injection_end_angle_raw_range": [300, 330]})
+
     def test_toml_value_formatting(self):
         self.assertEqual(mlg_relation_audit.format_value(3), "3")
         self.assertEqual(mlg_relation_audit.format_value(0.5), "0.500000")

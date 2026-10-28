@@ -732,8 +732,11 @@ def audit_states(recording_: Recording) -> dict:
         ("iat_raw", "iat_raw_range"),
         ("battery_voltage_raw", "battery_raw_range"),
         ("injection_end_angle_raw", "injection_end_angle_raw_range"),
+        ("transmission_reduction_state_raw", "transmission_reduction_state_raw_range"),
+        ("torque_transition_state_raw", "torque_transition_state_raw_range"),
     ):
-        column = _ints(recording_, source)
+        column = [int(round(value)) for value in recording_.columns.get(source, ())
+                  if math.isfinite(value)]
         if column:
             result[key] = [min(column), max(column)]
     return result
