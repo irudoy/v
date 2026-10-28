@@ -4,8 +4,10 @@ import types
 import unittest
 from unittest import mock
 
-from tools.can_dashboard import app
 from tools.can_dashboard import model, presentation, sources
+from tools.can_dashboard.tests.tk_support import application_for_tests
+
+app = application_for_tests()
 
 
 class PcanReconnectTest(unittest.TestCase):

@@ -9,6 +9,10 @@ import types
 import unittest
 from unittest import mock
 
+from tools.can_dashboard.tests.tk_support import require_tk
+
+require_tk()
+
 from tools.can_dashboard import app
 from tools.logs import mlvlg
 

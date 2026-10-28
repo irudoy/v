@@ -5,7 +5,7 @@ from __future__ import annotations
 import tkinter as tk
 
 from tools.can_dashboard import live_feed
-from tools.can_dashboard.settings import FeedSettings
+from tools.can_dashboard.settings import FeedSettings, endpoint_text, parse_feed_form as parse_form
 from tools.can_dashboard.widgets import ToolButton
 
 
@@ -25,16 +25,6 @@ PLUGIN_STATES = {
     "missing": ("not installed", "error"),
     None: ("", "muted"),
 }
-
-
-def endpoint_text(host, port):
-    return f"{host}:{port}"
-
-
-def parse_form(enabled, endpoint):
-    """Build feed settings from the dialog fields or raise ValueError."""
-    host, port = live_feed.parse_endpoint(endpoint)
-    return FeedSettings(enabled=bool(enabled), host=host, port=port)
 
 
 class FeedDialog(tk.Toplevel):

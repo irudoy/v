@@ -54,6 +54,7 @@ SOURCE_FILES = (
     "tools/can_dashboard/settings.py",
     "tools/can_dashboard/sources.py",
     "tools/can_dashboard/widgets.py",
+    "tools/can_dashboard/layout.py",
     "tools/can_dashboard/README.md",
 )
 

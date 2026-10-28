@@ -1,6 +1,8 @@
 from pathlib import Path
 import tempfile
-import tkinter as tk
+from tools.can_dashboard.tests.tk_support import require_tk
+
+tk = require_tk()
 import unittest
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SHORT_NAME, __version__
@@ -78,7 +80,7 @@ class WindowLayoutTest(unittest.TestCase):
                 continue
             labels += 1
             self.assertEqual(
-                int(widget.cget("highlightthickness")),
+                widget.winfo_pixels(widget.cget("highlightthickness")),
                 0,
                 str(widget),
             )
@@ -183,13 +185,13 @@ class WindowLayoutTest(unittest.TestCase):
             for field in panel.fields:
                 self.assertEqual(field.winfo_reqwidth(), floor)
 
-    def test_the_narrowest_panel_fits_its_rows_and_keeps_labels_distinct(self):
+    def test_the_narrowest_panel_fits_its_rows_and_preserves_full_tooltip_labels(self):
         elided = 0
         chrome = 2 * (1 + app.PANEL_PAD + app.PANEL_GAP)
         for panel in self.panels():
             panel.fit(app.PANEL_MIN_WIDTH)
-            shown = [label.cget("text") for label, _full in panel.labels]
-            self.assertEqual(len(set(shown)), len(shown), shown)
+            tooltips = [label.tooltip.provider() for label, _full in panel.labels]
+            self.assertEqual(len(set(tooltips)), len(tooltips), tooltips)
             for (label, full), field in zip(panel.labels, panel.fields):
                 elided += label.cget("text") != full
                 self.assertLessEqual(

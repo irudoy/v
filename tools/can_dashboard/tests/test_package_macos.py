@@ -1,4 +1,5 @@
 import os
+from contextlib import chdir
 from pathlib import Path
 import plistlib
 import stat
@@ -152,12 +153,11 @@ class MacosPackageTest(unittest.TestCase):
         )
 
     def test_validation_resolves_relative_bundle_before_running_executable(self):
-        temporary_root = package_macos.ROOT / "tmp"
-        temporary_root.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=temporary_root) as directory:
+        with tempfile.TemporaryDirectory() as directory:
             app = self.create_app(Path(directory))
-            relative = app.relative_to(package_macos.ROOT)
-            with mock.patch.object(
+            relative = Path(app.name)
+            expected_executable = (app / "Contents/MacOS" / package_macos.APP_NAME).resolve()
+            with chdir(directory), mock.patch.object(
                 package_macos.subprocess,
                 "check_output",
                 return_value="arm64",
@@ -169,6 +169,7 @@ class MacosPackageTest(unittest.TestCase):
 
         driver_check = run.call_args_list[-1].args[0]
         self.assertTrue(Path(driver_check[0]).is_absolute())
+        self.assertEqual(Path(driver_check[0]), expected_executable)
         self.assertEqual(driver_check[-1], "--pcan-driver-check")
 
     def test_replace_app_preserves_symlink(self):

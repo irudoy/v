@@ -61,6 +61,24 @@ the main status reports `SCHEMA MISMATCH`. A later matching health context resto
 the display using values received under that verified layout. Independently
 decoded stock CAN values remain available while telemetry is unverified.
 
+## Python and Tk
+
+Source execution requires Python 3.11 with `tkinter`, its `_tkinter` extension,
+Tcl/Tk 8.6 or newer, and a graphical display. The project's `requires-python`
+constraint and `uv sync` do not install Tk. A Linux distribution supplies it
+through the Python Tk package; the Windows Python installer offers Tcl/Tk as
+an installation component. The native macOS package embeds its Tk runtime.
+
+Pure layout, selection, settings, and icon-geometry tests run without Tk.
+Tests that import GUI modules skip with an explicit reason when Tkinter is
+unavailable; window tests also require a display. Touchpad event tests check
+the event capability separately, so Tk 8.6 still exercises mouse-wheel
+behavior. Linux GUI checks can run under Xvfb:
+
+```bash
+xvfb-run -a python3 -m pytest -q tools/can_dashboard/tests
+```
+
 ## Portable Windows package
 
 Build the ignored transfer archive from the repository root:

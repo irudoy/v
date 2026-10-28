@@ -1,5 +1,7 @@
 import tempfile
-import tkinter as tk
+from tools.can_dashboard.tests.tk_support import require_tk
+
+tk = require_tk()
 import unittest
 
 from tools.can_dashboard import feed_dialog, live_feed
@@ -46,34 +48,6 @@ FONTS = {
 def tearDownModule():
     if ROOT is not None:
         ROOT.destroy()
-
-
-class FormTest(unittest.TestCase):
-    def test_the_form_builds_feed_settings(self):
-        self.assertEqual(
-            feed_dialog.parse_form(True, " 127.0.0.1:5000 "),
-            FeedSettings(True, "127.0.0.1", 5000),
-        )
-        self.assertEqual(
-            feed_dialog.parse_form(False, "47809"),
-            FeedSettings(False, live_feed.DEFAULT_HOST, 47809),
-        )
-
-    def test_the_form_rejects_an_invalid_endpoint(self):
-        for endpoint in ("", "host:", ":5000", "0", "70000", "host:port"):
-            with self.subTest(endpoint=endpoint):
-                with self.assertRaises(ValueError):
-                    feed_dialog.parse_form(True, endpoint)
-
-    def test_the_default_endpoint_round_trips(self):
-        defaults = FeedSettings()
-        self.assertEqual(
-            feed_dialog.parse_form(
-                False,
-                feed_dialog.endpoint_text(defaults.host, defaults.port),
-            ),
-            defaults,
-        )
 
 
 @unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")

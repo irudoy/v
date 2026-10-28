@@ -2,7 +2,9 @@ import json
 from pathlib import Path
 import sys
 import tempfile
-import tkinter as tk
+from tools.can_dashboard.tests.tk_support import require_tk
+
+tk = require_tk()
 import types
 import unittest
 from unittest import mock

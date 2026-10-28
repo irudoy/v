@@ -6,8 +6,11 @@ import tempfile
 import types
 import unittest
 
-from tools.can_dashboard import app, live_feed, model
+from tools.can_dashboard import live_feed, model
+from tools.can_dashboard.tests.tk_support import application_for_tests
 from tools.logs import can_telemetry
+
+app = application_for_tests()
 
 
 def verified_model():
