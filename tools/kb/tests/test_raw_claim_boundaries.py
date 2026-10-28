@@ -56,7 +56,7 @@ def test_dead_alternative_retains_the_q7_hypothesis_without_asserting_its_scale(
     assert "does not fix" in notes(symbol.meaning)
 
 
-def test_main_capture_is_retained_without_a_hardware_identity_claim():
+def test_main_capture_is_retained_without_a_hardware_status_claim():
     symbol = compile.cached(repo.ROOT).symbols[SymbolKey("7mfk", "ram", 0xFFFF2A85)]
     assert symbol.value("level") == "code"
     assert symbol.evidence
@@ -66,4 +66,4 @@ def test_main_capture_is_retained_without_a_hardware_identity_claim():
     record = tomllib.loads((repo.ROOT / "patches/hardware-results.toml").read_text())[
         "map_switching"]["ascd_main_vehicle_2026_09_21"]
     assert record.get("hardware_status") is None
-    assert record.get("target_ecu") is None
+    assert record["target_ecu"] == "23710-JK00D"
