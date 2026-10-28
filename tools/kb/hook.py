@@ -437,15 +437,12 @@ class Guard:
                     return reason
                 continue
             if (program == "gh" and len(clean) > 2 and clean[1] in {"issue", "pr"}
-                    and clean[2] in {"create", "comment", "close", "edit"}):
-                files = {"--body-file", "-F"}
+                    and clean[2] in {"create", "comment", "close", "edit", "reopen", "view"}):
+                # Numbers, URLs, branches, and text options are data; only
+                # the file options read files.
+                files = {"--body-file", "-F", "--template", "-T", "--recover"}
                 reason = self.shell_paths([shell_value(value, variables)
                     for value in option_files(clean[3:], files)], "read", cwd)
-                if reason:
-                    return reason
-                arguments = without_option_values(clean[3:], files | {"--comment", "--body", "--title", "-b", "-t"})
-                reason = self.shell_paths([part for word in arguments
-                    for part in candidates(shell_value(word, variables))], "unknown", cwd)
                 if reason:
                     return reason
                 continue
@@ -854,21 +851,6 @@ def api_files(words):
         elif value.startswith("@"):
             files.append(value[1:])
     return files
-
-
-def without_option_values(words, options):
-    """Arguments after removing declared literal-data or separately checked options."""
-    result, index = [], 0
-    while index < len(words):
-        word = words[index]
-        index += 1
-        if word in options:
-            index += 1
-        elif not any(word.startswith(option + "=") or
-                     len(option) == 2 and word.startswith(option) and len(word) > 2
-                     for option in options):
-            result.append(word)
-    return result
 
 
 def xargs_command(words):

@@ -124,8 +124,10 @@ unknown iteration values retain conservative operand checks. Other `for` lists
 contain data; a pattern in them receives read checks. Reserved words such as
 `do` and `then` and wrappers such as `timeout` and `env` leave the decision to
 the command they precede.
-For `gh issue` and `gh pr` create, comment, close and edit operations, comment,
-body and title options contain data. Body-file options remain read operands.
+For `gh issue` and `gh pr` create, view, comment, close, reopen and edit
+operations, issue numbers, URLs, branches and text options contain data;
+`--body-file` (`-F`), `--template` (`-T`) and `--recover` remain read
+operands.
 For `gh api`, the endpoint and field values contain data; `--input` and `-F`
 values that start with `@` remain read operands, and an unresolved `-F` value
 receives the operand check.

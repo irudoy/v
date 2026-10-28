@@ -1769,9 +1769,10 @@ security boundary: the gates validate every file whatever wrote it.
   `do` and `then` and wrappers such as `timeout` and `env` leave the decision
   to the command they precede; wrapper options that take a value check it as an
   operand.
-  The `gh issue` and `gh pr` operations `create`, `comment`, `close` and `edit`
-  treat `--comment`, `--body` and `--title` as data; `--body-file` and `-F`
-  remain read operands. `gh api` treats its endpoint and field values as data;
+  The `gh issue` and `gh pr` operations `create`, `view`, `comment`, `close`,
+  `reopen` and `edit` treat issue numbers, URLs, branches and text options
+  such as `--comment`, `--body` and `--title` as data; `--body-file` (`-F`),
+  `--template` (`-T`) and `--recover` remain read operands. `gh api` treats its endpoint and field values as data;
   `--input` and `-F` values that start with `@` remain read operands, and an
   unresolved `-F` value receives the operand check. Redirections and active
   substitutions retain their checks before these option roles apply.

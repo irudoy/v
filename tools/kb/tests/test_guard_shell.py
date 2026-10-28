@@ -353,6 +353,31 @@ read = "open"
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
+    def test_gh_issue_and_pr_numbers_urls_and_branches_are_data(self):
+        for command in (
+            "for n in $(seq 9 15); do gh issue view $n --repo irudoy/vhrev; done",
+            'gh pr view "$branch" --json title -q .title',
+            "gh issue reopen $n --comment 'kb/names.csv'",
+            "gh pr comment https://github.com/irudoy/vhrev/pull/3 --body-file GUIDE.md",
+            'gh issue edit "$n" --add-label "$label" --body "$text"',
+            "gh pr edit kb/names.csv --title x",
+            "gh issue view 9 --comments",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "for n in $(seq 9 15); do gh issue comment $n --body-file kb/names.csv; done",
+            'gh issue edit $n --body-file "$file"',
+            "gh issue reopen 9 -F l0/7mfk/funcs.csv",
+            "gh pr create --template kb/names.csv",
+            "gh pr create -Tkb/names.csv",
+            "gh issue create --recover=l0/7mfk/funcs.csv",
+            'gh issue reopen 9 --comment "$(cat kb/names.csv)"',
+            "gh pr view 3 > kb/names.csv",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
     def test_gh_api_endpoints_and_fields_are_data_but_input_files_are_operands(self):
         for command in (
             "for e in $(seq 42 43); do gh api repos/irudoy/vhrev/issues/$e/sub_issues --jq '.[]'; done",
