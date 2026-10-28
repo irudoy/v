@@ -1,4 +1,4 @@
-# Exact-image structural preparation of the reviewed JK08A crank handler.
+# Exact-image structural preparation of reviewed JK08A entries and dispatch data.
 schema_version = 1
 layout = "7mfk"
 image = "JK08A"
@@ -76,3 +76,23 @@ owner = "00028ea2"
 site = "0002927c"
 target = "ffff196c"
 type = "read"
+
+[[dispatch]]
+entry = "00022038"
+site = "00022044"
+table = "00022094"
+former_entry = "00022094"
+former_end = "000220f8"
+former_instruction_sha256 = "8bac2f5cbbdbf70fc72b398a1baa310804406cc9eccac49c0de4f6d40c90b8a7"
+targets = [
+    "0002208e", "0002208a", "00022086", "00022082",
+    "0002207e", "0002207a", "00022076", "00022072",
+    "0002206e", "0002206a", "00022066", "00022062",
+    "0002205e", "0002205a", "00022056", "00022052", "0002204e",
+]
+ranges = [
+    ["00022038", "00022048"],
+    ["0002204e", "00022092"],
+    ["000220d8", "000220f8"],
+]
+instruction_sha256 = "265aa3c0880df8820debd85febda18b94358001a776f12c3fcda50c23bffd1c8"

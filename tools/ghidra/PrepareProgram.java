@@ -7,12 +7,20 @@
 // Seal binds successfully produced output bytes to that independently prepared run.
 // HeadlessScript failure aborts following scripts without deleting the program.
 import ghidra.app.util.headless.HeadlessScript;
+import ghidra.app.cmd.function.CreateFunctionCmd;
+import ghidra.app.cmd.disassemble.DisassembleCommand;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSet;
+import ghidra.program.model.data.ArrayDataType;
+import ghidra.program.model.data.PointerDataType;
+import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.RefType;
+import ghidra.program.model.symbol.SourceType;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +50,9 @@ public class PrepareProgram extends HeadlessScript {
     List<String[]> joins = new ArrayList<>();
     List<String[]> references = new ArrayList<>();
     List<String[]> forbidden = new ArrayList<>();
+    List<String[]> dispatches = new ArrayList<>();
+    List<String[]> dispatchRanges = new ArrayList<>();
+    List<String[]> dispatchTargets = new ArrayList<>();
 
     @Override
     public void run() throws Exception {
@@ -66,10 +77,12 @@ public class PrepareProgram extends HeadlessScript {
     }
 
     void readPlan(Path path) throws Exception {
-        Map<String, List<String[]>> arrays = Map.of(
-            "input", inputs, "seed", seeds, "pin", pins, "site", sites,
-            "fragment", fragments, "join", joins, "reference", references,
-            "forbidden", forbidden);
+        Map<String, List<String[]>> arrays = Map.ofEntries(
+            Map.entry("input", inputs), Map.entry("seed", seeds), Map.entry("pin", pins),
+            Map.entry("site", sites), Map.entry("fragment", fragments), Map.entry("join", joins),
+            Map.entry("reference", references), Map.entry("forbidden", forbidden),
+            Map.entry("dispatch", dispatches), Map.entry("dispatch_range", dispatchRanges),
+            Map.entry("dispatch_target", dispatchTargets));
         Set<String> keys = Set.of("schema", "layout", "digest", "image_sha256",
                 "image_size", "merges", "run_id");
         for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
@@ -91,6 +104,9 @@ public class PrepareProgram extends HeadlessScript {
         for (String[] row : joins) requireLength(row, 3);
         for (String[] row : references) requireLength(row, 5);
         for (String[] row : forbidden) requireLength(row, 2);
+        for (String[] row : dispatches) requireLength(row, 12);
+        for (String[] row : dispatchRanges) requireLength(row, 4);
+        for (String[] row : dispatchTargets) requireLength(row, 3);
     }
 
     void clearStageOutputs(Path receipt, String[] outputs) throws Exception {
@@ -158,6 +174,10 @@ public class PrepareProgram extends HeadlessScript {
         Set<String> modified = new HashSet<>();
         for (String[] row : seeds) modified.add(row[1]);
         for (String[] row : fragments) modified.add(row[2]);
+        for (String[] row : dispatches) {
+            modified.add(row[1]);
+            modified.add(row[5]);
+        }
         for (String[] row : forbidden) {
             if (before.containsKey(row[1])) {
                 throw new IllegalStateException("unreviewed outside-function entry " + row[1]);
@@ -170,20 +190,24 @@ public class PrepareProgram extends HeadlessScript {
                 throw new IllegalStateException("fragment bytes differ at " + row[2]);
             }
         }
+        for (String[] row : dispatches) repairDispatch(row);
         String[] entries = seeds.stream().map(row -> row[1]).toArray(String[]::new);
         String[] recover = new String[entries.length + 1];
         recover[0] = "--seeds-only";
         System.arraycopy(entries, 0, recover, 1, entries.length);
         runScript("RecoverFuncs.java", recover, state);
         requireSeeds();
-        runScript("AnalyzeFuncs.java", entries, state);
+        String[] analyzed = java.util.stream.Stream.concat(Arrays.stream(entries),
+                dispatches.stream().map(row -> row[1])).toArray(String[]::new);
+        runScript("AnalyzeFuncs.java", analyzed, state);
         runScript("MergeFuncs.java", new String[] { scalar.get("merges") }, state);
-        runScript("AnalyzeFuncs.java", entries, state);
+        runScript("AnalyzeFuncs.java", analyzed, state);
         postconditions();
         Map<String, Snapshot> after = snapshots();
         Set<String> expected = new HashSet<>(before.keySet());
         expected.addAll(Arrays.asList(entries));
         for (String[] row : joins) expected.remove(row[2]);
+        for (String[] row : dispatches) expected.remove(row[5]);
         if (!expected.equals(after.keySet())) {
             throw new IllegalStateException("preparation changes an unreviewed function entry");
         }
@@ -208,6 +232,24 @@ public class PrepareProgram extends HeadlessScript {
                 preserve(old, after.get(join[1]), join[2], borrowedFrame);
             }
         }
+        for (String[] row : dispatches) {
+            Snapshot owner = after.get(row[1]);
+            if (before.containsKey(row[1])) preserve(before.get(row[1]), owner, row[1], true);
+            Snapshot former = before.get(row[5]);
+            if (former != null) {
+                // Only the exact registered data span loses instruction classification.
+                // Real tail instructions keep their bytes and non-stack references.
+                Snapshot retained = withoutDispatchData(former, row);
+                preserve(retained, owner, row[5], true);
+                JsonObject classified = new JsonObject();
+                classified.addProperty("start", row[3]);
+                classified.addProperty("end", row[4]);
+                classified.addProperty("former_instruction_sha256", former.exact);
+                classified.addProperty("removed_instruction_count",
+                        former.instructions.size() - retained.instructions.size());
+                preservation.getAsJsonObject(row[5]).add("reclassified_data", classified);
+            }
+        }
         JsonObject result = new JsonObject();
         result.addProperty("schema_version", 1);
         result.addProperty("layout", scalar.get("layout"));
@@ -222,6 +264,114 @@ public class PrepareProgram extends HeadlessScript {
         result.add("preservation", preservation);
         Files.writeString(receipt, result.toString() + "\n");
         println("VQ_PREP prepared " + scalar.get("layout") + " functions=" + after.size());
+    }
+
+    List<String[]> dispatchRows(List<String[]> rows, String entry) {
+        return rows.stream().filter(row -> row[1].equals(entry)).toList();
+    }
+
+    boolean dispatchCode(String[] dispatch, Address site) {
+        for (String[] row : dispatchRows(dispatchRanges, dispatch[1])) {
+            if (site.compareTo(address(row[2])) >= 0 && site.compareTo(address(row[3])) < 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void repairDispatch(String[] row) throws Exception {
+        Address entry = address(row[1]), table = address(row[3]);
+        Address tableEnd = address(row[4]), formerEntry = address(row[5]);
+        Function owner = getFunctionAt(entry), former = getFunctionAt(formerEntry);
+        if (owner == null) throw new IllegalStateException("missing dispatch owner " + entry);
+        if (former != null) {
+            Snapshot old = snapshot(former);
+            long bytes = address(row[6]).subtract(formerEntry);
+            if (old.size != bytes || old.instructions.size() * 2 != bytes
+                    || !old.exact.equals(row[7])
+                    || !former.getBody().getMinAddress().equals(formerEntry)
+                    || !former.getBody().getMaxAddress().equals(address(row[6]).subtract(1))) {
+                throw new IllegalStateException("former dispatch body differs at " + formerEntry);
+            }
+        }
+        for (String[] range : dispatchRows(dispatchRanges, row[1])) {
+            for (Address at = address(range[2]); at.compareTo(address(range[3])) < 0; at = at.add(2)) {
+                Function held = getFunctionContaining(at);
+                if (held != null && !held.getEntryPoint().equals(entry)
+                        && !held.getEntryPoint().equals(formerEntry)) {
+                    throw new IllegalStateException("dispatch overlaps another function at " + at);
+                }
+            }
+        }
+        Instruction branch = listing.getInstructionAt(address(row[2]));
+        if (branch == null || !branch.getFlowType().isJump() || !branch.getFlowType().isComputed()) {
+            throw new IllegalStateException("dispatch site is not a computed jump " + row[2]);
+        }
+        List<String[]> targets = dispatchRows(dispatchTargets, row[1]);
+        if (targets.size() * 4 != tableEnd.subtract(table)) {
+            throw new IllegalStateException("dispatch table length differs " + table);
+        }
+        for (int i = 0; i < targets.size(); i++) {
+            long actual = Integer.toUnsignedLong(currentProgram.getMemory().getInt(table.add(4L * i)));
+            if (actual != address(targets.get(i)[2]).getOffset()) {
+                throw new IllegalStateException("dispatch target differs at " + table.add(4L * i));
+            }
+        }
+        int transaction = currentProgram.startTransaction("prepare-dispatch-data");
+        boolean success = false;
+        try {
+            monitor.checkCancelled();
+            if (former != null && !currentProgram.getFunctionManager().removeFunction(formerEntry)) {
+                throw new IllegalStateException("cannot remove false dispatch entry " + formerEntry);
+            }
+            listing.clearCodeUnits(table, tableEnd.subtract(1), false);
+            createData(table, new ArrayDataType(PointerDataType.dataType, targets.size(), 4));
+            AddressSet allowed = new AddressSet();
+            for (String[] range : dispatchRows(dispatchRanges, row[1])) {
+                allowed.add(address(range[2]), address(range[3]).subtract(1));
+            }
+            for (String[] range : dispatchRows(dispatchRanges, row[1])) {
+                for (Address at = address(range[2]); at.compareTo(address(range[3])) < 0; at = at.add(2)) {
+                    monitor.checkCancelled();
+                    if (listing.getInstructionAt(at) == null
+                            && !new DisassembleCommand(at, allowed, true).applyTo(currentProgram, monitor)) {
+                        throw new IllegalStateException("cannot disassemble dispatch code " + at);
+                    }
+                }
+            }
+            for (String[] target : targets) {
+                monitor.checkCancelled();
+                Address destination = address(target[2]);
+                currentProgram.getReferenceManager().addMemoryReference(
+                        branch.getAddress(), destination, RefType.COMPUTED_JUMP, SourceType.USER_DEFINED, 0);
+            }
+            if (!CreateFunctionCmd.fixupFunctionBody(currentProgram, owner, monitor)) {
+                throw new IllegalStateException("cannot reconstruct dispatch body " + entry);
+            }
+            success = true;
+        } finally {
+            currentProgram.endTransaction(transaction, success);
+        }
+    }
+
+    Snapshot withoutDispatchData(Snapshot old, String[] row) {
+        Snapshot retained = new Snapshot();
+        for (Map.Entry<String, String> instruction : old.instructions.entrySet()) {
+            Address at = address(instruction.getKey());
+            if (at.compareTo(address(row[3])) >= 0 && at.compareTo(address(row[4])) < 0) continue;
+            if (!dispatchCode(row, at)) {
+                throw new IllegalStateException("former dispatch has unregistered code " + at);
+            }
+            retained.instructions.put(instruction.getKey(), instruction.getValue());
+        }
+        for (String ref : old.references) {
+            String site = ref.substring(0, ref.indexOf(':'));
+            if (!retained.instructions.containsKey(site)) continue;
+            retained.references.add(ref);
+            if (old.stackReferences.contains(ref)) retained.stackReferences.add(ref);
+            if (old.memoryReferences.contains(ref)) retained.memoryReferences.add(ref);
+        }
+        return retained;
     }
 
     void preserve(Snapshot old, Snapshot owner, String entry) {
@@ -345,6 +495,50 @@ public class PrepareProgram extends HeadlessScript {
                         || type.equals("call") && ref.getReferenceType().isCall()) found = true;
             }
             if (!found) throw new IllegalStateException("missing " + row[4] + " at " + row[2]);
+        }
+        for (String[] row : dispatches) {
+            Function owner = getFunctionAt(address(row[1]));
+            Snapshot body = owner == null ? null : snapshot(owner);
+            if (body == null || getFunctionAt(address(row[5])) != null
+                    || body.size != Long.parseLong(row[8])
+                    || body.instructions.size() != Integer.parseInt(row[9])
+                    || owner.getBody().getNumAddressRanges() != Integer.parseInt(row[10])
+                    || !body.exact.equals(row[11])
+                    || body.instructions.keySet().stream().anyMatch(at -> !dispatchCode(row, address(at)))) {
+                throw new IllegalStateException("prepared dispatch body differs at " + row[1]
+                        + (body == null ? ": absent" : ": bytes=" + body.size + " instructions="
+                        + body.instructions.size() + " ranges=" + owner.getBody()
+                        + " sha256=" + body.exact));
+            }
+            Data table = listing.getDefinedDataAt(address(row[3]));
+            List<String[]> targets = dispatchRows(dispatchTargets, row[1]);
+            if (table == null || table.getLength() != address(row[4]).subtract(address(row[3]))
+                    || table.getNumComponents() != targets.size()) {
+                throw new IllegalStateException("dispatch table is not pointer data " + row[3]);
+            }
+            for (int i = 0; i < targets.size(); i++) {
+                if (!address(targets.get(i)[2]).equals(table.getComponent(i).getValue())) {
+                    throw new IllegalStateException("dispatch pointer data differs " + row[3]);
+                }
+            }
+            for (Address at = address(row[3]); at.compareTo(address(row[4])) < 0; at = at.add(2)) {
+                if (listing.getInstructionAt(at) != null || owner.getBody().contains(at)) {
+                    throw new IllegalStateException("dispatch data remains executable at " + at);
+                }
+            }
+            Set<Address> actual = new HashSet<>(), expected = new HashSet<>();
+            for (Reference ref : getReferencesFrom(address(row[2]))) {
+                if (ref.getReferenceType().isFlow()) {
+                    if (!ref.getReferenceType().equals(RefType.COMPUTED_JUMP)) {
+                        throw new IllegalStateException("unexpected dispatch flow at " + row[2]);
+                    }
+                    actual.add(ref.getToAddress());
+                }
+            }
+            for (String[] target : targets) expected.add(address(target[2]));
+            if (!actual.equals(expected)) {
+                throw new IllegalStateException("dispatch flow differs at " + row[2]);
+            }
         }
     }
 

@@ -55,6 +55,31 @@ class Seed:
 
 
 @dataclass(frozen=True)
+class Dispatch:
+    entry: int
+    site: int
+    table: int
+    targets: tuple[int, ...]
+    former_entry: int
+    former_end: int
+    former_instruction_sha256: str
+    ranges: tuple[tuple[int, int], ...]
+    instruction_sha256: str
+
+    @property
+    def table_end(self):
+        return self.table + 4 * len(self.targets)
+
+    @property
+    def bytes(self):
+        return sum(end - start for start, end in self.ranges)
+
+    @property
+    def sites(self):
+        return frozenset(site for start, end in self.ranges for site in range(start, end, 2))
+
+
+@dataclass(frozen=True)
 class Plan:
     layout: str
     image: str
@@ -66,6 +91,7 @@ class Plan:
     joins: tuple[tuple[int, int], ...]
     forbidden_entries: tuple[int, ...]
     inputs: dict[str, str]
+    dispatches: tuple[Dispatch, ...] = ()
 
     @property
     def digest(self):
@@ -134,6 +160,60 @@ def _joins(layout, root):
     return tuple(pairs)
 
 
+def _dispatches(rows, data, where):
+    result = []
+    for row in _tables(rows, where):
+        _keys(row, ("entry", "site", "table", "targets", "former_entry", "former_end",
+                    "former_instruction_sha256", "ranges", "instruction_sha256"), where)
+        entry, site, table, former, former_end = (
+            _address(row[key], where) for key in
+            ("entry", "site", "table", "former_entry", "former_end"))
+        targets = _addresses(row["targets"], where)
+        if (not targets or len(targets) > 256 or table & 3 or former != table
+                or not table + 4 * len(targets) < former_end <= len(data)
+                or former_end & 1):
+            raise KbError(f"{where}: invalid dispatch table or former body")
+        former_sha = _digest(row["former_instruction_sha256"], where)
+        if hashlib.sha256(data[former:former_end]).hexdigest() != former_sha:
+            raise KbError(f"{where}: former dispatch body differs from the exact image")
+        if not isinstance(row["ranges"], list) or not row["ranges"]:
+            raise KbError(f"{where}: dispatch requires explicit code ranges")
+        ranges = []
+        for span in row["ranges"]:
+            if not isinstance(span, list) or len(span) != 2:
+                raise KbError(f"{where}: dispatch range requires start and exclusive end")
+            start, end = (_address(value, where) for value in span)
+            if (start & 1 or end & 1 or not start < end <= len(data)
+                    or start < table + 4 * len(targets) and table < end
+                    or ranges and start <= ranges[-1][1]):
+                raise KbError(f"{where}: dispatch code ranges overlap data or each other")
+            ranges.append((start, end))
+        code = {at for start, end in ranges for at in range(start, end, 2)}
+        if entry != ranges[0][0] or site not in code or any(target not in code for target in targets):
+            raise KbError(f"{where}: dispatch entry, site and targets must lie in its code")
+        if int.from_bytes(data[site:site + 2], "big") & 0xf0ff != 0x402b:
+            raise KbError(f"{where}: dispatch requires an SH-2 register jump")
+        actual = tuple(int.from_bytes(data[at:at + 4], "big")
+                       for at in range(table, table + 4 * len(targets), 4))
+        if actual != targets:
+            raise KbError(f"{where}: dispatch targets differ from the exact image")
+        instruction_sha = _digest(row["instruction_sha256"], where)
+        if hashlib.sha256(b"".join(data[start:end] for start, end in ranges)).hexdigest() != instruction_sha:
+            raise KbError(f"{where}: dispatch code differs from the exact image")
+        result.append(Dispatch(entry, site, table, targets, former, former_end, former_sha,
+                               tuple(ranges), instruction_sha))
+    if len({item.entry for item in result}) != len(result):
+        raise KbError(f"{where}: duplicate dispatch owner")
+    for index, item in enumerate(result):
+        for other in result[:index]:
+            if (item.sites & other.sites
+                    or item.table < other.table_end and other.table < item.table_end
+                    or any(item.table <= site < item.table_end for site in other.sites)
+                    or any(other.table <= site < other.table_end for site in item.sites)):
+                raise KbError(f"{where}: dispatch contracts overlap")
+    return tuple(result)
+
+
 def _config_bytes(root):
     """Canonical export settings; unrelated configuration is not an input."""
     settings = repo.config(root).get("l0")
@@ -188,7 +268,8 @@ def plan(layout_id, root=repo.ROOT):
     except (OSError, tomllib.TOMLDecodeError) as error:
         raise KbError(f"{path}: {error}") from error
     _keys(document, ("schema_version", "layout", "image", "image_sha256", "image_size",
-                     "forbidden_entries", "seed", "pin", "reference"), str(path))
+                     "forbidden_entries", "seed", "pin", "reference")
+          + (("dispatch",) if "dispatch" in document else ()), str(path))
     if document["schema_version"] != 1 or isinstance(document["schema_version"], bool):
         raise KbError(f"{path}: unsupported preparation schema")
     if (document["layout"], document["image"]) != (layout.id, layout.image):
@@ -265,6 +346,11 @@ def plan(layout_id, root=repo.ROOT):
     forbidden = _addresses(document["forbidden_entries"], str(path))
     if set(forbidden) & {seed.entry for seed in seeds}:
         raise KbError(f"{path}: a seed is forbidden")
+    dispatches = _dispatches(document["dispatch"], data, str(path)) if "dispatch" in document else ()
+    if any(item.entry in seed_entries | set(fragment_entries) | set(forbidden)
+           or item.former_entry in seed_entries | set(fragment_entries) | set(forbidden)
+           for item in dispatches):
+        raise KbError(f"{path}: dispatch conflicts with a seed, join or forbidden entry")
     paths = [path.relative_to(root), MERGES / f"{layout_id}.csv", repo.CATALOG, repo.HOMOLOGY,
              repo.GHIDRA_PIN, *(Path(path) for path in BUILDERS),
              *(repo.GHIDRA_SCRIPTS / name for name in SCRIPTS),
@@ -272,7 +358,7 @@ def plan(layout_id, root=repo.ROOT):
     inputs = {path.as_posix(): repo.sha256_file(root / path) for path in paths}
     inputs[CONFIG_INPUT] = hashlib.sha256(_config_bytes(root)).hexdigest()
     return Plan(layout.id, layout.image, expected_sha, size, tuple(seeds), tuple(pins),
-                tuple(references), joins, forbidden, dict(sorted(inputs.items())))
+                tuple(references), joins, forbidden, dict(sorted(inputs.items())), dispatches)
 
 
 def _wire_text(prepared, root, run_id, wire):
@@ -297,6 +383,14 @@ def _wire_text(prepared, root, run_id, wire):
               for owner, site, target, type_ in prepared.references]
     lines += [f"join\t{entry:08x}\t{fragment:08x}" for entry, fragment in prepared.joins]
     lines += [f"forbidden\t{entry:08x}" for entry in prepared.forbidden_entries]
+    for item in prepared.dispatches:
+        lines.append(f"dispatch\t{item.entry:08x}\t{item.site:08x}\t{item.table:08x}\t"
+                     f"{item.table_end:08x}\t{item.former_entry:08x}\t{item.former_end:08x}\t"
+                     f"{item.former_instruction_sha256}\t{item.bytes}\t{len(item.sites)}\t"
+                     f"{len(item.ranges)}\t{item.instruction_sha256}")
+        lines += [f"dispatch_range\t{item.entry:08x}\t{start:08x}\t{end:08x}"
+                  for start, end in item.ranges]
+        lines += [f"dispatch_target\t{item.entry:08x}\t{target:08x}" for target in item.targets]
     lines.append(f"merges\t{Path(root).resolve() / MERGES / (prepared.layout + '.csv')}")
     return "\n".join(lines) + "\n"
 
@@ -418,12 +512,26 @@ def check_exports(prepared, directory, root=repo.ROOT):
     for entry, fragment in prepared.joins:
         if entry not in funcs or fragment in funcs or fragment not in bodies.get(entry, set()):
             raise KbError(f"prepared export lacks the reviewed join {entry:08x}/{fragment:08x}")
+    for item in prepared.dispatches:
+        row = signatures.get(item.entry, {})
+        if (item.entry not in funcs or item.former_entry in funcs
+                or row.get("exact_sha256") != item.instruction_sha256
+                or row.get("size") != str(item.bytes)
+                or row.get("instructions") != str(len(item.sites))
+                or bodies.get(item.entry) != item.sites
+                or any(holders.get(site) != {item.entry} for site in item.sites)
+                or any(site in holders for site in range(item.table, item.table_end, 2))):
+            raise KbError(f"prepared export lacks the reviewed dispatch body {item.entry:08x}")
     references = {(int(row["func_addr"], 16), int(row["ins_addr"], 16),
                    int(row["ref_addr"], 16), row["ref_type"])
                   for row in records("function_references.csv")}
     for owner, site, target, type_ in prepared.references:
         if not any((owner, site, target) == row[:3] and type_ in row[3] for row in references):
             raise KbError(f"prepared export lacks {type_} at {site:08x}")
+    for item in prepared.dispatches:
+        if any((item.entry, item.site, target, "computed_jump") not in references
+               for target in item.targets):
+            raise KbError(f"prepared export lacks computed dispatch flow at {item.site:08x}")
 
 
 def promote_directory(source, target):

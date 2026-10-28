@@ -181,6 +181,18 @@ keeps every instruction and non-stack reference. Abstract stack-space annotation
 may be recomputed for its joined frame; every removed or added annotation is
 recorded in its receipt. Other functions retain their full reference snapshots.
 This exception does not apply to ROM, RAM, peripheral, flow, or register references.
+The exact-image registry can also declare a `dispatch`: its computed jump,
+ordered pointer table, false former function, and disjoint code ranges. The
+primary preparation verifies the former instruction digest before replacing
+only the declared table's instruction classification with pointer data. It
+adds the declared computed-jump references and reconstructs the owner's body
+from control flow. The resulting instruction sites, bytes, pointer values,
+flow targets, and absence of a function or instructions in the table are
+checked before output acceptance. Real instructions outside the table retain
+their bytes and non-stack references; the receipt records the reclassified
+span and the recomputed stack annotations of the shared frame. All other
+function snapshots remain exact. Both export and on-demand code apply this
+contract in memory under `-readOnly`.
 Its image preflight checks both the imported executable digest and the current
 ROM memory before mutations. Exact
 entry-pointer, prologue, branch, literal, and restoration pins come from

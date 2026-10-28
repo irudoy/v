@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import tomllib
 from unittest.mock import patch
 
 import pytest
@@ -79,6 +80,124 @@ def test_plan_is_read_only_and_binds_primary_scripts(prepared_root):
     assert plan.manifest == {"schema_version": 1, "inputs": plan.inputs}
     assert {str(repo.GHIDRA_SCRIPTS / name) for name in prep.SCRIPTS} <= plan.inputs.keys()
     assert not (root / repo.STATE).exists()
+
+
+@pytest.fixture
+def dispatch_root(prepared_root):
+    root, original = prepared_root
+    data = bytearray(original)
+    data[0x40:0x42] = bytes.fromhex("432b")
+    data[0x80:0x88] = bytes.fromhex("0000004200000090")
+    image = bytes(data)
+    digest = hashlib.sha256(image).hexdigest()
+    old = hashlib.sha256(original).hexdigest()
+    (root / "rom-images/T1/T1.bin").write_bytes(image)
+    catalog = root / repo.CATALOG
+    catalog.write_text(catalog.read_text().replace(old, digest))
+    path = root / prep.SEEDS / "t1.toml"
+    path.write_text(path.read_text().replace(old, digest) + (
+        '\n[[dispatch]]\nentry = "00000040"\nsite = "00000040"\n'
+        'table = "00000080"\nformer_entry = "00000080"\nformer_end = "00000094"\n'
+        f'former_instruction_sha256 = "{hashlib.sha256(image[0x80:0x94]).hexdigest()}"\n'
+        'targets = ["00000042", "00000090"]\n'
+        'ranges = [["00000040", "00000046"], ["00000090", "00000094"]]\n'
+        f'instruction_sha256 = "{hashlib.sha256(image[0x40:0x46] + image[0x90:0x94]).hexdigest()}"\n'))
+    return root, image
+
+
+def test_dispatch_contract_binds_exact_data_targets_and_disjoint_code(dispatch_root, tmp_path):
+    root, image = dispatch_root
+    plan = prep.plan("t1", root)
+    [dispatch] = plan.dispatches
+    assert dispatch.targets == (0x42, 0x90)
+    assert dispatch.sites == {0x40, 0x42, 0x44, 0x90, 0x92}
+    assert dispatch.table_end == 0x88
+    assert dispatch.bytes == 10
+    assert dispatch.instruction_sha256 == hashlib.sha256(image[0x40:0x46] + image[0x90:0x94]).hexdigest()
+    wire = tmp_path / "dispatch.tsv"
+    prep.write_plan(plan, wire, root)
+    text = wire.read_text()
+    assert "dispatch\t00000040\t00000040\t00000080\t00000088\t00000080\t00000094" in text
+    assert "dispatch_range\t00000040\t00000090\t00000094" in text
+    assert "dispatch_target\t00000040\t00000042" in text
+    assert "dispatch_target\t00000040\t00000090" in text
+
+
+@pytest.mark.parametrize("before,after,message", [
+    ('targets = ["00000042", "00000090"]', 'targets = ["00000044", "00000090"]', 'targets differ'),
+    ('targets = ["00000042", "00000090"]', 'targets = ["00000042", "00000070"]', 'lie in its code'),
+    ('table = "00000080"', 'table = "00000082"', 'invalid dispatch'),
+    ('former_end = "00000094"', 'former_end = "00000088"', 'invalid dispatch'),
+    ('["00000040", "00000046"]', '["00000040", "00000082"]', 'overlap data'),
+    ('["00000090", "00000094"]', '["00000044", "00000048"]', 'each other'),
+    ('["00000090", "00000094"]', '["00000091", "00000094"]', 'overlap data'),
+    ('site = "00000040"', 'site = "00000042"', 'register jump'),
+])
+def test_dispatch_refuses_wrong_targets_ranges_and_prior_body(dispatch_root, before, after, message):
+    root, _ = dispatch_root
+    path = root / prep.SEEDS / "t1.toml"
+    path.write_text(path.read_text().replace(before, after))
+    with pytest.raises(KbError, match=message):
+        prep.plan("t1", root)
+
+
+def test_dispatch_prior_body_digest_must_match_registered_image(dispatch_root):
+    root, _ = dispatch_root
+    path = root / prep.SEEDS / "t1.toml"
+    document = tomllib.loads(path.read_text())
+    old = document["dispatch"][0]["former_instruction_sha256"]
+    path.write_text(path.read_text().replace(old, "0" * 64))
+    with pytest.raises(KbError, match="former dispatch body"):
+        prep.plan("t1", root)
+
+
+def test_dispatch_instruction_digest_must_match_declared_ranges(dispatch_root):
+    root, _ = dispatch_root
+    path = root / prep.SEEDS / "t1.toml"
+    document = tomllib.loads(path.read_text())
+    old = document["dispatch"][0]["instruction_sha256"]
+    path.write_text(path.read_text().replace(old, "0" * 64))
+    with pytest.raises(KbError, match="dispatch code differs"):
+        prep.plan("t1", root)
+
+
+def dispatch_export(plan, output):
+    output.mkdir()
+    seed, dispatch = plan.seeds[0], plan.dispatches[0]
+    (output / "funcs.csv").write_text("addr\n00000100\n00000040\n")
+    (output / "function_signatures.csv").write_text(
+        "addr,size,instructions,exact_sha256\n"
+        f"00000100,8,4,{seed.instruction_sha256}\n"
+        f"00000040,10,5,{dispatch.instruction_sha256}\n")
+    (output / "function_tokens.csv").write_text("func_addr,ins_addr\n" + "".join(
+        f"{owner:08x},{site:08x}\n" for owner, sites in
+        ((0x100, range(0x100, 0x108, 2)), (0x40, sorted(dispatch.sites))) for site in sites))
+    (output / "function_references.csv").write_text(
+        "func_addr,ins_addr,ref_addr,ref_type\n00000100,00000104,ffff1000,write\n"
+        "00000040,00000040,00000042,computed_jump\n"
+        "00000040,00000040,00000090,computed_jump\n")
+
+
+@pytest.mark.parametrize("mutation", ["false-entry", "data-instruction", "missing-flow", "overlap"])
+def test_dispatch_export_rejects_executable_data_missing_flow_and_foreign_owners(
+        dispatch_root, tmp_path, mutation):
+    root, _ = dispatch_root
+    plan = prep.plan("t1", root)
+    output = tmp_path / "dispatch-export"
+    dispatch_export(plan, output)
+    prep.check_exports(plan, output, root)
+    if mutation == "false-entry":
+        path, extra = output / "funcs.csv", "00000080\n"
+    elif mutation == "missing-flow":
+        path = output / "function_references.csv"
+        path.write_text(path.read_text().replace("00000040,00000040,00000090,computed_jump\n", ""))
+        extra = ""
+    else:
+        path = output / "function_tokens.csv"
+        extra = "00000200,00000080\n" if mutation == "data-instruction" else "00000200,00000042\n"
+    path.write_text(path.read_text() + extra)
+    with pytest.raises(KbError, match="dispatch"):
+        prep.check_exports(plan, output, root)
 
 
 def test_unconfigured_layout_has_no_new_preparation_requirement(prepared_root):
