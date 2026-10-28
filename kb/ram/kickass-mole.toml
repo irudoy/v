@@ -150,6 +150,36 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff102c"
+name = "spotted-ape"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003c9f8"
+to = "7mfk:0003bc48"
+count = 1
+value = 163
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff102c"
+name = "vigorous-lorikeet"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003c9f8"
+to = "7mfk:0003bc48"
+count = 1
+value = 163
+
 [[link]]
 type = "copy"
 to = "bfs/ram"

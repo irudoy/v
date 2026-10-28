@@ -74,17 +74,17 @@ def test_load_snapshot_keeps_byte_view_word_history_and_exact_copy_links():
     chain = model.entities[('chain', 'airflow_load')]
     assert chain.steps[27]['note'] == 'ffff102c = uint8(ffff1048)'
     assert [ref.address for ref in chain.steps[27]['via']] == [0x20dfe]
-    for output, source, width, unit in (
-        (0xffff1024, 0xffff1026, 16, 'ms*2048'),
-        (0xffff1028, 0xffff1024, 16, 'ms*2048'),
-        (0xffff102c, 0xffff1048, 8, 'percent'),
+    for output, source, width, unit, layouts in (
+        (0xffff1024, 0xffff1026, 16, 'ms*2048', {'7mfk'}),
+        (0xffff1028, 0xffff1024, 16, 'ms*2048', {'7mfk'}),
+        (0xffff102c, 0xffff1048, 8, 'percent', {'7mfk', 'jk00c', 'jk00d', 'jk78c'}),
     ):
         target = model.symbols[SymbolKey('7mfk', 'ram', output)]
         assert target.value('width') == width and target.value('signed') is False
         assert target.value('unit') == unit and target.meaning.props['level'] == 'code'
         [copy] = [link for link in target.meaning.links if link.type == 'copy']
         assert copy.to is model.meaning_of(SymbolKey('7mfk', 'ram', source))
-        assert copy.stated == {'7mfk'} and [ref.address for ref in copy.props['via']] == [0x20dfe]
+        assert copy.stated == layouts and [ref.address for ref in copy.props['via']] == [0x20dfe]
         assert 'hardware atomicity' in copy.props['note']
         [input_link] = [link for link in target.meaning.links
                         if link.type == 'input' and link.to is copy.to]

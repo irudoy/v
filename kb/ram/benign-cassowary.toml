@@ -161,6 +161,61 @@ supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1050"
+name = "spicy-malamute"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003c9f8"
+to = "7mfk:0003bc48"
+count = 1
+value = 163
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1050"
+name = "daffodil-armadillo"
+width = 8
+signed = false
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003c9f8"
+to = "7mfk:0003bc48"
+count = 1
+value = 163
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1042"
+name = "hypersonic-partridge"
+width = 8
+signed = false
+note = """
+Producer 0004068c shifts the Base Fuel Schedule word ffff102e left by seven, \
+divides it by ROM16[000091ee] through 00021e0c, caps the quotient at 255, \
+and stores the byte at 000408e0; the 7mfk producer stores the same ratio to \
+ffff1048 with reference ROM16[00009534]."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065666"
+to = "7mfk:0004bc94"
+count = 1
+value = 67
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000408e0"
+
 [[link]]
 type = "input"
 to = "bfs/ram"

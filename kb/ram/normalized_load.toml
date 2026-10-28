@@ -335,7 +335,7 @@ displacements masked"""
 type = "copy"
 to = "benign-cassowary/ram"
 via = ["coherent_snapshot/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -355,6 +355,24 @@ kind = "test"
 path = "tools/kb/tests/test_load_snapshot.py"
 key = """
 test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_match_stock"""
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk00c:00020f50"
+mode = "block-copy"
+note = "0x1c bytes from ffff1050 to ffff1034."
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk00d:00020f50"
+mode = "block-copy"
+note = "0x1c bytes from ffff1050 to ffff1034."
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:00020f84"
+mode = "block-copy"
+note = "0x10 bytes from ffff1042 to ffff1032."
 
 [[link]]
 type = "input"
