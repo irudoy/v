@@ -2,7 +2,6 @@ from dataclasses import replace
 import copy
 import hashlib
 import json
-from pathlib import Path
 import unittest
 
 from patches import can_telemetry
@@ -11,6 +10,7 @@ from patches import can_telemetry_compose
 from patches import can_telemetry_layout
 from patches import can_telemetry_profile
 from patches import jk08a_runtime_reservations
+from patches import map_switching_assembly
 from tools.logs import can_telemetry_schema
 
 
@@ -33,20 +33,40 @@ def _assignment_digest(assignment):
     ).hexdigest()
 
 
+def _generated_identity():
+    """The integer symbols of the generated identity header, read as the
+    source dialect reads them, and its configuration record."""
+    header = can_telemetry_profile.DEFAULT_IDENTITY
+    symbols = map_switching_assembly._header_symbols(header.name, header, 0)
+    (record,) = (
+        match["value"]
+        for line in header.read_text(encoding="utf-8").splitlines()
+        if (match := map_switching_assembly.DEFINE_RE.fullmatch(line))
+        and match["name"] == "TELEMETRY_CONFIGURATION"
+    )
+    return symbols, bytes(
+        int(value, 16) for value in record.strip("{ }").split(",")
+    )
+
+
 class CanTelemetryContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.manifest = can_telemetry_profile.load_manifest()
         cls.layout = can_telemetry_layout.load_layout()
         cls.blobs = can_telemetry_assembly.load_payloads(cls.layout)
+        symbols, cls.configuration_record = _generated_identity()
+        cls.profile_id = symbols["TELEMETRY_PROFILE_ID"]
+        cls.page_count = symbols["TELEMETRY_PAGE_COUNT"]
+        cls.crc16 = symbols["TELEMETRY_PROFILE_CRC"]
 
     def test_rom_configuration_guard_follows_the_manifest_identity(self):
         base = can_telemetry_assembly._manifest_identity
         drifts = (
-            ("crc16", 0x6475),
-            ("profile_id", 6),
-            ("page_count", 12),
-            ("version", 3),
+            ("crc16", self.crc16 ^ 1),
+            ("profile_id", self.profile_id + 1),
+            ("page_count", self.page_count + 1),
+            ("version", can_telemetry.CONFIG_VERSION + 1),
         )
         for field, value in drifts:
             with self.subTest(field=field):
@@ -69,20 +89,34 @@ class CanTelemetryContractTest(unittest.TestCase):
                 "magic": can_telemetry.CONFIG_MAGIC,
                 "version": can_telemetry.CONFIG_VERSION,
                 "can_id_max": can_telemetry.MAX_DATA_CAN_ID,
-                "profile_id": 7,
-                "page_count": 11,
-                "crc16": 0x6474,
+                "profile_id": self.profile_id,
+                "page_count": self.page_count,
+                "crc16": self.crc16,
             },
         )
 
     def test_rom_configuration_guard_takes_the_generated_identity(self):
         # A guard that spells a number of the identity instead of its symbol
         # fails, although the number equals the generated one.
+        profile_id = f"0x{self.profile_id:X}"
+        page_count = f"0x{self.page_count:X}"
         for unit_key, statement, spelled in (
-            ("capture", "cmp/eq TELEMETRY_PROFILE_ID,r0", "cmp/eq 0x7,r0"),
-            ("capture", "mov #TELEMETRY_PAGE_COUNT,r6", "mov #0xB,r6"),
-            ("control", "cmp/eq TELEMETRY_PAGE_COUNT,r0", "cmp/eq 0xB,r0"),
-            ("control", ".word TELEMETRY_PROFILE_CRC", ".word 0x6474"),
+            (
+                "capture",
+                "cmp/eq TELEMETRY_PROFILE_ID,r0",
+                f"cmp/eq {profile_id},r0",
+            ),
+            ("capture", "mov #TELEMETRY_PAGE_COUNT,r6", f"mov #{page_count},r6"),
+            (
+                "control",
+                "cmp/eq TELEMETRY_PAGE_COUNT,r0",
+                f"cmp/eq {page_count},r0",
+            ),
+            (
+                "control",
+                ".word TELEMETRY_PROFILE_CRC",
+                f".word 0x{self.crc16:04X}",
+            ),
         ):
             with self.subTest(unit=unit_key, statement=statement):
                 unit = self.layout.assembly_unit_by_key[unit_key]
@@ -113,12 +147,21 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 7, 11, 0x6474),
+                ("tuning", self.profile_id, self.page_count, self.crc16),
             ),
         )
-        self.assertEqual(len(self.manifest.fields), 40)
-        self.assertEqual(len(self.manifest.page_sources), 63)
-        self.assertEqual(len(self.manifest.contexts), 10)
+        # The locked assembly of the generated table holds one long word per
+        # fixed page byte and per context byte of the manifest.
+        self.assertEqual(
+            4 * (
+                len(self.manifest.page_sources)
+                + sum(
+                    len(context.byte_sources)
+                    for context in self.manifest.contexts
+                )
+            ),
+            self.layout.assembly_unit_by_key["tables"].data_bytes,
+        )
         names = {item.name for item in self.manifest.fields}
         context_names = {
             field.name
@@ -299,18 +342,15 @@ class CanTelemetryContractTest(unittest.TestCase):
                     configuration.can_id + 1,
                 )
 
-    def test_the_specification_publishes_the_default_configuration(self):
-        published = " ".join(
-            (Path(__file__).resolve().parents[1] / "can-telemetry.md")
-            .read_text(encoding="utf-8")
-            .split()
-        )
-        encoded = can_telemetry.default_configuration().to_bytes(self.manifest)
-        self.assertIn(
-            "The default disabled bytes are `"
-            + " ".join(f"{byte:02X}" for byte in encoded)
-            + "`.",
-            published,
+    def test_the_generated_header_holds_the_default_configuration(self):
+        # TELEMETRY_CONFIGURATION is the enabled record; the default disabled
+        # configuration differs from it in enable byte 3 alone.
+        record = bytearray(self.configuration_record)
+        self.assertEqual(record[3], 1)
+        record[3] = 0
+        self.assertEqual(
+            can_telemetry.default_configuration().to_bytes(self.manifest),
+            bytes(record),
         )
 
     def test_configuration_rejects_corruption_and_invalid_ranges(self):

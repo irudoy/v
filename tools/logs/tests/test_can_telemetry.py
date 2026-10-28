@@ -115,7 +115,6 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         )
         profile = document["profiles"][0]
         profile["name"] = "portable"
-        profile["id"] = 7
         portable_crc = can_telemetry_schema.profile_crc16(
             profile, document["protocol_version"]
         )
@@ -131,7 +130,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
 
             group = list(frames("tuning", 3, context_tag=3))
             health = bytearray(group[9])
-            health[3] = 7
+            health[3] = profile["id"]
             health[4:6] = portable_crc.to_bytes(2, "big")
             group[9] = bytes(health)
             snapshot = feed_group(decoder, group)
@@ -184,7 +183,9 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             decoder, frames("tuning", 3, context_tag=0)
         )
         self.assertTrue(verified_temperature.schema_verified)
-        self.assertEqual(verified_temperature.profile_id, 7)
+        self.assertEqual(
+            verified_temperature.profile_id, decoder.profile["id"]
+        )
         self.assertEqual(verified_temperature.fields["request_flow_raw"], 0x0304)
         self.assertEqual(
             verified_temperature.context_name,
@@ -256,7 +257,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
     def test_verification_ends_with_its_run(self):
         decoder = can_telemetry.Decoder("tuning")
         health = feed_group(decoder, frames("tuning", 0x281F, context_tag=3))
-        self.assertEqual(health.profile_id, 7)
+        self.assertEqual(health.profile_id, decoder.profile["id"])
         restarted = feed_group(decoder, frames("tuning", 1))
         self.assertEqual(restarted.run, 1)
         self.assertFalse(restarted.schema_verified)
