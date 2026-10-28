@@ -31,7 +31,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "ffff4b90"
-name = "delectable-vole"
+former = ["delectable-vole/ram/7mfk-ffff4b90"]
 
 [[symbol.evidence]]
 kind = "rom-bytes"

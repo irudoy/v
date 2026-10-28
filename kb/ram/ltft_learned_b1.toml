@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "delectable-vole/ram"
+to = "learned_fuel_trim_grid_b1/ram"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -171,7 +171,7 @@ index as the first summand"""
 
 [[link]]
 type = "input"
-to = "delectable-vole/ram"
+to = "learned_fuel_trim_grid_b1/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

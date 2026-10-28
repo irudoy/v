@@ -42,15 +42,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "astonishing-hoatzin/ram"
-type = "reader"
-end = "to"
-link_role = "indexed_by"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
 to = "dainty-oriole/ram"
 type = "reader"
 end = "to"
@@ -61,15 +52,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "dazzling-sawfly/ram"
-type = "reader"
-end = "to"
-link_role = "indexed_by"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "illustrious-peccary/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"
@@ -106,6 +88,24 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "stft_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "third_fuel_trim_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "third_fuel_trim_b2/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"

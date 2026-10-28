@@ -58,7 +58,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "ffff2a24"
-name = "astonishing-hoatzin"
+former = ["astonishing-hoatzin/ram/7mfk-ffff2a24"]
 width = 16
 note = """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \

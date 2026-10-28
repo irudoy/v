@@ -49,7 +49,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "ffff2a26"
-name = "illustrious-peccary"
+former = ["illustrious-peccary/ram/7mfk-ffff2a26"]
 width = 16
 note = """
 The complete bank base-pulse entry consumes or publishes this raw16 word in \
@@ -98,7 +98,7 @@ key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "base"
-to = "astonishing-hoatzin/ram"
+to = "third_fuel_trim_b1/ram"
 offset = 0x2
 via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]

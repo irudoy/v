@@ -161,7 +161,7 @@ specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "stft_b1/ram"
-to = "delectable-vole/ram"
+to = "learned_fuel_trim_grid_b1/ram"
 effect = "learns"
 sign = "none"
 via = ["rousing-rhino/fn"]
@@ -247,7 +247,7 @@ F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
 specs = ["defs/JK08A.closed-loop-publication.md"]
 
 [[step]]
-from = "delectable-vole/ram"
+from = "learned_fuel_trim_grid_b1/ram"
 to = "ltft_learned_b1/ram"
 effect = "selects"
 sign = "none"
@@ -342,7 +342,7 @@ uint32(I*T); V = A+floor(P/65536); Z = min(1,I); R = \
 (1-Z)*V+Z*floor(uint32(256*V+O-32768)/256); to = min(65535,R)"""
 
 [[step]]
-from = "astonishing-hoatzin/ram"
+from = "third_fuel_trim_b1/ram"
 to = "enlightened-mastodon/ram"
 effect = "multiplies"
 sign = "none"

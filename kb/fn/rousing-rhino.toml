@@ -97,7 +97,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "delectable-vole/ram"
+to = "diligent-bat/ram"
 type = "writer"
 end = "to"
 relies = "structure"
@@ -105,7 +105,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "diligent-bat/ram"
+to = "learned_fuel_trim_grid_b1/ram"
 type = "writer"
 end = "to"
 relies = "structure"

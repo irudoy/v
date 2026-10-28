@@ -42,14 +42,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "illustrious-peccary/ram"
-type = "input"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
 to = "ltft_b2/ram"
 type = "input"
 end = "owner"
@@ -67,6 +59,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "stft_b2/ram"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "third_fuel_trim_b2/ram"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -258,39 +258,6 @@ key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "input"
-to = "illustrious-peccary/ram"
-via = ["bank_base_pulse_builder/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-b=1: E=RAM16[ffff2a24+2]. This is one view of the same complete output \
-publication, with explicit full-word arithmetic and wrap. A sign-positive \
-physical domain is not inferred."""
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:0004eaf0"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
-key = "test_bank_base_pulse_chain_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
-key = "test_bank_base_pulse_registered_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/JK08A.fuel.md"
-key = "Bounded bank base-pulse builder"
-
-[[link]]
-type = "input"
 to = "ltft_b2/ram"
 via = ["bank_base_pulse_builder/fn"]
 layouts = ["7mfk"]
@@ -372,6 +339,39 @@ physical domain is not inferred."""
 [[link.evidence]]
 kind = "l0"
 at = "7mfk:0004eae6"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
+key = "test_bank_base_pulse_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_bank_base_pulse_chain.py"""
+key = "test_bank_base_pulse_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.fuel.md"
+key = "Bounded bank base-pulse builder"
+
+[[link]]
+type = "input"
+to = "third_fuel_trim_b2/ram"
+via = ["bank_base_pulse_builder/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+b=1: E=RAM16[ffff2a24+2]. This is one view of the same complete output \
+publication, with explicit full-word arithmetic and wrap. A sign-positive \
+physical domain is not inferred."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0004eaf0"
 
 [[link.evidence]]
 kind = "test"
