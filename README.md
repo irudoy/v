@@ -174,6 +174,8 @@ from the registered address profiles.
 
 `make check` independently assembles and byte-compares that manifest and the
 canonical JK08A telemetry manifest using the same pinned GNU toolchain.
+`make telemetry-update` derives the telemetry layout locks and the telemetry
+manifest after an intentional change of the telemetry profile or sources.
 
 Build the self-contained ROM atlas HTML with:
 

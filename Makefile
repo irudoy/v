@@ -33,7 +33,7 @@ CALIBRATION_OPTION = $(if $(strip $(CALIBRATION)),--calibration "$(CALIBRATION)"
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
 .PHONY: test-python-fast test-full
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate telemetry-update rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate
 
 help:
 	@printf '%s\n' \
@@ -58,6 +58,8 @@ help:
 		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
+		'  telemetry-update  Derive the JK08A CAN telemetry layout locks and payload manifest' \
+		'                    from the telemetry sources.' \
 		'  rom-correspondence Compare the function-signature exports of two layouts.' \
 		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence from L0.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
@@ -177,6 +179,10 @@ defs-generate:
 
 runtime-targets-generate:
 	tools/sh-elf-run/generate-targets.sh
+
+telemetry-update:
+	$(PYTHON) patches/can_telemetry_profile.py --check
+	tools/sh-elf-run/generate-targets.sh --telemetry --update
 
 rom-correspondence:
 	@test -n "$(strip $(CORRESPONDENCE_SOURCE_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_SOURCE_EXPORT is required' >&2; exit 2; }

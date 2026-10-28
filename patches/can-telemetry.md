@@ -271,7 +271,8 @@ literal by literal against `can-telemetry-profile.toml`. The executable
 harness includes the same header and installs `TELEMETRY_CONFIGURATION`. A
 wire layout change that moves the CRC therefore reaches the guards and the
 fixture through the generator, and the SHA-256 locks of the assembled units
-and of the composition hold the gate until they state the new bytes. The
+and of the composition hold the gate until they state the new bytes;
+`make telemetry-update` derives them, as described under Lock update. The
 builder independently
 requires mailbox 26 to be a type-4 DLC-8 transmitter for the configured CAN ID.
 This mailbox configuration is present even when startup streaming is disabled,
@@ -580,6 +581,36 @@ The locked software result is:
 
 This gate proves the bounded software contract. It does not replace physical
 CAN, ECU, sensor, or actuator validation.
+
+### Lock update
+
+`can-telemetry-layout.toml` locks every assembly unit by the SHA-256 of its
+assembled bytes, its instruction count, and its data-byte count, and locks the
+default composition by its SHA-256. After an intentional change of the profile
+or of a telemetry source, derive these locks and the payload manifest with:
+
+```sh
+make telemetry-update
+```
+
+The target first requires the generated tables, schema, and identity header to
+match their inputs. A stale projection refuses and names
+`uv run python patches/can_telemetry_profile.py`, which regenerates it from the
+profile and the knowledge base. The target then runs
+`tools/sh-elf-run/generate-targets.sh --telemetry --update` in the pinned GNU
+SH-2E image. The update counts the instructions and data bytes of each unit
+source, assembles the units independently, derives the unit and composition
+locks from the assembled bytes, and rewrites only those values in the layout.
+It then repeats the strict generation against the rewritten layout: the locks,
+the static instruction audit, and the composition must hold before the layout
+and `can-telemetry-payloads.toml` are replaced. Unchanged inputs leave both
+files byte-identical. The update prints every changed lock with its declared
+and derived value.
+
+The strict `--telemetry` generator and its `--check` mode never rewrite a lock.
+A lock that differs from the assembled bytes refuses and names the update
+command. The update does not replace `make verify-firmware`, which executes the
+changed entries.
 
 ## Artifact inventory
 

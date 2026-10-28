@@ -543,22 +543,9 @@ def validate_instruction_semantics(layout, parsed_by_unit, blobs):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--payloads", type=Path, default=DEFAULT_PAYLOADS)
-    parser.add_argument(
-        "--update-from",
-        type=Path,
-        help="replace the payload manifest from <unit>.bin GNU outputs",
-    )
     args = parser.parse_args(argv)
     layout = layout_model.load_layout()
     parsed = validate_assembly_sources(layout)
-    if args.update_from is not None:
-        blobs = {
-            unit.key: (args.update_from / f"{unit.key}.bin").read_bytes()
-            for unit in layout.assembly_units
-        }
-        args.payloads.write_text(
-            render_payloads(layout, blobs), encoding="utf-8"
-        )
     blobs = load_payloads(layout, args.payloads)
     audit = validate_instruction_semantics(layout, parsed, blobs)
     print(

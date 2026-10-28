@@ -51,6 +51,13 @@ or refuses a stale image before execution. The target generator runs from that
 image ID with the invoking user's UID and GID, so the files that it writes in
 the checkout belong to that user.
 
+`generate-targets.sh --telemetry` writes the canonical JK08A telemetry payload
+manifest and refuses when a lock of the telemetry layout differs from the
+assembled bytes. `--telemetry --update` derives those locks, rewrites them in
+the layout, and writes both files only after the strict generation passes
+against the rewritten layout. `make telemetry-update` runs it after the profile
+projection check.
+
 ## Executable boundary
 
 The canonical and relocated runtime verifiers:

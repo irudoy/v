@@ -149,11 +149,12 @@ def test_relocated_unit_cannot_fall_back_to_canonical_source(tmp_path, monkeypat
         generator._assemble(layout, {'missing': object()}, tmp_path)
 
 
-@pytest.mark.parametrize('refuse', [None, 'structure', 'source', 'assembly', 'instructions', 'composition', 'render'])
+@pytest.mark.parametrize('refuse', [None, 'structure', 'source', 'assembly', 'locks', 'stale', 'instructions', 'composition', 'render'])
 def test_telemetry_locks_precede_manifest_publication(refuse, monkeypatch):
     layout = object()
     parsed = object()
     blobs = object()
+    locks = object()
     calls = []
     build_directory = []
 
@@ -177,6 +178,18 @@ def test_telemetry_locks_precede_manifest_publication(refuse, monkeypatch):
         return step('assembly', blobs)
 
     monkeypatch.setattr(generator, '_assemble', assemble)
+    monkeypatch.setattr(generator.can_telemetry_locks, 'counted',
+                        lambda actual: actual if actual is layout else pytest.fail())
+    monkeypatch.setattr(generator.can_telemetry_locks, 'derive',
+                        lambda actual, instructions, data: step('locks', locks)
+                        if (actual is layout and instructions is parsed and data is blobs) else pytest.fail())
+
+    def changes(actual, derived):
+        assert actual is layout and derived is locks
+        step('stale', None)
+        return ()
+
+    monkeypatch.setattr(generator.can_telemetry_locks, 'changes', changes)
     monkeypatch.setattr(generator.can_telemetry_assembly, 'validate_instruction_semantics',
                         lambda actual, instructions, data: step('instructions', None)
                         if (actual is layout and instructions is parsed and data is blobs) else pytest.fail())
@@ -186,7 +199,7 @@ def test_telemetry_locks_precede_manifest_publication(refuse, monkeypatch):
     monkeypatch.setattr(generator.can_telemetry_assembly, 'render_payloads',
                         lambda actual, data: step('render', CONTENT)
                         if actual is layout and data is blobs else pytest.fail())
-    stages = ['structure', 'source', 'assembly', 'instructions', 'composition', 'render']
+    stages = ['structure', 'source', 'assembly', 'locks', 'stale', 'instructions', 'composition', 'render']
     if refuse:
         with pytest.raises(ValueError, match=f'{refuse} lock fails'):
             generator.build_telemetry()

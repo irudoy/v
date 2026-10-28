@@ -23,6 +23,7 @@ DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
 DEFAULT_IDENTITY = Path(__file__).with_name("can-telemetry-identity.h")
+GENERATE_COMMAND = "uv run python patches/can_telemetry_profile.py"
 RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
 PROFILE_NAMES = ("tuning",)
 # Runtime state fields read the active RAM of these runtimes.
@@ -602,6 +603,7 @@ def generate(
         raise ValueError(
             "generated telemetry artifacts are stale: "
             + ", ".join(str(path) for path in stale)
+            + f"; regenerate them with {GENERATE_COMMAND}"
         )
     return manifest
 
