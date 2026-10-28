@@ -1269,9 +1269,11 @@ The minimum controlled validation set is:
    battery voltages to confirm the `10 us` duration count and the modeled
    opening time `0xFFFF2436`, and confirm that channel-8 output `i` drives
    the injector of cylinder `i + 1`.
-5. Retain Map 1 storage for the DFCO held-request and intermediate-restore
-   thresholds until FAIL-BOOT is fixed and base map switching is confirmed on
-   hardware; only then add Map 1-5 Hold and Intermediate support.
+5. Map Switching includes the DFCO held-request and intermediate-restore
+   families. `../patches/map-switching-layout.toml` owns their storage and hooks, and
+   `../patches/hardware-results.toml` records passing `full_runtime` stages
+   16 and 17. Their historical stage results do not qualify a different image
+   or unexercised operating conditions.
 
 ## Bounded LTFT publication
 

@@ -21,10 +21,15 @@ derived ROM bytes, and active tune identities remain local and unversioned.
 The current endpoint is software-verified. Vehicle capture of firmware `1.11`
 confirms Map 2 and Map 3 commits, serialized pulse counts, and selected
 calibration effects. That firmware emits ASCD display state 6 during the ON
-phase, and the exact target lights CRUISE at once and SET after a delay. The
-current endpoint emits state 4, which the stock display-state machine assigns
-to steadily lit CRUISE and SET, and has no vehicle result. The timing is 20
-serializer invocations ON followed by 20 invocations OFF for each pulse.
+phase, and the exact target lights CRUISE at once and SET after a delay.
+`hardware-results.toml` records state-4 pulses and the operator's observation
+of SET together with CRUISE under
+`map_switching.feedback_vehicle_2026_09_21` and
+`map_switching.feedback_vehicle_2026_09_22`. Those observations belong to
+their registered image and captured pulse timings. The current endpoint emits
+state 4, which the stock display-state machine assigns to steadily lit CRUISE
+and SET, with 20 serializer invocations ON followed by 20 invocations OFF for
+each pulse. The historical image observations do not qualify that timing.
 Hardware status is read only from `hardware-results.toml`; successful results
 from earlier compositions do not qualify a changed endpoint.
 
@@ -187,8 +192,9 @@ eight-point activation and release curves. The duplicated pairs are read with
 one index byte through one interpolator and carry no engine-bank identity, so
 each family is named by the selector arm that reaches it. The throttle limiter remains one selected
 uint16 scalar. The source exhaust-CVTC 16x16 surface is not projected because
-the target uses a different branch-selected curve model whose exact editor
-binding is not established.
+the VQ37 architecture removes exhaust camshaft timing control. The declared
+absent roles are owned by the target-native table registry; this surface has
+no replacement exhaust-CVTC curve model.
 
 The common projected RAM allocation is:
 

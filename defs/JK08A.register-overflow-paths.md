@@ -16,9 +16,9 @@ nonnegative shifted result; with R4>=0, the overflow path returns80000000.
 Examples include(-1,80000000) returning7FFFFFFF, (1,80000000) returning
 80000000 and(80000000,80000000) returning0. These cases are distinct from
 an ideal saturating-add substitution. Raw32 inputs establish no natural
-caller operand range or hardware reachability. The complete original
-function document retains its existing summary and native facts; the raw32
-minimum-word boundary is explicit in this narrow execution contract.
+caller operand range or hardware reachability. The native function summary
+describes this piecewise raw32 behavior without claiming executable
+qualification; the minimum-word boundary is explicit in this narrow contract.
 
 Independent scalar equations use signed integer bounds and an explicit
 minimum-word case, while the instruction engine uses low32 arithmetic and

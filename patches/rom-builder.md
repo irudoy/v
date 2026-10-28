@@ -61,7 +61,8 @@ make rom-verify INPUT=STOCK.bin ROM=JK00D
 The common handler performs these operations in one invocation:
 
 1. Validate image size and immutable identity, require the input to equal the
-   registered stock image, and verify all six stored checksum values.
+   registered stock image, and verify every stored checksum value declared by
+   the selected layout in `checksum-layouts.toml`.
 2. Validate either the exact-family ownership ledger or the SHA-bound relocated
    address profile, erased allocation, capabilities, and target payload registry.
 3. Apply the current Map Switching composition from the canonical payload
@@ -73,11 +74,14 @@ The common handler performs these operations in one invocation:
    currently registered family has a target-specific Rolling Launch stage.
 5. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
-   disabled-at-startup mode. All five family layouts use mailbox 31 as the
-   control receiver after each HCAN1 initialization and stock-inactive mailbox
-   26 for telemetry.
-6. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
-   order, then verify all stored values again.
+   disabled-at-startup mode. The control receiver is physical mailbox 22 on
+   1ME3B and physical mailbox 31 on the other targets; telemetry transmits
+   through stock-inactive mailbox 26. `can-telemetry.md` defines the preserved
+   stock reception and the primary/recovery initialization boundaries.
+6. Recalculate the selected layout's checksum domains in their declared
+   dependency order, then verify every stored value again. The SH7058 layout
+   uses self-test B, self-test A, SUM16 A, and SUM16 B; the SH7059 layouts use
+   their declared SUM16 fields and runtime XOR/SUM domains.
 7. Require every final difference from the input to be inside the union of the
    enabled component write sets and the checksum fields.
 
@@ -500,6 +504,10 @@ to interrupt-enabled transmit type 4 and encodes the selected data ID as
 `STDID << 5`. The SH7058 exact-code family writes mailbox 26 at `0x000097BE`;
 JK78C writes mailbox 26 at `0x000094AE`; 1ND writes mailbox 26 at `0x0000974C`;
 JK00C and JK00D write mailbox 26 at `0x00009882` and `0x00009892`.
+1ME3B writes mailbox 26 at `0x00009830`. The `mailbox_record_address/tbl`
+symbols own these addresses and the `can_telemetry` targets project them to
+`rom-address-profiles.toml`; the 1ME3B control mailbox 22 and preserved stock
+mailbox 31 are specified in `can-telemetry.md`.
 `enabled` controls whether sampling starts
 after reset; an idle type-4 mailbox does not request CAN traffic. A validated
 START command on `can_id + 1` activates streaming until reset even when
@@ -511,8 +519,9 @@ A profile can start transmission automatically only after a passive
 whole-vehicle capture proves both adjacent IDs unused and a measured bus-load
 review selects the page profile and divisor. The generated XML/XDF switch edits
 the same target-specific startup flag: `0x000D4E03` for the exact SH7058
-family, `0x000E1503` for 8MFK, `0x0001F803` for JK78C, and `0x00134E03` for
-1ND.
+family, `0x000E1503` for 8MFK, `0x0001F803` for JK78C, `0x00134E03` for
+1ND, and `0x0013DE03` for 1ME3B. The `can_telemetry` targets own these
+addresses; `runtime_targets.py` renders the selected configuration.
 
 The generated runtime configuration is 16 bytes and binds enable state,
 profile ID, page count, divisor, CAN ID, profile CRC16, and an integrity word.

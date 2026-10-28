@@ -104,14 +104,21 @@ assigning unproven physical names.
 
 ## Restore classifier
 
-`FUN_00050018` always interpolates both restore tables:
+`FUN_00050018` interpolates both restore tables only on its admitted lookup
+path. Calls to `FUN_00025C36` for diagnostic ids `0x0129` and `0x012A` must
+both return zero. That predicate reads bit 5 of byte 2 of the corresponding
+three-byte diagnostic record at `0xFFFF5718`. The remaining admission checks
+require `0xFFFF4250.bit6`, `0xFFFF41D1.bits7/2/0`,
+`0xFFFF41D0.bit0`, and `0xFFFF245D.bit1` to be clear and byte
+`0xFFFF48E1` to be zero. The admitted path reaches the real lookup calls at
+`0x500AC` and `0x500BC`:
 
 | Address | Stored result | Role |
 |---|---|---|
 | `0x1298C` | `0xFFFF1778` | low-speed upper threshold for the intermediate restore class |
 | `0x12818` | `0xFFFF16AA` | lower threshold for the full restore class |
 
-Both results use RPM/25. Scheduled positive RPM-drop byte `0xFFFF106A` is
+Both results use RPM/25. On this lookup path, scheduled positive RPM-drop byte `0xFFFF106A` is
 classified by the first three breakpoints in ROM sequence
 `0x11CB5 = [4, 8, 12, 32]`. Values `0..3`, `4..7`, `8..11`, and `12..255`
 select floor values `0x1299C = [36, 48, 54, 62]`, or
@@ -119,12 +126,21 @@ select floor values `0x1299C = [36, 48, 54, 62]`, or
 by this four-class loop. When `0xFFFF24CF.bit4` is clear, both thresholds are
 also clamped to at least `ROM8[0x8A3F] = 48`, or 1200 RPM.
 
+A rejected diagnostic or runtime admission check reaches `0x5017A` before
+either lookup. This fallback selects `ROM8[0x8A3E] = 64` RPM/25 counts for
+both thresholds and skips the lookup path's RPM-drop and runtime floors.
+Both paths publish the upper byte at `0x501AA` to `0xFFFF1778` and the lower
+byte at `0x501AE` to `0xFFFF16AA` before the classification branches.
+These are instruction-derived path descriptions; executable qualification of
+both diagnostic outcomes, fallback/table publications and complete state is
+not claimed here.
+
 The return contract is:
 
 | Return | State-machine meaning |
 |---:|---|
 | 0 | remain in or allow DFCO |
-| 1 | master inhibit or upstream DFCO mode absent |
+| 1 | upstream DFCO mode absent after the `0xFFFF2468.bit6` gate |
 | 2 | intermediate restore class |
 | 3 | full restore class |
 
@@ -144,19 +160,21 @@ runtime branches use `0xFFFF2458.bit7`, `0xFFFF24CF.bit4`, `0xFFFF1083`,
 `0xFFFF2978`, speed 10, and fallback constants, but none compares RPM with
 `0xFFFF1778` under the stock flags.
 
-When `0xFFFF24CF.bit4` is clear, the effective lower threshold is at least
+On the admitted lookup path, when `0xFFFF24CF.bit4` is clear, the effective lower threshold is at least
 `ROM8[0x8A3F] = 48`, or 1200 RPM. The moving fallback constant
 `ROM8[0x8A3A] = 42` is then dominated by that floor. Other runtime branches can
 select additional constants, including 72 RPM/25 counts, without making the
 upper map part of the moving comparison.
 
-Consequently, `0x1298C` is live in the stock low-speed branch below 4 counts,
+Consequently, `0x1298C` is live on the admitted lookup path in the stock low-speed branch below 4 counts,
 where it defines the class-2 band, but it has no effect on the stock moving
-classifier at speed 4 or above. Interpolating and storing the map on every call
-does not make it decision-relevant in those moving branches.
+classifier at speed 4 or above. A lookup result can be stored without being
+decision-relevant in those moving branches; a fallback invocation does not
+read either restore table.
 
-`0xFFFF2468.bit6` forces return 1. A clear current `0xFFFF2458.bit5` also
-returns 1 and updates the associated status bit.
+Set `0xFFFF2468.bit6` takes the early return with the initialized result 0.
+With that bit clear, a clear current `0xFFFF2458.bit5` returns 1. Both paths
+set `0xFFFF249D.bit7`.
 
 ## Target-vehicle restore-family evidence
 

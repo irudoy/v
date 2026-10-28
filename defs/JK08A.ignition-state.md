@@ -322,10 +322,13 @@ complete coordinator behavior and hardware behavior remain separate contracts.
 
 ## Target-vehicle trace boundary
 
-`tools/logs/ignition_surface_audit.py` replays the exact ignition finisher,
-normalized-BFS coordinate, active map slots, and the two hot surfaces against a
-strict verified historical schema-1 `wide54` capture. It recovers complete one-based map commits
-from the exact released/SET/CANCEL/SET/released gesture.
+The historical verified schema-1 `wide54` analysis compares the exact ignition
+finisher, normalized-BFS coordinate, active map slots, and the two hot surfaces
+with the capture. It recovers complete one-based map commits from the exact
+released/SET/CANCEL/SET/released gesture. The current
+`tools/logs/ignition_surface_audit.py` uses the schema contract accepted by
+`tools/logs/can_telemetry.py`; it does not replay that historical schema-1
+capture with the current decoder.
 
 For `new-log-full.trc` and its registered 1.11 image:
 

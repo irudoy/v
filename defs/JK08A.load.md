@@ -136,8 +136,8 @@ denominator varies with RPM.
 
 ## Moving-load capture validation
 
-`tools/logs/load_axis_audit.py` reproduces both formulas from the exact ROM and
-strict historical schema-1 `wide54` telemetry. For capture SHA-256
+The historical schema-1 `wide54` analysis compares both formulas with the
+exact ROM. Its recorded result belongs to capture SHA-256
 `a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298`:
 
 - 35,811 complete snapshots are present and 35,809 follow schema verification;
@@ -148,6 +148,10 @@ strict historical schema-1 `wide54` telemetry. For capture SHA-256
 - previous-contiguous-snapshot reconstruction is exact for 28,093 of 35,808
   comparisons and within one code for 34,367 samples, with maximum absolute
   error 8 codes.
+
+The current `tools/logs/load_axis_audit.py` uses the schema contract accepted
+by `tools/logs/can_telemetry.py`. That decoder does not accept the historical
+schema-1 capture, so the current tool does not replay this recorded analysis.
 
 The improved previous-snapshot alignment is consistent with the code-proven
 scheduler copy and producer order. Residual differences can include
