@@ -421,13 +421,22 @@ the pulse chain rather than an electrical pulse width.
 
 `ltft_publication_audit.py` relates the long-term trim channels of schema-2
 `tuning` recordings to the LTFT publisher `FUN 00057B26` and the learned-cell
-selector `FUN 0005796C` of the calibration image. Context tag 0 carries the
-selected bank 1 learned cell `0xFFFF2306` and the adjustment term
-`0xFFFF5648`, and tag 2 the published words `0xFFFF2302` and `0xFFFF2304`. The
+selector `FUN 0005796C` of the calibration image. It compares each bank's
+tag-0 learned cell and adjustment term with its tag-2 published word.
+Bank 1 uses `0xFFFF2306`, `0xFFFF5648`, and `0xFFFF2302`; bank 2 uses
+`0xFFFF2308`, `0xFFFF564A`, and `0xFFFF2304`. The
 tag phase is the tick residue on which front A/F word `0xFFFF2780` changes; a
 recording with more than one residue is refused. Brackets, learned pairs,
 cell visits, and intervals lie inside one running stream; the capture seconds
 include the recorded duration of stream pauses.
+
+`summands_b1_available` and `summands_b2_available` state which comparisons
+the recording supports. Bank 1 retains its historical output keys; bank 2
+uses the `b2_` prefix for publication and learning figures. A recording without
+bank 2 summands reports their absence and emits no bank 2 comparison figures.
+The duty-pair audit likewise reports `intake_duty_bN_pair_available` when the
+recording carries only live intake-CVTC duty. Historical scheduler-latch
+channels remain readable by their recorded names.
 
 - Publication: a tag-2 refresh is bracketed when the tag-0 refreshes two
   ticks before and three ticks after it predict the same word

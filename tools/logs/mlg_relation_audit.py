@@ -306,8 +306,11 @@ def _sha256_file(path: Path) -> str:
 
 def _source_by_channel_name() -> dict[str, str]:
     return {
-        binding.spec.name: binding.source
-        for binding in recording.build_bindings("tuning")
+        # Profile 5 recordings retain the scheduler-latch channels.
+        "Intake CVTC duty command B1": "intake_cvtc_duty_command_b1_raw",
+        "Intake CVTC duty command B2": "intake_cvtc_duty_command_b2_raw",
+        **{binding.spec.name: binding.source
+           for binding in recording.build_bindings("tuning")},
     }
 
 
@@ -420,12 +423,13 @@ def audit_duty_pairs(recording_: Recording) -> dict:
     for bank in (1, 2):
         monitor = _ints(recording_, f"intake_cvtc_duty_b{bank}_raw")
         command = _ints(recording_, f"intake_cvtc_duty_command_b{bank}_raw")
+        prefix = f"intake_duty_b{bank}"
+        result[f"{prefix}_pair_available"] = monitor is not None and command is not None
         if monitor is None or command is None:
             continue
         pairs = [
             (m, c) for m, c in zip(monitor, command) if m > 0 and c > 0
         ]
-        prefix = f"intake_duty_b{bank}"
         result[f"{prefix}_monitor_max_raw"] = max(monitor)
         result[f"{prefix}_command_max_raw"] = max(command)
         result[f"{prefix}_nonzero_pair_count"] = len(pairs)

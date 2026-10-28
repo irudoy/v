@@ -93,7 +93,16 @@ def write_synthetic_log(
     producer=synthetic_values,
     bindings=None,
 ):
-    bindings = recording.build_bindings("tuning") if bindings is None else bindings
+    if bindings is None:
+        bindings = list(recording.build_bindings("tuning"))
+        present = {binding.source for binding in bindings}
+        for bank in (1, 2):
+            source = f"intake_cvtc_duty_command_b{bank}_raw"
+            if source not in present:
+                bindings.append(recording.FieldBinding(
+                    mlvlg.FieldSpec(f"Intake CVTC duty command B{bank}", "%", "CVTC"),
+                    source,
+                ))
     specs = [binding.spec for binding in bindings]
     with path.open("wb") as stream:
         writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
@@ -321,6 +330,15 @@ class MlgRelationAuditTest(unittest.TestCase):
                 for index in range(20)
             ],
         )
+
+    def test_live_only_recording_reports_unavailable_latch_comparison(self):
+        source = mlg_relation_audit.Recording(
+            Path("live.mlg"), "0" * 64, (),
+            {"intake_cvtc_duty_b1_raw": [20.0], "intake_cvtc_duty_b2_raw": [30.0]}, 1,
+        )
+        result = mlg_relation_audit.audit_duty_pairs(source)
+        self.assertEqual(result, {"intake_duty_b1_pair_available": False,
+                                  "intake_duty_b2_pair_available": False})
 
     def test_toml_value_formatting(self):
         self.assertEqual(mlg_relation_audit.format_value(3), "3")

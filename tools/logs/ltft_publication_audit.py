@@ -2,14 +2,15 @@
 """Audit JK08A long-term fuel-trim publication and learning in dashboard MLGs.
 
 The tuning telemetry profile carries the published LTFT words
-0xFFFF2302/0xFFFF2304 in context tag 2 and the bank 1 learned cell 0xFFFF2306
-and adjustment term 0xFFFF5648 in context tag 0. An MLG retains every context
+0xFFFF2302/0xFFFF2304 in context tag 2 and learned cells 0xFFFF2306/0xFFFF2308
+and adjustment terms 0xFFFF5648/0xFFFF564A in context tag 0. Earlier profiles
+carry only the bank 1 summands. An MLG retains every context
 value between its refreshes and stores no tag, so the audit derives the
 refresh phase from the tick residue on which the tag-2 front A/F word
 0xFFFF2780 changes. A recording whose changes fall on more than one residue is
 refused.
 
-At each tag-2 refresh the audit brackets published B1 with the tag-0 refreshes
+At each tag-2 refresh the audit brackets each published bank with the tag-0 refreshes
 two snapshots before and three snapshots after it. When both brackets hold the
 same learned and adjustment words, FUN 00057B26 publishes
 clamp(learned + adjustment - 0x6400) unless one of its neutralizing conditions
@@ -106,11 +107,14 @@ COLUMNS = (
     "ltft_b2_raw",
     "ltft_learned_b1_raw",
     "ltft_adjustment_b1_raw",
+    "ltft_learned_b2_raw",
+    "ltft_adjustment_b2_raw",
     "af_adjustment_b1_raw",
     "af_adjustment_b2_raw",
     PHASE_SOURCE,
 )
 FLOAT_COLUMNS = ("date", "elapsed", "vehicle_speed_kmh")
+OPTIONAL_COLUMNS = ("ltft_learned_b2_raw", "ltft_adjustment_b2_raw")
 
 
 @dataclass(frozen=True)
@@ -230,10 +234,11 @@ def read_snapshots(path: Path) -> Snapshots:
         kept_ticks.append(tick)
     selected = {}
     for name in COLUMNS:
-        source = columns[name]
+        source = (columns.get(name, [None] * recording.record_count)
+                  if name in OPTIONAL_COLUMNS else columns[name])
         if name in FLOAT_COLUMNS:
             selected[name] = [
-                None if math.isnan(source[index]) else float(source[index])
+                None if source[index] is None or math.isnan(source[index]) else float(source[index])
                 for index in kept
             ]
         else:
@@ -287,13 +292,13 @@ def published_value(calibration: Calibration, learned: int, adjustment: int) -> 
 
 
 def publication_relation(
-    snapshots: Snapshots, phase: dict[int, int], calibration: Calibration
+    snapshots: Snapshots, phase: dict[int, int], calibration: Calibration, bank: int = 1
 ) -> Counter:
     columns = snapshots.columns
     position = {tick: index for index, tick in enumerate(snapshots.ticks)}
-    published = columns["ltft_b1_raw"]
-    learned = columns["ltft_learned_b1_raw"]
-    adjustment = columns["ltft_adjustment_b1_raw"]
+    published = columns[f"ltft_b{bank}_raw"]
+    learned = columns[f"ltft_learned_b{bank}_raw"]
+    adjustment = columns[f"ltft_adjustment_b{bank}_raw"]
     result = Counter()
     for index in refreshes(snapshots, phase, PUBLISHED_TAG):
         word = published[index]
@@ -373,10 +378,10 @@ def replay_cells(snapshots: Snapshots, calibration: Calibration) -> list[int | N
     return cells
 
 
-def update_bound(snapshots: Snapshots, calibration: Calibration) -> int:
+def update_bound(snapshots: Snapshots, calibration: Calibration, bank: int = 1) -> int:
     deviations = [
         abs(value - NEUTRAL)
-        for value in snapshots.columns["stft_b1_raw"]
+        for value in snapshots.columns[f"stft_b{bank}_raw"]
         if value is not None
     ]
     gain = max(*calibration.gains, calibration.first_visit_gain)
@@ -384,13 +389,13 @@ def update_bound(snapshots: Snapshots, calibration: Calibration) -> int:
 
 
 def learning_changes(
-    snapshots: Snapshots, phase: dict[int, int], calibration: Calibration
+    snapshots: Snapshots, phase: dict[int, int], calibration: Calibration, bank: int = 1
 ) -> dict:
     columns = snapshots.columns
     ticks = snapshots.ticks
     segments = snapshots.segments
-    learned = columns["ltft_learned_b1_raw"]
-    stft = columns["stft_b1_raw"]
+    learned = columns[f"ltft_learned_b{bank}_raw"]
+    stft = columns[f"stft_b{bank}_raw"]
     gear = columns["gear_raw"]
     samples = [i for i in refreshes(snapshots, phase, LEARNED_TAG) if learned[i] is not None]
     pairs = changes = park_pairs = park_changes = 0
@@ -414,7 +419,7 @@ def learning_changes(
             and index - visit_start + 1 >= STABLE_VISIT
         ):
             stable.append(index)
-    bound = update_bound(snapshots, calibration)
+    bound = update_bound(snapshots, calibration, bank)
     in_visit = updates = row0 = agree = neutral_stft = 0
     for first, second in zip(stable, stable[1:]):
         if (
@@ -590,6 +595,8 @@ def audit(
     samples = {
         "learned_b1": (LEARNED_TAG, "ltft_learned_b1_raw"),
         "adjustment_b1": (LEARNED_TAG, "ltft_adjustment_b1_raw"),
+        "learned_b2": (LEARNED_TAG, "ltft_learned_b2_raw"),
+        "adjustment_b2": (LEARNED_TAG, "ltft_adjustment_b2_raw"),
         "published_b1": (PUBLISHED_TAG, "ltft_b1_raw"),
         "published_b2": (PUBLISHED_TAG, "ltft_b2_raw"),
     }
@@ -607,19 +614,24 @@ def audit(
         column = f"af_adjustment_b{bank}_raw"
         values = [columns[column][index] for index in refreshes(snapshots, phase, tag)]
         result[f"af_adjustment_b{bank}_nonzero_count"] = _count(values, lambda value: value != 0)
-    relation = publication_relation(snapshots, phase, calibration)
-    for key in (
-        "bracketed",
-        "exact",
-        "nonneutral_exact",
-        "forced_neutral",
-        "other",
-        "transition",
-        "transition_bracket",
-        "unbracketed",
-    ):
-        result[f"relation_{key}_count"] = relation[key]
-    result.update(learning_changes(snapshots, phase, calibration))
+    for bank in (1, 2):
+        available = all(
+            any(value is not None for value in columns[f"ltft_{term}_b{bank}_raw"])
+            for term in ("learned", "adjustment")
+        )
+        result[f"summands_b{bank}_available"] = available
+        if not available:
+            continue
+        relation = publication_relation(snapshots, phase, calibration, bank)
+        # Retain the bank 1 output keys used by historical capture reports.
+        prefix = "" if bank == 1 else "b2_"
+        for key in (
+            "bracketed", "exact", "nonneutral_exact", "forced_neutral", "other",
+            "transition", "transition_bracket", "unbracketed",
+        ):
+            result[f"{prefix}relation_{key}_count"] = relation[key]
+        result.update({prefix + key: value for key, value in
+                       learning_changes(snapshots, phase, calibration, bank).items()})
     result.update(warm_window(snapshots, phase, calibration))
     result.update(drive_profile(snapshots, band))
     return result

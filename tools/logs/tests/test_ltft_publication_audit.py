@@ -76,13 +76,14 @@ def synthetic_row(tick):
     }
 
 
-def write_log(path, pause_tick=None, pause_seconds=0.0, stall=None):
+def write_log(path, pause_tick=None, pause_seconds=0.0, stall=None, omit_sources=()):
     """Write the synthetic MLG; a pause holds the tick for pause_seconds.
 
     A stall (first tick, length) holds that many snapshots in the host queue
     until the next one arrives.
     """
-    bindings = recording.build_bindings("tuning")
+    bindings = [binding for binding in recording.build_bindings("tuning")
+                if binding.source not in omit_sources]
     specs = [binding.spec for binding in bindings]
     rows = [dict(synthetic_row(FIRST_TICK - 1), schema_verified=0)]
     for tick in range(FIRST_TICK, LAST_TICK + 1):
@@ -224,6 +225,30 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(changes["in_visit_over_bound_count"], 1)
         self.assertEqual(changes["row_0_update_count"], 0)
         self.assertEqual(changes["update_stft_sign_agreement_count"], 1)
+
+    def test_bank_2_uses_its_own_summands_and_stft(self):
+        rows = [dict(row, ltft_learned_b2_raw=row["ltft_learned_b1_raw"],
+                     ltft_adjustment_b2_raw=NEUTRAL + 256,
+                     ltft_b2_raw=row["ltft_b1_raw"] + 256,
+                     stft_b2_raw=NEUTRAL - 256) for row in self.rows]
+        snapshots = snapshots_from(rows)
+        phase = audit.refresh_phase(snapshots)
+        relation = audit.publication_relation(snapshots, phase, self.calibration, bank=2)
+        self.assertEqual(relation["exact"], 7)
+        self.assertEqual(relation["forced_neutral"], 0)
+        self.assertEqual(relation["other"], 2)
+        changes = audit.learning_changes(snapshots, phase, self.calibration, bank=2)
+        self.assertEqual(changes["update_bound"], 26)
+        self.assertEqual(changes["in_visit_over_bound_count"], 2)
+
+    def test_earlier_recording_reports_missing_bank_2_summands(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "earlier.mlg"
+            write_log(path, omit_sources=audit.OPTIONAL_COLUMNS)
+            result = audit.audit(path, self.calibration)
+        self.assertTrue(result["summands_b1_available"])
+        self.assertFalse(result["summands_b2_available"])
+        self.assertNotIn("b2_relation_exact_count", result)
 
     def test_audit_reads_a_synthetic_mlg(self):
         with tempfile.TemporaryDirectory() as directory:
