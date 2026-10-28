@@ -187,6 +187,16 @@ def check_lock(
     return problems
 
 
+def check_locks(python: str) -> list[str]:
+    """Return the problems of every tracked lock against its requirements."""
+    problems = []
+    for target in TARGETS:
+        problems.extend(
+            check_lock(target, _read(target.requirements), _read(target.lock), python)
+        )
+    return problems
+
+
 def bootstrap_text(target: LockTarget, lock_text: str) -> str:
     """Return the lock entries that a target installs before the lock."""
     entries = parse_lock(lock_text)
@@ -238,6 +248,11 @@ def main(argv=None) -> int:
         help="resolve every target from the package index and rewrite its lock",
     )
     mode.add_argument(
+        "--check",
+        action="store_true",
+        help="check every lock against its requirements without the package index",
+    )
+    mode.add_argument(
         "--bootstrap",
         choices=sorted(TARGET_BY_NAME),
         help="print the bootstrap entries of a target lock",
@@ -248,6 +263,14 @@ def main(argv=None) -> int:
         for target in TARGETS:
             write_lock(target, python)
             print(f"wrote {target.lock}")
+        return 0
+    if args.check:
+        problems = check_locks(python)
+        for problem in problems:
+            print(f"package locks: {problem}", file=sys.stderr)
+        if problems:
+            return 1
+        print("package locks: every lock follows its requirements")
         return 0
     target = TARGET_BY_NAME[args.bootstrap]
     sys.stdout.write(bootstrap_text(target, _read(target.lock)))

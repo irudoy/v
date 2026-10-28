@@ -1,4 +1,7 @@
+from contextlib import redirect_stderr
+import io
 import unittest
+from unittest.mock import patch
 
 from tools.can_dashboard import package_locks as locks
 from tools.version_index import python_version
@@ -116,6 +119,18 @@ class LockTest(unittest.TestCase):
                 entries = locks.parse_lock(lock)
                 for name in target.bootstrap:
                     self.assertIn(name, entries)
+
+    def test_the_check_mode_reports_every_lock_problem(self):
+        self.assertEqual(locks.main(["--check"]), 0)
+        original = locks._read
+        changed = lambda relative: original(relative) + (
+            "\nextra==1.0\n" if relative.endswith(".txt") else ""
+        )
+        with patch.object(locks, "_read", changed):
+            self.assertEqual(len(locks.check_locks(python_version())), len(locks.TARGETS))
+            with redirect_stderr(io.StringIO()) as stderr:
+                self.assertEqual(locks.main(["--check"]), 1)
+        self.assertIn("was not generated for the current", stderr.getvalue())
 
 
 if __name__ == "__main__":
