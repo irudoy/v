@@ -20,6 +20,11 @@ def executable(path, source):
     return path
 
 
+def java_installation(path, version):
+    return executable(path / "bin/java",
+                      f'printf "%s\\n" "    java.specification.version = {version}" >&2\n')
+
+
 @pytest.fixture
 def installation(tmp_path):
     ghidra = tmp_path / "Ghidra tools" / "libexec"
@@ -30,11 +35,12 @@ def installation(tmp_path):
     executable(ghidra / "support/analyzeHeadless",
                'printf "%s\\n" "$JAVA_HOME" "$@"\n'
                'exit "${GHIDRA_TEST_EXIT:-0}"\n')
-    executable(java / "bin/java", "exit 0\n")
+    java_installation(java, "21")
     binaries = tmp_path / "bin"
     binaries.mkdir()
     (binaries / "sed").symlink_to(shutil.which("sed"))
-    env = {k: v for k, v in os.environ.items() if k not in {"GHIDRA_HOME", "JAVA_HOME"}}
+    env = {k: v for k, v in os.environ.items()
+           if k not in {"GHIDRA_HOME", "GHIDRA_JAVA_HOME", "JAVA_HOME"}}
     env["PATH"] = str(binaries)
     return ghidra, java, env
 
@@ -60,9 +66,11 @@ def brew(installation):
     return log
 
 
-def test_explicit_installations_preserve_paths_and_arguments_without_homebrew(installation):
+@pytest.mark.parametrize("version", ["21", "25"])
+def test_explicit_installations_preserve_paths_and_arguments_without_homebrew(installation, version):
     ghidra, java, env = installation
-    env.update(GHIDRA_HOME=str(ghidra), JAVA_HOME=str(java))
+    java_installation(java, version)
+    env.update(GHIDRA_HOME=str(ghidra), GHIDRA_JAVA_HOME=str(java))
     arguments = ["project directory", "project", "-readOnly", "-postScript", "a b.java", ""]
     result = run(env, *arguments)
     assert result.returncode == 0, result.stderr
@@ -71,7 +79,7 @@ def test_explicit_installations_preserve_paths_and_arguments_without_homebrew(in
 
 def test_headless_exit_status_reaches_the_caller(installation):
     ghidra, java, env = installation
-    env.update(GHIDRA_HOME=str(ghidra), JAVA_HOME=str(java), GHIDRA_TEST_EXIT="23")
+    env.update(GHIDRA_HOME=str(ghidra), GHIDRA_JAVA_HOME=str(java), GHIDRA_TEST_EXIT="23")
     assert run(env).returncode == 23
 
 
@@ -84,9 +92,21 @@ def test_unset_paths_select_both_homebrew_installations(installation):
     assert log.read_text().splitlines() == ["--prefix ghidra", "--prefix openjdk@21"]
 
 
+def test_inherited_java_home_does_not_override_the_ghidra_jdk(installation):
+    ghidra, java, env = installation
+    inherited = java.parent / "unrelated JDK 17"
+    java_installation(inherited, "17")
+    log = brew(installation)
+    env.update(GHIDRA_HOME=str(ghidra), JAVA_HOME=str(inherited))
+    result = run(env, "project")
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == [str(java), "project"]
+    assert log.read_text().splitlines() == ["--prefix openjdk@21"]
+
+
 @pytest.mark.parametrize("provided, expected_call", [
     ("GHIDRA_HOME", "--prefix openjdk@21"),
-    ("JAVA_HOME", "--prefix ghidra"),
+    ("GHIDRA_JAVA_HOME", "--prefix ghidra"),
 ])
 def test_only_the_unset_path_uses_homebrew(installation, provided, expected_call):
     ghidra, java, env = installation
@@ -101,7 +121,7 @@ def test_only_the_unset_path_uses_homebrew(installation, provided, expected_call
 @pytest.mark.parametrize("invalid", ["properties", "launcher", "version"])
 def test_invalid_explicit_ghidra_is_rejected_without_homebrew(installation, invalid):
     ghidra, java, env = installation
-    env.update(GHIDRA_HOME=str(ghidra), JAVA_HOME=str(java))
+    env.update(GHIDRA_HOME=str(ghidra), GHIDRA_JAVA_HOME=str(java))
     properties = ghidra / "Ghidra/application.properties"
     if invalid == "version":
         properties.write_text("application.version=0.0\n")
@@ -117,20 +137,31 @@ def test_invalid_explicit_ghidra_is_rejected_without_homebrew(installation, inva
 
 def test_invalid_explicit_jdk_is_rejected_without_homebrew(installation):
     ghidra, java, env = installation
-    env.update(GHIDRA_HOME=str(ghidra), JAVA_HOME=str(java))
+    env.update(GHIDRA_HOME=str(ghidra), GHIDRA_JAVA_HOME=str(java))
     (java / "bin/java").unlink()
     result = run(env)
     assert result.returncode != 0
     assert result.stdout == ""
-    assert "JAVA_HOME" in result.stderr
+    assert "GHIDRA_JAVA_HOME" in result.stderr
     assert "Homebrew" not in result.stderr
 
 
-@pytest.mark.parametrize("provided", ["GHIDRA_HOME", "JAVA_HOME"])
+@pytest.mark.parametrize("version", ["1.8", "17", "20", "unknown"])
+def test_old_or_unidentified_jdk_is_rejected_before_headless_execution(installation, version):
+    ghidra, java, env = installation
+    java_installation(java, version)
+    env.update(GHIDRA_HOME=str(ghidra), GHIDRA_JAVA_HOME=str(java))
+    result = run(env)
+    assert result.returncode != 0
+    assert result.stdout == ""
+    assert f"JDK 21 or newer is required for Ghidra; found {version}" in result.stderr
+
+
+@pytest.mark.parametrize("provided", ["GHIDRA_HOME", "GHIDRA_JAVA_HOME"])
 def test_missing_homebrew_requests_explicit_paths(installation, provided):
     ghidra, java, env = installation
     env[provided] = str(ghidra if provided == "GHIDRA_HOME" else java)
     result = run(env)
     assert result.returncode != 0
     assert result.stdout == ""
-    assert "set GHIDRA_HOME and JAVA_HOME explicitly" in result.stderr
+    assert "set GHIDRA_HOME and GHIDRA_JAVA_HOME explicitly" in result.stderr

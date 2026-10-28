@@ -75,7 +75,7 @@ This table describes the local deployment and tool locations.
 
 | Component | Version | Local location or source |
 |---|---|---|
-| Ghidra | Release pinned in `ghidra/headless-analyze.sh`, with JDK 21 | `GHIDRA_HOME` and `JAVA_HOME` select installations on Linux and macOS; unset paths use Homebrew |
+| Ghidra | Release pinned in `ghidra/headless-analyze.sh`, with JDK 21 or newer | `GHIDRA_HOME` and `GHIDRA_JAVA_HOME` select installations on Linux and macOS; unset paths use Homebrew |
 | Ghidra project | Local project | `~/tools/ghidra-projects/vq-hr` |
 | Memgraph MAGE | 3.11.0 | `memgraph/docker-compose.yml` |
 | Memgraph Lab | 3.11.0 | `memgraph/docker-compose.yml` |
@@ -100,7 +100,7 @@ the pinned Ghidra release. Its installation contract is in
 
 | Variable | Use |
 |---|---|
-| `GHIDRA_HOME`, `JAVA_HOME` | Ghidra and JDK installation roots; each unset path uses its Homebrew installation |
+| `GHIDRA_HOME`, `GHIDRA_JAVA_HOME` | Ghidra and JDK installation roots; each unset path uses its Homebrew installation; the inherited `JAVA_HOME` is ignored |
 | `VQ_SH_ELF_IMAGE` | GNU gate image tag in the local `default` Docker context |
 | `VQ_SH_ELF_SKIP_BUILD` | `1` reuses the image after the input-label check |
 | `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` | Timeout of the bounded ignition-consumer invocation; `sh-elf-run/run.sh` owns and validates the supported values |

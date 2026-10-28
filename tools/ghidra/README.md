@@ -6,25 +6,28 @@ derived data. Reviewed CSV annotations, assembly, layout manifests, stock ROM
 identities, and hardware records remain the tracked evidence sources.
 
 Tool versions and machine-local project locations are recorded in
-`../README.md`. The wrapper uses the pinned Ghidra release and JDK 21:
+`../README.md`. The wrapper uses the pinned Ghidra release and JDK 21 or newer:
 
 ```bash
 tools/ghidra/headless-analyze.sh <project-dir> <project-name> <Ghidra options>
 ```
 
 `GHIDRA_HOME` selects the installation containing `Ghidra/` and `support/`;
-`JAVA_HOME` selects the JDK containing `bin/java`. Explicit paths work on Linux
-and macOS without Homebrew:
+`GHIDRA_JAVA_HOME` selects the JDK containing `bin/java`. Explicit paths work on
+Linux and macOS without Homebrew:
 
 ```bash
-GHIDRA_HOME=/opt/ghidra JAVA_HOME=/opt/jdk-21 \
+GHIDRA_HOME=/opt/ghidra GHIDRA_JAVA_HOME=/opt/jdk-21 \
   tools/ghidra/headless-analyze.sh <project-dir> <project-name> <Ghidra options>
 ```
 
 Each unset path uses its Homebrew installation: `ghidra` for Ghidra and
 `openjdk@21` for the JDK. The wrapper preserves each supplied path, rejects an
 unusable installation, and refuses a Ghidra version different from the pin in
-`headless-analyze.sh`.
+`headless-analyze.sh`. It checks that the selected JDK reports a major version
+of at least 21 before starting `analyzeHeadless`. The inherited `JAVA_HOME` is
+ignored so an older JDK used by another application cannot select Ghidra's
+runtime; the selected Ghidra JDK is exported as `JAVA_HOME` to its child process.
 
 ## Import
 
