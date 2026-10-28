@@ -81,6 +81,10 @@ in local results and Git.
   address profiles, or runtime allocation require `make verify` for acceptance.
   Full checks also run before flashing and before track closure. A local
   commit records source state and does not establish successful acceptance.
+- The `Verify` workflow of GitHub Actions runs the steps of `make verify` for
+  every push to `master`. A green run of an exact commit is the full
+  verification of that commit, apart from the exclusions that `README.md`
+  names under Continuous verification.
 - Keep machine facts in TOML or CSV owners. Do not repeat repository-owned
   counts in handwritten prose. Each generated section
   has one generator and one consistency check; code and tests do not parse

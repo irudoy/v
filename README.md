@@ -235,3 +235,37 @@ builder series and their address profiles are in
 [`patches/rom-builder.md`](patches/rom-builder.md). Only JK08A carries scoped
 vehicle evidence; every other target is untested on bench and vehicle
 hardware.
+
+## Continuous verification
+
+The `Verify` workflow in [`.github/workflows/verify.yml`](.github/workflows/verify.yml)
+runs the steps of `make verify` on GitHub-hosted Ubuntu runners for every push
+to `master` and on manual dispatch. Its two jobs run in parallel:
+
+| Job | Steps |
+|---|---|
+| Firmware gate | `make verify-firmware` |
+| Source checks and tests | `kb instance up`, `kb sync`, `kb check`, `make check`, `make test-full` |
+
+Both jobs load the GNU SH-2E gate image from the Actions cache under the
+fingerprint of its build inputs and build it when the inputs change; a stale
+image is refused as in a local run. The source job restores the Memgraph data
+of the closest earlier graph, so `kb sync` loads only the changed parts; a
+manual dispatch with `full` builds the graph in an empty instance.
+`kb instance up` starts the Compose services, so every run includes the pull
+of the Memgraph and Lab images. `make check` and `make test-full` also run
+after a failed `kb check`, so one run reports every failure.
+
+A run takes about 20 minutes when the caches hold the gate image and a recent
+graph, and about 30 minutes when it builds both; the source job sets the
+duration. A newer push to `master` cancels the run of the previous push, so
+under frequent pushes only the newest commit receives a completed run.
+
+A green run of an exact commit is the full verification of that commit, apart
+from these exclusions:
+
+| Excluded check | Reason | Where it runs |
+|---|---|---|
+| Dashboard GUI tests | The runner has no display; pytest reports them as skipped with `Tk display is unavailable` | Local `make verify` |
+| Tests of untracked road captures and local images | Their inputs are not in the repository; pytest reports them as skipped | Local `make verify` in a checkout that holds the inputs |
+| `tools/check_projection_contract.py --run` | It requires every registered source, including the external checkout named by `VQ_OBD2TOOLS_SOURCE` | Manual run with every source; `make verify` does not include it |
