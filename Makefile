@@ -181,6 +181,7 @@ runtime-targets-generate:
 	tools/sh-elf-run/generate-targets.sh
 
 telemetry-update:
+	@$(UV) run kb project --check patches/can-telemetry-profile.toml || { printf '%s\n' 'regenerate it with uv run kb project patches/can-telemetry-profile.toml' >&2; exit 1; }
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	tools/sh-elf-run/generate-targets.sh --telemetry --update
 	tools/sh-elf-run/generate-targets.sh

@@ -56,7 +56,7 @@ manifest and refuses when a lock of the telemetry layout differs from the
 assembled bytes. `--telemetry --update` derives those locks, rewrites them in
 the layout, and writes both files only after the strict generation passes
 against the rewritten layout. `make telemetry-update` runs it after the profile
-projection check and then regenerates the relocated target payloads.
+projection checks and then regenerates the relocated target payloads.
 
 ## Executable boundary
 

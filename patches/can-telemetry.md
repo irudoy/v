@@ -593,10 +593,12 @@ or of a telemetry source, derive these locks and the payload manifest with:
 make telemetry-update
 ```
 
-The target first requires the generated tables, schema, and identity header to
-match their inputs. A stale projection refuses and names
-`uv run python patches/can_telemetry_profile.py`, which regenerates it from the
-profile and the knowledge base. The target then runs
+The target first requires `can-telemetry-profile.toml` to match its rendering
+from the knowledge base, and the generated tables, schema, and identity header
+to match the profile. A stale projection refuses and names its generator:
+`uv run kb project patches/can-telemetry-profile.toml` for the profile and
+`uv run python patches/can_telemetry_profile.py` for the generated files. The
+target then runs
 `tools/sh-elf-run/generate-targets.sh --telemetry --update` in the pinned GNU
 SH-2E image. The update counts the instructions and data bytes of each unit
 source, assembles the units independently, derives the unit and composition
