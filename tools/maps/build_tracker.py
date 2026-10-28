@@ -121,14 +121,17 @@ def report(out, tracker):
     print("  roles: " + ", ".join(f"{k}={role[k]}" for k in ROLE_ORDER if k in role))
     print("  families: " + ", ".join(f"{k}={fam[k]}" for k in sorted(fam)))
     named = sum(1 for r in out if r["semantics"])
-    empty = sum(1 for r in out if not r["via"] and not r["accessors"])
+    empty = [r for r in out if not r["via"] and not r["accessors"]]
     print(f"  with semantics: {named}/{len(out)}")
     diagnostic = sum(1 for r in out if r["diagnostic_context"])
     print(f"  with static diagnostic context: {diagnostic}/{len(out)}")
     print(f"  open (candidate without semantics): "
           f"{sum(1 for r in out if r['confidence'] == 'candidate' and not r['semantics'])}")
     if empty:
-        print(f"WARNING: {empty} maps have no wrapper or accessor and are orphan graph nodes")
+        print(f"WARNING: {len(empty)} maps have no wrapper or accessor; retained roles and reasons:")
+        for row in sorted(empty, key=lambda row: row["table"]):
+            reason = " ".join((row["note"] or "Review required: no reason recorded.").split())
+            print(f"  {row['table']}: role={row['role']}, confidence={row['confidence']}; {reason}")
 
 
 def emit_tracker(rom, tracker=None, display_tracker=None, *, graph=None):

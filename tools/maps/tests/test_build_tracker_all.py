@@ -8,6 +8,19 @@ from tools.mapkit import definition_targets
 from tools.maps import build_tracker
 
 
+def test_report_names_unaccessed_maps_with_their_retained_disposition(capsys):
+    rows = [dict(table="00000100", confidence="code", family="direct-row-major",
+                 role="dead", semantics="", via="", accessors="", diagnostic_context="",
+                 note="Retained unreferenced calibration data."),
+            dict(table="00000200", confidence="candidate", family="direct-row-major",
+                 role="table", semantics="", via="", accessors="", diagnostic_context="", note="")]
+    build_tracker.report(rows, "defs/EXAMPLE.maps.csv")
+    output = capsys.readouterr().out
+    assert "00000100: role=dead, confidence=code; Retained unreferenced calibration data." in output
+    assert "00000200: role=table, confidence=candidate; Review required: no reason recorded." in output
+    assert "orphan graph nodes" not in output
+
+
 def _fake_emitter(failing_rom=None):
     def emit(rom, tracker=None, display_tracker=None):
         if rom == failing_rom:
