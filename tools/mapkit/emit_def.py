@@ -1232,6 +1232,19 @@ def definition_failure(m, axes, ovr=None):
     return None
 
 
+def editor_axes(rom, image, emit, axes, ovr):
+    """Bind the axes of emitted maps and axis views to the builder ranges."""
+    used_axes = {address for calibration in emit
+                 for key in ("axis_x", "axis_y")
+                 for address in calibration[key]}
+    used_axes.update(ovr.get("axisview", {}))
+    axes = editor_ranges.bind_axes(rom, image, axes, used_axes)
+    for address in ovr.get("axisview", {}):
+        if "read_only_values" in axes[address]:
+            sys.exit(f"{rom}: axis view {address} is outside builder writable ranges")
+    return axes
+
+
 def emit_target(
     rom,
     romraider_path=None,
@@ -1367,14 +1380,7 @@ def emit_target(
                      f"{source_rom}.axes.csv "
                      f"and cannot be emitted")
 
-    used_axes = {address for calibration in emit
-                 for key in ("axis_x", "axis_y")
-                 for address in calibration[key]}
-    used_axes.update(ovr.get("axisview", {}))
-    axes = editor_ranges.bind_axes(rom, target.image, axes, used_axes)
-    for address in ovr.get("axisview", {}):
-        if "read_only_values" in axes[address]:
-            sys.exit(f"{rom}: axis view {address} is outside builder writable ranges")
+    axes = editor_axes(rom, target.image, emit, axes, ovr)
 
     view_entries, views_by_source = masked_views(
         ovr, {m["addr"]: m for m in emit}

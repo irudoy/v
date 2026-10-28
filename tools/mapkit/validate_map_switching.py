@@ -64,6 +64,9 @@ def validate():
                 )
             continue
         calibrations.append(calibration)
+    axes = emit_def.editor_axes(
+        layout.rom, image, calibrations, axes, projection.overrides
+    )
 
     emitted = {
         calibration["addr"]: calibration
