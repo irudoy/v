@@ -62,7 +62,7 @@ LINK_JOINED = (*LINK_LISTS, "supports", "reverse_supports")
 MEANING_OWNED = ("retired", "former", *(name for name, _ in store.ARRAYS))
 # The keys of every feature target (tools/kb/SPEC.md, section 7.9); a target
 # also takes the keys that a target of its feature states.
-TARGET_KEYS = ("layout", "status", "note", "basis", "requires")
+TARGET_KEYS = ("layout", "status", "note", "basis", "requires", "unsupported")
 ENTRY_OWNED = ("layout", "address", "name", "former")
 SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other

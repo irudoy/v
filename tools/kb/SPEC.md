@@ -866,7 +866,7 @@ Features:
   on every target layout; `vendor` lists the competitor products that offer
   it, for the parity catalog.
 - `[[target]]` keys: `layout`, `status` (`supported`, `planned`, or
-  `unsupported`), `note`, `basis`, `requires`, and the keys of the feature.
+  `unsupported`), `note`, `basis`, `requires`, `unsupported`, and the keys of the feature.
   An `unsupported` target names in `note` the meanings whose status blocks
   it; `basis` holds the prose of the review behind the target by topic.
   `requires` of a target lists the meanings that the feature needs on its
@@ -880,6 +880,10 @@ Features:
   the meanings of the feature that the layout does not support, each with a
   `note`; a meaning that has no symbol on the layout also carries a status
   there.
+  A telemetry target can mark a source role `unsupported` while its native
+  symbol exists, for example when its bit layout requires an unimplemented
+  wire conversion. Numeric profiles, correspondence rows, and the support
+  matrix keep that field unavailable without discarding its native binding.
 - The `runtime` feature holds the runtime allocation of each layout, its
   ROM and RAM relocation, and the build variants, with the prose of a bound
   in `notes`; its `7mfk` target holds the envelope that the other layouts
@@ -1405,7 +1409,7 @@ references.
   `address`, `name`, and `former`; a feature takes every key besides
   `target`, since its file states the facts of the feature under keys of its
   own, as the wire constants, `profiles`, and `contexts` of `can_telemetry`;
-  a feature target takes `status`, `note`, `basis`, `requires`, and the keys
+  a feature target takes `status`, `note`, `basis`, `requires`, `unsupported`, and the keys
   that a target of its feature states, and a key that no target of the
   feature states needs a declared key schema of the feature; another designed
   entity takes the keys of its schema, including arrays of tables. A key at
@@ -1703,7 +1707,7 @@ read = "guarded"
   each feature in the order of the build, whose cell states the status of the
   target and what the model derives from it (the runtime ROM and RAM, the
   switched and unsupported map families, the telemetry mailbox, the `ecu_ram`
-  fields whose source the layout lacks, and the other required meanings
+  fields whose source the layout lacks or whose wire role is unsupported, and the other required meanings
   without a symbol by the state of their status), then a table of the title,
   summary, and specifications of each feature. The feature targets hold the
   facts and the section only shows them; a specification that names no file

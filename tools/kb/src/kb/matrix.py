@@ -31,7 +31,7 @@ RUNTIME = "runtime"
 SPANS = (("injected_rom", "ROM"), ("injected_ram", "RAM"))
 # The states of a meaning without a symbol, in the order of a cell; a meaning
 # without a status is unknown.
-STATES = ("absent", "unresolved", "unknown")
+STATES = ("absent", "unresolved", "unknown", "unsupported")
 
 
 def features(root=repo.ROOT):
@@ -127,6 +127,8 @@ def unavailable(model, target):
     entity = model.entities.get(("feature", target.feature))
     found, sources = Counter(), 0
     roles = target.props.get("roles", {})
+    unsupported = {meaning.key for entry in target.props.get("unsupported", ())
+                   if (meaning := model.meaning_of(entry.get("symbol"))) is not None}
     for ref in entity.refs.get("requires", ()) if entity is not None else ():
         field = model.entities.get(ref) if isinstance(ref, tuple) else None
         keys = list(field.refs.get("source", ())) if field is not None else []
@@ -134,6 +136,9 @@ def unavailable(model, target):
         if meaning is None:
             continue
         sources += 1
+        if meaning.key in unsupported:
+            found["unsupported"] += 1
+            continue
         if ref[1] in roles or target.layout in meaning.symbols:
             continue
         status = meaning.statuses.get(target.layout)

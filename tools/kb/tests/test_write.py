@@ -788,7 +788,7 @@ class SetTest(unittest.TestCase):
         message = self.refused(assign(self.PROBE, {"mailbox_index": 26}, layout="jk00c"),
                                code=2)
         self.assertEqual(message, f"op 1: set writes no mailbox_index of {self.PROBE} on "
-                                  "jk00c; it writes status, note, basis, requires; a new target "
+                                  "jk00c; it writes status, note, basis, requires, unsupported; a new target "
                                   "key needs a declared key schema of the feature")
         message = self.refused(assign("can_telemetry/feature", {"mailbox_indx": 26},
                                       layout="jk00c"), code=2)

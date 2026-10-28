@@ -12,6 +12,20 @@ def builder():
 
 
 class CellTest(unittest.TestCase):
+    def test_a_wire_limitation_keeps_a_native_source_unavailable(self):
+        b = builder()
+        group = ("ram", "field", "state_raw")
+        source = b.symbol("7mfk", "ram", 0xFFFF1000, "p.toml", group=group)
+        other = b.symbol("jk00d", "ram", 0xFFFF1100, "p.toml", group=group)
+        b.name(group, "state", "field", "p.toml")
+        b.entity("field", "state_raw", "p.toml", refs={"source": [source]})
+        b.entity("feature", "can_telemetry", "p.toml", refs={"requires": [("field", "state_raw")]})
+        b.target("can_telemetry", "jk00d", "p.toml", status="supported", props={
+            "unsupported": [{"symbol": other, "note": "The bit layout needs conversion."}]})
+        model = b.finish()
+        self.assertEqual(matrix.unavailable(model, model.targets["can_telemetry", "jk00d"]),
+                         {"unsupported": 1})
+
     def test_a_cell_states_the_status_of_the_target_and_what_the_model_derives(self):
         b = builder()
         group = ("ram", "field", "load_raw")

@@ -1032,10 +1032,15 @@ def _profile(model, layout, targets, fields, stocks):
             profile[table] = found
     if "can_telemetry" in targets:
         unavailable = []
+        unsupported = telemetry_unsupported(model, targets["can_telemetry"])
         for field in fields:
+            meaning = _field_source(model, field)
+            if meaning.key in unsupported:
+                sources.pop(field, None)
+                unavailable.append(field)
+                continue
             if field in sources:
                 continue
-            meaning = _field_source(model, field)
             symbol = meaning.symbols.get(layout.id)
             if symbol is not None:
                 sources[field] = symbol.address
@@ -1079,6 +1084,17 @@ def row_item(symbol, subject):
                 return SPECIFIC, item
     raise KbError(f"{subject}: {symbol.key.key} has neither homology evidence toward "
                   f"{CANONICAL} nor identity evidence on {symbol.layout}", code=3)
+
+
+def telemetry_unsupported(model, target):
+    """Source roles that a target cannot encode in the shared wire contract.
+
+    A reviewed native symbol can exist while its bit layout requires an
+    unimplemented wire conversion. This is a feature limitation, not absence
+    of the underlying meaning on that layout.
+    """
+    return {model.meaning_of(entry["symbol"]).key: entry.get("note")
+            for entry in target.props.get("unsupported", ())}
 
 
 def _text(value, subject):
@@ -1193,11 +1209,16 @@ def correspondence_rows(model, layout, targets, fields, stocks):
                              text=_text(text, f"{subject}: {prefix}_symbol:{key}")))
     can = targets.get("can_telemetry")
     roles = can.props.get("roles", {}) if can is not None else {}
+    unsupported = telemetry_unsupported(model, can) if can is not None else {}
     for field in fields:
         meaning = _field_source(model, field)
         origin = meaning.symbols.get(CANONICAL)
         source = origin.address if origin is not None else None
         where = f"{subject}: telemetry:{field}"
+        if meaning.key in unsupported:
+            rows.append(_row("telemetry", field, source, status=UNSUPPORTED,
+                             text=_text(unsupported[meaning.key], where)))
+            continue
         if field in roles:
             symbol = _held(model, roles[field]["symbol"], layout, subject)
             rows.append(_row("telemetry", field, source, symbol.address,

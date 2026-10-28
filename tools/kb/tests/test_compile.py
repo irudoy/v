@@ -630,6 +630,26 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertIs(register, m.meaning_of(roles[1]))
         self.assertIsNot(register, data)
 
+    def test_a_native_symbol_can_have_an_explicit_unsupported_wire_role(self):
+        m = model()
+        source = m.entities[("field", "maf_b1_raw")].refs["source"][0]
+        meaning = m.meaning_of(source)
+        target = copy.copy(m.targets[("can_telemetry", "jk78c")])
+        target.props = dict(target.props)
+        target.props["unsupported"] = [{"symbol": meaning.symbols["jk78c"].key,
+                                         "note": "The native bit layout requires a wire conversion."}]
+        targets = {feature: held for (feature, layout), held in m.targets.items() if layout == "jk78c"}
+        targets["can_telemetry"] = target
+        fields = profiles.telemetry_fields(m)
+        stocks = profiles._stocks(m)
+        document = profiles._profile(m, m.layouts["jk78c"], targets, fields, stocks)
+        self.assertIn("maf_b1_raw", document["telemetry_unavailable"])
+        self.assertNotIn("maf_b1_raw", document["telemetry_sources"])
+        rows = profiles.correspondence_rows(m, "jk78c", targets, fields, stocks)
+        [row] = [row for row in rows if row["domain"] == "telemetry" and row["key"] == "maf_b1_raw"]
+        self.assertEqual(row["status"], profiles.UNSUPPORTED)
+        self.assertIn("wire conversion", row["evidence"])
+
     def test_a_target_specific_telemetry_row_fills_the_role_of_its_field(self):
         m = model()
         target = m.targets[("can_telemetry", "jk78c")].props
