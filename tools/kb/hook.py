@@ -974,12 +974,23 @@ def _wrapped(words):
         option = rest.pop(0)
         if option == "--":
             break
-        if option in takes_value and rest:
+        # A value follows as the next word, after `=` of a long option, or
+        # attached to a short option.
+        name, value = option, None
+        if option.startswith("--") and "=" in option:
+            name, value = option.split("=", 1)
+        elif not option.startswith("--") and option[:2] in takes_value and len(option) > 2:
+            name, value = option[:2], option[2:]
+        if name not in takes_value:
+            continue
+        if value is None:
+            if not rest:
+                break
             value = rest.pop(0)
-            if option in {"-S", "--split-string"}:
-                rest = [*value.split(), *rest]
-            else:
-                values.append(value)
+        if name in {"-S", "--split-string"}:
+            rest = [*value.split(), *rest]
+        else:
+            values.append(value)
     if words[0] == "timeout" and rest:
         rest.pop(0)
     return rest, values

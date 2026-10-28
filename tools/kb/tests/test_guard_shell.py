@@ -44,7 +44,11 @@ class ShellOperationTest(GuardCase):
                         "nice -n 10 uv run kb brief", "nice uv run kb brief",
                         "nohup uv run kb check", "env KB_LIMIT=1 uv run kb brief",
                         "env -u KB_GUARD uv run kb brief", "time -p uv run kb brief",
-                        "timeout 5 nice -n 5 env A=1 uv run kb find knock"):
+                        "timeout 5 nice -n 5 env A=1 uv run kb find knock",
+                        "timeout --signal=TERM 10 uv run kb brief", "timeout -sTERM 10 kb brief",
+                        "nice -n5 uv run kb find knock", "nice --adjustment=5 kb brief",
+                        "env --unset=KB_GUARD uv run kb brief", "time -f%e uv run kb brief",
+                        "env --split-string='uv run kb brief'", "env -S'kb brief'"):
             with self.subTest(command=command):
                 self.assertIsNone(self.denied("Bash", command=command))
         for command in ("timeout 5 cat kb/names.csv", "timeout -s KILL 5 cat kb/names.csv",
@@ -52,7 +56,11 @@ class ShellOperationTest(GuardCase):
                         "nice -n 10 cat l0/7mfk/funcs.csv", "nohup cat kb/names.csv",
                         "env A=1 cat kb/names.csv", "timeout 5 nice env cat kb/names.csv",
                         "env -C kb cat names.csv", "time -o kb/names.csv true",
-                        "env -S 'cat kb/names.csv'"):
+                        "env -S 'cat kb/names.csv'", "time --output=kb/names.csv true",
+                        "time -okb/names.csv true", "env --chdir=kb cat names.csv",
+                        "env -Ckb cat names.csv", "env --split-string='cat kb/names.csv'",
+                        "env -S'cat kb/names.csv'", "timeout -sTERM 5 cat kb/names.csv",
+                        "nice -n5 cat l0/7mfk/funcs.csv"):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
