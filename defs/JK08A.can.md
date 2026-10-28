@@ -400,11 +400,11 @@ The raw traces remain local and untracked; their hashes and exact firmware
 identities are registered in `../patches/hardware-results.toml`.
 
 Image identity and physical ECU identity are separate facts. The registry's
-`target_ecu = "23710-JK00D"` binds the flashed runtime images to the physical
-board; its top-level `rom = "JK08A"` names their software basis. Software-only
-builds and records without an identified flashed image carry no physical-board
-qualification. Each hardware outcome retains its image, capture and operating
-boundaries.
+`target_ecu = "23710-JK00D"` identifies the board used for the recorded vehicle
+sessions, including those without a stored flashed-image hash. Its top-level
+`rom = "JK08A"` names their software basis. Software-only builds carry no
+physical-board qualification. Each hardware outcome retains its image,
+capture and operating boundaries.
 
 | Firmware label | Recorded context | Frames | Observed span | Standard IDs |
 | --- | --- | ---: | ---: | ---: |
