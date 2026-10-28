@@ -690,3 +690,17 @@ consumers = [
     "tools/version_index.py",
 ]
 read = "open"
+
+[[projection]]
+path = "tools/can_dashboard/README.md#feed-channels"
+generator = "uv run python tools/can_dashboard/feed_table.py"
+check = ["uv","run","python","tools/can_dashboard/feed_table.py","--check"]
+inputs = [
+    "patches/can-telemetry-schema.json",
+    "tools/can_dashboard/live_feed.py",
+    "tools/can_dashboard/descriptions.py",
+    "tools/logs/can_telemetry.py",
+    "tools/can_dashboard/feed_table.py",
+]
+consumers = ["GitHub", "tools/can_dashboard/package_windows.py"]
+read = "open"

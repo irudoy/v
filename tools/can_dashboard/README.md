@@ -276,25 +276,32 @@ without changing the settings file.
 The channel table is the engine speed of the stock bus, then every telemetry
 field whose presentation in the schema declares a feed channel, in profile
 order. A channel publishes the engineering value of its field in the display
-unit of the field scale:
+unit of the field scale. `feed_table.py` renders the table below from the
+same channel table and the bundled schema; a stock channel states the
+description of its metric:
 
+<!-- feed-channels:begin -->
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
-| `rpm` | `X_VQ_Engine_Speed` | RPM | `0x180` bytes 0..1 `/ 8` |
-| `load` | `X_VQ_Engine_Load` | % | `normalized_load_raw * 100 / 128` |
-| `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw / 2048` |
-| `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
-| `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw / 100` |
-| `throttle_pct` | `X_VQ_Absolute_Throttle` | % | `absolute_throttle_raw * 100 / 255` |
-| `coolant_c` | `X_VQ_Coolant_Temperature` | degC | `coolant_raw - 50` |
-| `iat_c` | `X_VQ_Intake_Air_Temperature` | degC | `iat_raw - 50` |
-| `intake_cam_b1_deg`, `intake_cam_b2_deg` | `X_VQ_Intake_Cam_B1`, `X_VQ_Intake_Cam_B2` | degCA | `(raw - 128) * 0.5` |
-| `stft_b1_pct`, `stft_b2_pct` | `X_VQ_STFT_B1`, `X_VQ_STFT_B2` | % | `raw / 256 - 100` |
-| `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
-| `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
-| `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw * 34285 / 1114112` |
-| `request_flow_count` | `X_VQ_QH0_Flow_Potential` | cnt | `request_flow_raw` |
-| `alpha_n_flow_count` | `X_VQ_QH0_Flow_Quantity` | cnt | `alpha_n_flow_raw` |
+| `rpm` | `X_VQ_Engine_Speed` | RPM | stock metric `stock_rpm`: Engine speed in the stock frame 0x180 at 3.125 RPM per count, taken when the frame is serialized. Engine speed shows the same frame, so the row is not an independent sensor. |
+| `request_flow_count` | `X_VQ_QH0_Flow_Potential` | cnt | `request_flow_raw` at `raw count` |
+| `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` at `raw degBTDC` |
+| `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw` at `raw / 100 g/s` |
+| `load` | `X_VQ_Engine_Load` | % | `normalized_load_raw` at `raw * 100 / 128 percent` |
+| `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw` at `raw / 2048 ms` |
+| `throttle_pct` | `X_VQ_Absolute_Throttle` | % | `absolute_throttle_raw` at `raw * 100 / 255 percent` |
+| `intake_cam_b1_deg` | `X_VQ_Intake_Cam_B1` | degCA | `intake_cvtc_actual_b1_raw` at `raw * 0.5 - 64 degCA` |
+| `intake_cam_b2_deg` | `X_VQ_Intake_Cam_B2` | degCA | `intake_cvtc_actual_b2_raw` at `raw * 0.5 - 64 degCA` |
+| `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw` at `raw * 34285 / 1114112 percent` |
+| `coolant_c` | `X_VQ_Coolant_Temperature` | degC | `coolant_raw` at `raw - 50 degC` |
+| `iat_c` | `X_VQ_Intake_Air_Temperature` | degC | `iat_raw` at `raw - 50 degC` |
+| `stft_b1_pct` | `X_VQ_STFT_B1` | % | `stft_b1_raw` at `raw / 256 - 100 percent` |
+| `stft_b2_pct` | `X_VQ_STFT_B2` | % | `stft_b2_raw` at `raw / 256 - 100 percent` |
+| `ltft_b1_pct` | `X_VQ_LTFT_B1` | % | `ltft_b1_raw` at `raw / 256 - 100 percent` |
+| `ltft_b2_pct` | `X_VQ_LTFT_B2` | % | `ltft_b2_raw` at `raw / 256 - 100 percent` |
+| `alpha_n_flow_count` | `X_VQ_QH0_Flow_Quantity` | cnt | `alpha_n_flow_raw` at `raw count` |
+| `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw` at `raw * 0.08 V` |
+<!-- feed-channels:end -->
 
 `throttle_target_pct` carries the channel 0 throttle target, which is the
 coordinate of throttle opening table `0x155A0`. Its factor is the code scale of

@@ -118,6 +118,7 @@ check:
 	$(PYTHON) tools/mapkit/emit_def.py all --check
 	$(PYTHON) tools/maps/build_tracker.py all --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
+	$(PYTHON) tools/can_dashboard/feed_table.py --check
 	tools/sh-elf-run/generate-targets.sh --rolling --check
 	tools/sh-elf-run/generate-targets.sh --telemetry --check
 	tools/sh-elf-run/generate-targets.sh --check
