@@ -1402,8 +1402,12 @@ references.
   `address`, `name`, and `former`; a feature takes every key besides
   `target`, since its file states the facts of the feature under keys of its
   own, as the wire constants, `profiles`, and `contexts` of `can_telemetry`;
-  a feature target takes every key besides its layout; another designed
-  entity takes the keys of its schema, including arrays of tables. A chain's
+  a feature target takes `status`, `note`, `basis`, `requires`, and the keys
+  that a target of its feature states, and a key that no target of the
+  feature states needs a declared key schema of the feature; another designed
+  entity takes the keys of its schema, including arrays of tables. A key at
+  any depth is bare, and a quoted key of dotted parts is refused with the
+  nested key that it spells. A chain's
   `step` array replaces the held steps in the stated order, with repeated
   calls in `via` preserved. A batch can replace steps and their meanings'
   conditions together, and the chain checks run before any file is written.

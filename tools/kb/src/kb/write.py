@@ -58,8 +58,11 @@ LINK_LISTS = ("via", "layouts")
 LINK_JOINED = (*LINK_LISTS, "supports", "reverse_supports")
 # The keys that commands other than `set` write: the former names, symbols,
 # statuses, links, and analogs of a meaning, and the place and the names of a
-# symbol entry. A feature target takes every key besides its layout.
+# symbol entry.
 MEANING_OWNED = ("retired", "former", *(name for name, _ in store.ARRAYS))
+# The keys of every feature target (tools/kb/SPEC.md, section 7.9); a target
+# also takes the keys that a target of its feature states.
+TARGET_KEYS = ("layout", "status", "note", "basis", "requires")
 ENTRY_OWNED = ("layout", "address", "name", "former")
 SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other
@@ -281,6 +284,21 @@ def _merged(held, value):
     if isinstance(held, dict) and isinstance(value, dict):
         return {**held, **{key: _merged(held.get(key), item) for key, item in value.items()}}
     return value
+
+
+def _bare(keys, subject, prefix=""):
+    """Refuse a key at any depth of `keys` that is no bare key; a quoted key
+    of dotted bare parts names the nested key that it spells."""
+    for name, value in keys.items():
+        if not store.BARE_KEY.fullmatch(name):
+            parts = name.split(".")
+            nested = (f", and the nested key {prefix}{name} names a key of a table"
+                      if len(parts) > 1 and all(store.BARE_KEY.fullmatch(part) for part in parts)
+                      else "")
+            raise KbError(f'set writes no "{name}" of {subject}; a key is bare{nested}', code=2)
+        for item in value if isinstance(value, list) else [value]:
+            if isinstance(item, dict):
+                _bare(item, subject, f"{prefix}{name}.")
 
 
 def _paths(keys, prefix=""):
@@ -609,13 +627,15 @@ class Change:
         both = sorted(set(written) & set(unset))
         if both:
             raise KbError(f"set writes and unsets {', '.join(both)}", code=2)
-        table, specs, subject = self._settable(op["ref"], op.get("layout"))
+        table, specs, subject, hint = self._settable(op["ref"], op.get("layout"))
+        _bare(keys, subject)
         whole = isinstance(specs, str)
         for name in [path.split(".", 1)[0] for path in unset] + list(keys):
             refused = name == 'retired' or (name == specs if whole else name not in specs)
             if refused:
                 allowed = f"every key besides {specs}" if whole else ", ".join(specs)
-                raise KbError(f"set writes no {name} of {subject}; it writes {allowed}", code=2)
+                raise KbError(f"set writes no {name} of {subject}; it writes {allowed}{hint}",
+                              code=2)
         for path in unset:
             _unset(table, path, subject)
         for name, value in keys.items():
@@ -626,15 +646,17 @@ class Change:
         self.lines.append(f"set {subject}: {'; '.join(parts)}")
 
     def _settable(self, text, layout):
-        """(table, specs, subject) of a reference of `set`: a designed entity,
-        the target of a feature on `layout`, a meaning, or the entry of the
-        symbol that the reference or `layout` names. The specs are {key: spec}
-        of the keys that the table takes, or else the one key that it refuses
-        where it takes every other: `target` of a feature, whose file states
-        the facts of the feature under keys of its own, and `layout` of a
-        target. A designed entity is one of the working tree or one that an
-        earlier `new` of the change starts, so that a batch starts an entity
-        with its keys."""
+        """(table, specs, subject, hint) of a reference of `set`: a designed
+        entity, the target of a feature on `layout`, a meaning, or the entry
+        of the symbol that the reference or `layout` names. The specs are
+        {key: spec} of the keys that the table takes, or else the one key that
+        it refuses where it takes every other: `target` of a feature, whose
+        file states the facts of the feature under keys of its own. A target
+        takes the keys of every target and those that a target of its feature
+        states besides its layout; the hint of a refused key says that a new
+        one needs a declared key schema. A designed entity is one of the
+        working tree or one that an earlier `new` of the change starts, so
+        that a batch starts an entity with its keys."""
         found = MEANING_REF.fullmatch(str(text).strip())
         if found and found.group("kind") in store.DESIGNED:
             kind, slug = found.group("kind"), found.group("name")
@@ -642,9 +664,9 @@ class Change:
                 raise KbError(f"no designed entity {slug}/{kind}", code=5)
             _, document = self.designed(kind, slug)
             if layout is None and kind == "feature":
-                return document, "target", f"{slug}/{kind}"
+                return document, "target", f"{slug}/{kind}", ""
             if layout is None:
-                return document, dict(store.DESIGNED[kind].keys), f"{slug}/{kind}"
+                return document, dict(store.DESIGNED[kind].keys), f"{slug}/{kind}", ""
             if kind != "feature":
                 raise KbError(f"a layout names a target of a feature; {slug}/{kind} is a {kind}",
                               code=2)
@@ -653,7 +675,11 @@ class Change:
                        if entry.get("layout") == layout]
             if not targets:
                 raise KbError(f"{slug}/feature has no target on {layout}", code=5)
-            return targets[0], "layout", f"{slug}/feature on {layout}"
+            known = [*TARGET_KEYS[1:], *sorted({name for entry in document["target"]
+                                                for name in entry} - set(TARGET_KEYS))]
+            return (targets[0], {name: store.TARGET.spec(name) for name in known},
+                    f"{slug}/feature on {layout}",
+                    "; a new target key needs a declared key schema of the feature")
         meaning, named = self.resolve(text)
         if layout is not None:
             layout = self._layout(layout)
@@ -666,8 +692,8 @@ class Change:
         _, document = self.document(meaning)
         if named is None:
             return document, {name: spec for name, spec in store.schema(meaning.kind).keys
-                              if name not in MEANING_OWNED}, meaning.key
-        return self._entry(meaning, document, named), SYMBOL_KEYS, self._ref(named)
+                              if name not in MEANING_OWNED}, meaning.key, ""
+        return self._entry(meaning, document, named), SYMBOL_KEYS, self._ref(named), ""
 
 
     def bind(self, op):

@@ -760,6 +760,43 @@ class SetTest(unittest.TestCase):
             with self.subTest(op=op):
                 self.assertIn(message, self.refused(op, code=code))
 
+    def test_set_refuses_a_quoted_key_and_names_the_nested_key_it_spells(self):
+        cases = [
+            (assign(self.PROBE, {"basis.timing": "native"}, layout="jk00c"),
+             f'set writes no "basis.timing" of {self.PROBE} on jk00c; a key is bare, and the '
+             "nested key basis.timing names a key of a table"),
+            (assign(self.PROBE, {"basis": {"maps.x": "native"}}, layout="jk00c"),
+             f'set writes no "maps.x" of {self.PROBE} on jk00c; a key is bare, and the nested '
+             "key basis.maps.x names a key of a table"),
+            (assign(INHIBIT, {"logparam.id": "x"}),
+             f'set writes no "logparam.id" of {INHIBIT}; a key is bare, and the nested key '
+             "logparam.id names a key of a table"),
+            (assign(self.PROBE, {"basis": {"two words": "x"}}, layout="jk00c"),
+             f'set writes no "two words" of {self.PROBE} on jk00c; a key is bare'),
+        ]
+        for op, message in cases:
+            with self.subTest(op=op):
+                self.assertEqual(self.refused(op, code=2), f"op 1: {message}")
+
+    def test_a_target_takes_the_keys_of_every_target_and_those_its_feature_states(self):
+        change = self.change(assign("can_telemetry/feature", {"mailbox_index": 26},
+                                    layout="jk00c"),
+                             assign(self.PROBE, {"note": "x", "basis": {"notes": "y"}},
+                                    layout="jk00c"))
+        self.assertEqual(change.lines, ["set can_telemetry/feature on jk00c: mailbox_index",
+                                        f"set {self.PROBE} on jk00c: basis.notes, note"])
+        message = self.refused(assign(self.PROBE, {"mailbox_index": 26}, layout="jk00c"),
+                               code=2)
+        self.assertEqual(message, f"op 1: set writes no mailbox_index of {self.PROBE} on "
+                                  "jk00c; it writes status, note, basis, requires; a new target "
+                                  "key needs a declared key schema of the feature")
+        message = self.refused(assign("can_telemetry/feature", {"mailbox_indx": 26},
+                                      layout="jk00c"), code=2)
+        self.assertIn("it writes status, note, basis, requires, ", message)
+        self.assertIn(", mailbox_index, ", message)
+        self.assertTrue(message.endswith("a new target key needs a declared key schema of the "
+                                         "feature"))
+
     def test_assignments_are_toml_values_or_strings(self):
         self.assertEqual(write.parse_assignments(
             ["level=code", 'bit=[{bit = 7, name = "main"}]', "basis.maps=a b", "count=3",
