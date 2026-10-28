@@ -81,6 +81,11 @@ jobs:
           path: tools/memgraph/data/lib
           key: ${{ steps.graph-key.outputs.key }}
           restore-keys: kb-graph-
+      # Memgraph runs as root in the Compose service and refuses a data
+      # directory that another user owns.
+      - name: Hand the restored graph to the Memgraph user
+        if: steps.graph-cache.outputs.cache-matched-key != ''
+        run: sudo chown -R 0:0 tools/memgraph/data
       - name: Start Memgraph
         run: uv run kb instance up
       - id: sync
