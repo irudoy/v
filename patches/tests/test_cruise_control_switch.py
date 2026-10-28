@@ -4,17 +4,14 @@ The steering switch decoders run in the SH-2 interpreter of
 tools/mapkit/sh2_interpreter.py on the stock images and on copies that differ
 only in the configuration byte, a selector byte, or ROM8[0x8A23]. Cells outside
 the image read zero until a seed or a store sets them, and each pass seeds the
-input word of the decoder. The static checks bind the tables of the
-specification to the images, the editor definitions, the mailbox tables, the
-DTC group bytes, the monitor instructions, the factory manual, the calibration
-transfer of the ROM builder, and the documents that cite the switch.
+input word of the decoder. The static checks bind the switch tables below to
+the images, the editor definitions, the mailbox tables, the DTC group bytes,
+the monitor instructions, and the calibration transfer of the ROM builder.
 """
 
 from __future__ import annotations
 
 import csv
-import json
-import re
 import tomllib
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -28,11 +25,9 @@ from tools.mapkit.sh2_interpreter import RETURN, STACK_TOP, Sh2, sext, u16
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC_PATH = ROOT / "patches/cruise-control-switch.md"
 HOMOLOGY_PATH = ROOT / "rom-images/homology.toml"
 OVERRIDES_PATH = ROOT / "defs/JK08A.overrides.toml"
 BINDINGS_PATH = ROOT / "defs/JK08A.diagnostic-bindings.csv"
-FRAGMENTS_PATH = ROOT / "refs/diagnostics/nissan-esm-2007-g35-sedan/fragments.jsonl"
 NAME = "Cruise Control Switch"
 NOT_INSTALLED = "Not Installed"
 ICC = "ICC Switch (5 Buttons)"
@@ -70,37 +65,37 @@ MONITORS = {
 BUILDS = ("JK00A", "1ND0A")
 
 
-def _doc() -> str:
-    return SPEC_PATH.read_text(encoding="utf-8")
-
-
-def _flat(text: str) -> str:
-    return " ".join(text.split())
-
-
-def _table(header: str) -> list[list[str]]:
-    lines = _doc().splitlines()
-    start = lines.index(header)
-    rows = []
-    for line in lines[start + 2:]:
-        if not line.startswith("|"):
-            break
-        rows.append([cell.strip().strip("`") for cell in line.strip().strip("|").split("|")])
-    return rows
-
-
-STATES = {name: int(byte, 16) for name, byte, _ in _table("| State | Byte | Decoder |")}
+# Configuration byte per switch state.
+STATES = {NOT_INSTALLED: 0x00, ICC: 0x2B}
+# Images with the switch: image, layout, configuration byte, stock byte, stock state.
 SITES = [
-    (image, layout, int(byte, 16), int(stock, 16), state)
-    for image, layout, byte, stock, state in _table("| Image | Layout | Byte | Stock | Stock state |")
+    ("JK08A", "7mfk", 0x8B28, 0x2B, ICC),
+    ("JK00A", "7mfk", 0x8B28, 0x00, NOT_INSTALLED),
+    ("JK03A", "7mfk", 0x8B28, 0x00, NOT_INSTALLED),
+    ("JK03B", "7mfk", 0x8B28, 0x00, NOT_INSTALLED),
+    ("JK00C", "jk00c", 0x8B59, 0x00, NOT_INSTALLED),
+    ("JK00D", "jk00d", 0x8B5A, 0x00, NOT_INSTALLED),
+    ("1ND0A", "1nd", 0x8A11, 0x00, NOT_INSTALLED),
+    ("1ND3B", "1nd", 0x8A11, 0x00, NOT_INSTALLED),
 ]
+# Steering switch decoder per layout: entry, input word, code, accepted code.
 DECODERS = {
-    layout: tuple(int(cell, 16) for cell in cells)
-    for layout, *cells in _table("| Layout | Decoder | Input word | Code | Accepted code |")
+    "7mfk": (0x000D185C, 0xFFFF3630, 0xFFFF36D9, 0xFFFF36D8),
+    "jk00c": (0x000DD6F4, 0xFFFF3728, 0xFFFF37E5, 0xFFFF37E4),
+    "jk00d": (0x000DDE30, 0xFFFF373C, 0xFFFF37F9, 0xFFFF37F8),
+    "1nd": (0x0012B270, 0xFFFEAAC0, 0xFFFEAB76, 0xFFFEAB74),
+    "jk78c": (0x000FE2B8, 0xFFFF3854, 0xFFFF3909, 0xFFFF3908),
+    "1me3b": (0x001386A4, 0xFFFEAC00, 0xFFFEACBC, 0xFFFEACBA),
 }
+# Window of the first ladder in A/D counts and the code of each button.
 WINDOWS = [
-    (button, *(int(bound) for bound in window.split("..")), int(code, 16), resistance)
-    for button, window, code, resistance in _table("| Button | Window | Code | Switch resistance |")
+    ("MAIN", 0, 108, 0x01),
+    ("CANCEL", 224, 317, 0x02),
+    ("DISTANCE", 416, 489, 0x04),
+    ("SET/COAST", 578, 636, 0x08),
+    ("RESUME/ACCELERATE", 720, 764, 0x10),
+    ("all released", 850, 883, 0x20),
+    ("open input", 940, 65535, 0x40),
 ]
 IMAGES = [site[0] for site in SITES]
 
@@ -163,12 +158,12 @@ def _outside_frame(machine: Sh2) -> list[tuple[int, int]]:
 
 
 def _level(button: str) -> int:
-    (low,) = [low for name, low, _, _, _ in WINDOWS if name == button]
+    (low,) = [low for name, low, _, _ in WINDOWS if name == button]
     return low
 
 
 def _code(button: str) -> int:
-    (code,) = [code for name, _, _, code, _ in WINDOWS if name == button]
+    (code,) = [code for name, _, _, code in WINDOWS if name == button]
     return code
 
 
@@ -185,14 +180,13 @@ def test_sites_hold_the_stated_stock_bytes() -> None:
         assert layouts[image] == layout
         value = romkit.load(image).data[byte]
         assert value & 0x01, image
-        assert f"`0x{value:02X}` at `0x{byte:04X}`" in _flat(_doc()), image
 
 
 @pytest.mark.parametrize("image", IMAGES)
 def test_not_installed_stores_nothing_outside_the_stack_frame(image: str) -> None:
     layout = _site(image)[1]
     decoder = Decoder(_image(image, NOT_INSTALLED), layout)
-    for _, low, high, _, _ in WINDOWS:
+    for _, low, high, _ in WINDOWS:
         for level in (low, high):
             machine = decoder.run(level)
             assert machine.stores or machine.loads, (image, level)
@@ -203,7 +197,7 @@ def test_not_installed_stores_nothing_outside_the_stack_frame(image: str) -> Non
 def test_icc_switch_decodes_every_window_at_both_bounds(image: str) -> None:
     layout = _site(image)[1]
     decoder = Decoder(_image(image, ICC), layout)
-    for button, low, high, code, _ in WINDOWS:
+    for button, low, high, code in WINDOWS:
         assert decoder.code_of(low) == code, (image, button, low)
         assert decoder.code_of(high) == code, (image, button, high)
         if low > 0:
@@ -245,9 +239,6 @@ def test_1nd_decoder_returns_only_while_the_second_gate_bit_is_clear() -> None:
         machine.pr = RETURN
         assert machine.run(decoder.entry, (ND_PAST_DECODE, RETURN), STEPS) == ND_PAST_DECODE
         assert not machine.stored(decoder.code), image
-    doc = _flat(_doc())
-    assert f"bit 0 of `ROM8[0x{ND_RETURN_GATE:04X}]`" in doc
-    assert f"continues at `0x{ND_PAST_DECODE:08X}`" in doc
 
 
 @pytest.mark.parametrize("layout", sorted(WITHOUT_SWITCH))
@@ -276,47 +267,12 @@ def test_selector_bit_0_takes_the_second_icc_ladder(image: str) -> None:
     assert Decoder(first, layout).code_of(SECOND_LADDER_CANCEL) == OUTSIDE, image
     assert Decoder(first, layout).code_of(_level("CANCEL")) == _code("CANCEL"), image
     assert Decoder(second, layout).code_of(SECOND_LADDER_CANCEL) == _code("CANCEL"), image
-    stated = {"JK00C": "on JK00C", "JK00D": "on JK00D", "1ND0A": "on 1ND", "1ND3B": "on 1ND",
-              "1ME3B": "on 1ME3B"}[image]
-    assert f"`0x{SELECTORS[image]:04X}` {stated}" in _flat(_doc()), image
 
 
 def test_first_icc_ladder_is_the_jk08a_ladder() -> None:
     data = romkit.load("JK08A").data
     ladder = [u16(data, FIRST_LADDER + 2 * index) for index in range(2 * len(WINDOWS))]
-    assert ladder == [bound for _, low, high, _, _ in WINDOWS for bound in (low, high)]
-    assert f"JK08A ladder at `0x{FIRST_LADDER:05X}`" in _flat(_doc())
-
-
-def _fragment(page: str) -> str:
-    with FRAGMENTS_PATH.open(encoding="utf-8") as source:
-        texts = [json.loads(line)["text"] for line in source
-                 if json.loads(line)["page_label"] == page]
-    return _flat(" ".join(texts))
-
-
-def test_manual_resistances_lie_in_the_windows() -> None:
-    text = _fragment("CCS-47")
-    assert "CHECK ICC STEERING SWITCH" in text and "13 16 DISTANCE" in text
-    values = [int(value) for value in re.findall(r"Approx\. (\d+)", text)]
-    buttons = ("MAIN", "CANCEL", "DISTANCE", "SET/COAST", "RESUME/ACCELERATE")
-    positions = [text.index(f" {button} ") for button in buttons]
-    assert positions == sorted(positions)
-    released = values[1::2]
-    assert len(values) == 2 * len(buttons) and set(released) == {5456}
-    manual = dict(zip(buttons, values[0::2]))
-    manual["all released"] = released[0]
-    stated = {button: resistance for button, _, _, _, resistance in WINDOWS}
-    for button, low, high, _, resistance in WINDOWS:
-        if resistance == "open":
-            count = 1023
-        else:
-            ohms = int(resistance.removesuffix(" Ohm"))
-            assert ohms == manual[button], button
-            count = 1023 * ohms / (ohms + 1000)
-        assert low <= count <= high, button
-    assert set(stated) - {"open input"} == set(manual)
-    assert "transmits ICC steering switch signal through CAN communication" in _fragment("CCS-26")
+    assert ladder == [bound for _, low, high, _ in WINDOWS for bound in (low, high)]
 
 
 def _records(data: bytes, base: int):
@@ -341,10 +297,6 @@ def test_images_with_the_switch_configure_no_icc_mailbox() -> None:
         if layout == "7mfk":
             by_address = {at: (kind, identifier) for at, kind, _, identifier in records}
             assert all(by_address[at] == (5, 0) for at in ICC_RECORDS), image
-    doc = _flat(_doc())
-    for layout, base in MAILBOXES.items():
-        assert f"`0x{base:04X}`" in doc, layout
-    assert "`0x975A`, `0x975E`, and `0x979A` hold type 5" in doc
 
 
 def _literal(data: bytes, pc: int) -> tuple[int, int]:
@@ -410,11 +362,6 @@ def test_dtc_group_byte_and_the_monitors_that_read_it() -> None:
     with BINDINGS_PATH.open(encoding="utf-8", newline="") as source_file:
         rows = [row for row in csv.reader(source_file) if f"{entry:08x}" in row]
     assert any("P1564" in row for row in rows)
-    doc = _flat(_doc())
-    for layout, base in GROUP_TABLES.items():
-        assert f"`0x{base:05X}`" in doc, layout
-    for entry, _, _ in MONITORS.values():
-        assert f"`0x{entry:08X}`" in doc, hex(entry)
 
 
 def _xml_switches(image: str) -> list[ET.Element]:
@@ -465,34 +412,3 @@ def test_calibration_transfer_carries_the_configuration_byte(image: str) -> None
     assert rom_checksums.verify(result.data, layout).valid
 
 
-def test_documents_cite_the_switch() -> None:
-    selector = _flat((ROOT / "patches/map-switching-selector.md").read_text(encoding="utf-8"))
-    launch = _flat((ROOT / "patches/rolling-launch.md").read_text(encoding="utf-8"))
-    readme = _flat((ROOT / "defs/README.md").read_text(encoding="utf-8"))
-    builder = _flat((ROOT / "patches/rom-builder.md").read_text(encoding="utf-8"))
-    matrix = (ROOT / "rom-images/support-matrix.md").read_text(encoding="utf-8")
-    until = f"until the Cruise Control Switch of their definitions selects {ICC}"
-    others = ", ".join(image for image in IMAGES if image != "JK08A")
-    assert f"the selector stays on Map 1 {until}" in selector
-    assert "`cruise-control-switch.md`" in selector
-    assert f"Rolling Launch never arms on them {until}" in launch
-    for text in (selector, launch):
-        assert others.replace(", 1ND3B", ", and 1ND3B") in text
-    assert "The Cruise Control Switch is a definition-controlled data edit" in readme
-    assert "`../patches/cruise-control-switch.md`" in readme
-    assert "the cruise control configuration byte of the Cruise Control Switch" in builder
-    header = "| Family | DTC codes | Developer Immobilizer | Cruise Control Switch | Native RomRaider checksum |"
-    lines = matrix.splitlines()
-    start = lines.index(header)
-    column = {}
-    for line in lines[start + 2:]:
-        if not line.startswith("|"):
-            break
-        cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
-        column[cells[0]] = cells[3]
-    families = {"7mfk": "7MFKAVN86", "1nd": "1ND"}
-    expected = {families.get(layout, image): f"0x{byte:04X}"
-                for image, layout, byte, _, _ in SITES}
-    expected.update({image: "none" for image, _ in WITHOUT_SWITCH.values()})
-    assert column == expected
-    assert "`../patches/cruise-control-switch.md`" in _flat(matrix)

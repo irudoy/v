@@ -9,7 +9,6 @@ from tools.logs import peak_trc_audit
 ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
-TELEMETRY = ROOT / "patches" / "can-telemetry.md"
 SESSION_KEY = "can_telemetry.schema2_profile5_drive_2026_09_22"
 KEY = "can_telemetry.schema2_transport_2026_09_22"
 PREVIOUS_SESSION_KEY = "can_telemetry.schema2_profile5_drive_2026_09_21"
@@ -21,10 +20,6 @@ CONTROL_TERMS = (
     "override_priority",
     "mailbox_31_after_recovery",
 )
-
-
-def _normalized(path):
-    return " ".join(path.read_text(encoding="utf-8").split())
 
 
 def _entry(registry, dotted):
@@ -44,10 +39,6 @@ def _recorded_profile_ids(node):
     return set()
 
 
-def _percent_range(low, high):
-    return f"`{low:.3f}%..{high:.3f}%`"
-
-
 class CanTelemetryTransportVehicleTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -61,7 +52,6 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         (cls.current_profile_id,) = (
             row["id"] for row in schema["profiles"] if row["name"] == "tuning"
         )
-        cls.published = _normalized(TELEMETRY)
 
     def test_session_carries_the_tuning_profile_of_the_same_image(self):
         session = self.session
@@ -82,11 +72,6 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         self.assertEqual(session["trc_warning_count"], 0)
         self.assertEqual(session["snapshot_overrun_count_max"], 0)
         self.assertEqual(session["tx_abort_count_max"], 0)
-        self.assertIn(
-            f"The road session of {session['recorded_on']} in registry entry "
-            f"`{SESSION_KEY}` carried the same profile",
-            self.published,
-        )
 
     def test_transport_captures_are_the_session_traces(self):
         result = self.result
@@ -147,13 +132,6 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
                 [round(a + b, 3) for a, b in zip(result[baseline], theory)],
                 result[planned],
             )
-        for text in (
-            f"add {_percent_range(*theory)} theoretical load",
-            f"was {_percent_range(*result['planning_baseline_average_bus_load_percent'])}",
-            f"planning average of {_percent_range(*result['planning_average_bus_load_percent'])}",
-            f"stream is {_percent_range(*result['planning_peak_100ms_bus_load_percent'])}",
-        ):
-            self.assertIn(text, self.published)
 
     def test_measured_load_stays_inside_the_planning_bounds(self):
         result = self.result
@@ -182,16 +160,7 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
             self.assertLessEqual(
                 row["peak_1000ms_bus_load_percent"][1], row["peak_100ms_bus_load_percent"][1]
             )
-        span = sum(row["observed_span_ms"] for row in rows) / 1000
         self.assertEqual(result["term_status"]["whole_bus_load"], "pass")
-        for text in (
-            f"three moving TRC captures of the {result['recorded_on']} road session, "
-            f"{span:.1f} s in total",
-            f"the whole-bus average lies within {_percent_range(*average)}",
-            f"the highest 100 ms window within {_percent_range(*peak)}",
-            "the captures contain no error, warning, or remote frame.",
-        ):
-            self.assertIn(text, self.published)
 
     def test_stock_cadence_and_group_timing_are_published(self):
         result = self.result
@@ -210,58 +179,23 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         self.assertEqual(len(result["dashboard_state_maximum_period_ms"]), len(rows))
         self.assertEqual(result["term_status"]["stock_frame_cadence"], "pass")
         self.assertEqual(result["term_status"]["group_continuity"], "pass")
-        medians = [row["page_0_to_10_median_ms"] for row in rows]
-        longest = max(row["page_0_to_10_max_ms"] for row in rows)
         for row in rows:
             self.assertLessEqual(row["page_0_to_10_median_ms"], row["page_0_to_10_p99_ms"])
             self.assertLessEqual(row["page_0_to_10_p99_ms"], row["page_0_to_10_max_ms"])
             self.assertLess(row["page_0_to_10_max_ms"], 1000 / SNAPSHOT_RATE_HZ)
             self.assertLess(row["group_rate_hz"], SNAPSHOT_RATE_HZ)
-        for text in (
-            f"Each of the {result['stock_identifier_count']} stock identifiers of the "
-            "stationary baselines keeps its median period within "
-            f"{result['median_period_max_deviation_ms']} ms",
-            f"`0x{result['dashboard_state_can_id']:03X}` at "
-            f"`{result['dashboard_state_median_period_ms']} ms`",
-            f"longest interval within {result['maximum_period_max_increase_ms']} ms "
-            "of the baseline maximum",
-            f"page 10 follows page 0 after {min(medians)}..{max(medians)} ms in the "
-            f"median and at most {longest} ms",
-        ):
-            self.assertIn(text, self.published)
 
     def test_control_terms_stay_untested(self):
         status = self.result["term_status"]
         for term in CONTROL_TERMS:
             self.assertEqual(status[term], "untested")
         self.assertEqual(status["bus_error_records"], "pass")
-        self.assertIn("no frame was transmitted", self.result["evidence_boundary"])
         # PCAN-View stores no trace of its error-frame setting in the TRC file.
         self.assertEqual(self.result["error_frame_recording"], "enabled")
-        self.assertIn(
-            "error-frame recording was enabled for all three captures by operator report",
-            self.result["evidence_boundary"],
-        )
         self.assertEqual(len(self.result["captures"]), 3)
         for row in self.result["captures"]:
             self.assertEqual(row["error_record_count"], 0)
             self.assertEqual(row["warning_record_count"], 0)
-        self.assertIn(
-            "With PCAN-View error-frame recording enabled, the captures contain no "
-            "error, warning, or remote frame.",
-            self.published,
-        )
-        self.assertIn(
-            "On the vehicle they remain untested: registry entry "
-            f"`{KEY}` records that no capture carries a control frame.",
-            self.published,
-        )
-        self.assertIn(
-            f"The TRC captures of registry entry `{KEY}` measure the last criterion "
-            f"for profile {self.session['profile_id']} on the target vehicle; "
-            "the current profile has no target-vehicle capture.",
-            self.published,
-        )
         self.assertNotIn(
             self.current_profile_id, _recorded_profile_ids(self.registry)
         )

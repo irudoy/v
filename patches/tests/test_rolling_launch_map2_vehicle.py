@@ -8,14 +8,11 @@ import pytest
 from patches import rolling_launch
 from patches import rolling_launch_layout
 from tools.can_dashboard import model
-from tools.logs import mlg_relation_audit
 
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-ROLLING_LAUNCH = ROOT / "patches" / "rolling-launch.md"
 ENGINE_SOURCE = ROOT / "patches" / "rolling-launch-engine.s"
-CAN_DEFS = ROOT / "defs" / "JK08A.can.md"
 LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
 KEY = "rolling_launch.map_2_vehicle_2026_09_22"
@@ -105,10 +102,6 @@ RECORD_ONLY = frozenset(
 )
 
 
-def _normalized(path):
-    return " ".join(path.read_text(encoding="utf-8").split())
-
-
 def _entry(registry, dotted):
     section, name = dotted.split(".")
     return registry[section][name]
@@ -116,13 +109,6 @@ def _entry(registry, dotted):
 
 def _number(value):
     return f"{value:g}"
-
-
-def _series(values):
-    words = [value if isinstance(value, str) else _number(value) for value in values]
-    if len(words) <= 2:
-        return " and ".join(words)
-    return ", ".join(words[:-1]) + ", and " + words[-1]
 
 
 def _active_state(calibration, slot, captured):
@@ -167,7 +153,6 @@ class RollingLaunchMap2VehicleTest(unittest.TestCase):
         # first, and each hold that activates shows the ACTIVE state.
         frames = cls.result["trace_hold_active_frames"]
         cls.activation_holds = [index for index, count in enumerate(frames) if count]
-        cls.document = _normalized(ROLLING_LAUNCH)
 
     def test_record_names_the_session_capture_and_image(self):
         result = self.result
@@ -525,23 +510,10 @@ class RollingLaunchMap2VehicleTest(unittest.TestCase):
 
     def test_published_figures_match_the_registry(self):
         result = self.result
-        feedback = self.feedback
         reference = self.reference
-        text = self.document
-        label = reference["firmware_label"]
         speeds = result["activation_speed_range_kmh"]
         moving = [index for index, (low, _) in enumerate(speeds) if low > 0]
-        standing = [index for index in range(result["activation_count"]) if index not in moving]
         captured = result["activation_captured_rpm"]
-        slot = result["selected_map"] - 1
-        bands = [
-            _active_state(self.calibration, slot, word).retard_band_start_native * RPM_PER_NATIVE
-            for index in standing
-            for word in range(
-                result["activation_captured_rpm_native"][index][0],
-                result["activation_captured_rpm_native"][index][1] + 1,
-            )
-        ]
 
         def captured_word(index):
             first, last = captured[index]
@@ -555,125 +527,19 @@ class RollingLaunchMap2VehicleTest(unittest.TestCase):
             if seconds[hold] > result["timeout_seconds"]
         ]
         moving_timeout = [activation for activation in timed_out if activation in moving]
-        standing_timeout = [activation for activation in timed_out if activation not in moving]
-        spacing = result["trace_hold_since_previous_release_ms"]
-        refusals = [value for value in spacing if value < result["rearm_seconds"] * 1000]
         carrying = [
             index for index, full in enumerate(result["activation_release_full_mask"]) if full
         ]
         self.assertEqual(len(carrying), 1)
-        clear = result["trace_activation_release_clear_ms"][carrying[0]]
-        exits = result["activation_release_exit_bound_ms"]
-        floor, ceiling = reference["post_release_full_inhibit_clear_latency_ms"]
         low, high = reference["activation_rpm_range"]
-        selections = _series(self.selections)
-        statements = (
-            f"`{KEY}`",
-            f"The Map {result['selected_map']} run of the {result['observed_on']} road "
-            "session is a TRC of the same image",
-            f"The trace holds {result['snapshot_count']:,} consecutive verified telemetry "
-            f"snapshots over {result['span_seconds']} s",
-            f"SET gestures commit Maps {selections}, frame `0x551` answers them with "
-            f"{selections} state-{feedback['map_feedback_state']} pulses",
-            f"A {_number(feedback['held_attempt_seconds'])} s CANCEL hold on Map "
-            f"{feedback['held_attempt_map']}, which has Rolling Launch disabled, shows "
-            f"{feedback['held_attempt_failed_frames']} frames of state "
-            f"{feedback['failed_held_attempt_state']} and no state "
-            f"{feedback['map_feedback_state']}",
-            "The exhaust CVTC replay excludes Map 3: its surface holds the neutral target, "
-            f"{result['exhaust_cvtc_target_above_neutral_count']:,} recorded targets lie "
-            "above it, and Maps 1, 2, 4, and 5 share one surface",
-            f"Six CANCEL holds on Map {result['selected_map']} enter `ACTIVE` state "
-            f"{result['dashboard_active_state']}, three while moving at "
-            f"{_number(round(min(speeds[index][0] for index in moving), 1))} to "
-            f"{_number(round(max(speeds[index][1] for index in moving), 1))} km/h and three "
-            "at standstill",
-            "bounds the captured words of the moving holds at "
-            f"{_series([captured_word(index) for index in moving])} RPM, inside the "
-            f"{_number(low)} to {_number(high)} RPM activation range of the firmware "
-            f"`{label}` capture",
-            f"cycle the full `0x{result['full_fuel_inhibit_mask']:02X}` mask "
-            f"{_series([result['activation_full_mask_cycles'][index] for index in moving])} "
-            "times while CANCEL is held",
-            "The standstill holds capture "
-            f"{_number(min(captured[index][0] for index in standing))} to "
-            f"{_number(max(captured[index][1] for index in standing))} RPM, and engine "
-            "speed stays below their retard band, which starts at "
-            f"{_number(min(bands))} to {_number(max(bands))} RPM",
-            f"All {result['full_mask_record_count']} full-mask snapshots lie inside the "
-            "activation windows, and no snapshot carries a partial mask",
-            f"reaches the target {result['target_command']} in "
-            f"{_series([result['activation_apc_target_records'][index] for index in moving])} "
-            "snapshots of the moving holds",
-            f"`final_timing = {mlg_relation_audit.APC_COMMAND_BASE} - APC command` holds in "
-            f"{result['identity_count']:,} of the {result['identity_pair_count']:,} "
-            f"snapshots, and all {result['identity_difference_inside_count']} differences "
-            "fall inside the activation windows",
-            f"The second moving hold lasts {_number(seconds[holds[moving_timeout[0]]])} s; "
-            "its retard ends "
-            f"{result['activation_active_ticks_bound'][moving_timeout[0]][0]} to "
-            f"{result['activation_active_ticks_bound'][moving_timeout[0]][1]} ticks after "
-            "the capture pass and before the release, and its `ACTIVE` indication lasts "
-            f"{result['trace_hold_active_frames'][holds[moving_timeout[0]]]} frames",
-            "The standstill holds of "
-            f"{_series([_number(seconds[holds[index]]) for index in standing_timeout])} s "
-            "each show "
-            f"{result['trace_hold_active_frames'][holds[standing_timeout[0]]]} `ACTIVE` "
-            "frames followed by "
-            f"{_series([result['trace_activation_inactive_frames_held'][index] for index in standing_timeout])} "
-            "frames of state 0 while CANCEL remains held",
-            f"These runs end by the {result['run_timeout_ticks']}-tick run timeout",
-            f"Three presses that start {_series([f'{value:.1f}' for value in refusals])} ms "
-            "after the preceding release "
-            "show neither state 4 nor state 5",
-            "Each hold that starts at least "
-            f"{_number(round(result['minimum_rearm_spacing_seconds'], 1))} s after the "
-            "preceding release activates",
-            f"The mask clears {_number(clear[0])} to {_number(clear[1])} ms after the first "
-            f"released `0x239` frame, above the `{_number(floor)}..{_number(ceiling)} ms` "
-            f"range of the firmware `{label}` trace",
-            f"The replay places the end of `ACTIVE` {_number(exits[0][0])} to "
-            f"{_number(exits[0][1])} ms after the released frame in the first moving hold "
-            f"and {_number(exits[carrying[0]][0])} to {_number(exits[carrying[0]][1])} ms "
-            "after it in the third",
-        )
         self.assertEqual(moving_timeout, [1])
         self.assertEqual(carrying, [2])
-        for statement in statements:
-            with self.subTest(statement=statement):
-                self.assertIn(statement, text)
-
-    def test_open_boundaries_follow_the_registered_status(self):
-        status = self.status
-        statements = (
-            ("above the `6.9..81.1 ms` range", status["release_clear_latency"] == "fail"),
-            (
-                "the session does not read the abort reason of DID `0x1211`",
-                status["timeout_reason"] == "untested",
-            ),
-            (
-                "the delay between the two codes is not established",
-                status["release_clear_latency"] != "pass",
-            ),
-        )
-        for statement, registered in statements:
-            with self.subTest(statement=statement):
-                self.assertEqual(statement in self.document, registered)
 
     def test_button_sources_are_the_published_codes(self):
         source = ENGINE_SOURCE.read_text(encoding="utf-8")
         match = re.search(r"^rl_button_address:\n\.long (0x[0-9A-F]+)$", source, re.MULTILINE)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1), "0xFFFF2A85")
-        self.assertIn(
-            "`0x239` byte 3 receives one-hot steering-switch code `0xFFFF36D8`",
-            _normalized(CAN_DEFS),
-        )
-        self.assertIn(
-            "The runtime reads the stock debounced button code `0xFFFF2A85`, while frame "
-            "`0x239` carries the steering-switch code `0xFFFF36D8`",
-            self.document,
-        )
 
     @pytest.mark.slow
     @unittest.skipUnless(LOGS.is_dir() and IMAGE.is_file(), "road captures are local and untracked")

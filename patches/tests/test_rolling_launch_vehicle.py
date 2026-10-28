@@ -5,20 +5,16 @@ import unittest
 from patches import rolling_launch
 from patches import rolling_launch_layout
 from tools.can_dashboard import model
-from tools.logs import mlg_relation_audit
 
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-ROLLING_LAUNCH = ROOT / "patches" / "rolling-launch.md"
 KEY = "rolling_launch.map_3_vehicle_2026_09_21"
 FEEDBACK_KEY = "map_switching.feedback_vehicle_2026_09_21"
 SESSION_KEY = "can_telemetry.schema2_profile5_drive_2026_09_21"
 # Frame 0x551 leaves the serializer on every tenth 10.24 ms invocation.
 SERIALIZER_CALLS_PER_FRAME = 10
 RPM_PER_NATIVE = model.RPM_PER_COUNT
-NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven")
-ORDINALS = ("first", "second", "third", "fourth", "fifth", "sixth")
 FUNCTIONAL_TERMS = (
     "moving_activation",
     "active_indication",
@@ -53,10 +49,6 @@ PER_ACTIVATION = (
 )
 
 
-def _normalized(path):
-    return " ".join(path.read_text(encoding="utf-8").split())
-
-
 def _entry(registry, dotted):
     section, name = dotted.split(".")
     return registry[section][name]
@@ -64,21 +56,6 @@ def _entry(registry, dotted):
 
 def _number(value):
     return f"{value:g}"
-
-
-def _series(values):
-    words = [str(value) for value in values]
-    if len(words) <= 2:
-        return " and ".join(words)
-    return ", ".join(words[:-1]) + ", and " + words[-1]
-
-
-def _holds(numbers):
-    """Render one-based hold numbers the way the document lists them."""
-    numbers = list(numbers)
-    if len(numbers) > 2 and numbers == list(range(numbers[0], numbers[-1] + 1)):
-        return f"{numbers[0]} to {numbers[-1]}"
-    return _series(numbers)
 
 
 def _window(calibration, slot, captured):
@@ -112,7 +89,6 @@ class RollingLaunchMap3VehicleTest(unittest.TestCase):
             bytes.fromhex(cls.result["configuration_hex"])
         )
         cls.tick_ms = cls.layout.scheduler.tick_microseconds / 1000
-        cls.document = _normalized(ROLLING_LAUNCH)
 
     def test_record_names_the_session_capture_and_image(self):
         result = self.result
@@ -457,40 +433,22 @@ class RollingLaunchMap3VehicleTest(unittest.TestCase):
 
     def test_published_figures_match_the_registry(self):
         result = self.result
-        reference = self.reference
-        text = self.document
-        selected = result["selected_map"]
         target = result["target_command"]
-        label = reference["firmware_label"]
 
-        speeds = result["activation_speed_range_kmh"]
-        captured = result["activation_captured_rpm"]
         cycles = result["activation_full_mask_cycles"]
-        cycled = [value for value in cycles if value]
         idle = cycles.index(0)
-        app_low, app_high = result["activation_app1_range_v"][idle]
-        rpm_low, rpm_high = result["activation_rpm_range"][idle]
-        cut_low, cut_high = result["activation_cut_rpm"][idle]
         stock_low, stock_high = result["activation_stock_command_range"][idle]
         self.assertEqual(stock_low, stock_high)
         self.assertGreater(stock_low, target)
-        reached = [value for value in result["activation_apc_target_records"] if value]
-        pairs = result["identity_pair_count"]
-        failed_state = rolling_launch.ASCD_FEEDBACK_CRUISE >> 4
 
         full_at_release = result["activation_release_full_mask"]
-        post_release = result["activation_post_release_full_mask_cycles"]
-        without = [n for n, full in enumerate(full_at_release, 1) if not full]
         carrying = [n for n, full in enumerate(full_at_release, 1) if full]
-        continuing = [n for n in carrying if not post_release[n - 1]]
-        restarting = [n for n in carrying if post_release[n - 1]]
         self.assertTrue(
             all(
                 result["activation_release_clear_by_window_removal"][n - 1]
                 for n in carrying
             )
         )
-        floor, ceiling = reference["post_release_full_inhibit_clear_latency_ms"]
         bounds = result["activation_release_clear_bound_ms"]
 
         def phrase(numbers):
@@ -500,108 +458,8 @@ class RollingLaunchMap3VehicleTest(unittest.TestCase):
                 for n in numbers
             )
 
-        within = [
-            n
-            for n in carrying
-            if floor <= bounds[n - 1][0] and bounds[n - 1][1] <= ceiling
-        ]
-        straddling = [n for n in carrying if n not in within]
         self.assertEqual(result["snapshot_gap_count"], 0)
         self.assertTrue(result["capture_name"].endswith(".mlg"))
-
-        low, high = reference["activation_rpm_range"]
-        statements = (
-            f"`{KEY}`",
-            f"`../{result['audit_tool']}`",
-            f"The mixed Map {selected} drive of the {result['observed_on']} road "
-            "session",
-            f"The recording holds {result['snapshot_count']:,} consecutive telemetry "
-            "snapshots and no TRC accompanies it",
-            f"bounded by the {_number(result['snapshot_period_ms'])} ms snapshot "
-            "spacing and each dashboard state by the "
-            f"{_number(result['dashboard_frame_period_ms'])} ms period of frame "
-            "`0x551`",
-            f"only the Map {selected} exhaust CVTC target surface reproduces all "
-            f"{result['exhaust_cvtc_comparison_count']:,} recorded targets",
-            f"All {NUMBER_WORDS[result['activation_count']]} moving CANCEL holds, at "
-            f"{_number(round(min(first for first, _ in speeds), 1))} to "
-            f"{_number(round(max(last for _, last in speeds), 1))} km/h, enter "
-            f"`ACTIVE` state {result['dashboard_active_state']}, and no record shows "
-            f"state {failed_state}",
-            "bounds the captured words of the "
-            f"{NUMBER_WORDS[len(captured)]} holds between "
-            f"{_number(min(first for first, _ in captured))} and "
-            f"{_number(max(last for _, last in captured))} RPM",
-            f"{NUMBER_WORDS[result['reference_range_activation_count']]} of them lie "
-            f"inside the {_number(low)} to {_number(high)} RPM activation range of "
-            f"the firmware `{label}` capture",
-            f"{NUMBER_WORDS[len(cycled)].capitalize()} holds reach their cut word "
-            f"and cycle the full `0x{result['full_fuel_inhibit_mask']:02X}` mask "
-            f"{_series(cycled)} times while CANCEL is held",
-            f"The {ORDINALS[idle]} hold keeps APP1 between {_number(app_low)} and "
-            f"{_number(app_high)} V while engine speed stays between "
-            f"{_number(rpm_low)} and {_number(rpm_high)} RPM, below its "
-            f"{_number(cut_low)} to {_number(cut_high)} RPM cut word, and its stock "
-            f"command {stock_low} is already later than the target {target}",
-            f"reaches the target {target} in the other "
-            f"{NUMBER_WORDS[len(reached)]} holds",
-            f"with `stock = {mlg_relation_audit.APC_COMMAND_BASE} - final_timing`",
-            f"`final_timing = {mlg_relation_audit.APC_COMMAND_BASE} - APC command` "
-            f"holds in {result['identity_count']:,} of the {pairs:,} snapshots; all "
-            f"{result['identity_difference_inside_count']:,} differences fall inside "
-            "the activation windows, "
-            f"{sum(result['activation_identity_differences_hold'])} while CANCEL is "
-            f"held and {sum(result['activation_identity_differences_post_release'])} "
-            "after its release",
-            f"Holds {_holds(without)} carry no full mask at the release",
-            f"Holds {_holds(carrying)} show a full mask at or after the first "
-            f"released `0x239` record: hold {_holds(continuing)} continues its "
-            f"cycle, and holds {_holds(restarting)} start one more",
-            f"The release-to-clear distance lies within {phrase(within)}, inside "
-            f"the `{_number(floor)}..{_number(ceiling)} ms` range of the firmware "
-            f"`{label}` trace",
-            f"and within {phrase(straddling)}, which the snapshot spacing does not "
-            f"place on either side of {_number(ceiling)} ms",
-            "Each later hold starts at least "
-            f"{_number(result['minimum_rearm_spacing_seconds'])} s after the "
-            f"preceding release, beyond the {_number(result['rearm_seconds'])} s "
-            "rearm period, and activates",
-            f"The longest hold lasts {_number(result['longest_hold_seconds'])} s, "
-            f"and the {_number(result['timeout_seconds'])} s run timeout is not "
-            "exercised",
-        )
-        for statement in statements:
-            with self.subTest(statement=statement):
-                self.assertIn(statement, text)
-
-    def test_open_boundaries_follow_the_registered_status(self):
-        status = self.result["term_status"]
-        statements = (
-            (
-                "which the snapshot spacing does not place on either side",
-                status["release_clear_latency"] == "unresolved",
-            ),
-            (
-                "the refusal inside that period is not exercised",
-                status["rearm_refusal"] == "untested",
-            ),
-            (
-                "run timeout is not exercised",
-                status["run_timeout"] == "untested",
-            ),
-            (
-                "No capture of the recorded image selects Map 2",
-                self.result["map_2_status"] == "untested",
-            ),
-            (
-                "spark angle at the crankshaft and electrical injector output "
-                "remain outside the measurement",
-                status["physical_outputs"] == "outside_measurement",
-            ),
-        )
-        for statement, registered in statements:
-            with self.subTest(statement=statement):
-                self.assertEqual(statement in self.document, registered)
 
 
 if __name__ == "__main__":

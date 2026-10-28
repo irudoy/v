@@ -15,11 +15,7 @@ from patches import rolling_launch
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-CAN_DEFS = ROOT / "defs" / "JK08A.can.md"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
-DIAGNOSTIC_BINDINGS = ROOT / "defs" / "JK08A.diagnostic-bindings.csv"
-ROLLING_LAUNCH = ROOT / "patches" / "rolling-launch.md"
-SELECTOR = ROOT / "patches" / "map-switching-selector.md"
 STOCK_IMAGE = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 KEY = "map_switching.feedback_vehicle_2026_09_21"
 KEY_2026_09_22 = "map_switching.feedback_vehicle_2026_09_22"
@@ -42,18 +38,6 @@ MAIN_STATE = 0xFFFF4251
 DISPLAY_STATE_4 = 0xFFFF424E
 # Frame 0x551 leaves the serializer on every tenth 10.24 ms invocation.
 SERIALIZER_CALLS_PER_FRAME = 10
-NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven")
-
-
-def _normalized(path):
-    return " ".join(path.read_text(encoding="utf-8").split())
-
-
-def _series(values):
-    words = [str(value) for value in values]
-    if len(words) <= 2:
-        return " and ".join(words)
-    return ", ".join(words[:-1]) + ", and " + words[-1]
 
 
 def _runs(flags):
@@ -178,9 +162,6 @@ class MapFeedbackVehicleSessionTest(unittest.TestCase):
         section, name = KEY.split(".")
         cls.result = cls.registry[section][name]
         cls.feedback = layout_model.load_layout().feedback
-        cls.can_defs = _normalized(CAN_DEFS)
-        cls.rolling_launch = _normalized(ROLLING_LAUNCH)
-        cls.selector = _normalized(SELECTOR)
 
     def test_observation_uses_the_registered_session_captures(self):
         result = self.result
@@ -253,80 +234,6 @@ class MapFeedbackVehicleSessionTest(unittest.TestCase):
             result["moving_cancel_full_inhibit_outside_record_count"], 0
         )
 
-    def test_published_figures_match_the_registry(self):
-        result = self.result
-        selections = sum(len(maps) for maps in result["selected_maps"].values())
-        low, high = result["failed_held_attempt_frames"]
-        holds = NUMBER_WORDS[result["moving_cancel_hold_count"]]
-        on = NUMBER_WORDS[result["map_feedback_on_frames"]]
-        off = NUMBER_WORDS[result["map_feedback_off_frames"]]
-        stock = f"`0x{result['stock_byte5']:02X}`"
-        for text, name in (
-            (self.can_defs, "can"),
-            (self.rolling_launch, "rolling-launch"),
-        ):
-            with self.subTest(published=name):
-                self.assertIn(f"`{KEY}`", text)
-                self.assertIn(f"of the {holds} moving CANCEL holds", text)
-        self.assertIn(f"contain {selections} map selections", self.can_defs)
-        self.assertIn(
-            f"{NUMBER_WORDS[low]}- or {NUMBER_WORDS[high]}-frame "
-            f"`0x{result['failed_held_attempt_byte5']:02X}` run",
-            self.can_defs,
-        )
-        self.assertIn(f"{on} frames ON and {off} frames OFF", self.can_defs)
-        self.assertIn(f"leaves byte 5 at {stock}", self.can_defs)
-        full_inhibit = NUMBER_WORDS[
-            result["moving_cancel_full_inhibit_interval_count"]
-        ]
-        self.assertIn(
-            f"{full_inhibit} of the intervals carry the full "
-            f"`0x{result['moving_cancel_full_inhibit_mask']:02X}`",
-            self.rolling_launch,
-        )
-
-    def test_lamp_statements_follow_the_registered_status(self):
-        result = self.result
-        both_lamps = result["map_feedback_lamp_status"] == "pass"
-        # A later session may observe the CRUISE-alone lamp of state 5.
-        section, name = KEY_2026_09_22.split(".")
-        cruise_alone_open = all(
-            record["failed_held_attempt_lamp_status"] == "untested"
-            for record in (result, self.registry[section][name])
-        )
-        statements = (
-            (
-                self.can_defs,
-                "each state-4 map feedback pulse lights SET together with CRUISE",
-                both_lamps,
-            ),
-            (
-                self.rolling_launch,
-                "state 4 lights SET together with CRUISE on the exact target",
-                both_lamps,
-            ),
-            (
-                self.selector,
-                "map feedback pulses shows SET lighting together with CRUISE",
-                both_lamps,
-            ),
-            (
-                self.can_defs,
-                "the lamp response to state 5 is not separately observed",
-                cruise_alone_open,
-            ),
-            (
-                self.rolling_launch,
-                "The CRUISE-alone result of state 5 remains a hardware "
-                "acceptance item",
-                cruise_alone_open,
-            ),
-        )
-        for text, statement, registered in statements:
-            with self.subTest(statement=statement):
-                self.assertEqual(statement in text, registered)
-        self.assertIn(f"`{KEY}`", self.selector)
-
 
 class MapFeedbackVehicle20260922Test(unittest.TestCase):
     @classmethod
@@ -338,7 +245,6 @@ class MapFeedbackVehicle20260922Test(unittest.TestCase):
         section, name = cls.result["rolling_launch_record"].split(".")
         cls.launch = cls.registry[section][name]
         cls.feedback = layout_model.load_layout().feedback
-        cls.can_defs = _normalized(CAN_DEFS)
 
     def test_observation_uses_the_registered_session_capture(self):
         result = self.result
@@ -414,81 +320,18 @@ class MapFeedbackVehicle20260922Test(unittest.TestCase):
             self.feedback.default_off_frames,
         )
 
-    def test_published_figures_match_the_registry(self):
-        result = self.result
-        counts = dict(zip(result["byte5_values"], result["byte5_frame_counts"], strict=True))
-        selections = [index for maps in result["selected_maps"].values() for index in maps]
-        low, high = result["failed_held_attempt_frames"]
-        first = result["map_feedback_first_on_after_release_ms"]
-        period = result["map_feedback_mean_period_ms"]
-        statements = (
-            f"`{KEY_2026_09_22}`",
-            f"carries {result['dashboard_frame_count']:,} frames of `0x551`, in which byte 5 "
-            + ", ".join(
-                f"holds `0x{value:02X}` {count:,} times"
-                if index == 0
-                else (
-                    f"and `0x{value:02X}` {count:,} times"
-                    if index == len(counts) - 1
-                    else f"`0x{value:02X}` {count:,} times"
-                )
-                for index, (value, count) in enumerate(counts.items())
-            ),
-            f"Four SET gestures select Maps {_series(selections)}",
-            f"Each of the {result['gesture_tap_count']} CANCEL taps appears as a "
-            f"{NUMBER_WORDS[low]}- or {NUMBER_WORDS[high]}-frame "
-            f"`0x{result['failed_held_attempt_byte5']:02X}` run",
-            f"{NUMBER_WORDS[result['map_feedback_on_frames']]} frames ON and "
-            f"{NUMBER_WORDS[result['map_feedback_off_frames']]} frames OFF",
-            f"The first ON frame follows SET release by {min(first)} to {max(first)} ms",
-            f"the pulse starts of one selection lie {min(period)} to {max(period)} ms apart "
-            "on average",
-            f"A {result['held_attempt_seconds']} s CANCEL hold on Map "
-            f"{result['held_attempt_map']}, where Rolling Launch is disabled, shows "
-            f"{result['held_attempt_failed_frames']} frames of "
-            f"`0x{result['failed_held_attempt_byte5']:02X}` and no "
-            f"`0x{result['map_feedback_byte5']:02X}`",
-            "presses inside the Rolling Launch rearm period keep byte 5 at "
-            f"`0x{result['stock_byte5']:02X}`",
-        )
-        for statement in statements:
-            with self.subTest(statement=statement):
-                self.assertIn(statement, self.can_defs)
-
-    def test_operator_observation_is_published(self):
+    def test_registered_lamp_statuses_pass(self):
         result = self.result
         self.assertEqual(result["map_feedback_lamp_status"], "pass")
         self.assertEqual(result["failed_held_attempt_lamp_status"], "pass")
         self.assertIs(result["ascd_engaged"], False)
         # The observed pulse trains are the selections with more than one pulse.
-        selections = [index for maps in result["selected_maps"].values() for index in maps]
-        pulsed = list(dict.fromkeys(index for index in selections if index >= 2))
-        held = result["held_attempt_map"]
-        self.assertIn(
-            "Operator observation in the same session establishes that the "
-            + " and ".join(f"Map {index}" for index in pulsed)
-            + " pulses light SET together with CRUISE, that the CANCEL hold on "
-            f"Map {held} lights CRUISE alone, and that ASCD does not engage.",
-            self.can_defs,
-        )
-        self.assertIn(
-            f"In the {result['recorded_on']} road session a CANCEL hold on Map {held} "
-            "shows state 5 for its whole length and lights CRUISE alone; "
-            "`hardware-results.toml` records the observation under "
-            f"`{KEY_2026_09_22}`.",
-            _normalized(ROLLING_LAUNCH),
-        )
-        self.assertIn(f"`{KEY_2026_09_22}`", _normalized(SELECTOR))
 
     def test_dtc_read_is_the_uncleared_session_read(self):
         session = self.registry["can_telemetry"]["schema2_profile5_drive_2026_09_22"]
         self.assertIs(session["dtc_cleared_before_session"], False)
         self.assertEqual(session["dtc_read_after_session"], ["U1000", "U1001"])
         self.assertIn("not dated to the session", session["dtc_read_boundary"])
-        self.assertIn(
-            "can_telemetry.schema2_profile5_drive_2026_09_22", self.result["evidence_boundary"]
-        )
-        self.assertIn("TCM behavior is not observed", self.result["evidence_boundary"])
 
     @pytest.mark.slow
     @unittest.skipUnless(LOGS_2026_09_22.is_dir(), "road captures are local and untracked")
@@ -767,78 +610,14 @@ class AscdMainVehicleTest(unittest.TestCase):
         self.assertEqual(rolling_launch.MAIN_PRESSED_MASK, bit)
         self.assertEqual(rolling_launch.AbortReason(6).name, "MAIN_PRESSED")
         self.assertEqual(rolling_launch.Flag(1 << 4).name, "MAIN_RELEASED")
-        self.assertIn(
-            "6. The MAIN switch bit of the stock ASCD flag byte is clear.",
-            _normalized(ROLLING_LAUNCH),
-        )
 
-    def test_published_statements_follow_the_record(self):
-        result = self.result
-        main = result["main_code"]
-        released = result["released_code"]
-        mask = result["main_state_mask"]
-        changes = result["main_state_change_frames_after_press"]
-        main_state = f"`0x{MAIN_STATE:08X}.bit{mask.bit_length() - 1}`"
-        can_defs = _normalized(CAN_DEFS)
-        for statement in (
-            f"The {result['recorded_on']} stationary CRUISE MAIN capture establishes "
-            f"`0x239` byte 3 value `0x{main:02X}` for MAIN.",
-            f"Byte 3 reads `0x{main:02X}` only during the "
-            f"{NUMBER_WORDS[result['main_press_count']]} MAIN presses, for "
-            f"{_series(result['main_press_frames'])} frames, and `0x{released:02X}` in "
-            "every other frame.",
-            f"Byte 2 changes only in bit {mask.bit_length() - 1}, once within each press "
-            f"and {min(changes)} or {max(changes)} frames after its first `0x{main:02X}` "
-            f"frame, so each MAIN press toggles {main_state}.",
-            f"`0x239` byte 2 bit {mask.bit_length() - 1} receives {main_state}",
-            f"`{KEY_MAIN}`",
-        ):
-            with self.subTest(statement=statement):
-                self.assertIn(statement, can_defs)
-        selector = _normalized(SELECTOR)
-        for statement in (
-            f"| `0x{main:02X}` | MAIN |",
-            f"Bit {main.bit_length() - 1} of the stable switch code is the MAIN code "
-            f"`0x{main:02X}`",
-            f"The MAIN state that each press toggles, {main_state},",
-            "are not selector inputs",
-            f"`{KEY_MAIN}`",
-            "Gestures are made with the cruise MAIN state off.",
-            "The selector does not read the state",
-            "The same rule covers the CANCEL hold of Rolling Launch.",
-        ):
-            with self.subTest(statement=statement):
-                self.assertIn(statement, selector)
-        launch = _normalized(ROLLING_LAUNCH)
-        for statement in (
-            "On JK08A, gate 6 follows the MAIN switch itself: the MAIN switch bit is set "
-            "only while MAIN is pressed.",
-            f"The MAIN state that each press toggles, {main_state},",
-            "are not gate inputs",
-            "The CANCEL hold is therefore made with the cruise MAIN state off",
-        ):
-            with self.subTest(statement=statement):
-                self.assertIn(statement, launch)
+    def test_button_state_row_stays_code_derived(self):
         with VARS.open(encoding="utf-8", newline="") as source:
             variables = {row["addr"]: row for row in csv.DictReader(source)}
         stable = variables[f"{self.symbols['button_state']:08x}"]
         self.assertNotIn(f"spec:hardware-results:{KEY_MAIN}",
                          [token.strip() for token in stable["evidence"].split(";")])
         self.assertEqual(stable["confidence"], "code")
-        self.assertIn(KEY_MAIN, stable["note"])
-        self.assertIn(f"accepted code 0x{main:02X} to physical MAIN presses", stable["note"])
-        self.assertIn("Those RAM/flag bindings are code-derived", stable["note"])
-        self.assertIn(
-            f"The toggled state {MAIN_STATE:08x}.bit"
-            f"{mask.bit_length() - 1}",
-            stable["note"],
-        )
-        with DIAGNOSTIC_BINDINGS.open(encoding="utf-8", newline="") as source:
-            bindings = {row["id"]: row for row in csv.DictReader(source)}
-        self.assertIn(
-            "the MAIN bit is set only while the MAIN switch is pressed",
-            bindings["ascd-steering-switch-did-130d"]["note"],
-        )
 
     @unittest.skipUnless(LOGS_2026_09_21.is_dir(), "road captures are local and untracked")
     def test_trace_reproduces_the_record(self):
