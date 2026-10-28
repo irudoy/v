@@ -63,24 +63,21 @@ them for each layout.
 
 ## Diagnostic layer
 
-| Family | DTC codes | Developer Immobilizer | Cruise Control Switch | Native RomRaider checksum |
-| --- | ---: | --- | --- | --- |
-| `7MFKAVN86` | 48 | `0x8725` | `0x8B28` | `alt` and `alt2` |
-| JK00C | 48 | `0x873F` | `0x8B59` | `alt` and `alt2` |
-| JK00D | 48 | `0x8740` | `0x8B5A` | `alt` and `alt2` |
-| JK78C | 39 | `0x861C` | none | `alt` and `alt2` |
-| `1ND` | 39 | `0x8668` | `0x8A11` | `alt2` |
-| `1ME3B` | 38 | `0x8671` | none | `alt2` |
+| Family | DTC codes | Developer Immobilizer | Native RomRaider checksum |
+| --- | ---: | --- | --- |
+| `7MFKAVN86` | 48 | `0x8725` | `alt` and `alt2` |
+| JK00C | 48 | `0x873F` | `alt` and `alt2` |
+| JK00D | 48 | `0x8740` | `alt` and `alt2` |
+| JK78C | 39 | `0x861C` | `alt` and `alt2` |
+| `1ND` | 39 | `0x8668` | `alt2` |
+| `1ME3B` | 38 | `0x8671` | `alt2` |
 
 `tools/mapkit/dtc_projection.py` prints these counts per target.
 
 The Cruise Control Switch sets the cruise control configuration byte, whose bit
 0 enables the steering switch decoder that Map Switching and Rolling Launch
-read. Stock JK08A holds `0x2B`, and the other images with the switch hold
-`0x00`, which leaves both features without button input until the switch
-selects ICC Switch (5 Buttons). JK78C and 1ME3B enable their decoders in stock
-form and carry no switch. `../patches/cruise-control-switch.md` states the
-bytes, the decoders, and the hardware checks.
+read. `../patches/cruise-control-switch.md` owns the configuration byte of each
+image, the decoders, and the hardware checks.
 
 Each image stores its diagnostic descriptors as twelve-byte records followed
 immediately by one 32-bit attribute pointer per record. The pointer table is the
