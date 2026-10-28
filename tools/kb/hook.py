@@ -39,8 +39,18 @@ PROJECTIONS = Path("tools/kb/projections.toml")
 EDITS = ("Edit", "Write", "MultiEdit", "NotebookEdit")
 RUNNERS = ("tools/", "patches/")
 DIRECTORY = ("cd", "pushd", "popd")
-# Prefixes that run the rest of the command line as a command.
-WRAPPERS = ("command", "env", "exec", "nohup", "time")
+# Prefixes that run the rest of the command line as a command, with their
+# options that take the next word as their value. timeout also takes a
+# duration before the command, and env -S splits its value into words.
+WRAPPERS = {
+    "command": frozenset(),
+    "env": frozenset({"-C", "--chdir", "-S", "--split-string", "-u", "--unset"}),
+    "exec": frozenset({"-a"}),
+    "nice": frozenset({"-n", "--adjustment"}),
+    "nohup": frozenset(),
+    "time": frozenset({"-f", "--format", "-o", "--output"}),
+    "timeout": frozenset({"-k", "--kill-after", "-s", "--signal"}),
+}
 INTERPRETER = re.compile(r"(?:python(?:\d+(?:\.\d+)?)?|bash|sh|zsh)$")
 # Options of `uv run` that take the next word as their value.
 UV_VALUES = {"--project", "--directory", "--package", "--with", "--with-editable",
@@ -371,16 +381,22 @@ class Guard:
                     return reason
             local = variables.copy()
             prefix = list(words)
+            wrapper_values = []
             while prefix:
                 if _assignment(prefix[0]):
                     key, value = prefix.pop(0).split("=", 1)
                     local[key] = shell_value(value, variables)
-                elif prefix[0] in WRAPPERS:
-                    prefix.pop(0)
-                    while prefix and prefix[0].startswith("-"):
-                        prefix.pop(0)
+                elif (unwrapped := _wrapped(prefix)) is not None:
+                    prefix, values = unwrapped
+                    wrapper_values += values
                 else:
                     break
+            # Wrapper option values such as `time -o FILE` and `env -C DIR`
+            # may name paths.
+            reason = self.shell_paths([shell_value(value, variables) for value in wrapper_values],
+                                      "unknown", cwd)
+            if reason:
+                return reason
             extra_refs = [value for name, value in local.items() if inherited.get(name) != value]
             leaf = executed(words)
             if not leaf:
@@ -948,15 +964,34 @@ def editor_file_actions(source, program):
     return False
 
 
+def _wrapped(words):
+    """The words after one leading wrapper and the values of its options, or
+    None when the command does not start with a wrapper."""
+    if not words or words[0] not in WRAPPERS:
+        return None
+    takes_value, rest, values = WRAPPERS[words[0]], list(words[1:]), []
+    while rest and rest[0].startswith("-"):
+        option = rest.pop(0)
+        if option == "--":
+            break
+        if option in takes_value and rest:
+            value = rest.pop(0)
+            if option in {"-S", "--split-string"}:
+                rest = [*value.split(), *rest]
+            else:
+                values.append(value)
+    if words[0] == "timeout" and rest:
+        rest.pop(0)
+    return rest, values
+
+
 def _unwrap(words):
     """The words of a simple command after its assignments and wrappers."""
     while words:
         if _assignment(words[0]):
             words = words[1:]
-        elif words[0] in WRAPPERS:
-            words = words[1:]
-            while words and words[0].startswith("-"):
-                words = words[1:]
+        elif (unwrapped := _wrapped(words)) is not None:
+            words = unwrapped[0]
         else:
             break
     return words

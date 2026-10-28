@@ -37,6 +37,25 @@ class ShellOperationTest(GuardCase):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
+    def test_command_wrappers_leave_the_inner_command_decision(self):
+        for command in ("timeout 600 uv run kb check --only sites",
+                        "timeout -k 5 -s KILL 600 uv run kb check --only sites",
+                        "timeout --signal=TERM --preserve-status 10m kb brief",
+                        "nice -n 10 uv run kb brief", "nice uv run kb brief",
+                        "nohup uv run kb check", "env KB_LIMIT=1 uv run kb brief",
+                        "env -u KB_GUARD uv run kb brief", "time -p uv run kb brief",
+                        "timeout 5 nice -n 5 env A=1 uv run kb find knock"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in ("timeout 5 cat kb/names.csv", "timeout -s KILL 5 cat kb/names.csv",
+                        "timeout --kill-after=5 10m cat defs/JK08A.xml",
+                        "nice -n 10 cat l0/7mfk/funcs.csv", "nohup cat kb/names.csv",
+                        "env A=1 cat kb/names.csv", "timeout 5 nice env cat kb/names.csv",
+                        "env -C kb cat names.csv", "time -o kb/names.csv true",
+                        "env -S 'cat kb/names.csv'"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
     def test_literal_drafts_and_message_text_are_not_file_operands(self):
         messaging = Path.home() / ".codex/skills/codex-messaging/scripts/sessions.py"
         commands = [
