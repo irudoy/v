@@ -74,6 +74,7 @@ if __package__:
     from . import (
         definition_targets,
         definition_projections,
+        editor_ranges,
         map_switching,
         presentation,
         rolling_launch,
@@ -86,6 +87,7 @@ else:
     from mapkit import (
         definition_targets,
         definition_projections,
+        editor_ranges,
         map_switching,
         presentation,
         rolling_launch,
@@ -369,6 +371,11 @@ def axis_xml(kind, x, ovr, size_attr, indent=6):
     """Build a ROM-array axis: address, element, and length are facts; name is presentation."""
     o = ovr.get("axis", {}).get(x["addr"], {})
     name = o.get("name") or AXIS_NAMES[x["kind"]]
+    if "read_only_values" in x:
+        return static_axis_xml(
+            x["read_only_values"], f"{name} ({x['units']})", f"Static {kind}", size_attr,
+            indent, logparam=axis_logparam(x, ovr),
+        )
     pad = " " * indent
     attrs = [f'type="{kind}"', f'name="{att(name)}"',
              f'storagetype="{att(x["storagetype"])}"',
@@ -1360,6 +1367,15 @@ def emit_target(
                      f"{source_rom}.axes.csv "
                      f"and cannot be emitted")
 
+    used_axes = {address for calibration in emit
+                 for key in ("axis_x", "axis_y")
+                 for address in calibration[key]}
+    used_axes.update(ovr.get("axisview", {}))
+    axes = editor_ranges.bind_axes(rom, target.image, axes, used_axes)
+    for address in ovr.get("axisview", {}):
+        if "read_only_values" in axes[address]:
+            sys.exit(f"{rom}: axis view {address} is outside builder writable ranges")
+
     view_entries, views_by_source = masked_views(
         ovr, {m["addr"]: m for m in emit}
     )
@@ -1488,9 +1504,6 @@ def emit_target(
            + "\n  </rom>\n</roms>\n")
     if checksums:
         require_checksum_coverage(rom, xml, checksums)
-    with open(romraider_path, "w") as f:
-        f.write(xml)
-
     xdf, xdf_stats = tunerpro.render(
         rom,
         image,
@@ -1505,6 +1518,9 @@ def emit_target(
         dtc_rom=dtc_rom,
         definition_projection=target.definition_projection,
     )
+    editor_ranges.require_coverage(rom, xml, xdf)
+    with open(romraider_path, "w") as f:
+        f.write(xml)
     with open(tunerpro_path, "w") as f:
         f.write(xdf)
 

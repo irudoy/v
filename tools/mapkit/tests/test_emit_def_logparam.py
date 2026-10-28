@@ -457,7 +457,7 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
         parameters = {parameter for _name, parameter in bound}
         self.assertEqual(
             parameters,
-            {"X_VQ_Coolant_Temperature", "X_VQ_Engine_Speed"},
+            {"X_VQ_Coolant_Temperature", "X_VQ_Engine_Speed", "X_VQ_Engine_Load"},
         )
 
     def test_coolant_and_speed_curves_support_the_overlay(self):
@@ -484,7 +484,7 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
         for table in self.rom.findall("table"):
             if table.get("type") == "3D":
                 axes = {
-                    element.get("type"): element.get("logparam")
+                    element.get("type").removeprefix("Static "): element.get("logparam")
                     for element in table.findall("table")
                 }
                 params[table.get("name")] = (

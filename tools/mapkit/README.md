@@ -91,6 +91,19 @@ The generated headers identify their inputs and warn that manual changes do not
 survive regeneration. Change the tracked canonical source layer or target
 identity and run the generator again instead of editing generated XML/XDF.
 
+Every writable extent in both editor formats must fit a builder calibration
+range or a Rolling Launch or CAN telemetry configuration record transferred in
+a build profile. The generator checks complete table, axis, flag and patch
+extents before writing either definition. The allowed storage comes from
+`patches/calibration_ranges.py` and the target runtime layouts.
+
+An axis outside that storage, including the load axis of Engine Torque Surface,
+uses fixed labels in RomRaider and TunerPro. The labels are calculated from the
+selected ROM's SHA-bound stock bytes with the reviewed axis expression. They
+carry no writable ROM address; RomRaider retains an applicable Logger binding.
+The artifact tests compare the labels against each registered stock image.
+Other unsupported editor writes fail generation with their address and size.
+
 ## Map ledger
 
 Render the canonical review ledger from the graph:

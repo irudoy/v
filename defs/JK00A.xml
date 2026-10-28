@@ -1598,10 +1598,11 @@
            storagetype="uint16" storageaddress="0x10B8E" sizex="16" sizey="16" endian="big">
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1-3276.8" to_byte="x/0.1+32768"
                format="0.0" fineincrement="1" coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x2378C"
-             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
-        <scaling units="Normalized BFS [%]" expression="x*0.00244140625"
-                 to_byte="x/0.00244140625" format="0"/>
+      <table type="Static X Axis" name="Engine Load (Normalized BFS [%])" logparam="X_VQ_Engine_Load" sizex="16">
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+        <data>120</data><data>130</data><data>140</data><data>150</data>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x14B4A" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">

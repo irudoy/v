@@ -301,6 +301,11 @@ def add_static_axis(parent, axis_id, values, units=""):
 
 
 def add_embedded_axis(parent, axis_id, axis_info, override):
+    if "read_only_values" in axis_info:
+        return add_static_axis(
+            parent, axis_id, axis_info["read_only_values"],
+            units_with_confidence(axis_info["units"], axis_info.get("scale_conf")),
+        )
     axis = node(parent, "XDFAXIS", id=axis_id, uniqueid="0x0", flags="0x0")
     bits = STORAGE_BITS[axis_info["storagetype"]]
     node(
