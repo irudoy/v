@@ -1378,7 +1378,23 @@ lock, dry run, complete-model refusal gate and source preservation apply as
 they do to other writes. No active project entity is retired by the transfer
 of its representation.
 
-Every write:
+For a native function meaning whose symbols have no function entry in the
+validated L0, `kb retire <meaning>/fn --withdraw-ledger <registry>:<order>`
+can explicitly withdraw its active ledger projections. Repeat the option to
+name every owned selector exactly once. A live or unavailable L0 entry,
+another native owner, a curated selector, or any other consumer refuses the
+operation. The complete inactive document keeps the ledger records as
+historical data; the projections omit them. The equivalent `retire` batch
+operation takes a `withdraw_ledger` array of `registry:order` strings.
+
+This explicit withdrawal resolves a canonical meaning key on the source model
+under the writer lock, validates its layouts' L0, and checks the unchanged
+source fingerprint before writing. It synchronizes the graph after the source
+repair, so the removed function cannot obstruct the repair by requiring a
+fresh graph first. Dry run writes and synchronizes nothing. Review rebasing
+remains a separate operation.
+
+Ordinary native writes:
 
 1. takes the lock, syncs a stale graph, and resolves its references on it;
 2. builds the change in memory and compiles the model with the changed files

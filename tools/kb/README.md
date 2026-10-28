@@ -103,6 +103,15 @@ Changed source inputs during planning refuse the operation before an owner write
 Its dry run does not synchronize the graph; applying a changed owner uses the
 primary writer and then synchronizes the graph.
 
+A false function whose entry disappears from validated L0 can retire with
+`kb retire <meaning>/fn --withdraw-ledger <registry>:<order> --dry-run`.
+Repeat the selector option to name every owned ledger row exactly once.
+Other consumers and live function entries still refuse retirement. The
+inactive document retains its selectors and names as historical data; they
+leave the active projections. This source repair resolves the canonical
+meaning key under the writer lock before graph synchronization, so the
+vanished entry does not require a successful graph load first.
+
 ## Evidence and confidence
 
 Levels distinguish resemblance, a candidate interpretation, grounding in

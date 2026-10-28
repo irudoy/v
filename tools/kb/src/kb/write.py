@@ -30,7 +30,7 @@ COMMANDS = {'new': ('kind', 'symbol', 'slug', 'name', 'evidence', 'level', 'note
  'merge': ('meaning', 'other', 'evidence', 'from'),
  'rename': ('meaning', 'name'),
  'move': ('symbol', 'to', 'evidence', 'from', 'level', 'note'),
- 'retire': ('ref',),
+ 'retire': ('ref', 'withdraw_ledger'),
  'rebase-reviews': ('layout', 'from_l0', 'reasons_reviewed')}
 REQUIRED = {'new': ('kind',),
  'set': ('ref',),
@@ -1736,10 +1736,15 @@ class Change:
             if symbol is not None:
                 raise KbError('retire takes a whole meaning, not one layout symbol', code=2)
             path, document = self.document(subject)
+        withdrawn = (retirement.ledger_withdrawal(self.model, subject, document, op['withdraw_ledger'])
+                     if op.get('withdraw_ledger') else ())
         consumers = retirement.consumers(self.model, subject)
+        if withdrawn:
+            consumers = [item for item in consumers if item != 'a ledger projection selects this meaning']
         if consumers:
             raise KbError(f'{subject.key}: retirement has consumers: ' + '; '.join(consumers), code=3)
-        if document.get('ledger') or any(entry.get('curated') for entry in document.get('symbol', ())):
+        if (document.get('ledger') and not withdrawn
+                or any(entry.get('curated') for entry in document.get('symbol', ()))):
             raise KbError(f'{subject.key}: generated selectors prevent retirement', code=3)
         document['retired'] = True
         key = subject.key
@@ -1752,6 +1757,9 @@ class Change:
                 return f'{key}: a retained source reconstructs the retired entity'
         self.expected.append(inactive)
         self.lines.append(f'retire {subject.key}: inactive; names remain reserved')
+        if withdrawn:
+            self.lines.append('withdraw active ledger selectors: ' + ', '.join(withdrawn)
+                              + '; their records remain in the inactive owner')
 
     @staticmethod
     def _keep_home(meaning, layouts, document):
@@ -1993,20 +2001,32 @@ def plan(ops, base, resolve, root=repo.ROOT):
 def apply(ops, root=repo.ROOT, dry_run=False, log=print):
     """Validate and apply a native batch under the lock; a dry run writes nothing."""
     with lock.held(root):
-        source_only = bool(ops) and all(
+        review_only = bool(ops) and all(
             isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
+        withdrawal_only = bool(ops) and all(
+            isinstance(op, dict) and op.get('cmd') == 'retire' and op.get('withdraw_ledger') for op in ops)
+        source_only = review_only or withdrawal_only
         if source_only:
             from kb import fingerprint, l0
 
             before = fingerprint.compute(root)
             base = compile.build(root)
             change, texts, result = plan(ops, base, model_resolver(base), root)
-            failures = l0.check_all(root, only=sorted({op['layout'] for op in ops}))
+            if review_only:
+                layouts = {op['layout'] for op in ops}
+            else:
+                from kb import retirement
+
+                owned = {meaning.key: set(meaning.symbols) for meaning in base.meanings}
+                owned.update({f'{name}/{kind}': {item['layout'] for item in document.get('symbol', ())}
+                              for kind, name, document, _ in retirement.records(base)})
+                layouts = set().union(*(owned[str(op['ref']).strip()] for op in ops))
+            failures = l0.check_all(root, only=sorted(layouts))
             if failures:
-                raise KbError('review rebase requires valid L0:\n'
+                raise KbError('source-only write requires valid L0:\n'
                               + '\n'.join(map(str, failures)), code=3)
             if fingerprint.compute(root) != before:
-                raise KbError('the sources change during review rebasing; nothing is written', code=6)
+                raise KbError('the sources change during source-only planning; nothing is written', code=6)
         else:
             with graph.fresh(root, log=log, held=True) as session:
                 base = compile.build(root)

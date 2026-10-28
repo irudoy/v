@@ -1,6 +1,43 @@
 """Inactive owner documents retain names and refuse incoming consumers."""
 
+import re
+from pathlib import Path
+
 from kb.model import SymbolKey
+from kb.repo import KbError
+
+
+def ledger_withdrawal(model, subject, document, selectors):
+    """Explicitly withdraw all ledger selectors of vanished function entries.
+
+    The inactive owner keeps the selectors as historical data. This permission
+    does not remove incoming consumers or retire an entry still present in L0.
+    """
+    if (subject.kind != 'fn' or not getattr(subject, 'symbols', None)
+            or not isinstance(selectors, list) or not selectors):
+        raise KbError('ledger withdrawal requires a function meaning and explicit selectors', code=2)
+    selected = []
+    for item in selectors:
+        match = re.fullmatch(r'([a-z][a-z-]*):(0|[1-9][0-9]*)', item) if isinstance(item, str) else None
+        if match is None:
+            raise KbError('a withdrawn ledger selector is registry:order', code=2)
+        selected.append((match[1], int(match[2])))
+    markers = document.get('ledger', ())
+    if not isinstance(markers, list) or any(not isinstance(item, dict) or not isinstance(item.get('registry'), str)
+           or type(item.get('order')) is not int or item['order'] < 0 for item in markers):
+        raise KbError('ledger withdrawal requires valid owned selectors', code=3)
+    held = [(item.get('registry'), item.get('order')) for item in markers]
+    if (not held or len(set(held)) != len(held) or len(set(selected)) != len(selected)
+            or set(selected) != set(held)):
+        raise KbError('ledger withdrawal must name every owned selector exactly once', code=3)
+    owners = [source for owner, source in model.files.values() if owner is subject]
+    if len(owners) != 1 or not Path(owners[0]).as_posix().startswith('kb/'):
+        raise KbError('ledger withdrawal requires one native owner', code=3)
+    for symbol in subject.symbols.values():
+        entries = model.functions.get(symbol.layout)
+        if entries is None or symbol.address in entries:
+            raise KbError(f'{subject.key}: ledger withdrawal requires absent L0 function entries', code=3)
+    return tuple(f'{registry}:{order}' for registry, order in selected)
 
 
 def records(model):

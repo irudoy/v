@@ -451,7 +451,10 @@ def command_set(args, root=repo.ROOT):
 
 
 def command_retire(args, root=repo.ROOT):
-    return _write(args, [{'cmd': 'retire', 'ref': args.ref}], root)
+    operation = {'cmd': 'retire', 'ref': args.ref}
+    if getattr(args, 'withdraw_ledger', None):
+        operation['withdraw_ledger'] = args.withdraw_ledger
+    return _write(args, [operation], root)
 
 
 def command_rebase_reviews(args, root=repo.ROOT):
@@ -802,8 +805,10 @@ def build_parser():
     move.set_defaults(handler=command_move)
     writer("apply", "a batch of write operations as one change",
            ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
-    writer('retire', 'make an unused owned entity inactive and reserve its names',
-           reference).set_defaults(handler=command_retire)
+    retiring = writer('retire', 'make an unused owned entity inactive and reserve its names', reference)
+    retiring.add_argument('--withdraw-ledger', action='append', metavar='registry:order',
+                          help='explicitly withdraw every owned ledger selector of a vanished L0 function entry')
+    retiring.set_defaults(handler=command_retire)
     rebase = writer('rebase-reviews', 'rebind exact unresolved reviews after an L0 export')
     rebase.add_argument('--layout', required=True, help='the layout whose reviews may change')
     rebase.add_argument('--from-l0', required=True, help='the previous exported-data digest')
