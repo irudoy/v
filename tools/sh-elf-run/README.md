@@ -14,8 +14,14 @@ make verify-firmware
 
 `make verify` includes this gate along with the repository checks and tests.
 The first invocation builds the toolchain image; subsequent invocations reuse
-Docker layers. `run.sh` selects the local `default` Docker context without
-changing the caller's configured context. It mounts the checkout read-only.
+Docker layers. `run.sh` and `generate-targets.sh` select the local `default`
+Docker context and discard `DOCKER_HOST` for their child processes without
+changing the caller's configured context. This keeps image builds, input-label
+checks and execution on the same local daemon and image store.
+`docker_lifecycle.py` also passes `--context default` for its Docker operations.
+The daemon behind that context must provide the image validated below;
+`DOCKER_HOST` does not select a rootless or remote daemon for this gate.
+`run.sh` mounts the checkout read-only.
 
 The gate uses the patch layouts, payload manifests, runtime bindings and stock
 ROM registry. It has no knowledge-package, graph, TEST witness or stock-proof

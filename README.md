@@ -97,7 +97,7 @@ engines.
 | Requirement | Used by |
 |---|---|
 | `uv`, which provisions the pinned Python | Every Python entry point, `make setup`, and `uv run pytest -q` |
-| Docker in the `desktop-linux` context | Memgraph ingestion and the GNU SH-2E execution gate |
+| Docker with Compose | Memgraph ingestion through the configured daemon; GNU SH-2E execution through the local `default` context |
 | Node.js and npm | ROM-atlas validation and the pin-tracer contract |
 | Ghidra with JDK 21 | Headless structure export, decompilation, and p-code fixtures |
 | Poppler with `pdftotext` and `pdfinfo` on PATH | Factory ESM and legacy Nissan PDF extraction and projection checks |

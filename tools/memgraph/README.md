@@ -17,8 +17,17 @@ uv run kb instance down
 
 The main working tree uses `bolt://127.0.0.1:7687` with empty local authentication.
 Linked working trees use the instance and port selected by `kb instance`.
-Lab is available at `http://127.0.0.1:3100`. Versions and all project ports are
-recorded once in `../README.md`.
+The port comes from `[instances].ports` in `../kb/config.toml`, with an
+exclusive upper bound, and is recorded in that tree's `.kb/instance.toml`.
+The main Compose instance also publishes Lab at `http://127.0.0.1:3100` and
+the log-stream port. Linked working-tree instances publish their Bolt port.
+The service and port index is in [`../README.md`](../README.md#local-services-and-ports).
+
+`kb instance` invokes Docker through the caller's daemon selection. The local
+macOS deployment uses the `desktop-linux` context; Linux can use its configured
+Docker daemon without a context of that name. Keep instance management on the
+same daemon. The GNU firmware gate has a separate fixed `default` context,
+described in [`../sh-elf-run/README.md`](../sh-elf-run/README.md#run-the-patch-gate).
 
 Persistent snapshots and WAL live in the gitignored `tools/memgraph/data/`
 bind mount. Do not edit or replace this directory during normal ingestion.

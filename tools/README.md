@@ -75,11 +75,11 @@ This table describes the local deployment and tool locations.
 
 | Component | Version | Local location or source |
 |---|---|---|
-| Ghidra | 12.1.4 with JDK 21 and ARM native libraries | Homebrew, held by `brew pin ghidra`; `$(brew --prefix ghidra)/libexec`; pinned in `ghidra/headless-analyze.sh` |
+| Ghidra | Release pinned in `ghidra/headless-analyze.sh`, with JDK 21 | `GHIDRA_HOME` and `JAVA_HOME` select installations on Linux and macOS; unset paths use Homebrew |
 | Ghidra project | Local project | `~/tools/ghidra-projects/vq-hr` |
 | Memgraph MAGE | 3.11.0 | `memgraph/docker-compose.yml` |
 | Memgraph Lab | 3.11.0 | `memgraph/docker-compose.yml` |
-| `mcp-memgraph` | 0.4.1 | `../.mcp.json`; machine-local and untracked, so the gate checks it only where it exists |
+| Memgraph MCP connection | Configured locally | `../.mcp.json`; ignored machine-local connection settings |
 | GNU SH toolchain | GCC 13.3.0, binutils 2.44, GDB SH simulator 16.3 | Image built from `sh-elf-run/Dockerfile`; the simulator version is required by `sh-elf-run/verify_map_switching.py` |
 | Python | 3.11 | `../pyproject.toml` and `../uv.lock` |
 | Poppler | 26.09.0 | Reference extraction release, installed through Homebrew; `pdftotext` and `pdfinfo` on PATH; `diagnostics/extract_esm.py` reports this reference and the installed releases; every release must meet inventory and projection checks |
@@ -92,20 +92,36 @@ This table describes the local deployment and tool locations.
 | Dashboard dependency locks | Generated | `can_dashboard/requirements-*.lock` from `can_dashboard/package_locks.py --write` |
 | External npkern source | Revision locked by `run-npkern.sh` | Default `../../oss/npkern` |
 
+The headless Ghidra wrapper preserves explicit installation paths and checks
+the pinned Ghidra release. Its installation contract is in
+[`ghidra/README.md`](ghidra/README.md). GNU execution uses a local image in the
+`default` Docker context; its input-label checks and daemon selection are in
+[`sh-elf-run/README.md`](sh-elf-run/README.md#run-the-patch-gate).
+
+| Variable | Use |
+|---|---|
+| `GHIDRA_HOME`, `JAVA_HOME` | Ghidra and JDK installation roots; each unset path uses its Homebrew installation |
+| `VQ_SH_ELF_IMAGE` | GNU gate image tag in the local `default` Docker context |
+| `VQ_SH_ELF_SKIP_BUILD` | `1` reuses the image after the input-label check |
+| `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` | Timeout of the bounded ignition-consumer invocation; `sh-elf-run/run.sh` owns and validates the supported values |
+
 ## Local services and ports
 
 | Endpoint | Purpose | Boundary |
 |---|---|---|
-| `127.0.0.1:7687` | Memgraph Bolt | Empty local authentication; Docker Desktop context |
-| `127.0.0.1:7444` | Memgraph log stream | Compose network to Lab |
+| `127.0.0.1:7687` | Main working-tree Memgraph Bolt | Empty local authentication; published by `memgraph/docker-compose.yml` |
+| `[instances].ports` in [`kb/config.toml`](kb/config.toml) | Linked working-tree Memgraph Bolt | A free loopback port from the configured range, whose upper bound is exclusive; selected port is recorded in `.kb/instance.toml` |
+| `127.0.0.1:7444` | Memgraph log stream | Loopback mapping of the main Compose instance |
 | `127.0.0.1:3100` | Memgraph Lab | Optional local browser UI |
 | `127.0.0.1:47809` | Dashboard UDP telemetry feed | Local datagrams to a log viewer |
 | `127.0.0.1:8765` | Pin tracer static server | Local browser UI started on demand |
 
-Memgraph must run in the `desktop-linux` Docker context. Starting another copy
-under Lima or Colima can split IPv4 and IPv6 `localhost` traffic between two
-independent databases. The complete startup, recovery, and ingestion contract
-is in `memgraph/README.md`.
+`kb instance` uses the caller's Docker daemon selection. The local macOS
+deployment uses `desktop-linux` for Memgraph; Linux uses its configured Docker
+daemon without requiring that context name. Use the same daemon selection for
+instance management and the same working tree for knowledge queries. The GNU
+gate selects `default` independently. The complete graph startup, recovery and
+ingestion contract is in [`memgraph/README.md`](memgraph/README.md).
 
 ## Headless inspection
 
@@ -125,3 +141,6 @@ queries after tracked loaders build the graph.
 - Hardware-result identities belong in `../patches/hardware-results.toml`, not
   in command documentation.
 - Concrete tuned images and local profiles remain outside the repository.
+- `.mcp.json` and `.claude/settings.local.json` are ignored machine-local
+  configuration. `.claude/settings.json` and `.codex/hooks.json` are tracked
+  registrations of the knowledge access guard.

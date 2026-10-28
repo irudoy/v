@@ -87,6 +87,10 @@ help:
 		'  CORRESPONDENCE_ARGS  Optional additional correspondence arguments.' \
 		'  UV, PYTHON, PYTEST  Python entry points (default: uv, uv run python, uv run pytest).' \
 		'  NODE, NPM         JavaScript entry points (default: node, npm).' \
+		'  GHIDRA_HOME, JAVA_HOME  Explicit Ghidra and JDK installations; unset paths use Homebrew.' \
+		'  VQ_SH_ELF_IMAGE   Local GNU gate image tag in the default Docker context.' \
+		'  VQ_SH_ELF_SKIP_BUILD  Set to 1 to reuse the image after its input-label check.' \
+		'  VQ_SH_ELF_STOCK_TIMEOUT_SECONDS  Bounded ignition-consumer timeout; validated by run.sh.' \
 		'  VQ_NPKERN_SOURCE  External npkern checkout for verify-npkern.'
 
 setup:

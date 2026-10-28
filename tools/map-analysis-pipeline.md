@@ -116,8 +116,9 @@ ROM references are not paired by instruction ordinal from structural matches.
 
 ## Derived graph schema
 
-Firmware node identity is `{rom, addr}`, with lowercase hexadecimal addresses
-without `0x`. Address-free reference catalogs use their own stable source keys.
+Addressed firmware node identity is `{rom, addr}`, with lowercase hexadecimal
+addresses without `0x`. `Rom` nodes use `{id}` for the ROM identity. Address-free
+reference catalogs use their own stable source keys.
 
 ### Firmware nodes
 
@@ -129,7 +130,6 @@ without `0x`. Address-free reference catalogs use their own stable source keys.
 | `Interp` | Kernel, wrapper, or finisher with recovered geometry and family |
 | `Map` | Addressed calibration, threshold, or proven dead table with measured values and independent semantic and scale claims |
 | `Axis` | Addressed axis geometry, measured monotonicity, semantic claim, and scale claim |
-| `Flag` | Local selector, gate, or threshold candidate tied to a traced path |
 
 ### Reference and diagnostic nodes
 
@@ -150,12 +150,18 @@ without `0x`. Address-free reference catalogs use their own stable source keys.
 | `Func-[:USES]->Reg` | RAM or peripheral reference |
 | `Func-[:ACCESSES]->Map` | Resolved table operand at a callsite |
 | `Map-[:VIA]->Interp`, `Interp-[:KERNEL]->Interp` | Wrapper and kernel mechanics |
-| `Map-[:AXIS_X|AXIS_Y]->Axis` | Recovered table geometry |
-| `Axis-[:INDEXED_BY]->Reg`, `Map-[:WRITES]->Reg` | Reviewed input and output data flow |
-| `Flag-[:SELECTS]->Map`, `Flag-[:GATES]->Func` | Local control relationship established by branch analysis |
-| `Map-[:MATCHES]->A2LEntry` | Address-free catalog candidate |
-| `Map-[:HOMOLOG]->Map`, `Func-[:HOMOLOG]->Func` | Cross-ROM structural candidate |
-| `Claim-[:RESTS_ON]->Claim` | Claim-specific evidence dependency |
+| `Map-[:AXIS_X]->Axis`, `Map-[:AXIS_Y]->Axis` | Recovered table geometry |
+| `(dependent)-[:RESTS_ON]->(basis)` | Claim-specific evidence dependency between firmware nodes, or from a diagnostic binding to its evidence |
+
+`memgraph/load_code.py` projects reviewed dependencies between `Func`, `Reg`,
+`Map` and `Axis` nodes. For these dependencies, `RESTS_ON.source_prop` names the
+dependent claim, and `target_prop` names its basis claim or `structural` node
+existence. The edge records its relationship in `role` and source token in
+`ref`. Reviewed data flow and control relationships use roles such as
+`indexed_by`, `writes`, `selector`, `threshold` and `trace`, whose vocabulary is
+owned by `memgraph/provenance.py`. A claim is a property of its firmware node.
+`DiagnosticBinding` uses `RESTS_ON` for firmware dependencies and source-claim
+provenance through `memgraph/load_diagnostic_bindings.py`.
 
 Catalog concepts are joined by properties when queried. They are not copied
 into additional graph edges merely to materialize a vocabulary join.
