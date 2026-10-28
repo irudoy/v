@@ -151,6 +151,86 @@ read = "open"
         self.assertIsNotNone(self.denied("Bash", command="env name=kb/names.csv python3 other.py"))
         self.assertIsNotNone(self.denied("Bash", command="name=kb/names.csv; export name; python3 other.py"))
 
+    def test_pipeline_data_becomes_xargs_file_operands(self):
+        for command in (
+            "echo kb/names.csv | xargs cat",
+            "echo kb/names.csv | xargs -I{} cat {}",
+            "printf '%s\\n' kb/names.csv | xargs cat",
+            "echo kb/names.csv | cat | xargs -n 1 cat",
+            "echo defs/JK08A.xml | xargs tee",
+            "echo open.txt | xargs cat kb/names.csv",
+            "xargs -a kb/names.csv echo",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in (
+            "echo kb/names.csv | xargs echo",
+            "echo kb/names.csv | xargs printf '%s'",
+            "echo open.txt | xargs cat",
+            "echo kb/names.csv; echo open.txt | xargs cat",
+            "rg -l 'kb/names.csv' tools/ | xargs cat",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_substitution_file_operands_treat_backticks_and_dollar_forms_equally(self):
+        for command in ("cat `echo kb`/names.csv", "cat $(echo kb)/names.csv"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_python_program_arguments_are_file_operands(self):
+        for command in (
+            "python3 -c 'import sys; print(open(sys.argv[1]).read())' kb/names.csv",
+            "python3 outside.py kb/names.csv",
+            "python3 outside.py kb/names.csv <<'PY'\nprint('input data')\nPY",
+            "python3 - kb/names.csv <<'PY'\nimport sys\nprint(open(sys.argv[1]).read())\nPY",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        self.assertIsNone(self.denied("Bash", command="python3 -c 'import sys; print(sys.argv)' open.txt"))
+        self.assertIsNone(self.denied("Bash", command="python3 -u - open.txt <<'PY'\nprint('input data')\nPY"))
+
+    def test_bound_variables_are_expanded_before_sed_operand_checks(self):
+        self.assertIsNone(self.denied("Bash", command="S=/private/tmp/scratch; sed s/a/b/ $S/a.py > $S/b.py"))
+        self.assertIsNotNone(self.denied("Bash", command="S=kb; sed s/a/b/ $S/names.csv"))
+
+    def test_dynamic_operands_keep_conservative_checks_within_the_repository(self):
+        # /private/tmp contains the fixture; model the actual root outside it.
+        self.guard.root = self.guard.cwd = Path("/workspace/vq")
+        self.assertIsNone(self.denied("Bash", command="for t in a b; do cat /private/tmp/$t.output; done"))
+        for command in ("for t in a b; do cat /workspace/vq/$t.output; done",
+                        "for t in a b; do cat kb/$t.toml; done",
+                        "for t in a b; do cat /workspace/$t.output; done"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_review_forms_through_the_bash_json_hook(self):
+        cases = [
+            ("echo kb/names.csv | xargs cat", True),
+            ("echo kb/names.csv | xargs -I{} cat {}", True),
+            ("cat `echo kb`/names.csv", True),
+            ("cat $(echo kb)/names.csv", True),
+            ("python3 -c 'import sys; print(open(sys.argv[1]).read())' kb/names.csv", True),
+            ("python3 outside.py kb/names.csv", True),
+            ("S=/private/tmp/scratch; sed s/a/b/ $S/a.py > $S/b.py", False),
+            ("S=/private/tmp/scratch; cp $S/a.py /private/tmp/b.py", False),
+            ("for t in a b; do cat /outside/scratch/$t.output; done", False),
+            ("for t in a b; do cat kb/$t.toml; done", True),
+        ]
+        for command, denied in cases:
+            with self.subTest(command=command):
+                result = subprocess.run([sys.executable, str(self.root / "tools/kb/hook.py")],
+                    input=json.dumps({"tool_name": "Bash", "cwd": str(self.root),
+                                      "tool_input": {"command": command}}),
+                    capture_output=True, text=True,
+                    env={**os.environ, "KB_GUARD": "", "HOME": str(self.root)})
+                self.assertEqual((result.returncode, result.stderr), (0, ""))
+                if denied:
+                    decision = json.loads(result.stdout)["hookSpecificOutput"]
+                    self.assertEqual(decision["permissionDecision"], "deny")
+                else:
+                    self.assertEqual(result.stdout, "")
+
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):
     script = ("import runpy,sys\nsys.version_info=(3,10,0)\n"

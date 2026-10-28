@@ -1757,7 +1757,12 @@ security boundary: the gates validate every file whatever wrote it.
   resolve to their targets. A subshell restores its parent working directory
   and variables. Bare tree operands are paths, while search patterns and
   literal draft bodies are data. Known codex-messaging scripts treat `--text`
-  as data and `--file` as a file operand.
+  as data and `--file` as a file operand. Literal pipeline data becomes file
+  operands when `xargs` invokes a command that can access files. Python program
+  arguments receive operand checks separately from the program text. Known
+  shell variables expand before path checks. An unresolved absolute operand
+  whose fixed prefix is outside the repository and its ancestors stays open;
+  the prefix resolves symbolic links before that decision.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations

@@ -11,7 +11,8 @@ tools/kb/config.toml (`[guard]`) and tools/kb/projections.toml. `kb guard` recor
 `KB_GUARD=off` in the hook environment disables it.
 
 Shell inspection preserves quotes, operators, subshell directories and raw
-here-documents. File operands, redirections, substitutions and selected Git
+here-documents. Literal pipeline data becomes file operands for reading xargs
+commands. File operands, redirections, substitutions and selected Git
 operations have access checks; literal draft and message bodies remain data.
 Inline Python supports finite literal file and metadata forms, with a
 conservative refusal for unknown operations involving protected references.
@@ -349,7 +350,14 @@ class Guard:
         cwd, variables = cwd or self.cwd, dict(os.environ)
         inherited = variables.copy()
         scopes = []
+        pipeline = []
         for words, documents in commands(command):
+            upstream = pipeline
+            producer, _ = redirections(executed(words))
+            literals = (producer[1:] if producer and os.path.basename(producer[0]) in {"echo", "printf"}
+                        else [])
+            pipeline = ([*upstream, *literals, *(text for text, _ in documents)]
+                        if words and getattr(words[0], "piped", False) else [])
             if words == ["("] and getattr(words[0], "operator", False):
                 scopes.append((cwd, variables.copy()))
                 continue
@@ -410,7 +418,17 @@ class Guard:
                     return reason
                 continue
             if INTERPRETER.match(program) and program.startswith("python"):
-                if "-c" in clean or documents:
+                python_args = clean[1:]
+                while python_args and python_args[0].startswith("-") and python_args[0] not in {"-", "-c", "-m"}:
+                    python_args = python_args[2:] if python_args[0] in {"-W", "-X"} else python_args[1:]
+                stdin = documents and (not python_args or python_args[0] == "-")
+                if "-c" in clean or stdin:
+                    arguments = (clean[clean.index("-c") + 2:] if "-c" in clean
+                                 else clean[clean.index("-") + 1:] if "-" in clean else [])
+                    reason = self.shell_paths([part for word in arguments
+                        for part in candidates(shell_value(word, variables))], "unknown", cwd)
+                    if reason:
+                        return reason
                     source = (clean[clean.index("-c") + 1] if "-c" in clean
                               else "\n".join(item[0] for item in documents))
                     reason = self.python_operations(source, cwd, extra_refs)
@@ -426,6 +444,20 @@ class Guard:
                     if reason:
                         return reason
                     continue
+            if program == "xargs":
+                reason = self.shell_paths([shell_value(value, variables)
+                    for value in option_files(clean[1:], {"-a", "--arg-file"})], "read", cwd)
+                if reason:
+                    return reason
+                invoked = xargs_command(clean[1:])
+                if (invoked and os.path.basename(invoked[0]) not in {"printf", "echo", "true", "false", ":"}
+                        and not self.passes(invoked, cwd)):
+                    mode, _ = file_operands(invoked)
+                    reason = self.shell_paths([part for word in [*upstream, *invoked[1:]]
+                        for part in candidates(shell_value(word, variables))], mode, cwd)
+                    if reason:
+                        return reason
+                continue
             if self.passes(clean, cwd):
                 continue
             if program in {"sh", "bash", "zsh"} and (documents or "-c" in clean):
@@ -448,7 +480,8 @@ class Guard:
                 if reason:
                     return reason
             if program in {"sed", "awk", "gawk"}:
-                reason = self.shell_paths([part for word in clean[1:] for part in candidates(word)],
+                reason = self.shell_paths([part for word in clean[1:]
+                                          for part in candidates(shell_value(word, variables))],
                                           "unknown", cwd)
                 if reason:
                     return reason
@@ -478,7 +511,13 @@ class Guard:
         for value in values:
             if not value or value == "-" or value.isdigit():
                 continue
-            if "$" in value:
+            dynamic = re.search(r"[$`]", value)
+            if dynamic:
+                prefix = value[:dynamic.start()]
+                base = Path(prefix) if prefix.endswith("/") else Path(prefix).parent
+                if (os.path.isabs(prefix) and not self.root.is_relative_to(base.resolve())
+                        and not base.resolve().is_relative_to(self.root)):
+                    continue
                 return "cannot inspect a dynamic file operand; use an explicit path or the KB command."
             for option in expand(value):
                 absolute = os.path.expanduser(option)
@@ -748,6 +787,21 @@ def option_files(words, options):
                     found.append(word[2:])
                     break
     return found
+
+
+def xargs_command(words):
+    """The finite xargs option forms before its invoked command."""
+    values = {"-a", "--arg-file", "-d", "--delimiter", "-E", "--eof", "-I", "--replace",
+              "-L", "--max-lines", "-n", "--max-args", "-P", "--max-procs", "-s", "--max-chars"}
+    index = 0
+    while index < len(words):
+        word = words[index]
+        if word == "--":
+            return words[index + 1:]
+        if not word.startswith("-"):
+            return words[index:]
+        index += 2 if word in values else 1
+    return ["echo"]
 
 
 def redirections(words):
@@ -1039,6 +1093,7 @@ def _simple(text):
         for token in _shell_words(text):
             if token.operator and token in {";", "&&", "||", "|", "&", "\n", "(", ")"}:
                 if words:
+                    words[0].piped = token == "|"
                     found.append(words)
                 words = []
                 if token in {"(", ")"}:

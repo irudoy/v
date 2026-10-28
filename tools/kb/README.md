@@ -109,6 +109,10 @@ trusted commands run. Absolute patterns retain their root, symbolic links use
 their targets, and subshell directory changes stay in their scope. Git review
 commands remain available; blob reads, message-file reads and worktree writes
 still receive the corresponding file checks.
+Literal pipeline data receives file checks when `xargs` passes it to a command
+that can access files. Python program arguments receive their operand checks.
+Known shell variables expand before those checks; an unresolved operand with
+an absolute prefix outside the repository and its ancestors is permitted.
 
 Inline Python inspection supports literal file paths, simple path bindings and
 captured-response metadata transformations. It conservatively refuses unknown
