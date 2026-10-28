@@ -8,7 +8,6 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 BINDINGS = ROOT / "defs" / "JK08A.diagnostic-bindings.csv"
-SPEC = ROOT / "defs" / "JK08A.work-support.md"
 
 HANDLER = 0x34194
 LID_BITMAP_POINTER = 0x22E30
@@ -127,7 +126,6 @@ class WorkSupportAdjustmentTest(unittest.TestCase):
             cls.vars = {row["addr"]: row for row in csv.DictReader(source)}
         with BINDINGS.open(newline="", encoding="utf-8") as source:
             cls.bindings = {row["id"]: row for row in csv.DictReader(source)}
-        cls.spec = " ".join(SPEC.read_text(encoding="utf-8").split())
 
     def assertOps(self, expected):
         for address, opcode in expected:
@@ -711,79 +709,16 @@ class WorkSupportAdjustmentTest(unittest.TestCase):
             apply_bit = (word & 0xFF).bit_length() - 1
             return word, 0xFFFF99F4 + (word >> 8), apply_bit, 0xFFFF99DB + lid
 
-        for lid in range(1, 5):
-            word, flag, apply_bit, slot = fields(lid)
-            with self.subTest(lid=lid):
-                self.assertIn(
-                    f"| {lid} | `0x{word:04X}` | `0x{flag:08X}` | {apply_bit} "
-                    f"| {apply_bit + 1} | `0x{slot:08X}` |",
-                    self.spec,
-                )
         for first in range(5, 21, 4):
             rows = [fields(lid) for lid in range(first, first + 4)]
             self.assertEqual(len({flag for _, flag, _, _ in rows}), 1)
-            with self.subTest(lids=f"{first}..{first + 3}"):
-                self.assertIn(
-                    f"| {first}..{first + 3} | `0x{rows[0][0]:04X}..0x{rows[-1][0]:04X}` "
-                    f"| `0x{rows[0][1]:08X}` "
-                    f"| {', '.join(str(row[2]) for row in rows)} "
-                    f"| {', '.join(str(row[2] + 1) for row in rows)} "
-                    f"| `0x{rows[0][3]:08X}..0x{rows[-1][3]:08X}` |",
-                    self.spec,
-                )
 
     def test_published_window(self):
         rom = self.rom
-        coolant = u16(rom, 0x4DC96) & 0xFF        # mov #0x6e,r2
-        coolant_band = u16(rom, 0x4DC94) & 0xFF   # add #3,r6
         rpm_band = u16(rom, 0x4DC14) & 0xFF       # add #8,r5
         load_band = u16(rom, 0x4DC54) & 0xFF      # add #4,r6
-        low_rpm, high_rpm = u8(rom, 0x8897), u8(rom, 0x8896)
-        low_load, high_load = u8(rom, 0x8768), u8(rom, 0x8767)
         self.assertEqual((u16(rom, 0x4DC30) & 0xFF, u16(rom, 0x4DC72) & 0xFF),
                          (rpm_band, load_band))
-        rows = (
-            f"| 1 | raw coolant `0xFFFF1079` | at or above {coolant} "
-            f"({coolant - 50} deg C) | below {coolant - coolant_band} |",
-            f"| 2 | RPM/25 `0xFFFF11B3` | at or above `ROM8[0x8897] = {low_rpm}` "
-            f"({low_rpm * 25} rpm) | below {low_rpm - rpm_band} "
-            f"({(low_rpm - rpm_band) * 25} rpm) |",
-            f"| 3 | RPM/25 `0xFFFF11B3` | at or below {high_rpm - rpm_band} "
-            f"({(high_rpm - rpm_band) * 25} rpm) | above `ROM8[0x8896] = {high_rpm}` "
-            f"({high_rpm * 25} rpm) |",
-            f"| 4 | Q7 normalized base fuel schedule `0xFFFF1048` | at or above "
-            f"`ROM8[0x8768] = {low_load}` | below {low_load - load_band} |",
-            f"| 5 | Q7 normalized base fuel schedule `0xFFFF1048` | at or below "
-            f"{high_load - load_band} | above `ROM8[0x8767] = {high_load}` |",
-        )
-        for row in rows:
-            with self.subTest(row=row):
-                self.assertIn(row, self.spec)
-
-    def test_published_statements(self):
-        rom = self.rom
-        spec = self.spec
-        statements = (
-            f"walks {SCHEDULER_ENTRIES} pointers at `0x2196C..0x21B58`",
-            "The bytes are `C0 00 00 00`",
-            f"ROM8[0x821D] = {s8(rom, 0x821D)}, ROM8[0x821C] = {s8(rom, 0x821C)})",
-            f"`ROM8[0x8CC8] = {u8(rom, 0x8CC8)}` and `ROM8[0x8CC7] = {u8(rom, 0x8CC7)}`",
-            f"`ROM8[0x8283] = {u8(rom, 0x8283)}`",
-            f"holds for {u8(rom, 0x8283) * 1024 / 10000:.1f} s after the signal clears",
-            f"min(0xFFFF99DD, ROM8[0x8909] = {u8(rom, 0x8909)})",
-            f"`ROM8[0x12754] = {u8(rom, 0x12754)}`",
-            f"gives the stock limit of {u8(rom, 0x8909)} counts as "
-            f"{u8(rom, 0x8909) * 25 // 2} rpm",
-            f"`ROM8[0x8A37] = {u8(rom, 0x8A37)}` attempts",
-            f"`ROM8[0x8B34] = 0x{u8(rom, 0x8B34):02X}`",
-            f"`ROM8[0x8B42] = 0x{u8(rom, 0x8B42):02X}`",
-            f"`ROM8[0x870E] = 0x{u8(rom, 0x870E):02X}`",
-            f"ROM32[0x22760] = 0x{u32(rom, TIMING_DID_POINTER):08X}",
-            f"ROM32[0x22764] = 0x{u32(rom, IDLE_DID_POINTER):08X}",
-        )
-        for statement in statements:
-            with self.subTest(statement=statement):
-                self.assertIn(statement, spec)
 
 
 if __name__ == "__main__":

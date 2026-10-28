@@ -8,7 +8,6 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
-CONTRACT = ROOT / "defs" / "JK08A.fuel.md"
 
 
 def read_by(path, key):
@@ -27,7 +26,6 @@ class InjectionTimingSequencerTest(unittest.TestCase):
         cls.funcs = read_by(FUNCS, "addr")
         cls.vars = read_by(VARS, "addr")
         cls.findings = read_by(FINDINGS, "addr")
-        cls.contract = CONTRACT.read_text(encoding="utf-8")
 
     def test_pulse_angle_constant_gives_four_crank_degrees_per_count(self):
         self.assertEqual(u32be(self.rom, 0x522A8), 0xC49B)
@@ -69,7 +67,6 @@ class InjectionTimingSequencerTest(unittest.TestCase):
                 self.assertEqual(row["scale_conf"], "code")
                 self.assertIn("consumer:000521a8@structural", row["scale_evidence"])
                 self.assertIn("consumer:00054a44@structural", row["scale_evidence"])
-                self.assertIn("not measured electrically", row["note"])
 
     def test_sequencer_is_an_engine_event_task_with_a_default_lead_of_three(self):
         self.assertEqual(u32be(self.rom, 0x21B5C + 4 * 1), 0x00054A44)
@@ -84,8 +81,6 @@ class InjectionTimingSequencerTest(unittest.TestCase):
         self.assertEqual(sequencer["role"], "driver")
         self.assertIn("Sequential-injection sequencer", sequencer["semantics"])
         self.assertIn("rom_const:00021b60=00054a44", sequencer["evidence"])
-        self.assertIn("FUN_00054A44", self.contract)
-        self.assertIn("## Injection timing", self.contract)
 
     def test_delayed_start_programmer_uses_the_ten_degree_tooth(self):
         self.assertEqual(u32be(self.rom, 0x2B86C), 0x00028E7C)

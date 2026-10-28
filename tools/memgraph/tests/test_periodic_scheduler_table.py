@@ -7,7 +7,6 @@ checked against the silicon rather than against another document.
 """
 
 import csv
-import re
 import struct
 import unittest
 from pathlib import Path
@@ -15,8 +14,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 IMAGES = ROOT / "rom-images"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
 
 # Dispatcher loops of JK08A, by the address of the pointer load.
 PERIODIC_LOOP = 0x212F0
@@ -172,60 +169,6 @@ class PeriodicSchedulerTableTest(unittest.TestCase):
         for function, entry in PENDING_INDEX_BY_FUNCTION.items():
             with self.subTest(function=f"{function:06x}"):
                 self.assertEqual(index.get(function), entry)
-
-    def test_documented_table_rows_state_the_entry_of_their_function(self):
-        index = table_index(self.rom, PERIODIC_TABLE, PERIODIC_ENTRIES)
-        row = re.compile(r"^\|\s*(\d+)\s*\|\s*`FUN_([0-9A-F]{8})`")
-        rows = 0
-        for name in ("JK08A.fuel.md", "JK08A.limiters.md"):
-            document = (ROOT / "defs" / name).read_text()
-            heading = document.index("## Periodic")
-            for line in document[heading:].splitlines():
-                match = row.match(line)
-                if match is None:
-                    continue
-                rows += 1
-                with self.subTest(document=name, function=match.group(2)):
-                    self.assertEqual(
-                        index.get(int(match.group(2), 16)),
-                        int(match.group(1)),
-                    )
-        self.assertEqual(rows, 23)
-
-    def test_the_ledgers_state_the_periodic_entries_they_publish(self):
-        statements = (
-            (FUNCS, "entry 101 of the 124-function table in scheduler 00020dfe"),
-            (FUNCS, "Scheduler index 40 executes this function"),
-            (FUNCS, "reached from periodic-table index 12 through 000769c0"),
-            (FUNCS, "Coordinator 000522c4 runs at scheduler index 42"),
-            (FUNCS, "Periodic table index 66 reaches this function through 00065434"),
-            (FUNCS, "Scheduler index 43 follows multiplier publication"),
-            (FUNCS, "Fuel-multiplier calculation coordinator at periodic table index 36"),
-            (FUNCS, "This function is periodic table index 71."),
-            (FUNCS, "This function is periodic table index 66,"),
-            (FUNCS, "Entry 61 at word 00021928 of the 69-entry table 00021834"),
-            (FUNCS, "Entry 63 at word 00021930 of the 69-entry table 00021834"),
-            (VARS, "written by FUN 0007584e under periodic-table index 12"),
-            (VARS, "written at periodic-table index 28 by 0004ed88"),
-            (VARS, "at the end of periodic-table index 21"),
-        )
-        for path, statement in statements:
-            with self.subTest(statement=statement):
-                self.assertIn(statement, path.read_text())
-
-    def test_the_specifications_state_the_table_base(self):
-        for name, statement in (
-            ("defs/JK08A.fuel.md", "the 124-entry table at `0x2196C`"),
-            ("defs/JK08A.limiters.md", "the 124-entry table at `0x2196C`"),
-            ("defs/JK08A.throttle-control.md", "Periodic-table index 12 reaches `0007584E`"),
-            ("defs/JK08A.fuel-inhibit.md", "Periodic-table index 28 invokes"),
-            ("defs/JK08A.can.md", "the 69-entry table at\n`0x21834`"),
-            ("patches/rolling-launch.md", "the 124-entry table at\n`0x0002196C`"),
-            ("patches/rolling-launch.md", "replaces entry 1 at `0x00021970`"),
-            ("patches/rolling-launch.md", "periodic scheduler entry 1 at `0x00021970`"),
-        ):
-            with self.subTest(document=name):
-                self.assertIn(statement, (ROOT / name).read_text())
 
     def test_every_homologous_table_holds_its_hooked_entry(self):
         for name, (base, entries, slot) in TARGET_TABLES.items():

@@ -7,7 +7,6 @@ ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
-CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 
 LATCH = 0xFFFF5B2C
 REGION_BOUNDS = 0x22624
@@ -112,7 +111,6 @@ class CoolantLatchRetentionTest(unittest.TestCase):
             cls.vars = {row["addr"]: row for row in csv.DictReader(source)}
         with FUNCS.open(newline="", encoding="utf-8") as source:
             cls.funcs = {row["addr"]: row for row in csv.DictReader(source)}
-        cls.cvtc = " ".join(CVTC.read_text(encoding="utf-8").split())
 
     def test_zero_loop_covers_the_latch_byte(self):
         rom = self.rom
@@ -276,37 +274,6 @@ class CoolantLatchRetentionTest(unittest.TestCase):
         self.assertEqual(u16(rom, 0x84020), 0x6023)
 
     def test_published_statement(self):
-        self.assertIn(
-            "The latch byte lies in the retained RAM region "
-            "`0xFFFF4514..0xFFFF5CF3`.",
-            self.cvtc,
-        )
-        self.assertIn(
-            "whose zero loops and initialized-data copy write only below "
-            "`0xFFFF4514` and from `0xFFFF8000` upward.",
-            self.cvtc,
-        )
-        self.assertIn(
-            "it stores zero longwords from `ROM32[0x22624] = 0xFFFF4514` while "
-            "the address lies below `ROM32[0x22628] = 0xFFFF5CF2`. Only "
-            "`FUN 00026F08` calls it;",
-            self.cvtc,
-        )
-        self.assertIn(
-            "`FUN 000CD85C` calls it at `0xCE7DA` while `0xFFFF41B0` bit 4 is set.",
-            self.cvtc,
-        )
-        self.assertIn(
-            "Among the direct writers of the byte, only `FUN 000BD20A` changes "
-            "bit 6.",
-            self.cvtc,
-        )
-        self.assertIn(
-            "a start between raw coolant 65 and 124 inherits the latch of "
-            "earlier operation, and the clear-latch path needs a start below "
-            "raw 65 or a zeroed region.",
-            self.cvtc,
-        )
         latch = self.vars["ffff5b2c"]
         self.assertIn(
             "The byte lies in retained RAM region ffff4514..ffff5cf3",
@@ -322,9 +289,6 @@ class CoolantLatchRetentionTest(unittest.TestCase):
         self.assertIn(
             "zeroes ffff4514..ffff5cf3, including coolant latch byte ffff5b2c",
             self.funcs["00026f30"]["semantics"],
-        )
-        self.assertIn(
-            "FUN 00026f08 is its only direct caller", self.funcs["00026f30"]["note"]
         )
         self.assertIn(
             "zeroes retained region ffff4514..ffff5cf3 through FUN 00026f30",

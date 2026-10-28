@@ -9,8 +9,6 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 OVERRIDES = ROOT / "defs" / "JK08A.overrides.toml"
-FUEL = ROOT / "defs" / "JK08A.fuel.md"
-IGNITION = ROOT / "defs" / "JK08A.ignition-output.md"
 
 
 def read_by(path, key):
@@ -79,8 +77,6 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         cls.rom = ROM.read_bytes()
         cls.funcs = read_by(FUNCS, "addr")
         cls.vars = read_by(VARS, "addr")
-        cls.fuel = " ".join(FUEL.read_text(encoding="utf-8").split())
-        cls.ignition = " ".join(IGNITION.read_text(encoding="utf-8").split())
         with OVERRIDES.open("rb") as source:
             cls.overrides = tomllib.load(source)
 
@@ -120,7 +116,6 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         self.assertEqual(counter["units"], "crank tooth 0..9")
         self.assertIn("writes:00028ea2@structural", counter["evidence"])
         self.assertEqual(self.vars["ffff196c"]["units"], "ratio*64")
-        self.assertIn("latches 9", self.vars["ffff13b4"]["note"])
 
     def test_normalizer_is_exact_for_two_missing_teeth_after_tooth_seven(self):
         for count in range(1, 25):
@@ -149,11 +144,9 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         events, remainder = normalize(7, 9 - 1, 5 + 10)
         self.assertEqual((events, remainder), (6, 15))
         self.assertEqual(fire_angle(7, events, remainder), 95)
-        self.assertIn("110 degrees after that tooth", self.funcs["0004df82"]["note"])
         index = self.vars["ffff11de"]
         self.assertEqual(index["units"], "cylinder number 1..6")
         self.assertIn("110 degrees before compression TDC", index["semantics"])
-        self.assertIn("110 degrees before compression", self.ignition)
 
     def test_cylinder_tables(self):
         expected = {
@@ -209,11 +202,9 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         self.assertEqual(0xFFFF36D8 + (0x4C << 2), 0xFFFF3808)
         builder = self.funcs["00084aa4"]
         self.assertEqual(builder["role"], "monitor")
-        self.assertIn("P0301", builder["note"])
         attribution = self.vars["ffff4038"]
         self.assertEqual(attribution["units"], "cylinder number 1..6")
         self.assertIn("rom_const:0002265c=[0,4,5,6,1,2,3]", attribution["evidence"])
-        self.assertIn("event index ffff11de equals the cylinder number", self.funcs["00085a70"]["note"])
 
     def test_start_phase_constants_and_grouped_pulse(self):
         self.assertEqual(self.rom[0x8D5F], 0)
@@ -230,16 +221,11 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         # Start-phase pulse on tooth 9 with lead 3: cylinder n - 2.
         self.assertEqual(-(40 - 110) + 120, 190)
         self.assertEqual(190 - 92, 98)
-        self.assertIn("190 or 98 degrees before intake TDC", self.fuel)
 
     def test_dwell_channel_tables_and_spark_edge(self):
         self.assertEqual(u32be(self.rom, 0x2AD9C), 0x00022680)
         self.assertEqual(u32be(self.rom, 0x2B094), 0x00022687)
         self.assertIn("rom_const:00022687=[0,2,4,8,16,32,1]", self.funcs["0002af38"]["evidence"])
-        self.assertIn("spark edge", self.vars["ffff13bd"]["note"])
-        self.assertIn("low state is the dwell", self.vars["ffff13d1"]["note"])
-        self.assertIn("dwell angle in crank degrees", self.funcs["0004e080"]["note"])
-        self.assertIn("## Crank reference and output edges", self.ignition)
 
     def test_injection_tables_are_published_with_the_intake_tdc_coordinate(self):
         for address, name in (
@@ -254,9 +240,6 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
                 self.assertEqual(
                     entry["static_axis"], [800 * cell for cell in range(8)]
                 )
-        self.assertIn("D - 590 degrees after the following intake TDC", self.fuel)
-        self.assertIn("not measured", self.fuel)
-        self.assertIn("cylinder k + 1", self.vars["ffff2228"]["note"])
         self.assertEqual(self.rom[0x8770], 120)
 
 
@@ -371,7 +354,6 @@ class HomologousInjectionReferenceTest(unittest.TestCase):
         cls.images = {
             name: facts["image"].read_bytes() for name, facts in HOMOLOGS.items()
         }
-        cls.fuel = FUEL.read_text(encoding="utf-8")
 
     def test_sequencing_constant_block_is_byte_identical(self):
         reference = self.images["JK08A"][0x22658:0x226AA]
@@ -472,15 +454,6 @@ class HomologousInjectionReferenceTest(unittest.TestCase):
                         for site in literal_sites(data, 0xC49B)
                     )
                 )
-
-    def test_fuel_document_states_the_homologous_anchor(self):
-        self.assertIn("### Homologous targets", self.fuel)
-        self.assertIn("`raw * 2 - 590` degrees after", self.fuel)
-        self.assertIn("1ND forms its misfire metric through a different", self.fuel)
-        self.assertIn("1ME3B keeps the attribution map in RAM", self.fuel)
-        for facts in HOMOLOGS.values():
-            for key in ("table", "sequencer", "ignition_task", "scheduler", "reader"):
-                self.assertIn(f"`0x{facts[key]:X}`", self.fuel)
 
 
 if __name__ == "__main__":

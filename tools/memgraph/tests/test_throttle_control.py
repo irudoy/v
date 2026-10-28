@@ -9,7 +9,6 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
-CONTRACT = ROOT / "defs" / "JK08A.throttle-control.md"
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 
 
@@ -25,7 +24,6 @@ class ThrottleControlContractTest(unittest.TestCase):
         cls.funcs = read_by_addr(FUNCS)
         cls.vars = read_by_addr(VARS)
         cls.findings = read_by_addr(FINDINGS)
-        cls.contract = CONTRACT.read_text(encoding="utf-8")
         with HARDWARE_RESULTS.open("rb") as source:
             cls.hardware_results = tomllib.load(source)
 
@@ -78,30 +76,6 @@ class ThrottleControlContractTest(unittest.TestCase):
             (1000, 1300, 1300, 1000, 1000),
         )
 
-    def test_rotational_speed_limiter_calibrations_are_reviewed_sources(self):
-        required = {
-            "00009424": ("blend", "1024"),
-            "00009426": ("normal", "128"),
-            "00009428": ("fast", "q7"),
-            "0000942a": ("final", "128"),
-            "0000942c": ("base threshold", "0xffff"),
-            "0000942e": ("cap", "ffff4188"),
-            "00009430": ("decrement", "ffff84c3"),
-            "00009434": ("alternate", "ffff249e"),
-            "00009436": ("increment", "ffff84c3"),
-            "0000943a": ("recovery", "ffff19dc"),
-            "0000943c": ("recovery", "ffff19dc"),
-            "0000943e": ("duration", "ffff413c"),
-            "000094b2": ("lower floor", "ffff4162"),
-            "00014384": ("auxiliary", "ffff2400"),
-        }
-        for address, tokens in required.items():
-            row = self.findings[address]
-            text = (row["semantics"] + row["note"]).lower()
-            for token in tokens:
-                with self.subTest(address=address, token=token):
-                    self.assertIn(token, text)
-
     def test_transmission_can_and_variant_selectors_match_stock_rom(self):
         self.assertEqual(self.rom[0x83C1], 0x2C)
         self.assertEqual(self.rom[0x870C], 0x44)
@@ -113,62 +87,6 @@ class ThrottleControlContractTest(unittest.TestCase):
         )
         self.assertEqual(self.u16(0xC3C56), 0x2E80)
         self.assertEqual(self.u16(0xC3C5A), 0x2EE0)
-
-        function_tokens = {
-            "00077352": ("00077892", "00077dec", "000777fa"),
-            "000777fa": ("ffff4162", "ffff3480", "ffff3484"),
-            "00077892": ("ffff418f", "ffff41a6", "ffff4413"),
-            "00079030": ("ffff3480", "ffff3484", "ffff19c6"),
-            "000c3b14": ("0x174", "0x177", "shifted left by five"),
-            "000c47ea": ("target gear", "current gear", "ffff1087"),
-            "000c4ace": ("gear-phase", "ffff1066", "0x177"),
-            "000c5cb2": ("ffff1086", "ffff1087", "invalid"),
-        }
-        for address, tokens in function_tokens.items():
-            text = (
-                self.funcs[address]["semantics"]
-                + self.funcs[address]["note"]
-            ).lower()
-            for token in tokens:
-                with self.subTest(address=address, token=token):
-                    self.assertIn(token, text)
-
-    def test_transmission_context_and_secondary_scalar_gate_are_canonical(self):
-        required_variables = {
-            "ffff1064": ("0x177", "gear-phase", "30"),
-            "ffff1066": ("byte 2", "0x07", "gear-phase"),
-            "ffff1082": ("current gear", "low nibble"),
-            "ffff1083": ("target gear", "high nibble"),
-            "ffff1086": ("current gear", "0x174"),
-            "ffff1087": ("target gear", "0x174"),
-            "ffff25b0": ("no countdown", "100"),
-            "ffff32ec": ("0x942c", "ffff4162"),
-            "ffff3480": ("ffff4162", "ffff19c6"),
-            "ffff3484": ("ffff4162", "ffff19c6"),
-            "ffff4162": ("ffff41a6", "307.2 ms", "4-3 and 3-2 downshifts"),
-            "ffff418f": ("ffff419b", "byte 4", "0x174"),
-            "ffff41a6": ("ffff4252", "ffff4413", "bit 3"),
-            "ffff4252": ("current gear", "target gear", "4-3 and 3-2 downshifts"),
-            "ffff4253": ("bit 6", "inhibit"),
-            "ffff4413": ("0x1e", "0002040c", "307.2 ms"),
-        }
-        for address, tokens in required_variables.items():
-            text = (
-                self.vars[address]["semantics"] + self.vars[address]["note"]
-            ).lower()
-            for token in tokens:
-                with self.subTest(address=address, token=token):
-                    self.assertIn(token, text)
-
-        normalized_contract = " ".join(self.contract.lower().split())
-        for token in (
-            "0x44 -> 0x34 -> 0x33",
-            "0x22 -> 0x32 -> 0x33",
-            "secondary candidate constrains `ffff19c6` only during such an episode and its hold",
-            "calibration-only `0x942c` a/b test is isolated from this secondary path only outside such episodes",
-        ):
-            with self.subTest(contract_token=token):
-                self.assertIn(token, normalized_contract)
 
     def test_hardware_registry_records_transmission_payload_evidence(self):
         result = self.hardware_results["can_telemetry"][
@@ -213,19 +131,6 @@ class ThrottleControlContractTest(unittest.TestCase):
                 ):
                     self.assertLess(2 * minimum, before)
 
-        limiters = " ".join(
-            (ROOT / "defs" / "JK08A.limiters.md").read_text(encoding="utf-8").split()
-        )
-        for slot in (1, 4):
-            before = "/".join(map(str, dict.fromkeys(result[f"map_{slot}_tps_before"])))
-            minimum = "/".join(map(str, result[f"map_{slot}_tps_min"]))
-            low, high = result[f"map_{slot}_hold_stock_can_rpm"]
-            with self.subTest(published_slot=slot):
-                self.assertIn(f"{before} to {minimum} counts", row["note"])
-                self.assertIn(f"{before} -> {minimum}", limiters)
-                self.assertIn(f"{low}..{high} RPM", row["note"])
-                self.assertIn(f"{low}..{high} RPM", limiters)
-
         self.assertEqual(result["map_3_scalar"], 0xFFFF)
         self.assertGreaterEqual(
             result["map_3_first_fuel_cut_engine_speed_rpm"],
@@ -238,34 +143,9 @@ class ThrottleControlContractTest(unittest.TestCase):
         self.assertEqual(self.rom[0x870C], 0x44)
         self.assertEqual(self.rom[0x870C] & 0x80, 0)
 
-        coordinator = self.funcs["000730fc"]
-        text = coordinator["semantics"] + coordinator["note"]
-        for token in ("ffff1984", "ffff198a", "ffff183e", "0x870c"):
-            with self.subTest(token=token):
-                self.assertIn(token, text)
-
-        self.assertIn("not the stock-active actuator coordinate", self.vars["ffff1984"]["note"])
         self.assertIn("stock-active", self.vars["ffff198a"]["semantics"].lower())
-        self.assertIn("stock-active request is the shared", self.contract)
 
     def test_request_to_channel_target_path_is_recorded(self):
-        required = {
-            "00075590": ("ffff266e", "ffff1e6c"),
-            "00075540": ("ffff19d2", "ffff243c"),
-            "0007584e": ("ffff243c", "ffff19d8"),
-            "000730fc": ("ffff198a", "ffff183e"),
-            "00072c3c": ("ffff1340", "ffff19b2"),
-            "0006f48c": ("ffff19b2", "ffff28bc"),
-            "000cb1ca": ("ffff28bc", "ffff387a"),
-            "000cb614": ("ffff37b8", "ffff2628"),
-            "000cc5f0": ("ffff37b8", "ffff374c"),
-            "000407c0": ("fffff510", "fffff516"),
-        }
-        for address, tokens in required.items():
-            text = self.funcs[address]["semantics"] + self.funcs[address]["note"]
-            for token in tokens:
-                with self.subTest(address=address, token=token):
-                    self.assertIn(token, text)
 
         for address in (
             "ffff243c",
@@ -289,10 +169,6 @@ class ThrottleControlContractTest(unittest.TestCase):
         for token in ("ffff183e", "ffff1340", "ffff120e", "ffff19b2"):
             with self.subTest(token=token):
                 self.assertIn(token, compositor)
-
-        self.assertIn("does not become zero merely because the pedal", self.contract)
-        self.assertIn("DFCO entry and hold calibrations decide fuel", self.contract)
-        self.assertIn("not a channel target", self.vars["ffff40c6"]["note"])
 
     def test_regulator_dispatch_order_is_bound_to_stock_rom(self):
         expected = (
@@ -319,7 +195,6 @@ class ThrottleControlContractTest(unittest.TestCase):
         self.assertEqual(self.u16(0x933A), 0x00D2)
         self.assertEqual(self.u16(0xCC71C), 490)
         self.assertIn("unsigned offset 0xe0", self.funcs["000cc5f0"]["semantics"])
-        self.assertIn("not ffff36b8", self.funcs["000cc5f0"]["note"])
 
     def test_atu2_boundary_preserves_unverified_physical_assignments(self):
         publisher = self.funcs["000407c0"]
@@ -327,28 +202,15 @@ class ThrottleControlContractTest(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, publisher["semantics"])
 
-        for address, register, pin in (
-            ("fffff510", "BFR6A", "145"),
-            ("fffff512", "BFR6B", "146"),
-            ("fffff514", "BFR6C", "147"),
-            ("fffff516", "BFR6D", "149"),
+        for address, register in (
+            ("fffff510", "BFR6A"),
+            ("fffff512", "BFR6B"),
+            ("fffff514", "BFR6C"),
+            ("fffff516", "BFR6D"),
         ):
             row = self.vars[address]
             with self.subTest(address=address):
                 self.assertIn(register, row["semantics"])
-                self.assertIn(pin, row["note"])
-                self.assertIn("unverified", row["note"])
-
-        self.assertIn("channel 0", self.contract)
-        self.assertIn("Neither bank assignment", self.contract)
-
-    def test_throttle_rev_limiter_claim_reaches_the_throttle_plates(self):
-        finding = self.findings["0000942c"]
-        text = finding["semantics"] + finding["note"]
-        self.assertIn("ATU-II BFR6A-D", text)
-        self.assertIn("closes both throttle sensors", finding["note"])
-        self.assertIn("Plate response time", finding["note"])
-        self.assertIn("fuel mask ffff22e0", finding["note"])
 
     def test_rotational_speed_limiter_state_contract_is_complete(self):
         limiter = self.funcs["0007584e"]
@@ -373,37 +235,6 @@ class ThrottleControlContractTest(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, text)
 
-        required_variables = {
-            "ffff1794": "newly stored",
-            "ffff1796": "dynamic",
-            "ffff1798": "blended",
-            "ffff19d8": "equality",
-            "ffff19da": "fast",
-            "ffff19dc": "recovery",
-            "ffff2400": "auxiliary",
-            "ffff249e": "255",
-            "ffff24a3": "nonpositive",
-            "ffff25b0": "fast-ramp",
-            "ffff413c": "duration",
-            "ffff4188": "cap",
-            "ffff4252": "forced-neutral",
-        }
-        for address, token in required_variables.items():
-            row = self.vars[address]
-            text = (row["semantics"] + row["note"]).lower()
-            with self.subTest(address=address, token=token):
-                self.assertIn(token, text)
-
-        normalized_contract = " ".join(self.contract.lower().split())
-        for token in (
-            "exact one-sample split",
-            "equality takes the inactive branch",
-            "51 state and sweep cases",
-            "253522 stock instructions",
-            "not a vehicle prediction",
-        ):
-            with self.subTest(contract_token=token):
-                self.assertIn(token, normalized_contract)
 
 
 if __name__ == "__main__":

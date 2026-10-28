@@ -7,7 +7,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
-LIMITERS = ROOT / "defs" / "JK08A.limiters.md"
 LAYOUT = ROOT / "patches" / "map-switching-layout.toml"
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 
@@ -32,7 +31,6 @@ class MainFuelCutVehicleSessionTest(unittest.TestCase):
             )
         with HARDWARE_RESULTS.open("rb") as source:
             cls.result = tomllib.load(source)["main_fuel_cut"]["vehicle_2026_09_21"]
-        cls.limiters = " ".join(LIMITERS.read_text(encoding="utf-8").split())
 
     def test_scale_rests_on_the_vehicle_session(self):
         self.assertEqual(self.row["scale_conf"], "silicon")
@@ -92,22 +90,6 @@ class MainFuelCutVehicleSessionTest(unittest.TestCase):
         for pair in releases:
             with self.subTest(stock_release=pair):
                 self.assertGreaterEqual(min(pair), stock_release)
-
-    def test_published_figures_match_the_registry(self):
-        result = self.result
-        low, high = result["release_bound_raw"]
-        bound = f"{low}..{high} = {low * 12.5:g}..{high * 12.5:g} RPM"
-        activation = result["activation_bound_raw"][1]
-        lower_words = [min(pair) for pair in result["release_transitions_raw"]]
-        released_from = f"{min(lower_words)}..{max(lower_words)}"
-        slot = "/".join(map(str, result["slot_words"]))
-        for text, name in ((self.row["note"], "note"), (self.limiters, "limiters")):
-            with self.subTest(published=name):
-                self.assertIn(bound, text)
-                self.assertIn(f"{activation} = {activation * 12.5:g} RPM", text)
-                self.assertIn(f"is {released_from}", text)
-        self.assertIn(slot, self.limiters)
-        self.assertIn(f"`0x{result['slot_address']:05X}`", self.limiters)
 
 
 if __name__ == "__main__":

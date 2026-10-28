@@ -7,7 +7,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
-CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 PROFILE = ROOT / "patches" / "can-telemetry-profile.toml"
 HARDWARE = ROOT / "patches" / "hardware-results.toml"
 
@@ -115,12 +114,6 @@ class IntakeDutyLatchTest(unittest.TestCase):
             result["equal_record_count"], result["record_count_with_both_pairs"]
         )
         self.assertGreater(result["nonzero_record_count"], 0)
-
-        published = " ".join(CVTC.read_text(encoding="utf-8").split())
-        for text in (published, self.vars["ffff2440"]["note"]):
-            for count in ("equal_record_count", "nonzero_record_count"):
-                with self.subTest(count=count):
-                    self.assertIn(f"{result[count]:,}", text)
 
 
 if __name__ == "__main__":

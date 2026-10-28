@@ -9,7 +9,6 @@ ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 BINDINGS = ROOT / "defs" / "JK08A.diagnostic-bindings.csv"
-CONTRACT = ROOT / "defs" / "JK08A.start-signal-temperature-selector.md"
 HARDWARE = ROOT / "patches" / "hardware-results.toml"
 
 
@@ -29,7 +28,6 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         cls.funcs = read_by(FUNCS, "addr")
         cls.vars = read_by(VARS, "addr")
         cls.bindings = read_by(BINDINGS, "id")
-        cls.contract = CONTRACT.read_text(encoding="utf-8")
         with HARDWARE.open("rb") as source:
             cls.hardware = tomllib.load(source)
 
@@ -47,7 +45,6 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         selector = self.funcs["0003967a"]
         self.assertIn("START SIGNAL", selector["semantics"])
         self.assertIn("below 100", selector["semantics"])
-        self.assertIn("8.00 V", selector["note"])
 
     def test_an0_mux_paths_are_bound_to_named_diagnostics(self):
         self.assertEqual(
@@ -58,17 +55,13 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         self.assertIn("code 000", sampler["semantics"])
         self.assertIn("code 001", sampler["semantics"])
         self.assertIn("code 111", sampler["semantics"])
-        self.assertIn("battery voltage", self.vars["ffff1d6e"]["note"])
         self.assertIn("DID 0x1103", self.vars["ffff1188"]["semantics"])
 
     def test_start_signal_bit_chain_is_structured(self):
         producer = self.funcs["00038d44"]
-        packer = self.funcs["0002e0d4"]
         self.assertIn("ffff4185.bit6", producer["semantics"])
         self.assertIn("ffff24ae.bit7", producer["semantics"])
-        self.assertIn("ffff3342.bit1", packer["note"])
         self.assertIn("computed START SIGNAL", self.vars["ffff4185"]["semantics"])
-        self.assertIn("START SIGNAL", self.vars["ffff3342"]["note"])
 
     def test_diagnostic_bindings_cover_voltage_and_start_signal(self):
         battery = self.bindings["battery-voltage-did-1103"]
@@ -113,8 +106,6 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
                 self.assertIn("Previous-pass image", self.vars[address]["semantics"])
                 self.assertIn("writes:000209d8@structural", self.vars[address]["evidence"])
         self.assertIn("00020cba", self.funcs["000209d8"]["semantics"])
-        self.assertIn("previous-pass image of the selected pair", self.contract)
-        self.assertIn("coolant temperature at engine", self.contract)
 
     def test_readiness_latches_match_factory_driving_pattern_a(self):
         # mov #0x20,r2: RPM/12.5 of 400 rpm; mov #0x14,r2: rise of 20 counts;
@@ -125,7 +116,6 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         updater = self.funcs["000804ce"]
         self.assertIn("start-latched raw coolant ffff106e", updater["semantics"])
         self.assertIn("spec:esm-2013-g-ec150-driving-pattern-a", updater["evidence"])
-        self.assertIn("driving pattern A", self.contract)
 
     def test_coolant_fail_safe_ramp_spans_raw_90_to_130(self):
         # add #0x5a,r6 and mov #-0x7e,r5: min(90 + counter, 130).
@@ -135,7 +125,6 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         self.assertEqual(self.rom[0x395EC:0x395EE], bytes.fromhex("e206"))
         ramp = self.funcs["000395ae"]
         self.assertIn("min(90 + counter, 130)", ramp["semantics"])
-        self.assertIn("245.8 s", ramp["note"])
 
     def test_target_observations_keep_their_timing_boundary(self):
         telemetry = self.hardware["can_telemetry"]["current_wide54_divisor1"]

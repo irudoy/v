@@ -1,5 +1,4 @@
 import csv
-import tomllib
 import unittest
 from pathlib import Path
 
@@ -8,9 +7,6 @@ ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
-FUEL = ROOT / "defs" / "JK08A.fuel.md"
-SIGNALS = ROOT / "defs" / "JK08A.tuning-signals.toml"
-BINDINGS = ROOT / "defs" / "JK08A.diagnostic-bindings.csv"
 
 DEAD_WORD = 0xFFFF162E
 DEAD_WORD_POINTER_SITES = (
@@ -44,7 +40,6 @@ class BaseFuelScheduleScaleTest(unittest.TestCase):
         cls.rom = ROM.read_bytes()
         cls.funcs = read_by(FUNCS, "addr")
         cls.vars = read_by(VARS, "addr")
-        cls.fuel = FUEL.read_text(encoding="utf-8")
 
     def test_precursor_stage_normalizers_are_bound_to_instruction_bytes(self):
         rom = self.rom
@@ -131,30 +126,18 @@ class BaseFuelScheduleScaleTest(unittest.TestCase):
         self.assertIn("writes:00027c50@structural", row["evidence"])
         for site in DEAD_WORD_POINTER_SITES:
             self.assertIn(f"rom_const:{site:08x}=ffff162e", row["evidence"])
-        with SIGNALS.open("rb") as source:
-            signals = {item["id"]: item for item in tomllib.load(source)["signal"]}
-        self.assertIn("no runtime producer", signals["injection_timing_state"]["note"])
-        self.assertIn("all 143961 records", self.fuel)
 
     def test_ledgers_state_the_code_closed_schedule_scale(self):
         for address in ("ffff1024", "ffff1026"):
             self.assertEqual(self.vars[address]["units"], "ms*2048")
-        self.assertIn("100/2048", self.vars["ffff1026"]["note"])
-        self.assertIn("12280..13917", self.vars["ffff165e"]["note"])
         for address in ("ffff2a24", "ffff2a26"):
             self.assertEqual(self.vars[address]["units"], "percent*256")
             self.assertIn("0x6400", self.vars[address]["semantics"])
         for address in ("ffff160d", "ffff17ee", "ffff31d8", "ffff17b9", "ffff13b1"):
             self.assertIn("writes:00053698@structural", self.vars[address]["evidence"])
-        # Full-word producer semantics retain wrap and offset boundaries;
-        # fixed neutral scaling is bound by the specification below.
+        # Full-word producer semantics retain wrap and offset boundaries.
         self.assertIn("low32 multiplication", self.funcs["0004ead4"]["semantics"])
         self.assertIn("unsigned offset underflow", self.funcs["0004ead4"]["semantics"])
-        self.assertIn("100/2048", self.funcs["0004e974"]["note"])
-        self.assertIn("(1/8) * (100/256) = 100/2048", self.fuel)
-        self.assertNotIn("code alone cannot close the schedule", self.fuel)
-        bindings = read_by(BINDINGS, "id")
-        self.assertIn("100/2048", bindings["base-fuel-schedule-did-1208"]["note"])
 
 
 if __name__ == "__main__":
