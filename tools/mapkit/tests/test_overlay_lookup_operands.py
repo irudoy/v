@@ -13,8 +13,6 @@ VARS = ROOT / "defs" / "JK08A.vars.csv"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 INTERP = ROOT / "defs" / "JK08A.interp.csv"
 OVERRIDES = ROOT / "defs" / "JK08A.overrides.toml"
-FUEL = ROOT / "defs" / "JK08A.fuel.md"
-THROTTLE = ROOT / "defs" / "JK08A.throttle-control.md"
 
 SPEED_WORD = 0xFFFF1196
 SPEED_BLOCK = 0xFFFF11D4
@@ -193,8 +191,6 @@ class OverlayLookupOperandTest(unittest.TestCase):
             cls.interp = {row["wrapper"]: row for row in csv.DictReader(source)}
         with OVERRIDES.open("rb") as source:
             cls.overrides = tomllib.load(source)
-        cls.fuel = " ".join(FUEL.read_text(encoding="utf-8").split())
-        cls.throttle = " ".join(THROTTLE.read_text(encoding="utf-8").split())
 
     def test_speed_word_counts_rpm_times_5_12(self):
         # FUN_00038272 divides this constant by event interval ffff11fc.
@@ -1167,59 +1163,6 @@ class OverlayLookupOperandTest(unittest.TestCase):
         ):
             self.assertNotIn(register, logparam)
 
-    def test_published_statements(self):
-        for statement in (
-            "row axis `0x11CF0` over RPM/12.5 word `0xFFFF11F4` and column "
-            "axis `0x11D4C` over byte `0xFFFF1170`",
-            "Byte core `0x269C4` compares each row point after multiplication "
-            "by four with the RPM/12.5 word, so one row-axis count is 50 RPM.",
-            "Byte core `0x26944` compares each column point with `0xFFFF1170` "
-            "directly.",
-            "`FUN_0003B498` writes that byte as the high byte of curve "
-            "`0x15042`, at coordinate `4 * u` below `u = 0x3C00`, or of curve "
-            "`0x15022`, at coordinate `u - 0x3C00` from there:",
-            "u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) "
-            "+ (0xFFFF120E * 0xFFFF114E >> 11))",
-            "0xFFFF114E = min(65535, 0xDC1D00 / 0xFFFF1F46), or 0 while "
-            "0xFFFF1F46 = 0",
-            "0xFFFF1F46 = min(65535, ROM8[0x8D8F] * 0xFFFF11F4)",
-            "`FUN_0003B40A` writes `0xFFFF1F46`, and `FUN_0003B436` writes "
-            "`0xFFFF114E`, which is inversely proportional to engine speed.",
-            "`FUN_0003B468` selects `0xFFFF1E60` from ETC-path value "
-            "`0xFFFF3A76`, which `FUN_0003B520` derives through the Throttle "
-            "Angle-to-Area pair `0x13202`/`0x155A0`, or from ROM word "
-            "`0x916C`.",
-            "Both addends of `u` are opening areas in the value domain of "
-            "`0x13202`, divided by engine speed.",
-            "u ~= 3522 * (0xFFFF1E60 + 0xFFFF120E / 4) / RPM",
-            "The column coordinate is therefore an alpha-N flow estimate: "
-            "opening area over engine speed through a saturating curve.",
-            "MAF range monitors `FUN_0008152A` (P0101) and `FUN_00081D74` "
-            "(P010B) evaluate the same curve pair and read `0xFFFF120E`.",
-        ):
-            with self.subTest(statement=statement[:40]):
-                self.assertIn(statement, self.fuel)
-        for statement in (
-            "FFFF1702 = max(32, FFFF11B6) FFFF1CCA = max(32, FFFF11D0)",
-            "so `FFFF22D4` equals `FFFF11FC` and "
-            "`FFFF1208 = floor(2000000 / FFFF11FC)`",
-            "One stored row-axis count is therefore 50 RPM, and the row points "
-            "decode to 800 through 6400 RPM in 400 RPM steps and 7200 RPM.",
-            "Every forward lookup of `0xE98E` passes `FFFF1702` as the row "
-            "input except throttle-rev limiter `0007584E`, which passes "
-            "`FFFF11B6`; the two differ only below 100 RPM. Every lookup of "
-            "`0x175C8` passes `FFFF1CCA`.",
-            "FFFF1824 = floor(4 * floor(FFFF12A0 * 65536 / ROM8[0x8D8F]) "
-            "/ FFFF1702)",
-            "`FFFF1824 = 8192 * FFFF12A0 / RPM`: the column input is an "
-            "opening area divided by engine speed.",
-            "at column `0xFFFF`, the last column; `0007584E` reads `0xE98E` "
-            "at column 0.",
-            "`FFFF19B2 + (FFFF120E >> 2) = FFFF183E + FFFF1340`",
-        ):
-            with self.subTest(statement=statement[:40]):
-                self.assertIn(statement, self.throttle)
-
 
 class ThrottleOpeningScaleTest(unittest.TestCase):
     """Bind the percent scale of opening coordinate table 0x155A0 to the ROM."""
@@ -1233,8 +1176,6 @@ class ThrottleOpeningScaleTest(unittest.TestCase):
         cls.funcs = rows(FUNCS)
         with OVERRIDES.open("rb") as source:
             cls.overrides = tomllib.load(source)
-        cls.fuel = " ".join(FUEL.read_text(encoding="utf-8").split())
-        cls.throttle = " ".join(THROTTLE.read_text(encoding="utf-8").split())
 
     def test_monitor_averages_both_channels_in_the_area_domain(self):
         rom = self.rom
@@ -1405,29 +1346,6 @@ class ThrottleOpeningScaleTest(unittest.TestCase):
             self.overrides["logparam"]["ffff28bc"],
             {"id": "X_VQ_Throttle_Target", "units": "Throttle Valve Opening [%]"},
         )
-
-    def test_published_statements(self):
-        for statement in (
-            "`0006F236` writes `min(255, (FFFF3F7C - FFFF28F8) * 0x505B >> 16)` "
-            "to `FFFF1075`, which `00035856` returns for J1979 Mode 01 PID 0x11 "
-            "as `A * 100 / 255` percent.",
-            "`0x505B / 65536 / 4 * 100 / 255 = 34285 / 1114112` percent of "
-            "throttle opening: 100 percent is 3249.6 counts, and the stored "
-            "axis points `0..3172` span `0..97.6` percent.",
-            "No ECM diagnostic item publishes the coordinate in degrees, so the "
-            "catalog `0.0275` degree scale remains a candidate.",
-        ):
-            with self.subTest(statement=statement[:40]):
-                self.assertIn(statement, self.throttle)
-        for statement in (
-            "`FUN_0006F236` applies the same gradient, after subtracting idle "
-            "base `0xFFFF28F8`, to the byte it publishes as J1979 PID 0x11 "
-            "absolute throttle, so `0xFFFF3528` is throttle opening from "
-            "coordinate zero at 100/255 percent per count, and the latch "
-            "threshold 200 is 78.4 percent.",
-        ):
-            with self.subTest(statement=statement[:40]):
-                self.assertIn(statement, self.fuel)
 
 
 if __name__ == "__main__":

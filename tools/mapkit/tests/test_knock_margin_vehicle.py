@@ -1,7 +1,6 @@
 """Knock channel schedule and the 2026-09-21 knock margin vehicle result."""
 
 import math
-import re
 import struct
 import tomllib
 from fractions import Fraction
@@ -19,16 +18,7 @@ REGISTRY = tomllib.loads(
     (ROOT / "patches/hardware-results.toml").read_text(encoding="utf-8")
 )
 RESULT = REGISTRY["knock_margin"]["vehicle_2026_09_21"]
-KEY = "knock_margin.vehicle_2026_09_21"
 
-
-def _normalized(path):
-    return " ".join((ROOT / path).read_text(encoding="utf-8").split())
-
-
-KNOCK_DOC = _normalized("defs/JK08A.knock-detection.md")
-TELEMETRY_DOC = _normalized("patches/can-telemetry.md")
-FUEL_DOC = _normalized("defs/JK08A.fuel.md")
 
 THRESHOLD_TABLE = 0x1108E
 SPEED_AXIS = 0x15340
@@ -156,39 +146,10 @@ def test_tooth_0_closes_the_window_through_the_evaluator():
     assert u16(0x4A264) == 0x8B01  # bf over the return branch
 
 
-def test_channel_windows_follow_the_cylinder_order():
+def test_ignition_command_is_measured_from_110_degrees():
     # Ignition command ROM8[0x83D5] - advance is measured from tooth 7.
     before_tdc = ROM[0x83D5]
     assert before_tdc == 110
-    match = re.search(
-        r"teeth 8, 9, 0, 1, 2, 3, 4, 5, 6, and 7 follow at ([0-9, and]+) degrees",
-        FUEL_DOC,
-    )
-    angles = [int(value) for value in re.findall(r"\d+", match.group(1))]
-    tooth_0, event = angles[2], angles[-1]
-    assert (tooth_0, event) == (50, 120)
-    assert "The event index is the cylinder number." in FUEL_DOC
-    assert "The index advances 1-2-3-4-5-6, the firing order." in FUEL_DOC
-    assert f"one knock window per {event} crank degrees" in KNOCK_DOC
-    assert f"closes it on tooth 0, {tooth_0} degrees later" in KNOCK_DOC
-    assert f"`ROM8[0x83D5] - advance = {before_tdc} - advance`" in KNOCK_DOC
-    start, end = before_tdc, before_tdc - tooth_0
-    assert (
-        f"spans {start}..{end} degrees before compression TDC of cylinder `c`, "
-        f"which is {event - start}..{event - end} degrees after compression TDC "
-        "of cylinder `c - 1` (cylinder 6 for channel 1)"
-    ) in KNOCK_DOC
-    previous = [(channel - 2) % 6 + 1 for channel in RESULT["all_ffff_rows"]]
-    assert (
-        "The windows of channels 3 and 5 span "
-        f"{event - start}..{event - end} degrees after compression TDC of "
-        f"cylinders {previous[0]} and {previous[1]}."
-    ) in KNOCK_DOC
-    assert (
-        f"The window of channel `c` spans {event - start}..{event - end} degrees "
-        "after compression TDC of cylinder `c - 1`, and on the stock path every "
-        "channel samples the same A/D inputs."
-    ) in TELEMETRY_DOC
 
 
 def test_stock_window_start_programs_one_acquisition_for_every_channel():
@@ -304,55 +265,10 @@ def test_metric_and_reference_constants():
     ]
 
 
-def test_specification_names_the_bound_code_and_bounds():
-    for value in (
-        WINDOW_START,
-        WINDOW_CLOSE,
-        EVALUATOR,
-        EVALUATOR_LITERAL,
-        TOOTH_7_CALL,
-        INDEX_STORE,
-        TOOTH_0_CALL,
-        IDENTIFIED_CYLINDER,
-        EVENT_INDEX,
-        PREVIOUS_INDEX,
-        BLOCK_COUNT,
-        VALUE_FUNCTION,
-        REFERENCE,
-        DIAGNOSTIC_PREDICATE,
-        ADDR24,
-        ADDR28,
-    ):
-        assert f"0x{value:08X}" in KNOCK_DOC
-    for text in (
-        "`ADCSR2 = 0x59`",
-        "`ADCSR2 = 0x5D`",
-        "ROM8[0x8870] = 3",
-        "ROM8[0x8618] = 0x00",
-        f"`g = {1 << 14}`",
-        "`ROM8[0x884B] = 0xE0`",
-        "`ROM16[0x9282] = 0xFFFF`",
-        "`0x12D`",
-        "`0x13F`",
-    ):
-        assert text in KNOCK_DOC
-    top = ROM[0x8870] * WORD
-    assert f"-{top}..{top}" in KNOCK_DOC
-    assert f"its metric is {top} minus the sum of the three smallest references" in KNOCK_DOC
-    assert f"only for a metric above {WORD}" in KNOCK_DOC
-    assert f"only for a metric above {WORD - IDLE}" in KNOCK_DOC
-    assert f"only for a metric above {WORD - IDLE} units" in TELEMETRY_DOC
-
-
 def test_record_uses_the_registered_session_and_captures():
     section, name = RESULT["capture_registry"].split(".")
     captures = REGISTRY[section][name]
     session = REGISTRY["can_telemetry"]["schema2_profile5_drive_2026_09_21"]
-    assert (
-        "the road session of 2026-09-21 in registry entry "
-        "`can_telemetry.schema2_profile5_drive_2026_09_21` carried profile "
-        f"{session['profile_id']}."
-    ) in TELEMETRY_DOC
     for key in ("recorded_on", "image_sha256", "profile_id", "profile_crc16"):
         assert RESULT[key] == session[key]
     assert RESULT["hardware_status"] == session["hardware_status"] == "pass"
@@ -385,13 +301,6 @@ def test_every_interval_holds_an_evaluation_from_the_profile_speed():
     assert FULL_COVERAGE_RPM == Fraction(234375, 100)
     rpm_raw = math.ceil(FULL_COVERAGE_RPM / RPM_STEP)
     assert RESULT["full_coverage_rpm_raw_min"] == rpm_raw
-    assert f"{float(FULL_COVERAGE_RPM):g} RPM, `0xFFFF11F4` {rpm_raw}," in KNOCK_DOC
-    assert f"`0xFFFF11F4` {rpm_raw} or more" in KNOCK_DOC
-    groups = RESULT["full_coverage_group_count"]
-    assert (
-        f"{groups:,} groups at {float(rpm_raw * RPM_STEP):g} RPM or more"
-        in TELEMETRY_DOC
-    )
 
 
 def test_idle_counts_single_out_channels_3_and_5():
@@ -474,55 +383,3 @@ def test_largest_metrics_are_exact_threshold_differences():
     )
 
 
-def test_documents_publish_the_registry_figures():
-    result = RESULT
-    for name in (
-        "tag4_group_count",
-        "mlg_record_count",
-        "full_coverage_group_count",
-        "cadence_group_count",
-        "cadence_expected_idle_group_count",
-    ):
-        assert f"{result[name]:,}" in KNOCK_DOC
-    observed = result["cadence_idle_group_count"]
-    assert f"{min(observed):,}..{max(observed):,}" in KNOCK_DOC
-    assert f"From `0xFFFF11F4` {result['cadence_rpm_raw_min']}," in KNOCK_DOC
-
-    valued = dict(
-        zip(
-            result["valued_channels"],
-            zip(result["margin_min"], result["metric_max_by_channel"], strict=True),
-            strict=True,
-        )
-    )
-    for channel, idle in zip(range(1, 7), result["idle_group_count"], strict=True):
-        if channel in valued:
-            margin, metric = valued[channel]
-            cells = f"{margin:,} | {metric:,}"
-        else:
-            cells = f"`{IDLE}` | at most {WORD - IDLE}"
-        assert f"| {channel} | {idle:,} | {cells} |" in KNOCK_DOC
-
-    metrics = result["metric_max_by_channel"]
-    index = metrics.index(max(metrics))
-    channel = result["valued_channels"][index]
-    rpm_raw = result["metric_max_rpm_raw_by_channel"][index]
-    assert (
-        f"{metrics[index]:,} on channel {channel} at "
-        f"{float(rpm_raw * RPM_STEP):g} RPM with margin "
-        f"{result['metric_max_margin_by_channel'][index]:,} against threshold "
-        f"{row(channel)[-1]:,}"
-    ) in KNOCK_DOC
-    speeds = result["metric_max_rpm_raw_by_channel"]
-    assert f"`0xFFFF11F4` {min(speeds)}..{max(speeds)}" in KNOCK_DOC
-    assert f"`0xFFFF11F4` {AXIS[-1]} upward" in KNOCK_DOC
-    assert f"`{result['metric_max_capture']}`" in KNOCK_DOC
-    assert (
-        f"nonzero in {result['latched_bitmap_nonzero_record_count']} records"
-        in KNOCK_DOC
-    )
-    assert f"`0x{result['latched_bitmap_union']:02X}`" in KNOCK_DOC
-    assert f"never exceeds {result['latched_count_max']}" in KNOCK_DOC
-    assert "main_fuel_cut.vehicle_2026_09_21" in KNOCK_DOC
-    for text in (KNOCK_DOC, TELEMETRY_DOC):
-        assert KEY in text

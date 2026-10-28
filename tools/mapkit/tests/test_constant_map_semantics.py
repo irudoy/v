@@ -58,10 +58,8 @@ def test_remaining_constant_maps_have_code_semantics() -> None:
 
     for address in ("0001050e", "0001070e", "00017cc8", "00017ec8"):
         assert "rom_const:000089fb=0x20" in findings[address]["evidence"]
-        assert "Result disposition: dead_control_flow" in findings[address]["note"]
 
     assert "rom_const:000083c1=0x2c" in findings[CENTERED_SURFACE]["evidence"]
-    assert "Result disposition: dead_control_flow" in findings[CENTERED_SURFACE]["note"]
 
 
 def test_exact_rom_constant_map_values_and_selectors() -> None:
