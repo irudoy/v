@@ -4,30 +4,30 @@
 Claude Code and Codex run this hook before the registered file and shell
 tools. Codex reports shell commands as Bash and file patches as apply_patch.
 It reads the tool call as JSON on standard input and
-denies a call that reads knowledge whose owner lies under a guarded tree or in
-a guarded projection, edits a guarded tree or a projection, searches a guarded
-path, or names one in a shell command, with a reason that names the command to
-use. It uses only the standard library and reads its lists from
+denies a call that reads or searches a guarded tree or projection, or edits a
+guarded tree or any projection, with a reason that names the command to use.
+It uses only the standard library and reads its lists from
 tools/kb/config.toml (`[guard]`) and tools/kb/projections.toml. `kb guard` records a session override; without an override,
 `KB_GUARD=off` in the hook environment disables it.
 
-A shell command splits into simple commands at the shell operators and line
-breaks, and the body of a here-document belongs to the command that reads it.
-A word, or a path-like part of it, names a path when it holds a slash or
-equals a projection file; the pattern of a search program names none, and a
-command that runs inside a guarded tree names that tree. A simple command that
-names a guarded path passes when it changes the directory or runs `kb`, a git
-subcommand of the allow list, `make`, or a repository script under `tools/` or
-`patches/`, which read their inputs as the gates do.
+Shell inspection preserves quotes, operators, subshell directories and raw
+here-documents. File operands, redirections, substitutions and selected Git
+operations have access checks; literal draft and message bodies remain data.
+Inline Python supports finite literal file and metadata forms, with a
+conservative refusal for unknown operations involving protected references.
+Trusted `kb`, `make` and repository runners keep their input access after
+shell substitutions and redirections have been checked. An unsupported Python
+interpreter produces a deliberate denial rather than a hook error.
 """
 
+import ast
 import fnmatch
+import glob
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
-import shlex
 import sys
 import tempfile
 import uuid
@@ -53,7 +53,6 @@ SEARCH_VALUES = {"-A", "-B", "-C", "-g", "-j", "-m", "-M", "-t", "-T", "--after-
                  "--before-context", "--colors", "--context", "--exclude", "--exclude-dir",
                  "--glob", "--iglob", "--include", "--max-columns", "--max-count",
                  "--max-depth", "--sort", "--sortr", "--threads", "--type", "--type-not"}
-PUNCTUATION = "();<>|&\n"
 HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)[ \t]*(['\"]?)([^\s'\"<>|&;()]+)\2")
 PATHLIKE = re.compile(r"[^\s'\"`()\[\]{},:;=<>|&$]+")
 BRACES = re.compile(r"\{([^{}]*)\}")
@@ -347,25 +346,314 @@ class Guard:
         return None
 
     def bash(self, command, cwd=None):
-        cwd = cwd or self.cwd
-        for words, body in commands(command):
-            named = []
-            inside = self.tree(self.relative(str(cwd)))
-            if inside:
-                named.append(inside + "/")
-            for word in operands(words) + body:
-                for candidate in candidates(word):
-                    relative = self.relative(candidate, cwd)
-                    found = self.guarded(relative) if "/" in candidate else (
-                        self.projection(relative) and self.guarded(relative))
-                    if found:
-                        named.append(found)
-            if named and not self.passes(words, cwd):
-                return (f"the command names {named[0]}, whose knowledge kb answers: use "
-                        "`uv run kb` (at, code, cypher for l0/; show, raw, find, where for "
-                        "kb/ and guarded projections).")
-            if words[:1] in (["cd"], ["pushd"]) and len(words) > 1:
-                cwd = Path(os.path.normpath(cwd / os.path.expanduser(words[1])))
+        cwd, variables = cwd or self.cwd, dict(os.environ)
+        inherited = variables.copy()
+        scopes = []
+        for words, documents in commands(command):
+            if words == ["("] and getattr(words[0], "operator", False):
+                scopes.append((cwd, variables.copy()))
+                continue
+            if words == [")"] and getattr(words[0], "operator", False):
+                if scopes:
+                    cwd, variables = scopes.pop()
+                continue
+            for word in words:
+                reason = self.substitutions(word, cwd)
+                if reason:
+                    return reason
+            local = variables.copy()
+            prefix = list(words)
+            while prefix:
+                if _assignment(prefix[0]):
+                    key, value = prefix.pop(0).split("=", 1)
+                    local[key] = shell_value(value, variables)
+                elif prefix[0] in WRAPPERS:
+                    prefix.pop(0)
+                    while prefix and prefix[0].startswith("-"):
+                        prefix.pop(0)
+                else:
+                    break
+            extra_refs = [value for name, value in local.items() if inherited.get(name) != value]
+            leaf = executed(words)
+            if not leaf:
+                variables = local
+                continue
+            clean, redirects = redirections(leaf)
+            for operator, value in redirects:
+                if operator == "<<<":
+                    reason = self.substitutions(value, cwd)
+                    if reason:
+                        return reason
+                    continue
+                reason = self.shell_paths([shell_value(value, variables)],
+                    "read" if operator in {"<", "<&"} else "edit", cwd)
+                if reason:
+                    return reason
+            if not clean:
+                continue
+            program = os.path.basename(clean[0])
+            for text, quoted in documents:
+                if not quoted:
+                    reason = self.substitutions(text, cwd)
+                    if reason:
+                        return reason
+            if program in DIRECTORY:
+                if len(clean) > 1:
+                    value = shell_value(clean[1], variables)
+                    if "$" in value:
+                        return "cannot inspect a dynamic working directory; use an explicit path."
+                    cwd = Path(os.path.normpath(cwd / os.path.expanduser(value)))
+                continue
+            if program == "git":
+                reason = self.git_operation([shell_value(word, variables) for word in clean[1:]], cwd)
+                if reason:
+                    return reason
+                continue
+            if INTERPRETER.match(program) and program.startswith("python"):
+                if "-c" in clean or documents:
+                    source = (clean[clean.index("-c") + 1] if "-c" in clean
+                              else "\n".join(item[0] for item in documents))
+                    reason = self.python_operations(source, cwd, extra_refs)
+                    if reason:
+                        return reason
+                    continue
+                if len(clean) > 1 and messaging_script(clean[1]):
+                    reason = self.shell_paths([part for value in extra_refs for part in candidates(value)], "unknown", cwd)
+                    if reason:
+                        return reason
+                    values = option_files(clean[2:], {"--file"})
+                    reason = self.shell_paths([shell_value(value, variables) for value in values], "read", cwd)
+                    if reason:
+                        return reason
+                    continue
+            if self.passes(clean, cwd):
+                continue
+            if program in {"sh", "bash", "zsh"} and (documents or "-c" in clean):
+                text = (clean[clean.index("-c") + 1] if "-c" in clean
+                        else "\n".join(item[0] for item in documents))
+                reason = self.bash(text, cwd)
+                if reason:
+                    return reason
+                continue
+            if program in {"printf", "echo", "true", "false", ":"}:
+                continue
+            if program in {"test", "[", "[["} and not any(
+                    word in {"-e", "-f", "-d", "-r", "-w", "-x", "-s", "-L", "-h", "-nt", "-ot", "-ef"} for word in clean):
+                continue
+            reason = self.shell_paths([part for value in extra_refs for part in candidates(value)], "unknown", cwd)
+            if reason:
+                return reason
+            if program == "sort":
+                reason = self.shell_paths(option_files(clean[1:], {"-o", "--output"}), "edit", cwd)
+                if reason:
+                    return reason
+            if program in {"sed", "awk", "gawk"}:
+                reason = self.shell_paths([part for word in clean[1:] for part in candidates(word)],
+                                          "unknown", cwd)
+                if reason:
+                    return reason
+            mode, values = file_operands(clean)
+            values = [shell_value(value, variables) for value in values]
+            if not values and program in {"ls", "find", *SEARCHERS}:
+                values = [str(cwd)]
+            reason = self.shell_paths(values, mode, cwd)
+            if reason:
+                return reason
+        return None
+
+    def substitutions(self, text, cwd):
+        """Inspect simple command substitutions; ambiguous guarded forms refuse."""
+        if not getattr(text, "expansion", True):
+            return None
+        pattern = re.compile(r"\$\(([^()]*)\)|`([^`]*)`", re.DOTALL)
+        for match in pattern.finditer(text):
+            reason = self.bash(match.group(1) if match.group(1) is not None else match.group(2), cwd)
+            if reason:
+                return reason
+        if "$(" in pattern.sub("", text) or "`" in pattern.sub("", text):
+            return "cannot inspect a nested command substitution; use explicit file operands."
+        return None
+
+    def shell_paths(self, values, mode, cwd):
+        for value in values:
+            if not value or value == "-" or value.isdigit():
+                continue
+            if "$" in value:
+                return "cannot inspect a dynamic file operand; use an explicit path or the KB command."
+            for option in expand(value):
+                absolute = os.path.expanduser(option)
+                if not os.path.isabs(absolute):
+                    absolute = str(cwd / absolute)
+                if "**" in absolute:
+                    first = next((index for index, char in enumerate(absolute) if char in "*?["), len(absolute))
+                    prefix = Path(absolute[:first]).parent if not absolute[:first].endswith("/") else Path(absolute[:first])
+                    if self.root.is_relative_to(prefix.resolve()):
+                        return "a recursive file pattern can enter protected paths; use explicit KB references."
+                paths = glob.glob(absolute, recursive=True) if glob.has_magic(absolute) else [absolute]
+                for path in paths or [absolute]:
+                    if mode in {"edit", "unknown"}:
+                        reason = self.edit({"file_path": path, "content": ""})
+                        if reason:
+                            return reason
+                    reason = self.read(path)
+                    if reason:
+                        return reason
+        return None
+
+    def git_operation(self, words, cwd):
+        index = 0
+        while index < len(words) and words[index].startswith("-"):
+            if words[index] == "-C" and index + 1 < len(words):
+                cwd = cwd / words[index + 1]
+            index += 2 if words[index] in {"-C", "-c", "--git-dir", "--work-tree"} else 1
+        if index >= len(words):
+            return None
+        command, args = words[index], words[index + 1:]
+        outputs = option_files(args, {"--output"})
+        reason = self.shell_paths(outputs, "edit", cwd)
+        if reason:
+            return reason
+        if command == "commit":
+            return self.shell_paths(option_files(args, {"-F", "--file", "-t", "--template"}), "read", cwd)
+        if command == "show":
+            for word in args:
+                if ":" in word and not word.startswith("-"):
+                    reason = self.shell_paths([word.split(":", 1)[1]], "read", cwd)
+                    if reason:
+                        return reason
+        if command in {"restore", "checkout", "rm", "mv"}:
+            if "--staged" in args and "--worktree" not in args or "--cached" in args:
+                return None
+            return self.shell_paths([word for word in args if not word.startswith("-")], "edit", cwd)
+        if command == "grep":
+            return self.shell_paths(operands(["grep", *args]) or [str(cwd)], "read", cwd)
+        if command == "diff" and "--no-index" in args:
+            return self.shell_paths([word for word in args if not word.startswith("-")], "read", cwd)
+        if self.git_passes(words):
+            return None
+        return self.shell_paths([part for word in args for part in candidates(word)], "unknown", cwd)
+
+    def python_operations(self, source, cwd, extra_refs=()):
+        """Inspect finite literal file forms; unknown uses of protected data refuse."""
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            return "cannot inspect the Python program; use complete literal file operations."
+        assignments = []
+        for item in ast.walk(tree):
+            if isinstance(item, ast.Assign) and len(item.targets) == 1 and isinstance(item.targets[0], ast.Name):
+                assignments.append((item.targets[0].id, item.value))
+            if isinstance(item, ast.withitem) and isinstance(item.optional_vars, ast.Name):
+                assignments.append((item.optional_vars.id, item.context_expr))
+        bindings = {name: value for name, value in assignments
+                    if sum(other == name for other, _ in assignments) == 1}
+
+        def path(node, visited=()):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                return node.value
+            if isinstance(node, ast.Name) and node.id in bindings and node.id not in visited:
+                return path(bindings[node.id], (*visited, node.id))
+            if isinstance(node, ast.Call) and call_name(node.func).split(".")[-1] in {"Path", "open"} and node.args:
+                return path(node.args[0], visited)
+            if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Div, ast.Add)):
+                left, right = path(node.left, visited), path(node.right, visited)
+                if left is not None and right is not None:
+                    return str(Path(left) / right) if isinstance(node.op, ast.Div) else left + right
+            return None
+
+        protected = (any(self.shell_paths(candidates(value), "unknown", cwd) for value in extra_refs)
+                     or any(self.shell_paths(candidates(node.value), "unknown", cwd)
+                            for node in ast.walk(tree) if isinstance(node, ast.Constant) and isinstance(node.value, str)))
+        imports = {alias.asname or alias.name.split(".")[0] for node in ast.walk(tree)
+                   if isinstance(node, (ast.Import, ast.ImportFrom)) for alias in node.names}
+        if protected:
+            allowed = {"pathlib", "json", "tomllib", "hashlib", "datetime", "re", "sys", "os"}
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    return "cannot inspect custom Python operations on protected references; use the KB command."
+                if isinstance(node, ast.Assign) and any(isinstance(target, ast.Attribute) for target in node.targets):
+                    return "cannot inspect rebound Python operations on protected references; use the KB command."
+                if isinstance(node, ast.Import) and any(alias.name.split(".")[0] not in allowed for alias in node.names):
+                    return "cannot inspect external Python operations on protected references; use the KB command."
+                if isinstance(node, ast.ImportFrom) and (node.module or "").split(".")[0] not in allowed:
+                    return "cannot inspect external Python operations on protected references; use the KB command."
+
+        def data(node, visited=()):
+            if isinstance(node, ast.Constant):
+                return True
+            if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+                return all(data(item, visited) for item in node.elts)
+            if isinstance(node, ast.Dict):
+                return all(data(item, visited) for item in node.values)
+            if isinstance(node, ast.Subscript):
+                return data(node.value, visited)
+            if isinstance(node, ast.Name):
+                # Repeated literal-data transformations are finite too. Every
+                # preceding assignment must be data; file operands still use
+                # the unique-binding resolver above.
+                values = [value for name, value in assignments if name == node.id
+                          and (value.lineno, value.col_offset) < (node.lineno, node.col_offset)]
+                return bool(values) and all(id(value) not in visited and
+                    data(value, (*visited, id(value))) for value in values)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                name = call_name(node.func)
+                if name.split(".")[0] in {"json", "tomllib", "hashlib", "datetime", "re"}:
+                    return True
+                if node.func.attr == "read_text" and path(node.func.value) is not None:
+                    return True
+                return data(node.func.value, visited) and node.func.attr in {
+                    "split", "rsplit", "strip", "partition", "replace", "decode", "encode", "get"}
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in {"str", "bytes", "repr"}:
+                return node.func.id not in bindings and node.func.id not in imports
+            return False
+        readers = {"read_text", "read_bytes", "read", "readline", "readlines", "glob", "rglob", "iterdir"}
+        writers = {"write_text", "write_bytes", "write", "unlink", "rename", "replace", "touch", "mkdir"}
+        safe = {"print", "str", "bytes", "len", "any", "all", "sorted", "list", "dict", "tuple", "set",
+                "enumerate", "range", "zip", "int", "bool", "isinstance", "split", "rsplit", "strip",
+                "lstrip", "rstrip", "startswith", "endswith", "partition", "rpartition", "replace",
+                "loads", "dumps", "dump", "sha256", "hexdigest", "encode", "decode", "join", "get",
+                "items", "keys", "values", "append", "now", "isoformat"}
+        for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
+            name = call_name(call.func).split(".")[-1]
+            value, mode = None, "read"
+            if protected and isinstance(call.func, ast.Name) and name in safe and (name in imports or name in bindings):
+                return "cannot inspect a rebound Python operation on protected references; use the KB command."
+            if name == "Path":
+                value = path(call.args[0]) if call.args else None
+            elif name == "open":
+                method = isinstance(call.func, ast.Attribute)
+                value = path(call.func.value) if method else path(call.args[0]) if call.args else None
+                position = 0 if method else 1
+                flags = next((path(item.value) for item in call.keywords if item.arg == "mode"),
+                             path(call.args[position]) if len(call.args) > position else "r")
+                if flags is None and protected:
+                    return "cannot inspect dynamic Python file mode; use an explicit mode."
+                mode = "edit" if any(flag in (flags or "") for flag in "wax+") else "read"
+            elif isinstance(call.func, ast.Attribute) and name in readers | writers:
+                value = path(call.func.value)
+                mode = "edit" if name in writers else "read"
+                # String replacement is data, unlike Path.replace().
+                if name == "replace" and data(call.func.value):
+                    continue
+                if name in {"rename", "replace"} and call.args:
+                    destination = path(call.args[0])
+                    if destination is None and protected:
+                        return "cannot inspect a dynamic Python destination; use an explicit path."
+                    if destination is not None:
+                        reason = self.shell_paths([destination], "edit", cwd)
+                        if reason:
+                            return reason
+            elif protected and name not in safe:
+                return "cannot inspect an unknown Python operation on protected references; use the KB command."
+            else:
+                continue
+            if value is None:
+                if protected:
+                    return "cannot inspect a dynamic Python file operand; use the KB command."
+            else:
+                reason = self.shell_paths([value], mode, cwd)
+                if reason:
+                    return reason
         return None
 
     def passes(self, words, cwd=None):
@@ -431,6 +719,121 @@ def _assignment(word):
     return bool(sep) and name.isidentifier()
 
 
+def executed(words):
+    words = _unwrap(words)
+    if words and os.path.basename(words[0]) == "uv" and words[1:2] == ["run"]:
+        words = _uv_run(words[2:])
+    return words
+
+
+def shell_value(word, variables):
+    return re.sub(r"\$(?:\{([A-Za-z_]\w*)\}|([A-Za-z_]\w*))",
+                  lambda match: variables.get(match.group(1) or match.group(2), match.group()), word)
+
+
+def option_files(words, options):
+    found, index = [], 0
+    while index < len(words):
+        word = words[index]
+        index += 1
+        if word in options and index < len(words):
+            found.append(words[index])
+            index += 1
+        else:
+            for option in options:
+                if word.startswith(option + "="):
+                    found.append(word[len(option) + 1:])
+                    break
+                if len(option) == 2 and word.startswith(option) and len(word) > 2:
+                    found.append(word[2:])
+                    break
+    return found
+
+
+def redirections(words):
+    kept, found, index = [], [], 0
+    while index < len(words):
+        word = words[index]
+        if getattr(word, "operator", False) and word in {"<", ">", ">>", "<>", ">&", "<&", "&>", "&>>", "<<", "<<<"}:
+            if index + 1 >= len(words):
+                found.append((word, "$uninspectable_redirect"))
+                break
+            if kept and kept[-1].isdigit():
+                kept.pop()
+            if word != "<<":
+                found.append((word, words[index + 1]))
+            index += 2
+        else:
+            kept.append(word)
+            index += 1
+    return kept, found
+
+
+def messaging_script(value):
+    path = Path(value).expanduser().resolve()
+    return any(path == Path.home() / root / "skills/codex-messaging/scripts/sessions.py"
+               for root in (".codex", ".agents"))
+
+
+def call_name(node):
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return call_name(node.value) + "." + node.attr
+    return ""
+
+
+def file_operands(words):
+    program, args = os.path.basename(words[0]), words[1:]
+    if program in SEARCHERS:
+        return "read", operands(words)
+    if program in {"sed", "awk", "gawk"}:
+        found, script, index = [], False, 0
+        while index < len(args):
+            word = args[index]
+            index += 1
+            if word in {"-e", "--expression", "-v", "-F"}:
+                index += 1
+                script = script or word in {"-e", "--expression"}
+            elif word in {"-f", "--file"} and index < len(args):
+                found.append(args[index])
+                index += 1
+                script = True
+            elif word.startswith("--file="):
+                found.append(word.split("=", 1)[1])
+                script = True
+            elif word.startswith(("--expression=", "-e")):
+                script = True
+            elif word.startswith("-") or not word:
+                continue
+            elif not script:
+                script = True
+            else:
+                found.append(word)
+        return ("edit" if any(word == "--in-place" or word.startswith("-i") for word in args)
+                else "read"), found
+    readers = {"cat", "head", "tail", "cut", "sort", "wc", "ls", "find", "less", "more", "od", "xxd", "strings"}
+    mode = "read" if program in readers else "edit" if program in {
+        "cp", "mv", "rm", "tee", "touch", "truncate", "install"} else "unknown"
+    value_options = {
+        "head": {"-n", "-c", "--lines", "--bytes"},
+        "tail": {"-n", "-c", "--lines", "--bytes"},
+        "cut": {"-d", "-f", "-c", "-b", "--delimiter", "--fields", "--characters", "--bytes"},
+        "sort": {"-t", "-k", "--field-separator", "--key"},
+    }.get(program, set())
+    values, index = [], 0
+    while index < len(args):
+        word = args[index]
+        index += 1
+        if word in value_options:
+            index += 1
+        elif word.startswith("--") and "=" in word:
+            values.append(word.split("=", 1)[1])
+        elif not word.startswith("-"):
+            values.append(word)
+    return mode, values if mode != "unknown" else [part for word in words for part in candidates(word)]
+
+
 def _unwrap(words):
     """The words of a simple command after its assignments and wrappers."""
     while words:
@@ -458,7 +861,7 @@ def operands(words):
     unwrapped = _unwrap(words)
     if not unwrapped or os.path.basename(unwrapped[0]) not in SEARCHERS:
         return words
-    kept, rest, pattern, options = [], unwrapped[1:], False, True
+    kept, rest, pattern, options = [], unwrapped[1:], "--files" in unwrapped[1:], True
     index = 0
     while index < len(rest):
         word = rest[index]
@@ -475,7 +878,6 @@ def operands(words):
             if word.startswith(("-f", "--file")):
                 kept.append(value)
         elif options and word in SEARCH_VALUES:
-            kept.extend(rest[index - 1:index + 1])
             index += 1
         elif options and word.startswith("-") and word != "-":
             kept.append(word)
@@ -486,16 +888,8 @@ def operands(words):
     return kept
 
 
-def _operator(token):
-    """Whether a punctuation token separates simple commands; redirections
-    stay words of their command."""
-    return any(char in token for char in ";&|()\n")
-
-
 def commands(command):
-    """[(words, here-document tokens)] of the simple commands of a command
-    line. A here-document gives the path-like tokens of its body to the command
-    that reads it."""
+    """Simple commands with their raw here-document bodies and quote state."""
     lines, bodies, kept = command.split("\n"), [], []
     index = 0
     while index < len(lines):
@@ -510,36 +904,149 @@ def commands(command):
                 if (text.lstrip("\t") if match.group(1) else text) == match.group(3):
                     break
                 body.append(text)
-            bodies.append(PATHLIKE.findall("\n".join(body)))
+            bodies.append(("\n".join(body), bool(match.group(2))))
     found = _simple("\n".join(kept))
-    if sum(word == "<<" for words in found for word in words) != len(bodies):
+    if sum(getattr(word, "operator", False) and word == "<<" for words in found for word in words) != len(bodies):
         # A here-document marker inside quotes: every line is a command.
         found, bodies = _simple(command), []
     result = []
     for words in found:
         body = []
-        for _ in range(sum(word == "<<" for word in words)):
-            body.extend(bodies.pop(0) if bodies else ())
+        for _ in range(sum(getattr(word, "operator", False) and word == "<<" for word in words)):
+            if bodies:
+                body.append(bodies.pop(0))
         result.append((words, body))
     return result
 
 
+class ShellWord(str):
+    def __new__(cls, value, *, operator=False, expansion=False):
+        instance = super().__new__(cls, value)
+        instance.operator, instance.expansion = operator, expansion
+        return instance
+
+
+SHELL_OPERATOR = re.compile(r"&&|\|\||<<<|<<|&>>|&>|>>|<>|>&|<&|[();|&\n<>]")
+
+
+def _substitution_end(text, start):
+    """End of one balanced substitution; its contents remain shell source."""
+    if text[start] == "`":
+        index = start + 1
+        while index < len(text):
+            if text[index] == "\\":
+                index += 2
+            elif text[index] == "`":
+                return index + 1
+            else:
+                index += 1
+    else:
+        depth, quote, index = 1, None, start + 2
+        while index < len(text):
+            char = text[index]
+            if char == "\\" and quote != "'":
+                index += 2
+                continue
+            if quote:
+                if char == quote:
+                    quote = None
+            elif char in "'\"":
+                quote = char
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if not depth:
+                    return index + 1
+            index += 1
+    raise ValueError("unterminated command substitution")
+
+
+def _shell_words(text):
+    """POSIX quote removal retains operators and executable substitutions."""
+    tokens, value, quote, started, expansion, index = [], "", None, False, False, 0
+
+    def word():
+        nonlocal value, started, expansion
+        if started:
+            tokens.append(ShellWord(value, expansion=expansion))
+        value, started, expansion = "", False, False
+
+    while index < len(text):
+        char = text[index]
+        if quote == "'":
+            if char == "'":
+                quote = None
+            else:
+                value += char
+            index += 1
+            continue
+        if char == "\\":
+            if index + 1 == len(text):
+                raise ValueError("trailing escape")
+            next_char = text[index + 1]
+            if quote == '"' and next_char not in '$`"\\\n':
+                value += char
+                index += 1
+                continue
+            if next_char != "\n":
+                value += next_char
+                started = True
+            index += 2
+            continue
+        if char == "`" or text.startswith("$(", index):
+            end = _substitution_end(text, index)
+            value += text[index:end]
+            started, expansion, index = True, True, end
+            continue
+        if quote == '"':
+            if char == '"':
+                quote = None
+            else:
+                value += char
+            index += 1
+            continue
+        if char in "'\"":
+            quote, started = char, True
+            index += 1
+            continue
+        if char == "#" and not started:
+            end = text.find("\n", index)
+            index = len(text) if end < 0 else end
+            continue
+        operator = SHELL_OPERATOR.match(text, index)
+        if operator:
+            word()
+            tokens.append(ShellWord(operator.group(), operator=True))
+            index = operator.end()
+        elif char in " \t\r":
+            word()
+            index += 1
+        else:
+            value += char
+            started = True
+            index += 1
+    if quote:
+        raise ValueError("unterminated quote")
+    word()
+    return tokens
+
+
 def _simple(text):
-    """The simple commands of a text without here-document bodies."""
-    lexer = shlex.shlex(text, posix=True, punctuation_chars=PUNCTUATION)
-    lexer.whitespace = " \t\r"
-    lexer.whitespace_split = True
+    """Commands and subshell boundaries, without mistaking quoted data for operators."""
     found, words = [], []
     try:
-        for token in lexer:
-            if token and all(char in PUNCTUATION for char in token) and _operator(token):
+        for token in _shell_words(text):
+            if token.operator and token in {";", "&&", "||", "|", "&", "\n", "(", ")"}:
                 if words:
                     found.append(words)
                 words = []
+                if token in {"(", ")"}:
+                    found.append([token])
             else:
                 words.append(token)
     except ValueError:
-        return [line.split() for line in text.split("\n") if line.split()]
+        return [["__uninspectable_shell__", text]]
     if words:
         found.append(words)
     return found
@@ -633,13 +1140,27 @@ def patched_text(text, body):
     return "\n".join(lines) + "\n"
 
 
+def denial(reason):
+    json.dump({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse", "permissionDecision": "deny",
+        "permissionDecisionReason": "kb guard: " + reason}}, sys.stdout)
+    return 0
+
+
 def main():
+    if sys.version_info < (3, 11):
+        return denial("Python 3.11 or newer is required; restore the working tree's .venv interpreter.")
     call = json.load(sys.stdin)
     mode = session_mode(ROOT, call.get("session_id"))
     if mode == "off" or (mode is None and os.environ.get("KB_GUARD", "").lower() == "off"):
         return 0
-    reason = Guard(ROOT, call.get("cwd")).decide(call.get("tool_name", ""),
-                                                call.get("tool_input") or {})
+    try:
+        reason = Guard(ROOT, call.get("cwd")).decide(call.get("tool_name", ""),
+                                                    call.get("tool_input") or {})
+    except ModuleNotFoundError as error:
+        if error.name == "tomllib":
+            return denial("Python 3.11 with tomllib is required; restore the working tree's .venv interpreter.")
+        raise
     if reason:
         session = session_key(call.get("session_id"))
         maintenance = (f"uv run kb guard off --session {session}" if session else

@@ -291,7 +291,7 @@ class BashTest(GuardCase):
 
     def test_a_command_inside_a_tree_names_it(self):
         inside = project.hook.Guard(self.root, cwd=self.root / "l0" / "7mfk")
-        self.assertIn("names l0/", inside.decide("Bash", {"command": "cat funcs.csv"}))
+        self.assertIn("l0/7mfk/funcs.csv is L0", inside.decide("Bash", {"command": "cat funcs.csv"}))
         self.assertIsNone(inside.decide("Bash", {"command": f"cd {self.root} && ls"}))
 
     def test_codex_shell_uses_the_tool_working_directory(self):
@@ -308,7 +308,7 @@ class BashTest(GuardCase):
 
     def test_here_documents_join_the_command_that_reads_them(self):
         commands = project.hook.commands("git commit -F - <<'EOF'\nsee (kb/x)\nEOF\nls -la")
-        self.assertEqual(commands, [(["git", "commit", "-F", "-", "<<", "EOF"], ["see", "kb/x"]),
+        self.assertEqual(commands, [(["git", "commit", "-F", "-", "<<", "EOF"], [("see (kb/x)", True)]),
                                     (["ls", "-la"], [])])
 
 

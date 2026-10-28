@@ -103,6 +103,19 @@ The access guard directs protected data and projection operations to KB.
 A refusal names the supported command. Diagnose the prescribed path; a failed
 operation does not authorize a guard override or another writer.
 
+Shell checks distinguish file operands from literal draft, here-document and
+message text. Redirections and active command substitutions are checked before
+trusted commands run. Absolute patterns retain their root, symbolic links use
+their targets, and subshell directory changes stay in their scope. Git review
+commands remain available; blob reads, message-file reads and worktree writes
+still receive the corresponding file checks.
+
+Inline Python inspection supports literal file paths, simple path bindings and
+captured-response metadata transformations. It conservatively refuses unknown
+operations involving protected references. It does not execute the program or
+provide general Python analysis. The hook requires Python 3.11 with `tomllib`;
+an unsuitable fallback interpreter returns a deliberate denial.
+
 ## Implementation
 
 | Modules | Responsibility |

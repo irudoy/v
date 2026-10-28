@@ -1728,8 +1728,9 @@ security boundary: the gates validate every file whatever wrote it.
   `.venv`, or `python3` without it. The hook uses only the Python standard
   library and reads its path lists from `[guard]` of `tools/kb/config.toml`
   and from `tools/kb/projections.toml`, and the stage from
-  `tools/kb/bench.toml`. A failure of the hook reaches the user and does not
-  block the call.
+  `tools/kb/bench.toml`. Python older than 3.11 or missing `tomllib` produces
+  a deliberate denial that names the required interpreter. Other hook
+  failures reach the user and do not block the call.
 - The hook denies with `permissionDecision = "deny"` and a reason that names
   the command to use:
 
@@ -1741,17 +1742,29 @@ security boundary: the gates validate every file whatever wrote it.
 | `Read` under `l0/` | Deny | `kb at`, `kb code`, and `kb cypher` |
 | `Read` of a guarded projection | Deny | `kb show`, `kb where`, or `kb find` |
 | `Grep` or `Glob` whose path lies in a guarded tree or file | Deny | `kb find` |
-| `Bash` whose command names a guarded path, unless it changes the directory or runs `uv run kb`, a git command from the allow list, `make`, or a repository script under `tools/` or `patches/` | Deny | The matching `kb` command |
+| `Bash` that reads or searches a guarded operand, or edits a guarded tree or projection, outside a trusted runner | Deny | The matching `kb` command |
 
 - The git allow list covers `status`, `add`, `commit`, `diff`, `log`,
   `show --stat`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
-  `mv`, and `rm`, so diffs stay reviewable. `make` and the repository scripts
-  read their inputs as the gates do.
-- A shell command splits into simple commands at the shell operators and line
-  breaks, and a here-document belongs to the command that reads it. A word, or
-  a path-like part of a word, names a path when it holds a slash or equals a
-  projection file; the pattern of a search program names none. A command that
-  runs inside a guarded tree names that tree.
+  `mv`, and `rm`, so diffs stay reviewable. Explicit blob reads, commit message
+  files, `grep`, `diff --no-index`, output files and worktree file edits receive
+  their file checks before that allow list applies. Index-only operations
+  retain their access. `make` and repository scripts read their inputs as the
+  gates do.
+- Shell inspection preserves quoted data, actual operators and here-document
+  bodies. It checks redirections and active command substitutions before
+  trusted runners. Absolute glob operands retain their root and symbolic links
+  resolve to their targets. A subshell restores its parent working directory
+  and variables. Bare tree operands are paths, while search patterns and
+  literal draft bodies are data. Known codex-messaging scripts treat `--text`
+  as data and `--file` as a file operand.
+- Inline Python inspection accepts finite literal file operations and metadata
+  transformations over captured responses. File paths support literals,
+  unique simple bindings and path joins; known string and metadata operations
+  keep literal source headers as data. Unknown operations involving protected
+  references are conservatively denied. The hook does not execute Python
+  programs or provide general Python analysis. Unknown shell operations use
+  conservative checks of their possible file operands.
 - An edit of a file with a marked section is an edit of the projection when
   it changes the section or its markers.
 - A Codex patch checks every source and move destination. For an update of
