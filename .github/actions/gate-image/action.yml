@@ -1,0 +1,43 @@
+name: Gate image
+description: >-
+  Load the GNU SH-2E gate image of the current build inputs from the Actions
+  cache, or build it with its input label and cache it.
+inputs:
+  image:
+    description: Local tag of the gate image.
+    required: true
+runs:
+  using: composite
+  steps:
+    - id: inputs
+      name: Identify the image inputs
+      shell: bash
+      run: |
+        label=$(python3 tools/sh-elf-run/image_inputs.py)
+        echo "label=$label" >> "$GITHUB_OUTPUT"
+        echo "key=sh-elf-run-${label##*sha256:}" >> "$GITHUB_OUTPUT"
+    - id: cache
+      name: Restore the gate image
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ runner.temp }}/sh-elf-run-image.tar.zst
+        key: ${{ steps.inputs.outputs.key }}
+    - name: Load the gate image
+      if: steps.cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: zstd -dc "$RUNNER_TEMP/sh-elf-run-image.tar.zst" | docker load
+    - name: Build the gate image
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        LABEL: ${{ steps.inputs.outputs.label }}
+      run: |
+        docker build --tag "$IMAGE" --label "$LABEL" tools/sh-elf-run
+        docker save "$IMAGE" | zstd -T0 -q -o "$RUNNER_TEMP/sh-elf-run-image.tar.zst"
+    - name: Cache the gate image
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ runner.temp }}/sh-elf-run-image.tar.zst
+        key: ${{ steps.inputs.outputs.key }}

@@ -1,0 +1,125 @@
+name: Verify
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      full:
+        description: Build the graph in an empty instance instead of updating the cached graph.
+        type: boolean
+        default: false
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GATE_IMAGE: vq-sh-elf-run:ci
+
+jobs:
+  firmware:
+    name: Firmware gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/gate-image
+        with:
+          image: ${{ env.GATE_IMAGE }}
+      - name: make verify-firmware
+        env:
+          VQ_SH_ELF_IMAGE: ${{ env.GATE_IMAGE }}
+          VQ_SH_ELF_SKIP_BUILD: "1"
+        run: make verify-firmware
+      - name: Upload the gate records
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: firmware-gate-records
+          path: tmp/local-results/sh-elf-run
+          if-no-files-found: ignore
+
+  sources:
+    name: Source checks and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: "0.12.19"
+          enable-cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - uses: ./.github/actions/gate-image
+        with:
+          image: ${{ env.GATE_IMAGE }}
+      - name: Install the locked environment
+        run: uv sync --frozen
+      - id: graph-key
+        name: Fingerprint the graph inputs
+        run: |
+          fingerprint=$(uv run python -c 'from kb import fingerprint; print(fingerprint.compute().value)')
+          echo "key=kb-graph-$fingerprint" >> "$GITHUB_OUTPUT"
+      - id: graph-cache
+        name: Restore the graph
+        if: ${{ !inputs.full }}
+        uses: actions/cache/restore@v6
+        with:
+          path: tools/memgraph/data/lib
+          key: ${{ steps.graph-key.outputs.key }}
+          restore-keys: kb-graph-
+      - name: Start Memgraph
+        run: uv run kb instance up
+      - id: sync
+        name: kb sync
+        run: uv run kb sync
+      - name: kb check
+        run: uv run kb check
+      - name: make check
+        env:
+          VQ_SH_ELF_IMAGE: ${{ env.GATE_IMAGE }}
+          VQ_SH_ELF_SKIP_BUILD: "1"
+        run: make check
+      - name: make test-full
+        env:
+          PYTEST_ADDOPTS: -rs
+        run: make test-full
+      # A stopped instance writes its final snapshot; the newest snapshot holds
+      # the whole graph, so the cache keeps only that one. Snapshot names start
+      # with their creation time.
+      - name: Stop Memgraph
+        id: stop
+        if: always() && steps.sync.outcome == 'success' && steps.graph-cache.outputs.cache-hit != 'true'
+        run: |
+          docker compose -f tools/memgraph/docker-compose.yml stop --timeout 300
+          sudo chown -R "$(id -u):$(id -g)" tools/memgraph/data
+          find tools/memgraph/data/lib/snapshots -maxdepth 1 -type f | sort | head -n -1 \
+            | xargs -r rm -f
+          du -sh tools/memgraph/data/lib
+      - name: Cache the graph
+        if: always() && steps.stop.outcome == 'success'
+        uses: actions/cache/save@v6
+        with:
+          path: tools/memgraph/data/lib
+          key: ${{ steps.graph-key.outputs.key }}
+      - name: Collect the Memgraph log
+        if: failure()
+        run: sudo chown -R "$(id -u):$(id -g)" tools/memgraph/data/log || true
+      - name: Upload the Memgraph log
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: memgraph-log
+          path: tools/memgraph/data/log
+          if-no-files-found: ignore
