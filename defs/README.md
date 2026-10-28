@@ -45,12 +45,18 @@ projection and does not replace these tracked sources.
 The architecture view is generated from the stage, block, endpoint, and chain
 entities of `kb`. Edit their owners with `kb`, then regenerate the view.
 
-The six JK08A ledgers and the curated function names in
+The JK08A ledgers and the curated function names in
 `tools/ghidra/symbols/7mfk.csv` are views of the meanings in `kb/` from stage 5
-of `tools/kb/SPEC.md`. Use `kb` to read and change their facts, then
-`uv run kb project` to regenerate the views. Reproduced ledger sites carry
+of `tools/kb/SPEC.md`. Use `kb` to read and change their facts;
+`tools/kb/src/kb/ledger_projection.py` owns their CSV rendering. Reproduced ledger sites carry
 checked L0 contexts; unverified sites and constants retain their source claims
 without grounding a level. The `levels` gate checks each claim independently.
+
+This README identifies mechanisms and their source owners. Current row counts,
+status totals, image identities and version values are read from those owners
+or their generated reports. `tools/kb/projections.toml` declares the generator
+and consistency check of each generated projection; prose is not a machine
+input and does not carry an independent census snapshot.
 
 ## Canonical exact-code layer
 
@@ -111,24 +117,19 @@ source-only interpolation contract without inventing a target pair.
 Target-only wrappers remain in the target interpolation registry and do not
 need correspondence rows.
 
-The SH7059 1ND library retains the same interpolation mechanics but adds two
-mixed-axis wrappers and an alternate-finisher 8x8 byte wrapper while omitting
-the standard-finisher 16x16 byte wrapper used by JK08A.
-`JK08A-1ND0A.interp-correspondence.csv` records every source contract,
-including the explicit unsupported entry, while `1ND0A.interp.csv` retains the
-three target-only contracts.
-
-JK78C contains the same 36 interpolation contracts as 1ND0A at SH7058
-addresses. Its 33 mapped JK08A contracts, one explicit source-only contract,
-and three VQ37-only contracts are recorded independently. Equal wrapper bytes
-and reviewed library order establish the contract registry; they do not by
-themselves establish map semantics or equal calibration geometry.
+The SH7059 1ND library retains the interpolation mechanics of JK08A, with
+target-only mixed-axis and alternate-finisher wrappers and an unsupported
+standard-finisher contract. `JK08A-1ND0A.interp-correspondence.csv` owns the
+mapped and unsupported source contracts; `1ND0A.interp.csv` owns the target
+library. The corresponding JK78C registries retain its independent SH7058
+addresses. Equal wrapper bytes and reviewed library order establish a contract
+pair; they do not establish map semantics or equal calibration geometry.
 
 `1ME3B.interp.csv` registers a library that fuses wrapper, kernel, and axis
 search into one leaf per access, so every row names the leaf as both `kernel`
-and `wrapper`. Its 34 rows are read from the leaf code and reproduce the 1ND0A
-contract vocabulary without any shared code; seven rows are byte-identical
-copies of another leaf with their own callers. The census runs
+and `wrapper`. Its rows are read from the leaf code and reproduce the 1ND0A
+contract vocabulary without shared code; duplicate leaves retain their own
+callers. The census runs
 `ResolveAccessors.java` in `fused` mode per row. No interpolation
 correspondence registry exists for it: the contracts are equal in geometry,
 storage, and axis types, but pairing them with 1ND0A entries requires a
@@ -138,25 +139,20 @@ comparison is recorded per map and axis in
 target address.
 
 `1ND0A-1ME3B.census-correspondence.csv` classifies every ROM operand of the
-1ME3B accessor census against the 1ND0A census: 768 maps and 432 arrays read
-only as axes; 26 further axis operands are also read as maps and are listed as
-maps. The 458 axis operands exceed the 457 axes of the map layer by `0x016C46`,
-which is read only at call site `0x072794`, where no map base is recovered.
+1ME3B accessor census against the 1ND0A census. Operands used as both maps and
+axes are represented as maps; axis-only operands retain their own rows.
 `tools/census_homology.py` writes it from the L0 of layouts `1nd` and `1me3b`
 and applies three methods in order. `aligned-reference` aligns a 1ND0A function with its
-best 1ME3B function by instruction shape, at a similarity of at least 0.75, and
+best 1ME3B function by the instruction-shape threshold owned by that tool, and
 pairs the census operands loaded by aligned instructions when every vote of the
 source operand names one target of equal geometry. `unique-exact-content` pairs
 a remaining target whose stored bytes and geometry occur once in each census.
 `published-registry` adds the pairs that the definition correspondences and the
-target-native table registry publish under one role. The ledger pairs 588 maps
-and 356 axes; 557 and 345 of them hold equal stock bytes. No pair of the first
-two methods contradicts a published pair. A published pair may share its source
-with a census pair: the 1ME3B resolver `0x062FAC` and dispatcher `0x07448C`
-read separate copies, `0x00E17C` and `0x01027C`, of the hot-idle surface
-`0x00E748` that both 1ND0A readers share. Five maps and two axes are
-`ambiguous`. The 175 unpaired maps and 74 unpaired axes carry the reason in
-`note`: `flat-content` for uniform stock bytes, `duplicate-content` for bytes
+target-native table registry publish under one role. A published pair may
+share its source with a census pair when target readers use separate copies
+of one source surface. The ledger owns pair status, byte equality and the
+reason for each ambiguous or unpaired operand in `note`: `flat-content` for
+uniform stock bytes, `duplicate-content` for bytes
 that recur in the census, and `no-content-match` for bytes absent from the
 1ND0A census. The ledger is a candidate-level address index and assigns no
 semantics. `make check` validates it against both stock images and the
@@ -171,21 +167,21 @@ its symbol, the accessor bindings from the evidence of its `reader` links,
 its axes from its `axis` links, and the digest of its stock values; an absent
 role is an `absent` status of its meaning on the layout.
 
-`JK08A-JK78C.definition-addresses.csv` binds 29 source maps and 16 axes to
-JK78C storage and records 16 source maps as unsupported. The unsupported
-entries cover removed dispatcher slots, the three exhaust-cam surfaces and the
-four standstill exhaust-VTC override constants of the removed exhaust valve
-timing subsystem, target algorithms whose table geometry differs, and the three
+`JK08A-JK78C.definition-addresses.csv` owns the mapped source maps and axes
+and the unsupported source roles. The unsupported entries cover removed
+dispatcher slots, the exhaust-cam surfaces and standstill exhaust-VTC override
+constants of the removed exhaust valve timing subsystem, target algorithms
+whose table geometry differs, and the three
 canonical ignition surfaces, whose homologs sit in the coordinator half that
 the stock configuration leaves unexecuted. The JK78C registry enables native
-RomRaider checksum handling, fourteen-family target-specific Map Switching,
+RomRaider checksum handling, target-specific Map Switching,
 Rolling Launch, and the CAN telemetry startup switch from the validated runtime
 profile. The target-native fuel-cut projection adds the adjacent activation and
-release caps plus the two independent eight-point curves used by the exact
-190-byte state machine. The target-native table registry adds the two
+release caps plus independent eight-point curves used by the registered
+native state machine. The target-native table registry adds the
 alternate selector arms and the VVEL target set modelled in `JK78C.vvel.md`:
-twenty-one duration, intake-CVTC, shaft-angle, and monitor tables with twenty
-exact axes, each bound to the literal pool of its reading function. The set
+duration, intake-CVTC, shaft-angle, and monitor tables with their declared
+axes, each bound to the literal pool of its reading function. The set
 includes the byte-identical second copies of the shaft-angle conversion and of
 both monitor floors, and the hot-intake idle pair of the state-code dispatcher
 `0x0657E4`. The registry also publishes the two 16x16 ignition surfaces that
@@ -203,21 +199,21 @@ XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the reviewed VQ37 semantic set
-to the SH7059 1ND layout. It binds 27 source maps and 13 axes to 1ND storage
-and records 18 source maps as unsupported: the unsupported maps of JK78C, the
-target mixture map, and its high-detonation multiplier, whose mixture stage
+to the SH7059 1ND layout. It owns the mapped and unsupported roles, including
+the unsupported maps of JK78C, the target mixture map, and its
+high-detonation multiplier, whose mixture stage
 has no candidate in the 1ND0A export. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
 its identity, stock calibration values, and image hash remain independent.
 Both 1ND definitions expose target-specific Map Switching storage and the CAN
-telemetry startup switch. The project checksum implementation covers their six
-checksum fields, but native RomRaider checksum metadata cannot represent the
-complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
+telemetry startup switch. The project checksum implementation covers the
+fields owned by the selected checksum layout, but native RomRaider checksum
+metadata cannot represent the complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
 and exact scheduler-to-coordinator bindings are shared at the same addresses,
 while each definition remains bound to its independent stock image hash. The
-1ND VVEL registry carries eighteen target-native tables and seventeen axes at
+1ND VVEL registry carries its target-native tables and axes at
 shared addresses: the 1ND resolver indexes the hot-intake idle surfaces by two
 temperature-coded bytes instead of engine speed and torque, reads a mode 14
 surface that JK78C replaces with a constant, and has no floor curves and no
@@ -240,24 +236,23 @@ byte-identical copies in the gated half that the stock byte leaves unexecuted;
 the trio is recorded as unsupported.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the reviewed 1ND semantic set
-to the fused-library 1ME3B image. It binds 27 source maps and 13 axes to 1ME3B
-storage and records 18 source maps as unsupported. No code relocates
-from any modelled ROM, so every row is established through the 1ND0A
+to the fused-library 1ME3B image. It owns the mapped and unsupported roles.
+No code relocates from any modelled ROM, so every row is established through the 1ND0A
 structural export: exact-bytes or normalized-shape function pairs that read
 the target address at the same call ordinal, target functions that reproduce
 the 1ND0A reader's operand set, selector arms, and call order, the fused leaf
 whose contract equals the 1ND0A wrapper, exact target storage, and target
-literals. The unsupported rows are the eighteen rows of 1ND; the three
+literals. The unsupported roles follow the 1ND projection; the
 canonical ignition surfaces among them have no homolog at all: the target ignition coordinator `0x0797CC` carries only its
 mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with
 native RomRaider metadata over the `sh7059_1me3b` layout. The definition
 exposes the 1ME3B runtime allocation of `rom-address-profiles.toml`: Map 2-5
-storage for eighteen switched families, the target-native fuel-cut caps and
-curves of the VQ37 registry, the Rolling Launch controls at `0x13CF60`, and the
-CAN telemetry startup switch at `0x13DE03`. The target-native table registry adds the two
+storage for the registered switched families, the target-native fuel-cut caps
+and curves of the VQ37 registry, Rolling Launch controls, and the CAN telemetry
+startup switch at their declared target addresses. The target-native table registry adds the
 alternate selector arms, the VVEL target set, and the six executed ignition
-surfaces to the 1ME3B definition: thirty-one tables and twenty-four axes, each
+surfaces to the 1ME3B definition, each
 bound to an undisplaced literal-pool word of its reading function. The ignition
 surfaces are the mode-selected set of the coordinator `0x0797CC`: the 16x16
 surfaces `0x00A344` and `0x00A444` over the projected ignition axes and the 8x8
@@ -448,16 +443,15 @@ descriptor is intact (`../patches/immo-off-developer-flag.md`).
 
 Every image stores its descriptors as twelve-byte records followed immediately
 by one 32-bit attribute pointer per record. That pointer table is the ECU's own
-attribute reference: it reproduces all 48 canonical JK08A attribute addresses
+attribute reference: it reproduces the canonical JK08A attribute addresses
 exactly. `../tools/mapkit/dtc_projection.py` therefore reads a target binding
 out of the target image instead of deriving it from an offset.
 
 A canonical record is carried to a relocated target only when exactly one target
 record is byte-identical to it, which fixes group, sub-index, monitor class,
-code, and trailing flag together. JK00C and JK00D carry all 48 codes; JK78C and
-`1ND` carry 39, because VQ37 declares no P1422 record and none of the eight
-exhaust valve timing records; 1ME3B carries 38, because it declares no P0443
-record either. The exact-code members of `7MFKAVN86`
+code, and trailing flag together. Each target's DTC projection owns its record
+inventory. VQ37 declares no P1422 or exhaust valve timing records, and 1ME3B
+also declares no P0443 record. The exact-code members of `7MFKAVN86`
 reproduce the canonical registry from their own images and share it rather than
 tracking a copy.
 
@@ -465,9 +459,8 @@ Byte identity carries a record across a relocation that is not uniform. The
 projection needs no address model: it locates the descriptor run and the pointer
 table in the target image and matches records. 1ME3B is the case that separates
 the two, and it also shows that this registry precedes every other analysis
-layer. Its 334 descriptor records at `0x1bf58` hold the 38 codes it shares with
-the 331 records of `1ND0A` at three different relocations and at index offsets
-of `-1`, `0`, and `+1`, and the projection matches them without reference to the
+layer. Its descriptor records share codes with `1ND0A` at nonuniform address
+and index relocations, and the projection matches them without reference to the
 structural export, checksum layout, or definition correspondence of the image.
 
 The Developer Immobilizer flag is a definition-controlled data edit, not a

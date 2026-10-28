@@ -16,8 +16,8 @@ engines.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
-- The unified builder composes the current capability-specific runtime for
-  JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
+- The unified builder composes the capability-specific runtime for the targets
+  registered by `patches/runtime_targets.py` and their address profiles.
   Map Switching, Rolling Launch, and custom CAN telemetry are available on all
   registered targets. Map Switching and Rolling Launch take their input from the
   steering switch buttons, which JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and
@@ -33,8 +33,7 @@ engines.
   reviewed address layout while retaining independent identities and values.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. It independently assembles and executes the canonical JK08A
-  runtime and the target-specific JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and
-  1ME3B projections.
+  runtime and the relocated projections registered by `patches/runtime_targets.py`.
   Software verification does not replace bench, readback, or engine validation.
 - Concrete tuned images, local calibration profiles, build recipes, active tune
   identities, and generated test artifacts are intentionally outside Git.
@@ -168,9 +167,9 @@ It includes the repository-contained GNU SH-2E Docker gate and is required
 before flashing or closing an engineering track. The pin-tracer contract is
 documented beside that tool.
 
-`make runtime-targets-generate` regenerates the tracked JK00C, JK00D, JK78C,
-1ND0A, 1ND3B, and 1ME3B GNU SH-2E payload locks and capability-specific stage hashes
-from the registered address profiles.
+`make runtime-targets-generate` regenerates GNU SH-2E payload locks and
+capability-specific stage hashes for the relocated targets registered by
+`patches/runtime_targets.py`, using their declared address profiles.
 
 `make check` independently assembles and byte-compares that manifest and the
 canonical JK08A telemetry manifest using the same pinned GNU toolchain.

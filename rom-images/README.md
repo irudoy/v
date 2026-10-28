@@ -4,8 +4,9 @@ Ground-truth ROM dumps for the **VQ HR ECU** project: images from the RomRaider
 forum and owned reads from physical ECUs.
 
 Original binaries (`*.bin`) are versioned in Git; duplicate archives are not
-stored. This file is the identification manifest. Dumps are identified by
-`sha256`.
+stored. `roms.csv` owns the image inventory and identities; this document
+describes provenance, interpretation and the registry workflow. Dumps are
+identified by `sha256`.
 
 A previously unmodelled image enters the project through
 [`new-rom-intake.md`](new-rom-intake.md), which classifies it, selects a
@@ -76,23 +77,14 @@ Renesas datasheet
 
 ## Dumps
 
-| File | Size (bytes) | Flash / MCU | ECM part # | Vehicle | Engine | Market | Bus |
-|------|-------------:|-------------|------------|---------|--------|--------|-----|
-| `23710-1ME3B/11ME3B-20260825-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 (`SH705927N`) | 23710-1ME3B | KY51 Fuga | VQ37VHR | JDM | CAN |
-| `23710-1ND0A/11ND0A-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
-| `23710-1ND3B/11ND3B-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
-| `23710-JK00A/1JK00A-20260804-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00A | V36 Skyline 350GT (PV36; exact-part marketplace) | VQ35HR | JDM | CAN |
-| `23710-JK00C/1JK00C-20260803-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00C | V36 Skyline 350GT (PV36; hardware-family) | VQ35HR | JDM | CAN |
-| `23710-JK00D/1JK00D-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | bench ECU | VQ35HR | unknown | CAN |
-| `23710-JK03A/1JK03A-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
-| `23710-JK03B/1JK03B-20260804-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK03B | V36 Skyline 250GT | VQ25HR | JDM | CAN |
-| `23710-JK08A/1JK08A-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK08A | V36 Skyline 250GT | VQ25HR | JDM | CAN |
-| `23710-JK78C/1JK78C-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 * | 23710-JK78C | Infiniti G37 (2008-09) | VQ37VHR | USDM | CAN * |
+[`roms.csv`](roms.csv) supplies paths, hashes, sizes and application metadata.
+The README beside each image records the evidence behind its provenance,
+physical labels and application assignment.
 
 The `23710` prefix is the Nissan/Infiniti part-number prefix for an ECM, according
 to the parts.nissanusa catalog.
 
-`*` Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
+Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
 Renesas datasheet. The specific on-board chip model (SH7058 vs SH7059) and CAN
 bus are inferred from flash size and the Hitachi HR CAN ECU family; final
 verification requires disassembly or chip markings. As a cross-check, PCMflash
@@ -274,53 +266,52 @@ The current separation between binary homology, definition parity, runtime
 features, verification, and hardware evidence is summarized in
 [`support-matrix.md`](support-matrix.md).
 
-The baseline identifies five implementation groups, tabulated with their
+The baseline identifies the registered implementation groups, tabulated with their
 address policy and builder consequence in
 [`support-matrix.md`](support-matrix.md#family-baseline). The measurements
-below state what the homology registry reads for each group.
+below explain the family interpretation; current comparison metrics belong to
+`homology.csv`, generated from the image bytes and `homology.toml`.
 
 ### Exact-code families
 
 The `7MFKAVN86` images are byte-identical in `0x000000:0x008200` and
-`0x020000:0x100000`. All 2,312 confirmed executable JK08A function ranges are
-therefore exact across the family. The current JK08A checksum implementation
-validates all six stored domains in every member. The four images also have the
-same 15 stock Map Switching hook values, the same empty runtime allocation, the
-same diagnostic pointer slots, and the same stock CAN mailbox record. The
-production builder registers all four exact identities under
+`0x020000:0x100000`. The reviewed executable ranges are therefore exact across
+the family. The selected checksum layout validates its stored domains in every
+member. The images also have the same stock Map Switching hook values, empty
+runtime allocation, diagnostic pointer slots, and stock CAN mailbox record. The
+production builder resolves the registered exact identities under
 `sh7058_7mfkavn86`, uses JK08A as the canonical executable layout, and restores
 builder-owned bytes from the selected member's stock image. No code relocation
 is required within this family.
 
 The reviewed JK08A table layer also transfers structurally within this family.
-At the same addresses, JK03A has 460 of 464 table byte ranges identical to
-JK08A, JK03B has 454, and JK00A has 271. All 48 reviewed DTC descriptor and
-attribute pairs are identical in all four images. Generated definitions must
+Table-byte equality is measured from the selected images; the definition and
+DTC projections own the reviewed map and descriptor inventories. Generated
+definitions must
 measure the selected ROM values rather than copy JK08A values, especially for
 JK00A, but they can share the recovered accessors, geometry, semantics, and
-presentation source. `defs/rom-inheritance.toml` binds all three inheritors to
+presentation source. `defs/rom-inheritance.toml` binds the registered inheritors to
 the canonical source, while `defs/rom-identities.toml` supplies distinct editor
 identity blocks. The generated XML/XDF files therefore expose the common
 structure without embedding JK08A calibration values in another target.
 
 The `1ND` pair is byte-identical in `0x000000:0x008200` and
-`0x020000:0x180000`. All 1,909 functions in the current 1ND0A Ghidra census are
-exact in 1ND3B. The registered checksum profile reproduces four SUM16 fields
-and one runtime XOR+SUM domain in both images. The generated definitions and
+`0x020000:0x180000`. The executable layout is shared; current function totals
+belong to the layout's structural export. The registered checksum profile owns
+the SUM16 fields and runtime XOR/SUM domain in both images. The generated
+definitions and
 production builder share one address profile and executable layout while
 retaining independent image identities, calibration values, and stage hashes.
 
 ### Near-code family
 
-JK00C and JK00D have only 55.4819 percent byte equality at the same offsets
-because local changes shift later content. Address-independent matching finds
-73.4272 percent conservative exact 64-byte code-window coverage in both
-directions. The Myers comparison in `radiff2 6.1.6` reports similarity `0.979`
-and edit distance `43,104`, confirming a common code lineage with relatively
-small edits rather than independent implementations.
+`homology.toml` classifies JK00C and JK00D as a near-code family. Local changes
+shift later content, so same-offset equality and address-independent window
+coverage are separate metrics in `homology.csv`; neither metric establishes
+semantic inheritance.
 
 Direct reuse of JK08A or JK00D addresses is unsafe. JK00C and JK00D match none
-of the 15 current JK08A Map Switching stock hooks, and their checksum fields
+of the canonical JK08A Map Switching stock hooks, and their checksum fields
 and application state are relocated. Reviewed homologs show that the
 higher-level algorithms survive at target-specific addresses.
 
@@ -335,23 +326,18 @@ relocated Map Switching, Rolling Launch, and CAN telemetry paths.
 
 ### Significantly different groups
 
-The conservative exact 64-byte window overlap is about 15 percent between the
-`7MFKAVN86` and `8MFK` families, about 8 percent between `8MFK` and JK78C,
-about 1.3 percent between JK78C and the SH7059 `1ND` family, and about 19
-percent between `1ME3B` and `1ND`. These values are not semantic similarity
-scores. They establish that same-address or raw byte inheritance is
-inappropriate.
+`homology.csv` owns the measured window overlap between the declared divergent
+groups. Window overlap is not a semantic similarity score and does not permit
+same-address or raw-byte inheritance.
 
 `1ME3B` shares the SH7059 class, the 1.5 MiB flash, and the boot and vector
-blocks with the `1ND` pair; below `0x008200` it differs from 1ND0A at only 14
-byte positions, namely a four-byte value at `0x005fe0`, the stored SUM16 fields
+blocks with the `1ND` pair; below `0x008200` its differences include a
+four-byte value at `0x005fe0`, the stored SUM16 fields
 at `0x005ffe` and `0x006efe`, and the software identifier at `0x006f09`. Its
 executable region is a separate layout.
-`radiff2 6.1.6` reports Myers similarity `0.815` and edit distance `581,292`
-for `1ME3B` against `1ND0A`. The same metric reads `0.790` for the declared
-divergent JK08A and JK00D pair and `0.979` for the near-code JK00C and JK00D
-pair, so `1ME3B` sits in the divergent band. Two structures still carry across
-at relocated addresses: the four `1ND` SUM16 checksum domains reproduce at
+The declared divergent relationship is owned by `homology.toml`. Structures
+still carry across at relocated addresses: the `1ND` SUM16 checksum domains
+reproduce at
 their `1ND` field addresses while the application XOR and SUM fields move from
 `0x009610` and `0x009618` to `0x0096f4` and `0x0096fc`, and the diagnostic
 descriptor region is byte-identical across 1,936 bytes at a constant `+0x164`
