@@ -160,7 +160,7 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,ffff239a,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,ffff239b,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
 telemetry,ltft_b1_raw,ffff2302,ffff225a,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_b2_raw,ffff2304,ffff225c,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,alpha_n_flow_raw,ffff1170,ffff22f8,,,target-specific,"The high byte of ffff22f8, the scheduler snapshot of ffff238a that producer 0004726c forms, is the column of the target Fuel Compensation surfaces 00009eba and 00009fba on the percent scale of the field; producer 0003fca4 stores the JK08A coordinate as ffff115c, which indexes only 4x4 surface 00009a1a"
+telemetry,alpha_n_flow_raw,ffff1170,ffff22f8,,,target-specific,"The high byte of this word, not the JK08A coordinate cell, is the column of the target Fuel Compensation surfaces; diamond-macaque/ram holds the evidence."
 telemetry,battery_voltage_raw,ffff1188,ffff1174,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_learned_b1_raw,ffff2306,ffff225e,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
 telemetry,ltft_adjustment_b1_raw,ffff5648,ffff5be0,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction

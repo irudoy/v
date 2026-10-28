@@ -1,3 +1,15 @@
+summary = """
+JK78C scheduler snapshot of ffff238a whose high byte is the column \
+coordinate of the Fuel Compensation surfaces."""
+note = [
+    """
+Producer 0004726c forms ffff238a on the percent scale of the \
+alpha_n_flow_raw field. FUN 00040958 reads this word at 00040dac and \
+00040dd8, and its high byte is the column of fuel_compensation_main/tbl \
+00009eba and fuel_compensation_alternate/tbl 00009fba. The JK08A coordinate \
+counterpart alpha_n_flow/ram ffff115c indexes only the 4x4 surface \
+00009a1a.""",
+]
 width = 16
 
 [[symbol]]

@@ -139,6 +139,7 @@ key = "sh2-decode"
 [[symbol]]
 layout = "jk00c"
 address = "00021d6c"
+note = "The 115 instructions equal those of the 7mfk divider 00021ce0."
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -151,6 +152,7 @@ value = 0
 [[symbol]]
 layout = "jk00d"
 address = "00021d6c"
+note = "The 115 instructions equal those of the 7mfk divider 00021ce0."
 
 [[symbol.evidence]]
 kind = "call-ordinal"
