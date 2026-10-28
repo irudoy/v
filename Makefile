@@ -98,6 +98,7 @@ setup:
 check:
 	$(PYTHON) tools/check_projection_contract.py
 	$(PYTHON) tools/version_index.py --check
+	$(PYTHON) tools/can_dashboard/package_locks.py --check
 	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/diagnostics/extract_rom_dtc.py --check
 	$(PYTHON) tools/diagnostics/extract_esm.py refs/nissan-esm-2007-g35-sedan --check
