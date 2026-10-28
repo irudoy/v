@@ -1,8 +1,12 @@
 from argparse import Namespace
 import contextlib
 import io
+import json
+import os
 from pathlib import Path
 import subprocess
+import shlex
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -241,7 +245,7 @@ class PatternTest(RepoCase):
             "defs/C.interp.csv: matches defs/*.interp.csv and is no file of its rendering "
             "(fix: git rm defs/C.interp.csv)",
             "defs/A.interp.csv: file: differs from its rendering "
-            "(fix: uv run kb project defs/*.interp.csv)"])
+            "(fix: uv run kb project 'defs/*.interp.csv')"])
 
     def test_a_rendered_file_that_git_does_not_track_fails(self):
         root = self.repo("untracked", {"defs/B.interp.csv": None})
@@ -249,12 +253,50 @@ class PatternTest(RepoCase):
         self.assertEqual(project.check(root), [
             "defs/B.interp.csv: not tracked (fix: git add defs/B.interp.csv)"])
 
+    def test_printed_pattern_fixes_render_unchanged_through_a_posix_shell(self):
+        for index, pattern in enumerate(("defs/*.interp.csv", "defs/{A,B}.interp.csv",
+                                         "defs/owner's {A,B}.interp.csv")):
+            with self.subTest(pattern=pattern):
+                names = ("defs/A.interp.csv", "defs/B.interp.csv") if index < 2 else (
+                    "defs/owner's A.interp.csv", "defs/owner's B.interp.csv")
+                rendered = dict(zip(names, ("a\n", "b\n")))
+                root = self.repo(f"shell {index}", {
+                    "tools/kb/config.toml": CONFIG + "\n[lock]\ntimeout = 2\n",
+                    "tools/kb/projections.toml": PROJECTIONS + PATTERN.replace(
+                        '"defs/*.interp.csv"', json.dumps(pattern)),
+                    **{name: "old\n" for name in names},
+                })
+                entry = next(row for row in project.load(root) if row["path"] == pattern)
+                with mock.patch.object(project, "renderings", return_value=rendered):
+                    line = project._compare(root, entry, names)[0]
+                command = line.rsplit("(fix: ", 1)[1][:-1]
+                self.assertEqual(shlex.split(command), ["uv", "run", "kb", "project", pattern])
+                bin_dir = root / "bin"
+                bin_dir.mkdir()
+                uv = bin_dir / "uv"
+                uv.write_text(
+                    f"#!{sys.executable}\n"
+                    "import sys\nfrom pathlib import Path\nfrom kb import cli, project\n"
+                    "assert sys.argv[1:3] == ['run', 'kb']\n"
+                    f"project.generator = lambda entry: lambda root: {rendered!r}\n"
+                    "args = cli.build_parser().parse_args(sys.argv[3:])\n"
+                    "raise SystemExit(args.handler(args, root=Path.cwd()))\n",
+                    encoding="utf-8",
+                )
+                uv.chmod(0o755)
+                result = subprocess.run(["/bin/sh", "-c", command], cwd=root,
+                    env={**os.environ, "PATH": str(bin_dir) + os.pathsep + os.environ["PATH"]},
+                    capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                for name, expected in rendered.items():
+                    self.assertEqual((root / name).read_text(), expected)
+
 
 class CheckTest(RepoCase):
     def test_rendered_projections_pass(self):
         root = self.repo("pass")
         self.assertEqual(project.check(root), [
-            "AGENTS.md: kb: differs from its rendering (fix: uv run kb project AGENTS.md#kb)"])
+            "AGENTS.md: kb: differs from its rendering (fix: uv run kb project 'AGENTS.md#kb')"])
         project.write(root)
         self.assertEqual(project.check(root), [])
 

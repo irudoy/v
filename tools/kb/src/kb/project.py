@@ -5,6 +5,7 @@ import importlib.util
 import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import tempfile
 import tomllib
@@ -147,10 +148,10 @@ def _paths(root, items, files):
 def _compare(root, entry, found):
     """Failure lines of the files of a projection that `kb` renders whole,
     whose tracked files are `found`."""
-    fix = f"(fix: uv run kb project {entry['path']})"
+    fix = f"(fix: uv run kb project {shlex.quote(entry['path'])})"
     files = renderings(root, entry)
     failures = [f"{name}: matches {entry['path']} and is no file of its rendering "
-                f"(fix: git rm {name})" for name in sorted(set(found) - set(files))]
+                f"(fix: git rm {shlex.quote(name)})" for name in sorted(set(found) - set(files))]
     for name, text in sorted(files.items()):
         if not matches(split(entry["path"])[0], name):
             failures.append(f"{name}: lies outside the path of projection {entry['path']} "
@@ -158,7 +159,7 @@ def _compare(root, entry, found):
         elif not (root / name).is_file():
             failures.append(f"{name}: missing {fix}")
         elif name not in found:
-            failures.append(f"{name}: not tracked (fix: git add {name})")
+            failures.append(f"{name}: not tracked (fix: git add {shlex.quote(name)})")
         elif (root / name).read_bytes() != text.encode("utf-8"):
             failures.append(f"{name}: file: differs from its rendering {fix}")
     return failures
@@ -209,10 +210,10 @@ def check(root=repo.ROOT):
             text = current(root, entry)
             if text is None:
                 failures.append(f"{file}: {section}: no markers {' '.join(markers(section))} "
-                                f"(fix: add them and run uv run kb project {entry['path']})")
+                                f"(fix: add them and run uv run kb project {shlex.quote(entry['path'])})")
             elif text != render(root):
                 failures.append(f"{file}: {section or 'file'}: differs from its rendering "
-                                f"(fix: uv run kb project {entry['path']})")
+                                f"(fix: uv run kb project {shlex.quote(entry['path'])})")
         else:
             words = [word for word in entry["generator"].split() if "/" in word
                      and not word.startswith("-")]
