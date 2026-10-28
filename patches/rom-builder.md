@@ -168,6 +168,18 @@ Calibration files, profiles, and calibrated images are local artifacts. Both
 commands write only outside the repository or to a path that Git ignores, such
 as `tmp/`.
 
+## Pre-flash qualification
+
+`preflash.py` (`make preflash`) accepts an image for flashing only when the
+builder at HEAD reproduces it byte for byte from the registered stock image.
+An image without a runtime must equal the stock image with its calibration
+elements and recalculated checksums. An image with the current runtime must
+equal a build with the Rolling Launch and CAN telemetry settings of its own
+configuration records, followed by the application of its calibration
+elements. A registered historical runtime endpoint and settings that the
+profile schema cannot express are refused. The commit, CI, and test conditions
+are in the root `README.md`.
+
 ## Relocated address profiles
 
 `rom-address-profiles.toml` records exact JK00C, JK00D, JK78C, 1ND0A, 1ND3B,

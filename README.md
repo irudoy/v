@@ -134,9 +134,9 @@ neither Ghidra nor Memgraph.
    applies the capability patches, closes every checksum domain, and emits a
    build manifest. `make rom-extract` and `make rom-calibrate` carry the
    calibration of an earlier image to the new build.
-5. Gate the result with `make verify`: source checks, the complete Python and
-   pin-tracer test contracts, and execution of changed instruction bytes
-   against independently assembled SH-2E fixtures.
+5. Qualify the result with `make preflash`: the image rebuilds byte for byte
+   from its stock image at a clean commit with a green `Verify` run, and the
+   patch tests and the GNU SH-2E gate of its ROM pass.
 6. Flash the built image with the external tool, then validate on a bench and
    in the vehicle. Software gates do not establish hardware behavior.
 
@@ -168,8 +168,10 @@ does not cover selects `make test`.
 
 `make verify` runs firmware qualification, source checks, and `make test-full`.
 It includes the repository-contained GNU SH-2E Docker gate and is required
-before flashing or closing an engineering track. The pin-tracer contract is
-documented beside that tool.
+before closing an engineering track; a green `Verify` run of the exact commit
+counts as that run (see [Continuous verification](#continuous-verification)).
+`make preflash` qualifies one built image for flashing. The pin-tracer contract
+is documented beside that tool.
 
 `make runtime-targets-generate` regenerates GNU SH-2E payload locks and
 capability-specific stage hashes for the relocated targets registered by
@@ -219,7 +221,19 @@ make rom-extract INPUT=tmp/tuned.bin \
   CALIBRATION=tmp/tuned-calibration.toml PROFILE=tmp/tuned-profile.toml
 make rom-calibrate INPUT=tmp/output.bin \
   CALIBRATION=tmp/tuned-calibration.toml OUTPUT=tmp/calibrated.bin
+make preflash INPUT=tmp/calibrated.bin ROM=JK08A
 ```
+
+`make preflash` qualifies one built image of one exact ROM for flashing. The
+image must carry the immutable identity of that ROM, change stock bytes only
+inside its calibration ranges, builder write sets, and checksum fields, and
+rebuild byte for byte from the registered stock image with the settings and
+calibration that it carries. The tracked worktree must equal HEAD, and the
+`Verify` workflow must have a green run of that exact commit; a running,
+failed, cancelled, or missing run refuses the image, and runs of other commits
+do not count. The target then runs the patch tests of that ROM through
+`pytest --rom` and the GNU SH-2E gate through `tools/sh-elf-run/run.sh --rom`.
+It writes no tracked file.
 
 `make defs-generate` regenerates XML/XDF pairs for every registered target,
 the canonical JK08A map ledger, and the common definition validation from an
@@ -264,6 +278,8 @@ A run takes about 20 minutes when the caches hold the gate image and a recent
 graph, and about 30 minutes when it builds both; the source job sets the
 duration. A newer push to `master` cancels the run of the previous push, so
 under frequent pushes only the newest commit receives a completed run.
+`make preflash` accepts only a commit with a green run; build the image to
+flash from such a commit.
 
 A green run of an exact commit is the full verification of that commit, apart
 from these exclusions:

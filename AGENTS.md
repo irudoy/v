@@ -47,8 +47,9 @@ Use small packages that state a user scenario and the knowledge or capability
 they change before implementation. Scenarios include calibration, a runtime
 feature, ROM porting, subsystem research and a hardware session.
 
-Run affected tests immediately. Full verification runs before flashing and
-before closing an engineering track. Source preparation without execution
+Run affected tests immediately. Full verification runs before closing an
+engineering track, and `make preflash` qualifies an image before flashing.
+Source preparation without execution
 followed by one deferred acceptance run is not a supported workflow.
 
 Stop a package and ask the user when it doubles its estimated size or active
@@ -81,8 +82,13 @@ in local results and Git.
   `make verify` runs firmware qualification, source checks, and `make test-full`.
 - Run affected checks for each small package. Changes to instruction bytes,
   address profiles, or runtime allocation require `make verify` for acceptance.
-  Full checks also run before flashing and before track closure. A local
-  commit records source state and does not establish successful acceptance.
+  Full checks also run before track closure. A local commit records source
+  state and does not establish successful acceptance.
+- Before flashing, `make preflash INPUT=<image> ROM=<ROM>` qualifies the image
+  of the target ROM: a byte-identical rebuild from its stock image at a clean
+  HEAD, a green `Verify` run of that exact commit, and the patch tests and the
+  GNU SH-2E gate of that ROM. Other ROMs need no local check before this
+  flash; CI covers them.
 - The `Verify` workflow of GitHub Actions runs the steps of `make verify` for
   every push to `master`. A green run of an exact commit is the full
   verification of that commit, apart from the exclusions that `README.md`

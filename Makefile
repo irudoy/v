@@ -33,7 +33,7 @@ CALIBRATION_OPTION = $(if $(strip $(CALIBRATION)),--calibration "$(CALIBRATION)"
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
 .PHONY: test-python-fast test-full test-changed
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate telemetry-update rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate telemetry-update rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate preflash
 
 help:
 	@printf '%s\n' \
@@ -68,9 +68,10 @@ help:
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'  rom-extract       Extract the calibration and build profile of a ROM; requires INPUT.' \
 		'  rom-calibrate     Apply a calibration file over a fresh build; requires INPUT, CALIBRATION, and OUTPUT.' \
+		'  preflash          Qualify a built image of one ROM for flashing; requires INPUT and an exact ROM.' \
 		'' \
 		'Variables:' \
-		'  ROM               Exact ROM or auto detection for ROM builds (default: auto).' \
+		'  ROM               Exact ROM or auto detection for ROM builds (default: auto); exact for preflash.' \
 		'  DEFS_ROM          Definition target or all (default: all).' \
 		'  ROMS              ROM models or all for romviz (default: all).' \
 		'  ROMVIZ_OUTPUT     ROM atlas output path.' \
@@ -78,7 +79,7 @@ help:
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
 		'  CAN_DASHBOARD_MACOS_BUILD_ENV  macOS build environment created from the build lock.' \
-		'  INPUT             Input ROM path for rom-verify, rom-build, rom-extract, and rom-calibrate.' \
+		'  INPUT             Input ROM path for rom-verify, rom-build, rom-extract, rom-calibrate, and preflash.' \
 		'  OUTPUT            Output ROM path for rom-build and rom-calibrate.' \
 		'  PROFILE           Local unified-builder profile: optional rom-build input, rom-extract output.' \
 		'  CALIBRATION       Local calibration file: rom-extract output, rom-calibrate input.' \
@@ -222,3 +223,8 @@ rom-calibrate:
 	@test -n "$(strip $(CALIBRATION))" || { printf '%s\n' 'CALIBRATION is required' >&2; exit 2; }
 	@test -n "$(strip $(OUTPUT))" || { printf '%s\n' 'OUTPUT is required' >&2; exit 2; }
 	$(PYTHON) patches/apply_calibration.py "$(INPUT)" --calibration "$(CALIBRATION)" --output "$(OUTPUT)"$(if $(strip $(REPLACE_SETTINGS)), --replace-settings,)
+
+preflash:
+	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
+	@test "$(ROM)" != auto || { printf '%s\n' 'ROM must name the exact ROM of the image' >&2; exit 2; }
+	$(PYTHON) patches/preflash.py "$(INPUT)" --rom "$(ROM)" --pytest "$(PYTEST)"
