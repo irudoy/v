@@ -513,7 +513,7 @@ The implementation inventory is:
 | `rolling_launch_layout.py` | structural validation |
 | `rolling_launch_assembly.py` | payload and source-byte validation |
 | `rolling_launch_compose.py` | pure in-memory composition |
-| `apply_rolling_launch.py` | isolated diagnostic application |
+| `apply_rolling_launch.py` | builder stage: source checks and application |
 | `build_rom.py` | production composition and checksum closure |
 | `../tools/sh-elf-run/verify_rolling_launch.py` | independent GNU SH gate |
 | `hardware-results.toml` | immutable hardware-result registry |
@@ -541,8 +541,11 @@ A candidate is software-valid only when all applicable checks pass:
 Software verification and the recorded JK08A target-vehicle result do not
 authorize another flash. That image qualifies repeated activation, RPM hold,
 release, rearm, and bounded software-command behavior on Maps 2 and 3. VQ37
-runtime behavior, timeout, corrupt-state recovery, map changes while active,
+runtime behavior, corrupt-state recovery, map changes while active,
 and the exact physical spark and injector outputs remain software-only or
-unmeasured boundaries. A physical timing claim requires a crank-referenced
+unmeasured boundaries. `rolling_launch.map_2_vehicle_2026_09_22` in
+`hardware-results.toml` records `run_timeout = "pass"` for the captured Map 2
+image, while `timeout_reason = "untested"` leaves the reported reason unread.
+A physical timing claim requires a crank-referenced
 measurement, and an injector-pulse claim requires an electrical measurement at
 the output path.
