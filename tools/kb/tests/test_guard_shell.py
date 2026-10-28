@@ -198,9 +198,10 @@ read = "open"
         # /private/tmp contains the fixture; model the actual root outside it.
         self.guard.root = self.guard.cwd = Path("/workspace/vq")
         self.assertIsNone(self.denied("Bash", command="for t in a b; do cat /private/tmp/$t.output; done"))
-        for command in ("for t in a b; do cat /workspace/vq/$t.output; done",
+        self.assertIsNone(self.denied("Bash", command="for t in a b; do cat /workspace/vq/$t.output; done"))
+        for command in ("for t in $unknown; do cat /workspace/vq/$t.output; done",
                         "for t in a b; do cat kb/$t.toml; done",
-                        "for t in a b; do cat /workspace/$t.output; done"):
+                        "for t in $unknown; do cat /workspace/$t.output; done"):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
@@ -216,6 +217,7 @@ read = "open"
             ("S=/private/tmp/scratch; cp $S/a.py /private/tmp/b.py", False),
             ("for t in a b; do cat /outside/scratch/$t.output; done", False),
             ("for t in a b; do cat kb/$t.toml; done", True),
+            ("for n in 9 62; do gh issue view $n --repo irudoy/vhrev --json body -q .body; done", False),
         ]
         for command, denied in cases:
             with self.subTest(command=command):
@@ -230,6 +232,27 @@ read = "open"
                     self.assertEqual(decision["permissionDecision"], "deny")
                 else:
                     self.assertEqual(result.stdout, "")
+
+    def test_literal_for_lists_resolve_every_possible_operand(self):
+        for command in (
+            "for n in 9 62; do gh issue view $n --repo irudoy/vhrev --json body -q .body; done",
+            "for name in open.txt other.txt; do unknown-command $name; done",
+            "for name in open.txt other.txt; do cat $name; done",
+            "for a in open other; do for b in txt csv; do cat $a.$b; done; done",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "for name in open.txt kb/names.csv; do unknown-command $name; done",
+            "for name in open.txt kb/names.csv; do cat $name; done",
+            "for a in open kb; do for b in names.csv; do cat $a/$b; done; done",
+            "name=open.txt; for name in $unknown; do cat $name; done",
+            "for name in $unknown; do unknown-command $name; done",
+            "for name in 9 62; do cat kb/names.csv; done",
+            "for name in kb/names.csv; do echo $name | xargs cat; done",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
 
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):

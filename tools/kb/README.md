@@ -113,6 +113,8 @@ Literal pipeline data receives file checks when `xargs` passes it to a command
 that can access files. Python program arguments receive their operand checks.
 Known shell variables expand before those checks; an unresolved operand with
 an absolute prefix outside the repository and its ancestors is permitted.
+Bounded literal `for` lists check each possible value, including nested lists;
+unknown iteration values retain conservative operand checks.
 
 Inline Python inspection supports literal file paths, simple path bindings and
 captured-response metadata transformations. It conservatively refuses unknown

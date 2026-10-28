@@ -351,7 +351,7 @@ class Guard:
         inherited = variables.copy()
         scopes = []
         pipeline = []
-        for words, documents in commands(command):
+        for words, documents in literal_loops(commands(command)):
             upstream = pipeline
             producer, _ = redirections(executed(words))
             literals = (producer[1:] if producer and os.path.basename(producer[0]) in {"echo", "printf"}
@@ -970,6 +970,52 @@ def commands(command):
             if bodies:
                 body.append(bodies.pop(0))
         result.append((words, body))
+    return result
+
+
+def literal_loops(items, budget=None):
+    """Inspect each finite literal for-list; unknown iteration values stay unknown."""
+    budget = [256] if budget is None else budget
+    result, index = [], 0
+    while index < len(items):
+        words, documents = items[index]
+        index += 1
+        if len(words) < 2 or words[0] != "for" or not words[1].isidentifier():
+            result.append((words, documents))
+            continue
+        body, depth, end = [], 1, index
+        while end < len(items):
+            nested, docs = items[end]
+            if nested[:1] == ["do"]:
+                piped = getattr(nested[0], "piped", False)
+                nested = nested[1:]
+                if nested:
+                    nested[0].piped = piped
+            end += 1
+            if nested[:1] == ["for"]:
+                depth += 1
+            elif nested[:1] == ["done"]:
+                depth -= 1
+                if not depth:
+                    break
+            if nested:
+                body.append((nested, docs))
+        finite = (not depth and words[2:3] == ["in"] and not documents
+                  and all(not re.search(r"[$`*?\[{}]", value) for value in words[3:]))
+        if finite:
+            for value in words[3:]:
+                budget[0] -= 1
+                if budget[0] < 0:
+                    return [([ShellWord("__uninspectable_loop__"), "$loop_limit"], [])]
+                result.append(([ShellWord(f"{words[1]}={value}")], []))
+                result.extend(literal_loops(body, budget))
+            index = end
+        else:
+            result.append((words, documents))
+            result.append(([ShellWord(f"{words[1]}=$unknown_loop_value")], []))
+            if not depth:
+                result.extend(literal_loops(body, budget))
+                index = end
     return result
 
 

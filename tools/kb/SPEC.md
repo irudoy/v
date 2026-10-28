@@ -1763,6 +1763,8 @@ security boundary: the gates validate every file whatever wrote it.
   shell variables expand before path checks. An unresolved absolute operand
   whose fixed prefix is outside the repository and its ancestors stays open;
   the prefix resolves symbolic links before that decision.
+  Bounded literal `for` lists check every iteration value without executing the
+  commands. Unknown lists keep their iteration values unresolved.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations
