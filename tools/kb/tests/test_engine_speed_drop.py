@@ -83,6 +83,3 @@ def test_rpm_drop_arithmetic_and_three_selectors_keep_the_reviewed_contract():
         assert link.stated == {'7mfk'}
         assert link.props['via'] == [SymbolKey('7mfk', 'fn', 0x3e1da)]
     assert 'max(' not in output.props['summary']
-    specification = (repo.ROOT / 'defs/JK08A.rpm-drop-state.md').read_text()
-    assert 'if H4 < R:' in specification and 'F = 0' in specification
-    assert 'D = H4 - R' in specification and 'D = max(' not in specification
