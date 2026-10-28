@@ -18,6 +18,79 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:00064fd4"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff18c6"
+level = "code"
+note = """
+The aligned word accesses in the reviewed mode and shift controller bind the \
+effective reduction storage cell; no physical torque conversion is \
+asserted."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067048"
+to = "7mfk:00064d76"
+count = 1
+value = 19
+note = """
+Unique aligned source accesses bind the effective reduction word in the \
+reviewed controller."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff18ca"
+level = "code"
+note = """
+The aligned word accesses in the reviewed mode and shift controller bind the \
+effective reduction storage cell; no physical torque conversion is \
+asserted."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067048"
+to = "7mfk:00064d76"
+count = 1
+value = 19
+note = """
+Unique aligned source accesses bind the effective reduction word in the \
+reviewed controller."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1866"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search returns no candidate. The telemetry word is \
+unavailable until a producer-consumer binding is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1866"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search returns no candidate. The telemetry word is \
+unavailable until a producer-consumer binding is reviewed."""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1866"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The source-access search returns no candidate. The telemetry word is \
+unavailable until a producer-consumer binding is reviewed."""
+
 [[link]]
 type = "input"
 to = "rough-panther/ram"

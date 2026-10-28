@@ -312,13 +312,13 @@ description of its metric:
 | `intake_cam_b2_deg` | `X_VQ_Intake_Cam_B2` | degCA | `intake_cvtc_actual_b2_raw` at `raw * 0.5 - 64 degCA` |
 | `throttle_target_pct` | `X_VQ_Throttle_Target` | % | `throttle_target_channel_0_raw` at `raw * 34285 / 1114112 percent` |
 | `coolant_c` | `X_VQ_Coolant_Temperature` | degC | `coolant_raw` at `raw - 50 degC` |
-| `iat_c` | `X_VQ_Intake_Air_Temperature` | degC | `iat_raw` at `raw - 50 degC` |
 | `stft_b1_pct` | `X_VQ_STFT_B1` | % | `stft_b1_raw` at `raw / 256 - 100 percent` |
 | `stft_b2_pct` | `X_VQ_STFT_B2` | % | `stft_b2_raw` at `raw / 256 - 100 percent` |
 | `ltft_b1_pct` | `X_VQ_LTFT_B1` | % | `ltft_b1_raw` at `raw / 256 - 100 percent` |
 | `ltft_b2_pct` | `X_VQ_LTFT_B2` | % | `ltft_b2_raw` at `raw / 256 - 100 percent` |
 | `alpha_n_flow_count` | `X_VQ_QH0_Flow_Quantity` | cnt | `alpha_n_flow_raw` at `raw count` |
 | `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw` at `raw * 0.08 V` |
+| `iat_c` | `X_VQ_Intake_Air_Temperature` | degC | `iat_raw` at `raw - 50 degC` |
 <!-- feed-channels:end -->
 
 `throttle_target_pct` carries the channel 0 throttle target, which is the

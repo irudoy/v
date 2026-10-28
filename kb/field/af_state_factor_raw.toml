@@ -3,8 +3,8 @@ source = "af_state_factor/ram"
 origin = "ecu_ram"
 width = 2
 signed = false
-context = "temperatures_af"
-position = 4
+context = "air_oil_temperature_and_af_state"
+position = 2
 
 [dashboard]
 label = "A/F state factor"

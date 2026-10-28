@@ -3,7 +3,13 @@ Multipurpose state byte. Bit 7 suppresses the direct high-octane minus \
 high-detonation Q8 map-difference branch in 000493e8 when set."""
 note = ["Other bits and consumers belong to separate calculations."]
 level = "code"
+width = 8
+signed = false
 unit = "bitfield"
+
+[[bit]]
+bit = 7
+name = "direct_difference_inhibit"
 
 [[ledger]]
 registry = "vars"
@@ -44,10 +50,10 @@ level = "code"
 width = 8
 signed = false
 note = """
-Normal post-lookup entry 00049614 reads this byte at GBR+0x11 and tests bit7 \
-at 0004961e. A set bit dispatches to the alternative arithmetic. A clear bit \
-permits the second bit6 test; other bits and consumers are separate. \
-Standalone entry 000499b8 does not read this byte."""
+The coordinator reads bit 7 before updating it through the shared store at \
+00049704. The post-scheduler capture carries its output for the next \
+evaluation. Unrelated bits and physical producer conditions remain \
+unreviewed."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -74,6 +80,83 @@ key = "test_knock_state_selection_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock state selection"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00049704"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff24ed"
+name = "attentive-squid"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004a714"
+to = "7mfk:000496ce"
+count = 1
+value = 75
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff24f5"
+name = "olive-gaur"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004a718"
+to = "7mfk:000496ce"
+count = 1
+value = 75
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff2469"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff2469"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff2469"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "depends"

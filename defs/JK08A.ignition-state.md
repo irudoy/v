@@ -156,6 +156,18 @@ The alternate branch slew-limits a branch-selected Q8 state, applies a dynamic
 negative bound, and clamps positive output to zero. Therefore the map-difference
 formula is conditional, not a universal interpretation of `0xFFFF121A`.
 
+The scheduler copies `0xFFFF2466` to `0xFFFF2467` at `0x21068` before the
+periodic tasks. The coordinator reads `0xFFFF2469.bit7` before it updates that
+byte through the shared store at `0x49704`. A capture after the scheduler
+therefore reports the current pass's snapshot byte and the coordinator state
+for the next evaluation. The previous consecutive full-rate capture supplies
+the latter branch input for the current pass.
+
+One guarded hysteresis path at `0x49A16` sets `0xFFFF2466.bit6` when signed
+`RAM16[0xFFFF1382] <= ROM16[0x8F02]`, and clears it when that word exceeds
+`ROM16[0x8F00]`. Other paths can force or retain the bit. The raw state
+producer and the physical switching conditions remain unreviewed.
+
 The published byte is truncation toward zero, not an unconditional high-byte
 copy:
 

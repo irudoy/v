@@ -1,0 +1,14 @@
+title = "Fuel learning permission and neutralization"
+domain = "fuel"
+priority = "high"
+coverage = "fixed"
+basis = "exact-code"
+observes = [
+    "fuel_learning_permit_a/ram",
+    "fuel_learning_permit_b/ram",
+    "ltft_publication_neutral_control/ram",
+]
+note = """
+Bank b requires bit b in both permit bytes. The control byte can reset the \
+selected learned grid and neutralize publication. Physical causes of every \
+composite gate and the diagnostic request remain unreviewed."""

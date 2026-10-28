@@ -54,34 +54,6 @@
                 "offset": -50.0
               },
               "dashboard": {
-                "description": "Intake air temperature.",
-                "digits": 0,
-                "feed": {
-                  "format": "0",
-                  "key": "iat_c",
-                  "maximum": 140,
-                  "minimum": -40,
-                  "name": "VQ Intake Air Temperature",
-                  "step": 20
-                },
-                "group": "Temperature",
-                "label": "Intake air",
-                "order": 10,
-                "panel": "Temperatures and context"
-              },
-              "name": "iat_raw",
-              "scale": "raw - 50 degC",
-              "signed": false,
-              "unit": "degC",
-              "width": 1
-            },
-            {
-              "candidate": false,
-              "conversion": {
-                "factor": 1.0,
-                "offset": -50.0
-              },
-              "dashboard": {
                 "description": "Fuel temperature from the fuel tank temperature sensor.",
                 "digits": 0,
                 "group": "Temperature",
@@ -98,45 +70,45 @@
             {
               "candidate": false,
               "conversion": {
-                "factor": 1.0,
-                "offset": -50.0
+                "factor": 0.00390625,
+                "offset": -100.0
               },
               "dashboard": {
-                "description": "Engine oil temperature.",
-                "digits": 0,
-                "group": "Temperature",
-                "label": "Oil temperature",
-                "order": 30,
-                "panel": "Temperatures and context"
+                "description": "Selected learned trim cell of bank 2, in percent. The publisher combines this cell with the running adjustment minus 100 percent before its conditional clamps and neutralization.",
+                "digits": 2,
+                "group": "Fuel",
+                "label": "LTFT learned bank 2",
+                "order": 11,
+                "panel": "Trims and supply"
               },
-              "name": "oil_temperature_did_source_raw",
-              "scale": "raw - 50 degC",
+              "name": "ltft_learned_b2_raw",
+              "scale": "raw / 256 - 100 percent",
               "signed": false,
-              "unit": "degC",
-              "width": 1
+              "unit": "percent",
+              "width": 2
             },
             {
               "candidate": false,
               "conversion": {
-                "factor": 6.103515625e-05,
-                "offset": 0.0
+                "factor": 0.00390625,
+                "offset": -100.0
               },
               "dashboard": {
-                "description": "Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 is the closed-loop stoichiometric target, and a larger value commands enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / factor.",
-                "digits": 4,
+                "description": "Running adjustment of the bank 2 long-term trim, in percent.",
+                "digits": 2,
                 "group": "Fuel",
-                "label": "A/F state factor",
-                "order": 80,
-                "panel": "Air and fuel"
+                "label": "LTFT adjustment bank 2",
+                "order": 21,
+                "panel": "Trims and supply"
               },
-              "name": "af_state_factor_raw",
-              "scale": "raw / 16384 ratio",
+              "name": "ltft_adjustment_b2_raw",
+              "scale": "raw / 256 - 100 percent",
               "signed": false,
-              "unit": "ratio",
+              "unit": "percent",
               "width": 2
             }
           ],
-          "name": "temperatures_af",
+          "name": "temperatures_and_b2_trim_terms",
           "page": 9,
           "tag": 0
         },
@@ -600,7 +572,7 @@
                 "offset": -100.0
               },
               "dashboard": {
-                "description": "Learned long-term trim cell of bank 1 for the current operating region, in percent. LTFT bank 1 is this cell plus the adjustment.",
+                "description": "Selected learned trim cell of bank 1, in percent. The publisher combines this cell with the running adjustment minus 100 percent before its conditional clamps and neutralization.",
                 "digits": 2,
                 "group": "Fuel",
                 "label": "LTFT learned bank 1",
@@ -643,85 +615,93 @@
             {
               "candidate": false,
               "conversion": {
-                "factor": 0.09765625,
-                "offset": 0.0
+                "factor": 1.0,
+                "offset": -50.0
               },
               "dashboard": {
-                "description": "Duty of the bank 1 exhaust valve timing solenoid, in percent.",
-                "digits": 1,
-                "group": "CVTC",
-                "label": "Exhaust CVTC duty B1 word",
-                "order": 50,
-                "panel": "CVTC detail"
+                "description": "Intake air temperature.",
+                "digits": 0,
+                "feed": {
+                  "format": "0",
+                  "key": "iat_c",
+                  "maximum": 140,
+                  "minimum": -40,
+                  "name": "VQ Intake Air Temperature",
+                  "step": 20
+                },
+                "group": "Temperature",
+                "label": "Intake air",
+                "order": 10,
+                "panel": "Temperatures and context"
               },
-              "name": "exhaust_cvtc_duty_b1_word_raw",
-              "scale": "raw * 100 / 1024 percent",
+              "name": "iat_raw",
+              "scale": "raw - 50 degC",
               "signed": false,
-              "unit": "percent",
-              "width": 2
+              "unit": "degC",
+              "width": 1
             },
             {
               "candidate": false,
               "conversion": {
-                "factor": 0.09765625,
-                "offset": 0.0
+                "factor": 1.0,
+                "offset": -50.0
               },
               "dashboard": {
-                "description": "Duty of the bank 2 exhaust valve timing solenoid, in percent.",
-                "digits": 1,
-                "group": "CVTC",
-                "label": "Exhaust CVTC duty B2 word",
-                "order": 60,
-                "panel": "CVTC detail"
-              },
-              "name": "exhaust_cvtc_duty_b2_word_raw",
-              "scale": "raw * 100 / 1024 percent",
-              "signed": false,
-              "unit": "percent",
-              "width": 2
-            },
-            {
-              "candidate": false,
-              "conversion": {
-                "factor": 0.39,
-                "offset": 0.0
-              },
-              "dashboard": {
-                "description": "Scheduler copy of the bank 1 intake valve timing solenoid duty, in percent. Every recorded drive holds it equal to the live duty.",
-                "digits": 1,
-                "group": "CVTC",
-                "label": "Intake CVTC duty command B1",
+                "description": "Engine oil temperature.",
+                "digits": 0,
+                "group": "Temperature",
+                "label": "Oil temperature",
                 "order": 30,
-                "panel": "CVTC detail"
+                "panel": "Temperatures and context"
               },
-              "name": "intake_cvtc_duty_command_b1_raw",
-              "scale": "raw * 39 / 100 percent",
+              "name": "oil_temperature_did_source_raw",
+              "scale": "raw - 50 degC",
               "signed": false,
-              "unit": "percent",
+              "unit": "degC",
               "width": 1
             },
             {
               "candidate": false,
               "conversion": {
-                "factor": 0.39,
+                "factor": 6.103515625e-05,
                 "offset": 0.0
               },
               "dashboard": {
-                "description": "Scheduler copy of the bank 2 intake valve timing solenoid duty, in percent. Every recorded drive holds it equal to the live duty.",
-                "digits": 1,
-                "group": "CVTC",
-                "label": "Intake CVTC duty command B2",
-                "order": 40,
-                "panel": "CVTC detail"
+                "description": "Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 is the closed-loop stoichiometric target, and a larger value commands enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / factor.",
+                "digits": 4,
+                "group": "Fuel",
+                "label": "A/F state factor",
+                "order": 80,
+                "panel": "Air and fuel"
               },
-              "name": "intake_cvtc_duty_command_b2_raw",
-              "scale": "raw * 39 / 100 percent",
+              "name": "af_state_factor_raw",
+              "scale": "raw / 16384 ratio",
               "signed": false,
-              "unit": "percent",
-              "width": 1
+              "unit": "ratio",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 2.0,
+                "offset": -590.0
+              },
+              "dashboard": {
+                "description": "End of injection in crank degrees after intake TDC of the injected cylinder. A firmware coordinate from the injection-end tables, not a measured injector event.",
+                "digits": 0,
+                "group": "Injection",
+                "label": "End of injection after intake TDC",
+                "order": 70,
+                "panel": "Torque and requests"
+              },
+              "name": "injection_end_angle_raw",
+              "scale": "raw * 2 - 590 degCA",
+              "signed": false,
+              "unit": "degCA",
+              "width": 2
             }
           ],
-          "name": "exhaust_cvtc_duty_and_intake_duty_command",
+          "name": "air_oil_temperature_and_af_state",
           "page": 10,
           "tag": 1
         },
@@ -916,7 +896,7 @@
           "tag": 4
         }
       ],
-      "crc16_ccitt_false": "0x6474",
+      "crc16_ccitt_false": "0xBCAB",
       "fields": [
         {
           "dashboard": {
@@ -1263,69 +1243,102 @@
           "width": 2
         },
         {
-          "candidate": false,
-          "conversion": {
-            "factor": 0.01,
-            "offset": 0.0
-          },
+          "bits": [
+            {
+              "bit": 0,
+              "name": "BANK_1_COMPOSITE_PERMIT"
+            },
+            {
+              "bit": 1,
+              "name": "BANK_2_COMPOSITE_PERMIT"
+            }
+          ],
           "dashboard": {
-            "description": "Calculated injection pulse of channel 2, which drives cylinder 3 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
-            "digits": 2,
-            "group": "Injection",
-            "label": "Injection calc 2",
-            "order": 30,
-            "panel": "Injection and knock"
+            "description": "Bank bits 0 and 1 of the composite learning gate written by FUN 00058740. Learning also requires the corresponding stability-permit bit. The physical meaning of every contributing condition is unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT composite permit",
+            "order": 10,
+            "panel": "Learning and knock state"
           },
-          "name": "injection_2_raw",
+          "name": "fuel_learning_permit_b_raw",
           "offset": 1,
           "page": 3,
-          "scale": "raw / 100 ms",
+          "scale": "bits: 0 BANK_1_COMPOSITE_PERMIT, 1 BANK_2_COMPOSITE_PERMIT",
           "signed": false,
-          "unit": "ms",
-          "width": 2
+          "width": 1
         },
         {
-          "candidate": false,
-          "conversion": {
-            "factor": 0.01,
-            "offset": 0.0
-          },
+          "bits": [
+            {
+              "bit": 0,
+              "name": "BANK_1_STABILITY_PERMIT"
+            },
+            {
+              "bit": 1,
+              "name": "BANK_2_STABILITY_PERMIT"
+            }
+          ],
           "dashboard": {
-            "description": "Calculated injection pulse of channel 3, which drives cylinder 4 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
-            "digits": 2,
-            "group": "Injection",
-            "label": "Injection calc 3",
-            "order": 40,
-            "panel": "Injection and knock"
+            "description": "Bank bits 0 and 1 written by FUN 00058740 from bounded signal-change and derivative checks after the per-bank eligibility counters. Both permit bytes are required by the learned-grid update. Raw signal identities and physical learning permission remain unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT stability permit",
+            "order": 20,
+            "panel": "Learning and knock state"
           },
-          "name": "injection_3_raw",
+          "name": "fuel_learning_permit_a_raw",
+          "offset": 2,
+          "page": 3,
+          "scale": "bits: 0 BANK_1_STABILITY_PERMIT, 1 BANK_2_STABILITY_PERMIT",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 0,
+              "name": "NEUTRALIZE_PUBLICATION_AND_RESET_GRID"
+            }
+          ],
+          "dashboard": {
+            "description": "Bit 0 participates in learned-grid reset and neutral LTFT publication. FUN 00057900 produces it as an edge pulse from request FFFF99D8.bit5 and latch FFFF4201.bit6. The exact diagnostic request and other control bits are unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT neutralization state",
+            "order": 30,
+            "panel": "Learning and knock state"
+          },
+          "name": "ltft_publication_neutral_control_raw",
           "offset": 3,
           "page": 3,
-          "scale": "raw / 100 ms",
+          "scale": "bits: 0 NEUTRALIZE_PUBLICATION_AND_RESET_GRID",
           "signed": false,
-          "unit": "ms",
-          "width": 2
+          "width": 1
         },
         {
           "candidate": false,
           "conversion": {
-            "factor": 0.01,
+            "factor": 1.0,
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Calculated injection pulse of channel 4, which drives cylinder 5 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
-            "digits": 2,
-            "group": "Injection",
-            "label": "Injection calc 4",
-            "order": 50,
-            "panel": "Injection and knock"
+            "description": "Raw 16-bit storage view of the generated Q8 transition state. The event timing stage consumes its unsigned high byte on the reviewed path; other modes use a separate latched path. Physical units and producer signedness remain unresolved, and the state is not exclusive to TCM requests.",
+            "digits": 0,
+            "group": "Torque",
+            "label": "Generated torque transition state",
+            "order": 72,
+            "panel": "Torque and requests"
           },
-          "name": "injection_4_raw",
-          "offset": 5,
+          "name": "torque_transition_state_raw",
+          "offset": 4,
           "page": 3,
-          "scale": "raw / 100 ms",
+          "scale": "raw count",
           "signed": false,
-          "unit": "ms",
+          "unit": "count",
           "width": 2
         },
         {
@@ -1342,26 +1355,50 @@
           "width": 1
         },
         {
-          "candidate": false,
-          "conversion": {
-            "factor": 0.01,
-            "offset": 0.0
-          },
+          "bits": [
+            {
+              "bit": 6,
+              "name": "DIRECT_DIFFERENCE_ENABLE"
+            }
+          ],
           "dashboard": {
-            "description": "Calculated injection pulse of channel 5, which drives cylinder 6 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
-            "digits": 2,
-            "group": "Injection",
-            "label": "Injection calc 5",
-            "order": 60,
-            "panel": "Injection and knock"
+            "description": "Scheduler snapshot of FFFF2466 before periodic tasks. Bit 6 permits the direct high-octane minus high-detonation map-difference branch when the prior coordinator state bit 7 is clear. Other bits and the physical producer of the switching state remain unreviewed.",
+            "digits": 0,
+            "group": "Knock",
+            "hexadecimal": true,
+            "label": "Knock input state",
+            "order": 40,
+            "panel": "Learning and knock state"
           },
-          "name": "injection_5_raw",
+          "name": "knock_state_snapshot_raw",
           "offset": 1,
           "page": 4,
-          "scale": "raw / 100 ms",
+          "scale": "bits: 6 DIRECT_DIFFERENCE_ENABLE",
           "signed": false,
-          "unit": "ms",
-          "width": 2
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 7,
+              "name": "DIRECT_DIFFERENCE_INHIBIT"
+            }
+          ],
+          "dashboard": {
+            "description": "Coordinator state captured after FUN 000493E8. Bit 7 inhibits the direct map-difference branch at the next evaluation. Use the previous contiguous snapshot to recover that input for the current pass. Other bits and their physical causes remain unreviewed.",
+            "digits": 0,
+            "group": "Knock",
+            "hexadecimal": true,
+            "label": "Knock branch state",
+            "order": 50,
+            "panel": "Learning and knock state"
+          },
+          "name": "knock_branch_state_raw",
+          "offset": 2,
+          "page": 4,
+          "scale": "bits: 7 DIRECT_DIFFERENCE_INHIBIT",
+          "signed": false,
+          "width": 1
         },
         {
           "candidate": false,
@@ -1731,23 +1768,23 @@
         {
           "candidate": false,
           "conversion": {
-            "factor": 2.0,
-            "offset": -590.0
+            "factor": 1.0,
+            "offset": 0.0
           },
           "dashboard": {
-            "description": "End of injection in crank degrees after intake TDC of the injected cylinder. A firmware coordinate from the injection-end tables, not a measured injector event.",
+            "description": "Unsigned effective TCM reduction state after enable, shift, and inhibit handling. The enabled direct path uses the request byte shifted left by eight; other branches retain, limit, rebuild, decrease, or clear it. Raw stored counts without a physical torque conversion.",
             "digits": 0,
-            "group": "Injection",
-            "label": "End of injection after intake TDC",
-            "order": 70,
+            "group": "Torque",
+            "label": "Accepted TCM reduction state",
+            "order": 71,
             "panel": "Torque and requests"
           },
-          "name": "injection_end_angle_raw",
+          "name": "transmission_reduction_state_raw",
           "offset": 5,
           "page": 7,
-          "scale": "raw * 2 - 590 degCA",
+          "scale": "raw count",
           "signed": false,
-          "unit": "degCA",
+          "unit": "count",
           "width": 2
         },
         {
@@ -1872,8 +1909,15 @@
           "width": 1
         }
       ],
-      "id": 7,
+      "id": 8,
       "name": "tuning",
+      "padding": [
+        {
+          "offset": 6,
+          "page": 3,
+          "width": 1
+        }
+      ],
       "page_count": 11
     }
   ],

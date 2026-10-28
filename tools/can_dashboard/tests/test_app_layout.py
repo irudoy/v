@@ -145,17 +145,21 @@ class WindowLayoutTest(unittest.TestCase):
                 app.PANEL_MIN_WIDTH,
             )
 
-    def test_four_panels_share_one_row_down_to_the_cell_minimum(self):
-        for panels in self.dashboard.panel_grids:
+    def test_tab_panels_share_one_row_down_to_the_cell_minimum(self):
+        for panels, (_tab, definitions) in zip(
+                self.dashboard.panel_grids, self.dashboard.presentation.tabs):
+            count = len(definitions)
             panels.layout(1482)
-            self.assertEqual(panels.columns, 4)
-            panels.layout(row_of(panels, 4))
-            self.assertEqual(panels.columns, 4)
+            self.assertEqual(panels.columns, count)
+            panels.layout(row_of(panels, count))
+            self.assertEqual(panels.columns, count)
 
-    def test_a_narrower_window_folds_the_panels_into_two_rows_of_two(self):
-        for panels in self.dashboard.panel_grids:
-            panels.layout(row_of(panels, 4) - 1)
-            self.assertEqual(panels.columns, 2)
+    def test_a_narrower_window_balances_two_rows_before_folding_further(self):
+        for panels, (_tab, definitions) in zip(
+                self.dashboard.panel_grids, self.dashboard.presentation.tabs):
+            count = len(definitions)
+            panels.layout(row_of(panels, count) - 1)
+            self.assertEqual(panels.columns, (count + 1) // 2)
             panels.layout(row_of(panels, 2))
             self.assertEqual(panels.columns, 2)
             panels.layout(row_of(panels, 2) - 1)

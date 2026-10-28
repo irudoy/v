@@ -110,6 +110,7 @@ ram_delta = 768
 rom_delta = 50944
 rom_size = 1048576
 telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff61e0"
 
 [target.basis]
 free_ram = """
@@ -135,6 +136,7 @@ ram_delta = 768
 rom_delta = 50944
 rom_size = 1048576
 telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff61e0"
 
 [target.basis]
 free_ram = """
@@ -160,6 +162,7 @@ ram_delta = -20736
 rom_delta = -742912
 rom_size = 1048576
 telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff0de0"
 
 [target.basis]
 free_ram = """

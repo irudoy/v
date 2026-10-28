@@ -130,10 +130,12 @@ telemetry,normalized_load_raw,ffff102c,,,,unsupported,No normalized load snapsho
 telemetry,bfs_raw,ffff1026,fffe802e,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,injection_0_raw,ffff23c8,fffe93a6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,injection_1_raw,ffff23ca,fffe93a8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,injection_2_raw,ffff23cc,fffe93aa,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
-telemetry,injection_3_raw,ffff23ce,fffe93ac,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
-telemetry,injection_4_raw,ffff23d0,fffe93ae,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
-telemetry,injection_5_raw,ffff23d2,fffe93b0,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
+telemetry,fuel_learning_permit_b_raw,ffff1457,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,fuel_learning_permit_a_raw,ffff1458,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_publication_neutral_control_raw,ffff41b5,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,torque_transition_state_raw,ffff23c2,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
+telemetry,knock_state_snapshot_raw,ffff2467,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,knock_branch_state_raw,ffff2469,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
 telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,The target selects ignition surfaces by state code and does not retain the separate signed Q8 state
 telemetry,knock_surface_state,ffff2466,fffe945b,,,mapped,"The knock function 00071d64 stores the byte after it sets the high-detonation bit, as the knock function 000493e8 stores ffff2466 at 00049a56 after it sets bit 6"
 telemetry,app1_raw,ffff269e,fffe96ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
@@ -148,17 +150,16 @@ telemetry,exhaust_cvtc_target_raw,ffff2327,fffe9436,,,mapped,Aligned diagnostic 
 telemetry,calculated_load_raw,ffff413e,fffeb8f8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,throttle_request_bounded_raw,ffff19c6,fffe941e,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,engine_torque_state_raw,ffff18cc,fffe88b6,,,mapped,Three accessor functions 000975b4 00097ae8 00097bd2 repeat the five 1ND access sites including the writer in the return delay slot
-telemetry,injection_end_angle_raw,ffff192e,fffe8946,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,transmission_reduction_state_raw,ffff1866,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,fffe942f,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,throttle_target_shared_raw,ffff19b2,fffeaa58,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,throttle_target_channel_0_raw,ffff28bc,fffeb80c,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,throttle_target_channel_1_raw,ffff28be,fffeb80e,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,fffe9430,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,coolant_raw,ffff1079,fffe8079,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,iat_raw,ffff2837,fffe9928,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8075,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,oil_temperature_did_source_raw,ffff2876,fffe8161,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,af_state_factor_raw,ffff22e8,fffe92e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,ltft_learned_b2_raw,ffff2308,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_adjustment_b2_raw,ffff564a,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
 telemetry,stft_b1_raw,ffff22dc,fffe92ac,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,stft_b2_raw,ffff22de,fffe92ae,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe942b,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
@@ -169,10 +170,10 @@ telemetry,alpha_n_flow_raw,ffff1170,,,,unsupported,No homolog is established for
 telemetry,battery_voltage_raw,ffff1188,fffe8164,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim block whose offsets 4 and 6 are the diagnostic long-term trim words
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
-telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8aa4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8aa6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,fffe938f,,,mapped,"The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7B, as 000beace loads ffff23b4 on 7mfk"
-telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,fffe9390,,,mapped,"The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7A, as 000beace loads ffff23b5 on 7mfk"
+telemetry,iat_raw,ffff2837,fffe9928,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,oil_temperature_did_source_raw,ffff2876,fffe8161,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,af_state_factor_raw,ffff22e8,fffe92e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,injection_end_angle_raw,ffff192e,fffe8946,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe9810,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe9812,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,af_adjustment_b1_raw,ffff45a0,fffebdfa,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source

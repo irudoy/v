@@ -3,7 +3,7 @@ source = "coolant/ram"
 origin = "ecu_ram"
 width = 1
 signed = false
-context = "temperatures_af"
+context = "temperatures_and_b2_trim_terms"
 position = 0
 
 [dashboard]

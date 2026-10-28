@@ -57,6 +57,11 @@ def synthetic_row(tick):
         "front_af_sensor_b1_word_raw": published_tick,
         "ltft_learned_b1_raw": learned_at(learned_tick),
         "ltft_adjustment_b1_raw": NEUTRAL,
+        "ltft_learned_b2_raw": NEUTRAL,
+        "ltft_adjustment_b2_raw": NEUTRAL,
+        "fuel_learning_permit_a_raw": 3,
+        "fuel_learning_permit_b_raw": 3,
+        "ltft_publication_neutral_control_raw": 0,
         "ltft_b1_raw": published,
         "ltft_b2_raw": NEUTRAL,
         "coolant_raw": 125 if learned_tick >= 120 else 110,
@@ -273,6 +278,10 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(result["learned_tag_residue"], PUBLISHED_RESIDUE - 2)
         self.assertEqual(result["adjustment_b1_neutral_count"], 12)
         self.assertEqual(result["relation_exact_count"], 7)
+        self.assertTrue(result["summands_b2_available"])
+        self.assertEqual(result["b2_relation_other_count"], 0)
+        self.assertTrue(result["learning_permits_available"])
+        self.assertEqual(result["both_permits_b2_set_count"], len(self.rows))
         self.assertEqual(
             result["relation_bracketed_count"] + result["relation_transition_count"],
             result["learned_pair_count"],

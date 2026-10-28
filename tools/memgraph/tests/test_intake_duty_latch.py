@@ -78,21 +78,20 @@ class IntakeDutyLatchTest(unittest.TestCase):
                     self.vars[live]["units"], self.vars[latch]["units"]
                 )
 
-    def test_both_pairs_share_one_capture_context_and_conversion(self):
+    def test_profile_keeps_the_live_pair_without_scheduler_copies(self):
         pairs = (
             ("intake_cvtc_duty_b1_raw", 0xFFFF2440),
             ("intake_cvtc_duty_b2_raw", 0xFFFF2441),
-            ("intake_cvtc_duty_command_b1_raw", 0xFFFF23B4),
-            ("intake_cvtc_duty_command_b2_raw", 0xFFFF23B5),
         )
         for name, source in pairs:
             with self.subTest(field=name):
                 field = self.fields[name]
                 self.assertEqual(field["source"], source)
                 self.assertEqual(field["scale"], "raw * 39 / 100 percent")
-        # Pages 9 and 10 of one tag come from one capture pass.
         self.assertEqual({self.fields[name]["tag"] for name, _ in pairs}, {1})
-        self.assertEqual({self.fields[name]["page"] for name, _ in pairs}, {9, 10})
+        self.assertEqual({self.fields[name]["page"] for name, _ in pairs}, {9})
+        for bank in (1, 2):
+            self.assertNotIn(f"intake_cvtc_duty_command_b{bank}_raw", self.fields)
 
     def test_recorded_pairs_are_equal_in_every_record(self):
         result = self.hardware["can_telemetry"]["intake_duty_latch_2026_09_21"]

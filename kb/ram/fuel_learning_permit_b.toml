@@ -1,5 +1,15 @@
 summary = "Second independent permit byte; bank b in 0..1 requires bit b."
 block = "fuel_closed_loop/block"
+width = 8
+signed = false
+
+[[bit]]
+bit = 0
+name = "bank_1_composite_permit"
+
+[[bit]]
+bit = 1
+name = "bank_2_composite_permit"
 
 [[symbol]]
 layout = "7mfk"
@@ -8,9 +18,9 @@ level = "code"
 width = 8
 signed = false
 note = """
-The bounded software domain, storage footprint and reader interpretation do \
-not establish producer semantics, physical units, hardware permission or \
-cadence."""
+FUN 00058740 writes bits 0 and 1 from the composite bank gates at \
+FFFF8868/FFFF886C and preserves other bits. Physical causes of all \
+contributing conditions remain unreviewed."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,6 +42,89 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00058f30"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff147f"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005ae00"
+to = "7mfk:00058eec"
+count = 1
+value = 163
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff147f"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005adfc"
+to = "7mfk:00058eec"
+count = 1
+value = 163
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff144a"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000754be"
+to = "7mfk:00058efe"
+count = 1
+value = 154
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1457"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1457"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "reader"

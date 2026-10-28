@@ -268,7 +268,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 88)
+        self.assertEqual(validation.fields, 89)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed", names)
@@ -307,15 +307,9 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
                 "Exhaust CVTC duty B1 word",
             }
         }
+        self.assertEqual(set(duty_specs), {"CVTC duty B1"})
         self.assertEqual(duty_specs["CVTC duty B1"].scale, 0.39)
-        self.assertEqual(
-            duty_specs["Intake CVTC duty command B1"].scale, 0.39
-        )
         self.assertEqual(duty_specs["CVTC duty B1"].units, "%")
-        self.assertEqual(
-            duty_specs["Exhaust CVTC duty B1 word"].scale, 100 / 1024
-        )
-        self.assertEqual(duty_specs["Exhaust CVTC duty B1 word"].units, "%")
         knock_specs = {
             binding.spec.name: binding.spec
             for binding in recorder.bindings

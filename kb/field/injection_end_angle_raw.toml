@@ -3,9 +3,8 @@ source = "injection_end_angle/ram"
 origin = "ecu_ram"
 width = 2
 signed = false
-profiles = ["tuning"]
-page = 7
-offset = 0x5
+context = "air_oil_temperature_and_af_state"
+position = 3
 
 [dashboard]
 label = "End of injection after intake TDC"

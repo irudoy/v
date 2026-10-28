@@ -1,7 +1,7 @@
 title = "Intake CVTC solenoid duty command"
 domain = "cvtc"
 priority = "high"
-coverage = "rotating"
+coverage = "absent"
 basis = "exact-code"
 observes = [
     "intake_cvtc_duty_command_b1/ram",

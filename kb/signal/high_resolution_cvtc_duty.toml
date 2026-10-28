@@ -1,7 +1,7 @@
 title = "High-resolution exhaust CVTC duty"
 domain = "cvtc"
 priority = "high"
-coverage = "rotating"
+coverage = "absent"
 basis = "exact-code"
 observes = [
     "spiritual-porpoise/ram",
@@ -10,6 +10,6 @@ observes = [
     "exhaust_cvtc_duty_b2_word/ram",
 ]
 note = """
-Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and \
-0x122E publish two words that no producer maintains and only the exhaust \
-pair is streamed."""
+The active telemetry profile carries no high-resolution exhaust duty words. \
+Only entries 0 and 1 of the underlying duty word array have producers; the \
+adjacent DID words have no maintained producer."""

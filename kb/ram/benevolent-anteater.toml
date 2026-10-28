@@ -4,7 +4,10 @@ bank-indexed function and combined with selected learned cell ffff2308 when \
 forming ffff2304."""
 note = ["The arithmetic and neutral behavior mirror bank 1."]
 level = "code"
-unit = "percent*256"
+width = 16
+signed = false
+unit = "percent"
+scale = "x/256-100"
 
 [[ledger]]
 registry = "vars"
@@ -81,6 +84,88 @@ key = "test_ltft_publication_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded LTFT publication"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff56c2"
+name = "skilled-skua"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00082dd0"
+to = "7mfk:0007ea00"
+count = 1
+value = 74
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff56d6"
+name = "classic-grebe"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00082dd0"
+to = "7mfk:0007ea00"
+count = 1
+value = 74
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff5be2"
+name = "fierce-herring"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a06de"
+to = "7mfk:0007ea00"
+count = 1
+value = 74
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff564a"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff564a"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "depends"

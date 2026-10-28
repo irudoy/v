@@ -24,9 +24,18 @@ map_variant = "sh7059-1me3b"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
     "alpha_n_flow_raw",
+    "fuel_learning_permit_a_raw",
+    "fuel_learning_permit_b_raw",
+    "knock_branch_state_raw",
+    "knock_state_snapshot_raw",
     "knock_timing_state_raw",
+    "ltft_adjustment_b2_raw",
+    "ltft_learned_b2_raw",
+    "ltft_publication_neutral_control_raw",
     "normalized_load_raw",
     "request_flow_raw",
+    "torque_transition_state_raw",
+    "transmission_reduction_state_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -174,10 +183,6 @@ maf_total_raw = 0xFFFEAE4E
 bfs_raw = 0xFFFE802E
 injection_0_raw = 0xFFFE93A6
 injection_1_raw = 0xFFFE93A8
-injection_2_raw = 0xFFFE93AA
-injection_3_raw = 0xFFFE93AC
-injection_4_raw = 0xFFFE93AE
-injection_5_raw = 0xFFFE93B0
 knock_surface_state = 0xFFFE945B
 app1_raw = 0xFFFE96CE
 app2_raw = 0xFFFE96D2
@@ -191,17 +196,13 @@ exhaust_cvtc_target_raw = 0xFFFE9436
 calculated_load_raw = 0xFFFEB8F8
 throttle_request_bounded_raw = 0xFFFE941E
 engine_torque_state_raw = 0xFFFE88B6
-injection_end_angle_raw = 0xFFFE8946
 exhaust_cvtc_actual_b1_raw = 0xFFFE942F
 throttle_target_shared_raw = 0xFFFEAA58
 throttle_target_channel_0_raw = 0xFFFEB80C
 throttle_target_channel_1_raw = 0xFFFEB80E
 exhaust_cvtc_actual_b2_raw = 0xFFFE9430
 coolant_raw = 0xFFFE8079
-iat_raw = 0xFFFE9928
 fuel_temperature_did_source_raw = 0xFFFE8075
-oil_temperature_did_source_raw = 0xFFFE8161
-af_state_factor_raw = 0xFFFE92E2
 stft_b1_raw = 0xFFFE92AC
 stft_b2_raw = 0xFFFE92AE
 intake_cvtc_duty_b1_raw = 0xFFFE942B
@@ -211,10 +212,10 @@ ltft_b2_raw = 0xFFFE92CE
 battery_voltage_raw = 0xFFFE8164
 ltft_learned_b1_raw = 0xFFFE92D0
 ltft_adjustment_b1_raw = 0xFFFED0E4
-exhaust_cvtc_duty_b1_word_raw = 0xFFFE8AA4
-exhaust_cvtc_duty_b2_word_raw = 0xFFFE8AA6
-intake_cvtc_duty_command_b1_raw = 0xFFFE938F
-intake_cvtc_duty_command_b2_raw = 0xFFFE9390
+iat_raw = 0xFFFE9928
+oil_temperature_did_source_raw = 0xFFFE8161
+af_state_factor_raw = 0xFFFE92E2
+injection_end_angle_raw = 0xFFFE8946
 front_af_sensor_b1_word_raw = 0xFFFE9810
 front_af_sensor_b2_word_raw = 0xFFFE9812
 af_adjustment_b1_raw = 0xFFFEBDFA
@@ -272,8 +273,17 @@ map_variant = "sh7059-1nd"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
     "alpha_n_flow_raw",
+    "fuel_learning_permit_a_raw",
+    "fuel_learning_permit_b_raw",
+    "knock_branch_state_raw",
+    "knock_state_snapshot_raw",
+    "ltft_adjustment_b2_raw",
+    "ltft_learned_b2_raw",
+    "ltft_publication_neutral_control_raw",
     "normalized_load_raw",
     "request_flow_raw",
+    "torque_transition_state_raw",
+    "transmission_reduction_state_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -422,10 +432,6 @@ maf_total_raw = 0xFFFEAD0A
 bfs_raw = 0xFFFE802E
 injection_0_raw = 0xFFFE93D6
 injection_1_raw = 0xFFFE93D8
-injection_2_raw = 0xFFFE93DA
-injection_3_raw = 0xFFFE93DC
-injection_4_raw = 0xFFFE93DE
-injection_5_raw = 0xFFFE93E0
 knock_timing_state_raw = 0xFFFE8214
 knock_surface_state = 0xFFFE9488
 app1_raw = 0xFFFE96F6
@@ -440,17 +446,13 @@ exhaust_cvtc_target_raw = 0xFFFE9466
 calculated_load_raw = 0xFFFEB796
 throttle_request_bounded_raw = 0xFFFE944E
 engine_torque_state_raw = 0xFFFE8936
-injection_end_angle_raw = 0xFFFE89A2
 exhaust_cvtc_actual_b1_raw = 0xFFFE945F
 throttle_target_shared_raw = 0xFFFEA944
 throttle_target_channel_0_raw = 0xFFFEB6C4
 throttle_target_channel_1_raw = 0xFFFEB6C6
 exhaust_cvtc_actual_b2_raw = 0xFFFE9460
 coolant_raw = 0xFFFE8079
-iat_raw = 0xFFFE98AA
 fuel_temperature_did_source_raw = 0xFFFE8075
-oil_temperature_did_source_raw = 0xFFFE8179
-af_state_factor_raw = 0xFFFE9318
 stft_b1_raw = 0xFFFE92E0
 stft_b2_raw = 0xFFFE92E2
 intake_cvtc_duty_b1_raw = 0xFFFE945B
@@ -460,10 +462,10 @@ ltft_b2_raw = 0xFFFE9304
 battery_voltage_raw = 0xFFFE817C
 ltft_learned_b1_raw = 0xFFFE9306
 ltft_adjustment_b1_raw = 0xFFFECFE4
-exhaust_cvtc_duty_b1_word_raw = 0xFFFE8B10
-exhaust_cvtc_duty_b2_word_raw = 0xFFFE8B12
-intake_cvtc_duty_command_b1_raw = 0xFFFE93BF
-intake_cvtc_duty_command_b2_raw = 0xFFFE93C0
+iat_raw = 0xFFFE98AA
+oil_temperature_did_source_raw = 0xFFFE8179
+af_state_factor_raw = 0xFFFE9318
+injection_end_angle_raw = 0xFFFE89A2
 front_af_sensor_b1_word_raw = 0xFFFE97E6
 front_af_sensor_b2_word_raw = 0xFFFE97E8
 af_adjustment_b1_raw = 0xFFFEBCA2
@@ -518,7 +520,8 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = []
+telemetry_unavailable = ["ltft_publication_neutral_control_raw"]
+telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00C.capabilities]
 map_switching = true
@@ -657,10 +660,11 @@ normalized_load_raw = 0xFFFF1034
 bfs_raw = 0xFFFF102E
 injection_0_raw = 0xFFFF2444
 injection_1_raw = 0xFFFF2446
-injection_2_raw = 0xFFFF2448
-injection_3_raw = 0xFFFF244A
-injection_4_raw = 0xFFFF244C
-injection_5_raw = 0xFFFF244E
+fuel_learning_permit_b_raw = 0xFFFF147F
+fuel_learning_permit_a_raw = 0xFFFF1480
+torque_transition_state_raw = 0xFFFF243E
+knock_state_snapshot_raw = 0xFFFF24EB
+knock_branch_state_raw = 0xFFFF24ED
 knock_timing_state_raw = 0xFFFF122E
 knock_surface_state = 0xFFFF24EA
 app1_raw = 0xFFFF272E
@@ -675,17 +679,16 @@ exhaust_cvtc_target_raw = 0xFFFF239B
 calculated_load_raw = 0xFFFF42CE
 throttle_request_bounded_raw = 0xFFFF1A24
 engine_torque_state_raw = 0xFFFF192C
-injection_end_angle_raw = 0xFFFF1992
+transmission_reduction_state_raw = 0xFFFF18C6
 exhaust_cvtc_actual_b1_raw = 0xFFFF2398
 throttle_target_shared_raw = 0xFFFF1A10
 throttle_target_channel_0_raw = 0xFFFF422A
 throttle_target_channel_1_raw = 0xFFFF422C
 exhaust_cvtc_actual_b2_raw = 0xFFFF2399
 coolant_raw = 0xFFFF107F
-iat_raw = 0xFFFF28D6
 fuel_temperature_did_source_raw = 0xFFFF107B
-oil_temperature_did_source_raw = 0xFFFF2914
-af_state_factor_raw = 0xFFFF235C
+ltft_learned_b2_raw = 0xFFFF237C
+ltft_adjustment_b2_raw = 0xFFFF56C2
 stft_b1_raw = 0xFFFF2350
 stft_b2_raw = 0xFFFF2352
 intake_cvtc_duty_b1_raw = 0xFFFF24C4
@@ -696,10 +699,10 @@ alpha_n_flow_raw = 0xFFFF117C
 battery_voltage_raw = 0xFFFF1193
 ltft_learned_b1_raw = 0xFFFF237A
 ltft_adjustment_b1_raw = 0xFFFF56C0
-exhaust_cvtc_duty_b1_word_raw = 0xFFFF1B04
-exhaust_cvtc_duty_b2_word_raw = 0xFFFF1B06
-intake_cvtc_duty_command_b1_raw = 0xFFFF2430
-intake_cvtc_duty_command_b2_raw = 0xFFFF2431
+iat_raw = 0xFFFF28D6
+oil_temperature_did_source_raw = 0xFFFF2914
+af_state_factor_raw = 0xFFFF235C
+injection_end_angle_raw = 0xFFFF1992
 front_af_sensor_b1_word_raw = 0xFFFF2818
 front_af_sensor_b2_word_raw = 0xFFFF281A
 af_adjustment_b1_raw = 0xFFFF4774
@@ -737,7 +740,8 @@ injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
 map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = []
+telemetry_unavailable = ["ltft_publication_neutral_control_raw"]
+telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00D.capabilities]
 map_switching = true
@@ -876,10 +880,11 @@ normalized_load_raw = 0xFFFF1034
 bfs_raw = 0xFFFF102E
 injection_0_raw = 0xFFFF244C
 injection_1_raw = 0xFFFF244E
-injection_2_raw = 0xFFFF2450
-injection_3_raw = 0xFFFF2452
-injection_4_raw = 0xFFFF2454
-injection_5_raw = 0xFFFF2456
+fuel_learning_permit_b_raw = 0xFFFF147F
+fuel_learning_permit_a_raw = 0xFFFF1480
+torque_transition_state_raw = 0xFFFF2446
+knock_state_snapshot_raw = 0xFFFF24F3
+knock_branch_state_raw = 0xFFFF24F5
 knock_timing_state_raw = 0xFFFF122E
 knock_surface_state = 0xFFFF24F2
 app1_raw = 0xFFFF2742
@@ -894,17 +899,16 @@ exhaust_cvtc_target_raw = 0xFFFF23A3
 calculated_load_raw = 0xFFFF42E2
 throttle_request_bounded_raw = 0xFFFF1A2A
 engine_torque_state_raw = 0xFFFF1930
-injection_end_angle_raw = 0xFFFF1996
+transmission_reduction_state_raw = 0xFFFF18CA
 exhaust_cvtc_actual_b1_raw = 0xFFFF23A0
 throttle_target_shared_raw = 0xFFFF1A16
 throttle_target_channel_0_raw = 0xFFFF423E
 throttle_target_channel_1_raw = 0xFFFF4240
 exhaust_cvtc_actual_b2_raw = 0xFFFF23A1
 coolant_raw = 0xFFFF107F
-iat_raw = 0xFFFF28EA
 fuel_temperature_did_source_raw = 0xFFFF107B
-oil_temperature_did_source_raw = 0xFFFF2928
-af_state_factor_raw = 0xFFFF2364
+ltft_learned_b2_raw = 0xFFFF2384
+ltft_adjustment_b2_raw = 0xFFFF56D6
 stft_b1_raw = 0xFFFF2358
 stft_b2_raw = 0xFFFF235A
 intake_cvtc_duty_b1_raw = 0xFFFF24CC
@@ -915,10 +919,10 @@ alpha_n_flow_raw = 0xFFFF117C
 battery_voltage_raw = 0xFFFF1193
 ltft_learned_b1_raw = 0xFFFF2382
 ltft_adjustment_b1_raw = 0xFFFF56D4
-exhaust_cvtc_duty_b1_word_raw = 0xFFFF1B0C
-exhaust_cvtc_duty_b2_word_raw = 0xFFFF1B0E
-intake_cvtc_duty_command_b1_raw = 0xFFFF2438
-intake_cvtc_duty_command_b2_raw = 0xFFFF2439
+iat_raw = 0xFFFF28EA
+oil_temperature_did_source_raw = 0xFFFF2928
+af_state_factor_raw = 0xFFFF2364
+injection_end_angle_raw = 0xFFFF1996
 front_af_sensor_b1_word_raw = 0xFFFF282C
 front_af_sensor_b2_word_raw = 0xFFFF282E
 af_adjustment_b1_raw = 0xFFFF4788
@@ -956,7 +960,14 @@ injected_ram_start = 0xFFFF0C00
 injected_ram_end = 0xFFFF0F00
 map_variant = "sh7058-jk78"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = []
+telemetry_unavailable = [
+    "fuel_learning_permit_a_raw",
+    "knock_branch_state_raw",
+    "knock_state_snapshot_raw",
+    "ltft_publication_neutral_control_raw",
+    "transmission_reduction_state_raw",
+]
+telemetry_zero_source = 0xFFFF0DE0
 
 [profile.JK78C.capabilities]
 map_switching = true
@@ -1100,10 +1111,8 @@ normalized_load_raw = 0xFFFF1032
 bfs_raw = 0xFFFF102E
 injection_0_raw = 0xFFFF231C
 injection_1_raw = 0xFFFF231E
-injection_2_raw = 0xFFFF2320
-injection_3_raw = 0xFFFF2322
-injection_4_raw = 0xFFFF2324
-injection_5_raw = 0xFFFF2326
+fuel_learning_permit_b_raw = 0xFFFF144A
+torque_transition_state_raw = 0xFFFF2318
 knock_timing_state_raw = 0xFFFF1204
 knock_surface_state = 0xFFFF23C6
 app1_raw = 0xFFFF25F8
@@ -1118,17 +1127,15 @@ exhaust_cvtc_target_raw = 0xFFFF23A4
 calculated_load_raw = 0xFFFF448C
 throttle_request_bounded_raw = 0xFFFF19B0
 engine_torque_state_raw = 0xFFFF18D0
-injection_end_angle_raw = 0xFFFF192A
 exhaust_cvtc_actual_b1_raw = 0xFFFF239E
 throttle_target_shared_raw = 0xFFFF199E
 throttle_target_channel_0_raw = 0xFFFF43D8
 throttle_target_channel_1_raw = 0xFFFF43DA
 exhaust_cvtc_actual_b2_raw = 0xFFFF239F
 coolant_raw = 0xFFFF106F
-iat_raw = 0xFFFF278A
 fuel_temperature_did_source_raw = 0xFFFF106B
-oil_temperature_did_source_raw = 0xFFFF1171
-af_state_factor_raw = 0xFFFF2270
+ltft_learned_b2_raw = 0xFFFF2260
+ltft_adjustment_b2_raw = 0xFFFF5BE2
 stft_b1_raw = 0xFFFF2238
 stft_b2_raw = 0xFFFF223A
 intake_cvtc_duty_b1_raw = 0xFFFF239A
@@ -1139,10 +1146,10 @@ alpha_n_flow_raw = 0xFFFF22F8
 battery_voltage_raw = 0xFFFF1174
 ltft_learned_b1_raw = 0xFFFF225E
 ltft_adjustment_b1_raw = 0xFFFF5BE0
-exhaust_cvtc_duty_b1_word_raw = 0xFFFF1A88
-exhaust_cvtc_duty_b2_word_raw = 0xFFFF1A8A
-intake_cvtc_duty_command_b1_raw = 0xFFFF2308
-intake_cvtc_duty_command_b2_raw = 0xFFFF2309
+iat_raw = 0xFFFF278A
+oil_temperature_did_source_raw = 0xFFFF1171
+af_state_factor_raw = 0xFFFF2270
+injection_end_angle_raw = 0xFFFF192A
 front_af_sensor_b1_word_raw = 0xFFFF26D8
 front_af_sensor_b2_word_raw = 0xFFFF26DA
 af_adjustment_b1_raw = 0xFFFF490A

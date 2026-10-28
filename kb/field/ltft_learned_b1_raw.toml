@@ -13,5 +13,6 @@ group = "Fuel"
 panel = "Trims and supply"
 order = 10
 description = """
-Learned long-term trim cell of bank 1 for the current operating region, in \
-percent. LTFT bank 1 is this cell plus the adjustment."""
+Selected learned trim cell of bank 1, in percent. The publisher combines \
+this cell with the running adjustment minus 100 percent before its \
+conditional clamps and neutralization."""

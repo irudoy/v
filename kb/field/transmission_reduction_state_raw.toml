@@ -1,0 +1,21 @@
+signal = "torque_request_states/signal"
+source = "transmission_reduction_state/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+scale = "raw count"
+profiles = ["tuning"]
+page = 7
+offset = 0x5
+
+[dashboard]
+label = "Accepted TCM reduction state"
+digits = 0
+group = "Torque"
+panel = "Torque and requests"
+order = 71
+description = """
+Unsigned effective TCM reduction state after enable, shift, and inhibit \
+handling. The enabled direct path uses the request byte shifted left by \
+eight; other branches retain, limit, rebuild, decrease, or clear it. Raw \
+stored counts without a physical torque conversion."""

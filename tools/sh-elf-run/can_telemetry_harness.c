@@ -374,6 +374,10 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
             return fail_value(
                 name, "context_10_source", actual[82 + offset], expected);
     }
+    /* Reserved profile bytes have a zero-value contract independent of the
+       source-pointer table used by the generic capture comparison. */
+    if (actual[3 * 8 + 6] != 0)
+        return fail_value(name, "fixed_reserved_zero", actual[3 * 8 + 6], 0);
     return 1;
 }
 

@@ -1,3 +1,4 @@
+retired = true
 signal = "intake_cvtc_duty_command/signal"
 source = "intake_cvtc_duty_command_b1/ram"
 origin = "ecu_ram"

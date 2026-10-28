@@ -1,17 +1,10 @@
-title = "Per-cylinder injection calculation"
+title = "Bank-representative injection calculation"
 domain = "fuel"
 priority = "core"
 coverage = "fixed"
 basis = "exact-code"
-observes = [
-    "injection_0/ram",
-    "injection_1/ram",
-    "injection_2/ram",
-    "injection_3/ram",
-    "injection_4/ram",
-    "injection_5/ram",
-]
+observes = ["injection_0/ram", "injection_1/ram"]
 note = """
-All six calculated words are streamed; service 0x22 publishes only the first \
-two words in the declared table. These are not verified electrical pulse \
-widths."""
+Channels 0 and 1 represent the two parity banks and drive cylinders 1 and 2 \
+by the family Power Balance order. The words are compensated software \
+commands, without an electrical injector-open measurement."""

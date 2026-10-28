@@ -1,5 +1,15 @@
 summary = "First independent permit byte; bank b in 0..1 requires bit b."
 block = "fuel_closed_loop/block"
+width = 8
+signed = false
+
+[[bit]]
+bit = 0
+name = "bank_1_stability_permit"
+
+[[bit]]
+bit = 1
+name = "bank_2_stability_permit"
 
 [[symbol]]
 layout = "7mfk"
@@ -8,9 +18,9 @@ level = "code"
 width = 8
 signed = false
 note = """
-The bounded software domain, storage footprint and reader interpretation do \
-not establish producer semantics, physical units, hardware permission or \
-cadence."""
+FUN 00058740 writes bits 0 and 1 from the bounded change/derivative \
+predicates at FFFF8860/FFFF8864 and preserves other bits. Raw signal \
+identities, physical permission and hardware cadence remain unreviewed."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,6 +42,81 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005906c"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1480"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00059c56"
+to = "7mfk:00057d36"
+count = 1
+value = 125
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1480"
+level = "code"
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00059c52"
+to = "7mfk:00057d36"
+count = 1
+value = 125
+note = """
+Unique aligned source accesses bind this storage cell. This code \
+correspondence does not establish hardware behavior."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1458"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1458"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff1458"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "reader"

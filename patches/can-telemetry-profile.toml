@@ -27,11 +27,17 @@ table_address = 0x000D4C00
 table_end = 0x000D4E00
 configuration_address = 0x000D4E00
 state_address = 0xFFFF5E00
+padding_source = 0x000D4E07
 
 [[profile]]
 name = "tuning"
-id = 7
+id = 8
 page_count = 11
+
+[[padding]]
+page = 3
+offset = 6
+width = 1
 
 [[field]]
 name = "tick16"
@@ -358,70 +364,98 @@ diagnostic Power Balance order: the compensated software command in ms at 10 \
 us per count, not a measured injector-open time."""
 
 [[field]]
-name = "injection_2_raw"
+name = "fuel_learning_permit_b_raw"
 page = 3
 offset = 1
-width = 2
-source = 0xFFFF23CC
+width = 1
+source = 0xFFFF1457
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 100 ms"
+scale = "bits: 0 BANK_1_COMPOSITE_PERMIT, 1 BANK_2_COMPOSITE_PERMIT"
 
 [field.dashboard]
-label = "Injection calc 2"
-digits = 2
-group = "Injection"
-panel = "Injection and knock"
-order = 30
+label = "LTFT composite permit"
+digits = 0
+hexadecimal = true
+group = "Fuel"
+panel = "Learning and knock state"
+order = 10
 description = """
-Calculated injection pulse of channel 2, which drives cylinder 3 by the \
-diagnostic Power Balance order: the compensated software command in ms at 10 \
-us per count, not a measured injector-open time."""
+Bank bits 0 and 1 of the composite learning gate written by FUN 00058740. \
+Learning also requires the corresponding stability-permit bit. The physical \
+meaning of every contributing condition is unreviewed."""
 
 [[field]]
-name = "injection_3_raw"
+name = "fuel_learning_permit_a_raw"
+page = 3
+offset = 2
+width = 1
+source = 0xFFFF1458
+profiles = ["tuning"]
+kind = "ecu_ram"
+signed = false
+scale = "bits: 0 BANK_1_STABILITY_PERMIT, 1 BANK_2_STABILITY_PERMIT"
+
+[field.dashboard]
+label = "LTFT stability permit"
+digits = 0
+hexadecimal = true
+group = "Fuel"
+panel = "Learning and knock state"
+order = 20
+description = """
+Bank bits 0 and 1 written by FUN 00058740 from bounded signal-change and \
+derivative checks after the per-bank eligibility counters. Both permit bytes \
+are required by the learned-grid update. Raw signal identities and physical \
+learning permission remain unreviewed."""
+
+[[field]]
+name = "ltft_publication_neutral_control_raw"
 page = 3
 offset = 3
-width = 2
-source = 0xFFFF23CE
+width = 1
+source = 0xFFFF41B5
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 100 ms"
+scale = "bits: 0 NEUTRALIZE_PUBLICATION_AND_RESET_GRID"
 
 [field.dashboard]
-label = "Injection calc 3"
-digits = 2
-group = "Injection"
-panel = "Injection and knock"
-order = 40
+label = "LTFT neutralization state"
+digits = 0
+hexadecimal = true
+group = "Fuel"
+panel = "Learning and knock state"
+order = 30
 description = """
-Calculated injection pulse of channel 3, which drives cylinder 4 by the \
-diagnostic Power Balance order: the compensated software command in ms at 10 \
-us per count, not a measured injector-open time."""
+Bit 0 participates in learned-grid reset and neutral LTFT publication. FUN \
+00057900 produces it as an edge pulse from request FFFF99D8.bit5 and latch \
+FFFF4201.bit6. The exact diagnostic request and other control bits are \
+unreviewed."""
 
 [[field]]
-name = "injection_4_raw"
+name = "torque_transition_state_raw"
 page = 3
-offset = 5
+offset = 4
 width = 2
-source = 0xFFFF23D0
+source = 0xFFFF23C2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 100 ms"
+scale = "raw count"
 
 [field.dashboard]
-label = "Injection calc 4"
-digits = 2
-group = "Injection"
-panel = "Injection and knock"
-order = 50
+label = "Generated torque transition state"
+digits = 0
+group = "Torque"
+panel = "Torque and requests"
+order = 72
 description = """
-Calculated injection pulse of channel 4, which drives cylinder 5 by the \
-diagnostic Power Balance order: the compensated software command in ms at 10 \
-us per count, not a measured injector-open time."""
+Raw 16-bit storage view of the generated Q8 transition state. The event \
+timing stage consumes its unsigned high byte on the reviewed path; other \
+modes use a separate latched path. Physical units and producer signedness \
+remain unresolved, and the state is not exclusive to TCM requests."""
 
 [[field]]
 name = "telemetry_status"
@@ -440,26 +474,52 @@ digits = 0
 group = "Transport"
 
 [[field]]
-name = "injection_5_raw"
+name = "knock_state_snapshot_raw"
 page = 4
 offset = 1
-width = 2
-source = 0xFFFF23D2
+width = 1
+source = 0xFFFF2467
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw / 100 ms"
+scale = "bits: 6 DIRECT_DIFFERENCE_ENABLE"
 
 [field.dashboard]
-label = "Injection calc 5"
-digits = 2
-group = "Injection"
-panel = "Injection and knock"
-order = 60
+label = "Knock input state"
+digits = 0
+hexadecimal = true
+group = "Knock"
+panel = "Learning and knock state"
+order = 40
 description = """
-Calculated injection pulse of channel 5, which drives cylinder 6 by the \
-diagnostic Power Balance order: the compensated software command in ms at 10 \
-us per count, not a measured injector-open time."""
+Scheduler snapshot of FFFF2466 before periodic tasks. Bit 6 permits the \
+direct high-octane minus high-detonation map-difference branch when the \
+prior coordinator state bit 7 is clear. Other bits and the physical producer \
+of the switching state remain unreviewed."""
+
+[[field]]
+name = "knock_branch_state_raw"
+page = 4
+offset = 2
+width = 1
+source = 0xFFFF2469
+profiles = ["tuning"]
+kind = "ecu_ram"
+signed = false
+scale = "bits: 7 DIRECT_DIFFERENCE_INHIBIT"
+
+[field.dashboard]
+label = "Knock branch state"
+digits = 0
+hexadecimal = true
+group = "Knock"
+panel = "Learning and knock state"
+order = 50
+description = """
+Coordinator state captured after FUN 000493E8. Bit 7 inhibits the direct \
+map-difference branch at the next evaluation. Use the previous contiguous \
+snapshot to recover that input for the current pass. Other bits and their \
+physical causes remain unreviewed."""
 
 [[field]]
 name = "knock_timing_state_raw"
@@ -829,26 +889,27 @@ torque chain. A candidate modeled-torque label is not measured flywheel \
 torque. The gross and net terms remain distinct."""
 
 [[field]]
-name = "injection_end_angle_raw"
+name = "transmission_reduction_state_raw"
 page = 7
 offset = 5
 width = 2
-source = 0xFFFF192E
+source = 0xFFFF1866
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 2 - 590 degCA"
+scale = "raw count"
 
 [field.dashboard]
-label = "End of injection after intake TDC"
+label = "Accepted TCM reduction state"
 digits = 0
-group = "Injection"
+group = "Torque"
 panel = "Torque and requests"
-order = 70
+order = 71
 description = """
-End of injection in crank degrees after intake TDC of the injected cylinder. \
-A firmware coordinate from the injection-end tables, not a measured injector \
-event."""
+Unsigned effective TCM reduction state after enable, shift, and inhibit \
+handling. The enabled direct path uses the request byte shifted left by \
+eight; other branches retain, limit, rebuild, decrease, or clear it. Raw \
+stored counts without a physical torque conversion."""
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"
@@ -975,7 +1036,7 @@ phase of the cam sensor edges."""
 [[context]]
 page = 9
 tag = 0
-name = "temperatures_af"
+name = "temperatures_and_b2_trim_terms"
 
 [[context.field]]
 name = "coolant_raw"
@@ -1000,30 +1061,6 @@ maximum = 140
 step = 20
 
 [[context.field]]
-name = "iat_raw"
-width = 1
-source = 0xFFFF2837
-kind = "ecu_ram"
-signed = false
-scale = "raw - 50 degC"
-
-[context.field.dashboard]
-label = "Intake air"
-digits = 0
-group = "Temperature"
-panel = "Temperatures and context"
-order = 10
-description = "Intake air temperature."
-
-[context.field.dashboard.feed]
-key = "iat_c"
-name = "VQ Intake Air Temperature"
-format = "0"
-minimum = -40
-maximum = 140
-step = 20
-
-[[context.field]]
 name = "fuel_temperature_did_source_raw"
 width = 1
 source = 0xFFFF1074
@@ -1040,40 +1077,39 @@ order = 20
 description = "Fuel temperature from the fuel tank temperature sensor."
 
 [[context.field]]
-name = "oil_temperature_did_source_raw"
-width = 1
-source = 0xFFFF2876
+name = "ltft_learned_b2_raw"
+width = 2
+source = 0xFFFF2308
 kind = "ecu_ram"
 signed = false
-scale = "raw - 50 degC"
+scale = "raw / 256 - 100 percent"
 
 [context.field.dashboard]
-label = "Oil temperature"
-digits = 0
-group = "Temperature"
-panel = "Temperatures and context"
-order = 30
-description = "Engine oil temperature."
+label = "LTFT learned bank 2"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 11
+description = """
+Selected learned trim cell of bank 2, in percent. The publisher combines \
+this cell with the running adjustment minus 100 percent before its \
+conditional clamps and neutralization."""
 
 [[context.field]]
-name = "af_state_factor_raw"
+name = "ltft_adjustment_b2_raw"
 width = 2
-source = 0xFFFF22E8
+source = 0xFFFF564A
 kind = "ecu_ram"
 signed = false
-scale = "raw / 16384 ratio"
+scale = "raw / 256 - 100 percent"
 
 [context.field.dashboard]
-label = "A/F state factor"
-digits = 4
+label = "LTFT adjustment bank 2"
+digits = 2
 group = "Fuel"
-panel = "Air and fuel"
-order = 80
-description = """
-Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 \
-is the closed-loop stoichiometric target, and a larger value commands \
-enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / \
-factor."""
+panel = "Trims and supply"
+order = 21
+description = "Running adjustment of the bank 2 long-term trim, in percent."
 
 [[context]]
 page = 9
@@ -1511,8 +1547,9 @@ group = "Fuel"
 panel = "Trims and supply"
 order = 10
 description = """
-Learned long-term trim cell of bank 1 for the current operating region, in \
-percent. LTFT bank 1 is this cell plus the adjustment."""
+Selected learned trim cell of bank 1, in percent. The publisher combines \
+this cell with the running adjustment minus 100 percent before its \
+conditional clamps and neutralization."""
 
 [[context.field]]
 name = "ltft_adjustment_b1_raw"
@@ -1533,75 +1570,86 @@ description = "Running adjustment of the bank 1 long-term trim, in percent."
 [[context]]
 page = 10
 tag = 1
-name = "exhaust_cvtc_duty_and_intake_duty_command"
+name = "air_oil_temperature_and_af_state"
 
 [[context.field]]
-name = "exhaust_cvtc_duty_b1_word_raw"
-width = 2
-source = 0xFFFF1AAC
-kind = "ecu_ram"
-signed = false
-scale = "raw * 100 / 1024 percent"
-
-[context.field.dashboard]
-label = "Exhaust CVTC duty B1 word"
-digits = 1
-group = "CVTC"
-panel = "CVTC detail"
-order = 50
-description = "Duty of the bank 1 exhaust valve timing solenoid, in percent."
-
-[[context.field]]
-name = "exhaust_cvtc_duty_b2_word_raw"
-width = 2
-source = 0xFFFF1AAE
-kind = "ecu_ram"
-signed = false
-scale = "raw * 100 / 1024 percent"
-
-[context.field.dashboard]
-label = "Exhaust CVTC duty B2 word"
-digits = 1
-group = "CVTC"
-panel = "CVTC detail"
-order = 60
-description = "Duty of the bank 2 exhaust valve timing solenoid, in percent."
-
-[[context.field]]
-name = "intake_cvtc_duty_command_b1_raw"
+name = "iat_raw"
 width = 1
-source = 0xFFFF23B4
+source = 0xFFFF2837
 kind = "ecu_ram"
 signed = false
-scale = "raw * 39 / 100 percent"
+scale = "raw - 50 degC"
 
 [context.field.dashboard]
-label = "Intake CVTC duty command B1"
-digits = 1
-group = "CVTC"
-panel = "CVTC detail"
+label = "Intake air"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
+order = 10
+description = "Intake air temperature."
+
+[context.field.dashboard.feed]
+key = "iat_c"
+name = "VQ Intake Air Temperature"
+format = "0"
+minimum = -40
+maximum = 140
+step = 20
+
+[[context.field]]
+name = "oil_temperature_did_source_raw"
+width = 1
+source = 0xFFFF2876
+kind = "ecu_ram"
+signed = false
+scale = "raw - 50 degC"
+
+[context.field.dashboard]
+label = "Oil temperature"
+digits = 0
+group = "Temperature"
+panel = "Temperatures and context"
 order = 30
-description = """
-Scheduler copy of the bank 1 intake valve timing solenoid duty, in percent. \
-Every recorded drive holds it equal to the live duty."""
+description = "Engine oil temperature."
 
 [[context.field]]
-name = "intake_cvtc_duty_command_b2_raw"
-width = 1
-source = 0xFFFF23B5
+name = "af_state_factor_raw"
+width = 2
+source = 0xFFFF22E8
 kind = "ecu_ram"
 signed = false
-scale = "raw * 39 / 100 percent"
+scale = "raw / 16384 ratio"
 
 [context.field.dashboard]
-label = "Intake CVTC duty command B2"
-digits = 1
-group = "CVTC"
-panel = "CVTC detail"
-order = 40
+label = "A/F state factor"
+digits = 4
+group = "Fuel"
+panel = "Air and fuel"
+order = 80
 description = """
-Scheduler copy of the bank 2 intake valve timing solenoid duty, in percent. \
-Every recorded drive holds it equal to the live duty."""
+Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 \
+is the closed-loop stoichiometric target, and a larger value commands \
+enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / \
+factor."""
+
+[[context.field]]
+name = "injection_end_angle_raw"
+width = 2
+source = 0xFFFF192E
+kind = "ecu_ram"
+signed = false
+scale = "raw * 2 - 590 degCA"
+
+[context.field.dashboard]
+label = "End of injection after intake TDC"
+digits = 0
+group = "Injection"
+panel = "Torque and requests"
+order = 70
+description = """
+End of injection in crank degrees after intake TDC of the injected cylinder. \
+A firmware coordinate from the injection-end tables, not a measured injector \
+event."""
 
 [[context]]
 page = 10

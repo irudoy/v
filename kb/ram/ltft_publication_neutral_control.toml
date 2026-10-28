@@ -2,6 +2,12 @@ summary = """
 7mfk raw control byte whose bit0 selects neutral output in the bounded LTFT \
 publication."""
 block = "fuel_closed_loop/block"
+width = 8
+signed = false
+
+[[bit]]
+bit = 0
+name = "neutralize_publication_and_reset_grid"
 
 [[symbol]]
 layout = "7mfk"
@@ -10,9 +16,10 @@ level = "code"
 width = 8
 signed = false
 note = """
-Storage and read interpretation describe only the bounded 7mfk LTFT \
-consumer; upstream production, physical identity and other layouts have no \
-inferred contract."""
+FUN 00057900 produces bit 0 as the rising-request pulse of FFFF99D8.bit5 \
+before FFFF4201.bit6 latches it. The other reviewed direct writers preserve \
+bit 0. The diagnostic request identity and physical reset conditions remain \
+unreviewed."""
 
 [[symbol.evidence]]
 kind = "test"
@@ -30,6 +37,86 @@ key = "test_ltft_publication_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded LTFT publication"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005793c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00057950"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4514"
+level = "code"
+note = """
+The JK78C request-edge producer uses bit 6 at FFFF4514; the 7mfk role uses \
+bit 0. The native correspondence requires wire normalization before this \
+field is available."""
+
+[[symbol.bit]]
+bit = 6
+name = "neutralize_publication_and_reset_grid"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00073e78"
+to = "7mfk:00057900"
+count = 1
+value = "mnemonic"
+note = """
+The matching request-edge producer binds this byte. Its mask is 0x40 on \
+JK78C and 0x01 on 7mfk."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00073eb4"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff41b5"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff41b5"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "jk00c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff41b5"
+count = 2
+l0 = "f01e712d1206a561"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
+
+[[status]]
+layout = "jk00d"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff41b5"
+count = 2
+l0 = "b8079591e2903f0e"
+note = """
+The source-access search has no unique reviewed producer-consumer binding. \
+This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "reader"

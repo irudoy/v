@@ -1,0 +1,21 @@
+signal = "torque_request_states/signal"
+source = "athletic-coucal/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+scale = "raw count"
+profiles = ["tuning"]
+page = 3
+offset = 0x4
+
+[dashboard]
+label = "Generated torque transition state"
+digits = 0
+group = "Torque"
+panel = "Torque and requests"
+order = 72
+description = """
+Raw 16-bit storage view of the generated Q8 transition state. The event \
+timing stage consumes its unsigned high byte on the reviewed path; other \
+modes use a separate latched path. Physical units and producer signedness \
+remain unresolved, and the state is not exclusive to TCM requests."""

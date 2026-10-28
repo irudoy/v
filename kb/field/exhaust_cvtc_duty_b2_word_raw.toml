@@ -1,3 +1,4 @@
+retired = true
 signal = "high_resolution_cvtc_duty/signal"
 source = "exhaust_cvtc_duty_b2_word/ram"
 origin = "ecu_ram"

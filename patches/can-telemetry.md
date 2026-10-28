@@ -383,11 +383,13 @@ Fixed pages 0 through 8, bytes 1..7:
 | 2 | 3 | `rolling_launch_phase` | u8 | `rolling_launch` RAM `0xFFFF5D40` | enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN |
 | 2 | 4..5 | `injection_0_raw` | u16 | ECU RAM `0xFFFF23C8` | raw / 100 ms |
 | 2 | 6..7 | `injection_1_raw` | u16 | ECU RAM `0xFFFF23CA` | raw / 100 ms |
-| 3 | 1..2 | `injection_2_raw` | u16 | ECU RAM `0xFFFF23CC` | raw / 100 ms |
-| 3 | 3..4 | `injection_3_raw` | u16 | ECU RAM `0xFFFF23CE` | raw / 100 ms |
-| 3 | 5..6 | `injection_4_raw` | u16 | ECU RAM `0xFFFF23D0` | raw / 100 ms |
+| 3 | 1 | `fuel_learning_permit_b_raw` | u8 | ECU RAM `0xFFFF1457` | bits: 0 BANK_1_COMPOSITE_PERMIT, 1 BANK_2_COMPOSITE_PERMIT |
+| 3 | 2 | `fuel_learning_permit_a_raw` | u8 | ECU RAM `0xFFFF1458` | bits: 0 BANK_1_STABILITY_PERMIT, 1 BANK_2_STABILITY_PERMIT |
+| 3 | 3 | `ltft_publication_neutral_control_raw` | u8 | ECU RAM `0xFFFF41B5` | bits: 0 NEUTRALIZE_PUBLICATION_AND_RESET_GRID |
+| 3 | 4..5 | `torque_transition_state_raw` | u16 | ECU RAM `0xFFFF23C2` | raw count |
 | 3 | 7 | `telemetry_status` | u8 | `can_telemetry` RAM `0xFFFF5E07` | bit mask |
-| 4 | 1..2 | `injection_5_raw` | u16 | ECU RAM `0xFFFF23D2` | raw / 100 ms |
+| 4 | 1 | `knock_state_snapshot_raw` | u8 | ECU RAM `0xFFFF2467` | bits: 6 DIRECT_DIFFERENCE_ENABLE |
+| 4 | 2 | `knock_branch_state_raw` | u8 | ECU RAM `0xFFFF2469` | bits: 7 DIRECT_DIFFERENCE_INHIBIT |
 | 4 | 3..4 | `knock_timing_state_raw` | s16 | ECU RAM `0xFFFF121A` | raw / 256 deg |
 | 4 | 5 | `knock_surface_state` | u8 | ECU RAM `0xFFFF2466` | bits: 6 HIGH_DETONATION |
 | 4 | 6 | `knock_count_latched` | u8 | `can_telemetry` RAM `0xFFFF5E0C` | saturating event count |
@@ -404,22 +406,22 @@ Fixed pages 0 through 8, bytes 1..7:
 | 6 | 7 | `calculated_load_raw` | u8 | ECU RAM `0xFFFF413E` | raw * 100 / 255 percent |
 | 7 | 1..2 | `throttle_request_bounded_raw` | s16 | ECU RAM `0xFFFF19C6` | raw count |
 | 7 | 3..4 | `engine_torque_state_raw` | s16 | ECU RAM `0xFFFF18CC` | raw count |
-| 7 | 5..6 | `injection_end_angle_raw` | u16 | ECU RAM `0xFFFF192E` | raw * 2 - 590 degCA |
+| 7 | 5..6 | `transmission_reduction_state_raw` | u16 | ECU RAM `0xFFFF1866` | raw count |
 | 7 | 7 | `exhaust_cvtc_actual_b1_raw` | u8 | ECU RAM `0xFFFF2324` | raw * 0.5 - 64 degCA |
 | 8 | 1..2 | `throttle_target_shared_raw` | u16 | ECU RAM `0xFFFF19B2` | raw count |
 | 8 | 3..4 | `throttle_target_channel_0_raw` | u16 | ECU RAM `0xFFFF28BC` | raw * 34285 / 1114112 percent |
 | 8 | 5..6 | `throttle_target_channel_1_raw` | u16 | ECU RAM `0xFFFF28BE` | raw * 34285 / 1114112 percent |
 | 8 | 7 | `exhaust_cvtc_actual_b2_raw` | u8 | ECU RAM `0xFFFF2325` | raw * 0.5 - 64 degCA |
+| 3 | 6..6 | Reserved zero | bytes | ROM `0x000D4E07` repeated | 0 |
 
 Context pages 9 and 10, bytes 2..7 after the tag in byte 1:
 
 | Tag | Page | Context | Bytes | Field | Type | Source | Scale |
 | ---: | ---: | --- | ---: | --- | --- | --- | --- |
-| 0 | 9 | `temperatures_af` | 2 | `coolant_raw` | u8 | ECU RAM `0xFFFF1079` | raw - 50 degC |
-| 0 | 9 | `temperatures_af` | 3 | `iat_raw` | u8 | ECU RAM `0xFFFF2837` | raw - 50 degC |
-| 0 | 9 | `temperatures_af` | 4 | `fuel_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF1074` | raw - 50 degC |
-| 0 | 9 | `temperatures_af` | 5 | `oil_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF2876` | raw - 50 degC |
-| 0 | 9 | `temperatures_af` | 6..7 | `af_state_factor_raw` | u16 | ECU RAM `0xFFFF22E8` | raw / 16384 ratio |
+| 0 | 9 | `temperatures_and_b2_trim_terms` | 2 | `coolant_raw` | u8 | ECU RAM `0xFFFF1079` | raw - 50 degC |
+| 0 | 9 | `temperatures_and_b2_trim_terms` | 3 | `fuel_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF1074` | raw - 50 degC |
+| 0 | 9 | `temperatures_and_b2_trim_terms` | 4..5 | `ltft_learned_b2_raw` | u16 | ECU RAM `0xFFFF2308` | raw / 256 - 100 percent |
+| 0 | 9 | `temperatures_and_b2_trim_terms` | 6..7 | `ltft_adjustment_b2_raw` | u16 | ECU RAM `0xFFFF564A` | raw / 256 - 100 percent |
 | 0 | 10 | `launch_abort_voltage_and_trim_terms` | 2 | `rolling_launch_abort_reason` | u8 | `rolling_launch` RAM `0xFFFF5D41` | enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 RESERVED_13, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED |
 | 0 | 10 | `launch_abort_voltage_and_trim_terms` | 3 | `battery_voltage_raw` | u8 | ECU RAM `0xFFFF1188` | raw * 0.08 V |
 | 0 | 10 | `launch_abort_voltage_and_trim_terms` | 4..5 | `ltft_learned_b1_raw` | u16 | ECU RAM `0xFFFF2306` | raw / 256 - 100 percent |
@@ -428,10 +430,10 @@ Context pages 9 and 10, bytes 2..7 after the tag in byte 1:
 | 1 | 9 | `short_fuel_trim_cvtc_duty` | 4..5 | `stft_b2_raw` | s16 | ECU RAM `0xFFFF22DE` | raw / 256 - 100 percent |
 | 1 | 9 | `short_fuel_trim_cvtc_duty` | 6 | `intake_cvtc_duty_b1_raw` | u8 | ECU RAM `0xFFFF2440` | raw * 39 / 100 percent |
 | 1 | 9 | `short_fuel_trim_cvtc_duty` | 7 | `intake_cvtc_duty_b2_raw` | u8 | ECU RAM `0xFFFF2441` | raw * 39 / 100 percent |
-| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 2..3 | `exhaust_cvtc_duty_b1_word_raw` | u16 | ECU RAM `0xFFFF1AAC` | raw * 100 / 1024 percent |
-| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 4..5 | `exhaust_cvtc_duty_b2_word_raw` | u16 | ECU RAM `0xFFFF1AAE` | raw * 100 / 1024 percent |
-| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 6 | `intake_cvtc_duty_command_b1_raw` | u8 | ECU RAM `0xFFFF23B4` | raw * 39 / 100 percent |
-| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 7 | `intake_cvtc_duty_command_b2_raw` | u8 | ECU RAM `0xFFFF23B5` | raw * 39 / 100 percent |
+| 1 | 10 | `air_oil_temperature_and_af_state` | 2 | `iat_raw` | u8 | ECU RAM `0xFFFF2837` | raw - 50 degC |
+| 1 | 10 | `air_oil_temperature_and_af_state` | 3 | `oil_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF2876` | raw - 50 degC |
+| 1 | 10 | `air_oil_temperature_and_af_state` | 4..5 | `af_state_factor_raw` | u16 | ECU RAM `0xFFFF22E8` | raw / 16384 ratio |
+| 1 | 10 | `air_oil_temperature_and_af_state` | 6..7 | `injection_end_angle_raw` | u16 | ECU RAM `0xFFFF192E` | raw * 2 - 590 degCA |
 | 2 | 9 | `long_fuel_trim_map_index_flow` | 2..3 | `ltft_b1_raw` | s16 | ECU RAM `0xFFFF2302` | raw / 256 - 100 percent |
 | 2 | 9 | `long_fuel_trim_map_index_flow` | 4..5 | `ltft_b2_raw` | s16 | ECU RAM `0xFFFF2304` | raw / 256 - 100 percent |
 | 2 | 9 | `long_fuel_trim_map_index_flow` | 6 | `active_map_index` | u8 | `map_switching` RAM `0xFFFF5D00` | raw + 1; 0 through 4 select Maps 1 through 5, and any other value selects Map 1 |

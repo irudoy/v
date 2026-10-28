@@ -1,0 +1,18 @@
+signal = "long_fuel_trim_terms/signal"
+source = "inquisitive-dormouse/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "temperatures_and_b2_trim_terms"
+position = 2
+
+[dashboard]
+label = "LTFT learned bank 2"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 11
+description = """
+Selected learned trim cell of bank 2, in percent. The publisher combines \
+this cell with the running adjustment minus 100 percent before its \
+conditional clamps and neutralization."""

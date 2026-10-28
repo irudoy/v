@@ -60,6 +60,7 @@ TABS = (
         "CVTC detail",
         "Trims and supply",
         "Throttle sensors and protocol",
+        "Learning and knock state",
     )),
 )
 # The code metrics of each panel, each at its order among the telemetry

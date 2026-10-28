@@ -121,13 +121,13 @@ id = "high_resolution_cvtc_duty"
 domain = "cvtc"
 label = "High-resolution exhaust CVTC duty"
 priority = "high"
-coverage = "rotating"
-current_fields = ["exhaust_cvtc_duty_b1_word_raw", "exhaust_cvtc_duty_b2_word_raw"]
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF1AB0, 0xFFFF1AB2, 0xFFFF1AAC, 0xFFFF1AAE]
 widths = [2, 2, 2, 2]
 dids = [0x122D, 0x122E, 0x122F, 0x1230]
 evidence = "exact-code"
-note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
+note = "The active telemetry profile carries no high-resolution exhaust duty words. Only entries 0 and 1 of the underlying duty word array have producers; the adjacent DID words have no maintained producer."
 
 [[signal]]
 id = "intake_cvtc_duty_bytes"
@@ -147,8 +147,8 @@ id = "intake_cvtc_duty_command"
 domain = "cvtc"
 label = "Intake CVTC solenoid duty command"
 priority = "high"
-coverage = "rotating"
-current_fields = ["intake_cvtc_duty_command_b1_raw", "intake_cvtc_duty_command_b2_raw"]
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF23B4, 0xFFFF23B5]
 widths = [1, 1]
 dids = []
@@ -236,15 +236,15 @@ note = "The stream carries complete Q8.8-percent words instead of the high-byte-
 [[signal]]
 id = "injection_calculation"
 domain = "fuel"
-label = "Per-cylinder injection calculation"
+label = "Bank-representative injection calculation"
 priority = "core"
 coverage = "fixed"
-current_fields = ["injection_0_raw", "injection_1_raw", "injection_2_raw", "injection_3_raw", "injection_4_raw", "injection_5_raw"]
-sources = [0xFFFF23C8, 0xFFFF23CA, 0xFFFF23CC, 0xFFFF23CE, 0xFFFF23D0, 0xFFFF23D2]
-widths = [2, 2, 2, 2, 2, 2]
+current_fields = ["injection_0_raw", "injection_1_raw"]
+sources = [0xFFFF23C8, 0xFFFF23CA]
+widths = [2, 2]
 dids = [0x1206, 0x1207]
 evidence = "exact-code"
-note = "All six calculated words are streamed; service 0x22 publishes only the first two words in the declared table. These are not verified electrical pulse widths."
+note = "Channels 0 and 1 represent the two parity banks and drive cylinders 1 and 2 by the family Power Balance order. The words are compensated software commands, without an electrical injector-open measurement."
 
 [[signal]]
 id = "af_adjustment_states"
@@ -286,14 +286,27 @@ evidence = "exact-code"
 note = "FUN 0003B498 forms u = min(65535, (0xFFFF1E60 * 0xFFFF114E >> 9) + (0xFFFF120E * 0xFFFF114E >> 11)), about 3522 * (throttle opening area + inflow area / 4) / RPM, and writes the high byte of curve 0x15042 at 4 * u while u < 0x3C00 and of curve 0x15022 at u - 0x3C00 otherwise. FUN 0002C648 and FUN 0003BD74 pass the byte as the column input of Fuel Compensation Map 0xA29A. No service-0x22 DID publishes it."
 
 [[signal]]
+id = "fuel_learning_controls"
+domain = "fuel"
+label = "Fuel learning permission and neutralization"
+priority = "high"
+coverage = "fixed"
+current_fields = ["fuel_learning_permit_a_raw", "fuel_learning_permit_b_raw", "ltft_publication_neutral_control_raw"]
+sources = [0xFFFF1458, 0xFFFF1457, 0xFFFF41B5]
+widths = [1, 1, 1]
+dids = []
+evidence = "exact-code"
+note = "Bank b requires bit b in both permit bytes. The control byte can reset the selected learned grid and neutralize publication. Physical causes of every composite gate and the diagnostic request remain unreviewed."
+
+[[signal]]
 id = "long_fuel_trim_terms"
 domain = "fuel"
-label = "Bank 1 long-term trim summands"
+label = "Long-term trim summands of both banks"
 priority = "high"
 coverage = "rotating"
-current_fields = ["ltft_learned_b1_raw", "ltft_adjustment_b1_raw"]
-sources = [0xFFFF2306, 0xFFFF5648]
-widths = [2, 2]
+current_fields = ["ltft_learned_b1_raw", "ltft_adjustment_b1_raw", "ltft_learned_b2_raw", "ltft_adjustment_b2_raw"]
+sources = [0xFFFF2306, 0xFFFF5648, 0xFFFF2308, 0xFFFF564A]
+widths = [2, 2, 2, 2]
 dids = []
 evidence = "exact-code"
 note = "Diagnostic long-term trim is the selected learned cell plus the adjustment term minus neutral 0x6400, so the pair separates the learned grid value from the running adjustment."
@@ -316,7 +329,7 @@ id = "injection_end_angle"
 domain = "fuel"
 label = "End-of-injection angle"
 priority = "medium"
-coverage = "fixed"
+coverage = "rotating"
 current_fields = ["injection_end_angle_raw"]
 sources = [0xFFFF192E]
 widths = [2]
@@ -388,6 +401,32 @@ widths = [1, 1]
 dids = [0x1162, 0x112D]
 evidence = "exact-code"
 note = "0xFFFF2023 has no stock writer or reader, the startup clear zeroes it, and every recording reads 0, so it is not streamed. 0xFFFF564C is the work-support ignition-timing adjustment TARGET IGN TIM ADJ of JK08A.work-support.md, a signed byte in degrees bounded -5..0 that FUN 0004DBE8 adds to the final timing coordinate inside its coolant, speed, and load window. Only the service-0x3B adjustment changes it, and every recording reads 0, so it is not streamed; DID 0x112D publishes it."
+
+[[signal]]
+id = "knock_branch_controls"
+domain = "ignition"
+label = "Knock timing branch inputs and state"
+priority = "high"
+coverage = "fixed"
+current_fields = ["knock_state_snapshot_raw", "knock_branch_state_raw"]
+sources = [0xFFFF2467, 0xFFFF2469]
+widths = [1, 1]
+dids = []
+evidence = "exact-code"
+note = "The scheduler snapshot bit 6 and prior coordinator state bit 7 select the direct map-difference branch. The captured coordinator byte is its output for the next evaluation; unknown bits retain their raw values."
+
+[[signal]]
+id = "torque_request_states"
+domain = "ignition"
+label = "Accepted transmission reduction and generated transition state"
+priority = "high"
+coverage = "fixed"
+current_fields = ["transmission_reduction_state_raw", "torque_transition_state_raw"]
+sources = [0xFFFF1866, 0xFFFF23C2]
+widths = [2, 2]
+dids = []
+evidence = "exact-code"
+note = "The accepted transmission reduction and generated Q8 transition state separate request acceptance from the timing outcome. Both fields expose raw stored words. Physical torque scale and the transition state's physical units remain unresolved; the transition state is not exclusive to the TCM path."
 
 [[signal]]
 id = "physical_spark_angle"

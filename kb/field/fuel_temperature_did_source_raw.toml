@@ -3,8 +3,8 @@ source = "fuel_temperature_did_source/ram"
 origin = "ecu_ram"
 width = 1
 signed = false
-context = "temperatures_af"
-position = 2
+context = "temperatures_and_b2_trim_terms"
+position = 1
 
 [dashboard]
 label = "Fuel temperature"

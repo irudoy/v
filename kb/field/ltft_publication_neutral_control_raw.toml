@@ -1,0 +1,21 @@
+signal = "fuel_learning_controls/signal"
+source = "ltft_publication_neutral_control/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 3
+offset = 0x3
+
+[dashboard]
+label = "LTFT neutralization state"
+digits = 0
+hexadecimal = true
+group = "Fuel"
+panel = "Learning and knock state"
+order = 30
+description = """
+Bit 0 participates in learned-grid reset and neutral LTFT publication. FUN \
+00057900 produces it as an edge pulse from request FFFF99D8.bit5 and latch \
+FFFF4201.bit6. The exact diagnostic request and other control bits are \
+unreviewed."""

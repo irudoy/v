@@ -1,0 +1,15 @@
+signal = "long_fuel_trim_terms/signal"
+source = "benevolent-anteater/ram"
+origin = "ecu_ram"
+width = 2
+signed = false
+context = "temperatures_and_b2_trim_terms"
+position = 3
+
+[dashboard]
+label = "LTFT adjustment bank 2"
+digits = 2
+group = "Fuel"
+panel = "Trims and supply"
+order = 21
+description = "Running adjustment of the bank 2 long-term trim, in percent."

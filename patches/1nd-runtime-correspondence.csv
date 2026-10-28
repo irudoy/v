@@ -130,10 +130,12 @@ telemetry,normalized_load_raw,ffff102c,,,,unsupported,No normalized load snapsho
 telemetry,bfs_raw,ffff1026,fffe802e,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,injection_0_raw,ffff23c8,fffe93d6,,,mapped,Aligned diagnostic pointer table and channel-array producer agree
 telemetry,injection_1_raw,ffff23ca,fffe93d8,,,mapped,Aligned diagnostic pointer table and channel-array layout agree
-telemetry,injection_2_raw,ffff23cc,fffe93da,,,mapped,Channel-indexed producer preserves the two-byte stride
-telemetry,injection_3_raw,ffff23ce,fffe93dc,,,mapped,Channel-indexed producer preserves the two-byte stride
-telemetry,injection_4_raw,ffff23d0,fffe93de,,,mapped,Channel-indexed producer preserves the two-byte stride
-telemetry,injection_5_raw,ffff23d2,fffe93e0,,,mapped,Channel-indexed producer preserves the two-byte stride
+telemetry,fuel_learning_permit_b_raw,ffff1457,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,fuel_learning_permit_a_raw,ffff1458,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_publication_neutral_control_raw,ffff41b5,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,torque_transition_state_raw,ffff23c2,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
+telemetry,knock_state_snapshot_raw,ffff2467,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,knock_branch_state_raw,ffff2469,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
 telemetry,knock_timing_state_raw,ffff121a,fffe8214,,,mapped,"The only store of the word, in the knock function 0006d948, as 00049656 stores the 7mfk word; 0006dd90 publishes its rounded high byte to fffe92f9"
 telemetry,knock_surface_state,ffff2466,fffe9488,,,mapped,Ignition and correction consumers test bit 0x40 to select the surface
 telemetry,app1_raw,ffff269e,fffe96f6,,,mapped,Aligned diagnostic pointer table and direct references agree
@@ -148,17 +150,16 @@ telemetry,exhaust_cvtc_target_raw,ffff2327,fffe9466,,,mapped,Aligned diagnostic 
 telemetry,calculated_load_raw,ffff413e,fffeb796,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,throttle_request_bounded_raw,ffff19c6,fffe944e,,,mapped,Three-generation homologous fail-safe branch reads this bounded request
 telemetry,engine_torque_state_raw,ffff18cc,fffe8936,,,mapped,Three-generation homologous torque function writes this state
-telemetry,injection_end_angle_raw,ffff192e,fffe89a2,,,mapped,Homologous end-of-injection stage 0007f4e0 stores the doubled 209-count clamp to this word
+telemetry,transmission_reduction_state_raw,ffff1866,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,fffe945f,,,mapped,Aligned diagnostic pointer table preserves the channel byte
 telemetry,throttle_target_shared_raw,ffff19b2,fffea944,,,mapped,Producer limiter and external consumer bind the shared target
 telemetry,throttle_target_channel_0_raw,ffff28bc,fffeb6c4,,,mapped,Homologous channel limiter writes channel zero with a two-byte stride
 telemetry,throttle_target_channel_1_raw,ffff28be,fffeb6c6,,,mapped,Homologous channel limiter writes channel one with a two-byte stride
 telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,fffe9460,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
 telemetry,coolant_raw,ffff1079,fffe8079,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,iat_raw,ffff2837,fffe98aa,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8075,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,oil_temperature_did_source_raw,ffff2876,fffe8179,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,af_state_factor_raw,ffff22e8,fffe9318,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,ltft_learned_b2_raw,ffff2308,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_adjustment_b2_raw,ffff564a,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
 telemetry,stft_b1_raw,ffff22dc,fffe92e0,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,stft_b2_raw,ffff22de,fffe92e2,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe945b,,,mapped,Aligned diagnostic pointer table preserves the duty byte
@@ -169,10 +170,10 @@ telemetry,alpha_n_flow_raw,ffff1170,,,,unsupported,No homolog is established for
 telemetry,battery_voltage_raw,ffff1188,fffe817c,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffecfe4,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction
-telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8b10,,,mapped,Aligned diagnostic pointer table preserves the word position
-telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8b12,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
-telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,fffe93bf,,,mapped,"The 8-bit branch of buffer programmer 001108d0 loads the cell for BFR7B, as 000beace loads ffff23b4 on 7mfk"
-telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,fffe93c0,,,mapped,"The 8-bit branch of buffer programmer 001108d0 loads the cell for BFR7A, as 000beace loads ffff23b5 on 7mfk"
+telemetry,iat_raw,ffff2837,fffe98aa,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,oil_temperature_did_source_raw,ffff2876,fffe8179,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,af_state_factor_raw,ffff22e8,fffe9318,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,injection_end_angle_raw,ffff192e,fffe89a2,,,mapped,Homologous end-of-injection stage 0007f4e0 stores the doubled 209-count clamp to this word
 telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe97e6,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe97e8,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
 telemetry,af_adjustment_b1_raw,ffff45a0,fffebca2,,,mapped,Aligned diagnostic pointer table and direct references agree

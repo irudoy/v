@@ -779,7 +779,7 @@ class DemoGenerator:
             "rolling_launch_phase": 1 if launch else 0,
             **{
                 f"injection_{index}_raw": (injection + index * 0.02) * 100
-                for index in range(6)
+                for index in range(2)
             },
             "knock_timing_state_raw": 0x1020,
             "knock_count_latched": 1 if wave > 0.94 else 0,
@@ -820,12 +820,17 @@ class DemoGenerator:
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
-            "intake_cvtc_duty_command_b1_raw": (18 + 55 * wave) * 100 / 39,
-            "intake_cvtc_duty_command_b2_raw": (19 + 54 * wave) * 100 / 39,
             "ltft_learned_b1_raw": 101.8 * 256,
             "ltft_adjustment_b1_raw": 100.3 * 256,
-            "exhaust_cvtc_duty_b1_word_raw": (12 + 48 * wave) * 1024 / 100,
-            "exhaust_cvtc_duty_b2_word_raw": (13 + 47 * wave) * 1024 / 100,
+            "ltft_learned_b2_raw": 101.2 * 256,
+            "ltft_adjustment_b2_raw": 100.4 * 256,
+            "fuel_learning_permit_a_raw": 3,
+            "fuel_learning_permit_b_raw": 3,
+            "ltft_publication_neutral_control_raw": 0,
+            "knock_state_snapshot_raw": 0x40 if wave > 0.5 else 0,
+            "knock_branch_state_raw": 0,
+            "transmission_reduction_state_raw": 0x1800 if launch else 0,
+            "torque_transition_state_raw": 0x0400 if launch else 0,
             # IDLE names its first failed gate: CANCEL is not held.
             "rolling_launch_abort_reason": 0 if launch else 8,
             "battery_voltage_raw": 175,

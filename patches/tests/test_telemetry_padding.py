@@ -21,9 +21,11 @@ def padded_source():
     context = next(row for row in raw["context"] if row["page"] == 10 and row["tag"] == 1)
     trailing = context["field"].pop()
     raw["padding_source"] = raw["configuration_address"] + 7
-    raw["padding"] = [
+    raw["padding"] = raw.get("padding", []) + [
         {key: field[key] for key in ("page", "offset", "width")},
-        {"page": 10, "tag": 1, "offset": 8 - trailing["width"], "width": trailing["width"]},
+        {"page": 10, "tag": 1,
+         "offset": 2 + sum(field["width"] for field in context["field"]),
+         "width": trailing["width"]},
     ]
     return raw, field["name"], trailing["name"]
 
@@ -62,7 +64,7 @@ def test_producer_refuses_implicit_gaps_or_untrusted_zero_sources(mutation):
     elif mutation == "source":
         raw["padding_source"] += 1
     else:
-        raw["padding"][1]["offset"] -= 1
+        next(row for row in raw["padding"] if "tag" in row)["offset"] -= 1
     with pytest.raises(ValueError):
         load_source(raw)
 

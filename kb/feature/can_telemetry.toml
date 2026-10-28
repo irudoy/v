@@ -15,6 +15,7 @@ context_pages = [9, 10]
 fixed_page_count = 9
 full_rate_hz = 97.65625
 header_sequence_bits = 4
+padding_source = "can_telemetry.configuration_reserved"
 pphi_hz = 20000000
 protocol_version = 2
 rotating_divisor = 5
@@ -185,6 +186,10 @@ mailbox_mask = 1024
 state_address = "ffff5e00"
 table_address = "000d4c00"
 table_end = "000d4e00"
+
+[target.allocations.configuration_reserved]
+address = "000d4e07"
+width = 1
 
 [target.allocations.knock_channel_mask_latched]
 address = "ffff5e0d"
@@ -484,8 +489,15 @@ mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
 
+[[target.unsupported]]
+note = """
+Native FFFF4514 carries the neutralization pulse in bit 6; FUN 00073E78 sets \
+and clears mask 0x40. The shared profile decodes bit 0 and has no conversion \
+for this source, so this field is unavailable on JK78C."""
+symbol = "ltft_publication_neutral_control/ram"
+
 [[contexts]]
-name = "temperatures_af"
+name = "temperatures_and_b2_trim_terms"
 page = 9
 tag = 0
 
@@ -515,7 +527,7 @@ page = 10
 tag = 0
 
 [[contexts]]
-name = "exhaust_cvtc_duty_and_intake_duty_command"
+name = "air_oil_temperature_and_af_state"
 page = 10
 tag = 1
 
@@ -534,7 +546,12 @@ name = "knock_margin_channels_4_to_6"
 page = 10
 tag = 4
 
+[[padding]]
+offset = 6
+page = 3
+width = 1
+
 [[profiles]]
-id = 7
+id = 8
 name = "tuning"
 page_count = 11

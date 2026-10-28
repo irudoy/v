@@ -1,0 +1,10 @@
+title = "Knock timing branch inputs and state"
+domain = "ignition"
+priority = "high"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["glorious-spider/ram", "masked-inchworm/ram"]
+note = """
+The scheduler snapshot bit 6 and prior coordinator state bit 7 select the \
+direct map-difference branch. The captured coordinator byte is its output \
+for the next evaluation; unknown bits retain their raw values."""

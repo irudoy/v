@@ -59,6 +59,33 @@ The selected-cell influence has sign `none` over this unsigned domain. With
 the stock bounds, a cell of 23039 publishes 25600 through reset, while a cell
 of 23040 publishes 23040.
 
+## Learning permission producers
+
+`FUN 00058740` writes bank bits 0 and 1 of both permission bytes and preserves
+bits 2..7. The store at `00058f30` publishes `ffff1457` from the composite
+bank predicates at `ffff8868` and `ffff886c`. The store at `0005906c` publishes
+`ffff1458` from the independent predicates at `ffff8860` and `ffff8864`.
+Bank 1 uses bit 0 and bank 2 uses bit 1 in each byte.
+
+The latter predicates require the per-bank eligibility counter to exceed one,
+then bound a saturated signed signal difference and a separate absolute
+derivative word. The high byte of the absolute difference must not exceed
+`ROM8[000082eb]`; the absolute word at `ffff28fa+2*b` must not exceed
+`ROM16[00008f52]`. The raw signal identities and the physical causes of every
+composite gate remain unreviewed. A set permission bit alone establishes no
+physical learning rate.
+
+`FUN 00057900` produces `ffff41b5.bit0` from request `ffff99d8.bit5` and latch
+`ffff4201.bit6`. A set request with a clear latch sets both the pulse and the
+latch. A following call with the latch set clears the pulse. A clear request
+clears both and clears `ffff424f.bit4`; the preceding pulse and set latch can
+set that completion bit before the pulse clears. The exact diagnostic request
+identity remains open. The other reviewed direct writers preserve bit 0.
+
+The matched JK78C producer at `00073e78` uses bit 6 of `ffff4514`, rather than
+the 7mfk bit 0. Its native binding retains that mask. The shared telemetry
+field remains unavailable there until a wire conversion is implemented.
+
 ## Bounded learned-grid update
 
 The complete entry is `rousing-rhino/fn` at `00057d1e`. It executes the

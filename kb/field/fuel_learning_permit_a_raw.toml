@@ -1,0 +1,21 @@
+signal = "fuel_learning_controls/signal"
+source = "fuel_learning_permit_a/ram"
+origin = "ecu_ram"
+width = 1
+signed = false
+profiles = ["tuning"]
+page = 3
+offset = 0x2
+
+[dashboard]
+label = "LTFT stability permit"
+digits = 0
+hexadecimal = true
+group = "Fuel"
+panel = "Learning and knock state"
+order = 20
+description = """
+Bank bits 0 and 1 written by FUN 00058740 from bounded signal-change and \
+derivative checks after the per-bank eligibility counters. Both permit bytes \
+are required by the learned-grid update. Raw signal identities and physical \
+learning permission remain unreviewed."""

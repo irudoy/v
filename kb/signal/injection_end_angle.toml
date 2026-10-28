@@ -1,7 +1,7 @@
 title = "End-of-injection angle"
 domain = "fuel"
 priority = "medium"
-coverage = "fixed"
+coverage = "rotating"
 basis = "exact-code"
 observes = ["injection_end_angle/ram"]
 note = """

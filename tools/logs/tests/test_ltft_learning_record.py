@@ -441,10 +441,12 @@ class LtftTelemetryCoverageTest(unittest.TestCase):
         stride = published_b2 - published_b1
         learned_b2 = learned_b1 + stride
         adjustment_b2 = adjustment_b1 + stride
-        self.assertNotIn(learned_b2, self.sources)
-        self.assertNotIn(adjustment_b2, self.sources)
+        self.assertEqual(self._field("ltft_learned_b2_raw", audit.LEARNED_TAG), learned_b2)
+        self.assertEqual(self._field("ltft_adjustment_b2_raw", audit.LEARNED_TAG), adjustment_b2)
         self.assertIn("ltft_learned_b1_raw", audit.COLUMNS)
         self.assertIn("ltft_adjustment_b1_raw", audit.COLUMNS)
+        self.assertIn("ltft_learned_b2_raw", audit.COLUMNS)
+        self.assertIn("ltft_adjustment_b2_raw", audit.COLUMNS)
 
 
 if __name__ == "__main__":

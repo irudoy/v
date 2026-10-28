@@ -8,6 +8,7 @@ The value forms the multi-cycle selected-map state path. Physical units \
 remain unresolved.""",
 ]
 level = "code"
+width = 16
 unit = "Q8 state"
 
 [[ledger]]
@@ -78,6 +79,91 @@ key = "test_knock_event_retard_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock event retard"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff243e"
+name = "rustling-stingray"
+level = "code"
+note = """
+The reviewed nonlinear controller writes the aligned Q8 transition word. The \
+raw storage correspondence preserves unresolved physical units and producer \
+signedness."""
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000661c0"
+to = "7mfk:00063f30"
+count = 1
+value = "mnemonic"
+note = """
+The unique aligned controller binds the transition word, including its \
+shifted assignment and bounded decrement."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2446"
+name = "magnetic-booby"
+level = "code"
+note = """
+The reviewed nonlinear controller writes the aligned Q8 transition word. The \
+raw storage correspondence preserves unresolved physical units and producer \
+signedness."""
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000661c0"
+to = "7mfk:00063f30"
+count = 1
+value = "mnemonic"
+note = """
+The unique aligned controller binds the transition word, including its \
+shifted assignment and bounded decrement."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2318"
+name = "simple-junglefowl"
+level = "code"
+note = """
+The reviewed nonlinear controller writes the aligned Q8 transition word. Its \
+mode masks differ from 7mfk; the raw storage correspondence asserts no \
+common mask, physical units, or producer signedness."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000825a6"
+to = "7mfk:00064162"
+count = 1
+value = 16
+note = """
+Unique aligned word access and review of controller 00082346 bind the \
+transition storage cell with shifted assignment and bounded decrement."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff23c2"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The source-access search returns no candidate. The telemetry word is \
+unavailable until a producer-consumer binding is reviewed."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:ffff23c2"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The source-access search returns no candidate. The telemetry word is \
+unavailable until a producer-consumer binding is reviewed."""
 
 [[link]]
 type = "input"

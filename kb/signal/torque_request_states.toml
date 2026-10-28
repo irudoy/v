@@ -1,0 +1,12 @@
+title = "Accepted transmission reduction and generated transition state"
+domain = "ignition"
+priority = "high"
+coverage = "fixed"
+basis = "exact-code"
+observes = ["transmission_reduction_state/ram", "athletic-coucal/ram"]
+note = """
+The accepted transmission reduction and generated Q8 transition state \
+separate request acceptance from the timing outcome. Both fields expose raw \
+stored words. Physical torque scale and the transition state's physical \
+units remain unresolved; the transition state is not exclusive to the TCM \
+path."""

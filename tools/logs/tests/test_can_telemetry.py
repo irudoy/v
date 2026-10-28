@@ -155,7 +155,9 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(snapshot.fields["request_flow_raw"], 0x0304)
         self.assertEqual(snapshot.fields["final_timing_raw"], 5)
         self.assertEqual(snapshot.fields["injection_0_raw"], 0x1213)
-        self.assertIn("injection_end_angle_raw", snapshot.fields)
+        self.assertNotIn("injection_end_angle_raw", snapshot.fields)
+        self.assertIn("torque_transition_state_raw", snapshot.fields)
+        self.assertIn("transmission_reduction_state_raw", snapshot.fields)
         self.assertIn("throttle_request_bounded_raw", snapshot.fields)
         with self.assertRaises(can_telemetry.DecodeError):
             can_telemetry.engineering_values(snapshot, decoder.calibrations)
@@ -170,9 +172,11 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertIsNone(temperature.profile_id)
         self.assertEqual(
             temperature.context_name,
-            "temperatures_af + launch_abort_voltage_and_trim_terms",
+            "temperatures_and_b2_trim_terms + launch_abort_voltage_and_trim_terms",
         )
         self.assertIn("ltft_learned_b1_raw", temperature.fields)
+        self.assertIn("ltft_learned_b2_raw", temperature.fields)
+        self.assertIn("ltft_adjustment_b2_raw", temperature.fields)
         self.assertIn("rolling_launch_abort_reason", temperature.fields)
         with self.assertRaises(can_telemetry.DecodeError):
             can_telemetry.engineering_values(temperature, decoder.calibrations)
@@ -192,7 +196,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(verified_temperature.fields["request_flow_raw"], 0x0304)
         self.assertEqual(
             verified_temperature.context_name,
-            "temperatures_af + launch_abort_voltage_and_trim_terms",
+            "temperatures_and_b2_trim_terms + launch_abort_voltage_and_trim_terms",
         )
         self.assertIn("rolling_launch_abort_reason", verified_temperature.fields)
         physical = can_telemetry.engineering_values(
@@ -225,6 +229,13 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             physical["ltft_learned_b1"],
             verified_temperature.fields["ltft_learned_b1_raw"] / 256 - 100,
         )
+        self.assertAlmostEqual(
+            physical["ltft_learned_b2"],
+            verified_temperature.fields["ltft_learned_b2_raw"] / 256 - 100,
+        )
+        for name in ("transmission_reduction_state", "torque_transition_state"):
+            self.assertEqual(fixed_physical[name], health.fields[name + "_raw"])
+        self.assertNotIn("injection_end_angle_raw", health.fields)
 
         trims = feed_group(
             decoder, frames("tuning", 4, context_tag=1)
@@ -239,22 +250,17 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(
             trims.context_name,
             "short_fuel_trim_cvtc_duty"
-            " + exhaust_cvtc_duty_and_intake_duty_command",
+            " + air_oil_temperature_and_af_state",
         )
         for bank in (1, 2):
             self.assertAlmostEqual(
                 trim_physical[f"intake_cvtc_duty_b{bank}"],
                 trims.fields[f"intake_cvtc_duty_b{bank}_raw"] * 39 / 100,
             )
-            self.assertAlmostEqual(
-                trim_physical[f"intake_cvtc_duty_command_b{bank}"],
-                trims.fields[f"intake_cvtc_duty_command_b{bank}_raw"]
-                * 39
-                / 100,
-            )
+            self.assertNotIn(f"intake_cvtc_duty_command_b{bank}_raw", trims.fields)
         self.assertAlmostEqual(
-            fixed_physical["injection_end_angle"],
-            health.fields["injection_end_angle_raw"] * 2 - 590,
+            trim_physical["injection_end_angle"],
+            trims.fields["injection_end_angle_raw"] * 2 - 590,
         )
 
     def test_verification_ends_with_its_run(self):
