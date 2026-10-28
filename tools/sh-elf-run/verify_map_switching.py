@@ -74,6 +74,7 @@ OBJCOPY = "sh-elf-objcopy"
 GCC = "sh-elf-gcc"
 RUN = "sh-elf-run"
 NM = "sh-elf-nm"
+# ELF metadata only; diagnostic branch display is excluded in gnu-disassembly.md.
 OBJDUMP = "sh-elf-objdump"
 PC_COVERAGE_UNITS = (
     "startup_wrapper", "limiter_commit", "selector_host",

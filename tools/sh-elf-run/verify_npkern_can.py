@@ -36,6 +36,7 @@ FIXTURE_ADDRESS = 0x00180000
 
 GCC = "sh-elf-gcc"
 OBJCOPY = "sh-elf-objcopy"
+# ELF metadata only; diagnostic branch display is excluded in gnu-disassembly.md.
 OBJDUMP = "sh-elf-objdump"
 NM = "sh-elf-nm"
 RUN = "sh-elf-run"
