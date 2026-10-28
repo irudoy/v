@@ -33,6 +33,7 @@ BUILDERS = ("tools/kb/src/kb/ghidra_preparation.py",
             "tools/ghidra/export-l0.sh", "tools/kb/src/kb/l0.py")
 ADDRESS = re.compile(r"[0-9a-f]{8}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
+CONFIG_INPUT = f"{repo.CONFIG.as_posix()}#l0"
 
 
 @dataclass(frozen=True)
@@ -133,6 +134,14 @@ def _joins(layout, root):
     return tuple(pairs)
 
 
+def _config_bytes(root):
+    """Canonical export settings; unrelated configuration is not an input."""
+    settings = repo.config(root).get("l0")
+    if not isinstance(settings, dict):
+        raise KbError(f"{repo.CONFIG}: the output preparation requires [l0]")
+    return (json.dumps(settings, sort_keys=True, separators=(",", ":")) + "\n").encode()
+
+
 def execution_inputs(layout_id, root=repo.ROOT):
     """Actual output producers and the selected layout census inputs.
 
@@ -155,7 +164,7 @@ def execution_inputs(layout_id, root=repo.ROOT):
     interp = Path(census["interp"])
     if interp.is_absolute() or ".." in interp.parts or not interp.parts:
         raise KbError(f"{repo.CONFIG}: the census registry must be a repository path")
-    found = {repo.CONFIG, interp}
+    found = {interp}
     found.update(repo.GHIDRA_SCRIPTS / name for name in set(scripts) | set(OUTPUT_SCRIPTS))
     for path in found:
         if not (root / path).is_file():
@@ -261,17 +270,19 @@ def plan(layout_id, root=repo.ROOT):
              *(repo.GHIDRA_SCRIPTS / name for name in SCRIPTS),
              *execution_inputs(layout_id, root)]
     inputs = {path.as_posix(): repo.sha256_file(root / path) for path in paths}
+    inputs[CONFIG_INPUT] = hashlib.sha256(_config_bytes(root)).hexdigest()
     return Plan(layout.id, layout.image, expected_sha, size, tuple(seeds), tuple(pins),
                 tuple(references), joins, forbidden, dict(sorted(inputs.items())))
 
 
-def _wire_text(prepared, root, run_id):
+def _wire_text(prepared, root, run_id, wire):
     """The complete session contract; only its run identity varies."""
     lines = [f"schema\t1", f"layout\t{prepared.layout}", f"digest\t{prepared.digest}",
              f"image_sha256\t{prepared.image_sha256}", f"image_size\t{prepared.image_size}",
              f"run_id\t{run_id}"]
     for path, digest in prepared.inputs.items():
-        absolute = str(Path(root).resolve() / path)
+        absolute = str(Path(wire).with_suffix(".l0.json").resolve() if path == CONFIG_INPUT
+                       else Path(root).resolve() / path)
         if any(char in absolute for char in "\t\r\n"):
             raise KbError("preparation paths cannot contain tabs or line breaks")
         lines.append(f"input\t{path}\t{digest}\t{absolute}")
@@ -291,8 +302,12 @@ def _wire_text(prepared, root, run_id):
 
 
 def write_plan(prepared, target, root=repo.ROOT):
-    """Write a session-local tab-separated plan for the primary Ghidra script."""
-    Path(target).write_text(_wire_text(prepared, root, uuid.uuid4().hex))
+    """Write a plan and checked export-settings snapshot for the primary script."""
+    data = _config_bytes(root)
+    if hashlib.sha256(data).hexdigest() != prepared.inputs.get(CONFIG_INPUT):
+        raise KbError(f"{target}: the preparation export configuration is stale")
+    Path(target).with_suffix(".l0.json").write_bytes(data)
+    Path(target).write_text(_wire_text(prepared, root, uuid.uuid4().hex, target))
 
 
 def verify_wire(prepared, wire, root=repo.ROOT):
@@ -301,9 +316,18 @@ def verify_wire(prepared, wire, root=repo.ROOT):
         text = Path(wire).read_text()
     except OSError as error:
         raise KbError(f"{wire}: the session preparation plan is missing") from error
+    data = _config_bytes(root)
+    if hashlib.sha256(data).hexdigest() != prepared.inputs.get(CONFIG_INPUT):
+        raise KbError(f"{wire}: the preparation export configuration is stale")
+    try:
+        snapshot = Path(wire).with_suffix(".l0.json").read_bytes()
+    except OSError as error:
+        raise KbError(f"{wire}: the preparation configuration snapshot is missing") from error
+    if snapshot != data:
+        raise KbError(f"{wire}: the preparation configuration snapshot changed")
     ids = [line.split("\t", 1)[1] for line in text.splitlines() if line.startswith("run_id\t")]
     if (len(ids) != 1 or re.fullmatch(r"[0-9a-f]{32}", ids[0]) is None
-            or text != _wire_text(prepared, root, ids[0])):
+            or text != _wire_text(prepared, root, ids[0], wire)):
         raise KbError(f"{wire}: the session preparation contract is stale or changed")
 
 
@@ -443,5 +467,6 @@ def inputs(root=repo.ROOT):
     for path in sorted((Path(root) / SEEDS).glob("*.toml")):
         if path.stem not in known:
             raise KbError(f"{path}: preparation registry names an unknown layout")
-        found.update(plan(path.stem, root).inputs)
+        found.update(repo.CONFIG.as_posix() if key == CONFIG_INPUT else key
+                     for key in plan(path.stem, root).inputs)
     return sorted(found)

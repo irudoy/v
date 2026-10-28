@@ -247,6 +247,12 @@ raw stage, not in L0. `--from-stage` verifies every receipt and output digest
 against the current inputs; it does not relabel an old stage with current
 preparation hashes.
 
+The logical input `tools/kb/config.toml#l0` binds canonical JSON of the `[l0]`
+section. Each session stores that projection beside its wire as a `.l0.json`
+snapshot. Ghidra verifies the snapshot bytes as a sealed input, and stage
+acceptance checks them against the current export configuration. Changes to
+`[guard]`, `[budget]`, or TOML formatting do not invalidate preparation.
+
 The manifest records configured preparation inputs in a per-layout table,
 separate from the shared export-script table. The L0 check reconstructs the
 prepared instruction-byte digest from the registered image at the exported
