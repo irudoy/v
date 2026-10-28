@@ -1,0 +1,58 @@
+summary = """
+Unsigned effective transmission reduction state written by 00064cb2. On the \
+enabled direct path, stock ROM8[00008b3f].bit4 and ROM8[00008710].bit6 \
+select u8[ffff3373] << 8. The function also retains, limits, rebuilds, \
+decreases or clears the state on its other mode, shift, and inhibit \
+branches. 00065020 uses this state in the maximum published to ffff1870."""
+width = 16
+signed = false
+unit = "Q16 reduction count"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1866"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064fd4"
+
+[[link]]
+type = "input"
+to = "rough-panther/ram"
+via = ["strange-mushroom/fn"]
+layouts = ["7mfk"]
+note = """
+The direct branch loads the request at 00064e40, zero-extends it, shifts it \
+by eight at 00064e46 and stores the word at 00064fd4. Active updates at \
+00064e66..00064ea8 select the same direct value under the stock options. The \
+state records the effective request after the function's enable and shift \
+logic."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064e40"
+value = {named = ["ffff3373", "00064cb2"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "congenial-mosquito/fn"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000651fe"
+
+[[link]]
+type = "writer"
+to = "strange-mushroom/fn"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064fd4"

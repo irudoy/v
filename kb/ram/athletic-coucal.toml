@@ -80,6 +80,26 @@ path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock event retard"
 
 [[link]]
+type = "input"
+to = "heretic-condor/ram"
+via = ["nonlinear_transition_controller/fn"]
+layouts = ["7mfk"]
+note = """
+The controller combines the ratio with forward and inverse uses of the \
+00011d24/0001199e curve pair and the latched timing coordinates before \
+updating ffff23c2. Its alternate active-state branch also reads the ratio at \
+000640e6. The existing event-reader contract consumes the unsigned high byte \
+on Q1,G1; other modes use the separate latched path through ffff2336 and \
+ffff11f9."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063fe4"
+value = {named = ["ffff186a", "00063f30"], span = 1}
+key = "reference"
+
+[[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
 via = ["event_timing_correction_builder/fn"]

@@ -1,0 +1,23 @@
+summary = """
+Builds the byte torque-ratio request at ffff1872 from the combined Q16 \
+reduction state and torque-model terms, then publishes min(u8[ffff1872], \
+u8[ffff186c]) to ffff186a."""
+note = """
+Let R=u16[ffff1870]. With stock ROM8[0000870c].bit7 clear and \
+ROM8[00008b38].bit3 clear, T=s16[ffff18da] and B=u16[ffff18c6]. \
+P=trunc0(T*(65536-R)/256)+256*B. The byte at ffff1872 is \
+clamp(trunc0(P/(T+B)),0,255), or 255 when T+B=0. The other configuration \
+branch uses T=s16[ffff18d8] and B=u16[ffff2408]+u16[ffff14e2]. The final \
+store is the unsigned minimum with ffff186c. These are code-domain ratios \
+and do not select an Nm/count conversion."""
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00065270"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00065270"

@@ -1,3 +1,13 @@
+summary = """
+Selected byte torque-ratio request. Function 00065270 writes the unsigned \
+minimum of its computed ratio ffff1872 and the independent bounded-request \
+ratio ffff186c. The nonlinear transition controller 00063f30 consumes it \
+while constructing the Q8 transition state ffff23c2."""
+level = "code"
+width = 8
+signed = false
+unit = "Q8 ratio count"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff186a"
@@ -9,9 +19,51 @@ supports = "identity"
 at = "7mfk:00063fe4"
 
 [[link]]
+type = "input"
+to = "brilliant-wolf/ram"
+via = ["torque_reduction_ratio_builder/fn"]
+layouts = ["7mfk"]
+note = """
+The byte at ffff186c limits the requested ratio independently of the \
+transmission state."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065340"
+value = {named = ["ffff186c", "00065270"], span = 1}
+key = "reference"
+
+[[link]]
+type = "input"
+to = "combined_torque_reduction_state/ram"
+via = ["torque_reduction_ratio_builder/fn"]
+layouts = ["7mfk"]
+note = """
+The combined reduction state affects the requested ratio through the \
+torque-basis normalization, followed by the unsigned minimum with ffff186c."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065290"
+value = {named = ["ffff1870", "00065270"], span = 1}
+key = "reference"
+
+[[link]]
 type = "reader"
 to = "nonlinear_transition_controller/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "torque_reduction_ratio_builder/fn"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006534c"

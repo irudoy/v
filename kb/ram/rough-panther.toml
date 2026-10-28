@@ -1,3 +1,14 @@
+summary = """
+TCM reduction-request byte. With stock ROM8[00008b3f].bit4 set, 0006425a \
+copies the latched frame 0x177 byte 4 at ffff273a to ffff3373. The stock \
+enabled direct path of 00064cb2 shifts the unsigned byte left by eight into \
+ffff1866; subsequent torque-ratio and nonlinear timing stages consume that \
+state."""
+level = "code"
+width = 8
+signed = false
+unit = "raw TCM request count"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff3373"
@@ -7,6 +18,23 @@ name = "rough-panther"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000642dc"
+
+[[link]]
+type = "input"
+to = "exuberant-bulldog/ram"
+via = ["daring-koala/fn"]
+layouts = ["7mfk"]
+note = """
+Stock ROM8[00008b3f]=0x18 selects the byte copy at 00064276 and the store at \
+000642dc. The other configuration branch derives the request from \
+calibration lookups."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064276"
+value = {named = ["ffff273a", "0006425a"], span = 1}
+key = "reference"
 
 [[link]]
 type = "lookup"

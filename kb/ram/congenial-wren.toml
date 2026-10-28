@@ -1,3 +1,15 @@
+summary = """
+Signed pre-limiter-request scheduler latch read by CAN packer 00079e70 for \
+frame 0x180. The copy at 0002132c in 00020dfe transfers 88 bytes from \
+ffff4124 to ffff40cc through dispatch 00022038 and its long-copy entry \
+000220d8. Offset 0x3c transfers ffff4160 to ffff4108 without arithmetic or a \
+unit conversion. This is a request latch, distinct from the net \
+engine-torque latch ffff2380."""
+level = "code"
+width = 16
+signed = true
+unit = "raw torque count"
+
 [[symbol]]
 layout = "7mfk"
 address = "ffff4108"
@@ -7,6 +19,23 @@ name = "congenial-wren"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00079ece"
+
+[[link]]
+type = "input"
+to = "abiding-owl/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["7mfk"]
+note = """
+Bit-preserving scheduler copy: destination ffff40cc + 0x3c = ffff4108, \
+source ffff4124 + 0x3c = ffff4160. R0=88 selects the long-copy entry at \
+000220d8; its loads and stores preserve the word bits."""
+
+[[link.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002132c"
+value = {named = ["00022038", "ffff40cc", "ffff4124"], span = 1}
+key = "reference"
 
 [[link]]
 type = "reader"
