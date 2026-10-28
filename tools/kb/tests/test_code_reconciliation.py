@@ -1,15 +1,17 @@
 """Fixed source-bound uncertainty and permanent-name owner contracts."""
 
 from copy import deepcopy
+import hashlib
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 import tomlkit
 
-from kb import evidence_ref, names, reconciliation, repo
+from kb import evidence_ref, l0, match, names, reconciliation, repo
 from kb.adapters import dids
 from kb.model import SymbolKey
+from tools.kb import migrate_l0_identity
 
 
 def model():
@@ -79,6 +81,117 @@ def test_wider_access_does_not_change_declared_width():
     assert subject.config['reconciliation']['review'][0]['kind'] == 'width'
     assert run(subject, site, reconciliation.check) == []
     assert next(iter(subject.symbols.values())).value('width') == 8
+
+
+def identity_model(tmp_path):
+    subject = model()
+    subject.root = tmp_path
+    directory = tmp_path / repo.L0 / '7mfk'
+    directory.mkdir(parents=True)
+    data = b'addr,size,is_thunk,is_external\n00000200,4,false,false\n'
+    (directory / 'funcs.csv').write_bytes(data)
+    manifest = dict(layout='7mfk', image='JK08A', image_sha256='a' * 64,
+        preparation={'schema_version': 1, 'inputs': {'prepare.sh': 'b' * 64}},
+        files={'funcs.csv': {'sha256': hashlib.sha256(data).hexdigest(), 'rows': 1}})
+    path = directory / l0.MANIFEST
+    path.write_text(tomlkit.dumps(manifest), encoding='utf-8')
+    return subject, directory, manifest, path.read_bytes()
+
+
+def test_preparation_hash_change_preserves_the_exact_data_bound_review(tmp_path):
+    subject, directory, manifest, _ = identity_model(tmp_path)
+    with patch.object(reconciliation, 'accesses', return_value=observed(subject, [])):
+        held = reconciliation.reviews(subject)
+        held[0]['reason'] = 'Retain the reviewed uncertainty.'
+        subject.config['reconciliation']['review'] = deepcopy(held)
+        search = match.search_digest('7mfk', tmp_path)
+        manifest['preparation']['inputs']['prepare.sh'] = 'c' * 64
+        (directory / l0.MANIFEST).write_text(tomlkit.dumps(manifest), encoding='utf-8')
+        assert match.search_digest('7mfk', tmp_path) != search
+        assert reconciliation.check(subject) == []
+        assert subject.config['reconciliation']['review'] == held
+
+
+@pytest.mark.parametrize('changed', ('data', 'unsealed-data', 'filename', 'image'))
+def test_export_changes_invalidate_the_exact_review(tmp_path, changed):
+    subject, directory, manifest, _ = identity_model(tmp_path)
+    with patch.object(reconciliation, 'accesses', return_value=observed(subject, [])):
+        subject.config['reconciliation']['review'] = reconciliation.reviews(subject)
+        if changed in ('data', 'unsealed-data'):
+            with (directory / 'funcs.csv').open('ab') as target:
+                target.write(b'00000204,4,false,false\n')
+            if changed == 'data':
+                manifest['files']['funcs.csv'] = {
+                    'sha256': repo.sha256_file(directory / 'funcs.csv'), 'rows': 2}
+        elif changed == 'filename':
+            (directory / 'funcs.csv').rename(directory / 'calls.csv')
+            manifest['files']['calls.csv'] = manifest['files'].pop('funcs.csv')
+        else:
+            manifest['image_sha256'] = 'd' * 64
+        (directory / l0.MANIFEST).write_text(tomlkit.dumps(manifest), encoding='utf-8')
+        found = reconciliation.check(subject)
+        assert len(found) == 1 and 'current claim or L0' in found[0].message
+
+
+def legacy_review_model(tmp_path):
+    subject, directory, manifest, previous = identity_model(tmp_path)
+    with patch.object(reconciliation, 'accesses', return_value=observed(subject, [])):
+        records = reconciliation.reviews(subject)
+    records[0]['l0'] = hashlib.sha256(previous).hexdigest()[:16]
+    records[0]['reason'] = 'Retain the independently reviewed uncertainty.'
+    subject.config['reconciliation']['review'] = records
+    path = tmp_path / repo.OWNER_CONFIG
+    path.parent.mkdir(parents=True)
+    path.write_text(tomlkit.dumps(subject.config), encoding='utf-8')
+    manifest['preparation']['inputs']['prepare.sh'] = 'c' * 64
+    (directory / l0.MANIFEST).write_text(tomlkit.dumps(manifest), encoding='utf-8')
+    return subject, directory, previous
+
+
+def test_l0_identity_migration_preserves_all_fields_except_binding_and_is_idempotent(tmp_path):
+    subject, _, previous = legacy_review_model(tmp_path)
+    path = tmp_path / repo.OWNER_CONFIG
+    original = path.read_text(encoding='utf-8')
+    with patch.object(reconciliation, 'accesses', return_value=observed(subject, [])):
+        text, count = migrate_l0_identity.plan(subject, {'7mfk': previous})
+        assert count == 1
+        assert path.read_text(encoding='utf-8') == original
+        updated = tomlkit.parse(text).unwrap()
+        held = subject.config['reconciliation']['review'][0]
+        record = updated['reconciliation']['review'][0]
+        assert record['l0'] == match.l0_digest('7mfk', tmp_path)
+        assert record['l0'] != held['l0']
+        assert {key: value for key, value in record.items() if key != 'l0'} == {
+            key: value for key, value in held.items() if key != 'l0'}
+        subject.config = updated
+        assert reconciliation.check(subject) == []
+        path.write_text(text, encoding='utf-8')
+        assert migrate_l0_identity.plan(subject, {'7mfk': previous}) == (text, 0)
+
+
+@pytest.mark.parametrize('changed', ('data', 'claim', 'binding', 'reason', 'duplicate', 'missing'))
+def test_l0_identity_migration_refuses_changed_or_unreviewed_inputs(tmp_path, changed):
+    subject, directory, previous = legacy_review_model(tmp_path)
+    records = subject.config['reconciliation']['review']
+    if changed == 'data':
+        (directory / 'funcs.csv').write_bytes(b'changed\n')
+    elif changed == 'claim':
+        subject.links[0].roles.append('changed')
+    elif changed == 'binding':
+        records[0]['l0'] = 'f' * 16
+    elif changed == 'reason':
+        records[0]['reason'] = ' '
+    elif changed == 'duplicate':
+        records.append(deepcopy(records[0]))
+    else:
+        records.clear()
+    path = tmp_path / repo.OWNER_CONFIG
+    path.write_text(tomlkit.dumps(subject.config), encoding='utf-8')
+    original = path.read_bytes()
+    with patch.object(reconciliation, 'accesses', return_value=observed(subject, [])):
+        with pytest.raises(repo.KbError):
+            migrate_l0_identity.plan(subject, {'7mfk': previous})
+    assert path.read_bytes() == original
 
 
 def archive_models(tmp_path):

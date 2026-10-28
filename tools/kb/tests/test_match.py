@@ -661,7 +661,7 @@ class FileChecksTest(unittest.TestCase):
         self.assertEqual(subjects, ["7mfk-ffff2022/ram", "jk00d-ffff11f5/ram"])
 
     def test_statuses_carry_their_search(self):
-        current = match.l0_digest("jk78c")
+        current = match.search_digest("jk78c")
         statuses = [
             {"layout": "jk78c", "state": "unresolved", "method": "masked-match",
              "target": "7mfk:ffff2022", "count": 0, "l0": current},

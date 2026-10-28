@@ -553,7 +553,7 @@ def stale(model):
             if status.state != "unresolved" or not recorded or not _from_files(status.sources):
                 continue
             if layout not in digests:
-                digests[layout] = match.l0_digest(layout, model.root)
+                digests[layout] = match.search_digest(layout, model.root)
             if recorded != digests[layout]:
                 notes.append(Issue(
                     "statuses", _files(status.sources), _status_subject(meaning, layout),

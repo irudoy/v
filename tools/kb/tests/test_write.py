@@ -211,7 +211,7 @@ class PlanTest(unittest.TestCase):
             {"layout": "1me3b", "state": "absent", "evidence": [SPEC]},
             {"layout": "1nd", "state": "unresolved", "method": "masked-match",
              "target": f"7mfk:{INHIBIT_HOME:08x}", "count": 0,
-             "l0": match.l0_digest("1nd")}])
+             "l0": match.search_digest("1nd")}])
         meaning = result.meaning_of(SymbolKey("7mfk", "ram", INHIBIT_HOME))
         self.assertEqual({layout: status.state for layout, status in meaning.statuses.items()},
                          {"1me3b": "absent", "1nd": "unresolved"})
@@ -239,7 +239,7 @@ class PlanTest(unittest.TestCase):
         repeated = status()
         self.assertEqual((repeated["method"], repeated["target"], repeated["count"],
                           repeated["l0"], repeated["note"]),
-                         ("masked-match", f"7mfk:{FLOW_HOME:08x}", 0, match.l0_digest("1nd"),
+                         ("masked-match", f"7mfk:{FLOW_HOME:08x}", 0, match.search_digest("1nd"),
                           held["note"]))
         self.assertEqual(status(note="probe")["note"], "probe")
         self.assertNotIn("note", status(method="masked-match", target=f"7mfk:{FLOW_HOME:08x}",

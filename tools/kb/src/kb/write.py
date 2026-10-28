@@ -770,7 +770,7 @@ class Change:
                 note = held.get("note")
         self._status(meaning, {"layout": layout, "state": "unresolved", "method": method,
                                "target": target, "count": count,
-                               "l0": match.l0_digest(layout, self.root),
+                               "l0": match.search_digest(layout, self.root),
                                "note": note})
         self.lines.append(f"unresolved {meaning.key} on {layout}: {method} search of {target}, "
                           f"{count} matches")

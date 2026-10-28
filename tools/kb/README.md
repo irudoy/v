@@ -66,6 +66,21 @@ refactoring responsibility under issue #71.
 Historical unresolved chain records remain data with their original source
 and reason. They do not qualify an access, prove a calculation or raise a level.
 
+Unresolved access and width reviews bind the layout and image identity plus
+the names and actual contents of its normalized L0 exports. Preparation input
+hashes do not change that binding when the exported data is identical. The L0
+check independently validates preparation inputs. Search statuses and matcher
+caches retain their manifest identities.
+
+The one-time migration of manifest-bound reviews verifies the exports against
+an accepted historical manifest and changes only each review's `l0` field:
+
+```bash
+uv run python -m tools.kb.migrate_l0_identity --from-ref COMMIT
+uv run python -m tools.kb.migrate_l0_identity --from-ref COMMIT --write
+uv run kb check
+```
+
 ## Evidence and confidence
 
 Levels distinguish resemblance, a candidate interpretation, grounding in

@@ -36,8 +36,10 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 import gc
 import hashlib
+import json
 from pathlib import Path
 import pickle
+import tomllib
 import weakref
 
 from kb import derive, evidence_ref, l0, repo, sh2, sites, vocab
@@ -364,7 +366,26 @@ def _code(layout_id, root):
 
 
 def l0_digest(layout_id, root=repo.ROOT):
-    """The first 16 hexadecimal digits of the SHA-256 of a layout's L0 manifest."""
+    """Identity of exported layout data, independent of preparation inputs.
+
+    Hash the actual normalized files, not their manifest's claimed hashes.
+    The L0 check separately validates the manifest and preparation contract.
+    """
+    directory = root / repo.L0 / layout_id
+    manifest = tomllib.loads((directory / l0.MANIFEST).read_text(encoding="utf-8"))
+    files = {}
+    for name in sorted(manifest["files"]):
+        if Path(name).name != name or name in (".", ".."):
+            raise repo.KbError(f"L0 {layout_id}: invalid export filename {name!r}")
+        files[name] = repo.sha256_file(directory / name)
+    identity = {key: manifest[key] for key in ("layout", "image", "image_sha256")}
+    identity["files"] = files
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(b"kb-l0-data-v1\n" + encoded).hexdigest()[:16]
+
+
+def search_digest(layout_id, root=repo.ROOT):
+    """Manifest identity shared by recorded searches and graph layout nodes."""
     return repo.sha256_file(root / repo.L0 / layout_id / l0.MANIFEST)[:16]
 
 
