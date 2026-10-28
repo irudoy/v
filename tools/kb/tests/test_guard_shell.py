@@ -133,6 +133,38 @@ read = "open"
             with self.subTest(command=command):
                 self.assertIsNone(self.denied("Bash", command=command))
 
+    def test_editor_reads_do_not_become_generated_section_edits(self):
+        for command in (
+            "sed -n '1,170p' GUIDE.md",
+            "sed -n '1,170p' open.txt",
+            "awk 'NR < 170 {print $1}' GUIDE.md",
+            "sed 's|old|kb/names.csv|' open.txt",
+            "awk '{print \"kb/names.csv\"}' open.txt",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "sed -i '' 's/a/b/' GUIDE.md",
+            "sed --in-place=.bak 's/a/b/' GUIDE.md",
+            "sed -n 'w GUIDE.md' open.txt",
+            "sed 's/a/b/w GUIDE.md' open.txt",
+            "sed -n 'r kb/names.csv' open.txt",
+            r"sed '/a\/b/r kb/names.csv' open.txt",
+            "sed -fkb/names.csv open.txt",
+            "awk '{print $1 > \"GUIDE.md\"}' open.txt",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_metadata_can_raise_a_builtin_exception_before_writing_an_open_note(self):
+        source = ("from pathlib import Path\n"
+                  "note = Path('/private/tmp/note.md')\ntext = note.read_text()\n"
+                  "paragraph = 'Read GUIDE.md and kb/names.csv as metadata'\n"
+                  "if 'anchor' not in text:\n    raise SystemExit('missing anchor')\n"
+                  "note.write_text(text.replace('anchor', paragraph))")
+        self.assertIsNone(self.denied("Bash", command=f"python3 - <<'PY'\n{source}\nPY"))
+        self.assertIsNotNone(self.denied("Bash", command="python3 -c 'from os import system as SystemExit; SystemExit(\"cat kb/names.csv\")'"))
+
     def test_git_metadata_does_not_authorize_a_blob_read_or_a_message_file_read(self):
         for command in ("git show --stat HEAD:kb/names.csv", "git commit -F kb/names.csv",
                         "git -C kb grep needle", "git diff --no-index kb/names.csv open.txt"):

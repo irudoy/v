@@ -480,9 +480,10 @@ class Guard:
                 if reason:
                     return reason
             if program in {"sed", "awk", "gawk"}:
-                reason = self.shell_paths([part for word in clean[1:]
-                                          for part in candidates(shell_value(word, variables))],
-                                          "unknown", cwd)
+                _, _, sources = editor_inputs(clean)
+                reason = self.shell_paths([part for source in sources
+                    if editor_file_actions(source, program)
+                    for part in PATHLIKE.findall(shell_value(source, variables))], "unknown", cwd)
                 if reason:
                     return reason
             mode, values = file_operands(clean)
@@ -648,6 +649,7 @@ class Guard:
         readers = {"read_text", "read_bytes", "read", "readline", "readlines", "glob", "rglob", "iterdir"}
         writers = {"write_text", "write_bytes", "write", "unlink", "rename", "replace", "touch", "mkdir"}
         safe = {"print", "str", "bytes", "len", "any", "all", "sorted", "list", "dict", "tuple", "set",
+                "SystemExit", "ValueError", "RuntimeError", "AssertionError",
                 "enumerate", "range", "zip", "int", "bool", "isinstance", "split", "rsplit", "strip",
                 "lstrip", "rstrip", "startswith", "endswith", "partition", "rpartition", "replace",
                 "loads", "dumps", "dump", "sha256", "hexdigest", "encode", "decode", "join", "get",
@@ -842,30 +844,8 @@ def file_operands(words):
     if program in SEARCHERS:
         return "read", operands(words)
     if program in {"sed", "awk", "gawk"}:
-        found, script, index = [], False, 0
-        while index < len(args):
-            word = args[index]
-            index += 1
-            if word in {"-e", "--expression", "-v", "-F"}:
-                index += 1
-                script = script or word in {"-e", "--expression"}
-            elif word in {"-f", "--file"} and index < len(args):
-                found.append(args[index])
-                index += 1
-                script = True
-            elif word.startswith("--file="):
-                found.append(word.split("=", 1)[1])
-                script = True
-            elif word.startswith(("--expression=", "-e")):
-                script = True
-            elif word.startswith("-") or not word:
-                continue
-            elif not script:
-                script = True
-            else:
-                found.append(word)
-        return ("edit" if any(word == "--in-place" or word.startswith("-i") for word in args)
-                else "read"), found
+        mode, files, _ = editor_inputs(words)
+        return mode, files
     readers = {"cat", "head", "tail", "cut", "sort", "wc", "ls", "find", "less", "more", "od", "xxd", "strings"}
     mode = "read" if program in readers else "edit" if program in {
         "cp", "mv", "rm", "tee", "touch", "truncate", "install"} else "unknown"
@@ -886,6 +866,54 @@ def file_operands(words):
         elif not word.startswith("-"):
             values.append(word)
     return mode, values if mode != "unknown" else [part for word in words for part in candidates(word)]
+
+
+def editor_inputs(words):
+    """Separate sed/awk program text, program files and actual file operands."""
+    files, sources, script, index = [], [], False, 1
+    while index < len(words):
+        word = words[index]
+        index += 1
+        if word in {"-e", "--expression", "-f", "--file", "-v", "-F"} and index < len(words):
+            value = words[index]
+            index += 1
+            if word in {"-e", "--expression"}:
+                sources.append(value)
+                script = True
+            elif word in {"-f", "--file"}:
+                files.append(value)
+                script = True
+        elif word.startswith(("--expression=", "--file=")):
+            (sources if word.startswith("--expression=") else files).append(word.split("=", 1)[1])
+            script = True
+        elif word.startswith(("-e", "-f")) and len(word) > 2:
+            (sources if word.startswith("-e") else files).append(word[2:])
+            script = True
+        elif word.startswith("-") or not word:
+            continue
+        elif not script:
+            sources.append(word)
+            script = True
+        else:
+            files.append(word)
+    mode = "edit" if any(word == "--in-place" or word.startswith(("-i", "--in-place=")) for word in words[1:]) else "read"
+    return mode, files, sources
+
+
+def editor_file_actions(source, program):
+    """Finite embedded I/O forms; ordinary formatting text has no file operands."""
+    if program != "sed":
+        return bool(re.search(r">|\b(?:getline|system)\b|@(?:include|load)\b", source))
+    for command in re.split(r"[;\n]", source):
+        match = re.match(r"\s*(?:[\d$,!]+|/[^/]*/)?\s*s([^\w\s])", command)
+        if match:
+            # Skip the two delimited data fields; only flags can add I/O.
+            fields = re.split(r"(?<!\\)" + re.escape(match[1]), command[match.end():], maxsplit=2)
+            if len(fields) == 3 and re.fullmatch(r"[gpiImM\d\s]*", fields[2]):
+                continue
+        # Unrecognized programs keep the conservative check of explicit paths.
+        return True
+    return False
 
 
 def _unwrap(words):
