@@ -1,0 +1,275 @@
+# Test selection of `make test-changed` (tools/changed_tests.py).
+#
+# A changed path selects the fast tests of every subsystem whose `paths` match
+# it: `pytest` names test directories and `js` the pin-tracer contract. A path
+# that no subsystem matches selects the complete fast tier, `make test`.
+# Patterns are relative to the repository root; `*` stays within one path
+# segment and `**` spans any number of them.
+#
+# Source entries list Python modules only. Data, documentation, and build files
+# stay unmapped because tests read them by path. tools/tests/test_test_map.py
+# checks that every test directory is reachable and that each source entry
+# selects every test directory whose imports reach its modules.
+
+[[subsystem]]
+name = "patches"
+paths = ["patches/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/logs/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "patches tests"
+paths = ["patches/tests/**"]
+pytest = ["patches/tests"]
+
+[[subsystem]]
+name = "can_dashboard"
+paths = ["tools/can_dashboard/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/logs/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "can_dashboard tests"
+paths = ["tools/can_dashboard/tests/**"]
+pytest = ["tools/can_dashboard/tests"]
+
+[[subsystem]]
+name = "diagnostics"
+paths = ["tools/diagnostics/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "diagnostics tests"
+paths = ["tools/diagnostics/tests/**"]
+pytest = ["tools/diagnostics/tests"]
+
+[[subsystem]]
+name = "ghidra"
+paths = ["tools/ghidra/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "kb"
+paths = ["tools/kb/*.py", "tools/kb/src/**/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "kb tests"
+paths = ["tools/kb/tests/**"]
+pytest = ["tools/kb/tests"]
+
+[[subsystem]]
+name = "logs"
+paths = ["tools/logs/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/logs/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "logs tests"
+paths = ["tools/logs/tests/**"]
+pytest = ["tools/logs/tests"]
+
+[[subsystem]]
+name = "mapkit"
+paths = ["tools/mapkit/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/logs/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "mapkit tests"
+paths = ["tools/mapkit/tests/**"]
+pytest = ["tools/mapkit/tests"]
+
+[[subsystem]]
+name = "maps"
+paths = ["tools/maps/*.py"]
+pytest = ["tools/maps/tests", "tools/tests"]
+
+[[subsystem]]
+name = "maps tests"
+paths = ["tools/maps/tests/**"]
+pytest = ["tools/maps/tests"]
+
+[[subsystem]]
+name = "memgraph"
+paths = ["tools/memgraph/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "memgraph tests"
+paths = ["tools/memgraph/tests/**"]
+pytest = ["tools/memgraph/tests"]
+
+[[subsystem]]
+name = "pin-tracer"
+paths = ["tools/pin-tracer/**"]
+js = true
+
+[[subsystem]]
+name = "romviz"
+paths = ["tools/romviz/*.py"]
+pytest = ["tools/kb/tests", "tools/romviz/tests"]
+
+[[subsystem]]
+name = "romviz tests"
+paths = ["tools/romviz/tests/**"]
+pytest = ["tools/romviz/tests"]
+
+[[subsystem]]
+name = "sh-elf-run"
+paths = ["tools/sh-elf-run/*.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "vendor"
+paths = ["tools/vendor/*.py"]
+pytest = ["tools/tests"]
+
+[[subsystem]]
+name = "repository checks"
+paths = [
+    "tools/changed_tests.py",
+    "tools/check_projection_contract.py",
+    "tools/single_source.py",
+    "tools/test-map.toml",
+    "tools/tests/**",
+]
+pytest = ["tools/tests"]
+
+[[subsystem]]
+name = "correspondence"
+paths = ["tools/census_homology.py", "tools/rom_correspondence.py"]
+pytest = ["tools/kb/tests", "tools/tests"]
+
+[[subsystem]]
+name = "diagnostic context"
+paths = ["tools/diagnostic_context.py"]
+pytest = [
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "projection check"
+paths = ["tools/projection_check.py"]
+pytest = [
+    "tools/diagnostics/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "version index"
+paths = ["tools/version_index.py"]
+pytest = ["tools/can_dashboard/tests", "tools/tests"]
+
+[[subsystem]]
+name = "rom homology"
+paths = ["tools/rom_homology.py"]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+
+[[subsystem]]
+name = "rom sources"
+paths = ["tools/rom_sources.py"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]

@@ -75,6 +75,8 @@ in local results and Git.
   Python tests without the `slow` marker and the pin-tracer contract.
   `make test-full` runs the complete Python and pin-tracer contracts;
   `make test-python` and direct `uv run pytest -q` include every Python test.
+  `make test-changed` runs the fast tests that `tools/test-map.toml` maps from
+  the changed paths and falls back to `make test` for an unmapped path.
   `make verify-firmware` runs the repository-contained GNU SH-2E execution gate.
   `make verify` runs firmware qualification, source checks, and `make test-full`.
 - Run affected checks for each small package. Changes to instruction bytes,

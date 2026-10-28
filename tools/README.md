@@ -63,6 +63,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
 | `version_index.py` | Validate execution-image bindings and dashboard locks, and provide version readers used by packagers |
 | `single_source.py` | Check executable constants and ROM registry bindings against their machine owners |
+| `changed_tests.py` | Run the fast tests that `test-map.toml` selects for the changed paths, or `make test` for an unmapped path |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented

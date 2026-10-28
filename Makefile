@@ -32,7 +32,7 @@ PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 CALIBRATION_OPTION = $(if $(strip $(CALIBRATION)),--calibration "$(CALIBRATION)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
-.PHONY: test-python-fast test-full
+.PHONY: test-python-fast test-full test-changed
 .PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate telemetry-update rom-correspondence census-homology rom-verify rom-build rom-extract rom-calibrate
 
 help:
@@ -49,6 +49,8 @@ help:
 		'  test-js           Run the pin-tracer test contract.' \
 		'  test              Run fast Python tests and the JavaScript contract.' \
 		'  test-full         Run the complete Python and JavaScript contracts.' \
+		'  test-changed      Run the fast tests that tools/test-map.toml selects for the paths' \
+		'                    changed against origin/master; an unmapped path runs make test.' \
 		'  verify-firmware   Run the repository-contained GNU SH-2E executable gate.' \
 		'  verify-npkern     Run the optional exact-revision external npkern gate.' \
 		'  verify            Qualify firmware evidence, then run check and test-full.' \
@@ -141,6 +143,9 @@ test-js:
 test: test-python-fast test-js
 
 test-full: test-python test-js
+
+test-changed:
+	$(PYTHON) tools/changed_tests.py --pytest "$(PYTEST)" --npm "$(NPM)" --make "$(MAKE)"
 
 verify-firmware:
 	tools/sh-elf-run/run.sh --verbose

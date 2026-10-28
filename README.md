@@ -160,7 +160,11 @@ make verify
 contract. `make test-full` includes the complete Python and pin-tracer
 contracts. `make test-python` and direct `uv run pytest -q` include every
 Python test. `make test-python-fast` selects the same Python tests as
-`make test`.
+`make test`. `make test-changed` runs the fast tests of the subsystems that
+changed since `origin/master`, counting commits, the worktree, and untracked
+files: `tools/test-map.toml` maps the paths to test directories, the target
+prints the selected directories before it runs them, and a path that the map
+does not cover selects `make test`.
 
 `make verify` runs firmware qualification, source checks, and `make test-full`.
 It includes the repository-contained GNU SH-2E Docker gate and is required
