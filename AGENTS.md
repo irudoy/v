@@ -135,9 +135,12 @@ in local results and Git.
 - Issues of `irudoy/vhrev` may be created, edited, commented on, labelled,
   re-parented, and closed under the rules of the Issues section without
   separate confirmation.
-- Apart from issues, these permissions do not cover `git push`, publication,
-  messages, PRs, deployment, or unrelated external systems.
-- Do not push unless the user explicitly requests it.
+- `master` may be pushed to `origin` (`irudoy/vhrev`) without separate
+  confirmation once its local commits are reviewed. Force push, rewriting
+  published history, and pushing or deleting other remote branches or tags
+  require confirmation.
+- Apart from issues and the `master` push, these permissions do not cover
+  publication, messages, PRs, deployment, or unrelated external systems.
 
 ## Memgraph backup
 
