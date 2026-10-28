@@ -308,8 +308,13 @@ The report keeps the interpolated low-seven timing-state field separate from
 the lower-left-cell bit-7 flag, inventories high-detonation selector state and
 latched knock events, and reports the Q8 state transitions at map commits. The
 `implied_direct_base_q8` value subtracts the conditional direct-branch map term
-from captured `0xFFFF121A`; it is not asserted as the active branch because the
-current wire profile does not carry `0xFFFF2467` or `0xFFFF2469`.
+from captured `0xFFFF121A` as a conditional reconstruction. When both control
+bytes are available, `branch_input_pairs` counts consecutive full-rate samples
+that recover the branch inputs, and `direct_difference_inputs` counts those
+with current `0xFFFF2467.bit6` set and prior `0xFFFF2469.bit7` clear. The latter
+byte is captured after the coordinator updates it, so the current sample's
+bit 7 belongs to the next evaluation. Missing samples, stream pauses, and
+decimation leave no recoverable pair.
 
 An explicit calibration image is required to replay Map 2 through Map 5. With
 the registered stock image, all recovered slots intentionally resolve to the
@@ -437,6 +442,11 @@ bank 2 summands reports their absence and emits no bank 2 comparison figures.
 The duty-pair audit likewise reports `intake_duty_bN_pair_available` when the
 recording carries only live intake-CVTC duty. Historical scheduler-latch
 channels remain readable by their recorded names.
+
+The learning-control figures count the observed bank bits of both permit
+bytes and bit 0 of the neutralization byte. They state sample availability
+and both-permit overlap for each bank. They assign no physical cause to a
+closed composite gate and do not infer a learning rate from a permission bit.
 
 - Publication: a tag-2 refresh is bracketed when the tag-0 refreshes two
   ticks before and three ticks after it predict the same word

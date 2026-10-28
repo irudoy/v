@@ -109,12 +109,17 @@ COLUMNS = (
     "ltft_adjustment_b1_raw",
     "ltft_learned_b2_raw",
     "ltft_adjustment_b2_raw",
+    "fuel_learning_permit_a_raw",
+    "fuel_learning_permit_b_raw",
+    "ltft_publication_neutral_control_raw",
     "af_adjustment_b1_raw",
     "af_adjustment_b2_raw",
     PHASE_SOURCE,
 )
 FLOAT_COLUMNS = ("date", "elapsed", "vehicle_speed_kmh")
-OPTIONAL_COLUMNS = ("ltft_learned_b2_raw", "ltft_adjustment_b2_raw")
+OPTIONAL_COLUMNS = ("ltft_learned_b2_raw", "ltft_adjustment_b2_raw",
+                    "fuel_learning_permit_a_raw", "fuel_learning_permit_b_raw",
+                    "ltft_publication_neutral_control_raw")
 
 
 @dataclass(frozen=True)
@@ -576,6 +581,27 @@ def _count(values, predicate) -> int:
     return sum(1 for value in values if value is not None and predicate(value))
 
 
+def learning_controls(snapshots: Snapshots) -> dict:
+    """Count observed control bits without assigning physical gate causes."""
+    columns = snapshots.columns
+    a = columns["fuel_learning_permit_a_raw"]
+    b = columns["fuel_learning_permit_b_raw"]
+    neutral = columns["ltft_publication_neutral_control_raw"]
+    paired = [(first, second) for first, second in zip(a, b)
+              if first is not None and second is not None]
+    result = {"learning_permits_available": bool(paired),
+              "learning_permit_sample_count": len(paired),
+              "neutral_control_sample_count": _count(neutral, lambda value: True),
+              "neutral_control_bit0_set_count": _count(neutral, lambda value: bool(value & 1))}
+    for bank in (1, 2):
+        mask = 1 << (bank - 1)
+        result[f"permit_a_b{bank}_set_count"] = _count(a, lambda value: bool(value & mask))
+        result[f"permit_b_b{bank}_set_count"] = _count(b, lambda value: bool(value & mask))
+        result[f"both_permits_b{bank}_set_count"] = sum(
+            bool(first & mask and second & mask) for first, second in paired)
+    return result
+
+
 def audit(
     path: Path, calibration: Calibration, band: tuple[float, float] = (80.0, 100.0)
 ) -> dict:
@@ -632,6 +658,7 @@ def audit(
             result[f"{prefix}relation_{key}_count"] = relation[key]
         result.update({prefix + key: value for key, value in
                        learning_changes(snapshots, phase, calibration, bank).items()})
+    result.update(learning_controls(snapshots))
     result.update(warm_window(snapshots, phase, calibration))
     result.update(drive_profile(snapshots, band))
     return result

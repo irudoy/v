@@ -241,6 +241,17 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(changes["update_bound"], 26)
         self.assertEqual(changes["in_visit_over_bound_count"], 2)
 
+    def test_controls_count_each_bank_and_keep_unknown_bits_raw(self):
+        rows = [dict(row, fuel_learning_permit_a_raw=0x83,
+                     fuel_learning_permit_b_raw=0x42,
+                     ltft_publication_neutral_control_raw=index & 1)
+                for index, row in enumerate(self.rows)]
+        result = audit.learning_controls(snapshots_from(rows))
+        self.assertTrue(result["learning_permits_available"])
+        self.assertEqual(result["both_permits_b1_set_count"], 0)
+        self.assertEqual(result["both_permits_b2_set_count"], len(rows))
+        self.assertEqual(result["neutral_control_bit0_set_count"], len(rows) // 2)
+
     def test_earlier_recording_reports_missing_bank_2_summands(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "earlier.mlg"

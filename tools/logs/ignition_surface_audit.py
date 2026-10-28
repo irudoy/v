@@ -19,7 +19,7 @@ if str(ROOT) not in sys.path:
 
 from patches.map_switching_layout import load_layout
 from tools.can_dashboard.model import DashboardModel, FrameRecord
-from tools.logs import peak_trc_audit
+from tools.logs import can_telemetry, peak_trc_audit
 from tools.logs.cvtc_target_audit import explicit_axis_position
 from tools.logs.load_axis_audit import internal_load_raw
 from tools.mapkit import rom as romkit
@@ -80,6 +80,8 @@ class IgnitionSample:
     knock_count: int
     knock_channel_mask: int
     map_number: int
+    input_state: int | None = None
+    branch_state: int | None = None
 
 
 @dataclass(frozen=True)
@@ -146,6 +148,8 @@ class TraceIgnitionAudit:
     event_response: ExpectationSummary | None
     map_commit_state_steps: DistributionSummary | None
     alignments: tuple[AlignmentSummary, ...]
+    branch_input_pairs: int = 0
+    direct_difference_inputs: int = 0
 
 
 def _sha256_file(path: Path) -> str:
@@ -381,9 +385,28 @@ def _samples(trace, commits, profile: str, can_id: int, tick_divisor: int):
                 map_number=_map_number_at(
                     timestamp, commit_times, commits
                 ),
+                input_state=model.raw.get("knock_state_snapshot_raw"),
+                branch_state=model.raw.get("knock_branch_state_raw"),
             )
         )
     return model, samples
+
+
+def branch_input_counts(samples):
+    """Use current scheduler state and the prior coordinator output.
+
+    The coordinator tests bit 7 before updating it. A lost or decimated
+    snapshot cannot recover that input from its captured output.
+    """
+    pairs = selected = 0
+    for previous, current in zip(samples, samples[1:]):
+        if (previous.run != current.run or current.tick - previous.tick != 1
+                or current.timestamp - previous.timestamp > can_telemetry.STREAM_GAP_SECONDS
+                or current.input_state is None or previous.branch_state is None):
+            continue
+        pairs += 1
+        selected += bool(current.input_state & 0x40 and not previous.branch_state & 0x80)
+    return pairs, selected
 
 
 def replay_point(
@@ -559,6 +582,7 @@ def audit_trace(
         calibration.event_step_q8,
         tick_divisor,
     )
+    branch_pairs, direct_inputs = branch_input_counts(samples)
     return TraceIgnitionAudit(
         source=source,
         source_sha256=source_sha256,
@@ -594,6 +618,8 @@ def audit_trace(
             )
             for lag in source_lags
         ),
+        branch_input_pairs=branch_pairs,
+        direct_difference_inputs=direct_inputs,
     )
 
 
@@ -690,6 +716,8 @@ def main(argv: list[str] | None = None) -> int:
                 f"event_samples={result.knock_event_samples}, "
                 f"event_total={result.knock_event_total}"
             )
+            print(f"  branch_input_pairs={result.branch_input_pairs}, "
+                  f"direct_difference_inputs={result.direct_difference_inputs}")
             print(_format_distribution("quiet_state_step", result.quiet_state_steps))
             print(_format_distribution("event_state_step", result.event_state_steps))
             print(

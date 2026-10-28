@@ -15,6 +15,22 @@ def _button(offset_ms, code):
 
 
 class IgnitionSurfaceFormulaTest(unittest.TestCase):
+    def test_branch_selection_uses_prior_output_and_rejects_gaps(self):
+        def sample(tick, branch, state=0x40, run=0):
+            return ignition_surface_audit.IgnitionSample(
+                timestamp=tick * 0.01024, run=run, tick=tick, bfs_raw=0, rpm_raw=0,
+                state_q8=0, surface_state=0, knock_count=0, knock_channel_mask=0,
+                map_number=1, input_state=state, branch_state=branch)
+        rows = [sample(1, 0), sample(2, 0x80), sample(3, 0), sample(5, 0), sample(6, 0, run=1)]
+        self.assertEqual(ignition_surface_audit.branch_input_counts(rows), (2, 1))
+
+    def test_earlier_profile_has_no_branch_input_observations(self):
+        rows = [ignition_surface_audit.IgnitionSample(
+            timestamp=tick * 0.01024, run=0, tick=tick, bfs_raw=0, rpm_raw=0,
+            state_q8=0, surface_state=0, knock_count=0, knock_channel_mask=0,
+            map_number=1) for tick in range(3)]
+        self.assertEqual(ignition_surface_audit.branch_input_counts(rows), (0, 0))
+
     def test_ignition_finisher_interpolates_low_seven_bits(self):
         calibration = ignition_surface_audit.ExplicitU8Map(
             address=0,
