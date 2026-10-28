@@ -113,28 +113,17 @@ an eleven-byte software string nine bytes in. The calibration string is at
 `0x008204`, and the MCU type string is at `0x0050C6` for SH7058 and `0x0050D2`
 for SH7059.
 
-| ROM | Calibration `0x008204` | First block `0x006F09` | Second block `0x007009` |
-| --- | --- | --- | --- |
-| 1ME3B | `11ME3B00000` | `9FZ3V5DD1` | empty |
-| 1ND0A | `11ND0A00000` | `8FZ35NEE6` | empty |
-| 1ND3B | `11ND3B00000` | `8FZ35NEE6` | empty |
-| JK00A | `1JK00A00000` | `7MFKAVN86` | empty |
-| JK00C | `1JK00C00000` | `7MFKAVN86` | `8MFKPCN14` |
-| JK00D | `1JK00D00000` | `7MFKAVN86` | `8MFK36N15` |
-| JK03A | `1JK03A00000` | `7MFKAVN86` | empty |
-| JK03B | `1JK03B00000` | `7MFKAVN86` | empty |
-| JK08A | `1JK08A00000` | `7MFKAVN86` | empty |
-| JK78C | `1JK78C00000` | `7MFVH3NM1` | `7MFV68NV` |
+Image bytes own the calibration and software strings. `read_identity()` in
+`../tools/rom_homology.py` reads those fields; `homology.toml` owns the family
+identifiers, and `validate_software_ids()` checks them against every member
+image. Editor identity metadata is owned by `../defs/rom-identities.toml`.
 
-PCMFlash reports the second block when the image populates it and the first
-otherwise. Five owned reads record what the tool returned: the identification
-file for 1ME3B and the original read filenames for JK00A, JK00C, JK00D, and
-JK03B. The `7MFKAVN86` string that JK00C and JK00D hold in their first block
-therefore does not identify them and does not place them in the `7MFKAVN86`
-exact-code family; the byte measurements do. JK78C populates both blocks with
-different strings and has no read of its own. The same rule would make
-`7MFV68NV` its reported identifier, but that is an inference from two images,
-so `../defs/rom-identities.toml` keeps its `caseid` unknown.
+The owned PCMFlash identification records report the second block when the
+image populates it and the first otherwise. Their per-image READMEs identify
+the observed record. A shared first block does not establish exact-code
+inheritance; the image-byte comparisons do. JK78C has no physical read of its
+own, so its reported identifier remains an inference and the editor registry
+keeps its `caseid` unknown.
 
 ### Provenance and confidence
 

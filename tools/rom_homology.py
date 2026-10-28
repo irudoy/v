@@ -19,8 +19,6 @@ ROOT = Path(__file__).resolve().parents[1]
 ROM_DIR = ROOT / "rom-images"
 IMAGE_REGISTRY = ROM_DIR / "roms.csv"
 HOMOLOGY_REGISTRY = ROM_DIR / "homology.toml"
-IDENTITY_DOCUMENT = ROM_DIR / "README.md"
-IDENTITY_SECTION = "### Identity strings"
 DEFAULT_OUTPUT = ROM_DIR / "homology.csv"
 RANGE_RE = re.compile(r"0x([0-9a-fA-F]+):0x([0-9a-fA-F]+)")
 LAYOUT_RE = re.compile(r"[0-9a-z]{2,8}")
@@ -31,7 +29,6 @@ LAYOUT_RE = re.compile(r"[0-9a-z]{2,8}")
 CALIBRATION_OFFSET = 0x008204
 IDENTITY_WIDTH = 11
 IDENTITY_BLOCKS = ((0x006F00, b"12345", 0x006F09), (0x007000, b"000000", 0x007009))
-EMPTY_BLOCK = "empty"
 
 
 class HomologyError(ValueError):
@@ -378,43 +375,6 @@ def validate_software_ids(images, families, path: Path = HOMOLOGY_REGISTRY):
             )
 
 
-def validate_identity_document(images, path: Path = IDENTITY_DOCUMENT):
-    """Hold the published identity-string table to the bytes in each image."""
-
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError as error:
-        raise HomologyError(f"identity document not found: {path}") from error
-    context = f"{path} {IDENTITY_SECTION}"
-    if text.count(IDENTITY_SECTION) != 1:
-        raise HomologyError(f"{context}: section is missing or repeated")
-    section = text.split(IDENTITY_SECTION, 1)[1].split("\n### ", 1)[0]
-    published = {}
-    for line in section.splitlines():
-        cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
-        if len(cells) != 4 or cells[0] not in images:
-            continue
-        if cells[0] in published:
-            raise HomologyError(f"{context}: {cells[0]} appears in two rows")
-        published[cells[0]] = tuple(cells[1:])
-    measured = {}
-    for label, image in images.items():
-        calibration, blocks = read_identity(image.data)
-        measured[label] = (calibration, *(block or EMPTY_BLOCK for block in blocks))
-    if set(published) != set(measured):
-        raise HomologyError(
-            f"{context}: table coverage differs; "
-            f"missing={sorted(set(measured) - set(published))}; "
-            f"extra={sorted(set(published) - set(measured))}"
-        )
-    for label in sorted(measured):
-        if published[label] != measured[label]:
-            raise HomologyError(
-                f"{context}: {label} publishes {published[label]} "
-                f"while the image carries {measured[label]}"
-            )
-
-
 def validate_relationships(families, relationships, path: Path = HOMOLOGY_REGISTRY):
     if not isinstance(relationships, list):
         raise HomologyError(f"{path}: relationship must be an array of tables")
@@ -617,7 +577,6 @@ def build_report():
     settings, families, relationships = load_homology()
     validate_families(images, families)
     validate_software_ids(images, families)
-    validate_identity_document(images)
     validate_relationships(families, relationships)
     return render_csv(measure_pairs(images, settings))
 

@@ -2,7 +2,6 @@ import csv
 import hashlib
 from pathlib import Path
 import re
-import tempfile
 import unittest
 
 import pytest
@@ -272,52 +271,6 @@ class IdentityStringTest(unittest.TestCase):
         rom_homology.validate_software_ids(
             images, self._families(["JK00C", "JK00D"], ["8MFKPCN14", "8MFK36N15"])
         )
-
-    def _document(self, rows):
-        body = "\n".join(rows)
-        return (
-            f"{rom_homology.IDENTITY_SECTION}\n\n"
-            "| ROM | Calibration | First | Second |\n"
-            "| --- | --- | --- | --- |\n"
-            f"{body}\n\n### Next section\n"
-        )
-
-    def test_published_table_matching_the_images_passes(self):
-        images = {"JK08A": build_image("JK08A", "1JK08A00000", first="7MFKAVN86")}
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "README.md"
-            path.write_text(
-                self._document(["| JK08A | `1JK08A00000` | `7MFKAVN86` | empty |"]),
-                encoding="utf-8",
-            )
-            rom_homology.validate_identity_document(images, path)
-
-    def test_published_table_diverging_from_the_image_is_rejected(self):
-        images = {"JK08A": build_image("JK08A", "1JK08A00000", first="7MFKAVN86")}
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "README.md"
-            path.write_text(
-                self._document(["| JK08A | `1JK08A00000` | `8MFK36N15` | empty |"]),
-                encoding="utf-8",
-            )
-            with self.assertRaises(rom_homology.HomologyError) as raised:
-                rom_homology.validate_identity_document(images, path)
-        self.assertIn("while the image carries", str(raised.exception))
-
-    def test_unpublished_image_is_rejected(self):
-        images = {
-            "JK08A": build_image("JK08A", "1JK08A00000", first="7MFKAVN86"),
-            "JK03A": build_image("JK03A", "1JK03A00000", first="7MFKAVN86"),
-        }
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "README.md"
-            path.write_text(
-                self._document(["| JK08A | `1JK08A00000` | `7MFKAVN86` | empty |"]),
-                encoding="utf-8",
-            )
-            with self.assertRaises(rom_homology.HomologyError) as raised:
-                rom_homology.validate_identity_document(images, path)
-        self.assertIn("coverage differs", str(raised.exception))
 
 
 if __name__ == "__main__":
