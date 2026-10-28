@@ -71,7 +71,52 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
         ('pipeline', 'relocated_runtime_targets'),
     ]
     assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'throttle_cluster_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
-    assert 'VQ_SH_ELF_VERIFY status=PASS' in report and 'stock_code_' not in report
+    assert 'VQ_SH_ELF_VERIFY status=PASS scope=full ' in report and 'stock_code_' not in report
+
+
+def _stages(report):
+    execution = importlib.import_module('execution_report')
+    return [row['start']['name'] for row in execution.read(report, require_complete=True)]
+
+
+def test_exact_rom_scope_runs_the_native_stages_only(pipeline, capsys):
+    driver, events = pipeline
+    assert driver.main(['--rom', 'JK03B']) == 0
+    report = capsys.readouterr().out
+    assert _stages(report) == ['toolchain', 'reconstruction_fixture', 'map_switching',
+                               'delay_slot_probe', 'rolling_launch', 'can_telemetry']
+    assert 'verify_runtime_targets' not in events
+    assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK03B ' in report
+    assert 'runtime_targets=' not in report
+
+
+def test_relocated_rom_scope_runs_its_target_only(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+    requested = []
+
+    def runtime(**kwargs):
+        requested.append(kwargs['roms'])
+        return [dict(dynamic_cases=31)]
+
+    monkeypatch.setattr(sys.modules['verify_runtime_targets'], 'verify', runtime)
+    assert driver.main(['--rom', 'JK00D']) == 0
+    report = capsys.readouterr().out
+    assert _stages(report) == ['toolchain', 'delay_slot_probe', 'relocated_runtime_targets']
+    assert events == [] and requested == [('JK00D',)]
+    assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK00D ' in report
+    assert 'runtime_targets=1 runtime_target_cases=31' in report
+    assert 'composition_sha256=' not in report
+
+
+def test_unknown_rom_scope_is_refused_before_execution(pipeline, monkeypatch):
+    driver, events = pipeline
+    with pytest.raises(driver.VerificationError, match='unsupported ROM'):
+        driver.verify(rom='JK99Z')
+    monkeypatch.setattr(driver, 'verify', lambda **kwargs: pytest.fail('an unknown ROM executes no gate'))
+    with pytest.raises(SystemExit) as error:
+        driver.main(['--rom', 'JK99Z'])
+    assert error.value.code == 2
+    assert events == []
 
 
 def test_failed_fuel_cut_binding_prevents_execution(pipeline, monkeypatch, capsys):

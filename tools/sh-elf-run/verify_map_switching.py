@@ -7,6 +7,9 @@ one-MiB verification fixture, and executes its behavioral harness in GNU
 sh-elf-run. Startup and limiter commit paths have measured instruction coverage.
 It also executes the exact failed Overlay 07 BRA/MOV.L pair at
 its original addresses and requires the simulator's illegal-instruction stop.
+The relocated runtime targets follow. ``--rom`` executes only the stages that
+cover one ROM: the native stages for the exact family, or the target of one
+relocated ROM.
 """
 
 from __future__ import annotations
@@ -33,6 +36,7 @@ from patches import apply_map_switching
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
+from patches import runtime_targets
 from execution_report import stage
 from elf_storage_layout import ELFStorageError, require_separate_storage
 
@@ -1083,93 +1087,125 @@ def require_toolchain_version():
     return first_line, gcc
 
 
-def verify(verbose=False):
+def verify(verbose=False, rom=None):
+    """Execute the patch stages of every supported ROM, or of ``rom`` only.
+
+    The native stages cover the exact family, whose members carry the same
+    payloads at the same addresses; a relocated ROM runs its own target.
+    """
+    if rom is not None and rom not in runtime_targets.SUPPORTED_ROMS:
+        raise VerificationError(
+            f"unsupported ROM {rom!r}; supported ROMs: "
+            f"{', '.join(runtime_targets.SUPPORTED_ROMS)}"
+        )
+    native = rom is None or rom in runtime_targets.EXACT_ROMS
+    relocated_roms = (
+        runtime_targets.RELOCATED_ROMS if rom is None
+        else tuple(item for item in (rom,) if item in runtime_targets.RELOCATED_ROMS)
+    )
     with stage('toolchain'):
         simulator, gcc_version = require_toolchain_version()
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-run-") as directory:
         build_dir = Path(directory)
-        with stage('reconstruction_fixture'):
-            layout = layout_model.load_layout()
-            parsed_by_unit = assembly_model.validate_assembly_sources(layout)
-            blobs = assemble_all_units(
-                layout, parsed_by_unit, build_dir, verbose=verbose
-            )
-            audit = assembly_model.validate_instruction_semantics(
-                layout, parsed_by_unit, blobs
-            )
-            composition = require_composition(layout, blobs)
-            verify_fuel_cut_consumer_binding(layout, composition, build_dir)
-            verify_throttle_scalar_consumer_binding(layout, composition, build_dir)
-            throttle_reconstruction = verify_throttle_cluster_binding(layout, composition, build_dir)
-            fixture, relocated, differentiated, stubs = build_dynamic_fixture(
-                composition, layout, parsed_by_unit, throttle_reconstruction=throttle_reconstruction
-            )
-        with stage('map_switching'):
-            dynamic_marker = build_and_run_dynamic_harness(
-                fixture, build_dir, parsed_by_unit=parsed_by_unit,
-                composed_image=composition.data, layout=layout,
-            )
+        if native:
+            with stage('reconstruction_fixture'):
+                layout = layout_model.load_layout()
+                parsed_by_unit = assembly_model.validate_assembly_sources(layout)
+                blobs = assemble_all_units(
+                    layout, parsed_by_unit, build_dir, verbose=verbose
+                )
+                audit = assembly_model.validate_instruction_semantics(
+                    layout, parsed_by_unit, blobs
+                )
+                composition = require_composition(layout, blobs)
+                verify_fuel_cut_consumer_binding(layout, composition, build_dir)
+                verify_throttle_scalar_consumer_binding(layout, composition, build_dir)
+                throttle_reconstruction = verify_throttle_cluster_binding(layout, composition, build_dir)
+                fixture, relocated, differentiated, stubs = build_dynamic_fixture(
+                    composition, layout, parsed_by_unit, throttle_reconstruction=throttle_reconstruction
+                )
+            with stage('map_switching'):
+                dynamic_marker = build_and_run_dynamic_harness(
+                    fixture, build_dir, parsed_by_unit=parsed_by_unit,
+                    composed_image=composition.data, layout=layout,
+                )
         with stage('delay_slot_probe'):
             incident_signal = verify_delay_slot_incident(build_dir)
 
-    print(dynamic_marker)
-    try:
-        import verify_rolling_launch
+    if native:
+        print(dynamic_marker)
+        try:
+            import verify_rolling_launch
 
-        with stage('rolling_launch'):
-            rolling_result = verify_rolling_launch.verify(
-                verbose=verbose, check_toolchain=False
-            )
-    except Exception as error:
-        raise VerificationError(
-            f"Rolling Launch executable gate failed: {error}"
-        ) from error
-    try:
-        import verify_can_telemetry
+            with stage('rolling_launch'):
+                rolling_result = verify_rolling_launch.verify(
+                    verbose=verbose, check_toolchain=False
+                )
+        except Exception as error:
+            raise VerificationError(
+                f"Rolling Launch executable gate failed: {error}"
+            ) from error
+        try:
+            import verify_can_telemetry
 
-        with stage('can_telemetry'):
-            telemetry_result = verify_can_telemetry.verify(
-                verbose=verbose, check_toolchain=False
-            )
-    except Exception as error:
-        raise VerificationError(
-            f"CAN telemetry executable gate failed: {error}"
-        ) from error
-    try:
-        import verify_runtime_targets
+            with stage('can_telemetry'):
+                telemetry_result = verify_can_telemetry.verify(
+                    verbose=verbose, check_toolchain=False
+                )
+        except Exception as error:
+            raise VerificationError(
+                f"CAN telemetry executable gate failed: {error}"
+            ) from error
+    if relocated_roms:
+        try:
+            import verify_runtime_targets
 
-        with stage('relocated_runtime_targets'):
-            runtime_results = verify_runtime_targets.verify(verbose=verbose)
-    except Exception as error:
-        raise VerificationError(
-            f"relocated runtime-target executable gate failed: {error}"
-        ) from error
-    print(
-        "VQ_SH_ELF_VERIFY status=PASS"
-        f" simulator={EXPECTED_SIMULATOR_VERSION}"
-        f" gcc={gcc_version}"
-        f" units={len(layout.assembly_units)}"
-        f" instructions={audit.instructions}"
-        f" delayed_transfers={audit.delayed_transfers}"
-        f" pc_relative_references={audit.pc_relative_references}"
-        f" direct_branches={audit.direct_branches}"
-        f" indirect_transfers={audit.indirect_transfers}"
-        f" composition_sha256={composition.sha256}"
-        f" rolling_launch_instructions="
-        f"{rolling_result['audit'].instructions}"
-        f" rolling_launch_cases={rolling_result['dynamic_cases']}"
-        f" can_telemetry_instructions="
-        f"{telemetry_result['audit'].instructions}"
-        f" can_telemetry_cases={telemetry_result['dynamic_cases']}"
-        f" runtime_targets={len(runtime_results)}"
-        f" runtime_target_cases="
-        f"{sum(item['dynamic_cases'] for item in runtime_results)}"
-        f" ram_literals_relocated={relocated}"
-        f" differentiated_bytes={differentiated}"
-        f" stock_stubs={stubs}"
-        f" incident_address={INCIDENT_ADDRESS:#x}"
-        f" unsafe_signal={incident_signal}"
-    )
+            with stage('relocated_runtime_targets'):
+                runtime_results = verify_runtime_targets.verify(
+                    verbose=verbose, roms=relocated_roms
+                )
+        except Exception as error:
+            raise VerificationError(
+                f"relocated runtime-target executable gate failed: {error}"
+            ) from error
+    fields = [
+        ("scope", "full" if rom is None else f"rom:{rom}"),
+        ("simulator", EXPECTED_SIMULATOR_VERSION),
+        ("gcc", gcc_version),
+    ]
+    if native:
+        fields += [
+            ("units", len(layout.assembly_units)),
+            ("instructions", audit.instructions),
+            ("delayed_transfers", audit.delayed_transfers),
+            ("pc_relative_references", audit.pc_relative_references),
+            ("direct_branches", audit.direct_branches),
+            ("indirect_transfers", audit.indirect_transfers),
+            ("composition_sha256", composition.sha256),
+            ("rolling_launch_instructions", rolling_result['audit'].instructions),
+            ("rolling_launch_cases", rolling_result['dynamic_cases']),
+            ("can_telemetry_instructions", telemetry_result['audit'].instructions),
+            ("can_telemetry_cases", telemetry_result['dynamic_cases']),
+        ]
+    if relocated_roms:
+        fields += [
+            ("runtime_targets", len(runtime_results)),
+            ("runtime_target_cases",
+             sum(item['dynamic_cases'] for item in runtime_results)),
+        ]
+    if native:
+        fields += [
+            ("ram_literals_relocated", relocated),
+            ("differentiated_bytes", differentiated),
+            ("stock_stubs", stubs),
+        ]
+    fields += [
+        ("incident_address", f"{INCIDENT_ADDRESS:#x}"),
+        ("unsafe_signal", incident_signal),
+    ]
+    print("VQ_SH_ELF_VERIFY status=PASS " + " ".join(
+        f"{name}={value}" for name, value in fields
+    ))
     if verbose:
         print(f"TOOLCHAIN {simulator}")
 
@@ -1181,9 +1217,14 @@ def main(argv=None):
         action="store_true",
         help="print each independently assembled unit digest",
     )
+    parser.add_argument(
+        "--rom",
+        choices=runtime_targets.SUPPORTED_ROMS,
+        help="execute only the patch stages that cover this ROM",
+    )
     args = parser.parse_args(argv)
     try:
-        verify(verbose=args.verbose)
+        verify(verbose=args.verbose, rom=args.rom)
     except (OSError, ValueError, VerificationError) as error:
         traceback.print_exc(file=sys.stderr)
         print(f"VQ_SH_ELF_VERIFY status=FAIL error={error}", file=sys.stderr)

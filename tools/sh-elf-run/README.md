@@ -28,6 +28,13 @@ ROM registry. It has no knowledge-package, graph, TEST witness or stock-proof
 qualification dependency. Its successful terminal reports the patch stages and
 executed cases. It does not publish evidence receipts or change canonical facts.
 
+`run.sh --rom <ROM>` executes only the stages that cover one supported ROM: the
+native stages for a member of the exact family, whose members carry the same
+payloads at the same addresses, or the runtime target of one relocated ROM. The
+toolchain check and the delay-slot probe run in both scopes. The terminal line
+names the scope as `scope=full` or `scope=rom:<ROM>`. `make preflash` runs this
+scope for the ROM of the image it qualifies.
+
 `VQ_SH_ELF_IMAGE` selects the local image tag. `VQ_SH_ELF_SKIP_BUILD=1` reuses
 that tag without building it; the image input check below still applies.
 `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` retains the supported timeout

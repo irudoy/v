@@ -1345,11 +1345,11 @@ def verify_target(rom, locks, verbose=False):
     }
 
 
-def verify(verbose=False):
+def verify(verbose=False, roms=runtime_targets.RELOCATED_ROMS):
     locks = runtime_targets.load_payload_locks()
     results = [
         verify_target(rom, locks[rom], verbose=verbose)
-        for rom in runtime_targets.RELOCATED_ROMS
+        for rom in roms
     ]
     print(
         "VQ_SH_ELF_RUNTIME_TARGETS status=PASS "
