@@ -32,6 +32,18 @@ def _entry(registry, dotted):
     return registry[section][name]
 
 
+def _recorded_profile_ids(node):
+    """The profile IDs that the records of a registry node carry."""
+    if isinstance(node, dict):
+        found = {node["profile_id"]} if "profile_id" in node else set()
+        for value in node.values():
+            found |= _recorded_profile_ids(value)
+        return found
+    if isinstance(node, list):
+        return set().union(*map(_recorded_profile_ids, node))
+    return set()
+
+
 def _percent_range(low, high):
     return f"`{low:.3f}%..{high:.3f}%`"
 
@@ -247,8 +259,11 @@ class CanTelemetryTransportVehicleTest(unittest.TestCase):
         self.assertIn(
             f"The TRC captures of registry entry `{KEY}` measure the last criterion "
             f"for profile {self.session['profile_id']} on the target vehicle; "
-            f"profile {self.current_profile_id} has no target-vehicle capture.",
+            "the current profile has no target-vehicle capture.",
             self.published,
+        )
+        self.assertNotIn(
+            self.current_profile_id, _recorded_profile_ids(self.registry)
         )
 
 

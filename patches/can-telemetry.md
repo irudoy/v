@@ -33,7 +33,8 @@ profile 3, and the road session of 2026-09-21 in registry entry
 session of 2026-09-22 in registry entry
 `can_telemetry.schema2_profile5_drive_2026_09_22` carried the same profile,
 and its TRC captures measure the whole-bus load of the stream. The current
-profile 7 sends the same eleven DLC-8 frames per snapshot and has no vehicle
+profile, whose ID and CRC16 the generated `can-telemetry-identity.h` states,
+sends the same eleven DLC-8 frames per snapshot and has no vehicle
 recording. The recorded
 schema 1 `wide54` result remains useful bus-capacity and mailbox evidence; it
 does not validate schema 2 and is intentionally not accepted by the current
@@ -247,16 +248,19 @@ The 16-byte configuration contains:
 | 0 | 2 | magic `0x4354` |
 | 2 | 1 | protocol version `2` |
 | 3 | 1 | enable byte `0` or `1` |
-| 4 | 1 | profile ID `7` |
+| 4 | 1 | profile ID `TELEMETRY_PROFILE_ID` |
 | 5 | 1 | page count `11` |
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0x6474` |
+| 10 | 2 | profile CRC16 `TELEMETRY_PROFILE_CRC` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
-The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 07 0B 01 00 06 F0 64 74 54 45 4C 32`.
+The only profile name is `tuning`. `TELEMETRY_PROFILE_ID` and
+`TELEMETRY_PROFILE_CRC` are symbols of the generated header
+`can-telemetry-identity.h`. Its `TELEMETRY_CONFIGURATION` is the enabled
+record of the candidate CAN ID and tick divisor; the default disabled record
+differs from it in enable byte 3 alone, which holds `00`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. `can_telemetry_profile.py`
@@ -455,8 +459,8 @@ or more. At one evaluation of a channel per engine cycle, every tag-4 interval
 at divisor 1 holds an evaluation only above about 2350 rpm.
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 7, and CRC `0x6474`. A later mismatch disables conversions
-again.
+2 and the profile ID and CRC of the generated identity header. A later
+mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -537,13 +541,13 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 7, and CRC `0x6474` health identity;
+- version 2 and the generated profile ID and CRC as health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
 The TRC captures of registry entry `can_telemetry.schema2_transport_2026_09_22`
-measure the last criterion for profile 5 on the target vehicle; profile 7 has
-no target-vehicle capture.
+measure the last criterion for profile 5 on the target vehicle; the current
+profile has no target-vehicle capture.
 
 The acceptance run does not need a shutdown cycle, active diagnostic session,
 DTC comparison, or direct scheduler-slack measurement for this logging use.
@@ -558,8 +562,9 @@ both banks, all pages, every context record, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
 flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
-configuration, rejection of profile IDs 0, 6, and 8 by the capture entry and of
-profile ID 6 by the control receiver, active-group stop, corrupt-state
+configuration, rejection of profile ID 0 and of both IDs adjacent to the
+generated one by the capture entry and of the ID below it by the control
+receiver, active-group stop, corrupt-state
 fail-closed behavior, the knock surface byte with only its high-detonation
 bit set and with every other bit set, a real `TRAPA` exception entry, and the
 exact ISR `RTE`.

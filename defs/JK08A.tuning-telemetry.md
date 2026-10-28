@@ -182,8 +182,9 @@ in JK08A, reads zero, and is not streamed.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 7, generated CRC16 `0x6474`, one
-build-selected standard data CAN ID on physical mailbox 26, and the adjacent
+Schema 2 uses protocol version 2, the profile ID and CRC16 of the generated
+[`../patches/can-telemetry-identity.h`](../patches/can-telemetry-identity.h),
+one build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The CRC covers the wire layout alone:
 protocol version, profile ID, page count, and the placement, width, and
 signedness of every slot. Field names and scale strings are outside it, and a
@@ -206,5 +207,5 @@ The firmware and executable SH-2E gate are complete. Three road drives on
 2026-08-26 with profile 1 and a road session on 2026-09-21 with profile 5
 carried the eleven-frame stream with the overrun and abort counters at zero;
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml)
-records the captures. The current profile 7 has no vehicle recording, and
+records the captures. The current profile has no vehicle recording, and
 physical validation of mailbox-31 START/STOP remains required.

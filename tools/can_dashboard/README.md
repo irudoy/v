@@ -762,8 +762,8 @@ The decoder retains the latest values from the paired page-9 and page-10
 contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. The bundled schema declares
-profile ID 7 with CRC16 `0x6474`, and the `Schema` status field names the
-verified profile ID. A producer that reports another profile ID or CRC keeps
+the profile ID and CRC16, and the `Schema` status field names the verified
+profile ID. A producer that reports another profile ID or CRC keeps
 raw values only, because its slots carry other quantities. The CRC covers the
 wire layout alone, so a restated field name or scale string leaves it
 unchanged. Stale context values remain visible while their update
