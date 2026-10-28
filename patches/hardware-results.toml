@@ -899,6 +899,7 @@ ascd_resume_code = 0x10
 ascd_resume_status = "operator-confirmed live observation outside the saved trace"
 
 [can_telemetry.schema2_tuning_drives]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-08-26"
 software_status = "pass"
 hardware_status = "pass"
@@ -945,6 +946,7 @@ peak_engine_speed_rpm = 7725
 knock_retard_record_count = 0
 
 [can_telemetry.schema2_channel_coverage]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-08-26"
 knock_timing_state = "active; 749 records reach -2.40 degCA minimum at 1200..3200 rpm in the 22-40-01 capture and none in the other two"
 high_detonation_surface_selected = "constant zero in all three captures, so surface 0x9b1a is never selected"
@@ -955,6 +957,7 @@ front_o2_sensor_channels = "constant zero; the front sensors are wideband and re
 cvtc_duty_monitor_pair = "active over 0..78.5 percent and correlates 0.76..0.88 with intake actual angle against 0.35..0.64 with exhaust actual angle"
 
 [can_telemetry.schema2_cvtc_tracking]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-08-26"
 tool = "steady-target comparison over captures retimed by tools/logs/mlg_retime.py"
 steady_target_hold_seconds = 1.0
@@ -1172,6 +1175,7 @@ result = "with the vehicle moving in the cold band the intake target follows col
 evidence_boundary = "the recording starts with the engine running and carries neither CLSD THL POS, the vehicle-speed byte, the start delay, the fault and inhibit terms, the re-arm countdown 0xFFFF2527, nor latch 0xFFFF5B2C bit 6; the replay takes CLSD THL POS as APP1 raw at most 153, forms the speed byte from the 0x280 speed, uses a re-arm wait of 988 snapshots, takes the unobservable terms as passing, and takes the latch as set; the 189 comparisons before the first rise depend on the start delay, 120 map-path comparisons lie within 3 counts of the selected byte, and the 132 map-path comparisons at 0x80 fall to 4 as the APP1 bound rises to 175 while the neutral-path comparisons with an active target rise from 2 to 69; ffff2466.bit6 stays clear, so corrections 0xAB5A and 0xAB4A stay unexercised; the exhaust target stays 0x80 through the cold and blend bands while every cell of exhaust cold surface 0xB2FA is 0x80, so neither the exhaust cold surface nor the exhaust blend is discriminated; raw target agreement does not show physical camshaft response"
 
 [can_telemetry.mlg_relation_audit_2026_09_17]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-17"
 tool = "tools/logs/mlg_relation_audit.py"
 dashboard_version = "4.0.1"
@@ -1359,6 +1363,7 @@ span_seconds = 127.308
 peak_stock_can_rpm = 1228
 
 [can_telemetry.intake_duty_latch_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 profile_id = 5
 profile_crc16 = 0xE144
@@ -1618,6 +1623,7 @@ override_priority = "untested"
 mailbox_31_after_recovery = "untested"
 
 [can_telemetry.stock_speed_bracket_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 tool = "tools/logs/rolling_launch_audit.py"
 session = "can_telemetry.schema2_profile5_drive_2026_09_22"
@@ -2118,6 +2124,7 @@ result = "channels 3 and 5 publish 32767 in all 18,893 tag-4 groups and carry no
 evidence_boundary = "the recordings bound the metric of channels 3 and 5 from above without observing it; the sensors behind the A/D inputs, the combustion event that each channel window observes, and the physical metric scale are outside the measurement"
 
 [passive_can]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-08-16"
 format = "PEAK PCAN-View TRC 1.1"
 nominal_bitrate = 500000
