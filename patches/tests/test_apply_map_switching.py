@@ -242,7 +242,6 @@ class ApplyMapSwitchingTest(unittest.TestCase):
         telemetry_result = apply_can_telemetry.patch_image(rolling_result.data)
         for module, source, result in (
             (patcher, self.tuned, self.result),
-            (apply_rolling_launch, self.result.data, rolling_result),
             (apply_can_telemetry, rolling_result.data, telemetry_result),
         ):
             with self.subTest(module=module.__name__), tempfile.TemporaryDirectory() as directory:

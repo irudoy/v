@@ -15,6 +15,9 @@ from patches import rolling_launch_layout as rolling_layout_model
 
 
 class ApplyRollingLaunchTest(unittest.TestCase):
+    def test_stage_module_does_not_expose_a_command_entry_point(self):
+        self.assertFalse(hasattr(patcher, "main"))
+
     @classmethod
     def setUpClass(cls):
         cls.map_layout = map_layout_model.load_layout()

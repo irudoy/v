@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add the validated JK08A Rolling RPM Hold runtime to an exact base ROM.
+"""Compose the validated JK08A Rolling Launch stage for the ROM builder.
 
 The production profile is deliberately narrow: mode 1 (RPM hold), Map 1 only,
 no brake gate, and no ignition retard. The input must be the exact complete
@@ -11,7 +11,6 @@ set are all revalidated before an output can be written.
 
 from __future__ import annotations
 
-import argparse
 from dataclasses import dataclass
 import hashlib
 from itertools import chain
@@ -372,94 +371,3 @@ def patch_image(
 
 def _format_checksums(values):
     return ",".join(f"{name}={value:#x}" for name, value in values.items())
-
-
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "input", type=Path, help="exact complete map-switching stage-20 ROM"
-    )
-    parser.add_argument(
-        "--output", type=Path, help="output path; defaults beside INPUT"
-    )
-    parser.add_argument(
-        "--profile",
-        choices=(PROFILE_NAME,),
-        default=PROFILE_NAME,
-        help="locked hardware-test calibration profile",
-    )
-    parser.add_argument(
-        "--verify-only",
-        action="store_true",
-        help="compose and verify without writing files",
-    )
-    args = parser.parse_args(argv)
-
-    try:
-        source = args.input.read_bytes()
-        result = patch_image(source, source_name=str(args.input))
-    except (OSError, PatchError) as error:
-        parser.error(str(error))
-
-    calibration = rolling_launch.Calibration.from_bytes(result.configuration)
-    print(
-        f"status=PASS profile={result.profile} source={args.input} "
-        f"source_sha256={result.source_sha256}"
-    )
-    print(
-        f"mode={int(calibration.mode)} enable_mask={calibration.enable_mask:#04x} "
-        f"retard_ramp_native={calibration.retard_ramp_native} "
-        f"rpm_offset_native={calibration.rpm_offset_native} "
-        f"min_hysteresis_native={calibration.min_hysteresis_native} "
-        f"max_hysteresis_native={calibration.max_hysteresis_native} "
-        f"hysteresis_ratio_tenths="
-        f"{calibration.hysteresis_ratio_tenths} "
-        f"run_timeout_ticks={calibration.run_timeout_ticks} "
-        f"rearm_ticks={calibration.rearm_ticks} "
-        f"configuration={result.configuration.hex()}"
-    )
-    print(f"source_checksums={_format_checksums(result.source_checksums)}")
-    print(
-        f"output_sha256={result.output_sha256} md5={md5(result.data)} "
-        f"output_checksums={_format_checksums(result.output_checksums)}"
-    )
-    print(
-        f"composition_changed_bytes={result.composition_changed_bytes} "
-        f"final_changed_bytes={result.final_changed_bytes} "
-        f"permitted_write_bytes={result.permitted_write_bytes} "
-        f"checksum_changed_bytes={result.checksum_changed_bytes} "
-        f"instructions={result.instruction_count} "
-        f"entries={result.code_entry_count} "
-        f"diagnostics={result.diagnostic_count}"
-    )
-    enabled_slots = [
-        index + 1
-        for index in range(5)
-        if calibration.enable_mask & (1 << index)
-    ]
-    verification = canonical_checksums.verify(result.data)
-    print(
-        "ignition_retard="
-        f"{str(calibration.mode is rolling_launch.Mode.RPM_HOLD_RETARD).lower()} "
-        f"enabled_map_slots={','.join(str(slot) for slot in enabled_slots) or 'none'} "
-        f"checksums={'PASS' if verification.valid else 'FAIL'}"
-    )
-
-    if args.verify_only:
-        print("no ROM file was written")
-        return 0
-
-    try:
-        output = args.output or default_output_path(args.input)
-        if output.resolve() == args.input.resolve():
-            parser.error("input and output paths must differ")
-        created = map_runtime.write_output_with_md5(output, result.data)
-    except (OSError, map_runtime.PatchError) as error:
-        parser.error(str(error))
-    print(f"output={output} status={'created' if created else 'already_exact'}")
-    print(f"sidecar={output.name}.md5")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
