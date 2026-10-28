@@ -27,6 +27,7 @@ from elf_storage_layout import ELFStorageError, require_separate_storage
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
+from patches import can_telemetry_locks
 from patches import can_telemetry_profile
 from patches import map_switching_assembly
 from patches import map_switching_layout
@@ -34,17 +35,7 @@ from patches import rolling_launch_assembly
 from patches import rolling_launch_layout
 
 
-EXPECTED_COMPOSITION_SHA256 = (
-    "96ab4fad355be6e97ebf9361712ea2d19538d3bb6aaae6419401a7fade2f5e16"
-)
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1922
-EXPECTED_COMPOSITION_WRITE_BYTES = 3488
-EXPECTED_INSTRUCTION_COUNT = 720
-EXPECTED_CODE_ENTRY_COUNT = 11
-DYNAMIC_MARKER_PATTERN = (
-    r"^VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=[1-9][0-9]* entries=11 "
-    r"profiles=1 contexts=10 isr_rte=5$"
-)
+HARNESS_ISR_RETURNS = 5
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture", "completion")
 CAPTURE_MEASURED_REGIONS = ("capture", "build_bank", "knock_margin_wrapper", "request_page")
 COMPLETION_MEASURED_REGIONS = ("sle1_isr", "completion")
@@ -104,21 +95,39 @@ def assemble_all_units(layout, parsed_by_unit, build_dir, verbose=False):
     return assembled
 
 
+def dynamic_marker_pattern(layout, manifest=None):
+    """Return the semantic marker of the harness.
+
+    The entry count comes from the code regions of the layout, the profile and
+    context counts from the profile manifest.
+    """
+    manifest = manifest or can_telemetry_profile.load_manifest()
+    return (
+        r"^VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=[1-9][0-9]* "
+        f"entries={len(layout.code_regions)} profiles={len(manifest.profiles)} "
+        f"contexts={len(manifest.contexts)} isr_rte={HARNESS_ISR_RETURNS}$"
+    )
+
+
 def require_composition(layout, blobs):
+    """Compose the default image and require the values that the layout locks.
+
+    The composition SHA-256, the instruction count and the code entries come
+    from the layout. The changed and permitted write bytes follow from the
+    composition and are reported, not locked.
+    """
+    if layout.expected_composition_sha256 == can_telemetry_locks.ZERO_SHA256:
+        raise VerificationError("CAN telemetry layout does not lock its composition")
     result = can_telemetry_compose.compose(layout=layout, blobs=blobs)
     actual = (
         result.sha256,
-        result.changed_bytes,
-        result.permitted_write_bytes,
         result.instruction_count,
         result.code_entry_count,
     )
     expected = (
-        EXPECTED_COMPOSITION_SHA256,
-        EXPECTED_COMPOSITION_CHANGED_BYTES,
-        EXPECTED_COMPOSITION_WRITE_BYTES,
-        EXPECTED_INSTRUCTION_COUNT,
-        EXPECTED_CODE_ENTRY_COUNT,
+        layout.expected_composition_sha256,
+        layout.assembled_instruction_count,
+        len(layout.code_regions),
     )
     if actual != expected:
         raise VerificationError(
@@ -591,7 +600,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
 
     result, records, invoke_words = execute(harness_elf)
     covered = require_wrapper_coverage(records, fixture, layout, parsed_by_unit, invoke_words)
-    semantic = re.findall(DYNAMIC_MARKER_PATTERN, result.stdout, re.MULTILINE)
+    semantic = re.findall(dynamic_marker_pattern(layout), result.stdout, re.MULTILINE)
     if len(semantic) != 1:
         raise VerificationError("CAN telemetry harness lacks one exact semantic marker")
     main_call = "(void)invoke_r4(MAIN_WRAPPER, 0);"
@@ -794,6 +803,8 @@ def verify(verbose=False, check_toolchain=True):
         f" direct_branches={audit.direct_branches}"
         f" indirect_transfers={audit.indirect_transfers}"
         f" composition_sha256={composition.sha256}"
+        f" changed_bytes={composition.changed_bytes}"
+        f" permitted_write_bytes={composition.permitted_write_bytes}"
         f" dynamic_cases={dynamic_cases}"
         f" base_ram_literals_relocated={base_relocated}"
         f" rolling_ram_literals_relocated={launch_relocated}"

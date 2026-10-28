@@ -1,3 +1,4 @@
+from dataclasses import replace
 import importlib.util
 import re
 from pathlib import Path
@@ -516,12 +517,21 @@ mov #0x5,r1
 
         result = TELEMETRY_VERIFIER.require_composition(layout, blobs)
 
+        self.assertEqual(result.sha256, layout.expected_composition_sha256)
         self.assertEqual(
-            result.sha256,
-            TELEMETRY_VERIFIER.EXPECTED_COMPOSITION_SHA256,
+            result.instruction_count, layout.assembled_instruction_count
         )
-        self.assertEqual(result.instruction_count, 720)
-        self.assertEqual(result.code_entry_count, 11)
+        self.assertEqual(result.code_entry_count, len(layout.code_regions))
+
+    def test_can_telemetry_verifier_refuses_an_unlocked_composition(self):
+        layout = can_telemetry_layout.load_layout()
+        blobs = can_telemetry_assembly.load_payloads(layout)
+        unlocked = replace(layout, expected_composition_sha256="0" * 64)
+
+        with self.assertRaisesRegex(
+            TELEMETRY_VERIFIER.VerificationError, "does not lock its composition"
+        ):
+            TELEMETRY_VERIFIER.require_composition(unlocked, blobs)
 
     def test_can_telemetry_harness_rejects_the_neighbouring_profile_ids(self):
         harness = (
@@ -721,11 +731,22 @@ mov #0x5,r1
         self.assertIn("verify_can_telemetry.verify", source)
         self.assertIn("can_telemetry_cases", source)
         self.assertIn("can_telemetry_harness.c", verifier)
-        marker = "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=37 entries=11 profiles=1 contexts=10 isr_rte=5"
-        self.assertIsNotNone(re.fullmatch(TELEMETRY_VERIFIER.DYNAMIC_MARKER_PATTERN, marker))
-        self.assertIsNone(re.fullmatch(TELEMETRY_VERIFIER.DYNAMIC_MARKER_PATTERN, marker.replace("cases=37", "cases=0")))
+        layout = can_telemetry_layout.load_layout()
+        manifest = can_telemetry_profile.load_manifest()
+        pattern = TELEMETRY_VERIFIER.dynamic_marker_pattern(layout, manifest)
+        printed = re.search(
+            r'"(VQ_SH_ELF_CAN_TELEMETRY status=PASS [^"]*)"\s*"([^"]*)\\n"',
+            harness,
+        )
+        self.assertIsNotNone(printed)
+        marker = (printed.group(1) + printed.group(2)).replace("cases=%lu", "cases=37")
+        self.assertIsNotNone(re.fullmatch(pattern, marker))
+        self.assertIsNone(re.fullmatch(pattern, marker.replace("cases=37", "cases=0")))
+        fewer = replace(layout, code_regions=layout.code_regions[1:])
+        self.assertIsNone(re.fullmatch(
+            TELEMETRY_VERIFIER.dynamic_marker_pattern(fewer, manifest), marker
+        ))
         self.assertIn("trapa #0x40", exception)
-        self.assertIn("entries=11", harness)
 
     def test_top_level_gate_registers_relocated_runtime_targets(self):
         source = MODULE_PATH.read_text(encoding="utf-8")

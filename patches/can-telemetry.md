@@ -554,7 +554,7 @@ The repository-contained gate independently assembles all injected SH-2E
 instructions and proves identity with the tracked payloads before installing
 simulator-only high-RAM relocations and stock-function stubs. It executes all
 changed entries, relevant branch outcomes, delay slots, call and return paths,
-both banks, all pages, all ten context records, queue boundaries, latest-wins
+both banks, all pages, every context record, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
 flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
@@ -571,13 +571,13 @@ comparison boundary, an exceedance, the saturated exceedance and its edge,
 keeping and replacing a lower minimum across the sign boundary, a margin
 beyond the signed word, the startup arming, and the rearm behind tag 4 alone.
 
-The locked software result is:
-
-- 720 injected instructions and 770 data bytes;
-- eleven executable entries and 80 dynamic telemetry cases;
-- composition SHA-256
-  `96ab4fad355be6e97ebf9361712ea2d19538d3bb6aaae6419401a7fade2f5e16`;
-- 1,922 changed bytes inside a 3,488-byte declared write set.
+`can-telemetry-layout.toml` owns the locked software result: the SHA-256,
+instruction count, and data-byte count of every assembly unit, the executable
+entries of its code regions, and the SHA-256 of the default composition.
+`can-telemetry-profile.toml` owns the profile and context counts that the
+harness marker states. The verifier takes these values from their owners. It
+reports the dynamic case count, the changed bytes, and the declared write set
+of the composition, which follow from the sources and are not locked.
 
 This gate proves the bounded software contract. It does not replace physical
 CAN, ECU, sensor, or actuator validation.
