@@ -131,7 +131,7 @@ def test_one_subsystem_selects_only_its_tests():
         ["tools/vendor/build_catalog.py", "tools/tests/test_vendor_catalog.py"], SUBSYSTEMS
     )
     assert selection == changed_tests.Selection(("tools/tests",), False, ())
-    tests_only = changed_tests.select(["tools/memgraph/tests/test_dfco.py"], SUBSYSTEMS)
+    tests_only = changed_tests.select(["tools/memgraph/tests/test_example.py"], SUBSYSTEMS)
     assert tests_only == changed_tests.Selection(("tools/memgraph/tests",), False, ())
     pin_tracer = changed_tests.select(["tools/pin-tracer/index.html"], SUBSYSTEMS)
     assert pin_tracer == changed_tests.Selection((), True, ())
