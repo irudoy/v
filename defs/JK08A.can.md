@@ -392,22 +392,6 @@ streamed, so a floor or a target bound is visible only where the `0x180`
 request exceeds it. The image reads the throttle-limit scalar from
 map-switching word `0xFFFF5D28` instead of `ROM16[0x942C]`.
 
-### Historical acceptance labels
-
-The hardware records retain these historical `term_status` keys:
-
-- `engine_torque_scale.vehicle_2026_09_22`: `runbook_block`, `q_def_14`,
-  and `q_tcm_01_scale`;
-- `transmission_interface.vehicle_2026_09_22`: `runbook_block`, `q_tcm_01`,
-  and `q_rl_05`.
-
-Their values are `partial`. The records, audit tools and record tests do not
-declare the original runbook questions or their acceptance criteria. These
-labels therefore provide no additional qualification beyond the named scale,
-request, floor, burst and gear checks and their explicit measurement boundaries
-above. The historical keys remain unchanged until their question definitions
-are available.
-
 ## Passive vehicle capture evidence
 
 Three PEAK PCAN-View TRC 1.1 captures recorded on 2026-08-16 provide the
@@ -415,11 +399,12 @@ current vehicle baseline. The nominal bitrate was configured as `500 kbit/s`.
 The raw traces remain local and untracked; their hashes and exact firmware
 identities are registered in `../patches/hardware-results.toml`.
 
-An image identity does not identify the physical ECU. The registry explicitly
-names `23710-JK00D` only in `immo.developer_flag` and `immo.e2_pops`; its
-top-level `rom = "JK08A"` names the source ROM. The later runtime and capture
-records do not declare a physical ECU or board identity. Their image and
-capture evidence must not be used to infer that hardware provenance.
+Image identity and physical ECU identity are separate facts. The registry's
+`target_ecu = "23710-JK00D"` binds the flashed runtime images to the physical
+board; its top-level `rom = "JK08A"` names their software basis. Software-only
+builds and records without an identified flashed image carry no physical-board
+qualification. Each hardware outcome retains its image, capture and operating
+boundaries.
 
 | Firmware label | Recorded context | Frames | Observed span | Standard IDs |
 | --- | --- | ---: | ---: | ---: |
