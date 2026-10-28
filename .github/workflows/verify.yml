@@ -50,8 +50,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     steps:
+      # kb check reads the research sources of the chains from earlier commits.
       - uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           submodules: recursive
           persist-credentials: false
       - uses: astral-sh/setup-uv@v10.3.2
@@ -86,12 +88,15 @@ jobs:
         run: uv run kb sync
       - name: kb check
         run: uv run kb check
+      # Every check runs on a synced graph, so one run reports every failure.
       - name: make check
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
         env:
           VQ_SH_ELF_IMAGE: ${{ env.GATE_IMAGE }}
           VQ_SH_ELF_SKIP_BUILD: "1"
         run: make check
       - name: make test-full
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
         env:
           PYTEST_ADDOPTS: -rs
         run: make test-full
