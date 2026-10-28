@@ -110,7 +110,7 @@ def test_image_inputs_cover_every_local_build_source(image_inputs):
     assert len(image_inputs.INPUTS) == len(set(image_inputs.INPUTS))
 
 
-def generate(tmp_path, label):
+def generate(tmp_path, label, skip_build=False):
     """Run generate-targets.sh against a Docker stand-in whose image has `label`."""
     directory = tmp_path / 'bin'
     directory.mkdir()
@@ -128,7 +128,8 @@ def generate(tmp_path, label):
     fake.chmod(0o755)
     environment = dict(os.environ, PATH=str(directory) + os.pathsep + os.environ['PATH'],
         VQ_GENERATE_TEST_CALLS=str(calls), VQ_SH_ELF_IMAGE='controlled-image',
-        DOCKER_CONTEXT='unrelated-context', DOCKER_HOST='unrelated-host')
+        DOCKER_CONTEXT='unrelated-context', DOCKER_HOST='unrelated-host',
+        VQ_SH_ELF_SKIP_BUILD='1' if skip_build else '0')
     environment.pop('VQ_GENERATE_TEST_LABEL', None)
     if label is not None:
         environment['VQ_GENERATE_TEST_LABEL'] = label
@@ -163,3 +164,20 @@ def test_runtime_generation_refuses_a_stale_or_unlabeled_image(tmp_path, label):
     assert 'VQ_SH_ELF_LIFECYCLE status=REFUSE kind=stale' in result.stderr
     assert [command[0] for command in commands] == ['build', '--context']
     assert commands[1] == IMAGE_INSPECTION
+
+
+def test_runtime_generation_without_a_build_runs_the_verified_existing_image(tmp_path, image_inputs):
+    result, (inspect, run) = generate(tmp_path, image_inputs.label(), skip_build=True)
+    assert result.returncode == 0, result.stderr
+    assert inspect == IMAGE_INSPECTION
+    assert run[:2] == ['run', '--rm']
+    assert run[-3:] == ['sha256:' + 'd' * 64, 'tools/sh-elf-run/generate_runtime_targets.py',
+                        '--check']
+
+
+@pytest.mark.parametrize('label', [None, 'vhrev.sh-elf-run.inputs=sha256:' + 'e' * 64])
+def test_runtime_generation_without_a_build_refuses_a_stale_or_unlabeled_image(tmp_path, label):
+    result, commands = generate(tmp_path, label, skip_build=True)
+    assert result.returncode == 3
+    assert 'VQ_SH_ELF_LIFECYCLE status=REFUSE kind=stale' in result.stderr
+    assert commands == [IMAGE_INSPECTION]

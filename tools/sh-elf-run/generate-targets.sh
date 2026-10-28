@@ -9,8 +9,10 @@ DOCKER_CONTEXT=default
 export DOCKER_CONTEXT
 unset DOCKER_HOST
 
-inputs_label=$(python3 "$tool_dir/image_inputs.py")
-docker build --tag "$image_name" --label "$inputs_label" "$tool_dir"
+if [ "${VQ_SH_ELF_SKIP_BUILD:-0}" != "1" ]; then
+    inputs_label=$(python3 "$tool_dir/image_inputs.py")
+    docker build --tag "$image_name" --label "$inputs_label" "$tool_dir"
+fi
 # Resolve the tag once: a stale or unlabeled image refuses before execution,
 # and the container runs from the verified image ID.
 image_id=$(python3 "$tool_dir/docker_lifecycle.py" --identify --image "$image_name")
