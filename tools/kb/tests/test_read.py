@@ -1,9 +1,12 @@
+import contextlib
+import io
 from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
 
-from kb import graph, read, refs, vocab
+from kb import cli, graph, mcp, read, refs, vocab
+from kb.answer import tokens
 from kb.refs import Ref
 from kb.repo import KbError
 
@@ -690,6 +693,64 @@ class EvidenceTest(unittest.TestCase):
         self.assertEqual(lines, [
             "l0  supports identity  at 7mfk:0004d464 0004d468",
             "trace  supports identity  to puffin/fn/7mfk-000261b8  relies structure"])
+
+
+class ShowStore:
+    """The symbols of one meaning as `kb show` reads them, without links,
+    statuses, steps, or roles."""
+
+    def __init__(self, symbols):
+        self.symbols = symbols
+
+    def run(self, query, **params):
+        if "-[:HAS]->(s:Kb:Symbol) RETURN s.key AS key" in query:
+            return [{"key": node["key"]} for node in self.symbols]
+        if "-[:HAS]->(s:Kb:Symbol) RETURN s " in query:
+            return [{"s": node} for node in self.symbols]
+        return []
+
+
+class ShowTest(unittest.TestCase):
+    """A meaning whose symbol on jk00c states a note of its own."""
+
+    MEANING = {"key": "demo/ram", "kind": "ram", "home": "7mfk", "level": "code"}
+    SYMBOLS = [
+        {"key": "7mfk-ffff1980/ram", "name": "demo", "kind": "ram", "layout": "7mfk",
+         "address": 0xFFFF1980},
+        {"key": "jk00c-ffff19e6/ram", "name": "demo", "kind": "ram", "layout": "jk00c",
+         "address": 0xFFFF19E6, "note": ["The third load lies at offset 0x21c."]}]
+
+    def show(self):
+        ref = Ref("meaning", self.MEANING)
+        with mock.patch.object(read.refs, "resolve", lambda graph, text, layout, root: ref):
+            return read.show(ShowStore(self.SYMBOLS), "demo/ram")
+
+    def test_a_symbol_note_follows_the_line_of_its_symbol(self):
+        lines = self.show().text().splitlines()
+        start = lines.index("layouts")
+        self.assertEqual(lines[start + 1:start + 4], [
+            "  7mfk   demo/ram/7mfk-ffff1980  code",
+            "  jk00c  demo/ram/jk00c-ffff19e6  code",
+            "         note: The third load lies at offset 0x21c."])
+
+    def test_the_mcp_tool_returns_the_text_of_the_command(self):
+        ref, session = Ref("meaning", self.MEANING), contextlib.nullcontext(
+            ShowStore(self.SYMBOLS))
+        with mock.patch.object(cli.reader, "graph_session", return_value=session), \
+                mock.patch.object(read.refs, "resolve", lambda graph, text, layout, root: ref):
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(cli.main(["show", "demo/ram", "--no-sync"]), 0)
+            code, text = mcp.call("show", {"ref": "demo/ram", "no_sync": True})
+        self.assertEqual((code, text), (0, out.getvalue()))
+        self.assertIn("         note: The third load lies at offset 0x21c.\n", text)
+
+    def test_a_symbol_note_counts_toward_the_budget(self):
+        answer = self.show()
+        full = answer.text()
+        cut = answer.text(budget=tokens(full) - 10)
+        self.assertTrue(cut.startswith("TRUNCATED: "))
+        self.assertNotIn("note: The third load", cut)
 
 
 class RawStore:

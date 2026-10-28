@@ -655,6 +655,8 @@ def show(graph, text, layout=None, root=repo.ROOT):
         parts = [symbol_ref(symbol), symbol.get("level") or keys.get("level") or "",
                  symbol_keys_text(symbol)]
         layouts.append(f"  {symbol['layout']:<6} " + "  ".join(filter(None, parts)))
+        own = symbol.get("note") or []
+        layouts.extend(f"{'':9}note: {note}" for note in (own if isinstance(own, list) else [own]))
         data["symbols"].append(symbol)
     for row in statuses:
         layouts.append(f"  {row['layout']:<6} {_status_text(row['props'])}")

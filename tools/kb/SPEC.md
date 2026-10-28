@@ -1312,6 +1312,9 @@ codes. Tests bind those declarations to the parser and MCP command list.
 
 ### 12.2 Read commands
 
+`kb show` prints the note of each symbol under the line of the symbol in its
+`layouts` section, and the notes count toward the budget of the answer.
+
 `kb at --literal` adds a separate view of exact exported 32-bit ROM load
 values equal to the requested location's numeric value. Matches retain the
 function, instruction, ordinal, pool address, width, raw bytes and reference
