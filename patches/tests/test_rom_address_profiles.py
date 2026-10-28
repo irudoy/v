@@ -2,7 +2,7 @@ from dataclasses import replace
 
 import pytest
 
-from patches import rom_address_profiles
+from patches import can_telemetry_profile, rom_address_profiles
 from tools import rom_homology
 
 @pytest.fixture(scope="module")
@@ -120,11 +120,13 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
     assert one.rolling_symbol_by_key["periodic_task_table"] == 0x00022058
     assert one.rolling_symbol_by_key["vehicle_speed"] == 0xFFFE8104
     assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
-    assert one.telemetry_unavailable == (
-        "alpha_n_flow_raw",
-        "normalized_load_raw",
-        "request_flow_raw",
-    )
+    manifest = can_telemetry_profile.load_manifest()
+    fields = (*manifest.fields, *(field for context in manifest.contexts for field in context.fields))
+    expected = {field.name for field in fields if field.kind == "ecu_ram"}
+    mapped = set(one.telemetry_source_by_name)
+    unavailable = set(one.telemetry_unavailable)
+    assert mapped.isdisjoint(unavailable)
+    assert mapped | unavailable == expected
     assert one.telemetry_source_by_name["knock_timing_state_raw"] == 0xFFFE8214
     assert "normalized_load_raw" not in one.telemetry_source_by_name
     assert one.telemetry_zero_source == 0xFFFF0DE0

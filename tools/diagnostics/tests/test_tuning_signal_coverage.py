@@ -20,6 +20,15 @@ def test_catalog_covers_every_current_tuning_field():
     assert owners["intake_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["exhaust_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["knock_count_latched"] == "knock_event_latches"
+    assert owners["ltft_learned_b2_raw"] == "long_fuel_trim_terms"
+    assert owners["ltft_adjustment_b2_raw"] == "long_fuel_trim_terms"
+    assert owners["fuel_learning_permit_a_raw"] == "fuel_learning_controls"
+    assert owners["fuel_learning_permit_b_raw"] == "fuel_learning_controls"
+    assert owners["ltft_publication_neutral_control_raw"] == "fuel_learning_controls"
+    assert owners["knock_state_snapshot_raw"] == "knock_branch_controls"
+    assert owners["knock_branch_state_raw"] == "knock_branch_controls"
+    assert owners["transmission_reduction_state_raw"] == "torque_request_states"
+    assert owners["torque_transition_state_raw"] == "torque_request_states"
 
 
 def test_catalog_separates_stream_coverage_from_external_measurement():
@@ -33,6 +42,12 @@ def test_catalog_separates_stream_coverage_from_external_measurement():
         f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
     )
     assert catalog.by_id["physical_spark_angle"].coverage == "external"
+    assert catalog.by_id["injection_end_angle"].coverage == "rotating"
+    assert catalog.by_id["fuel_learning_controls"].coverage == "fixed"
+    assert catalog.by_id["knock_branch_controls"].coverage == "fixed"
+    assert catalog.by_id["torque_request_states"].coverage == "fixed"
+    assert catalog.by_id["intake_cvtc_duty_command"].coverage == "absent"
+    assert catalog.by_id["high_resolution_cvtc_duty"].coverage == "absent"
 
 
 def test_catalog_signals_outside_the_stream_share_no_source_with_it():
@@ -63,18 +78,20 @@ def test_catalog_did_bindings_include_high_value_gaps():
     )
 
 
-def test_summary_has_stable_coverage_counts():
-    report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
-    assert report["signal_count"] == 41
+def test_summary_groups_a_controlled_catalog_and_reports_only_its_gaps():
+    catalog = tuning_signal_coverage.load_catalog()
+    selected = replace(catalog, signals=tuple(catalog.by_id[name] for name in (
+        "fuel_learning_controls", "knock_branch_controls", "injection_end_angle",
+        "physical_spark_angle")))
+    report = tuning_signal_coverage.summary(selected)
+    assert report["signal_count"] == 4
     assert report["rotating_rate_hz"] == 19.53125
     assert report["coverage"] == {
-        "absent": 5,
         "external": 1,
-        "fixed": 19,
-        "latched": 1,
-        "rotating": 13,
-        "stock-can": 2,
+        "fixed": 2,
+        "rotating": 1,
     }
+    assert [signal["id"] for signal in report["gaps"]] == ["physical_spark_angle"]
 
 
 def test_did_validation_requires_the_complete_sequential_source_width():

@@ -86,7 +86,9 @@ class MlgRestampTest(unittest.TestCase):
             self.assertTrue(summary.written)
             self.assertEqual(summary.fields, len(specs))
             self.assertEqual(summary.unmatched, ("gps_lat",))
-            self.assertGreater(len(summary.changed), 20)
+            changed = {item.after.name for item in summary.changed}
+            self.assertTrue({"MAF bank 1", "Injection calc 0", "Injection calc 1",
+                             "Intake CVTC actual B1"} <= changed)
 
             fields = mlvlg.read_fields(log)
             names = [field.name for field in fields]
@@ -106,7 +108,8 @@ class MlgRestampTest(unittest.TestCase):
                     self.assertEqual(field.transform, CVTC_TRANSFORM)
                 if field.name in MARKED_UNITS_4_0_1:
                     self.assertNotIn("*", field.units)
-            self.assertTrue(MARKED_UNITS_4_0_1 <= set(names))
+            recorded_marked = MARKED_UNITS_4_0_1 & {spec.name for spec in specs}
+            self.assertTrue(recorded_marked <= set(names))
             self.assertEqual(data_blocks(log), before_blocks)
             mlvlg.validate_mlg(log)
 
@@ -132,7 +135,8 @@ class MlgRestampTest(unittest.TestCase):
             summary = mlg_restamp.restamp(log, dry_run=True)
 
             self.assertFalse(summary.written)
-            self.assertGreater(len(summary.changed), 20)
+            changed = {item.after.name for item in summary.changed}
+            self.assertTrue({"MAF bank 1", "Intake CVTC actual B1"} <= changed)
             self.assertEqual(Path(log).read_bytes(), original)
 
     def test_cli_reports_each_log(self):

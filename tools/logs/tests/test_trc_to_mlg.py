@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from tools.can_dashboard import model
+from tools.can_dashboard import model, recording
 from tools.logs import mlvlg, trc_to_mlg
 
 
@@ -123,8 +123,10 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertEqual(summary.telemetry_frames, 88)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(summary.bridge_records, 0)
-        self.assertEqual(summary.mlg_fields, 88)
-        self.assertEqual(validation.record_length, 352)
+        expected_fields = [binding.spec for binding in recording.build_bindings("tuning")]
+        self.assertEqual(summary.mlg_fields, len(expected_fields))
+        self.assertEqual(names, [field.name for field in expected_fields])
+        self.assertEqual(validation.record_length, mlvlg.record_length(expected_fields))
         self.assertEqual(validation.data_records, 8)
         self.assertEqual(header[0], b"MLVLG\x00")
         expected_start = math.floor(

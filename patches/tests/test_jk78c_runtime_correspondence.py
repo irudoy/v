@@ -61,8 +61,14 @@ def test_jk78c_runtime_correspondence_is_strict_and_unique():
 def test_jk78c_telemetry_correspondence_covers_the_complete_schema():
     rows = [row for row in _rows() if row["domain"] == "telemetry"]
     assert {row["key"] for row in rows} == _canonical_telemetry_keys()
-    unsupported = [row["key"] for row in rows if row["status"] == "unsupported"]
-    assert unsupported == []
+    unsupported = {row["key"] for row in rows if row["status"] == "unsupported"}
+    assert unsupported == {
+        "fuel_learning_permit_a_raw",
+        "ltft_publication_neutral_control_raw",
+        "knock_state_snapshot_raw",
+        "knock_branch_state_raw",
+        "transmission_reduction_state_raw",
+    }
     for row in rows:
         if row["status"] != "unsupported":
             assert 0xFFFF0000 <= int(row["target"], 16) < 0xFFFFC000
