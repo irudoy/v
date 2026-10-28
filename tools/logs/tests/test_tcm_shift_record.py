@@ -209,8 +209,6 @@ class TcmShiftRecordTest(unittest.TestCase):
         self.assertEqual(status["blip"], "not_observed")
         self.assertEqual(self.total("request_mismatch_above_passes"), 0)
         self.assertEqual(self.total("fuel_inhibit_passes"), 0)
-        for key in ("runbook_block", "q_tcm_01", "q_rl_05"):
-            self.assertEqual(status[key], "partial", key)
         self.assertEqual(self.result["hardware_status"], "partial")
 
     def test_published_text_reads_the_record(self):

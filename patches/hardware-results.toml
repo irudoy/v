@@ -21,6 +21,7 @@ target_ecu = "23710-JK00D"
 result = "pops operate with stock knock monitoring and the selected E2 and NATS DTC set"
 
 [map_switching.marker]
+target_ecu = "23710-JK00D"
 source_sha256 = "1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471"
 image_sha256 = "e1fef7ccf862243be7b231b26865c9cd099283993cfe8c73abb9952b1e5358b7"
 image_md5 = "ae982b7e05fdd04af51f4136637f60cd"
@@ -30,6 +31,7 @@ status = "pass_with_0x8080_variant"
 tested_on = "2026-08-04"
 
 [map_switching.startup_trampoline]
+target_ecu = "23710-JK00D"
 source_sha256 = "d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3"
 image_sha256 = "6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55"
 image_md5 = "8598014aa80faa4fff4faccba6cae17d"
@@ -39,6 +41,7 @@ status = "pass_exact"
 tested_on = "2026-08-04"
 
 [map_switching.startup_selector_init]
+target_ecu = "23710-JK00D"
 source_sha256 = "6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55"
 image_sha256 = "7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3"
 image_md5 = "f9d6e71af479a7169368d675e5a314cc"
@@ -50,6 +53,7 @@ tested_on = "2026-08-04"
 [[map_switching.stages]]
 chain = "limiter"
 sequence = 1
+target_ecu = "23710-JK00D"
 component = "inactive limiter payload, Map 1 copies, and pointer tables"
 sha256 = "9bb1704f93a6050593abbf30b450cc1b75bc4d141ed4455b7528148de69f56c4"
 md5 = "0b945f8909358e704039cc15386b14df"
@@ -58,6 +62,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "limiter"
 sequence = 2
+target_ecu = "23710-JK00D"
 component = "startup wrapper and limiter commit"
 sha256 = "135512525ed64b7728348a2b8859e9a7b607f931f57f6a7951e0d2d7dc847da5"
 md5 = "58e187733c04e5dc42417c0edc7ce408"
@@ -66,6 +71,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "limiter"
 sequence = 3
+target_ecu = "23710-JK00D"
 component = "fuel-cut shadow hook"
 sha256 = "22f824be2e9ca941b42760de27accc7cd1c7365e23a0b19eda29387fd1dd196c"
 md5 = "f21f4c62933aa1ce5d4d0ce7f37f0505"
@@ -74,6 +80,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "limiter"
 sequence = 4
+target_ecu = "23710-JK00D"
 component = "throttle-cluster shadow hook"
 sha256 = "3aa4bce11eb9030dc688c04744170e8aee61b1b9f8e3dd99a57a4d5ca1f626db"
 md5 = "bc1df55ec410d0c2053c5cd1021a016a"
@@ -82,6 +89,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "limiter"
 sequence = 5
+target_ecu = "23710-JK00D"
 component = "throttle-scalar shadow hook and complete limiter endpoint"
 sha256 = "1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a"
 md5 = "b3586f278e236499d7e0816bad1a8e46"
@@ -91,6 +99,7 @@ readback_sha256 = "1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d5419
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 6
+target_ecu = "23710-JK00D"
 component = "inactive lookup payload, Map 1 copies, and pointer tables"
 sha256 = "990c7aff5dc62f33682900ff93b30b4888bd7171147689b1d43c58c13452d59f"
 md5 = "19117705b5efa7ed53900af0c989c2c9"
@@ -99,6 +108,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 7
+target_ecu = "23710-JK00D"
 component = "DFCO Entry lookup hook"
 sha256 = "95049dca436d74375954bf2e8586525573f9c7b864636144e9b5195130a8a6ba"
 md5 = "619311f5941d5a570531c088a53bdcb8"
@@ -107,6 +117,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 8
+target_ecu = "23710-JK00D"
 component = "DFCO Full Restore lookup hook"
 sha256 = "50d6b59b1a236bf141eba2c5f74687fd440962510aa13e49a7414e42c1324e7b"
 md5 = "13fadaf3fc0fa5e8678ae044b03e450e"
@@ -115,6 +126,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 9
+target_ecu = "23710-JK00D"
 component = "ignition lookup hook at 0x496C0"
 sha256 = "b2941317c94f130833e350065980e96d44e1b60eef7c9e2ca6ce88b4b002bb89"
 md5 = "168dfe3a155782a9960f72b9febc0e36"
@@ -123,6 +135,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 10
+target_ecu = "23710-JK00D"
 component = "ignition lookup hook at 0x4E474"
 sha256 = "bc93046ef2d22cbe5f109c32745774e707e5246eb2e6b80b7cea44b1d5bd202a"
 md5 = "94e77e558c21d8f42c33994bdd12034a"
@@ -131,6 +144,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 11
+target_ecu = "23710-JK00D"
 component = "ignition lookup hook at 0x4E58C"
 sha256 = "7dae4b294a7833753ef3c3d4b64a61ba417a66bb894209bcabaf315b48f9b0ca"
 md5 = "bc26a7aa8ad807d8b3ba8eeb5192c7bb"
@@ -139,6 +153,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 12
+target_ecu = "23710-JK00D"
 component = "fuel compensation lookup hook at 0x3C388"
 sha256 = "dc7dadadcc679eca88f07093967080051dc00994bbb7085b231596b040df475e"
 md5 = "1ab39d163f242b18ebcbe6168eb37e1a"
@@ -147,6 +162,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 13
+target_ecu = "23710-JK00D"
 component = "exhaust CVTC target lookup hook at 0xC0020"
 sha256 = "80aa12d99145d1e51861c885f78485075e135b1cd218654d4abb7a5871c2837e"
 md5 = "da8483cbe57a3672f3444b98b19fdbbc"
@@ -155,6 +171,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "lookup_revision_2"
 sequence = 14
+target_ecu = "23710-JK00D"
 component = "startup fuel compensation lookup hook at 0x2CF1C"
 sha256 = "f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892"
 md5 = "f1865bc339166c90151d7a32f7f4e136"
@@ -164,6 +181,7 @@ readback_sha256 = "f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda
 [[map_switching.stages]]
 chain = "full_runtime"
 sequence = 15
+target_ecu = "23710-JK00D"
 component = "inactive full-DFCO payload and Map 1 storage"
 sha256 = "5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2"
 md5 = "c26b83085b76befe0ace9aaa7f99e0b6"
@@ -172,6 +190,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "full_runtime"
 sequence = 16
+target_ecu = "23710-JK00D"
 component = "DFCO Hold and Entry hook"
 sha256 = "84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58"
 md5 = "aeea9d950f02ed177298fa03ca3fb7b1"
@@ -180,6 +199,7 @@ status = "pass"
 [[map_switching.stages]]
 chain = "full_runtime"
 sequence = 17
+target_ecu = "23710-JK00D"
 component = "DFCO Full and Intermediate Restore hook"
 sha256 = "e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d"
 md5 = "a3bbd6562236859726824bce5311746f"
@@ -211,6 +231,7 @@ status = "software_only"
 use = "rolling_launch_base"
 
 [map_switching.feedback_v1_11]
+target_ecu = "23710-JK00D"
 observed_on = "2026-08-17"
 firmware_label = "1.11"
 image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
@@ -232,6 +253,7 @@ code_result = "the v1.9 full-field isolation fix remains present; map feedback a
 stock_state_semantics = "FUN_000CEABC assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6 to CRUISE with a blinking SET lamp"
 
 [map_switching.calibration_effects_v1_11]
+target_ecu = "23710-JK00D"
 observed_on = "2026-08-17"
 firmware_label = "1.11"
 image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
@@ -262,6 +284,7 @@ result = "Map 2 and Map 3 commits are observable without a partial-state symptom
 evidence_boundary = "the initial segment has the stock-family calibration fingerprint but Map 1, Map 4, and Map 5 are byte-identical for all switched families; the trace does not exercise Map 3 DFCO above 5000 RPM, the per-slot main fuel limiter, a physical spark reference, or electrical injector outputs"
 
 [map_switching.feedback_vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_registry = "can_telemetry.schema2_profile5_captures"
@@ -306,6 +329,7 @@ evidence_boundary = "frame counts come from the TRC captures, while the MLG capt
 "6-map-1-3-4-limiter.mlg" = [1, 3, 4, 3]
 
 [map_switching.ascd_main_vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_registry = "can_telemetry.schema2_profile5_captures"
@@ -327,6 +351,7 @@ result = "the switch code in 0x239 byte 3 is 0x01 only during the four MAIN pres
 evidence_boundary = "the capture is stationary at idle, and ASCD engagement, the CRUISE lamp, and the cluster indication are not recorded; the stable code 0xFFFF2A85 and the MAIN switch bit are not in the capture and follow from the sent code through the code basis; the MAIN attribution of code 0x01 rests on this capture of switching CRUISE MAIN on and off, in which no other switch code appears"
 
 [map_switching.feedback_vehicle_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_registry = "can_telemetry.schema2_profile5_captures_2026_09_22"
@@ -372,6 +397,7 @@ evidence_boundary = "frame counts and times come from the TRC, while the lamp st
 
 [[map_switching.incidents]]
 id = "lookup_revision_1_stage_7_delay_slot"
+target_ecu = "23710-JK00D"
 source_stage = 5
 inactive_sha256 = "4973ad83818d800325401bf49377a4074002b0f056ba1b9274ce25f9cfaf9a2d"
 activated_sha256 = "7e766b957454f7b22524528fd9e922060cac587d2f46a4fdb5f96e1db758e5ea"
@@ -382,6 +408,7 @@ cause = "PC-relative MOV.L in a BRA delay slot used the branch destination PC ba
 
 [[map_switching.incidents]]
 id = "superseded_release_code"
+target_ecu = "23710-JK00D"
 stage_18_sha256 = "4732168ad4aa0f8b8bf11e0b25b1ae506eed50713c789d3fb4297fafa9c37ac0"
 stage_19_sha256 = "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
 status = "functional_fail"
@@ -395,12 +422,14 @@ software_status = "pass"
 hardware_status = "untested"
 
 [rolling_launch.historical_map1_rpm_hold]
+target_ecu = "23710-JK00D"
 source_sha256 = "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
 output_sha256 = "a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081"
 hardware_status = "functional_fail"
 cause = "runtime cannot rearm after CANCEL release"
 
 [rolling_launch.vehicle_overlays]
+target_ecu = "23710-JK00D"
 overlay_20_sha256 = "0b07f7b7dc49eaaf27bc26c859befcdf13d817b924cf0bc41748ccb47cfcc796"
 overlay_20_status = "functional_fail"
 overlay_21_sha256 = "1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9"
@@ -409,6 +438,7 @@ overlay_22_sha256 = "21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592a
 overlay_22_status = "functional_fail"
 
 [rolling_launch.maps_2_3_v1_11]
+target_ecu = "23710-JK00D"
 observed_on = "2026-08-17"
 firmware_label = "1.11"
 image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
@@ -432,6 +462,7 @@ result = "all five moving CANCEL trials enter ACTIVE, reach the bounded retard t
 evidence_boundary = "engine-level RPM hold and the effective APC software command are causal hardware results; final_timing_raw is the upstream stock coordinate before the Rolling Launch late override, and the capture does not measure spark angle at the crankshaft or electrical injector-open duration"
 
 [rolling_launch.map_3_vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 observed_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_name = "0-mixed-map-3.mlg"
@@ -531,6 +562,7 @@ identity_localization = "pass"
 physical_outputs = "outside_measurement"
 
 [rolling_launch.map_2_vehicle_2026_09_22]
+target_ecu = "23710-JK00D"
 observed_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_name = "11-map-2-rl.trc"
@@ -656,6 +688,7 @@ identity_localization = "pass"
 physical_outputs = "outside_measurement"
 
 [can_telemetry.current_wide54_divisor1]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-08-17"
 firmware_label = "1.11"
 source_sha256 = "1a78e4ae2bd22c59aba90f7eb85140b91a1f43fa87966a09fa56a199306f8f8e"
@@ -933,6 +966,7 @@ intake_bank_difference_at_least_5_degca_percent = [2.437, 1.762, 0.519]
 result = "exhaust actual tracks target within a degree on average while the two exhaust banks separate far more than the two intake banks; the separation is not explained by the target, which is common to both banks"
 
 [can_telemetry.cvtc_cold_start_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 tool = "tools/logs/cvtc_target_audit.py"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
@@ -1024,6 +1058,7 @@ evidence_boundary = "the capture exercises cold surface 0xB53A only through the 
 
 
 [can_telemetry.cvtc_cold_start_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 tool = "tools/logs/cvtc_target_audit.py"
 state_tool = "tools/logs/cvtc_intake_state_audit.py"
@@ -1211,6 +1246,7 @@ injection_timing_state_raw_range = [[0, 0], [0, 0], [0, 0]]
 result = "stock RPM, the duty monitor and command pairs, steady-target tracking of both cam families, the MAF transfer chain, Calculated Load, the BFS producer, pulse linearity, the code chain from the schedule to both bank pulse words, and the final-timing to APC identity hold in raw units on the running engine; the chain replay reproduces the pulse words at a median ratio of 1.000 with the code-defined common gain and opening time, which confirms the code-closed raw/2048 ms Base Fuel Schedule scale against the raw/100 ms pulse scale; the word behind DIDs 0x1131, 0x1132, 0x1133, and 0x113D streams constant zero; both cam conversions of 0.5 degCA per count are fixed by code, the g/s airflow, degC temperature, degBTDC timing, km/h speed, and percent throttle scales are the ECU's J1979 Mode 01 declarations, and both millisecond fuel scales are fixed by code; the stock Map 1 exhaust actual bytes overshoot the low-speed retard target by 9 to 45 counts"
 
 [can_telemetry.schema2_profile5_drive_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 software_status = "pass"
@@ -1336,6 +1372,7 @@ nonzero_record_count = 112598
 result = "both pairs share context tag 1 and are equal in every record that carries them, which matches the scheduler block-copy latch"
 
 [can_telemetry.schema2_profile5_drive_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 software_status = "pass"
@@ -1470,6 +1507,7 @@ span_seconds = 52.480
 peak_stock_can_rpm = 7612
 
 [can_telemetry.schema2_transport_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 session = "can_telemetry.schema2_profile5_drive_2026_09_22"
@@ -1597,6 +1635,7 @@ result = "the coordinate of 205463 of 234650 snapshots lies between the stock fr
 evidence_boundary = "the excursion bound is an observation of this session; engine-speed changes faster than those of its captures can exceed it"
 
 [can_telemetry.ltft_learning_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 tool = "tools/logs/ltft_publication_audit.py"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
@@ -1699,6 +1738,7 @@ warm_cold_start_learning = "not_observed"
 learning_permit = "unresolved"
 
 [engine_torque_scale.vehicle_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 session = "can_telemetry.schema2_profile5_drive_2026_09_22"
@@ -1782,17 +1822,15 @@ result = "in 982 converter-coupled full-pedal points of 12 segments the flywheel
 evidence_boundary = "road grade, run direction, wind, vehicle mass with driver and fuel, driveline efficiency, rotating inertia, tire rolling radius, and the CAN speed scale are not measured; the neutral coasts give road load and grade together; the converter torque ratio is taken as 1 at speed ratio 0.90 and above; the gear ratios come from the 2007 G35 service manual; the 0x180 remainder and the word comparison use the same TRC captures"
 
 [engine_torque_scale.vehicle_2026_09_22.term_status]
-runbook_block = "partial"
 scale_0_0625 = "excluded"
 scale_0_08 = "compatible"
 scale_0_1 = "compatible"
 scale_0_125 = "not_supported"
 gross_state_as_flywheel_torque = "not_supported"
 net_word_replay = "pass"
-q_def_14 = "partial"
-q_tcm_01_scale = "partial"
 
 [transmission_interface.vehicle_2026_09_22]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-22"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 session = "can_telemetry.schema2_profile5_drive_2026_09_22"
@@ -1948,7 +1986,6 @@ result = "the 0x174 byte 4 counter advances by one modulo 16 in all 34,187 conse
 evidence_boundary = "the captures hold no kickdown and no downshift in D with the pedal pressed; the pedal state comes from APP1 alone; the bound terms 0xFFFF4162, 0xFFFF3480, and 0xFFFF3484, the floor gate inputs 0xFFFF245D.bit2 and 0xFFFF1210, and target speed 0xFFFF32EC are not streamed, so a floor or a target-speed bound is visible only where the 0x180 request exceeds it; the image reads the throttle-limit scalar of the target speed from map-switching word 0xFFFF5D28 instead of ROM16[0x942C]; the path from 0xFFFF3373 to the timing command is not traced, so the actual-word divergence is tied to the bursts by time; the TCM-side meaning of the status value and of words A and B rests on the ECU consumers alone"
 
 [transmission_interface.vehicle_2026_09_22.term_status]
-runbook_block = "partial"
 status_counter = "pass"
 status_value_3 = "pass"
 word_b_bound = "pass"
@@ -1957,10 +1994,9 @@ reduction_burst = "partial"
 gear_signal = "pass"
 kickdown = "not_run"
 blip = "not_observed"
-q_tcm_01 = "partial"
-q_rl_05 = "partial"
 
 [throttle_rev_limiter.vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_name = "6-map-1-3-4-limiter.mlg"
@@ -2006,6 +2042,7 @@ result = "the limiter closes both throttle plates at the x*0.78125 RPM conversio
 evidence_boundary = "plate response time, channel-to-bank identity, and ECM terminals are outside the measurement"
 
 [main_fuel_cut.vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_name = "6-map-1-3-4-limiter.mlg"
@@ -2035,6 +2072,7 @@ result = "the full 0x3F mask activates when the RPM word reaches activation word
 evidence_boundary = "column 1, the stock column-0 release word 596, a nonzero ROM8[0x8C69] activation delay, and injector-terminal fuel shutoff are outside the measurement"
 
 [knock_margin.vehicle_2026_09_21]
+target_ecu = "23710-JK00D"
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
 capture_registry = "can_telemetry.schema2_profile5_captures"
@@ -2092,6 +2130,7 @@ remaining_states = []
 
 [[passive_can.captures]]
 capture_name = "startup.trc"
+target_ecu = "23710-JK00D"
 capture_sha256 = "1d9cb1d792aaae9c44a45809709c6f6fb48729fa6faa09899b46310d4887c6ad"
 firmware_label = "1.8"
 firmware_sha256 = "5ea97b2fe18f58a16670ec597af3bc3f5e7fc22980aa9bc8ee411234db45818b"
@@ -2106,6 +2145,7 @@ error_record_count = 0
 
 [[passive_can.captures]]
 capture_name = "idle-ascd-prnd.trc"
+target_ecu = "23710-JK00D"
 capture_sha256 = "7ad7fde9f2b8c4eafbeb658babcb199135a583d4dcbdc391e9023f41bd87bbb3"
 firmware_label = "1.8"
 firmware_sha256 = "5ea97b2fe18f58a16670ec597af3bc3f5e7fc22980aa9bc8ee411234db45818b"
@@ -2127,6 +2167,7 @@ prnd_transient_code_is_stable_position = false
 
 [[passive_can.captures]]
 capture_name = "ascd-rl.trc"
+target_ecu = "23710-JK00D"
 capture_sha256 = "aa64e9d92a530e63a85f4d07a4afadd9b338ac7304e6d3c3e3a76fb2aaee2c15"
 firmware_label = "1.10"
 firmware_sha256 = "1a78e4ae2bd22c59aba90f7eb85140b91a1f43fa87966a09fa56a199306f8f8e"
