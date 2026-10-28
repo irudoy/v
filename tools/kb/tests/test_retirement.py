@@ -69,6 +69,32 @@ def test_all_generated_former_and_semantic_names_remain_reserved():
     assert 'small-bird/fn/home-00000100' in node['references']
 
 
+@pytest.mark.parametrize('explicit', [None, 'feature', 'target', 'other-entity'])
+def test_field_retirement_drops_only_the_automatic_telemetry_requirement(tmp_path, explicit):
+    model, _, _ = source_model(tmp_path)
+    path = Path('kb/field/channel.toml')
+    document = {'origin': 'ecu_ram', 'width': 1, 'source': 'source/ram'}
+    store.write(tmp_path, {path: store.render('field', document)})
+    field = Entity('field', 'channel', props=deepcopy(document), sources={path.as_posix()})
+    model.entities = {('field', 'channel'): field, ('feature', 'can_telemetry'):
+        Entity('feature', 'can_telemetry', refs={'requires': [('field', 'channel')]})}
+    if explicit == 'feature':
+        model.entities['feature', 'can_telemetry'].props['requires'] = ['channel/field']
+    elif explicit == 'target':
+        model.targets['can_telemetry', 'home'] = SimpleNamespace(props={'requires': ['channel/field']})
+    elif explicit == 'other-entity':
+        model.entities['feature', 'consumer'] = Entity('feature', 'consumer',
+            refs={'requires': [('field', 'channel')]})
+    change = write.Change(model, None, tmp_path)
+    if explicit:
+        with pytest.raises(KbError, match='retirement has consumers'):
+            change.run({'cmd': 'retire', 'ref': 'channel/field'})
+        assert tomllib.loads((tmp_path / path).read_text()) == document
+    else:
+        change.run({'cmd': 'retire', 'ref': 'channel/field'})
+        assert tomllib.loads(change.texts()[path]) == {**document, 'retired': True}
+
+
 @pytest.mark.parametrize('mutation', ['remove', 'reactivate', 'rewrite'])
 def test_inactive_owner_cannot_leave_or_change_through_a_generic_batch(mutation):
     record = ('block', 'unused', {'retired': True, 'title': 'Preserved'}, 'kb/block/unused.toml')

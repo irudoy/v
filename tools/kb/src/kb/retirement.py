@@ -80,7 +80,13 @@ def consumers(model, subject):
         if touches(values, key, symbols):
             found.add(f'{meaning.key}: incoming owned reference')
     for entity in model.entities.values():
-        if entity is not subject and touches([entity.refs, entity.steps, entity.props], key, symbols):
+        references = entity.refs
+        if subject.kind == 'field' and entity.kind == 'feature' and entity.slug == 'can_telemetry':
+            # The compiler requires every active field automatically. Retirement
+            # removes that derived edge; explicit requirements remain in props
+            # and target tables and still prevent retirement.
+            references = {name: value for name, value in references.items() if name != 'requires'}
+        if entity is not subject and touches([references, entity.steps, entity.props], key, symbols):
             found.add(f'{entity.key}: incoming designed reference')
     for (feature, layout), target in model.targets.items():
         if f'{feature}/feature' != key and touches(target.props, key, symbols):
