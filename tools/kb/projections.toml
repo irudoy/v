@@ -660,3 +660,21 @@ inputs = [
 ]
 consumers = ["patches/runtime_bindings.py", "patches/runtime_targets.py"]
 read = "open"
+
+[[projection]]
+path = "tools/can_dashboard/requirements-{windows,macos,macos-build}.lock"
+generator = "uv run python tools/can_dashboard/package_locks.py --write"
+check = ["uv","run","python","tools/version_index.py","--check"]
+inputs = [
+    "tools/can_dashboard/requirements-windows.txt",
+    "tools/can_dashboard/requirements-macos.txt",
+    "tools/can_dashboard/requirements-macos-build.txt",
+    "pyproject.toml",
+    "tools/can_dashboard/package_locks.py",
+]
+consumers = [
+    "tools/can_dashboard/package_windows.py",
+    "tools/can_dashboard/package_macos.py",
+    "tools/version_index.py",
+]
+read = "open"
