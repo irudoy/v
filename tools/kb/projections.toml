@@ -468,6 +468,18 @@ consumers = [
 read = "open"
 
 [[projection]]
+path = "patches/can-telemetry.md#telemetry-slots"
+generator = "uv run python patches/can_telemetry_profile.py"
+check = ["uv","run","python","patches/can_telemetry_profile.py","--check"]
+inputs = [
+    "patches/can-telemetry-profile.toml",
+    "patches/jk08a-runtime-reservations.toml",
+    "patches/can_telemetry_profile.py",
+]
+consumers = ["GitHub"]
+read = "open"
+
+[[projection]]
 path = "patches/can-telemetry-payloads.toml"
 generator = "tools/sh-elf-run/generate-targets.sh --telemetry"
 check = ["tools/sh-elf-run/generate-targets.sh","--telemetry","--check"]

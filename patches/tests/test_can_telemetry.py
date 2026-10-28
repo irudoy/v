@@ -2,6 +2,8 @@ from dataclasses import replace
 import copy
 import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from patches import can_telemetry
@@ -284,6 +286,66 @@ class CanTelemetryContractTest(unittest.TestCase):
         self.assertNotEqual(
             can_telemetry_schema.profile_crc16(profile, version + 1), expected
         )
+
+    def test_the_specification_slot_tables_follow_the_manifest(self):
+        text = can_telemetry_profile.DEFAULT_SPECIFICATION.read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            can_telemetry_profile.specification_text(self.manifest, text), text
+        )
+        rows = can_telemetry_profile.render_specification(
+            self.manifest
+        ).splitlines()
+        fields = list(self.manifest.fields)
+        for context in self.manifest.contexts:
+            fields.extend(context.fields)
+        for field in fields:
+            with self.subTest(field=field.name):
+                (row,) = [row for row in rows if f"| `{field.name}` |" in row]
+                self.assertIn(f"`0x{field.source:08X}` |", row)
+
+    def test_a_stale_slot_row_fails_the_specification_check(self):
+        text = can_telemetry_profile.DEFAULT_SPECIFICATION.read_text(
+            encoding="utf-8"
+        )
+        begin = f"<!-- {can_telemetry_profile.SPECIFICATION_SECTION}:begin -->"
+        end = f"<!-- {can_telemetry_profile.SPECIFICATION_SECTION}:end -->"
+        head, rest = text.split(begin)
+        section, tail = rest.split(end)
+        field = self.manifest.fields[1]
+        source = f"`0x{field.source:08X}`"
+        self.assertEqual(section.count(source), 1)
+        removed = (
+            "| 4 | 10 | `knock_margin_channels_4_to_6` | 2..3 | "
+            "`removed_raw` | s16 | ECU RAM `0xFFFF1000` | raw count |\n"
+        )
+        drifts = {
+            "edited source": section.replace(
+                source, f"`0x{field.source + 2:08X}`"
+            ),
+            "removed field": section + removed,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / can_telemetry_profile.DEFAULT_SPECIFICATION.name
+            for name, drifted in drifts.items():
+                with self.subTest(drift=name):
+                    path.write_text(head + begin + drifted + end + tail,
+                                    encoding="utf-8")
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "regenerate them with "
+                        + can_telemetry_profile.GENERATE_COMMAND,
+                    ):
+                        can_telemetry_profile.generate(
+                            specification=path, check=True
+                        )
+                    can_telemetry_profile.generate(specification=path)
+                    self.assertEqual(path.read_text(encoding="utf-8"), text)
+            path.write_text(head + drifts["edited source"] + tail,
+                            encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "no markers"):
+                can_telemetry_profile.generate(specification=path, check=True)
 
     def test_slot_assignment_is_pinned_to_the_profile_id(self):
         for profile in self.manifest.profiles:

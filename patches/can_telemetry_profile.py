@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Validate the exact producer binding and generate neutral wire artifacts."""
+"""Validate the exact producer binding and generate neutral wire artifacts
+and the slot tables of the specification."""
 
 from __future__ import annotations
 
@@ -23,11 +24,16 @@ DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
 DEFAULT_IDENTITY = Path(__file__).with_name("can-telemetry-identity.h")
+DEFAULT_SPECIFICATION = Path(__file__).with_name("can-telemetry.md")
+# The marked section of the specification that holds the slot tables.
+SPECIFICATION_SECTION = "telemetry-slots"
 GENERATE_COMMAND = "uv run python patches/can_telemetry_profile.py"
 RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
 PROFILE_NAMES = ("tuning",)
 # Runtime state fields read the active RAM of these runtimes.
 RUNTIME_STATE_OWNERS = ("map_switching", "rolling_launch")
+# Sources outside the active runtime RAM, by producer storage kind.
+SOURCE_LABELS = {"ecu_ram": "ECU RAM", "rom_configuration": "ROM configuration"}
 
 
 @dataclass(frozen=True)
@@ -144,14 +150,21 @@ def _require_keys(table, required, optional, context):
         )
 
 
-def _runtime_state_spans(path=RESERVATIONS):
-    """Return the active RAM spans of the runtimes a state field may read."""
+def _active_ram(path=RESERVATIONS):
+    """Return (owner, start, end) of every active runtime RAM allocation."""
     with Path(path).open("rb") as source:
         ledger = tomllib.load(source)
+    return tuple(
+        (row["owner"], row["start"], row["end"]) for row in ledger["active_ram"]
+    )
+
+
+def _runtime_state_spans(path=RESERVATIONS):
+    """Return the active RAM spans of the runtimes a state field may read."""
     spans = tuple(
-        (row["start"], row["end"])
-        for row in ledger["active_ram"]
-        if row["owner"] in RUNTIME_STATE_OWNERS
+        (start, end)
+        for owner, start, end in _active_ram(path)
+        if owner in RUNTIME_STATE_OWNERS
     )
     if len(spans) != len(RUNTIME_STATE_OWNERS):
         raise ValueError(f"{Path(path).name}: runtime state spans differ")
@@ -574,20 +587,110 @@ def render_identity(manifest):
     return "\n".join(lines) + "\n"
 
 
+def _source_label(field, allocations):
+    """The storage that the producer copies a field from: the ECU RAM, the
+    active RAM allocation of its runtime, or the ROM configuration."""
+    if field.kind in SOURCE_LABELS:
+        where = SOURCE_LABELS[field.kind]
+    else:
+        owners = [
+            owner
+            for owner, start, end in allocations
+            if start <= field.source and field.source + field.width <= end
+        ]
+        if len(owners) != 1:
+            raise ValueError(
+                f"{field.name}: source lies in no single active RAM allocation"
+            )
+        where = f"`{owners[0]}` RAM"
+    return f"{where} `0x{field.source:08X}`"
+
+
+def _slot_cells(field, first_byte, allocations):
+    last_byte = first_byte + field.width - 1
+    return (
+        str(first_byte) if last_byte == first_byte else f"{first_byte}..{last_byte}",
+        f"`{field.name}`",
+        f"{'s' if field.signed else 'u'}{8 * field.width}",
+        _source_label(field, allocations),
+        field.scale.replace("|", "\\|"),
+    )
+
+
+def _table_row(cells):
+    return "| " + " | ".join(cells) + " |"
+
+
+def render_specification(manifest, reservations=RESERVATIONS):
+    """Render the slot tables of the specification: the byte placement,
+    type, exact JK08A source, and scale of every fixed and context field."""
+    allocations = _active_ram(reservations)
+    lines = [
+        "",
+        f"Fixed pages 0 through {manifest.fixed_page_count - 1}, bytes 1..7:",
+        "",
+        "| Page | Bytes | Field | Type | Source | Scale |",
+        "| ---: | ---: | --- | --- | --- | --- |",
+    ]
+    for field in sorted(manifest.fields, key=lambda item: (item.page, item.offset)):
+        lines.append(_table_row(
+            (str(field.page), *_slot_cells(field, field.offset, allocations))
+        ))
+    pages = " and ".join(str(page) for page in manifest.context_pages)
+    lines.extend((
+        "",
+        f"Context pages {pages}, bytes 2..7 after the tag in byte 1:",
+        "",
+        "| Tag | Page | Context | Bytes | Field | Type | Source | Scale |",
+        "| ---: | ---: | --- | ---: | --- | --- | --- | --- |",
+    ))
+    for context in sorted(manifest.contexts, key=lambda item: (item.tag, item.page)):
+        first_byte = 2
+        for field in context.fields:
+            lines.append(_table_row((
+                str(context.tag),
+                str(context.page),
+                f"`{context.name}`",
+                *_slot_cells(field, first_byte, allocations),
+            )))
+            first_byte += field.width
+    lines.append("")
+    return "\n".join(lines)
+
+
+def specification_text(manifest, text, reservations=RESERVATIONS):
+    """Return `text` with its marked slot section rendered from the manifest."""
+    begin = f"<!-- {SPECIFICATION_SECTION}:begin -->"
+    end = f"<!-- {SPECIFICATION_SECTION}:end -->"
+    start, stop = text.find(begin), text.find(end)
+    if start < 0 or stop < start:
+        raise ValueError(f"the specification has no markers {begin} {end}")
+    start += len(begin)
+    return text[:start] + render_specification(manifest, reservations) + text[stop:]
+
+
 def generate(
     source=DEFAULT_SOURCE,
     tables=DEFAULT_TABLES,
     schema=DEFAULT_SCHEMA,
     identity=DEFAULT_IDENTITY,
+    specification=None,
     *,
     check=False,
 ):
+    """Write or check the wire artifacts and, when `specification` names
+    it, the slot section of the specification. The assembly gate checks the
+    wire artifacts alone; the command line includes the specification."""
     manifest = load_manifest(source)
     outputs = {
         Path(tables): render_tables(manifest),
         Path(schema): render_schema(manifest),
         Path(identity): render_identity(manifest),
     }
+    if specification is not None:
+        outputs[Path(specification)] = specification_text(
+            manifest, Path(specification).read_text(encoding="utf-8")
+        )
     stale = []
     for path, content in outputs.items():
         if check:
@@ -614,10 +717,18 @@ def main(argv=None):
     parser.add_argument("--tables", type=Path, default=DEFAULT_TABLES)
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
     parser.add_argument("--identity", type=Path, default=DEFAULT_IDENTITY)
+    parser.add_argument(
+        "--specification", type=Path, default=DEFAULT_SPECIFICATION
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     manifest = generate(
-        args.source, args.tables, args.schema, args.identity, check=args.check
+        args.source,
+        args.tables,
+        args.schema,
+        args.identity,
+        args.specification,
+        check=args.check,
     )
     print(
         "status=PASS"

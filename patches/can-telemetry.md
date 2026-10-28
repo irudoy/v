@@ -343,21 +343,111 @@ wrap keeps the run because its forward distance stays small. Snapshots of
 different runs are never adjacent: the distance across a restart is a gap of
 unknown length, not a snapshot count.
 
-### Fixed pages
+### Page layout
 
 Pages 0 through 8 are captured at every published snapshot.
+Pages 9 and 10 carry the same context tag in byte 1. Tags rotate from 0 through
+4. Both pages are transmitted every snapshot, while each tagged field set is
+refreshed once per five published snapshots. At divisor 1, the context-field
+rate is `19.53125 Hz`.
 
-| Page | Fields and exact sources |
-| ---: | --- |
-| 0 | `tick16`; `request_flow_raw` `FFFF1980`; `final_timing_raw` `FFFF11D4`; `apc_command_raw` `FFFF2022`; `fuel_inhibit_mask` `FFFF22E0` |
-| 1 | `maf_b1_raw` `FFFF101C`; `maf_b2_raw` `FFFF101E`; `maf_total_raw` `FFFF3852`; `normalized_load_raw` `FFFF102C` |
-| 2 | `bfs_raw` `FFFF1026`; `rolling_launch_phase` `FFFF5D40`; `injection_0_raw` `FFFF23C8`; `injection_1_raw` `FFFF23CA` |
-| 3 | `injection_2_raw` `FFFF23CC`; `injection_3_raw` `FFFF23CE`; `injection_4_raw` `FFFF23D0`; `telemetry_status` |
-| 4 | `injection_5_raw` `FFFF23D2`; `knock_timing_state_raw` `FFFF121A`; `knock_surface_state` `FFFF2466`; latched knock count and channel mask |
-| 5 | `app1_raw` `FFFF269E`; `app2_raw` `FFFF26A2`; `tps_b1_raw` `FFFF2756`; `absolute_throttle_raw` `FFFF1075` |
-| 6 | `tps_b2_raw` `FFFF285C`; intake actual B1/B2 `FFFF2442/2443`; intake target `FFFF2326`; exhaust target `FFFF2327`; calculated load `FFFF413E` |
-| 7 | bounded throttle request `FFFF19C6`; engine torque state `FFFF18CC`; end-of-injection angle word `FFFF192E`; exhaust actual B1 `FFFF2324` |
-| 8 | shared throttle target `FFFF19B2`; channel targets `FFFF28BC/28BE`; exhaust actual B2 `FFFF2325` |
+`can_telemetry_profile.py` renders the tables below from
+`can-telemetry-profile.toml`: the bytes, type, exact JK08A source, and scale
+of every field. The type states signedness and width, `u` for unsigned and
+`s` for signed. A source in active runtime RAM names its owner in
+`jk08a-runtime-reservations.toml`.
+
+<!-- telemetry-slots:begin -->
+Fixed pages 0 through 8, bytes 1..7:
+
+| Page | Bytes | Field | Type | Source | Scale |
+| ---: | ---: | --- | --- | --- | --- |
+| 0 | 1..2 | `tick16` | u16 | `can_telemetry` RAM `0xFFFF5E08` | base scheduler ticks |
+| 0 | 3..4 | `request_flow_raw` | u16 | ECU RAM `0xFFFF1980` | raw count |
+| 0 | 5 | `final_timing_raw` | s8 | ECU RAM `0xFFFF11D4` | raw degBTDC |
+| 0 | 6 | `apc_command_raw` | u8 | ECU RAM `0xFFFF2022` | 110 - raw degBTDC |
+| 0 | 7 | `fuel_inhibit_mask` | u8 | ECU RAM `0xFFFF22E0` | bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, 5 CYLINDER_6 |
+| 1 | 1..2 | `maf_b1_raw` | u16 | ECU RAM `0xFFFF101C` | raw / 200 V |
+| 1 | 3..4 | `maf_b2_raw` | u16 | ECU RAM `0xFFFF101E` | raw / 200 V |
+| 1 | 5..6 | `maf_total_raw` | u16 | ECU RAM `0xFFFF3852` | raw / 100 g/s |
+| 1 | 7 | `normalized_load_raw` | u8 | ECU RAM `0xFFFF102C` | raw * 100 / 128 percent |
+| 2 | 1..2 | `bfs_raw` | u16 | ECU RAM `0xFFFF1026` | raw / 2048 ms |
+| 2 | 3 | `rolling_launch_phase` | u8 | `rolling_launch` RAM `0xFFFF5D40` | enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN |
+| 2 | 4..5 | `injection_0_raw` | u16 | ECU RAM `0xFFFF23C8` | raw / 100 ms |
+| 2 | 6..7 | `injection_1_raw` | u16 | ECU RAM `0xFFFF23CA` | raw / 100 ms |
+| 3 | 1..2 | `injection_2_raw` | u16 | ECU RAM `0xFFFF23CC` | raw / 100 ms |
+| 3 | 3..4 | `injection_3_raw` | u16 | ECU RAM `0xFFFF23CE` | raw / 100 ms |
+| 3 | 5..6 | `injection_4_raw` | u16 | ECU RAM `0xFFFF23D0` | raw / 100 ms |
+| 3 | 7 | `telemetry_status` | u8 | `can_telemetry` RAM `0xFFFF5E07` | bit mask |
+| 4 | 1..2 | `injection_5_raw` | u16 | ECU RAM `0xFFFF23D2` | raw / 100 ms |
+| 4 | 3..4 | `knock_timing_state_raw` | s16 | ECU RAM `0xFFFF121A` | raw / 256 deg |
+| 4 | 5 | `knock_surface_state` | u8 | ECU RAM `0xFFFF2466` | bits: 6 HIGH_DETONATION |
+| 4 | 6 | `knock_count_latched` | u8 | `can_telemetry` RAM `0xFFFF5E0C` | saturating event count |
+| 4 | 7 | `knock_channel_mask_latched` | u8 | `can_telemetry` RAM `0xFFFF5E0D` | six-position bit mask; bit c - 1 is knock channel c |
+| 5 | 1..2 | `app1_raw` | u16 | ECU RAM `0xFFFF269E` | raw / 200 V |
+| 5 | 3..4 | `app2_raw` | u16 | ECU RAM `0xFFFF26A2` | raw / 200 V |
+| 5 | 5..6 | `tps_b1_raw` | u16 | ECU RAM `0xFFFF2756` | raw / 200 V |
+| 5 | 7 | `absolute_throttle_raw` | u8 | ECU RAM `0xFFFF1075` | raw * 100 / 255 percent |
+| 6 | 1..2 | `tps_b2_raw` | u16 | ECU RAM `0xFFFF285C` | raw / 200 V |
+| 6 | 3 | `intake_cvtc_actual_b1_raw` | u8 | ECU RAM `0xFFFF2442` | raw * 0.5 - 64 degCA |
+| 6 | 4 | `intake_cvtc_actual_b2_raw` | u8 | ECU RAM `0xFFFF2443` | raw * 0.5 - 64 degCA |
+| 6 | 5 | `intake_cvtc_target_raw` | u8 | ECU RAM `0xFFFF2326` | raw * 0.5 - 64 degCA |
+| 6 | 6 | `exhaust_cvtc_target_raw` | u8 | ECU RAM `0xFFFF2327` | raw * 0.5 - 64 degCA |
+| 6 | 7 | `calculated_load_raw` | u8 | ECU RAM `0xFFFF413E` | raw * 100 / 255 percent |
+| 7 | 1..2 | `throttle_request_bounded_raw` | s16 | ECU RAM `0xFFFF19C6` | raw count |
+| 7 | 3..4 | `engine_torque_state_raw` | s16 | ECU RAM `0xFFFF18CC` | raw count |
+| 7 | 5..6 | `injection_end_angle_raw` | u16 | ECU RAM `0xFFFF192E` | raw * 2 - 590 degCA |
+| 7 | 7 | `exhaust_cvtc_actual_b1_raw` | u8 | ECU RAM `0xFFFF2324` | raw * 0.5 - 64 degCA |
+| 8 | 1..2 | `throttle_target_shared_raw` | u16 | ECU RAM `0xFFFF19B2` | raw count |
+| 8 | 3..4 | `throttle_target_channel_0_raw` | u16 | ECU RAM `0xFFFF28BC` | raw * 34285 / 1114112 percent |
+| 8 | 5..6 | `throttle_target_channel_1_raw` | u16 | ECU RAM `0xFFFF28BE` | raw * 34285 / 1114112 percent |
+| 8 | 7 | `exhaust_cvtc_actual_b2_raw` | u8 | ECU RAM `0xFFFF2325` | raw * 0.5 - 64 degCA |
+
+Context pages 9 and 10, bytes 2..7 after the tag in byte 1:
+
+| Tag | Page | Context | Bytes | Field | Type | Source | Scale |
+| ---: | ---: | --- | ---: | --- | --- | --- | --- |
+| 0 | 9 | `temperatures_af` | 2 | `coolant_raw` | u8 | ECU RAM `0xFFFF1079` | raw - 50 degC |
+| 0 | 9 | `temperatures_af` | 3 | `iat_raw` | u8 | ECU RAM `0xFFFF2837` | raw - 50 degC |
+| 0 | 9 | `temperatures_af` | 4 | `fuel_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF1074` | raw - 50 degC |
+| 0 | 9 | `temperatures_af` | 5 | `oil_temperature_did_source_raw` | u8 | ECU RAM `0xFFFF2876` | raw - 50 degC |
+| 0 | 9 | `temperatures_af` | 6..7 | `af_state_factor_raw` | u16 | ECU RAM `0xFFFF22E8` | raw / 16384 ratio |
+| 0 | 10 | `launch_abort_voltage_and_trim_terms` | 2 | `rolling_launch_abort_reason` | u8 | `rolling_launch` RAM `0xFFFF5D41` | enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 RESERVED_13, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED |
+| 0 | 10 | `launch_abort_voltage_and_trim_terms` | 3 | `battery_voltage_raw` | u8 | ECU RAM `0xFFFF1188` | raw * 0.08 V |
+| 0 | 10 | `launch_abort_voltage_and_trim_terms` | 4..5 | `ltft_learned_b1_raw` | u16 | ECU RAM `0xFFFF2306` | raw / 256 - 100 percent |
+| 0 | 10 | `launch_abort_voltage_and_trim_terms` | 6..7 | `ltft_adjustment_b1_raw` | u16 | ECU RAM `0xFFFF5648` | raw / 256 - 100 percent |
+| 1 | 9 | `short_fuel_trim_cvtc_duty` | 2..3 | `stft_b1_raw` | s16 | ECU RAM `0xFFFF22DC` | raw / 256 - 100 percent |
+| 1 | 9 | `short_fuel_trim_cvtc_duty` | 4..5 | `stft_b2_raw` | s16 | ECU RAM `0xFFFF22DE` | raw / 256 - 100 percent |
+| 1 | 9 | `short_fuel_trim_cvtc_duty` | 6 | `intake_cvtc_duty_b1_raw` | u8 | ECU RAM `0xFFFF2440` | raw * 39 / 100 percent |
+| 1 | 9 | `short_fuel_trim_cvtc_duty` | 7 | `intake_cvtc_duty_b2_raw` | u8 | ECU RAM `0xFFFF2441` | raw * 39 / 100 percent |
+| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 2..3 | `exhaust_cvtc_duty_b1_word_raw` | u16 | ECU RAM `0xFFFF1AAC` | raw * 100 / 1024 percent |
+| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 4..5 | `exhaust_cvtc_duty_b2_word_raw` | u16 | ECU RAM `0xFFFF1AAE` | raw * 100 / 1024 percent |
+| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 6 | `intake_cvtc_duty_command_b1_raw` | u8 | ECU RAM `0xFFFF23B4` | raw * 39 / 100 percent |
+| 1 | 10 | `exhaust_cvtc_duty_and_intake_duty_command` | 7 | `intake_cvtc_duty_command_b2_raw` | u8 | ECU RAM `0xFFFF23B5` | raw * 39 / 100 percent |
+| 2 | 9 | `long_fuel_trim_map_index_flow` | 2..3 | `ltft_b1_raw` | s16 | ECU RAM `0xFFFF2302` | raw / 256 - 100 percent |
+| 2 | 9 | `long_fuel_trim_map_index_flow` | 4..5 | `ltft_b2_raw` | s16 | ECU RAM `0xFFFF2304` | raw / 256 - 100 percent |
+| 2 | 9 | `long_fuel_trim_map_index_flow` | 6 | `active_map_index` | u8 | `map_switching` RAM `0xFFFF5D00` | raw + 1; 0 through 4 select Maps 1 through 5, and any other value selects Map 1 |
+| 2 | 9 | `long_fuel_trim_map_index_flow` | 7 | `alpha_n_flow_raw` | u8 | ECU RAM `0xFFFF1170` | raw count |
+| 2 | 10 | `front_af_and_adjustment_b1` | 2..3 | `front_af_sensor_b1_word_raw` | u16 | ECU RAM `0xFFFF2780` | raw / 200 V |
+| 2 | 10 | `front_af_and_adjustment_b1` | 4..5 | `front_af_sensor_b2_word_raw` | u16 | ECU RAM `0xFFFF2782` | raw / 200 V |
+| 2 | 10 | `front_af_and_adjustment_b1` | 6..7 | `af_adjustment_b1_raw` | s16 | ECU RAM `0xFFFF45A0` | candidate raw * 0.002 ratio |
+| 3 | 9 | `health` | 2 | `protocol_version` | u8 | ROM configuration `0x000D4E02` | identity |
+| 3 | 9 | `health` | 3 | `profile_id` | u8 | ROM configuration `0x000D4E04` | identity |
+| 3 | 9 | `health` | 4..5 | `profile_crc16` | u16 | ROM configuration `0x000D4E0A` | CRC-16/CCITT-FALSE |
+| 3 | 9 | `health` | 6 | `snapshot_overrun_count` | u8 | `can_telemetry` RAM `0xFFFF5E0E` | saturating count |
+| 3 | 9 | `health` | 7 | `tx_abort_count` | u8 | `can_telemetry` RAM `0xFFFF5E0F` | saturating count |
+| 3 | 10 | `secondary_throttle_and_adjustment_b2` | 2..3 | `secondary_tps_b1_raw` | u16 | ECU RAM `0xFFFF275E` | raw / 200 V |
+| 3 | 10 | `secondary_throttle_and_adjustment_b2` | 4..5 | `secondary_tps_b2_raw` | u16 | ECU RAM `0xFFFF2864` | raw / 200 V |
+| 3 | 10 | `secondary_throttle_and_adjustment_b2` | 6..7 | `af_adjustment_b2_raw` | s16 | ECU RAM `0xFFFF45A2` | candidate raw * 0.002 ratio |
+| 4 | 9 | `knock_margin_channels_1_to_3` | 2..3 | `knock_margin_min_ch1_raw` | s16 | `can_telemetry` RAM `0xFFFF5E10` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+| 4 | 9 | `knock_margin_channels_1_to_3` | 4..5 | `knock_margin_min_ch2_raw` | s16 | `can_telemetry` RAM `0xFFFF5E12` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+| 4 | 9 | `knock_margin_channels_1_to_3` | 6..7 | `knock_margin_min_ch3_raw` | s16 | `can_telemetry` RAM `0xFFFF5E14` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+| 4 | 10 | `knock_margin_channels_4_to_6` | 2..3 | `knock_margin_min_ch4_raw` | s16 | `can_telemetry` RAM `0xFFFF5E16` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+| 4 | 10 | `knock_margin_channels_4_to_6` | 4..5 | `knock_margin_min_ch5_raw` | s16 | `can_telemetry` RAM `0xFFFF5E18` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+| 4 | 10 | `knock_margin_channels_4_to_6` | 6..7 | `knock_margin_min_ch6_raw` | s16 | `can_telemetry` RAM `0xFFFF5E1A` | threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more |
+<!-- telemetry-slots:end -->
+
+### Fixed pages
 
 The six injection words are calculated software values at `raw / 100 ms`, and
 word `i` belongs to cylinder `i + 1` by code. Equality to electrical
@@ -434,19 +524,6 @@ default because the barometric input is disabled, so none of them is
 streamed.
 
 ### Rotating context pages
-
-Pages 9 and 10 carry the same context tag in byte 1. Tags rotate from 0 through
-4. Both pages are transmitted every snapshot, while each tagged field set is
-refreshed once per five published snapshots. At divisor 1, the context-field
-rate is `19.53125 Hz`.
-
-| Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
-| ---: | --- | --- |
-| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | Rolling Launch abort reason `FFFF5D41`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
-| 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
-| 2 | LTFT B1/B2 `FFFF2302/2304`, active map index `FFFF5D00`, alpha-N column coordinate `FFFF1170` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
-| 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, A/F adjustment B2 `FFFF45A2` |
-| 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 
 Tag 1 carries the live intake duty pair on page 9 and the intake duty command
 pair, its scheduler latch, on page 10, so one capture pass samples both pairs
@@ -599,8 +676,8 @@ make telemetry-update
 ```
 
 The target first requires `can-telemetry-profile.toml` to match its rendering
-from the knowledge base, and the generated tables, schema, and identity header
-to match the profile. A stale projection refuses and names its generator:
+from the knowledge base, and the generated tables, schema, identity header,
+and slot tables of this specification to match the profile. A stale projection refuses and names its generator:
 `uv run kb project patches/can-telemetry-profile.toml` for the profile and
 `uv run python patches/can_telemetry_profile.py` for the generated files. The
 target then runs
@@ -626,7 +703,7 @@ changed entries.
 | Artifact | Responsibility |
 | --- | --- |
 | `can-telemetry-profile.toml` | authoritative wire fields and exact JK08A producer bindings |
-| `can_telemetry_profile.py` | producer validator and generator of the pointer table, the neutral host schema, and the identity header |
+| `can_telemetry_profile.py` | producer validator and generator of the pointer table, the neutral host schema, the identity header, and the slot tables of this specification |
 | `can-telemetry-schema.json` | generated ROM-neutral strict host contract |
 | `can-telemetry-identity.h` | generated profile ID, page count, CRC, and harness configuration record |
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
