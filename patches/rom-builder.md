@@ -184,11 +184,11 @@ two-byte-aligned stock throttle container with `MOV.W`; using the canonical
 Telemetry uses stock-inactive mailbox 26 and a completion ISR that handles that
 mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR
-boundary. JK00C and JK00D telemetry binds 60 of the 60 ECU-RAM fields. The
-target producers `0x03C244` and `0x0760E4` align with the JK08A producers
-`0x03B498` and `0x073948` of the Fuel Compensation Main and requested-torque
-column coordinates and store them to `0xFFFF117C` and to `0xFFFF19E6` on JK00C
-or `0xFFFF19EC` on JK00D.
+boundary. JK00C and JK00D telemetry binds the ECU-RAM fields to target source
+symbols, whose meanings hold the producer correspondence of each binding, for
+example `uv run kb show alpha_n_flow/ram`;
+`uv run kb gaps --feature can_telemetry --layout jk00c` lists any unavailable
+field.
 
 The 1ND runtime uses a uniform ROM relocation of `0x60000` and a RAM relocation
 of `-0x5100`, with explicit nonuniform SH7059 stock hooks and application-RAM
@@ -310,20 +310,18 @@ The 1ND address profile binds eighteen switched families: four DFCO rows, the
 two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
 surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
-curves, and the throttle-limiter scalar. Custom CAN telemetry binds 57 of the
-60 schema fields. The two intake CVTC duty command fields read the 8-bit command
-cells `0xFFFE93BF` and `0xFFFE93C0`: both stock images set bit 2 of
-`ROM8[0x8561]`, so the BFR programmer `0x1108D0` writes BFR7B and BFR7A from
-the 16-bit duty words `0xFFFE96BC` and `0xFFFE96BE`, and the cells hold their
-high bytes after two scheduler copies. In that scheme the command cells and the
-live duty bytes carry `x * 25 / 64` percent, within 0.16 percentage points of
-the `raw * 39 / 100` wire decoding
-([`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). The normalized load snapshot and
-the requested-torque and Fuel Compensation Main column coordinates are encoded
-from cleared reserved RAM and remain identified as unavailable in metadata: the
-32-instruction JK08A producer of the normalized load snapshot at `0x03BD1C` has
-no match in the image with PC-relative displacements masked, and no target
-homolog of the column-coordinate producers `0x073948` and `0x03B498` is traced.
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds the schema
+fields to 1ND0A source symbols, which hold the evidence of each binding. The two
+intake CVTC duty command fields read 8-bit command cells: in the 16-bit duty
+scheme that the stock calibration selects, the BFR programmer writes BFR7B and
+BFR7A from 16-bit duty words, and the cells hold their high bytes after two
+scheduler copies. The source symbols record the cell scale of that scheme
+(`uv run kb show intake_cvtc_duty_command_b1/ram`,
+[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). A field whose source meaning has a
+status on the layout is encoded from cleared reserved RAM and remains
+identified as unavailable in metadata;
+`uv run kb gaps --feature can_telemetry --layout 1nd` lists those fields with
+the evidence of each status.
 1ND0A and 1ND3B share executable payload bytes but retain separate stock
 identities, stage hashes, and six-field checksum closure.
 
@@ -360,23 +358,16 @@ inbound pointer values and direct PC-relative branch encodings to the entry.
 It does not establish absence of interior or computed control-flow entries.
 No lookup pointer is excluded from coverage because of this region key.
 
-Custom CAN telemetry binds 56 of the 60 ECU-RAM fields. The two intake
-solenoid duty command fields read the 8-bit command cells `0xFFFE938F` and
-`0xFFFE9390`: the stock image sets bit 2 of `ROM8[0x8576]`, so the BFR
-programmer `0x11C3A6` writes BFR7B and BFR7A from the 16-bit duty words
-`0xFFFE9692` and `0xFFFE9694`, and the cells hold their high bytes after two
-scheduler copies. In that scheme the command cells and the live duty bytes
-carry `x * 25 / 64` percent, within 0.16 percentage points of the
-`raw * 39 / 100` wire decoding. The knock surface field reads `0xFFFE945B`,
-whose bit 7 the knock function `0x071D64` keeps as the high-detonation state
-while bit 7 of `ROM8[0x8A7C]` enables its hysteresis; the capture moves that
-bit into bit 6 of the wire byte, the bit that the wire contract decodes, and
-clears the other bits of the byte. The knock timing state, the normalized load
-snapshot, and the requested-torque and Fuel Compensation Main column
-coordinates are encoded from cleared reserved RAM and remain identified as
-unavailable in metadata: the knock function `0x071D64` keeps no signed Q8
-state, the JK08A producer of the normalized load snapshot has no match in the
-image, and no target homolog of the column-coordinate producers is traced.
+Custom CAN telemetry binds the ECU-RAM fields to 1ME3B source symbols, which
+hold the evidence of each binding. The two intake solenoid duty command fields
+use the 16-bit duty scheme of 1ND. The knock surface field reads the target
+high-detonation state byte; the capture moves the state bit into the bit that
+the wire contract decodes and clears the other bits of the byte
+(`uv run kb show knock_surface_state/ram`). A field whose source meaning has a
+status on the layout is encoded from cleared reserved RAM and remains
+identified as unavailable in metadata;
+`uv run kb gaps --feature can_telemetry --layout 1me3b` lists those fields with
+the evidence of each status.
 
 ## SH7058 JK78C correspondence
 
@@ -395,17 +386,12 @@ equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
 belong to no family and pass through the adapter under the same validator
 rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
 path and the gated half only, so every call through them passes through. Custom CAN telemetry
-binds 60 available schema fields. The signed Q8 knock timing field reads the
-state `0xFFFF1204`, which the knock function `0x062780` stores only while bit 5
-of `ROM8[0x8965]` is clear; the stock byte sets that bit, so the field carries
-the start value of the word. The Fuel Compensation Main column field reads the high byte of
-`0xFFFF22F8`, the column that the target Fuel Compensation surfaces take: the
-scheduler snapshot of `0xFFFF238A`, which the target producer `0x04726C` forms
-on the percent scale of the field. The homolog `0xFFFF115C` of the JK08A
-coordinate indexes only a 4x4 surface. The normalized load snapshot `0xFFFF1032` and the
-requested-torque column coordinate `0xFFFF1976` come from the target producers
-`0x04068C` and `0x093164`, which compute the values of the JK08A producers
-`0x03BD1C` and `0x073948`. The profile also binds both SUM16 regions and both runtime SUM/XOR
+binds the schema fields to JK78C source symbols, which hold the evidence of
+each binding. Under the stock calibration the knock timing field carries the
+start value of its word (`uv run kb show knock_timing_state/ram`), and the Fuel
+Compensation Main column field reads the column word of the target Fuel
+Compensation surfaces in place of the JK08A coordinate cell
+(`uv run kb show diamond-macaque/ram`). The profile also binds both SUM16 regions and both runtime SUM/XOR
 regions to the independently reproduced stock checksum values.
 
 The flash-envelope audit distinguishes comparison operands from executable
