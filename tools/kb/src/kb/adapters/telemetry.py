@@ -62,7 +62,7 @@ WIRE_KEYS = ("protocol_version", "byte_order", "candidate_can_id", "candidate_ti
              "context_count", "header_sequence_bits")
 ADDRESS_KEYS = ("table_address", "table_end", "configuration_address", "state_address")
 DOCUMENT_KEYS = frozenset({"schema_version", "rom", "mailbox", "profile", "field", "context",
-                           *WIRE_KEYS, *ADDRESS_KEYS})
+                           "padding", "padding_source", *WIRE_KEYS, *ADDRESS_KEYS})
 FIELD_KEYS = frozenset({"name", "width", "source", "kind", "signed", "scale"})
 # The presentation of a field, which a field may state.
 OPTIONAL_FIELD_KEYS = frozenset({"dashboard"})
@@ -153,6 +153,12 @@ def declare_profile(b, document, regions, src):
     b.entity("feature", FEATURE, src, props={
         **{name: document[name] for name in WIRE_KEYS if name in document},
         "profiles": profiles, "contexts": contexts})
+    if document.get("padding"):
+        b.entity("feature", FEATURE, src, props={
+            "padding": document["padding"],
+            "padding_source": f"{FEATURE}.configuration_reserved"})
+        b.target(FEATURE, CANONICAL, src).props.setdefault("allocations", {})[
+            "configuration_reserved"] = {"address": hexed(document["padding_source"]), "width": 1}
     b.target(FEATURE, CANONICAL, src, props={
         "mailbox_index": document.get("mailbox"),
         **{name: hexed(document[name]) for name in ADDRESS_KEYS if name in document}})
@@ -296,6 +302,7 @@ DASHBOARD_ORDER = tuple(name for name, _ in store.DASHBOARD.keys if name != "fee
 FEED_ORDER = tuple(name for name, _ in store.FEED.keys)
 # The integer keys that the file writes in hexadecimal.
 HEXADECIMAL = {"candidate_can_id": "0x{:X}", "source": "0x{:08X}",
+               "padding_source": "0x{:08X}",
                **{key: "0x{:08X}" for key in ADDRESS_KEYS}}
 TOKEN = re.compile(r"x|\d+(?:\.\d+)?|[-+*/]")
 
@@ -372,6 +379,12 @@ def profile_document(model):
                                       "offset": props.get("offset"),
                                       "profiles": props.get("profiles")})
     document["context"] = list(contexts.values())
+    if feature.props.get("padding"):
+        document["padding"] = feature.props["padding"]
+        allocation = allocations.get(feature.props.get("padding_source"))
+        if allocation is None or allocation.get("width") != 1:
+            raise KbError("telemetry padding requires its single-byte allocation", code=3)
+        document["padding_source"] = int(allocation["address"], 16)
     return document
 
 
@@ -444,10 +457,14 @@ def _block(header, item, order, subject, optional=False):
 def render_profile(document):
     """The text of `patches/can-telemetry-profile.toml` from its document."""
     top = {key: value for key, value in document.items()
-           if key not in ("profile", "field", "context")}
-    blocks = [HEADER + "\n" + _block(None, top, TOP, "profile")]
+           if key not in ("profile", "field", "context", "padding")}
+    order = TOP + (("padding_source",) if "padding_source" in top else ())
+    blocks = [HEADER + "\n" + _block(None, top, order, "profile")]
     blocks += [_block("[[profile]]", item, PROFILE_ORDER, f"profile.{item.get('name')}")
                for item in document.get("profile", ())]
+    blocks += [_block("[[padding]]", item,
+                      ("page", "offset", "width") + (("tag",) if "tag" in item else ()),
+                      "padding") for item in document.get("padding", ())]
     blocks += [_block("[[field]]", item, STREAM_ORDER, f"field.{item.get('name')}")
                for item in document.get("field", ())]
     for context in document.get("context", ()):

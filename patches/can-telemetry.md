@@ -25,6 +25,14 @@ slot-to-field assignment per profile ID. Two producers implementing the same
 placement, widths, signedness, contexts, profile ID, and protocol version
 therefore publish the same wire identity.
 
+Explicit reserved payload bytes carry zero and have no observation channel.
+Their page, offset, width, and optional context tag enter the profile CRC.
+Fixed-page padding can occupy any declared free span; context padding follows
+the last field. The complete payload remains assigned without overlaps or
+implicit gaps. The source-pointer table repeats configuration byte 7, whose
+reserved-zero value both configuration guards require. The host rejects a
+snapshot with nonzero reserved payload bytes.
+
 The endpoint is disabled by default. The complete software gate passes, and
 three road drives on 2026-08-26 accepted schema 2 transport and channel
 coverage. Those drives carried profile 1, the recording of 2026-09-17 carried

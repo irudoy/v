@@ -53,7 +53,7 @@ def canonical_profile(profile, protocol_version):
     the CRC identifies byte placement, and the profile ID identifies which
     quantity each slot carries.
     """
-    return {
+    result = {
         "protocol_version": protocol_version,
         "id": profile["id"],
         "page_count": profile["page_count"],
@@ -76,6 +76,10 @@ def canonical_profile(profile, protocol_version):
             for context in profile["contexts"]
         ],
     }
+    if profile.get("padding"):
+        result["padding"] = sorted(profile["padding"],
+                                   key=lambda row: (row["page"], row.get("tag", -1), row["offset"]))
+    return result
 
 
 def profile_crc16(profile, protocol_version):

@@ -57,11 +57,31 @@ class Field:
 
 
 @dataclass(frozen=True)
+class Padding:
+    page: int
+    offset: int
+    width: int
+    source: int
+    tag: int | None = None
+
+    @property
+    def byte_sources(self):
+        return (self.source,) * self.width
+
+    def wire(self):
+        row = {"page": self.page, "offset": self.offset, "width": self.width}
+        if self.tag is not None:
+            row["tag"] = self.tag
+        return row
+
+
+@dataclass(frozen=True)
 class Context:
     page: int
     tag: int
     name: str
     fields: tuple[Field, ...]
+    padding: tuple[Padding, ...] = ()
 
     @property
     def byte_sources(self):
@@ -69,7 +89,7 @@ class Context:
             address
             for field in self.fields
             for address in field.byte_sources
-        )
+        ) + tuple(address for pad in self.padding for address in pad.byte_sources)
 
 
 @dataclass(frozen=True)
@@ -102,6 +122,7 @@ class Manifest:
     profiles: tuple[Profile, ...]
     fields: tuple[Field, ...]
     contexts: tuple[Context, ...]
+    padding: tuple[Padding, ...] = ()
 
     @property
     def profile_by_name(self):
@@ -123,6 +144,10 @@ class Manifest:
                 continue
             for index, address in enumerate(field.byte_sources):
                 slots[(field.page, field.offset + index)] = address
+        for pad in self.padding:
+            if pad.tag is None:
+                for index, address in enumerate(pad.byte_sources):
+                    slots[(pad.page, pad.offset + index)] = address
         return tuple(
             slots[(page, offset)]
             for page in range(self.fixed_page_count)
@@ -235,7 +260,7 @@ def _parse_field(raw, *, context, page_field, runtime_spans=()):
     return field
 
 
-def _canonical_profile(raw, fields, contexts, protocol_version):
+def _canonical_profile(raw, fields, contexts, protocol_version, padding=()):
     """Return the wire-layout identity document covered by the profile CRC.
 
     The document holds what decides the byte placement of a value: protocol
@@ -269,13 +294,16 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
         }
         for context in contexts
     ]
-    return {
+    result = {
         "protocol_version": protocol_version,
         "id": raw["id"],
         "page_count": raw["page_count"],
         "fields": selected,
         "contexts": context_rows,
     }
+    if padding:
+        result["padding"] = [pad.wire() for pad in padding]
+    return result
 
 
 def load_manifest(path=DEFAULT_SOURCE):
@@ -290,7 +318,7 @@ def load_manifest(path=DEFAULT_SOURCE):
         "table_end", "configuration_address", "state_address", "profile",
         "field", "context",
     }
-    _require_keys(raw, root_keys, (), path.name)
+    _require_keys(raw, root_keys, ("padding", "padding_source"), path.name)
     if (
         raw["schema_version"] != 2
         or raw["rom"] != "JK08A"
@@ -313,6 +341,26 @@ def load_manifest(path=DEFAULT_SOURCE):
         raise ValueError(f"{path.name}: fixed transport contract differs")
 
     runtime_spans = _runtime_state_spans()
+    padding = []
+    if bool(raw.get("padding")) != ("padding_source" in raw):
+        raise ValueError("padding requires its explicit zero source")
+    if raw.get("padding") and raw["padding_source"] != raw["configuration_address"] + 7:
+        raise ValueError("padding must read the reserved zero configuration byte")
+    for index, row in enumerate(raw.get("padding", ())):
+        _require_keys(row, ("page", "offset", "width"), ("tag",), f"padding[{index}]")
+        pad = Padding(**row, source=raw["padding_source"])
+        if (any(type(value) is not int for value in (pad.page, pad.offset, pad.width))
+                or not 0 <= pad.page < raw["fixed_page_count"] + len(raw["context_pages"])
+                or not 1 <= pad.width <= 7 or not 1 <= pad.offset
+                or pad.offset + pad.width > 8
+                or (pad.tag is None and pad.page >= raw["fixed_page_count"])
+                or (pad.tag is not None and (type(pad.tag) is not int
+                    or pad.page not in raw["context_pages"]
+                    or not 0 <= pad.tag < raw["context_count"] or pad.offset < 2))):
+            raise ValueError(f"padding[{index}]: invalid placement")
+        padding.append(pad)
+    padding = tuple(sorted(padding, key=lambda pad: (pad.page, -1 if pad.tag is None else pad.tag,
+                                                     pad.offset)))
     fields = tuple(
         _parse_field(
             item,
@@ -341,7 +389,8 @@ def load_manifest(path=DEFAULT_SOURCE):
             for field_index, field in enumerate(item["field"])
         )
         context = Context(
-            item["page"], item["tag"], item["name"], context_fields
+            item["page"], item["tag"], item["name"], context_fields,
+            tuple(pad for pad in padding if (pad.page, pad.tag) == (item["page"], item["tag"]))
         )
         if (
             type(context.page) is not int
@@ -352,6 +401,11 @@ def load_manifest(path=DEFAULT_SOURCE):
             or len(context.byte_sources) != 6
         ):
             raise ValueError(f"context[{index}]: invalid context contract")
+        cursor = 2 + sum(field.width for field in context.fields)
+        for pad in context.padding:
+            if pad.offset != cursor:
+                raise ValueError(f"context[{index}]: padding must follow its fields")
+            cursor += pad.width
         for field in context.fields:
             if field.kind == "rom_configuration" and not (
                 raw["configuration_address"] <= field.source
@@ -394,7 +448,7 @@ def load_manifest(path=DEFAULT_SOURCE):
                 f"profile[{index}]: page count is not {page_count}, the "
                 "fixed and context pages the capture builds"
             )
-        canonical = _canonical_profile(item, fields, contexts, raw["protocol_version"])
+        canonical = _canonical_profile(item, fields, contexts, raw["protocol_version"], padding)
         encoded = json.dumps(
             canonical, sort_keys=True, separators=(",", ":")
         ).encode("utf-8")
@@ -427,6 +481,7 @@ def load_manifest(path=DEFAULT_SOURCE):
         profiles=profiles,
         fields=fields,
         contexts=contexts,
+        padding=padding,
     )
     _validate_coverage(manifest)
     return manifest
@@ -440,6 +495,13 @@ def _validate_coverage(manifest):
             if key in occupied:
                 raise ValueError(f"page byte {key} is assigned more than once")
             occupied[key] = field.name
+    for pad in manifest.padding:
+        if pad.tag is None:
+            for offset in range(pad.offset, pad.offset + pad.width):
+                key = (pad.page, offset)
+                if key in occupied:
+                    raise ValueError(f"page byte {key} is assigned more than once")
+                occupied[key] = "reserved zero"
     for page in range(manifest.fixed_page_count):
         missing = [offset for offset in range(1, 8) if (page, offset) not in occupied]
         if missing:
@@ -544,6 +606,8 @@ def render_schema(manifest):
                     }
                     for context in manifest.contexts
                 ],
+                **({"padding": [pad.wire() for pad in manifest.padding]}
+                   if manifest.padding else {}),
             }
             for profile in manifest.profiles
         ],
@@ -636,6 +700,11 @@ def render_specification(manifest, reservations=RESERVATIONS):
         lines.append(_table_row(
             (str(field.page), *_slot_cells(field, field.offset, allocations))
         ))
+    for pad in manifest.padding:
+        if pad.tag is None:
+            lines.append(_table_row((str(pad.page),
+                f"{pad.offset}..{pad.offset + pad.width - 1}", "Reserved zero", "bytes",
+                f"ROM `0x{pad.source:08X}` repeated", "0")))
     pages = " and ".join(str(page) for page in manifest.context_pages)
     lines.extend((
         "",
@@ -654,6 +723,10 @@ def render_specification(manifest, reservations=RESERVATIONS):
                 *_slot_cells(field, first_byte, allocations),
             )))
             first_byte += field.width
+        for pad in context.padding:
+            lines.append(_table_row((str(context.tag), str(context.page), f"`{context.name}`",
+                f"{pad.offset}..{pad.offset + pad.width - 1}", "Reserved zero", "bytes",
+                f"ROM `0x{pad.source:08X}` repeated", "0")))
     lines.append("")
     return "\n".join(lines)
 

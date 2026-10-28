@@ -235,6 +235,30 @@ def _parse_profile(source_profile, context, protocol_version):
                 raise DecodeError(f"{field_context} overlaps {occupied[key]}")
             occupied[key] = field["name"]
 
+    padding = source_profile.get("padding", [])
+    if not isinstance(padding, list):
+        raise DecodeError(f"{context} padding must be an array")
+    context_padding = {}
+    for index, row in enumerate(padding):
+        if (not isinstance(row, dict) or not {"page", "offset", "width"} <= row.keys()
+                or row.keys() - {"page", "offset", "width", "tag"}
+                or any(type(row.get(key)) is not int for key in ("page", "offset", "width"))
+                or not 0 <= row["page"] < page_count or not 1 <= row["width"] <= 7
+                or not 1 <= row["offset"] or row["offset"] + row["width"] > 8):
+            raise DecodeError(f"{context}.padding[{index}] has invalid placement")
+        if "tag" in row:
+            if type(row["tag"]) is not int or not 0 <= row["tag"] <= 0xFF or row["offset"] < 2:
+                raise DecodeError(f"{context}.padding[{index}] has invalid context tag")
+            context_padding.setdefault((row["page"], row["tag"]), []).append(row)
+        else:
+            page = row["page"]
+            fixed_pages.add(page)
+            for offset in range(row["offset"], row["offset"] + row["width"]):
+                key = (page, offset)
+                if key in occupied:
+                    raise DecodeError(f"{context}.padding[{index}] overlaps {occupied[key]}")
+                occupied[key] = "reserved zero"
+
     contexts_by_page = {}
     health_contexts = 0
     health = None
@@ -273,6 +297,10 @@ def _parse_profile(source_profile, context, protocol_version):
                 raise DecodeError(f"duplicate field name {field['name']!r}")
             field_names.add(field["name"])
             payload_width += field["width"]
+        for pad in sorted(context_padding.pop((page, tag), []), key=lambda row: row["offset"]):
+            if pad["offset"] != payload_width + 2:
+                raise DecodeError(f"{row_context} padding must follow its fields")
+            payload_width += pad["width"]
         if payload_width != 6:
             raise DecodeError(f"{row_context} must fill six payload bytes")
         if context_name == "health":
@@ -286,6 +314,8 @@ def _parse_profile(source_profile, context, protocol_version):
             }:
                 raise DecodeError(f"{row_context} lacks schema identity fields")
 
+    if context_padding:
+        raise DecodeError(f"{context} padding names an undefined context")
     context_pages = set(contexts_by_page)
     if fixed_pages & context_pages:
         raise DecodeError(f"{context} mixes fixed and context page layouts")
@@ -581,6 +611,11 @@ class Decoder:
             self.malformed_frames += 1
             return None
         context_tag = next(iter(context_tags.values()))
+        for pad in self.profile.get("padding", ()):
+            if "tag" not in pad or pad["tag"] == context_tag:
+                if any(pages[pad["page"]][pad["offset"]:pad["offset"] + pad["width"]]):
+                    self.malformed_frames += 1
+                    return None
         health_page, health_tag = self._health
         if context_tag == health_tag:
             health = {

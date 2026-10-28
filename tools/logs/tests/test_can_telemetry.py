@@ -26,6 +26,9 @@ def frames(profile, tick, *, context_tag=0, health_valid=True, identity=None):
     result[0][1:3] = tick.to_bytes(2, "big")
     for page in manifest.context_pages:
         result[page][1] = context_tag
+    for pad in manifest.padding:
+        if pad.tag is None or pad.tag == context_tag:
+            result[pad.page][pad.offset:pad.offset + pad.width] = bytes(pad.width)
     if context_tag == 3:
         result[9][2] = manifest.protocol_version
         result[9][3] = profile_id

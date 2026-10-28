@@ -1305,6 +1305,17 @@ def _declare_telemetry(document, owners):
 
 
 class TelemetryAdapterTest(unittest.TestCase):
+    def test_reserved_wire_bytes_have_a_native_configuration_allocation(self):
+        document = _telemetry([])
+        document.update(padding=[{"page": 3, "offset": 4, "width": 3}],
+                        padding_source=0x000D4E07)
+        builder = _declare_telemetry(document, {})
+        feature = builder.entities[("feature", "can_telemetry")]
+        self.assertEqual(feature.props["padding"], document["padding"])
+        self.assertEqual(feature.props["padding_source"], "can_telemetry.configuration_reserved")
+        self.assertEqual(builder.targets[("can_telemetry", "7mfk")].props["allocations"],
+                         {"configuration_reserved": {"address": "000d4e07", "width": 1}})
+
     def test_a_scale_splits_into_arithmetic_unit_level_and_prose(self):
         units = frozenset(repo.config()["vocab"]["unit"])
         cases = {
