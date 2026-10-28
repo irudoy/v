@@ -30,7 +30,8 @@ COMMANDS = {'new': ('kind', 'symbol', 'slug', 'name', 'evidence', 'level', 'note
  'merge': ('meaning', 'other', 'evidence', 'from'),
  'rename': ('meaning', 'name'),
  'move': ('symbol', 'to', 'evidence', 'from', 'level', 'note'),
- 'retire': ('ref',)}
+ 'retire': ('ref',),
+ 'rebase-reviews': ('layout', 'from_l0', 'reasons_reviewed')}
 REQUIRED = {'new': ('kind',),
  'set': ('ref',),
  'bind': ('meaning', 'symbol'),
@@ -43,7 +44,8 @@ REQUIRED = {'new': ('kind',),
  'merge': ('meaning', 'other'),
  'rename': ('meaning', 'name'),
  'move': ('symbol', 'to'),
- 'retire': ('ref',)}
+ 'retire': ('ref',),
+ 'rebase-reviews': ('layout', 'from_l0')}
 SEARCH = ("method", "target", "count")
 # The keys of a link besides its type, target, and evidence, and those that
 # choose among the links of one type and target.
@@ -419,6 +421,7 @@ class Change:
         self.rows = {row.key: row for row in model.names}
         self.rows_changed = False
         self.lines = []
+        self.review_text = None
         # {meaning key: new key} of the renames of the change, the symbols
         # and the (kind, slug) of the designed entities that `new` starts, and
         # the checks of the compiled result that the operations expect, each a
@@ -508,6 +511,18 @@ class Change:
             for former in symbol.former}
 
     # Operations ------------------------------------------------------------
+
+    def rebase_reviews(self, op):
+        from kb import reconciliation
+
+        current = (compile.build(self.root, {**self.model.overlay, **self.texts()})
+                   if self.review_text is not None else self.model)
+        text, lines = reconciliation.rebase_export(
+            current, op['layout'], op['from_l0'],
+            reasons_reviewed=op.get('reasons_reviewed', False))
+        if text is not None:
+            self.review_text = text
+        self.lines.extend(lines)
 
     def run(self, op, number=None):
         """Apply one operation; errors name its position in a batch."""
@@ -1575,6 +1590,8 @@ class Change:
             text = names.render(self.rows.values())
             if self._current(names.PATH) != text:
                 found[names.PATH] = text
+        if self.review_text is not None and self._current(repo.OWNER_CONFIG) != self.review_text:
+            found[repo.OWNER_CONFIG] = self.review_text
         return dict(sorted(found.items(), key=lambda item: item[0].as_posix()))
 
     def diff(self, texts):
@@ -1940,6 +1957,9 @@ def refusals(base, result):
 
 def plan(ops, base, resolve, root=repo.ROOT):
     """Plan supported native operations and refuse new issues before writing."""
+    if (any(isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
+            and not all(isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)):
+        raise KbError('run review rebasing separately from native fact edits', code=2)
     change = Change(base, resolve, root)
     for number, op in enumerate(ops, 1):
         change.run(op, number if len(ops) > 1 else None)
@@ -1973,9 +1993,24 @@ def plan(ops, base, resolve, root=repo.ROOT):
 def apply(ops, root=repo.ROOT, dry_run=False, log=print):
     """Validate and apply a native batch under the lock; a dry run writes nothing."""
     with lock.held(root):
-        with graph.fresh(root, log=log, held=True) as session:
+        source_only = bool(ops) and all(
+            isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
+        if source_only:
+            from kb import fingerprint, l0
+
+            before = fingerprint.compute(root)
             base = compile.build(root)
-            change, texts, result = plan(ops, base, graph_resolver(session, base, root, log), root)
+            change, texts, result = plan(ops, base, model_resolver(base), root)
+            failures = l0.check_all(root, only=sorted({op['layout'] for op in ops}))
+            if failures:
+                raise KbError('review rebase requires valid L0:\n'
+                              + '\n'.join(map(str, failures)), code=3)
+            if fingerprint.compute(root) != before:
+                raise KbError('the sources change during review rebasing; nothing is written', code=6)
+        else:
+            with graph.fresh(root, log=log, held=True) as session:
+                base = compile.build(root)
+                change, texts, result = plan(ops, base, graph_resolver(session, base, root, log), root)
         if not dry_run and texts:
             store.write(root, texts)
             compile.cached.cache_clear()

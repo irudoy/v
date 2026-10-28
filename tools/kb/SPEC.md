@@ -1330,6 +1330,33 @@ default address view and its structured output retain their existing contract.
 
 ### 12.3 Write commands
 
+`kb rebase-reviews --layout <l> --from-l0 <digest>` maintains source-bound
+unresolved access and width records after a validated L0 export. It changes
+only the `l0` binding when the exact `(kind, subject, claim_sha256)` reproduces
+and the current difference retains its `detail` and `sources`. The record's
+`state`, `reason`, and all other fields remain unchanged. It refuses malformed
+or duplicate selected records and a source digest other than the stated old
+digest or the current export. Current exact records are a no-op. Reviews of
+other layouts stay unchanged.
+
+Changed, vanished, new, and otherwise unmatched differences are listed and
+receive no review or updated binding. Old unmatched records remain in place;
+the operation can succeed while the `code` check still fails. A custom reason
+that differs from the generated `detail` also remains in place unless
+`--reasons-reviewed` is explicit. The operation lists the custom text for
+inspection. That flag acknowledges a separate review of any code, pointer,
+call-path, or other source details named by the reason; exact discrepancy
+reproduction alone does not validate those details. No review becomes
+evidence or a resolved claim.
+
+The equivalent batch operation has `cmd = "rebase-reviews"`, `layout`,
+`from_l0`, and optional boolean `reasons_reviewed`. Such a batch contains only
+review-rebase operations. Under the primary lock it compiles before graph
+synchronization, plans the owner diff, applies the complete-model refusal
+gate, and validates the selected export. A dry run writes no owner and does
+not synchronize the graph. A write uses the primary file writer and then
+synchronizes the graph. Changed source inputs during planning refuse the
+operation before an owner write. It does not supply multi-file or graph rollback.
 
 `kb retire` keeps the canonical owner document at its existing path and adds
 `retired = true`. The complete document retains its semantic, generated and

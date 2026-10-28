@@ -72,6 +72,37 @@ hashes do not change that binding when the exported data is identical. The L0
 check independently validates preparation inputs. Search statuses and matcher
 caches retain their manifest identities.
 
+After a corrected export, transfer the still-reproduced reviews through the
+supported writer:
+
+```bash
+uv run kb rebase-reviews --layout 7mfk --from-l0 <previous-data-digest> --dry-run
+```
+
+The previous digest is the `l0` value held by the selected reviews in
+`owners.toml`. The dry run prints a diff and lists changed, vanished, new, or
+otherwise unmatched differences. The writer changes only `l0` for a record
+whose `(kind, subject, claim_sha256)`, detail, and sources reproduce exactly;
+its unresolved state and reason remain unchanged. Other layouts stay intact.
+Unmatched records remain on disk, so `kb check --only code` still fails until
+they receive a separate review. Exit 0 reports a successful operation, not a
+complete reconciliation.
+
+Custom reasons can refer to indirect pointer paths or other function details
+that the difference key does not cover. The writer lists those reasons and
+leaves their records unchanged unless `--reasons-reviewed` is present. Review
+the affected code and call paths before using that flag; it preserves the
+prose and does not validate it, provide evidence, or raise a level. Run the
+same command without `--dry-run` to apply the reviewed diff.
+
+`kb apply` accepts the equivalent `rebase-reviews` operation with `layout`,
+`from_l0`, and optional `reasons_reviewed` keys. A review-rebase batch contains
+only these operations, keeping claim edits separate from export maintenance.
+It compiles under the writer lock and checks the selected L0 before writing.
+Changed source inputs during planning refuse the operation before an owner write.
+Its dry run does not synchronize the graph; applying a changed owner uses the
+primary writer and then synchronizes the graph.
+
 ## Evidence and confidence
 
 Levels distinguish resemblance, a candidate interpretation, grounding in

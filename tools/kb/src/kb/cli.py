@@ -454,6 +454,12 @@ def command_retire(args, root=repo.ROOT):
     return _write(args, [{'cmd': 'retire', 'ref': args.ref}], root)
 
 
+def command_rebase_reviews(args, root=repo.ROOT):
+    return _write(args, [{'cmd': 'rebase-reviews', 'layout': args.layout,
+                         'from_l0': args.from_l0,
+                         'reasons_reviewed': args.reasons_reviewed}], root)
+
+
 def command_family(args, root=repo.ROOT):
     metadata = None
     if args.operation == 'new':
@@ -798,6 +804,12 @@ def build_parser():
            ("batch", "a TOML file of [[op]] tables")).set_defaults(handler=command_apply)
     writer('retire', 'make an unused owned entity inactive and reserve its names',
            reference).set_defaults(handler=command_retire)
+    rebase = writer('rebase-reviews', 'rebind exact unresolved reviews after an L0 export')
+    rebase.add_argument('--layout', required=True, help='the layout whose reviews may change')
+    rebase.add_argument('--from-l0', required=True, help='the previous exported-data digest')
+    rebase.add_argument('--reasons-reviewed', action='store_true',
+                        help='include custom reasons after reviewing their code dependencies')
+    rebase.set_defaults(handler=command_rebase_reviews)
     onboarding = commands.add_parser('family', help='record a family or image with a stock-bound census')
     operations = onboarding.add_subparsers(dest='operation', required=True)
     for name in ('new', 'add'):

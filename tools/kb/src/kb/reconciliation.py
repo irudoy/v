@@ -13,6 +13,16 @@ from kb import evidence_ref, graph, l0graph, match, repo
 from kb.model import Issue
 
 
+REVIEW_KEYS = {'kind', 'subject', 'layout', 'claim_sha256', 'l0', 'detail',
+               'sources', 'state', 'reason'}
+
+
+def valid_review(item):
+    return (isinstance(item, dict) and set(item) == REVIEW_KEYS
+            and item.get('state') == 'unresolved'
+            and isinstance(item.get('reason'), str) and bool(item['reason'].strip()))
+
+
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=True,
                                      separators=(',', ':'), default=str).encode()).hexdigest()
@@ -96,6 +106,82 @@ def differences(model):
 def reviews(model):
     """An exact unresolved inventory for the primary consolidated transfer."""
     return [{**item, 'state': 'unresolved', 'reason': item['detail']} for item in differences(model)]
+
+
+def rebase_export(model, layout, from_l0, *, reasons_reviewed=False):
+    """Plan only L0-binding changes for exact, still-unresolved differences.
+
+    Custom reasons can describe code outside the difference key. Their explicit
+    opt-in records an operator review, without validating that prose or adding
+    evidence. Unmatched records stay unchanged and remain check failures.
+    """
+    import tomlkit
+
+    if layout not in model.layouts:
+        raise repo.KbError(f'unknown layout {layout!r}', code=5)
+    if (not isinstance(from_l0, str) or len(from_l0) != 16
+            or any(char not in '0123456789abcdef' for char in from_l0)):
+        raise repo.KbError('from_l0 must be the previous 16-digit lowercase L0 digest', code=2)
+    if type(reasons_reviewed) is not bool:
+        raise repo.KbError('reasons_reviewed must be a boolean', code=2)
+    configured = model.config.get('reconciliation', {})
+    if not configured.get('enabled'):
+        raise repo.KbError('source-bound reviews are not enabled', code=3)
+    text = model.overlay.get(repo.OWNER_CONFIG)
+    if text is None:
+        text = (model.root / repo.OWNER_CONFIG).read_text(encoding='utf-8')
+    document = tomlkit.parse(text)
+    records = document['reconciliation']['review']
+    if records.unwrap() != configured.get('review'):
+        raise repo.KbError('the review owner differs from the compiled records', code=3)
+    current_l0 = match.l0_digest(layout, model.root)
+    actual = {difference_key(item): item for item in differences(model)
+              if item['layout'] == layout}
+    subjects = {(item['kind'], item['subject']) for item in actual.values()}
+    held, pending, lines = set(), [], []
+    counts = defaultdict(int)
+    for index, record in enumerate(configured['review']):
+        if not isinstance(record, dict):
+            raise repo.KbError(f'malformed unresolved review at index {index}', code=3)
+        if record.get('layout') != layout:
+            continue
+        if not valid_review(record):
+            raise repo.KbError(f'{layout}: malformed unresolved review at index {index}', code=3)
+        key = difference_key(record)
+        if key in held:
+            raise repo.KbError(f'{layout}: duplicate review {key}', code=3)
+        held.add(key)
+        if record['l0'] not in (from_l0, current_l0):
+            raise repo.KbError(f'{layout}: {key} binds another L0 digest {record["l0"]}', code=3)
+        candidate = actual.get(key)
+        status = None
+        if candidate is None:
+            status = 'changed' if key[:2] in subjects else 'vanished'
+        elif any(record[name] != value for name, value in candidate.items() if name != 'l0'):
+            status = 'binding-changed'
+        elif record['l0'] == current_l0:
+            counts['already-current'] += 1
+            continue
+        elif record['reason'] != record['detail'] and not reasons_reviewed:
+            status = 'reason-review-required'
+        if status:
+            counts[status] += 1
+            lines.append(f'not rebased {key[0]} {key[1]} {key[2]}: {status}')
+            if status == 'reason-review-required':
+                lines.append(f'  retained reason: {record["reason"]}')
+            continue
+        pending.append(index)
+        if record['reason'] != record['detail']:
+            lines.append(f'reviewed reason {key[0]} {key[1]} {key[2]}: {record["reason"]}')
+    for key in sorted(actual.keys() - held):
+        counts['new'] += 1
+        lines.append(f'not reviewed {key[0]} {key[1]} {key[2]}: new')
+    counts['rebased'] = len(pending)
+    for index in pending:
+        records[index]['l0'] = current_l0
+    summary = ', '.join(f'{name}={count}' for name, count in sorted(counts.items()))
+    lines.insert(0, f'rebase reviews {layout}: {from_l0} -> {current_l0}; {summary}')
+    return (tomlkit.dumps(document) if pending else None), lines
 
 
 def rebase(before, after, renames):
@@ -182,10 +268,7 @@ def check(model):
               for item in differences(model)}
     held, issues = {}, []
     for item in configured.get('review', ()):
-        if (not isinstance(item, dict) or set(item) != {
-                'kind', 'subject', 'layout', 'claim_sha256', 'l0', 'detail', 'sources',
-                'state', 'reason'} or item.get('state') != 'unresolved'
-                or not isinstance(item.get('reason'), str) or not item['reason'].strip()):
+        if not valid_review(item):
             issues.append(Issue('code', repo.OWNER_CONFIG.as_posix(), 'review',
                                 'an exception needs exact source binding and an unresolved reason'))
             continue

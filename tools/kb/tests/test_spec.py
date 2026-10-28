@@ -15,7 +15,7 @@ WRITE = "### 12.3 Write commands"
 CODES = "### 12.5 Exit codes"
 READ_OPTIONS = "<read options>"
 PACKAGE = "tools/kb/src/kb"
-TOKEN = re.compile(r"\[|\]|\.\.\.|--[a-z-]+|(?:<[^>]+>[:=]?)+|"
+TOKEN = re.compile(r"\[|\]|\.\.\.|--[a-z][a-z0-9-]*|(?:<[^>]+>[:=]?)+|"
                    r"[a-z]+(?:-[a-z]+)*(?:\|[a-z]+(?:-[a-z]+)*)*")
 WORD = re.compile(r"[a-z]+(?:-[a-z]+)*")
 

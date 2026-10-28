@@ -50,6 +50,7 @@ rows = [
   ["`kb move <symbol> <meaning> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]`", "Corrects a wrong homology ([Renames, merges, and moves](#55-renames-merges-and-moves))"],
   ["`kb move <symbol> <to> --legacy-reservation [--dry-run]`", "Preserves one generated-name reservation after an accepted registered legacy/L0 entry repair, without entity adoption"],
   ["`kb retire <ref> [--dry-run]`", "Retires a meaning or designed entity; its names stay reserved"],
+  ["`kb rebase-reviews --layout <l> --from-l0 <digest> [--reasons-reviewed] [--dry-run]`", "Rebinds exact unresolved access and width reviews to a validated export; custom reasons require explicit review, and unmatched or new differences remain unreviewed"],
   ["`kb family new <family> --image <image> --layout <layout> --census <path> --mcu <mcu> --flash-size <size> --software-id <id>... [--kind <kind>] [--calibration-region <range>] [--exact-range <range>]... [--dry-run]`", "Starts a family from a stock-bound census, explicit image identity and exported L0"],
   ["`kb family add <family> --image <image> --census <path> [--layout <layout>] [--dry-run]`", "Adds a stock-bound image; exact-code inheritance retains the layout, and other families require a new layout"],
   ["`kb apply <batch> [--dry-run]`", "A batch of the operations above as one change"],
