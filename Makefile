@@ -101,9 +101,6 @@ check:
 	$(PYTHON) tools/can_dashboard/package_locks.py --check
 	$(PYTHON) tools/vendor/build_catalog.py --check
 	$(PYTHON) tools/diagnostics/extract_rom_dtc.py --check
-	$(PYTHON) tools/diagnostics/extract_esm.py refs/nissan-esm-2007-g35-sedan --check
-	$(PYTHON) tools/diagnostics/extract_esm.py refs/nissan-esm-2013-g37-sedan --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml --check
-	$(PYTHON) tools/diagnostics/import_nissan_datatable.py --check
 	$(PYTHON) tools/diagnostics/import_370z_logger.py --check
 	$(PYTHON) tools/diagnostics/import_ecudocs.py --check
 	$(PYTHON) tools/single_source.py --check

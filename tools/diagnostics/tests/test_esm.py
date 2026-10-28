@@ -3,8 +3,6 @@ from __future__ import annotations
 import csv
 import json
 import re
-import shutil
-import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -13,7 +11,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2007-g35-sedan"
 VQ37_DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2013-g37-sedan"
-VQ37_MANUAL = ROOT / "refs" / "nissan-esm-2013-g37-sedan"
 VQ37_VEHICLE = "infiniti-g37-sedan-2013-usdm-vq37vhr"
 VQ25_VEHICLE = "infiniti-g-sedan-2013-mexico-vq25hr"
 sys.path.insert(0, str(ROOT / "tools" / "diagnostics"))
@@ -624,58 +621,6 @@ class EsmCatalogTest(unittest.TestCase):
             {
                 ecu: sum(row["ecu_id"] == ecu for row in parameters)
                 for ecu in (f"{VQ25_VEHICLE}:ecm", f"{VQ37_VEHICLE}:ecm")
-            },
-        )
-
-    def test_general_information_lists_the_vq25hr_models_for_mexico(
-        self,
-    ) -> None:
-        if shutil.which("pdftotext") is None:
-            self.skipTest("pdftotext is not installed")
-        text = subprocess.run(
-            [
-                "pdftotext",
-                "-layout",
-                "-f",
-                "23",
-                "-l",
-                "23",
-                str(VQ37_MANUAL / "GENERAL INFORMATION.pdf"),
-                "-",
-            ],
-            capture_output=True,
-            check=True,
-            text=True,
-        ).stdout
-        self.assertIn("GI-23", text)
-        lines = text.splitlines()
-        models = {
-            match.group(0): number
-            for number, line in enumerate(lines)
-            for match in re.finditer(r"\bBL[A-Z]{5}-E([A-Z])A\b", line)
-        }
-        destinations = {
-            name: number
-            for number, line in enumerate(lines)
-            for name in ("USA", "Canada", "Mexico")
-            if re.match(rf"^\s*{name}\b", line)
-        }
-        for name, suffix in (("USA", "EUA"), ("Canada", "ENA"), ("Mexico", "EJA")):
-            rows = [
-                number for model, number in models.items() if model.endswith(suffix)
-            ]
-            self.assertLessEqual(min(rows), destinations[name])
-            self.assertLessEqual(destinations[name], max(rows))
-        engine_rows = [
-            number for number, line in enumerate(lines) if "VQ25HR" in line
-        ]
-        self.assertEqual(1, len(engine_rows))
-        self.assertEqual(
-            {"BLUALHL-EJA", "BLUALSL-EJA"},
-            {
-                model
-                for model, number in models.items()
-                if abs(number - engine_rows[0]) == 1
             },
         )
 

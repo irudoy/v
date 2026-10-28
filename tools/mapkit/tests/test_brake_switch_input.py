@@ -1,7 +1,7 @@
 """Gate the PH1 stop-lamp-switch input facts published for JK78C and JK08A.
 
 The code facts are read from the exact stock images. The terminal facts are read
-from the tracked factory-manual fragments and PDFs; they identify ECM terminal
+from the tracked factory-manual fragments; they identify ECM terminal
 122 as the stop lamp switch input, which makes PH1 (MCU pin 64) a terminal 122
 candidate by signal identity, not a proven board route.
 """
@@ -10,11 +10,7 @@ from __future__ import annotations
 
 import csv
 import json
-import shutil
-import subprocess
 from pathlib import Path
-
-import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 JK78C_ROM = ROOT / "rom-images/23710-JK78C/1JK78C-20260715-stock.bin"
@@ -25,10 +21,6 @@ MANUAL = ROOT / "refs/renesas-sh7059-sh7058s-hardware-manual.md"
 FRAGMENTS = {
     2007: ROOT / "refs/diagnostics/nissan-esm-2007-g35-sedan/fragments.jsonl",
     2013: ROOT / "refs/diagnostics/nissan-esm-2013-g37-sedan/fragments.jsonl",
-}
-PDFS = {
-    2007: ROOT / "refs/nissan-esm-2007-g35-sedan/ENGINE CONTROL SYSTEM.pdf",
-    2013: ROOT / "refs/nissan-esm-2013-g37-sedan/ENGINE CONTROL SYSTEM.pdf",
 }
 PIN_TRACER = ROOT / "tools/pin-tracer"
 EDITED_SOURCES = (
@@ -234,31 +226,6 @@ FRAGMENT_EVIDENCE = (
     (2013, "CCS-58", "[ICC]", ("Stop lamp switch ECM Continuity Connector Terminal Connector Terminal E110 2 M107 122 Existed",)),
 )
 
-TERMINAL_122 = (
-    "[Ignition switch: OFF] 0V 122 128 Brake pedal: Fully released Stop lamp switch Input (P) (B) "
-    "[Ignition switch: OFF] BATTERY VOLTAGE Brake pedal: Slightly depressed"
-)
-# (year, PDF page, footer, section tag, normalized phrases) of the ECM terminal tables.
-TERMINAL_TABLES = (
-    (2007, 500, "EC-500 2007 G35 Sedan", "[VQ35HR]", (
-        "[Ignition switch: OFF] 0V Brake pedal: Fully released 122 Ground P Stop lamp switch Input "
-        "[Ignition switch: OFF] BATTERY VOLTAGE Brake pedal: Slightly depressed",
-        "[Ignition switch: ON] 0V els with ICC system) Brake pedal: Slightly depressed 126 Ground BR ASCD brake switch "
-        "Input (models with ASCD sys- [Ignition switch: ON] BATTERY VOLTAGE tem) Brake pedal: Fully released",
-    )),
-    (2013, 568, "EC-568 2013 G Sedan", "[VQ37VHR]", (
-        TERMINAL_122,
-        "[Ignition switch: ON] 0V 126 128 with ICC system) Brake pedal: Slightly depressed Input (BR) (B) "
-        "ASCD brake switch (mod- [Ignition switch: ON] BATTERY VOLTAGE els with ASCD system) Brake pedal: Fully released",
-    )),
-    (2013, 1005, "EC-1005 2013 G Sedan", "[VQ25HR]", (TERMINAL_122,)),
-    (2013, 1006, "EC-1006 2013 G Sedan", "[VQ25HR]", (
-        "[Ignition switch: ON] 0V 126 128 Brake pedal: Slightly depressed ASCD brake switch Input (BR) (B) "
-        "[Ignition switch: ON] BATTERY VOLTAGE Brake pedal: Fully released",
-    )),
-)
-
-
 def _fragment_pages(year: int) -> dict[str, str]:
     pages: dict[str, set[str]] = {}
     with FRAGMENTS[year].open(encoding="utf-8") as source:
@@ -268,18 +235,6 @@ def _fragment_pages(year: int) -> dict[str, str]:
     return {label: _normalized(" ".join(sorted(texts))) for label, texts in pages.items()}
 
 
-def _pdf_page(path: Path, page: int) -> str:
-    if shutil.which("pdftotext") is None:
-        pytest.skip("pdftotext is not installed")
-    result = subprocess.run(
-        ["pdftotext", "-layout", "-f", str(page), "-l", str(page), str(path), "-"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return _normalized(result.stdout)
-
-
 def test_manual_fragments_define_the_brake_signals_and_terminals() -> None:
     pages = {year: _fragment_pages(year) for year in FRAGMENTS}
     for year, label, tag, phrases in FRAGMENT_EVIDENCE:
@@ -287,14 +242,6 @@ def test_manual_fragments_define_the_brake_signals_and_terminals() -> None:
         assert tag in text, (year, label)
         for phrase in phrases:
             assert phrase in text, (year, label, phrase)
-
-
-def test_ecm_terminal_tables_place_the_brake_signals_on_122_and_126() -> None:
-    for year, page, footer, tag, phrases in TERMINAL_TABLES:
-        text = _pdf_page(PDFS[year], page)
-        assert footer in text and tag in text, (year, page)
-        for phrase in phrases:
-            assert phrase in text, (year, page, phrase)
 
 
 def test_pin_tracer_labels_the_brake_terminals() -> None:

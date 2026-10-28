@@ -58,6 +58,9 @@ entry point reports both installed releases and its reference release, whose
 project record is the deployment table in `../README.md`. Other releases must
 satisfy the same declared inventory and exact-output checks. A mismatch names
 the inventory count or projection path and leaves existing outputs intact.
+The PDF entry points, `extract_esm.py` and `import_nissan_datatable.py`, are
+not part of `make check`; run their `--check` after changing an extractor, a
+source pack, or a retained PDF.
 
 Examples:
 
