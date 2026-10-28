@@ -114,6 +114,45 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0003b498"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003c244"
+name = "dashing-auk"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003c244"
+to = "7mfk:0003b498"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003c244"
+name = "olive-limpet"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003c244"
+to = "7mfk:0003b498"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003fca4"
+name = "shrewd-dragon"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003fc00"
+to = "7mfk:0003b3f4"
+count = 1
+value = 28
+
 [[link]]
 type = "depends"
 to = "determined-lynx/fn"

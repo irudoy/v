@@ -201,6 +201,30 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00075898"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00075898"
+to = "7mfk:000730fc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00075898"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00075898"
+to = "7mfk:000730fc"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "primary_request_inverse_lookup/fn"

@@ -208,6 +208,7 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 [[symbol]]
 layout = "jk00c"
 address = "ffff117c"
+note = "Every other 7mfk access of ffff1170 aligns with an access of this cell."
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -220,6 +221,7 @@ value = 13
 [[symbol]]
 layout = "jk00d"
 address = "ffff117c"
+note = "Every other 7mfk access of ffff1170 aligns with an access of this cell."
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -348,6 +350,6 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "spiritual-rattlesnake/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "level"
 supports = "identity"

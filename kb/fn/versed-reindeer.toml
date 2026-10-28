@@ -263,3 +263,42 @@ kind = "trace"
 supports = "identity"
 to = "angelic-saluki/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000760e4"
+name = "cream-rooster"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000760e4"
+to = "7mfk:00073948"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000760e4"
+name = "glaring-dog"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000760e4"
+to = "7mfk:00073948"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00093164"
+name = "succinct-penguin"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000931a6"
+to = "7mfk:0007398c"
+count = 1
+value = 52

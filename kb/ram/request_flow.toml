@@ -203,6 +203,10 @@ key = "reference"
 [[symbol]]
 layout = "jk00c"
 address = "ffff19e6"
+note = """
+Every other 7mfk access of ffff1980 aligns with an access of this word; the \
+third load in request_coordinate_coordinator/fn lies at function offset \
+0x21c on both layouts."""
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -215,6 +219,10 @@ value = 33
 [[symbol]]
 layout = "jk00d"
 address = "ffff19ec"
+note = """
+Every other 7mfk access of ffff1980 aligns with an access of this word; the \
+third load in request_coordinate_coordinator/fn lies at function offset \
+0x21c on both layouts."""
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -306,7 +314,7 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "request_coordinate_coordinator/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 
@@ -320,7 +328,7 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "versed-reindeer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
