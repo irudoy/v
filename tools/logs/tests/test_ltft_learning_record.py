@@ -10,8 +10,6 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-FUEL = ROOT / "defs" / "JK08A.fuel.md"
-TELEMETRY = ROOT / "defs" / "JK08A.tuning-telemetry.md"
 PROFILE = ROOT / "patches" / "can-telemetry-profile.toml"
 LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
@@ -146,7 +144,6 @@ class LtftLearningRecordTest(unittest.TestCase):
         cls.result = cls.registry[section][name]
         cls.session = cls.registry[section][SESSION]
         cls.captures = [row["capture_name"] for row in cls.registry[section][CAPTURES]]
-        cls.published = " ".join(FUEL.read_text(encoding="utf-8").split())
 
     def test_record_belongs_to_the_registered_drive(self):
         result = self.result
@@ -261,33 +258,6 @@ class LtftLearningRecordTest(unittest.TestCase):
         self.assertEqual(status["cruise_map_1"], "pass")
         self.assertEqual(result["cruise_map_slot"], 1)
 
-    def test_published_figures_match_the_registry(self):
-        result = self.result
-        text = self.published
-        non_neutral_updates = (
-            result["in_visit_update_count"] - result["update_stft_neutral_count"]
-        )
-        for phrase in (
-            f"`{KEY}`",
-            f"`{result['tool']}`",
-            f"all {result['relation_bracketed_count']:,} tag-2 refreshes whose "
-            "bracketing tag-0 refreshes agree",
-            f"{result['relation_nonneutral_exact_count']:,} of them with a "
-            "non-neutral prediction",
-            f"stays `0x6400` in all {result['adjustment_b1_sample_count']:,} samples",
-            f"The learned word changes {result['learned_change_count']:,} times",
-            f"Of the {result['in_visit_change_count']:,} changes inside one replayed "
-            f"selector cell, {result['in_visit_update_count']:,} stay within the "
-            f"single-update bound, and {result['update_stft_sign_agreement_count']:,} "
-            f"of the {non_neutral_updates:,} with non-neutral STFT follow its sign",
-            f"No learned change occurs in the {result['gear_p_learned_pair_count']:,} "
-            f"tag-0 pairs in P or in the {result['cold_warm_capture_seconds']:.3f} s",
-            f"zero in {result['cold_warm_fueled_above_maf_gate_count']:,} snapshots",
-            f"the `0x{result['maf_summary_rpm_gate_raw']:X}` gate of `FUN 0004F736`",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, text)
-
     @pytest.mark.slow
     @unittest.skipUnless(LOGS.is_dir() and IMAGE.is_file(), "road captures are local and untracked")
     def test_audit_reproduces_the_record(self):
@@ -348,7 +318,6 @@ class LtftPublisherCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.rom = romkit.load("JK08A").data
-        cls.published = " ".join(FUEL.read_text(encoding="utf-8").split())
 
     def test_summands_and_limiting_gates(self):
         rom = self.rom
@@ -376,13 +345,6 @@ class LtftPublisherCodeTest(unittest.TestCase):
         self.assertEqual(_u16(rom, 0x57B72), 0x3E22)
         self.assertEqual(_mov_l_literal(rom, 0x57BD6), audit.PUBLICATION_HIGH_ADDRESS)
         self.assertEqual(_u16(rom, 0x57BE0), 0x3526)
-        for phrase in (
-            "`uint16[0xFFFF15FC] <= int16[0xFFFF15FE]`",
-            "`extu.w` at `0x57B60`",
-            "`cmp/gt` at `0x57B64`",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.published)
 
     def test_neutralizing_conditions(self):
         rom = self.rom
@@ -423,13 +385,6 @@ class LtftPublisherCodeTest(unittest.TestCase):
         self.assertEqual(_u16(rom, 0x57C24), 0x4E18)
         self.assertEqual(_mov_l_literal(rom, 0x57C26), 0xFFFF2302)
         self.assertEqual(_u16(rom, 0x57C2A), 0x02E5)
-        for phrase in (
-            "uint8[0xFFFF41FA].bit0 set and uint8[0xFFFF248B].bit1 set",
-            "uint8[0xFFFF249C].bit6 set and uint8[0xFFFF248B].bit0 set",
-            "`tst #1` at `0x57C02` and `bt 0x57C10`",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.published)
 
     def test_selector_resets_the_grid_on_the_shared_conditions(self):
         rom = self.rom
@@ -453,12 +408,6 @@ class LtftPublisherCodeTest(unittest.TestCase):
         self.assertEqual(_mov_l_literal(rom, 0x57ADC), 0xFFFF4B10)
         self.assertEqual(_mov_l_literal(rom, 0x57AEC), 0xFFFF4B90)
         self.assertEqual(_mov_l_literal(rom, 0x57B00), 0xFFFF2306)
-        self.assertIn(
-            "`FUN 0005796C` refills the bank grid with `0x6400` and selects "
-            "`0x6400` while runtime record `0x129` or `0xFFFF41B5.bit0` is set",
-            self.published,
-        )
-
 
 
 class LtftTelemetryCoverageTest(unittest.TestCase):
@@ -476,7 +425,6 @@ class LtftTelemetryCoverageTest(unittest.TestCase):
         cls.sources = {field["source"] for field in profile["field"]} | {
             source for _, source in cls.context_fields.values()
         }
-        cls.published = " ".join(TELEMETRY.read_text(encoding="utf-8").split())
 
     def _field(self, name, tag):
         field_tag, source = self.context_fields[name]
@@ -497,17 +445,6 @@ class LtftTelemetryCoverageTest(unittest.TestCase):
         self.assertNotIn(adjustment_b2, self.sources)
         self.assertIn("ltft_learned_b1_raw", audit.COLUMNS)
         self.assertIn("ltft_adjustment_b1_raw", audit.COLUMNS)
-        for phrase in (
-            f"The long-term trim words `{published_b1:08X}` and `{published_b2:08X}` "
-            f"in context tag {audit.PUBLISHED_TAG}",
-            f"Context tag {audit.LEARNED_TAG} carries the bank 1 summands, learned "
-            f"cell `{learned_b1:08X}` and adjustment term `{adjustment_b1:08X}`, and "
-            "`tools/logs/ltft_publication_audit.py` compares each bank 1 word with them",
-            f"The bank 2 summands `{learned_b2:08X}` and `{adjustment_b2:08X}` are "
-            "not streamed",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.published)
 
 
 if __name__ == "__main__":

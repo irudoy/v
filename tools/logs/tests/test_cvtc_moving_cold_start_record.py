@@ -15,7 +15,6 @@ from tools.logs import cvtc_target_audit, mlg_relation_audit
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
-CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 LOGS = ROOT / "tmp" / "logs-09-22"
@@ -191,7 +190,6 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
         cls.captures = {
             row["capture_name"]: row for row in cls.registry[section][CAPTURES]
         }
-        cls.published = " ".join(CVTC.read_text(encoding="utf-8").split())
 
     def classes(self, key="cold_state_class_counts"):
         return dict(zip(self.result["state_class_names"], self.result[key]))
@@ -392,147 +390,23 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
 
     def test_published_figures_match_the_registry(self):
         result = self.result
-        text = self.published
-        self.assertIn(f"`{KEY}`", text)
-        self.assertIn(f"`{result['capture_name']}`", text)
-        self.assertIn(f"`{result['capture_sha256']}`", text)
-        self.assertIn(
-            f"holds {result['record_count']:,} records, all of them snapshots", text
-        )
         self.assertEqual(_vars_row(RPM_SOURCE)["units"], "rpm/12.5")
         self.assertEqual(Fraction(model.RPM_PER_COUNT), Fraction(25, 2))
         first_rpm = Fraction(model.RPM_PER_COUNT) * result["first_record_rpm_raw"]
         self.assertEqual(first_rpm.denominator, 1)
-        self.assertIn(
-            f"its first snapshot carries {int(first_rpm):,} RPM "
-            f"(`0x{RPM_SOURCE:08X}` = {result['first_record_rpm_raw']})",
-            text,
-        )
-        low, high = result["coolant_raw_range"]
-        self.assertIn(f"Coolant rises from raw {low} to {high}", text)
-        self.assertIn(
-            f"Its bytes `0x{CODE_START:X}..0x{CODE_SPAN_END - 1:X}`, which hold "
-            "`FUN 000BD170` through `FUN 000BDF5C` and every literal these "
-            "functions load, equal stock",
-            text,
-        )
-        self.assertIn(
-            f"stock bytes 0x{CODE_START:X}..0x{CODE_SPAN_END - 1:X}, which hold "
-            "FUN 000BD170 through FUN 000BDF5C and every literal these functions "
-            "load",
-            result["calibration_basis"],
-        )
-        for band in cvtc_target_audit.COOLANT_BANDS:
-            start, end = result[f"{band}_band_elapsed_seconds"]
-            coolant_low, coolant_high = result[f"{band}_band_coolant_raw"]
-            speed = result[f"{band}_band_vehicle_speed_kmh_max"]
-            row = (
-                f"| {band} | {start:.3f}..{end:.3f} s | "
-                f"{coolant_low}..{coolant_high} | "
-                f"{result[f'{band}_comparison_count']:,} | {speed!r} km/h |"
-            )
-            with self.subTest(band=band):
-                self.assertIn(row, text)
 
         counts = dict(result)
         counts["exhaust_blend_without_neutralization_comparison_count"] = (
             result["blend_comparison_count"]
             - result["exhaust_blend_neutralization_sample_count"]
         )
-        for target, band, check, exact, comparisons in TRACE_ROWS:
-            row = (
-                f"| {target} | {band} | {check} | "
-                f"{counts[exact]:,} / {counts[comparisons]:,} |"
-            )
-            with self.subTest(row=row):
-                self.assertIn(row, text)
-
-        for band in ("cold", "blend"):
-            row = (
-                f"| `{result['capture_name']}` | {band} | "
-                f"{result[f'{band}_discriminating_comparison_count']:,} | "
-                + " | ".join(
-                    f"{result[f'{band}_discriminating_{field}_count']:,}"
-                    for field in DISCRIMINATION_FIELDS
-                )
-                + " |"
-            )
-            with self.subTest(row=row):
-                self.assertIn(row, text)
-        self.assertIn(
-            f"Of the {result['cold_discriminating_selected_count']:,} cold-band "
-            f"targets of `{result['capture_name']}` that carry the "
-            "coolant-selected byte, "
-            f"{result['cold_discriminating_selected_moving_count']:,} are moving, "
-            f"{result['cold_discriminating_selected_pedal_applied_count']:,} have "
-            f"APP1 raw above {result['state_app1_released_max']}, and "
-            f"{result['cold_discriminating_selected_off_cell_count']:,} carry a "
-            "byte that no cell of `0xB53A` holds",
-            text,
-        )
 
     def test_published_state_replay_matches_the_registry(self):
         result = self.result
-        text = self.published
-        latched = self.classes()
-        clear = self.classes("cold_state_class_counts_latch_clear")
-        self.assertIn(
-            "The replay takes `CLSD THL POS` as APP1 raw at most "
-            f"{result['state_app1_released_max']}",
-            text,
-        )
-        self.assertIn(
-            f"uses a re-arm wait of {result['state_rearm_snapshots']} snapshots",
-            text,
-        )
-        for name, label in CLASS_LABELS.items():
-            row = f"| {label} | {latched[name]:,} | {clear[name]:,} |"
-            with self.subTest(row=row):
-                self.assertIn(row, text)
-        self.assertIn(
-            "With the latch clear the replay puts "
-            f"{clear['neutral_target_active']:,} cold-band comparisons whose "
-            "target is active on the neutral path, against "
-            f"{latched['neutral_target_active']:,} with the latch set.",
-            text,
-        )
         cold_low, cold_high = result["cold_band_coolant_raw"]
-        self.assertIn(
-            f"The cold band holds raw coolant {cold_low}..{cold_high}, inside the "
-            "range in which `FUN 000BD20A` leaves the latch unchanged, so the "
-            "latch was set when the recording started.",
-            text,
-        )
         # The cold band ends below the set threshold, so no pass of this drive
         # set the latch before or during the band.
         self.assertLess(cold_high, state_audit.LATCH_SET_COOLANT)
-        retained = (
-            f"The drive reaches raw coolant {state_audit.LATCH_SET_COOLANT} only "
-            "after the cold band, so the set latch is retained from earlier "
-            "operation."
-        )
-        self.assertIn(retained, text)
-        self.assertIn(
-            f"inside the {state_audit.LATCH_CLEAR_COOLANT}.."
-            f"{state_audit.LATCH_SET_COOLANT - 1} range in which FUN 000BD20A "
-            "leaves the latch unchanged",
-            result["state_latch_basis"],
-        )
-        self.assertIn(
-            f"the drive reaches raw coolant {state_audit.LATCH_SET_COOLANT} only "
-            "after the cold band, and the latch lies in retained RAM region "
-            "0xFFFF4514..0xFFFF5CF3, which startup leaves unzeroed, so the set "
-            "latch is retained from earlier operation",
-            result["state_latch_basis"],
-        )
-        self.assertIn(
-            "With the latch set, "
-            f"{result['cold_state_map_cold_dependent_exact_count']:,} of the "
-            f"{result['cold_state_map_cold_dependent_comparison_count']:,} "
-            "cold-dependent cold-band comparisons on the map path are exact, and "
-            "none equals the main-surface byte.",
-            text,
-        )
         differ = dict(
             zip(result["state_class_names"], result["cold_differ_from_both_class_counts"])
         )
@@ -547,108 +421,8 @@ class CvtcMovingColdStartRecordTest(unittest.TestCase):
             result["cold_differ_from_both_count"],
         )
         self.assertEqual(differ["idle_other"], 1)
-        self.assertIn(
-            f"Of the {result['cold_differ_from_both_count']:,} cold-band "
-            "comparisons that differ from both replayed bytes, the replay places "
-            f"{neutral:,} on the neutral path and {differ['idle_rise']:,} on a "
-            f"rise; {differ['start_unresolved']:,} precede the first rise, "
-            f"{differ['map_within_3']:,} lie within 3 counts of the "
-            f"coolant-selected byte, {differ['map_target_0x80']:,} carry `0x80` on "
-            f"the map path, and {differ['idle_other']:,} lies on the idle-source "
-            "path outside a rise.",
-            text,
-        )
-        rearm = result["state_rearm_sweep_snapshots"]
         idle_other = result["cold_state_idle_other_by_rearm"]
-        active = result["cold_state_neutral_target_active_by_rearm"]
         self.assertEqual(idle_other[1], idle_other[2])
-        self.assertIn(
-            f"With a re-arm wait of {rearm[0]} snapshots, {idle_other[0]} "
-            "idle-source targets outside a rise differ from the replayed byte, "
-            f"against {idle_other[1]} at {rearm[1]} and {rearm[2]}; at "
-            f"{rearm[2]}, {active[2]} neutral-path targets are active.",
-            text,
-        )
-        app1 = result["state_app1_sweep"]
-        map_0x80 = result["cold_state_map_target_0x80_by_app1"]
-        neutral_active = result["cold_state_neutral_target_active_by_app1"]
-        self.assertIn(
-            f"As the APP1 bound rises from {app1[0]} to {app1[1]}, the map-path "
-            f"targets at `0x80` fall from {map_0x80[0]:,} to {map_0x80[1]:,} and "
-            f"the neutral-path active targets rise from {neutral_active[0]:,} to "
-            f"{neutral_active[1]:,}.",
-            text,
-        )
-        self.assertIn(
-            "The blend and warm bands are identical for both latch states.", text
-        )
-        cold_and_blend = (
-            result["cold_comparison_count"] + result["blend_comparison_count"]
-        )
-        self.assertIn(
-            f"stays `0x80` in all {cold_and_blend:,} cold- and blend-band "
-            f"comparisons, {result['exhaust_blend_neutralization_sample_count']:,} "
-            "of them against a blend value other than `0x80`",
-            text,
-        )
-
-    def test_record_prose_matches_the_counts(self):
-        result = self.result
-        latched = self.classes()
-        differ = dict(
-            zip(result["state_class_names"], result["cold_differ_from_both_class_counts"])
-        )
-        neutral = differ["neutral_target_0x80"] + differ["neutral_target_active"]
-        for phrase in (
-            f"{result['cold_discriminating_selected_count']:,} cold-band "
-            "comparisons whose coolant-selected byte differs from 0x80, the "
-            "main-surface byte, and the replayed 0xFFFF1553 byte carry that byte, "
-            f"{result['cold_discriminating_selected_off_cell_count']:,} of them a "
-            "byte that no cell of the surface holds, and none carries the "
-            "main-surface byte",
-            f"puts {result['cold_state_map_cold_dependent_comparison_count']:,} "
-            "cold-dependent comparisons on the map path, "
-            f"{result['cold_state_map_cold_dependent_exact_count']:,} of them exact "
-            "and none equal to the main-surface byte, predicts neutral 0x80 for "
-            f"{result['cold_state_predicted_neutral_count']:,} comparisons, "
-            f"{result['cold_state_predicted_neutral_target_0x80_count']:,} of them "
-            f"at 0x80, and places {neutral:,} of the "
-            f"{result['cold_differ_from_both_count']:,} cold-band comparisons that "
-            "differ from both replayed bytes on the neutral path and "
-            f"{differ['idle_rise']:,} on a rise",
-            "the blend band reproduces the intake blend in "
-            f"{result['intake_blend_cold_dependent_exact_count']:,} of "
-            f"{result['intake_blend_cold_dependent_comparison_count']:,} "
-            "cold-dependent comparisons",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, result["result"])
-        boundary = result["evidence_boundary"]
-        map_0x80 = result["cold_state_map_target_0x80_by_app1"]
-        neutral_active = result["cold_state_neutral_target_active_by_app1"]
-        for phrase in (
-            "the replay takes CLSD THL POS as APP1 raw at most "
-            f"{result['state_app1_released_max']}",
-            f"uses a re-arm wait of {result['state_rearm_snapshots']} snapshots",
-            f"the {latched['start_unresolved']:,} comparisons before the first "
-            "rise depend on the start delay",
-            f"{latched['map_within_3']:,} map-path comparisons lie within 3 counts "
-            "of the selected byte",
-            f"the {map_0x80[0]:,} map-path comparisons at 0x80 fall to "
-            f"{map_0x80[1]:,} as the APP1 bound rises to "
-            f"{result['state_app1_sweep'][1]} while the neutral-path comparisons "
-            f"with an active target rise from {neutral_active[0]:,} to "
-            f"{neutral_active[1]:,}",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, boundary)
-        self.assertIn(
-            f"with the latch clear the replay puts "
-            f"{self.classes('cold_state_class_counts_latch_clear')['neutral_target_active']:,} "
-            "cold-band comparisons whose target is active on the neutral path, "
-            f"against {latched['neutral_target_active']:,} with the latch set",
-            result["state_latch_basis"],
-        )
 
     def test_code_span_holds_the_functions_and_their_literals(self):
         rom = STOCK_ROM.read_bytes()

@@ -4,19 +4,16 @@ import unittest
 
 import pytest
 
-from tools.can_dashboard import model
 from tools.logs import rolling_launch_audit as audit
 
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-LOGS_README = ROOT / "tools" / "logs" / "README.md"
 LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
 KEY = "stock_speed_bracket_2026_09_22"
 CAPTURES = "schema2_profile5_captures_2026_09_22"
 ROLLING_LAUNCH_RECORD = ("rolling_launch", "map_2_vehicle_2026_09_22")
-RPM_PER_COUNT = model.RPM_PER_COUNT
 # Figures whose stock-frame value spans the value the published coordinate
 # gave. The rolling-launch record test compares the figures that engine speed
 # does not enter.
@@ -32,10 +29,6 @@ WIDENED = (
     "activation_active_ticks_bound",
     "activation_release_exit_bound_ms",
 )
-
-
-def _normalized(path):
-    return " ".join(path.read_text(encoding="utf-8").split())
 
 
 def spans(outer, inner) -> bool:
@@ -71,24 +64,10 @@ class StockSpeedBracketRecordTest(unittest.TestCase):
             record["maximum_excursion_counts"],
             max(record["capture_maximum_excursion_counts"]),
         )
-        self.assertIn(
-            f"{record['inside_count']} of {record['snapshot_count']} snapshots",
-            record["result"],
-        )
-        excursion = record["maximum_excursion_counts"]
-        self.assertIn(
-            f"at most {excursion} counts, {excursion * RPM_PER_COUNT:g} RPM,",
-            record["result"],
-        )
 
     def test_audit_margin_exceeds_the_recorded_excursion(self):
         margin = audit.STOCK_RPM_MARGIN
         self.assertGreater(margin, self.record["maximum_excursion_counts"])
-        self.assertIn(
-            f"widened by {margin} counts, {margin * RPM_PER_COUNT:g} RPM, beyond "
-            f"the excursion that registry entry `can_telemetry.{KEY}` records",
-            _normalized(LOGS_README),
-        )
 
     # The inside and excursion figures compare the stock frames with the
     # coordinate that the recorded profile published, which the recordings

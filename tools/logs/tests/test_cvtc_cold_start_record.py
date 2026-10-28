@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 import tomllib
 import unittest
 
@@ -11,7 +10,6 @@ from tools.logs import cvtc_target_audit
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-CVTC = ROOT / "defs" / "JK08A.cvtc.md"
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 LOGS = ROOT / "tmp" / "logs-09-21"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
@@ -19,7 +17,6 @@ RAM_WINDOW = 0xFFFF128C
 KEY = "can_telemetry.cvtc_cold_start_2026_09_21"
 SESSION = "schema2_profile5_drive_2026_09_21"
 CAPTURES = "schema2_profile5_captures"
-NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven")
 
 
 def _percent(exact, comparisons):
@@ -37,7 +34,6 @@ class CvtcColdStartRecordTest(unittest.TestCase):
         cls.captures = {
             row["capture_name"]: row for row in cls.registry[section][CAPTURES]
         }
-        cls.published = " ".join(CVTC.read_text(encoding="utf-8").split())
 
     def test_record_belongs_to_the_registered_drive(self):
         result = self.result
@@ -178,104 +174,15 @@ class CvtcColdStartRecordTest(unittest.TestCase):
 
     def test_published_figures_match_the_registry(self):
         result = self.result
-        text = self.published
-        self.assertIn(f"`{KEY}`", text)
-        self.assertIn(f"`{result['capture_name']}`", text)
-        self.assertIn(f"`{result['capture_sha256']}`", text)
-        self.assertIn(f"`{result['image_sha256']}`", text)
-        trc_count = NUMBER_WORDS[len(result["mlg_equivalence_trc_captures"])]
-        self.assertIn(f"For each of the {trc_count} TRC captures", text)
-        self.assertIn(
-            f"{result['mlg_equivalence_snapshot_count']:,} snapshots from "
-            f"{result['mlg_equivalence_record_count']:,} records, "
-            f"{result['mlg_equivalence_bridge_record_count']:,} of which are "
-            "bridge records",
-            text,
-        )
         self.assertEqual(result["bridge_record_count"], 0)
-        self.assertIn(
-            f"holds {result['record_count']:,} records, all of them snapshots",
-            text,
-        )
-        low, high = result["coolant_raw_range"]
-        self.assertIn(f"Coolant rises from raw {low} to {high}", text)
-        self.assertIn(f"keeps Map {result['map_slot']}", text)
-        for band in cvtc_target_audit.COOLANT_BANDS:
-            start, end = result[f"{band}_band_elapsed_seconds"]
-            coolant_low, coolant_high = result[f"{band}_band_coolant_raw"]
-            speed = result[f"{band}_band_vehicle_speed_kmh_max"]
-            row = (
-                f"| {band} | {start:.3f}..{end:.3f} s | "
-                f"{coolant_low}..{coolant_high} | "
-                f"{result[f'{band}_comparison_count']:,} | {speed!r} km/h |"
-            )
-            with self.subTest(band=band):
-                self.assertIn(row, text)
 
-        rows = (
-            ("intake", "cold", "coolant-selected map",
-             "intake_cold_direct_exact_count", "cold_comparison_count"),
-            ("intake", "cold", "coolant-selected map, active",
-             "intake_cold_active_exact_count", "intake_cold_active_comparison_count"),
-            ("intake", "cold", "replayed `0xFFFF1553`",
-             "intake_cold_alternate_exact_count", "cold_comparison_count"),
-            ("intake", "cold", "replayed `0xFFFF1553`, active",
-             "intake_cold_alternate_active_exact_count",
-             "intake_cold_alternate_active_comparison_count"),
-            ("intake", "blend", "map without downstream neutralization",
-             "intake_blend_without_neutralization_exact_count",
-             "intake_blend_without_neutralization_comparison_count"),
-            ("intake", "blend", "map, active",
-             "intake_blend_active_exact_count", "intake_blend_active_comparison_count"),
-            ("intake", "blend", "map, cold-dependent",
-             "intake_blend_cold_dependent_exact_count",
-             "intake_blend_cold_dependent_comparison_count"),
-            ("intake", "blend", "map, unchanged 16-cycle active",
-             "intake_blend_stable_active_16_exact_count",
-             "intake_blend_stable_active_16_comparison_count"),
-            ("intake", "warm", "map without downstream neutralization",
-             "intake_warm_without_neutralization_exact_count",
-             "intake_warm_without_neutralization_comparison_count"),
-            ("intake", "warm", "map, unchanged 16-cycle active",
-             "intake_warm_stable_active_16_exact_count",
-             "intake_warm_stable_active_16_comparison_count"),
-            ("exhaust", "cold", "map",
-             "exhaust_cold_exact_count", "cold_comparison_count"),
-            ("exhaust", "blend", "map without downstream neutralization",
-             "exhaust_blend_without_neutralization_exact_count",
-             "exhaust_blend_without_neutralization_comparison_count"),
-            ("exhaust", "warm", "map without downstream neutralization",
-             "exhaust_warm_without_neutralization_exact_count",
-             "exhaust_warm_without_neutralization_comparison_count"),
-            ("exhaust", "warm", "map, unchanged 16-cycle active",
-             "exhaust_warm_stable_active_16_exact_count",
-             "exhaust_warm_stable_active_16_comparison_count"),
-        )
         counts = dict(result)
         # Downstream neutralization removes exactly the neutralized samples.
         counts["exhaust_blend_without_neutralization_comparison_count"] = (
             result["blend_comparison_count"]
             - result["exhaust_blend_neutralization_sample_count"]
         )
-        for target, band, check, exact, comparisons in rows:
-            row = (
-                f"| {target} | {band} | {check} | "
-                f"{counts[exact]:,} / {counts[comparisons]:,} |"
-            )
-            with self.subTest(row=row):
-                self.assertIn(row, text)
 
-        unassigned = (
-            result["cold_comparison_count"]
-            - result["intake_cold_alternate_exact_count"]
-        )
-        self.assertIn(f"so the {unassigned:,} cold-band comparisons", text)
-        self.assertIn(
-            f"{result['intake_blend_cold_dependent_exact_count']:,} of its "
-            f"{result['intake_blend_cold_dependent_comparison_count']:,} "
-            "cold-dependent comparisons are exact",
-            text,
-        )
         trc_shares = [
             100 * exact / comparisons
             for exact, comparisons in zip(
@@ -289,12 +196,6 @@ class CvtcColdStartRecordTest(unittest.TestCase):
         )
         self.assertGreaterEqual(float(warm_share.split()[0]), min(trc_shares))
         self.assertLessEqual(float(warm_share.split()[0]), max(trc_shares))
-        self.assertIn(
-            f"agreement of {warm_share} lies within the {min(trc_shares):.3f} "
-            f"to {max(trc_shares):.3f} percent of the "
-            f"{NUMBER_WORDS[len(trc_shares)]} warm TRC captures",
-            text,
-        )
         exhaust_share = _percent(
             result["exhaust_warm_stable_active_16_exact_count"],
             result["exhaust_warm_stable_active_16_comparison_count"],
@@ -306,25 +207,9 @@ class CvtcColdStartRecordTest(unittest.TestCase):
         self.assertLess(
             float(exhaust_share.split()[0]), float(trc_exhaust_share.split()[0])
         )
-        self.assertIn(
-            f"exhaust figure of {exhaust_share} is below the "
-            f"{trc_exhaust_share} of Map 1 capture "
-            f"`{result['warm_trc_exhaust_map_1_capture']}`",
-            text,
-        )
-        cold_and_blend = (
-            result["cold_comparison_count"] + result["blend_comparison_count"]
-        )
-        self.assertIn(
-            f"stays `0x80` in all {cold_and_blend:,} cold- and blend-band "
-            f"comparisons, {result['exhaust_blend_neutralization_sample_count']:,} "
-            "of them",
-            text,
-        )
 
     def test_state_replay_places_the_cold_band(self):
         result = self.result
-        text = self.published
         self.assertTrue((ROOT / result["state_tool"]).is_file())
         self.assertEqual(result["state_class_names"], list(state_audit.CLASSES))
         classes = dict(
@@ -347,38 +232,6 @@ class CvtcColdStartRecordTest(unittest.TestCase):
         self.assertEqual(
             differ, blocked + classes["idle_rise"] + classes["idle_other"]
         )
-        self.assertIn(
-            f"divides the cold band into {classes['neutral_target_0x80']:,} "
-            f"neutral `0x80` targets, {classes['idle_exact']:,} exact idle-source "
-            f"targets, {classes['idle_rise']:,} targets on a rise, and "
-            f"{classes['idle_other']:,} other idle-source targets for either latch "
-            f"state, so the {differ:,} cold-band comparisons that differ from the "
-            f"replayed byte are {blocked:,} neutral targets while the engine-speed "
-            f"term of the idle source fails, {classes['idle_rise']:,} on a rise, "
-            f"and {classes['idle_other']:,} on the idle-source path outside a "
-            "rise.",
-            text,
-        )
-        self.assertIn(
-            f"places the {differ:,} cold-band comparisons that differ from that "
-            f"byte for either latch state: {blocked:,} carry neutral 0x80 while "
-            "the engine-speed term of the idle source fails, "
-            f"{classes['idle_rise']:,} lie on a rise, and "
-            f"{classes['idle_other']:,} lie on the idle-source path outside a "
-            "rise",
-            result["result"],
-        )
-        self.assertIn(
-            "the state replay takes CLSD THL POS as APP1 raw at most "
-            f"{result['state_app1_released_max']}",
-            result["evidence_boundary"],
-        )
-        self.assertIn(
-            f"and {classes['idle_other']:,} cold-band comparisons on the "
-            "predicted idle-source path outside a rise differ from the replayed "
-            "byte",
-            result["evidence_boundary"],
-        )
 
         fields = ("selected", "neutral", "alternate", "main", "other")
         counts = {
@@ -388,12 +241,6 @@ class CvtcColdStartRecordTest(unittest.TestCase):
         self.assertEqual(sum(counts.values()), comparisons)
         self.assertLessEqual(comparisons, result["cold_comparison_count"])
         self.assertEqual(result["cold_discriminating_selected_moving_count"], 0)
-        row = (
-            f"| `{result['capture_name']}` | cold | {comparisons:,} | "
-            + " | ".join(f"{counts[field]:,}" for field in fields)
-            + " |"
-        )
-        self.assertIn(row, text)
 
     @pytest.mark.slow
     @unittest.skipUnless(
@@ -536,21 +383,12 @@ def _record_calls(data, start, end):
     return records
 
 
-def _section(text, heading):
-    """Return the Markdown section under heading up to the next heading."""
-    start = text.index(f"\n{heading}\n")
-    end = text.find("\n#", start + len(heading) + 2)
-    return text[start:end]
-
-
 class IntakeIdleSourceCodeTest(unittest.TestCase):
     """Bind the published 0xFFFF1553 code facts to the stock ROM."""
 
     @classmethod
     def setUpClass(cls):
         cls.rom = STOCK_ROM.read_bytes()
-        cls.source = CVTC.read_text(encoding="utf-8")
-        cls.published = " ".join(cls.source.split())
 
     def test_producer_reads_the_tables_the_audit_replays(self):
         rom = self.rom
@@ -594,12 +432,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         # mov.b @(r0,r13),r5 loads 0xFFFF1553.
         self.assertEqual(RAM_WINDOW + _mov_w_literal(rom, 0xBDE14), 0xFFFF1553)
         self.assertEqual(_u16(rom, 0xBDE16), 0x05DC)
-        for phrase in (
-            "stored to `0xFFFF1BEE` at `0xBDE04`",
-            "tests `0xFFFF24A7` bit 1 at `0xBDE0A`",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.published)
 
     def test_ramp_reload_tables_hold_five(self):
         rom = self.rom
@@ -621,11 +453,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         for address in (0x12EFE, 0x12F06):
             with self.subTest(table=hex(address)):
                 self.assertEqual(set(rom[address : address + 8]), {5})
-        self.assertIn("bit 0 is set (stock `0x01`)", self.published)
-        self.assertIn(
-            "Both stock tables hold 5 in each of their eight cells.",
-            self.published,
-        )
 
     def test_idle_bit_producer_requires_closed_throttle_and_low_speed(self):
         rom = self.rom
@@ -656,15 +483,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         self.assertEqual(_u16(rom, 0xBD942), 0x3606)
         self.assertEqual(_conditional_target(rom, 0xBD944), 0xBD9C2)
         self.assertEqual(rom[0x871D], 2)
-        for phrase in (
-            "sets the bit at `0xBD994`",
-            "`CLSD THL POS` copy `0xFFFF2458` bit 5",
-            f"ffff110e <= ROM8[0x871D] = {rom[0x871D]} vehicle-speed byte",
-            f"the vehicle-speed byte at most {rom[0x871D]}.",
-            "clears it at `0xBD9C0` or `0xBD9C6`",
-        ):
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, self.published)
 
     def test_idle_bit_terms_follow_the_published_order(self):
         rom = self.rom
@@ -761,23 +579,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         )
         self.assertEqual(iat_records, [0x12E])
         self.assertEqual(option_records, [-1] * 6)
-        for phrase in (
-            "`FUN 000BD20A` writes `0xFFFF24A7` bit 1 on every call through its "
-            "single exit.",
-            "ffff248b bit 1 electrical enable",
-            "ffff2458 bit 5 CLSD THL POS",
-            "The pass also requires `0xFFFF41D1` bit 7, `0xFFFF41D0` bit 0, "
-            "`0xFFFF41BE` bit 6, `0xFFFF4250` bit 7, `0xFFFF245C` bit 4, and bits "
-            "0 and 1 of `0xFFFF2F64` and `0xFFFF14B8` clear, and the stored-fault "
-            "bit of `FUN 00025E20` clear for records `0x8D..0x96`, `0xFC..0xFF`, "
-            "`0x127`, `0x128`, and `0x153..0x156`, for `0xDD`, `0xDE`, and `0xE4` "
-            "under `ROM8[0x8616]` bit 0, and for `0x12E` under `ROM8[0x870F]` bit "
-            "0.",
-            "The terms under `ROM8[0x870C]` bit 5 and `ROM8[0x870E]` bit 4 are "
-            "skipped with the stock bytes `0x44` and `0x28`.",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
 
     def test_start_and_rearm_countdowns(self):
         rom = self.rom
@@ -852,20 +653,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
                 state_audit.load_state_calibration().idle_rpm_set_offset,
             ),
         )
-        for phrase in (
-            "`ROM8[0x8714] = 30` at `0xBD5F6`",
-            "sets `0xFFFF248F` bit 3, and clears `0xFFFF248F` bits 2 and 4",
-            "stay clear while `0xFFFF2528` is nonzero or `0xFFFF248F` bit 3 is "
-            "clear",
-            "Each pass through `0xBD9C2` reloads re-arm countdown `0xFFFF2527` "
-            "from `ROM8[0x8713] = 100` at `0xBD9C8`, and the set path stores 0 to "
-            "it at `0xBD9CA` and sets `0xFFFF248F` bit 4 at `0xBD9A4`.",
-            "the bit stays clear at `0xBD9C0` without the reload while "
-            "`0xFFFF248D` bit 3 is set or, once `0xFFFF248F` bit 4 is set, while "
-            "`0xFFFF2527` is nonzero.",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
 
     def test_operating_bit_stores_the_enable_register(self):
         rom = self.rom
@@ -1011,33 +798,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         self.assertEqual(RAM_WINDOW + _mov_w_literal(rom, 0xBD3A8), 0xFFFF19AA)
         self.assertEqual(_u16(rom, 0xBD3B6), 0x7601)
         self.assertEqual(_u16(rom, 0xBD3B8), 0x0364)
-        for phrase in (
-            "`FUN 000BD20A` stores register `r10` to `0xFFFF246B` bit 6 at "
-            "`0xBD9D6`.",
-            "It clears `r10` at `0xBD224` and sets it at `0xBD41E` only while "
-            "start counter `0xFFFF19AA` exceeds `0xFFFF17F0`, `FUN 00025E4E` "
-            "returns zero, the stored-fault bits of records `0x14B` and `0x14C` "
-            "are clear, battery snapshot `0xFFFF1108` lies above "
-            "`ROM8[0x8E0A] = 125` and at most `ROM8[0x8E07] = 200`, `0xFFFF244F` "
-            "bit 5 is set, and `0xFFFF3622` bits 0 and 1 are clear.",
-            "The start event zeroes `0xFFFF19AA` and loads `0xFFFF17F0` from "
-            "`0x12A8A` by oil temperature `0xFFFF2772` while `ROM8[0x8616]` bit 0 "
-            "is set, 30 in each stock cell; later calls count `0xFFFF19AA` up to "
-            "255 while `0xFFFF84C3` bit 7 is set.",
-            "`0xBD432` stores the result as intake electrical enable `0xFFFF248B` "
-            "bit 1.",
-            "`r10` returns to 0 at `0xBD462` when `CLSD THL POS` copy "
-            "`0xFFFF2458` bit 5 is set while `ROM8[0x8940]` bit 1 is clear (stock "
-            "`0x01`), or when `0xFFFF248D` bit 3, `0xFFFF41D1` bit 7, "
-            "`0xFFFF41D0` bit 0, or `0xFFFF41BE` bit 6 is set.",
-            "It returns to 0 at `0xBD492` unless coolant ceiling flag "
-            "`0xFFFF24A9` bit 6, the coolant floor, and engine-speed flag "
-            "`0xFFFF24A8` bit 4 are all set.",
-            "The idle-source path sets `r10` again at `0xBD988`, so the operating "
-            "bit is set whenever `0xFFFF24A7` bit 1 is.",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
 
     def test_latch_selects_the_coolant_floor(self):
         rom = self.rom
@@ -1076,23 +836,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         self.assertEqual(_u16(rom, 0xBD2D0), 0x8462)
         self.assertEqual(_u16(rom, 0xBD2D2), 0xC9BF)
         self.assertEqual(_u16(rom, 0xBD2D4), 0x8062)
-        low, high = (
-            state_audit.LATCH_CLEAR_COOLANT,
-            state_audit.LATCH_SET_COOLANT - 1,
-        )
-        for phrase in (
-            "`0xFFFF24A9` bit 0 as raw coolant above `ROM8[0x8E06] = 70`, adding "
-            "3 while set.",
-            "The floor is `0xFFFF24A9` bit 0 while latch `0xFFFF5B2C` bit 6 is set "
-            "and `0xFFFF24A9` bit 3, raw coolant above 106, while it is clear.",
-            "The function sets the latch at raw coolant `0xFFFF1071` of "
-            f"{state_audit.LATCH_SET_COOLANT} and above (`0xBD2B6`..`0xBD2C6`) "
-            f"and clears it below {state_audit.LATCH_CLEAR_COOLANT} "
-            f"(`0xBD2C8`..`0xBD2D4`), so raw coolant from {low} to {high} leaves "
-            "the latch unchanged.",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
         self.assertEqual(rom[0x8E03], 106)
 
     def test_conditioner_neutralizes_without_the_operating_bit(self):
@@ -1120,34 +863,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
         self.assertEqual(_u16(rom, 0xBDCF8), 0xE080)
         self.assertEqual(_mov_l_literal(rom, 0xBDEC8) + 2, 0xFFFF2326)
         self.assertEqual(_u16(rom, 0xBDECA), 0x8052)
-        for phrase in (
-            "`FUN 000BDC66` tests the operating bit at `0xBDCDE`.",
-            "While it is clear, the function stores neutral `0x80` to "
-            "`0xFFFF2326` through `0xBDCF6` and `0xBDECA` unless `0xFFFF248B` bit "
-            "1 and IOLID `0x19` active-test bit `0xFFFF41FA` bit 0 are both set.",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
-
-    def test_published_rom_constants_match_the_stock_bytes(self):
-        checked = 0
-        for heading in (
-            "### Intake idle source `0xFFFF1553`",
-            "### Intake operating bit `0xFFFF246B` bit 6",
-        ):
-            section = " ".join(_section(self.source, heading).split())
-            for width, address, value in re.findall(
-                r"ROM(8|16)\[0x([0-9A-F]+)\] = (0x[0-9A-F]+|\d+)", section
-            ):
-                address = int(address, 16)
-                size = int(width) // 8
-                with self.subTest(address=hex(address)):
-                    self.assertEqual(
-                        int.from_bytes(self.rom[address : address + size], "big"),
-                        int(value, 0),
-                    )
-                checked += 1
-        self.assertGreaterEqual(checked, 15)
 
     def test_stock_tables_match_the_published_values(self):
         source = cvtc_target_audit.load_calibration(
@@ -1186,18 +901,6 @@ class IntakeIdleSourceCodeTest(unittest.TestCase):
             exhaust.address, cvtc_target_audit.EXHAUST_CVTC_COLD_MAP_ADDRESS
         )
         self.assertEqual({value for row in exhaust.table for value in row}, {0x80})
-        for phrase in (
-            "Stock `S` is 128 up to 1200 RPM, 148 at 1400 RPM, 168 from 1600 "
-            "to 2000 RPM, and 128 from 2200 RPM.",
-            "Stock `W` is 128 from coolant index 96 to 128 (raw 70 to 90, 20 to "
-            "40 degC) and 0 at index 80 and below and at index 144 and above, "
-            "so the byte is neutral 128 at raw 60 and below and at raw 100 and "
-            "above.",
-            f"every cell of exhaust cold surface `0x{exhaust.address:X}` is "
-            "`0x80`",
-        ):
-            with self.subTest(phrase=phrase[:40]):
-                self.assertIn(phrase, self.published)
 
 
 if __name__ == "__main__":

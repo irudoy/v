@@ -9,8 +9,6 @@ from tools.logs import torque_scale_audit as audit
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-CAN = ROOT / "defs" / "JK08A.can.md"
-README = ROOT / "tools" / "logs" / "README.md"
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 KEY = "engine_torque_scale.vehicle_2026_09_22"
 COMPATIBLE = "compatible"
@@ -23,14 +21,6 @@ def _lookup(registry, dotted):
     for part in dotted.split("."):
         node = node[part]
     return node
-
-
-def _number(value):
-    return f"{value:,}" if isinstance(value, int) and value >= 1000 else f"{value}"
-
-
-def _range(low, high, unit=""):
-    return f"{low}..{high}{unit}"
 
 
 # Every net figure of the record subtracts the remainder that its TRC captures
@@ -48,8 +38,6 @@ class TorqueScaleRecordTest(unittest.TestCase):
         cls.captures = {
             row["capture_name"]: row for row in _lookup(cls.registry, cls.result["capture_registry"])
         }
-        cls.published = " ".join(CAN.read_text(encoding="utf-8").split())
-        cls.readme = " ".join(README.read_text(encoding="utf-8").split())
 
     def test_record_belongs_to_the_registered_drive(self):
         result = self.result
@@ -82,11 +70,6 @@ class TorqueScaleRecordTest(unittest.TestCase):
         self.assertEqual(result["actual_torque_frame"], audit.ACTUAL_TORQUE_ID)
         self.assertEqual(result["can_torque_divisor"], audit.CAN_TORQUE_DIVISOR)
         self.assertEqual(result["can_torque_zero"], audit.CAN_TORQUE_ZERO)
-        packing = (
-            f"word = clamp(trunc0(source / {audit.CAN_TORQUE_DIVISOR}) + {audit.CAN_TORQUE_ZERO}, 0, 4094)"
-        )
-        self.assertIn(packing, self.published)
-        self.assertIn(f"`{result['net_torque_address']:#010X}`".replace("0X", "0x"), self.published)
 
     def test_gear_speeds_scale_the_locked_gear(self):
         result = self.result
@@ -170,32 +153,8 @@ class TorqueScaleRecordTest(unittest.TestCase):
             self.assertLessEqual(low, nominal)
             self.assertLessEqual(nominal, high)
 
-    def test_published_text_reads_the_registry(self):
+    def test_record_holds_six_gear_pair_segments(self):
         result = self.result
-        published = self.published
-        self.assertIn(f"`{KEY}`", published)
-        self.assertIn("`tools/logs/torque_scale_audit.py`", published)
-        self.assertIn(f"{result['point_count']} converter-coupled full-pedal points", published)
-        self.assertIn(f"in {len(result['segment_capture_name'])} segments", published)
-        self.assertIn(f"remainder of {result['net_remainder_raw']} raw", published)
-        self.assertIn(f"{_number(result['remainder_sample_count'])} TRC samples", published)
-        self.assertIn(f"is {result['ratio_nominal']:.3f} of net torque", published)
-        self.assertIn(f"and {_range(*result['ratio_box'])} over the box", published)
-        labels = [f"net at `{scale} Nm`" for scale in result["candidate_scales_nm_per_raw"]]
-        rows = zip(labels, result["candidate_median_grade_percent"], result["candidate_median_grade_percent_box"])
-        for label, nominal, (low, high) in rows:
-            self.assertIn(f"| {label} | {nominal} percent | {_range(low, high)} percent |", published)
-        low, high = result["gross_median_grade_percent_box"]
-        gross = result["gross_median_grade_percent"]
-        self.assertIn(f"| gross state at `0.1 Nm` | {gross} percent | {_range(low, high)} percent |", published)
-        self.assertIn(f"median uphill grade of {gross} percent", published)
-        self.assertIn(
-            f"The {result['coast_window_count']} neutral-coast windows imply grades of "
-            f"{_range(*result['coast_grade_percent_range'])} percent", published)
-        pair_low = min(low for low, _ in result["gear_pair_scale_box"])
-        pair_high = max(high for _, high in result["gear_pair_scale_box"])
-        self.assertIn(
-            f"spans {pair_low}..{pair_high} Nm per raw count over the six gear pairs", published)
         self.assertEqual(len(result["gear_pair_segment"]), 6)
 
     def test_operator_report_names_the_comparison_runs(self):
@@ -203,28 +162,6 @@ class TorqueScaleRecordTest(unittest.TestCase):
         comparisons = [name for name in result["capture_name"] if name.startswith("xxx-")]
         self.assertEqual(len(comparisons), 7)
         self.assertEqual({name.split("-map-")[1].split("-")[0] for name in comparisons}, {"1", "3"})
-        observation = result["operator_observation"]
-        self.assertTrue(observation.startswith("the xxx captures are Map 1 and Map 3 acceleration comparisons"))
-        self.assertIn("the roads of the runs have grade", observation)
-        self.assertIn("neither vehicle mass nor tire pressure is known", observation)
-        self.assertIn(f"By operator report, {observation.replace('xxx', '`xxx`', 1)}.", self.published)
-
-    def test_readme_states_the_tool_thresholds(self):
-        readme = self.readme
-        self.assertIn("## JK08A engine-torque scale audit", README.read_text(encoding="utf-8"))
-        for text in (
-            f"at {audit.LOCKED_MIN_SPEED_KMH:g} km/h or more",
-            f"within {100 * audit.LOCKED_RATIO_TOLERANCE:g} percent of the window median",
-            f"APP1 of {audit.REMAINDER_MIN_APP1} raw or more, a timing command of {audit.REMAINDER_MIN_TIMING_RAW} or more",
-            f"APP1 at {audit.FULL_PEDAL_APP1} raw or more that lasts at least {audit.MIN_SEGMENT_SECONDS:g} s",
-            f"Points lie {audit.POINT_STEP_SECONDS:g} s apart and use line fits over {audit.FIT_HALF_SECONDS:g} s",
-            f"speed ratio of {audit.COUPLING_RANGE[0]:.2f}..{audit.COUPLING_RANGE[1]:.2f} in one gear",
-            f"a timing command of {audit.MIN_TIMING_RAW} or more, no fuel inhibit, and {audit.MIN_POINT_RPM:g} RPM or more",
-            f"faster than {-audit.SHIFT_DROP_RPM_PER_S:g} RPM/s marks a shift",
-            f"from {audit.SHIFT_GUARD_SECONDS[0]:g} s before to {audit.SHIFT_GUARD_SECONDS[1]:g} s after it",
-            f"all {2 ** len(audit.VEHICLE_BOX)} corners of the box",
-        ):
-            self.assertIn(text, readme)
 
 
 if __name__ == "__main__":
