@@ -87,7 +87,10 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["metadata"]["MCU"] == "SH7059"
     assert rom["counts"]["diagnostics"] == 76
     assert rom["counts"]["maps"] == 139
-    assert rom["counts"]["axes"] == 37
+    # The definition carries the Engine Load axis of the engine-torque map,
+    # which lies outside the builder writable ranges, as static labels without
+    # a ROM address, so it is no axis object of the model.
+    assert rom["counts"]["axes"] == 36
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
