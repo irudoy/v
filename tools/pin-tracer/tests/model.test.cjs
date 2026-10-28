@@ -40,6 +40,7 @@ function connection(overrides = {}) {
 function payload(connections, preferences) {
   return {
     schema: SCHEMA,
+    sources: { ...model.SOURCE_BINDINGS },
     connections,
     ...(preferences ? { preferences } : {})
   };
@@ -236,7 +237,7 @@ test("validates and normalizes a complete workspace payload", () => {
   assert.equal(Object.hasOwn(result.connections[0], "status"), false);
 });
 
-test("accepts the legacy browser import fixture and removes evidence statuses", () => {
+test("accepts the source-bound browser import fixture and removes evidence statuses", () => {
   const fixturePath = path.join(__dirname, "fixtures", "import-workspace.json");
   const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
   const result = model.validatePayload(fixture, validationOptions);
@@ -497,7 +498,8 @@ test("the HTML data set covers every connector and MCU package position", () => 
   assert.match(html, /t\("form\.observedPath"\)/);
   assert.match(html, /t\("template\.possible"/);
   assert.match(html, /language:\s*state\.language/);
-  assert.match(html, /serviceManualSha256:\s*"f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"/);
+  assert.equal(model.SOURCE_BINDINGS.serviceManualSha256,
+    "f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc");
   assert.match(html, /Neither connector terminal maps one-to-one to an MCU TX or RX pin/);
   assert.match(html, /Ground is a shared return network, not a one-to-one signal connection/);
   assert.match(

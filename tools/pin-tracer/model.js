@@ -13,6 +13,12 @@
     language: "en"
   });
 
+  const SOURCE_BINDINGS = Object.freeze({
+    ecuPinoutSha256: "9126b97d5530863ecbf568a140f8d3726f7b9db909d19a8e8e36de13c70b15a2",
+    renesasManualSha256: "6d8b0e3511ed583df0bec31d0d28641d1b06b23042985f41ad2d9df44fccd8ca",
+    serviceManualSha256: "f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"
+  });
+
   function mcuPinCategories(name) {
     const value = String(name || "");
     if (/^AN\d+$/.test(value)) return ["analog"];
@@ -333,6 +339,14 @@
     if (!payload || payload.schema !== config.schema || !Array.isArray(payload.connections)) {
       throw new Error("Unsupported or invalid pin-tracer JSON.");
     }
+    for (const [name, expected] of Object.entries(SOURCE_BINDINGS)) {
+      const actual = payload.sources?.[name];
+      if (actual !== expected) {
+        throw new Error(
+          `Source SHA-256 ${name}: expected ${expected}; received ${actual ?? "<missing>"}.`
+        );
+      }
+    }
     const topologyKeys = new Set(Object.keys(config.topologyProfiles || {}));
     const createId = typeof config.createId === "function"
       ? config.createId
@@ -419,6 +433,7 @@
 
   return Object.freeze({
     DEFAULT_PREFERENCES,
+    SOURCE_BINDINGS,
     mcuPinCategories,
     classifyMcuPin,
     mcuPinMatchesCategory,

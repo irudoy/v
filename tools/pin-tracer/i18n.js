@@ -601,6 +601,7 @@
 
   function localizeValidationError(language, message) {
     const value = String(message || "");
+    if (value.startsWith("Source SHA-256 ")) return value;
     if (normalizeLanguage(language) !== "ru") return value;
     if (value === "Unsupported or invalid pin-tracer JSON.") {
       return "Неподдерживаемый или некорректный JSON pin-tracer.";

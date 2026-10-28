@@ -340,6 +340,11 @@
       font-size: 0.75rem;
     }
 
+    #storageState {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
     .connector-stack {
       display: flex;
       align-items: flex-start;
@@ -1071,7 +1076,7 @@
       <article class="panel" aria-labelledby="connectionsHeading">
         <div class="section-heading">
           <h2 id="connectionsHeading" data-i18n="connections.heading">Recorded connections</h2>
-          <span id="storageState" data-i18n="storage.saved">Saved locally</span>
+          <span id="storageState" data-i18n="storage.saved" role="status" aria-live="polite">Saved locally</span>
         </div>
         <div class="table-wrap">
           <table>
@@ -1114,6 +1119,7 @@
     const LANGUAGE_STORAGE_KEY = "vq-hr-ecu-pin-tracer-language";
     const SCHEMA = "vq-hr-ecu-pin-tracer/v1";
     const {
+      SOURCE_BINDINGS,
       mcuPinCategories,
       classifyMcuPin,
       isDefaultSelectable,
@@ -1608,6 +1614,7 @@
       showSavedLines: false,
       language: initialLanguage,
       storageStatus: "storage.saved",
+      restoreFailure: null,
       connections: []
     };
 
@@ -1676,7 +1683,7 @@
       document.querySelectorAll("[data-i18n-title]").forEach(element => {
         element.title = t(element.dataset.i18nTitle);
       });
-      refs.storageState.textContent = t(state.storageStatus);
+      renderStorageStatus();
       refs.languageButtons.forEach(button => {
         const active = button.dataset.language === state.language;
         button.classList.toggle("active", active);
@@ -2212,6 +2219,10 @@
     }
 
     function saveConnection(connection) {
+      if (state.restoreFailure) {
+        window.alert(refs.storageState.textContent);
+        return;
+      }
       if (!connection.route) {
         window.alert(t("alert.missingPath"));
         return;
@@ -2348,15 +2359,22 @@
       requestAnimationFrame(drawConnections);
     }
 
+    function renderStorageStatus() {
+      refs.storageState.textContent = state.restoreFailure
+        ? `${t(state.storageStatus)}: ${state.restoreFailure.message} `
+          + `(${t("action.import")} / ${t("action.clearWorkspace")} / ${t("action.export")})`
+        : t(state.storageStatus);
+    }
+
     function persist() {
+      if (state.restoreFailure) {
+        renderStorageStatus();
+        return;
+      }
       const payload = {
         schema: SCHEMA,
         updatedAt: new Date().toISOString(),
-        sources: {
-          ecuPinoutSha256: "9126b97d5530863ecbf568a140f8d3726f7b9db909d19a8e8e36de13c70b15a2",
-          renesasManualSha256: "6d8b0e3511ed583df0bec31d0d28641d1b06b23042985f41ad2d9df44fccd8ca",
-          serviceManualSha256: "f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"
-        },
+        sources: SOURCE_BINDINGS,
         preferences: {
           advancedPins: state.advancedPins,
           showSavedLines: state.showSavedLines,
@@ -2367,12 +2385,12 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
       state.storageStatus = "storage.saved";
-      refs.storageState.textContent = t(state.storageStatus);
+      renderStorageStatus();
     }
 
     function restore() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      if (raw === null) return;
       try {
         const payload = JSON.parse(raw);
         const workspace = validatePayload(payload);
@@ -2388,8 +2406,9 @@
         refs.showSavedLines.checked = state.showSavedLines;
       } catch (error) {
         console.error(error);
+        state.restoreFailure = { raw, message: error.message };
         state.storageStatus = "storage.loadError";
-        refs.storageState.textContent = t(state.storageStatus);
+        renderStorageStatus();
       }
     }
 
@@ -2405,11 +2424,7 @@
       const payload = {
         schema: SCHEMA,
         exportedAt: new Date().toISOString(),
-        sources: {
-          ecuPinoutSha256: "9126b97d5530863ecbf568a140f8d3726f7b9db909d19a8e8e36de13c70b15a2",
-          renesasManualSha256: "6d8b0e3511ed583df0bec31d0d28641d1b06b23042985f41ad2d9df44fccd8ca",
-          serviceManualSha256: "f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"
-        },
+        sources: SOURCE_BINDINGS,
         preferences: {
           advancedPins: state.advancedPins,
           showSavedLines: state.showSavedLines,
@@ -2417,11 +2432,14 @@
         },
         connections: state.connections
       };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const blob = new Blob([
+        state.restoreFailure ? state.restoreFailure.raw : JSON.stringify(payload, null, 2)
+      ], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = `vq-hr-pin-trace-${formatLocalDate(new Date())}.json`;
+      const suffix = state.restoreFailure ? "-unrestored" : "";
+      anchor.download = `vq-hr-pin-trace-${formatLocalDate(new Date())}${suffix}.json`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -2432,9 +2450,11 @@
       try {
         const rawPayload = JSON.parse(await file.text());
         const payload = validatePayload(rawPayload);
-        if (state.connections.length && !window.confirm(t("confirm.importWorkspace"))) {
+        if ((state.connections.length || state.restoreFailure)
+            && !window.confirm(t("confirm.importWorkspace"))) {
           return;
         }
+        state.restoreFailure = null;
         state.connections = payload.connections;
         state.advancedPins = payload.preferences.advancedPins;
         state.showSavedLines = payload.preferences.showSavedLines;
@@ -2463,13 +2483,14 @@
     }
 
     function clearWorkspace() {
-      if (!state.connections.length) return;
+      if (!state.connections.length && !state.restoreFailure) return;
       if (!window.confirm(t("confirm.clearWorkspace"))) return;
       state.connections = [];
       localStorage.removeItem(STORAGE_KEY);
+      state.restoreFailure = null;
       state.storageStatus = "storage.empty";
       clearSelection();
-      refs.storageState.textContent = t(state.storageStatus);
+      renderStorageStatus();
     }
 
     function topologyOptions(selected) {

@@ -1,5 +1,10 @@
 {
   "schema": "vq-hr-ecu-pin-tracer/v1",
+  "sources": {
+    "ecuPinoutSha256": "9126b97d5530863ecbf568a140f8d3726f7b9db909d19a8e8e36de13c70b15a2",
+    "renesasManualSha256": "6d8b0e3511ed583df0bec31d0d28641d1b06b23042985f41ad2d9df44fccd8ca",
+    "serviceManualSha256": "f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"
+  },
   "exportedAt": "2026-07-28T00:00:00.000Z",
   "preferences": {
     "advancedPins": true,

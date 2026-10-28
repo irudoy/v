@@ -73,6 +73,18 @@ Saved connection lines remain hidden by default to keep the package view
 readable. Enable `Show saved lines` when the complete routing overlay is useful.
 The active connection under selection is always shown.
 
+Import and local restoration require the workspace's source SHA-256 bindings
+to match the reference revisions used by the application. A missing or differing
+binding names the source and reports its expected and received digest.
+
+A failed restoration preserves the original stored payload verbatim. Language
+and checkbox changes leave that record untouched, and new connections cannot
+be saved until recovery or discard. `Export JSON` downloads the original record
+with an `-unrestored` filename suffix. A valid `Import JSON` replaces it only
+after confirmation; `Clear workspace` explicitly discards it after confirmation,
+including when no connections could be loaded. The storage status retains the
+error and the available actions through language changes.
+
 The topology box is a generic circuit template, not an observed path. The route
 field is intentionally blank for a new pair and must contain the component path
 found on the physical board. `Use template` copies the selected generic template
