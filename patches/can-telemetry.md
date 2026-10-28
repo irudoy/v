@@ -605,7 +605,9 @@ It then repeats the strict generation against the rewritten layout: the locks,
 the static instruction audit, and the composition must hold before the layout
 and `can-telemetry-payloads.toml` are replaced. Unchanged inputs leave both
 files byte-identical. The update prints every changed lock with its declared
-and derived value.
+and derived value. The relocated runtime targets assemble the same telemetry
+sources, so the target finally regenerates `runtime-target-payloads.toml` with
+`tools/sh-elf-run/generate-targets.sh`.
 
 The strict `--telemetry` generator and its `--check` mode never rewrite a lock.
 A lock that differs from the assembled bytes refuses and names the update

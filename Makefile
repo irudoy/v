@@ -59,7 +59,7 @@ help:
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
 		'  telemetry-update  Derive the JK08A CAN telemetry layout locks and payload manifest' \
-		'                    from the telemetry sources.' \
+		'                    from the telemetry sources, then rebuild the relocated payloads.' \
 		'  rom-correspondence Compare the function-signature exports of two layouts.' \
 		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence from L0.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
@@ -183,6 +183,7 @@ runtime-targets-generate:
 telemetry-update:
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	tools/sh-elf-run/generate-targets.sh --telemetry --update
+	tools/sh-elf-run/generate-targets.sh
 
 rom-correspondence:
 	@test -n "$(strip $(CORRESPONDENCE_SOURCE_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_SOURCE_EXPORT is required' >&2; exit 2; }
