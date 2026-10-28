@@ -51,7 +51,7 @@ timeout = 300
 [guard]
 trees = ["kb/", "l0/"]
 git = ["add", "checkout", "commit", "diff", "log", "merge", "mv", "rebase", "restore", "rm",
-       "show --stat", "stash", "status", "switch"]
+       "show", "stash", "status", "switch"]
 
 # Default output budgets of the read commands in tokens (UTF-8 bytes / 3).
 [budget]

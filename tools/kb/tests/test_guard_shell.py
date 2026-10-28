@@ -171,9 +171,21 @@ read = "open"
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
         for command in ("git show --stat HEAD -- kb/names.csv", "git diff -- kb/names.csv",
+                        "git show 2a4ce4dc -- GUIDE.md Makefile | grep kb",
+                        "git show HEAD -- kb/names.csv", "git show HEAD -- GUIDE.md",
+                        "git show HEAD -- public:kb/names.csv",
                         "git -C . status --short", "git log --oneline -- kb/names.csv"):
             with self.subTest(command=command):
                 self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_git_show_review_does_not_authorize_blobs_or_output_writes(self):
+        for command in ("git show HEAD:kb/names.csv", "git show HEAD:l0/7mfk/funcs.csv",
+                        "git show HEAD --output=GUIDE.md", "git show HEAD -- GUIDE.md > GUIDE.md"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        self.guard.git = ("show --stat",)
+        self.assertIsNone(self.denied("Bash", command="git show --stat HEAD -- GUIDE.md"))
+        self.assertIsNotNone(self.denied("Bash", command="git show HEAD -- GUIDE.md"))
 
     def test_static_shell_variables_preserve_literal_and_file_operand_roles(self):
         self.assertIsNone(self.denied("Bash", command="name=kb/names.csv; printf '%s' \"$name\""))

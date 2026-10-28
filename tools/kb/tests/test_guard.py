@@ -12,7 +12,7 @@ from kb import guard, project, repo
 CONFIG = """\
 [guard]
 trees = ["kb/", "l0/"]
-git = ["add", "commit", "diff", "log", "show --stat", "status"]
+git = ["add", "commit", "diff", "log", "show", "status"]
 """
 
 PROJECTIONS = """\

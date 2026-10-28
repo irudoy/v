@@ -1745,7 +1745,7 @@ security boundary: the gates validate every file whatever wrote it.
 | `Bash` that reads or searches a guarded operand, or edits a guarded tree or projection, outside a trusted runner | Deny | The matching `kb` command |
 
 - The git allow list covers `status`, `add`, `commit`, `diff`, `log`,
-  `show --stat`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
+  `show`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
   `mv`, and `rm`, so diffs stay reviewable. Explicit blob reads, commit message
   files, `grep`, `diff --no-index`, output files and worktree file edits receive
   their file checks before that allow list applies. Index-only operations

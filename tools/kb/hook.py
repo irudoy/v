@@ -569,7 +569,8 @@ class Guard:
         if command == "commit":
             return self.shell_paths(option_files(args, {"-F", "--file", "-t", "--template"}), "read", cwd)
         if command == "show":
-            for word in args:
+            revisions = args[:args.index("--")] if "--" in args else args
+            for word in revisions:
                 if ":" in word and not word.startswith("-"):
                     reason = self.shell_paths([word.split(":", 1)[1]], "read", cwd)
                     if reason:
@@ -743,8 +744,11 @@ class Guard:
         return runner.startswith(RUNNERS)
 
     def git_passes(self, words):
-        """Whether a git command line after `git` runs a subcommand of the
-        allow list; `show` passes only with `--stat`."""
+        """Whether git runs an allowed review or maintenance subcommand.
+
+        git_operation checks blob reads and output writes before this list.
+        The former show --stat entry retains its narrower compatibility.
+        """
         index = 0
         while index < len(words) and words[index].startswith("-"):
             index += 2 if words[index] in ("-C", "-c", "--git-dir", "--work-tree") else 1
@@ -752,7 +756,7 @@ class Guard:
             return False
         subcommand = words[index]
         if subcommand == "show":
-            return "--stat" in words[index:] and "show --stat" in self.git
+            return "show" in self.git or "--stat" in words[index:] and "show --stat" in self.git
         return subcommand in self.git
 
 
