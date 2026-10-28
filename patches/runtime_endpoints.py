@@ -1,8 +1,8 @@
 """Classify the runtime layers of an image built from a registered stock image.
 
 An image carries no runtime, the current builder runtime, or a registered
-historical Rolling Launch endpoint under an optional current CAN telemetry
-layer. Each historical signature names the ROMs whose layout it describes, and
+historical Rolling Launch endpoint under an optional current or registered
+historical CAN telemetry layer. Each signature names the ROMs it describes, and
 classification considers only the signatures of the selected ROM. Partial,
 unknown, or mixed layers are rejected with a named reason.
 """
@@ -14,6 +14,7 @@ import hashlib
 import struct
 
 from patches import can_telemetry
+from patches import can_telemetry_history
 from patches import jk08a_checksums as canonical_checksums
 from patches import map_switching_compose
 from patches import rolling_launch
@@ -580,9 +581,9 @@ def require_coherent_rolling_endpoint(
 
 
 def require_coherent_telemetry_endpoint(
-    source, layout, payloads, context, launch_layout=None
+    source, layout, payloads, context, launch_layout=None, rom=None
 ):
-    """Accept only an absent or complete current CAN telemetry endpoint."""
+    """Accept an absent, current, or exactly registered historical endpoint."""
     expected_units = set(layout.assembly_unit_by_key)
     if set(payloads) != expected_units:
         raise EndpointError(
@@ -660,6 +661,17 @@ def require_coherent_telemetry_endpoint(
     )):
         return "current"
 
+    if reserve_erased and hooks_current:
+        for endpoint in can_telemetry_history.endpoints():
+            if (rom or layout.rom) not in endpoint.roms or not endpoint.matches(source, layout):
+                continue
+            try:
+                model = endpoint.configuration(configuration)
+            except (TypeError, ValueError):
+                continue
+            if mailbox_record == model.mailbox_record():
+                return endpoint.key
+
     raise EndpointError(f"{context}: partial or unknown CAN telemetry state")
 
 
@@ -669,7 +681,7 @@ def strip_telemetry_endpoint(
     """Restore the exact lower-layer bytes used by endpoint validation."""
     if state == "absent":
         return bytes(source)
-    if state != "current":
+    if state != "current" and can_telemetry_history.endpoint(state) is None:
         raise EndpointError(f"unsupported CAN telemetry endpoint {state!r}")
     data = bytearray(source)
     for unit in layout.assembly_units:
@@ -795,6 +807,7 @@ def classify_runtime(source, target, context):
         target.telemetry_payloads,
         context,
         target.rolling_layout,
+        rom=target.rom,
     )
     lower_source = strip_telemetry_endpoint(
         source, target.telemetry_layout, telemetry_state, target.checksum_layout
@@ -809,11 +822,11 @@ def classify_runtime(source, target, context):
         target.rom,
     )
     if (
-        telemetry_state == "current"
+        telemetry_state != "absent"
         and rolling_state not in TELEMETRY_LOWER_ROLLING_STATES
     ):
         raise EndpointError(
-            f"{context}: current CAN telemetry is not layered "
+            f"{context}: CAN telemetry is not layered "
             "over the current lower runtime endpoint"
         )
     return Classification(telemetry=telemetry_state, rolling=rolling_state)

@@ -82,6 +82,7 @@ help:
 		'  INPUT             Input ROM path for rom-verify, rom-build, rom-extract, rom-calibrate, and preflash.' \
 		'  OUTPUT            Output ROM path for rom-build and rom-calibrate.' \
 		'  PROFILE           Local unified-builder profile: optional rom-build input, rom-extract output.' \
+		'  UPGRADE           Set for rom-build to preserve calibration and settings from an existing complete image.' \
 		'  CALIBRATION       Local calibration file: rom-extract output, rom-calibrate input.' \
 		'  REPLACE_SETTINGS  Non-empty to let rom-calibrate replace the extracted settings.' \
 		'  CORRESPONDENCE_SOURCE_EXPORT  Source export directory, such as l0/<layout>.' \
@@ -212,7 +213,7 @@ rom-verify:
 rom-build:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
 	@test -n "$(strip $(OUTPUT))" || { printf '%s\n' 'OUTPUT is required' >&2; exit 2; }
-	$(PYTHON) patches/build_rom.py "$(INPUT)" --rom "$(ROM)" $(PROFILE_OPTION) --output "$(OUTPUT)"
+	$(PYTHON) patches/build_rom.py "$(INPUT)" --rom "$(ROM)" $(PROFILE_OPTION) --output "$(OUTPUT)"$(if $(strip $(UPGRADE)), --upgrade,)
 
 rom-extract:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }

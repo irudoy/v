@@ -35,6 +35,7 @@ from patches import build_rom
 from patches import calibration_file
 from patches import calibration_ranges
 from patches import can_telemetry
+from patches import can_telemetry_history
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_endpoints
@@ -184,12 +185,18 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
     if telemetry_state != ABSENT:
         layout = target.telemetry_layout
         record = source[layout.configuration.start : layout.configuration.end]
-        telemetry = can_telemetry.Configuration.from_bytes(record)
-        if telemetry.to_bytes() != record:
-            raise ExtractionError(
-                f"{source_name}: CAN telemetry record does not round trip"
-            )
-        settings.append(("can_telemetry", sha256(record)))
+        historical = can_telemetry_history.endpoint(telemetry_state)
+        if historical is not None:
+            # Transfer logical settings through the current profile format;
+            # the historical wire identity is not a calibration setting.
+            telemetry = historical.configuration(record)
+        else:
+            telemetry = can_telemetry.Configuration.from_bytes(record)
+            if telemetry.to_bytes() != record:
+                raise ExtractionError(
+                    f"{source_name}: CAN telemetry record does not round trip"
+                )
+            settings.append(("can_telemetry", sha256(record)))
 
     calibration = calibration_file.CalibrationFile(
         rom=selected,

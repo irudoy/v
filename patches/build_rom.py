@@ -7,16 +7,17 @@ canonical executable profile, while near-code and cross-generation targets use
 explicit address layouts and independently assembled payloads. Each member
 retains its own calibration, identity, capabilities, and checksum layout.
 
-The input must be byte-identical to the registered stock image of the
-selected ROM; any other image is rejected before composition. Calibration moves
-between images through ``extract_calibration.py`` and ``apply_calibration.py``:
-extraction from an existing image, then application over a fresh build.
+The default input is byte-identical to the registered stock image of the
+selected ROM. ``--upgrade`` validates an existing image, extracts its calibration
+and expressed runtime settings, and transfers them over a fresh stock build.
+The separate ``extract_calibration.py`` and ``apply_calibration.py`` commands
+expose those transfer stages for an explicit local workflow.
 """
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from functools import lru_cache
 import hashlib
 from itertools import chain
@@ -137,6 +138,7 @@ class BuildResult:
     telemetry_instruction_count: int
     telemetry_code_entry_count: int
     diagnostic_count: int
+    calibration_transfer: dict | None = None
 
 
 def sha256(data):
@@ -767,6 +769,50 @@ def build_image(
     )
 
 
+def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>"):
+    """Compose the current runtime while preserving an existing calibration."""
+    from patches import apply_calibration, extract_calibration
+
+    source = bytes(source)
+    try:
+        extraction = extract_calibration.extract(source, rom=rom, source_name=source_name)
+        if extraction.unexpressed or extraction.rolling is None:
+            raise BuildError("upgrade requires an existing runtime with expressible Rolling Launch settings")
+        selected = extraction.calibration.rom
+        target = runtime_targets.load_runtime_target(selected)
+        profile = Profile(name="Preserved input settings", rom=selected,
+                          calibration=replace(extraction.rolling,
+                              mode=rolling_launch.Mode(extraction.rolling.mode),
+                              options=rolling_launch.Option(extraction.rolling.options)),
+                          telemetry=extraction.telemetry or can_telemetry.default_configuration(),
+                          source=source_name, sha256=None)
+        fresh = build_image(target.stock_image.data, rom=selected, profile=profile,
+                            source_name=f"{selected} stock")
+        application = apply_calibration.apply(fresh.data, extraction.calibration)
+        if any(state != "matched" for _, state in application.settings):
+            raise BuildError("upgrade settings do not match the extracted source")
+        changed, permitted, checksum_changed = _validate_preservation(
+            source, application.data,
+            _component_offsets(target.map_layout, target.rolling_layout, target.telemetry_layout,
+                               target.checksum_layout),
+            target.checksum_layout)
+        checksums = rom_checksums.require_valid(source, target.checksum_layout, source_name)
+    except (ValueError, runtime_targets.RuntimeTargetError) as error:
+        raise BuildError(str(error)) from error
+    return replace(fresh, data=application.data, source_sha256=sha256(source),
+                   source_checksums=checksums.stored,
+                   output_sha256=sha256(application.data), output_md5=md5(application.data),
+                   output_checksums=application.output_checksums,
+                   changed_bytes=changed, permitted_write_bytes=permitted,
+                   checksum_changed_bytes=checksum_changed,
+                   calibration_transfer={
+                       "source_runtime": dict(extraction.calibration.source[1:]),
+                       "settings": dict(application.settings),
+                       "elements": len(extraction.calibration.elements),
+                       "fresh_build_sha256": fresh.output_sha256,
+                   })
+
+
 def default_output_path(source):
     try:
         return apply_map_switching.default_output_path(source, "complete")
@@ -799,7 +845,7 @@ def _runtime_configuration_data(launch_data, telemetry_data, mailbox_record):
 def manifest_data(result, input_path, output_path):
     """Return the deterministic JSON manifest payload for one output."""
     calibration = result.profile.calibration
-    return {
+    document = {
         "schema_version": MANIFEST_SCHEMA_VERSION,
         "tool": TOOL_NAME,
         "series": result.series,
@@ -865,6 +911,11 @@ def manifest_data(result, input_path, output_path):
             "diagnostic_count": result.diagnostic_count,
         },
     }
+    if result.calibration_transfer is not None:
+        document["calibration_transfer"] = result.calibration_transfer
+        document["stages"]["can_telemetry_sha256"] = result.calibration_transfer["fresh_build_sha256"]
+        document["stages"]["calibration_sha256"] = result.output_sha256
+    return document
 
 
 def artifact_contents(result, input_path, output_path):
@@ -928,17 +979,19 @@ def main(argv=None):
         action="store_true",
         help="build and verify in memory without writing artifacts",
     )
+    parser.add_argument("--upgrade", action="store_true",
+                        help="preserve calibration and runtime settings from a registered existing image")
     args = parser.parse_args(argv)
 
     try:
         source = args.input.read_bytes()
         profile = load_profile(args.profile) if args.profile else None
-        result = build_image(
-            source,
-            rom=args.rom,
-            profile=profile,
-            source_name=str(args.input),
-        )
+        if args.upgrade:
+            if profile is not None:
+                raise BuildError("--upgrade preserves input settings and takes no --profile")
+            result = upgrade_image(source, rom=args.rom, source_name=str(args.input))
+        else:
+            result = build_image(source, rom=args.rom, profile=profile, source_name=str(args.input))
     except (OSError, BuildError) as error:
         parser.error(str(error))
 

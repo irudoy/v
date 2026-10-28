@@ -1,7 +1,7 @@
 # Unified ROM builder
 
 `build_rom.py` is the production entry point for constructing a complete ROM.
-Its input is the registered stock image of the selected ROM. It installs every
+Its default input is the registered stock image of the selected ROM. It installs every
 current firmware runtime registered for the selected series, recalculates all
 checksum domains, verifies the final closed write set, and creates one ROM with
 digest sidecars and a machine-readable manifest. Calibration of an existing
@@ -39,10 +39,26 @@ make rom-build INPUT=STOCK.bin OUTPUT=OUTPUT.bin ROM=1ND0A
 The default `--rom auto` mode identifies the exact member from the registered
 image size and immutable identity bytes at `0x8204..0x8219`. It does not inspect
 the file name. An explicit selector bypasses selection ambiguity but does not
-bypass image validation. Both modes require the input to be byte-identical to
+bypass image validation. Without `UPGRADE=1`, both modes require the input to be byte-identical to
 the registered stock image of the selected member. A built, calibrated, or
 otherwise modified image is rejected before composition, and the message names
 the calibration transfer commands.
+
+An existing complete image with expressible runtime settings upgrades in one
+invocation of the same builder:
+
+```bash
+make rom-build INPUT=tmp/in-car-profile7.bin OUTPUT=tmp/current-runtime.bin UPGRADE=1
+```
+
+`UPGRADE=1` selects `--upgrade`. The builder validates the source through the
+calibration extractor, builds the current runtime from the registered stock
+image with the extracted logical settings, and applies every calibration
+element through the calibration writer. Rolling Launch settings must match;
+the command takes no `PROFILE` override and uses no `REPLACE_SETTINGS` bypass.
+Its manifest records source runtime identities, the settings match, the fresh
+runtime stage, and the calibration transfer. The output remains untested on
+hardware.
 
 Every invocation validates `rom-images/roms.csv` and
 `rom-images/homology.toml`. The selected stock image must match its registered
@@ -96,9 +112,9 @@ only the current composition modules.
 
 ## Calibration transfer
 
-Calibration moves from an existing image to a fresh build in two explicit
-steps: extraction into local files, then application over a build of the stock
-image.
+`UPGRADE=1` performs the transfer in memory through the unified builder. The
+same stages are available as an explicit local workflow: extraction into
+local files, then application over a build of the stock image.
 
 ```bash
 make rom-extract INPUT=tmp/tuned.bin \
@@ -123,8 +139,10 @@ historical runtime endpoint of the selected ROM. It requires valid checksums
 and every difference from the stock image inside the calibration ranges, the
 builder write sets, or the checksum fields; any other difference is rejected
 by address. The builder write sets must hold no runtime or one complete
-runtime. The CAN telemetry layer must be wholly absent or match the exact
-current payload, configuration, mailbox record, and hooks. After removing a
+runtime. The CAN telemetry layer must be wholly absent or match a complete
+current or registered historical payload, configuration, mailbox record, and
+hooks. `can-telemetry-history.toml` owns the exact schema-2 profile-7 components
+of the 7mfk family. After removing a
 validated telemetry layer in memory, the Rolling Launch layer, when supported,
 must be wholly absent, match the exact current payload and configuration
 schema, or match one registered historical unit fingerprint and its schema
@@ -144,6 +162,9 @@ from a fresh stock build: the stock bytes for the window and the Map 1 bytes
 for each Map 2 through Map 5 slot. No run crosses a range boundary. Its
 `[settings]` table holds the SHA-256 of each Rolling Launch and CAN telemetry
 configuration record of the source; it is a check, not a second source. The
+historical telemetry wire identity is omitted from that settings binding;
+its enabled state, CAN ID, and divisor transfer through the current profile
+format. The
 extracted profile carries the settings in the strict profile format below and
 is read back through the profile loader before it is written. A source without
 Rolling Launch settings yields the calibration file only. A historical schema 1
