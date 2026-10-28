@@ -115,6 +115,8 @@ Known shell variables expand before those checks; an unresolved operand with
 an absolute prefix outside the repository and its ancestors is permitted.
 Bounded literal `for` lists check each possible value, including nested lists;
 unknown iteration values retain conservative operand checks.
+For `gh issue` and `gh pr` create, comment, close and edit operations, comment,
+body and title options contain data. Body-file options remain read operands.
 
 Inline Python inspection supports literal file paths, simple path bindings and
 captured-response metadata transformations. It conservatively refuses unknown

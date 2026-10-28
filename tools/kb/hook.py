@@ -417,6 +417,19 @@ class Guard:
                 if reason:
                     return reason
                 continue
+            if (program == "gh" and len(clean) > 2 and clean[1] in {"issue", "pr"}
+                    and clean[2] in {"create", "comment", "close", "edit"}):
+                files = {"--body-file", "-F"}
+                reason = self.shell_paths([shell_value(value, variables)
+                    for value in option_files(clean[3:], files)], "read", cwd)
+                if reason:
+                    return reason
+                arguments = without_option_values(clean[3:], files | {"--comment", "--body", "--title", "-b", "-t"})
+                reason = self.shell_paths([part for word in arguments
+                    for part in candidates(shell_value(word, variables))], "unknown", cwd)
+                if reason:
+                    return reason
+                continue
             if INTERPRETER.match(program) and program.startswith("python"):
                 python_args = clean[1:]
                 while python_args and python_args[0].startswith("-") and python_args[0] not in {"-", "-c", "-m"}:
@@ -789,6 +802,21 @@ def option_files(words, options):
                     found.append(word[2:])
                     break
     return found
+
+
+def without_option_values(words, options):
+    """Arguments after removing declared literal-data or separately checked options."""
+    result, index = [], 0
+    while index < len(words):
+        word = words[index]
+        index += 1
+        if word in options:
+            index += 1
+        elif not any(word.startswith(option + "=") or
+                     len(option) == 2 and word.startswith(option) and len(word) > 2
+                     for option in options):
+            result.append(word)
+    return result
 
 
 def xargs_command(words):

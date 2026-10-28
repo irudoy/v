@@ -1765,6 +1765,10 @@ security boundary: the gates validate every file whatever wrote it.
   the prefix resolves symbolic links before that decision.
   Bounded literal `for` lists check every iteration value without executing the
   commands. Unknown lists keep their iteration values unresolved.
+  The `gh issue` and `gh pr` operations `create`, `comment`, `close` and `edit`
+  treat `--comment`, `--body` and `--title` as data; `--body-file` and `-F`
+  remain read operands. Redirections and active substitutions retain their
+  checks before these option roles apply.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations

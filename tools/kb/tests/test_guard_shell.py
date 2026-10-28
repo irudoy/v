@@ -250,6 +250,8 @@ read = "open"
             ("for t in a b; do cat /outside/scratch/$t.output; done", False),
             ("for t in a b; do cat kb/$t.toml; done", True),
             ("for n in 9 62; do gh issue view $n --repo irudoy/vhrev --json body -q .body; done", False),
+            ('gh issue close 40 --repo irudoy/vhrev --comment "...kb/fn/rough-porpoise.toml..."', False),
+            ("gh issue create --body-file kb/names.csv", True),
         ]
         for command, denied in cases:
             with self.subTest(command=command):
@@ -282,6 +284,32 @@ read = "open"
             "for name in $unknown; do unknown-command $name; done",
             "for name in 9 62; do cat kb/names.csv; done",
             "for name in kb/names.csv; do echo $name | xargs cat; done",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_gh_issue_and_pr_text_options_are_data_but_body_files_are_operands(self):
+        for subject in ("issue", "pr"):
+            for action in ("create", "comment", "close", "edit"):
+                for option in ("--comment", "--body", "--title", "-b", "-t"):
+                    with self.subTest(subject=subject, action=action, option=option):
+                        self.assertIsNone(self.denied("Bash", command=
+                            f'gh {subject} {action} 40 --repo irudoy/vhrev {option} "...kb/fn/rough-porpoise.toml..."'))
+        for command in (
+            "gh issue close 40 --comment='kb/names.csv'",
+            "gh pr edit 40 -bkb/names.csv -tkb/ram/x.toml",
+            "body=kb/names.csv; gh issue comment 40 --body \"$body\"",
+            "gh issue create --body-file GUIDE.md",
+            "gh pr edit -F GUIDE.md",
+            "gh issue create --body-file - <<'EOF'\nkb/names.csv\nEOF",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "gh issue create --body-file kb/names.csv",
+            "gh pr edit -Fkb/names.csv",
+            'gh issue close 40 --comment "$(cat kb/names.csv)"',
+            "gh pr edit --body-file=kb/names.csv",
         ):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
