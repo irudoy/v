@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# Ghidra analyzeHeadless wrapper using JDK 21.
-# System JAVA_HOME may point to JDK 17. Ghidra 12.x requires 21 and fails without
-# a TTY instead of asking for a path. Homebrew's bin/ghidraRun wrapper selects
-# JDK 21 itself, while support/analyzeHeadless is called directly and would
-# inherit system JAVA_HOME.
+# Ghidra analyzeHeadless wrapper with explicit installation paths.
+# GHIDRA_HOME selects Ghidra; JAVA_HOME selects its JDK. Unset paths use the
+# Homebrew installations of Ghidra and JDK 21.
 #
 # Usage:
 #   tools/ghidra/headless-analyze.sh <project_dir> <project_name> -import <file> [options]
@@ -14,11 +12,25 @@
 set -euo pipefail
 
 # The tracked exports, symbol names, and decompiler output belong to one Ghidra
-# release. An unnoticed upgrade changes them silently, so the installation is
-# pinned here and `tools/README.md` carries the same version under a gate.
+# release. The knowledge tools read this pin when validating exports.
 GHIDRA_VERSION=12.1.4
 
-GHIDRA_HOME="$(brew --prefix ghidra)/libexec"
+homebrew_prefix() {
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "Homebrew is unavailable; set GHIDRA_HOME and JAVA_HOME explicitly." >&2
+    return 1
+  fi
+  brew --prefix "$1"
+}
+
+if [ -z "${GHIDRA_HOME:-}" ]; then
+  GHIDRA_HOME="$(homebrew_prefix ghidra)/libexec"
+fi
+if [ ! -r "$GHIDRA_HOME/Ghidra/application.properties" ] || \
+   [ ! -x "$GHIDRA_HOME/support/analyzeHeadless" ]; then
+  echo "GHIDRA_HOME does not name a usable Ghidra installation: $GHIDRA_HOME" >&2
+  exit 1
+fi
 INSTALLED="$(sed -n 's/^application\.version=//p' \
   "$GHIDRA_HOME/Ghidra/application.properties")"
 if [ "$INSTALLED" != "$GHIDRA_VERSION" ]; then
@@ -27,6 +39,12 @@ if [ "$INSTALLED" != "$GHIDRA_VERSION" ]; then
   exit 1
 fi
 
-JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+if [ -z "${JAVA_HOME:-}" ]; then
+  JAVA_HOME="$(homebrew_prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+fi
+if [ ! -x "$JAVA_HOME/bin/java" ]; then
+  echo "JAVA_HOME does not name a usable JDK installation: $JAVA_HOME" >&2
+  exit 1
+fi
 export JAVA_HOME
 exec "$GHIDRA_HOME/support/analyzeHeadless" "$@"
