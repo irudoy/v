@@ -34,6 +34,15 @@ A successful synchronization does not establish new firmware semantics.
 Ordinary reads use the CLI directly, without per-read receipts or wrapper
 runners. The MCP server exposes the same supported read commands and `apply`.
 
+`cypher` classifies mutation clauses separately from property names, parameters,
+labels, result aliases and references to bound names. Comments and string
+literals do not introduce clauses; quoted procedure names retain their actual
+identity for the write-procedure check. A classifier acceptance is not a syntax
+validation: the graph reports syntax errors through the ordinary CLI, and
+unterminated quotes or comments are refused as malformed input. Actual mutation
+clauses, transaction commands, discovered write procedures and `periodic`
+procedures remain unavailable through this read interface.
+
 ## Change an owned fact
 
 Ask KB for the owner and read the complete record before changing it. Native

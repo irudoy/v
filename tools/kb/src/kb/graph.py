@@ -48,14 +48,15 @@ WRITES = re.compile(
     r"FREE\s+MEMORY|STORAGE\s+MODE|ANALYZE\s+GRAPH|(?:UN)?LOCK\s+DATA|GRANT|REVOKE|DENY|"
     r"BEGIN|COMMIT|ROLLBACK)\b(?!\s*:)",
     re.IGNORECASE)
-LITERALS = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|`[^`]*`|//[^\n]*|/\*.*?\*/",
-                      re.DOTALL)
-PROCEDURE_CODE = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|//[^\n]*|/\*.*?\*/",
-                            re.DOTALL)
-CALL_TOKEN = re.compile(r"`(?:``|[^`])*`|\bCALL\b", re.IGNORECASE)
-PROCEDURE_NAME = re.compile(
-    r"CALL\s+((?:[A-Za-z_]\w*|`(?:``|[^`])+`)(?:\s*\.\s*(?:[A-Za-z_]\w*|`(?:``|[^`])+`))*)",
-    re.IGNORECASE)
+CYPHER_TOKEN = re.compile(
+    r"(?P<comment>//[^\n]*|/\*.*?\*/)|"
+    r"(?P<literal>'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\")|"
+    r"(?P<quoted>`(?:``|[^`])*`)|(?P<word>[^\W\d]\w*)|(?P<punct>[^\s])",
+    re.DOTALL)
+EXPRESSION_START = frozenset({
+    "RETURN", "WITH", "YIELD", "WHERE", "BY", "DISTINCT", "AND", "OR", "NOT", "IN",
+    "WHEN", "THEN", "ELSE", "(", "[", ",", "=", "+", "-", "*", "/", "<", ">", "|",
+})
 
 
 class Graph:
@@ -566,23 +567,76 @@ def sync_held(root=repo.ROOT, full=False, log=print, model=None):
     return model, fp
 
 
+def _query_tokens(query):
+    """Tokens retain identifier positions without interpreting literal data."""
+    return [token for token in CYPHER_TOKEN.finditer(query) if token.lastgroup != "comment"]
+
+
+def _identifier_positions(tokens):
+    """Explicit names and references to bound names, rather than clauses."""
+    identifiers, bound, yielding = set(), set(), False
+    for index, token in enumerate(tokens):
+        kind, word = token.lastgroup, token.group()
+        if kind not in {"word", "quoted"}:
+            continue
+        previous = tokens[index - 1].group().upper() if index else ""
+        following = tokens[index + 1].group() if index + 1 < len(tokens) else ""
+        name = word.casefold()
+        declaration = ((previous in {"AS", "YIELD"} and index - 1 not in identifiers)
+                       or (yielding and previous == ","))
+        procedure = previous == "CALL" and index - 1 not in identifiers
+        pattern = previous in {"(", "["} and following in {":", ")", "]", "{"}
+        if declaration or pattern:
+            bound.add(name)
+        if (kind == "quoted" or previous in {".", ":", "$"} or following == ":"
+                or declaration or pattern or procedure
+                or (name in bound and previous in EXPRESSION_START)):
+            identifiers.add(index)
+        if index not in identifiers:
+            if word.upper() == "YIELD":
+                yielding = True
+            elif word.upper() in {"RETURN", "WITH", "WHERE", "MATCH", "UNWIND", "CALL",
+                                  "ORDER", "SKIP", "LIMIT"}:
+                yielding = False
+    return identifiers
+
+
 def refusal(query, write_procedures=()):
     """Why `kb cypher` refuses a query, or None for a read-only one."""
-    code = LITERALS.sub(" ", query)
+    tokens = _query_tokens(query)
+    for token in tokens:
+        if token.lastgroup == "punct" and (token.group() in {"'", '"', "`"}
+                or query.startswith("/*", token.start())):
+            return "cypher: unterminated quote or comment; the query is not executed"
+    identifiers = _identifier_positions(tokens)
+    code = list(query)
+    for index, token in enumerate(tokens):
+        if token.lastgroup == "literal" or index in identifiers:
+            code[token.start():token.end()] = " " * (token.end() - token.start())
+    for token in CYPHER_TOKEN.finditer(query):
+        if token.lastgroup == "comment":
+            code[token.start():token.end()] = " " * (token.end() - token.start())
+    code = "".join(code)
     found = WRITES.search(code)
     if found:
         clause = " ".join(found.group(1).split()).upper()
         return f"the query writes ({clause}); kb cypher is read-only"
     writers = {name.casefold() for name in write_procedures}
-    procedure_code = PROCEDURE_CODE.sub(' ', query)
-    for token in CALL_TOKEN.finditer(procedure_code):
-        if token.group().startswith('`'):
+    for index, token in enumerate(tokens):
+        if token.lastgroup != "word" or token.group().upper() != "CALL" or index in identifiers:
             continue
-        matched = PROCEDURE_NAME.match(procedure_code, token.start())
-        if matched is None:
+        parts, cursor = [], index + 1
+        while cursor < len(tokens) and tokens[cursor].lastgroup in {"word", "quoted"}:
+            part = tokens[cursor].group()
+            parts.append(part[1:-1].replace("``", "`")
+                         if tokens[cursor].lastgroup == "quoted" else part)
+            cursor += 1
+            if cursor >= len(tokens) or tokens[cursor].group() != ".":
+                break
+            cursor += 1
+        if not parts:
             continue
-        parts = re.findall(r'`((?:``|[^`])+)`|([A-Za-z_]\w*)', matched.group(1))
-        name = '.'.join((quoted or bare).replace('``', '`') for quoted, bare in parts)
+        name = '.'.join(parts)
         if name.casefold().startswith('periodic.'):
             return f"the procedure {name} executes nested queries; kb cypher is read-only"
         if name.casefold() in writers:
