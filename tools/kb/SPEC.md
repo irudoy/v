@@ -824,8 +824,8 @@ Fields:
   `can_telemetry` for `rom_configuration`, the state record of
   `can_telemetry` for `telemetry_state`, and the active RAM of
   `map_switching` or `rolling_launch` for `runtime_state`. A field of another
-  origin carries `scale`; an `ecu_ram` field carries none, and the profile
-  renders the scale, the values, or the named bits of its source meaning
+  origin carries `scale`; an `ecu_ram` field carries no semantic scale,
+  and the profile renders the scale, the values, or the named bits of its source meaning
   ([Telemetry, signals, and
   presentation](#205-telemetry-signals-and-presentation)).
 - A numeric source file owns its unit, including its absence; the legacy
@@ -834,7 +834,9 @@ Fields:
   scale, values, or named bits are established, the profile presents
   `raw count` with identity conversion. This host storage view does not
   assert semantic scale keys or evidence, including when the profile
-  converts again. A partial or unrenderable
+  converts again. An `ecu_ram` field may explicitly carry `scale = "raw count"`
+  to expose the stored word while preserving an unresolved native unit or
+  conversion. Every other field-local scale is forbidden. A partial or unrenderable
   conversion refuses projection.
 - `width`, in bytes, and `signed` describe the field on the wire. On every
   layout that a feature requiring the field targets, the `widths` check
@@ -1624,7 +1626,7 @@ its last pass and the files that it read beyond those it states in advance.
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails |
 | `blocks` | Stages, blocks, and endpoints carry the required text metadata of the generated view; order is a positive integer where stated; named specifications are repository files; every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage |
 | `chains` | Required metadata is nonempty text, and named specifications are repository files; every step resolves; `effect` and `sign` are in their vocabularies; a step note is text and matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step |
-| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no scale, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns |
+| `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no semantic scale, allowing only the explicit `raw count` storage view, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered |
 | `guard` | `.claude/settings.json` and `.codex/hooks.json` are tracked and run `tools/kb/hook.py` synchronously before every guarded tool, including the Codex `apply_patch`; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies |
 

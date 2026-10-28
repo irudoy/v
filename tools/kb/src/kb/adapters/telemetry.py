@@ -204,8 +204,11 @@ def declare_profile(b, document, regions, src):
                 continue
             refs["source"] = [key]
             # The host storage view is not a semantic scale declaration.
-            parsed = ({} if item["scale"] == STORED_COUNT_SCALE
-                      else parse_scale(item["scale"], units))
+            if item["scale"] == STORED_COUNT_SCALE:
+                props["scale"] = STORED_COUNT_SCALE
+                parsed = {}
+            else:
+                parsed = parse_scale(item["scale"], units)
             if parsed is None:
                 b.issue("fields", src, subject, f"scale {item['scale']!r} gives the source "
                         "meaning no keys")
@@ -402,6 +405,8 @@ def _source(model, entity, allocations):
     keys = entity.refs.get("source", ())
     if len(keys) != 1 or not isinstance(keys[0], SymbolKey) or keys[0].layout != CANONICAL:
         raise KbError(f"{entity.key}: the source names no {CANONICAL} symbol", code=3)
+    if props.get("scale") == STORED_COUNT_SCALE:
+        return {"source": keys[0].address, "scale": STORED_COUNT_SCALE}
     meaning = model.meaning_of(keys[0])
     scale = scale_text(meaning.props) if meaning else None
     if meaning is not None and not any(

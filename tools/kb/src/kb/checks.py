@@ -654,7 +654,8 @@ def _span(entry):
 
 def fields(model):
     """Every field names a source of its origin, and every `ecu_ram` field a
-    signal and no scale; the source of an `ecu_ram` field is a `7mfk` `ram` or
+    signal and no semantic scale; an explicit raw-count storage view is
+    allowed. The source of an `ecu_ram` field is a `7mfk` `ram` or
     `reg` symbol outside the RAM that the features allocate, and the `signed`
     of the field agrees with each symbol that it reads where the symbol
     states it; on every layout that a feature requiring the field targets,
@@ -663,6 +664,8 @@ def fields(model):
     allocation named after the field without `_raw`, inside a region of its
     origin that the feature of the allocation owns (`origin_regions` of the
     stash), and the field carries its scale (section 7.9)."""
+    from kb.adapters.telemetry import STORED_COUNT_SCALE
+
     issues = [issue for issue in model.issues if issue.check == "fields"]
     feature_ram = model.stash.get("feature_ram", ())
     regions = model.stash.get("origin_regions", {})
@@ -689,7 +692,7 @@ def fields(model):
             if not any(ref in model.entities for ref in entity.refs.get("signal", ())
                        if isinstance(ref, tuple)):
                 found.append("an ecu_ram field that names no signal")
-            if "scale" in props:
+            if "scale" in props and props["scale"] != STORED_COUNT_SCALE:
                 found.append(f"an ecu_ram field with scale {props['scale']!r}; the meaning of "
                              "its source holds the scale")
             source = _source_symbol(model, entity)

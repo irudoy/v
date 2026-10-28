@@ -1403,6 +1403,7 @@ class TelemetryAdapterTest(unittest.TestCase):
         source = b.entities[("field", "count_raw")].refs["source"][0]
         meaning = b.finish().meaning_of(source)
         self.assertFalse({"unit", "scale", "to_raw", "scale_level"} & meaning.props.keys())
+        self.assertEqual(b.entities[("field", "count_raw")].props["scale"], "raw count")
 
     def test_a_field_carries_its_presentation_and_another_key_fails_the_schema(self):
         presentation = {"label": "Probe", "digits": 2, "group": "Probe",
@@ -1533,6 +1534,16 @@ class TelemetryAdapterTest(unittest.TestCase):
                                  {"source": key.address, "scale": expected})
                 self.assertEqual(props, held)
                 self.assertNotIn("scale_level", props)
+
+    def test_an_explicit_count_view_keeps_the_native_unit_without_a_conversion(self):
+        key = SymbolKey("7mfk", "ram", 0xFFFF23C2)
+        entity = SimpleNamespace(props={"origin": "ecu_ram", "scale": "raw count"},
+                                 refs={"source": (key,)})
+        native = {"unit": "Q8 state"}
+        source_model = SimpleNamespace(meaning_of=lambda source: SimpleNamespace(props=native))
+        self.assertEqual(telemetry._source(source_model, entity, {}),
+                         {"source": key.address, "scale": "raw count"})
+        self.assertEqual(native, {"unit": "Q8 state"})
 
     def test_the_projection_changes_only_the_scales_of_ecu_ram_fields(self):
         text = (repo.ROOT / telemetry.PROFILE).read_text(encoding="utf-8")
