@@ -120,9 +120,15 @@ that can access files. Python program arguments receive their operand checks.
 Known shell variables expand before those checks; an unresolved operand with
 an absolute prefix outside the repository and its ancestors is permitted.
 Bounded literal `for` lists check each possible value, including nested lists;
-unknown iteration values retain conservative operand checks.
+unknown iteration values retain conservative operand checks. Other `for` lists
+contain data; a pattern in them receives read checks. Reserved words such as
+`do` and `then` and wrappers such as `timeout` and `env` leave the decision to
+the command they precede.
 For `gh issue` and `gh pr` create, comment, close and edit operations, comment,
 body and title options contain data. Body-file options remain read operands.
+For `gh api`, the endpoint and field values contain data; `--input` and `-F`
+values that start with `@` remain read operands, and an unresolved `-F` value
+receives the operand check.
 
 Inline Python inspection supports literal file paths, simple path bindings and
 captured-response metadata transformations. It conservatively refuses unknown

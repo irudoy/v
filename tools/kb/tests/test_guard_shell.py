@@ -353,6 +353,61 @@ read = "open"
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
+    def test_gh_api_endpoints_and_fields_are_data_but_input_files_are_operands(self):
+        for command in (
+            "for e in $(seq 42 43); do gh api repos/irudoy/vhrev/issues/$e/sub_issues --jq '.[]'; done",
+            "gh api repos/irudoy/vhrev/issues/$e/sub_issues",
+            "gh api repos/irudoy/vhrev/contents/kb/names.csv --jq .sha",
+            "gh api graphql -f query='{ viewer { login } }' -F number=9 -f id=$n",
+            "gh api repos/irudoy/vhrev/issues -F title='kb/names.csv' -f body=\"$text\"",
+            "gh api repos/irudoy/vhrev/issues -F body=@GUIDE.md --input GUIDE.md",
+            "gh api repos/irudoy/vhrev/issues --input - <<'EOF'\nkb/names.csv\nEOF",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "gh api repos/irudoy/vhrev/issues --input kb/names.csv",
+            "gh api repos/irudoy/vhrev/issues --input=l0/7mfk/funcs.csv",
+            "gh api repos/irudoy/vhrev/issues -F body=@kb/names.csv",
+            "gh api repos/irudoy/vhrev/issues -Fbody=@kb/names.csv",
+            "gh api repos/irudoy/vhrev/issues --field=body=@kb/names.csv",
+            "body=@kb/names.csv; gh api repos/irudoy/vhrev/issues -F text=$body",
+            "gh api repos/irudoy/vhrev/issues -F body=$unknown",
+            "gh api repos/irudoy/vhrev/issues -F \"$pair\"",
+            "gh api repos/irudoy/vhrev/issues --input \"$file\"",
+            "gh api repos/irudoy/vhrev/issues -f body=\"$(cat kb/names.csv)\"",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_dynamic_loop_values_are_data_for_kb_references(self):
+        for command in (
+            'for f in $(cat list.txt); do uv run kb show "$f/field"; done',
+            'for f in $(cat list.txt); do kb where "$f"; done',
+            'for f in $refs; do uv run kb code "$f"; done',
+            "for f in `cat list.txt`; do uv run kb at $f; done",
+            *(f'cat list.txt | while read f; do uv run kb {read} "$f"; done'
+              for read in ("show", "where", "find", "log", "raw", "code", "at", "impact", "path")),
+            'if test -n "$f"; then uv run kb show "$f"; else kb find "$f"; fi',
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            'for f in $(cat list.txt); do cat "$f/field"; done',
+            'for f in $(cat list.txt); do uv run cat "$f"; done',
+            'for f in $(cat kb/names.csv); do uv run kb show "$f"; done',
+            'for f in kb/*; do uv run kb show "$f"; done',
+            'for f in l0/7mfk/*.csv; do echo "$f"; done',
+            'for f in $d/*; do uv run kb show "$f"; done',
+            'cat list.txt | while read f; do cat "$f"; done',
+            "while read f; do cat kb/names.csv; done < list.txt",
+            "if true; then cat kb/names.csv; fi",
+            "if grep -q x kb/names.csv; then true; fi",
+            "! cat l0/7mfk/funcs.csv",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):
     script = ("import runpy,sys\nsys.version_info=(3,10,0)\n"

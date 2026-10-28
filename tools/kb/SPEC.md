@@ -1764,11 +1764,17 @@ security boundary: the gates validate every file whatever wrote it.
   whose fixed prefix is outside the repository and its ancestors stays open;
   the prefix resolves symbolic links before that decision.
   Bounded literal `for` lists check every iteration value without executing the
-  commands. Unknown lists keep their iteration values unresolved.
+  commands. Unknown lists keep their iteration values unresolved and are data
+  apart from their patterns, which receive read checks. Reserved words such as
+  `do` and `then` and wrappers such as `timeout` and `env` leave the decision
+  to the command they precede; wrapper options that take a value check it as an
+  operand.
   The `gh issue` and `gh pr` operations `create`, `comment`, `close` and `edit`
   treat `--comment`, `--body` and `--title` as data; `--body-file` and `-F`
-  remain read operands. Redirections and active substitutions retain their
-  checks before these option roles apply.
+  remain read operands. `gh api` treats its endpoint and field values as data;
+  `--input` and `-F` values that start with `@` remain read operands, and an
+  unresolved `-F` value receives the operand check. Redirections and active
+  substitutions retain their checks before these option roles apply.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations

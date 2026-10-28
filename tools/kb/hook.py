@@ -51,6 +51,8 @@ WRAPPERS = {
     "time": frozenset({"-f", "--format", "-o", "--output"}),
     "timeout": frozenset({"-k", "--kill-after", "-s", "--signal"}),
 }
+# Reserved words that start a condition or a body before a simple command.
+KEYWORDS = frozenset({"!", "do", "elif", "else", "if", "then", "until", "while"})
 INTERPRETER = re.compile(r"(?:python(?:\d+(?:\.\d+)?)?|bash|sh|zsh)$")
 # Options of `uv run` that take the next word as their value.
 UV_VALUES = {"--project", "--directory", "--package", "--with", "--with-editable",
@@ -66,6 +68,7 @@ SEARCH_VALUES = {"-A", "-B", "-C", "-g", "-j", "-m", "-M", "-t", "-T", "--after-
                  "--max-depth", "--sort", "--sortr", "--threads", "--type", "--type-not"}
 HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)[ \t]*(['\"]?)([^\s'\"<>|&;()]+)\2")
 PATHLIKE = re.compile(r"[^\s'\"`()\[\]{},:;=<>|&$]+")
+DYNAMIC = re.compile(r"\$\([^()]*\)|`[^`]*`|\$\{?\w+\}?")
 BRACES = re.compile(r"\{([^{}]*)\}")
 # An edit reason lists the inputs of a projection up to this many.
 LISTED_INPUTS = 4
@@ -443,6 +446,22 @@ class Guard:
                 arguments = without_option_values(clean[3:], files | {"--comment", "--body", "--title", "-b", "-t"})
                 reason = self.shell_paths([part for word in arguments
                     for part in candidates(shell_value(word, variables))], "unknown", cwd)
+                if reason:
+                    return reason
+                continue
+            if program == "gh" and clean[1:2] == ["api"]:
+                # The endpoint and the field values are request data.
+                reason = self.shell_paths(api_files([shell_value(word, variables)
+                    for word in clean[2:]]), "read", cwd)
+                if reason:
+                    return reason
+                continue
+            if program == "for" and clean[2:3] == ["in"]:
+                # A for-list holds data, and its variable stays unknown in the
+                # loop body; only a pattern in it lists files.
+                values = [shell_value(word, variables) for word in clean[3:]]
+                reason = self.shell_paths([value for value in values
+                    if glob.has_magic(DYNAMIC.sub("", value))], "read", cwd)
                 if reason:
                     return reason
                 continue
@@ -824,6 +843,19 @@ def option_files(words, options):
     return found
 
 
+def api_files(words):
+    """The files that `gh api` reads: --input and the @file values of -F."""
+    files = option_files(words, {"--input"})
+    for field in option_files(words, {"-F", "--field"}):
+        name, separator, value = field.partition("=")
+        if not separator or re.search(r"[$`]", name) or re.match(r"[$`]", value):
+            # An unknown name or value may expand to a @file value.
+            files.append(field)
+        elif value.startswith("@"):
+            files.append(value[1:])
+    return files
+
+
 def without_option_values(words, options):
     """Arguments after removing declared literal-data or separately checked options."""
     result, index = [], 0
@@ -965,8 +997,10 @@ def editor_file_actions(source, program):
 
 
 def _wrapped(words):
-    """The words after one leading wrapper and the values of its options, or
-    None when the command does not start with a wrapper."""
+    """The words after one leading reserved word or wrapper and the values of
+    the wrapper options, or None when the command starts with neither."""
+    if words and words[0] in KEYWORDS:
+        return list(words[1:]), []
     if not words or words[0] not in WRAPPERS:
         return None
     takes_value, rest, values = WRAPPERS[words[0]], list(words[1:]), []
