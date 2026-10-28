@@ -72,15 +72,6 @@ hashes do not change that binding when the exported data is identical. The L0
 check independently validates preparation inputs. Search statuses and matcher
 caches retain their manifest identities.
 
-The one-time migration of manifest-bound reviews verifies the exports against
-an accepted historical manifest and changes only each review's `l0` field:
-
-```bash
-uv run python -m tools.kb.migrate_l0_identity --from-ref COMMIT
-uv run python -m tools.kb.migrate_l0_identity --from-ref COMMIT --write
-uv run kb check
-```
-
 ## Evidence and confidence
 
 Levels distinguish resemblance, a candidate interpretation, grounding in
