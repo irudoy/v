@@ -1,11 +1,13 @@
 role = "service"
 block = "library/block"
 contract = """
-Not arithmetic: longword block copy. It copies r0 bytes from [r2] to [r1], \
-with r0 divisible by 4. For r0 <= 0x40 it unrolls through jump table \
-0x22094; otherwise it loops. It returns no result and clobbers r0; r2 and r3 \
-are preserved on the stack. It writes only destination range [r1, r1+r0) and \
-has no diagnostic channel."""
+Longword block copy. It copies r0 bytes from [r2] to [r1], with r0 divisible \
+by 4. For r0 <= 0x40 it unrolls through the pointer table at 0x22094; \
+otherwise it branches to the internal long-copy path at 0x220D8. The table \
+at 0x22094..0x220D7 is data outside the function body. Both paths restore r3 \
+saved by the entry at 0x22038, and the long path also saves and restores r2. \
+It returns no result and clobbers r0; r2 and r3 are preserved. It writes \
+only destination range [r1, r1+r0) and has no diagnostic channel."""
 contract_level = "code"
 
 [[ledger]]

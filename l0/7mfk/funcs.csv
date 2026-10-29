@@ -147,8 +147,7 @@ addr,size,is_thunk,is_external
 00021dd0,60,false,false
 00021e14,292,false,false
 00021f40,238,false,false
-00022038,16,false,false
-00022094,100,false,false
+00022038,116,false,false
 000220f8,12,false,false
 00022104,12,false,false
 00022116,66,false,false

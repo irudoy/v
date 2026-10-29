@@ -1,3 +1,4 @@
+retired = true
 role = "service"
 block = "library/block"
 contract = """
