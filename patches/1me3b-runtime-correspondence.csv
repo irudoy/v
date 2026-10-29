@@ -150,7 +150,7 @@ telemetry,exhaust_cvtc_target_raw,ffff2327,fffe9436,,,mapped,Aligned diagnostic 
 telemetry,calculated_load_raw,ffff413e,fffeb8f8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,throttle_request_bounded_raw,ffff19c6,fffe941e,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,engine_torque_state_raw,ffff18cc,fffe88b6,,,mapped,Three accessor functions 000975b4 00097ae8 00097bd2 repeat the five 1ND access sites including the writer in the return delay slot
-telemetry,transmission_reduction_state_raw,ffff1866,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
+telemetry,transmission_reduction_state_raw,ffff1866,fffe8850,,,target-specific,The reviewed controller 00096a18 and inline publication at 000972fc..0009730c bind the uint16 effective reduction state fffe8850. Direct request-byte shifts are conditional; the source is published unchanged to fffe885a and arithmetic consumer 00096c44 uses its 65536 complement. The wire field remains raw counts without a physical torque conversion.
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,fffe942f,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,throttle_target_shared_raw,ffff19b2,fffeaa58,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
 telemetry,throttle_target_channel_0_raw,ffff28bc,fffeb80c,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals

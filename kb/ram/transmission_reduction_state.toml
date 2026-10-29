@@ -9,6 +9,49 @@ signed = false
 unit = "Q16 reduction count"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe8850"
+level = "code"
+note = """
+Controller 00096a18 maintains this unsigned word. The conditional direct \
+path writes uint8[fffea819]<<8 at 00096a8a; ROM8[00008a7f].bit4 is set and \
+ROM8[0000865e].bit6 is clear in the decoded 1ME3B image. Other paths use \
+uint8[fffe885d]<<8, retain or limit the state, rebuild it, decrease it with \
+a zero boundary, or clear it. Coordinator 00096e2c reads it at 000972fc, \
+zero-extends it at 000972fe and transfers the same low word to fffe885a at \
+0009730c in the call delay slot. The arithmetic consumer 00096c44 uses 65536 \
+minus that published word. The telemetry field carries raw stored counts \
+without a physical torque conversion. The publication is an inline slice of \
+a wider coordinator; no full-function publisher homology is claimed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096a8a"
+note = """
+The reviewed controller 00096a18 and inline publication at \
+000972fc..0009730c bind the uint16 effective reduction state fffe8850. \
+Direct request-byte shifts are conditional; the source is published \
+unchanged to fffe885a and arithmetic consumer 00096c44 uses its 65536 \
+complement. The wire field remains raw counts without a physical torque \
+conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096aee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096bfc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000972fc"
+
+[[symbol]]
 layout = "1nd"
 address = "fffe88d0"
 level = "code"
@@ -135,17 +178,6 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00083404"
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1866"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search returns no candidate. The telemetry word is \
-unavailable until a producer-consumer binding is reviewed."""
-
 [[link]]
 type = "input"
 to = "rough-panther/ram"
@@ -189,7 +221,7 @@ at = "jk78c:00083404"
 [[link]]
 type = "writer"
 to = "strange-mushroom/fn"
-layouts = ["7mfk", "jk78c", "1nd"]
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
@@ -217,3 +249,15 @@ at = "1nd:00090ece"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00090f96"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00096a8a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00096aee"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00096bfc"

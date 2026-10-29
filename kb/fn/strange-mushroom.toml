@@ -4,6 +4,41 @@ shift, update and inhibit branches."""
 block = "ignition_timing/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "00096a18"
+name = "eggplant-squirrel"
+level = "code"
+note = """
+The reviewed 1ME3B controller maintains the unsigned effective \
+transmission-reduction word fffe8850 with GBR=fffe8748. The direct request \
+path writes uint8[fffea819]<<8 at 00096a8a when ROM8[00008a7f].bit4 and \
+ROM8[0000865e].bit6 select it; the second bit is clear in the decoded 1ME3B \
+image. The alternative direct input is uint8[fffe885d]<<8 at 00096a96. Other \
+branches retain, limit, rebuild, decrease or clear the state. The inline \
+publication in 00096e2c reads the word unsigned and transfers it unchanged \
+to fffe885a. Physical torque conversion remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096a18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096a8a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096aee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096bfc"
+
+[[symbol]]
 layout = "1nd"
 address = "00090db0"
 name = "premium-chachalaca"
