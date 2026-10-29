@@ -167,26 +167,62 @@ layout = "1me3b"
 address = "fffe8161"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8161"
-to = "7mfk:ffff2876"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004c40c"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0004c338 publishes byte fffe8161 through offset 0x09 of R14 base \
+fffe8158. The publication slice writes the converted or limited byte at \
+0004c40c, 0004c434 and 0004c43c, the fallback byte at 0004c450, and zero on \
+the disabled branch at 0004c56a. The previous byte is read at 0004c412. This \
+evidence binds target byte storage and publication; diagnostic identity, \
+physical conversion and cadence require a separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004c412"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004c450"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004c56a"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8179"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8179"
-to = "7mfk:ffff2876"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00048a0c"
+note = """
+Function 00048938 publishes byte fffe8179 through offset 0x0d of R14 base \
+fffe816c. The publication slice writes the converted or limited byte at \
+00048a0c, 00048a34 and 00048a3c, the fallback byte at 00048a50, and zero on \
+the disabled branch at 00048b6a. The previous byte is read at 00048a12. This \
+evidence binds target byte storage and publication; diagnostic identity, \
+physical conversion and cadence require a separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00048a12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00048a50"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00048b6a"
 
 [[symbol]]
 layout = "7mfk"
@@ -309,12 +345,32 @@ layout = "jk78c"
 address = "ffff1171"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff1171"
-to = "7mfk:ffff2876"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043ad4"
+note = """
+The publication slice of function 000439c0 reads and writes byte ffff1171 \
+through offset 0x6d of R11 base ffff1104. Stores at 00043ad4 and 00043adc \
+publish the limited or converted byte, 00043aea publishes the fallback, and \
+00043c7a writes zero on the disabled branch. The previous byte is \
+zero-extended after its read at 00043aae. This evidence binds target byte \
+storage and publication; diagnostic identity, physical conversion and \
+cadence require a separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043aae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043aea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043c7a"
 
 [[link]]
 type = "input"

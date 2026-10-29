@@ -116,26 +116,34 @@ layout = "1me3b"
 address = "fffe9928"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe9928"
-to = "7mfk:ffff2837"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004a118"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0004a0e2 publishes byte fffe9928 at 0004a118 through offset 4 of \
+literal base fffe9924. Raw configuration tests select either 0x4b or the \
+result of lookup 0002aa98 over table 0001451a with \
+uint8(uint16[fffe9924]>>2). Both branches join at the byte store before the \
+status-byte return delay slot. This evidence binds the target byte and \
+bounded selection path; physical conversion and live cadence require a \
+separate target review."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe98aa"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe98aa"
-to = "7mfk:ffff2837"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00046a84"
+note = """
+Function 00046a4e publishes byte fffe98aa at 00046a84 through offset 4 of \
+literal base fffe98a6. Raw configuration tests select either 0x4b or the \
+result of lookup 000287e4 over table 0001468e with \
+uint8(uint16[fffe98a6]>>2). Both branches join at the byte store before the \
+status-byte return delay slot. This evidence binds the target byte and \
+bounded selection path; physical conversion and live cadence require a \
+separate target review."""
 
 [[symbol]]
 layout = "7mfk"

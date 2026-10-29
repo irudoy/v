@@ -183,26 +183,34 @@ layout = "1me3b"
 address = "fffe8164"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8164"
-to = "7mfk:ffff1188"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00043bcc"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The publication slice of function 00043b80 reads unsigned sample word \
+fffe8d26, shifts it right by two and passes the low byte to 0009a0a0 after \
+the guard call 0009a058. The returned word is zero-extended, capped at 0xff \
+and stored as a byte at fffe8164 in the conditional delay slot at 00043bcc. \
+GBR retains fffe8108 from the prologue. This evidence binds target storage \
+and byte publication; the scaler contract, physical voltage conversion and \
+cadence require separate target review."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe817c"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe817c"
-to = "7mfk:ffff1188"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00040a58"
+note = """
+The publication slice of function 00040a0c reads unsigned sample word \
+fffe8d82, shifts it right by two and passes the low byte to 000942a0 after \
+the guard call 00094254. The returned word is zero-extended, capped at 0xff \
+and stored as a byte at fffe817c in the conditional delay slot at 00040a58. \
+GBR retains fffe8114 from the prologue. This evidence binds target storage \
+and byte publication; the scaler contract, physical voltage conversion and \
+cadence require separate target review."""
 
 [[symbol]]
 layout = "7mfk"

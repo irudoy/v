@@ -167,7 +167,7 @@ telemetry,battery_voltage_raw,ffff1188,ffff1174,,,mapped,Aligned diagnostic poin
 telemetry,ltft_learned_b1_raw,ffff2306,ffff225e,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
 telemetry,ltft_adjustment_b1_raw,ffff5648,ffff5be0,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction
 telemetry,iat_raw,ffff2837,ffff278a,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,oil_temperature_did_source_raw,ffff2876,ffff1171,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,oil_temperature_did_source_raw,ffff2876,ffff1171,,,target-specific,"The publication slice of function 000439c0 reads and writes byte ffff1171 through offset 0x6d of R11 base ffff1104. Stores at 00043ad4 and 00043adc publish the limited or converted byte, 00043aea publishes the fallback, and 00043c7a writes zero on the disabled branch. The previous byte is zero-extended after its read at 00043aae. This evidence binds target byte storage and publication; diagnostic identity, physical conversion and cadence require a separate target review."
 telemetry,af_state_factor_raw,ffff22e8,ffff2270,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,injection_end_angle_raw,ffff192e,ffff192a,,,mapped,Homologous end-of-injection stage 000730cc stores the doubled 209-count clamp to this word
 telemetry,front_af_sensor_b1_word_raw,ffff2780,ffff26d8,,,mapped,Aligned diagnostic pointer table and direct references agree

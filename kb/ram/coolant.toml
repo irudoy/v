@@ -61,26 +61,42 @@ layout = "1me3b"
 address = "fffe8079"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8079"
-to = "7mfk:ffff1079"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00043394"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 00043304 selects a converted sample, raw override or fallback and \
+publishes the byte at fffe8079 in the call delay slot at 00043394. R14 holds \
+fffe8074 from 0004338e. The same function reads the published byte at \
+000433aa, 000433c8 and 000433da. This evidence binds target storage and byte \
+access; physical conversion and live cadence require a separate target \
+review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000433aa"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8079"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8079"
-to = "7mfk:ffff1079"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00040218"
+note = """
+Function 00040188 selects a converted sample, raw override or fallback and \
+publishes the byte at fffe8079 in the call delay slot at 00040218. R14 holds \
+fffe8074 from 00040212. The same function reads the published byte at \
+0004022e, 0004024c and 0004025e. This evidence binds target storage and byte \
+access; physical conversion and live cadence require a separate target \
+review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004022e"
 
 [[symbol]]
 layout = "7mfk"
