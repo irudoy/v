@@ -47,6 +47,16 @@ Use small packages that state a user scenario and the knowledge or capability
 they change before implementation. Scenarios include calibration, a runtime
 feature, ROM porting, subsystem research and a hardware session.
 
+A package is sized by its scenario, not by its items: one subsystem, not one
+table, field, or address. Research first surveys the whole subject, such as
+every table, reader, or source of a subsystem, and then records the findings
+of one subsystem in one write, one projection and test run, one review, and
+one commit. Plans, generation, tests, review, and issue and vault updates are
+fixed costs paid once per package. When they take more active time than the
+analysis, merge items into a larger package instead of repeating the cycle per
+item. An item that needs separate reasoning stays unresolved with its reason
+inside the package rather than becoming a package of its own.
+
 Run affected tests immediately. Full verification runs before closing an
 engineering track, and `make preflash` qualifies an image before flashing.
 Source preparation without execution
