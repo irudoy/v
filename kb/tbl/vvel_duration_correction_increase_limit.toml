@@ -1,10 +1,11 @@
 summary = """
-Largest increase of the ratio-corrected VVEL duration above the reference \
-duration of FUN_00055E78. FUN_00055FF2 looks up this curve by engine speed \
-over the axis 0x0001512C, scales it by 0.005, and writes max(reference, \
-min(reference + limit, corrected duration)) to 0xFFFFA0FC, the first output \
-of FUN_00055E78. Every stock cell holds 65535 = 327.675, so the stock limit \
-never binds."""
+Largest increase of the corrected VVEL duration above the reference duration \
+of FUN_00055E78. FUN_00055FF2 looks up this curve by engine speed over the \
+axis 0x0001512C, scales it by 0.005, and writes max(reference, min(reference \
++ limit, corrected duration)) to 0xFFFFA0FC, the first output of \
+FUN_00055E78. The stock ratio bounds ROM16[0x9222] = ROM16[0x9224] = 65535 \
+fix the ratio at 65535 / 8192, and every stock cell holds 65535 = 327.675, \
+so the stock limit never binds."""
 level = "code"
 home = "jk78c"
 role = "table"
@@ -43,4 +44,4 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00056000"
+at = "jk78c:000560b4"

@@ -85,9 +85,9 @@ clears above 4, under the `0xFFFF45C0.bit6` and `ROM8[0x8968]` gates). `FUN_000A
 flag: mode byte 5, model state `0xFFFFA367` = 0, the model counter
 `0xFFFFA369` at or above `ROM8[0x8B07]` = 1, the scaled demand margin at or
 above `ROM8[0x8B05]` = 20, and the model duration at or below curve
-`0x00016C64` (stock 21504 at every point); or the model latch `0xFFFFA368`
-set with `0xFFFFA36B` = 0. Mode 15 requires that flag clear, so the
-above-idle condition excludes passes on which the idle model is engaged.
+`0x00016C64` (`vvel_idle_model_duration_floor/tbl`); or the model latch
+`0xFFFFA368` set with `0xFFFFA36B` = 0. Mode 15 requires that flag clear, so
+the above-idle condition excludes passes on which the idle model is engaged.
 
 The predicate cells resolve as follows.
 
