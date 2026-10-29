@@ -70,7 +70,7 @@ rolling_hook,primary_ignition_command,0004e198,000699d4,0002d6f6,,mapped,Produce
 rolling_hook,selector_arbitration,000ce8dc,000fb260,000fd40c,,mapped,Rolling arbitration chains from the selector literal
 rolling_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Runtime clear chains from the startup literal
 rolling_symbol,apc_mode,ffff24c9,ffff241e,,,mapped,APC control path binds the mode byte
-rolling_symbol,apc_output,ffff2022,ffff11cf,,,mapped,Aligned diagnostic pointer table and homologous producer agree
+rolling_symbol,apc_output,ffff2022,ffff11cf,,,target-specific,"Function 0006981e publishes byte ffff11cf at 00069938 and on its override branch at 00069948, through offset 0x0f of literal base ffff11c0. It zero-extends the selected byte into R4 in the call delay slot at 0006994e before scheduler 0002d6f6. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
 rolling_symbol,ascd_state,ffff41ae,ffff450b,,,mapped,"The MAIN switch block of 000fb9c0 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 4, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
 rolling_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
 rolling_symbol,coolant_index,ffff1077,ffff106d,,,mapped,Coolant activation index is recovered from target consumers
@@ -117,7 +117,7 @@ can_symbol,occupied_mailbox_record_address,000097c6,000094b6,04000000,,mapped,Ad
 can_symbol,stock_sle1_isr,000c7914,000f0410,,,mapped,Vector target supplies the complete ISR tail-chain entry
 telemetry,request_flow_raw,ffff1980,ffff1976,,,mapped,Homologous stage 00093164 stores the curve-pair coordinate to this word and passes it as the column of surface 0000face
 telemetry,final_timing_raw,ffff11d4,ffff1f45,,,mapped,Exact-size homologous command builder binds the final timing byte at equal instruction ordinal
-telemetry,apc_command_raw,ffff2022,ffff11cf,,,mapped,Aligned diagnostic pointer table and homologous producer agree
+telemetry,apc_command_raw,ffff2022,ffff11cf,,,target-specific,"Function 0006981e publishes byte ffff11cf at 00069938 and on its override branch at 00069948, through offset 0x0f of literal base ffff11c0. It zero-extends the selected byte into R4 in the call delay slot at 0006994e before scheduler 0002d6f6. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
 telemetry,fuel_inhibit_mask,ffff22e0,ffff223c,,,mapped,Aligned diagnostic pointer table preserves the inhibit mask position
 telemetry,maf_b1_raw,ffff101c,ffff1024,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_b2_raw,ffff101e,ffff1026,,,mapped,Aligned diagnostic pointer table and direct references agree

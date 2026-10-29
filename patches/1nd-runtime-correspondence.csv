@@ -75,13 +75,13 @@ rolling_hook,primary_ignition_command,0004e198,00074d88,0002e464,,mapped,Target 
 rolling_hook,selector_arbitration,000ce8dc,00127158,00129cbc,,mapped,Rolling arbitration can chain from the selector literal
 rolling_hook,startup_state_clear,00027d28,0002b398,00030810,,mapped,Runtime clear can chain from the startup literal
 rolling_symbol,apc_mode,ffff24c9,fffe94e5,,,mapped,APC control path binds the mode byte
-rolling_symbol,apc_output,ffff2022,fffe81dd,,,mapped,Aligned diagnostic pointer table and direct references agree
+rolling_symbol,apc_output,ffff2022,fffe81dd,,,target-specific,"The reviewed output slice of function 00074afa publishes byte fffe81dd at 00074d0c and on its override branch at 00074d1a, with GBR=fffe81cc. It zero-extends the selected byte into R4 in the call delay slot at 00074d20 before scheduler 0002e464. The same function reads fffe81dd at 00074d44 before forming the argument of 0002e956. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
 rolling_symbol,ascd_state,ffff41ae,fffeb823,,,mapped,Selector reads this ASCD state byte
 rolling_symbol,button_state,ffff2a85,fffe9ad3,,,mapped,Selector reads this button byte
 rolling_symbol,coolant_index,ffff1077,fffe8077,,,mapped,Coolant activation index is recovered from target consumers
 rolling_symbol,fuel_cut_coordinator,,000760cc,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
 rolling_symbol,fuel_inhibit,ffff2497,fffe94ba,,,target-specific,The rev-limit fuel-cut state machine 00076ad2 keeps the arm and the active cut in this byte
-rolling_symbol,fuel_inhibit_mask,ffff22e0,fffe92e4,,,mapped,Multiple homologous fuel-control functions use this mask
+rolling_symbol,fuel_inhibit_mask,ffff22e0,fffe92e4,,,target-specific,"The terminal mask slice of coordinator 000760cc combines the selected request mask with the result of 00078080 at 000766e4, applies AND 0x3f at 000766e8, and publishes the byte to literal destination fffe92e4 at 000766f0. The store is the conditional branch delay slot and executes for both zero and nonzero results. This independently binds the final six-bit mask storage; target bit-to-cylinder correspondence and hardware behavior require separate qualification."
 rolling_symbol,pedal,ffff2672,fffe96c8,,,mapped,Pedal activation source is recovered from target consumers
 rolling_symbol,periodic_task_slot,00021970,0002205c,,,mapped,Entry 1 of the homologous 148-entry scheduler table at 00022058 binds the periodic wrapper
 rolling_symbol,periodic_task_table,0002196c,00022058,,,mapped,Homologous 148-entry periodic task table walked by the scheduler
@@ -121,8 +121,8 @@ can_symbol,occupied_mailbox_record_address,000097c6,00009754,04000000,,mapped,Ad
 can_symbol,stock_sle1_isr,000c7914,0011b334,,,mapped,Vector target supplies the complete ISR tail-chain entry
 telemetry,request_flow_raw,ffff1980,fffe89ee,,,target-specific,The reviewed forward conversion 000a5de8 stores the curve-pair result at fffe89ee and uses it as the column of primary requested-torque table 00010048; 000a5cc4 conditionally selects the stored word. The source is a raw code coordinate with unestablished physical conversion.
 telemetry,final_timing_raw,ffff11d4,fffe81cc,,,mapped,Target command builder subtracts this byte from 110 before the primary consumer
-telemetry,apc_command_raw,ffff2022,fffe81dd,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,fuel_inhibit_mask,ffff22e0,fffe92e4,,,mapped,Multiple homologous fuel-control functions use this mask
+telemetry,apc_command_raw,ffff2022,fffe81dd,,,target-specific,"The reviewed output slice of function 00074afa publishes byte fffe81dd at 00074d0c and on its override branch at 00074d1a, with GBR=fffe81cc. It zero-extends the selected byte into R4 in the call delay slot at 00074d20 before scheduler 0002e464. The same function reads fffe81dd at 00074d44 before forming the argument of 0002e956. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
+telemetry,fuel_inhibit_mask,ffff22e0,fffe92e4,,,target-specific,"The terminal mask slice of coordinator 000760cc combines the selected request mask with the result of 00078080 at 000766e4, applies AND 0x3f at 000766e8, and publishes the byte to literal destination fffe92e4 at 000766f0. The store is the conditional branch delay slot and executes for both zero and nonzero results. This independently binds the final six-bit mask storage; target bit-to-cylinder correspondence and hardware behavior require separate qualification."
 telemetry,maf_b1_raw,ffff101c,fffe8024,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_b2_raw,ffff101e,fffe8026,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_total_raw,ffff3852,fffead0a,,,mapped,Aligned diagnostic pointer table preserves the field position

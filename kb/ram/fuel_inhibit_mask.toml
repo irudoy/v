@@ -184,26 +184,54 @@ layout = "1me3b"
 address = "fffe92b0"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92b0"
-to = "7mfk:ffff22e0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007ad86"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+The terminal mask slice of coordinator 0007a740 combines the selected \
+request mask with the result of 0007cab4 at 0007ad7a, applies AND 0x3f at \
+0007ad7e, and publishes the byte to literal destination fffe92b0 at \
+0007ad86. The store is the conditional branch delay slot and executes for \
+both zero and nonzero results. This independently binds the final six-bit \
+mask storage; target bit-to-cylinder correspondence and hardware behavior \
+require separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033054"
+note = """
+Function 00032ffe reads byte fffe92b0 at 00033054 and tests the request mask \
+against it at 00033056. A set bit selects unsigned fallback word fffe937e at \
+00033068 instead of the requested pulse word. This is a target consumer \
+binding without a physical cylinder-order claim."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe92e4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe92e4"
-to = "7mfk:ffff22e0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Multiple homologous fuel-control functions use this mask"
+kind = "l0"
+supports = "identity"
+at = "1nd:000766f0"
+note = """
+The terminal mask slice of coordinator 000760cc combines the selected \
+request mask with the result of 00078080 at 000766e4, applies AND 0x3f at \
+000766e8, and publishes the byte to literal destination fffe92e4 at \
+000766f0. The store is the conditional branch delay slot and executes for \
+both zero and nonzero results. This independently binds the final six-bit \
+mask storage; target bit-to-cylinder correspondence and hardware behavior \
+require separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0003030c"
+note = """
+Function 000302b6 reads byte fffe92e4 at 0003030c and tests the request mask \
+against it at 0003030e. A set bit selects unsigned fallback word fffe93ae at \
+00030320 instead of the requested pulse word. This is a target consumer \
+binding without a physical cylinder-order claim."""
 
 [[symbol]]
 layout = "7mfk"
