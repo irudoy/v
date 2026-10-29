@@ -1,7 +1,6 @@
 summary = """
-Multipurpose state byte. Bit 6 enables the direct high-octane minus \
-high-detonation Q8 map-difference branch in 000493e8 when ffff2469.bit7 is \
-clear."""
+Multipurpose captured state byte. Bit 6 enables the direct Q8 timing-map \
+difference when the layout-specific coordinator inhibit is clear."""
 note = ["Other bits and consumers belong to separate calculations."]
 level = "code"
 width = 8
@@ -42,6 +41,37 @@ type = "input"
 end = "owner"
 relies = "structure"
 supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9489"
+name = "singing-axolotl"
+level = "code"
+note = """
+Periodic state copier 00021218 reads byte fffe9488 at 00021520 and writes \
+fffe9489 at 00021524 before the task dispatch loop at 0002170a. Coordinator \
+0006d948 reads this snapshot at 0006dc98 for table selection and at 0006dd0c \
+for the direct timing-map difference path, requiring bit 6 after the \
+independent fffe948b.bit6 inhibit test. The read at 0006dd38 supplies \
+snapshot.bit6 for the subsequent inhibit-history update at 0006dd98. The \
+snapshot bit-6 role matches the shared field encoding. Other bits and the \
+physical upstream conditions remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00021524"
+note = """
+The reviewed periodic state copier transfers fffe9488 to fffe9489 before its \
+task dispatch loop. Coordinator 0006d948 uses snapshot.bit6 in the direct \
+timing-map difference path and its inhibit-history update; the wire field \
+retains its bit-6 encoding. Physical switching-input identity remains \
+unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006dd0c"
 
 [[symbol]]
 layout = "7mfk"
@@ -165,17 +195,6 @@ note = """
 The source-access search has no unique reviewed producer-consumer binding. \
 This field is unavailable on the layout until its source role is reviewed."""
 
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff2467"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
 [[link]]
 type = "depends"
 to = "knock_timing_state/ram"
@@ -195,7 +214,7 @@ supports = "identity"
 type = "reader"
 to = "knock_function/fn"
 via = ["knock_function/fn"]
-layouts = ["7mfk", "jk78c"]
+layouts = ["7mfk", "jk78c", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -237,6 +256,29 @@ at = "jk78c:00062e7a"
 [[link.evidence]]
 kind = "l0"
 at = "jk78c:00062eb2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0006dc98"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0006dd0c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0006dd38"
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00021524"
 
 [[link]]
 type = "writer"
