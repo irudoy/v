@@ -736,6 +736,11 @@ def _verify_function_match(ctx):
     return None
 
 
+def _rom_range(data, address, size):
+    """Whether a positive range lies wholly inside a ROM image."""
+    return size > 0 and address >= 0 and address + size <= len(data)
+
+
 def _verify_byte_identical(ctx):
     failure = _own(ctx) or _counterpart(ctx)
     if failure:
@@ -748,18 +753,37 @@ def _verify_byte_identical(ctx):
         here, there = pair
         if (here.entry, there.entry) != (ctx.symbol.address, ctx.other.address):
             return "the functions are not the symbol and its counterpart"
+        spans = [(ctx.at, here.size), (ctx.to, there.size)]
+    else:
+        if (ctx.at[1], ctx.to[1]) != (ctx.symbol.address, ctx.other.address):
+            return "the ranges do not start at the symbol and its counterpart"
+        size = storage_size(ctx.symbol)
+        if size is None:
+            return "the symbol states no storage size"
+        if storage_size(ctx.other) != size:
+            return "the symbol and its counterpart have different storage sizes"
+        spans = [(ctx.at, size), (ctx.to, size)]
+    compared = []
+    for (layout, address), size in spans:
+        if size < 1:
+            return f"the range {layout}:{address:08x} has no positive byte size"
+        selected = _images_of(ctx, layout)
+        if not selected:
+            return f"{layout} has no applicable ROM image for the byte comparison"
+        compared.extend((layout, address, size, rom, data) for rom, data in selected)
+    for layout, address, size, rom, data in compared:
+        if not _rom_range(data, address, size):
+            hint = ("; RAM identity requires reviewed access/address evidence"
+                    if ctx.symbol.kind == "ram" else "")
+            return (f"the {size}-byte range {layout}:{address:08x} is outside "
+                    f"the {len(data)}-byte ROM image {rom}{hint}")
+    if ctx.symbol.kind == "fn":
         if here.hashes[0] != digest or there.hashes[0] != digest:
             return "the exact bytes of the functions differ from sha256"
         return None
-    if (ctx.at[1], ctx.to[1]) != (ctx.symbol.address, ctx.other.address):
-        return "the ranges do not start at the symbol and its counterpart"
-    size = storage_size(ctx.symbol)
-    if size is None:
-        return "the symbol states no storage size"
-    for layout, address in (ctx.at, ctx.to):
-        for rom, data in _images_of(ctx, layout):
-            if hashlib.sha256(data[address:address + size]).hexdigest() != digest:
-                return f"the {size} bytes of {rom} at {address:08x} differ from sha256"
+    for _, address, size, rom, data in compared:
+        if hashlib.sha256(data[address:address + size]).hexdigest() != digest:
+            return f"the {size} bytes of {rom} at {address:08x} differ from sha256"
     return None
 
 
@@ -1399,22 +1423,28 @@ def _byte_identical(model, symbol, other):
         there = code(other.layout, model.root).functions.get(other.address)
         if here is None or there is None or here.hashes[0] != there.hashes[0]:
             return
+        sizes, digest = (here.size, there.size), here.hashes[0]
+    else:
+        size = storage_size(symbol)
+        if size is None or storage_size(other) != size:
+            return
+        sizes, digest = (size, size), None
+    digests = set()
+    for owner, size in zip((symbol, other), sizes):
+        only = symbol.props.get("images") if owner is symbol else None
+        selected = images(model, owner.layout, only)
+        if size < 1 or not selected:
+            return
+        for _, data in selected:
+            if not _rom_range(data, owner.address, size):
+                return
+            if digest is None:
+                digests.add(hashlib.sha256(data[owner.address:owner.address + size]).hexdigest())
+    if digest is not None or len(digests) == 1:
         yield {"kind": "byte-identical", "supports": "homology",
                "at": f"{symbol.layout}:{symbol.address:08x}",
-               "to": f"{other.layout}:{other.address:08x}", "sha256": here.hashes[0]}
-        return
-    size = storage_size(symbol)
-    if size is None or storage_size(other) != size:
-        return
-    digests = {hashlib.sha256(data[address:address + size]).hexdigest()
-               for layout, address, only in (
-                   (symbol.layout, symbol.address, symbol.props.get("images")),
-                   (other.layout, other.address, None))
-               for _, data in images(model, layout, only)}
-    if len(digests) == 1:
-        yield {"kind": "byte-identical", "supports": "homology",
-               "at": f"{symbol.layout}:{symbol.address:08x}",
-               "to": f"{other.layout}:{other.address:08x}", "sha256": digests.pop()}
+               "to": f"{other.layout}:{other.address:08x}",
+               "sha256": digest if digest is not None else digests.pop()}
 
 
 def homology_items(model, symbol, other):

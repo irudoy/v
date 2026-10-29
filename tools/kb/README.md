@@ -119,6 +119,11 @@ program structure or bytes, and hardware confirmation. L0, image bytes and
 reviewed code retain their independent grounding roles. Graph topology is not
 semantics, and software checks do not replace hardware validation.
 
+Byte-identity evidence compares positive, complete ROM ranges on both layouts
+and every applicable image. RAM bindings use reviewed L0 access/address
+evidence. Matching hashes of empty or truncated ROM slices provide no identity
+grounding.
+
 A historical file reference uses `git:<tag>:<repository-path>[#fragment]`.
 Stock-proof evidence uses the local `archive/stock-proofs-2026-10-26` tag.
 Archived TEST evidence and TEST evidence without `supports` provide no grounding.

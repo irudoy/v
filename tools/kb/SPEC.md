@@ -627,7 +627,7 @@ A link is stored at one end and read in both directions.
 | `call-ordinal` | The calls at `at` and at the location `to` are the call `value` of homologous functions and relate the symbol and its counterpart in the same way | `at`, `to`, `count`, `value` | `code` when `count` is 1 |
 | `interp-contract` | Two functions with one interpolation contract, and a location `to` is the entry of the counterpart. For two wrappers, `key` is the entry of the counterpart, the `[interp]` keys `access`, `offset`, `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` agree, and the L0 body of each wrapper calls the entry of its kernel unless the wrapper is its own kernel. For two kernels, `key` is the kernel entry on the layout of the counterpart that a wrapper of one meaning calls there, while that wrapper's symbol on the layout of the symbol calls its own kernel entry | `to`, `key` | `code` |
 | `did-table` | The DID's slot in the service pointer table of the image | `at`, `value` | `code` |
-| `byte-identical` | Identical bytes over a range: the exact hash of two functions, or the storage of two data symbols on every image | `at`, `to`, `sha256` | `code` |
+| `byte-identical` | Identical bytes over positive, complete ROM ranges: the exact hash of two L0 functions, or equal-sized data storage on every applicable image | `at`, `to`, `sha256` | `code` |
 | `rom-bytes` | Bytes of every image of the layout at `at` | `at`, `value` | `code` |
 | `unbound-constant` | A retained legacy constant without a verified address and byte binding | `value` | none |
 | `unverified-site` | A retained legacy site whose code relationship is not reproduced | `at` | none |
@@ -645,6 +645,10 @@ A link is stored at one end and read in both directions.
 
 - Evidence of one layout names locations of that layout; homology evidence
   names the other symbol in `to`.
+- A byte-identity comparison requires an applicable ROM image on both sides
+  and a positive range wholly inside every such image. Both ranges pass this
+  check before their hashes are compared. RAM identities use reviewed `l0`
+  access/address evidence.
 - Masking clears the operand bits that encode an address the layouts place
   differently: the displacements of PC-relative loads, of `mova`, of
   branches, and of GBR accesses. A region is a maximal run of equal masked

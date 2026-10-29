@@ -1,6 +1,8 @@
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from kb import checks, compile, derive, levels, match, names, repo, store, tokens, vocab
@@ -159,6 +161,102 @@ class FunctionMatchTest(unittest.TestCase):
         self.assertEqual(best.address, MNEMONIC[1])
         self.assertEqual((best.evidence["kind"], best.evidence["value"]),
                          ("function-match", "mnemonic"))
+
+
+class ByteIdentityRangeTest(unittest.TestCase):
+    def model(self, address=0x20, counterpart=0x10, size=2, other_size=2, kind="const"):
+        def declare(b):
+            b.symbol("7mfk", kind, counterpart, "test", group=(kind, "range"),
+                     props={"width": 8 * other_size})
+            b.symbol("jk00d", kind, address, "test", group=(kind, "range"),
+                     props={"width": 8 * size})
+        return model_of(declare)
+
+    def compare(self, model, digest, images=None):
+        other = next(symbol for symbol in model.symbols.values() if symbol.layout == "7mfk")
+        symbol = next(symbol for symbol in model.symbols.values() if symbol.layout == "jk00d")
+        images = images if images is not None else {
+            layout: [(layout, bytes(0x40))] for layout in ("7mfk", "jk00d")}
+        with patch.object(match, "images", side_effect=lambda model, layout, only=None: images[layout]):
+            failure = match.verify(model, symbol, {
+                "kind": "byte-identical", "supports": "homology", "at": symbol.key.location,
+                "to": other.key.location, "sha256": digest})
+            proposed = list(match._byte_identical(model, symbol, other))
+        return failure, proposed
+
+    def test_empty_ram_slices_cannot_ground_or_propose_an_identity(self):
+        model = self.model(0xFFFF1000, 0xFFFF2000, kind="ram")
+        failure, proposed = self.compare(model, hashlib.sha256(b"").hexdigest())
+        self.assertIsNotNone(failure)
+        self.assertIn("outside", failure)
+        self.assertIn("RAM identity requires reviewed access/address evidence", failure)
+        self.assertEqual(proposed, [])
+
+    def test_matching_truncated_slices_are_refused(self):
+        model = self.model(0x3F, 0x3F)
+        failure, proposed = self.compare(model, hashlib.sha256(b"\0").hexdigest())
+        self.assertIsNotNone(failure)
+        self.assertIn("2-byte range jk00d:0000003f", failure)
+        self.assertIn("outside", failure)
+        self.assertEqual(proposed, [])
+
+    def test_every_source_and_target_image_needs_the_complete_range(self):
+        for source_length, target_length, failed_layout in (
+                (0x40, 0x40, None), (0x3F, 0x40, "jk00d"), (0x40, 0x3F, "7mfk")):
+            with self.subTest(source=source_length, target=target_length):
+                model = self.model(0x3E, 0x3E)
+                images = {
+                    "jk00d": [("source-full", bytes(0x40)), ("source-extra", bytes(source_length))],
+                    "7mfk": [("target-full", bytes(0x40)), ("target-extra", bytes(target_length))]}
+                failure, proposed = self.compare(model, hashlib.sha256(bytes(2)).hexdigest(), images)
+                if failed_layout is None:
+                    self.assertIsNone(failure)
+                    self.assertEqual(len(proposed), 1)
+                    self.assertEqual(proposed[0]["sha256"], hashlib.sha256(bytes(2)).hexdigest())
+                else:
+                    self.assertIsNotNone(failure)
+                    self.assertIn(f"{failed_layout}:0000003e", failure)
+                    self.assertIn("outside", failure)
+                    self.assertEqual(proposed, [])
+
+    def test_the_declared_counterpart_storage_must_have_the_same_size(self):
+        failure, proposed = self.compare(self.model(other_size=1), hashlib.sha256(bytes(2)).hexdigest())
+        self.assertIsNotNone(failure)
+        self.assertIn("different storage sizes", failure)
+        self.assertEqual(proposed, [])
+
+    def test_both_sides_need_an_applicable_rom_image(self):
+        for missing in ("7mfk", "jk00d"):
+            with self.subTest(layout=missing):
+                images = {layout: [(layout, bytes(0x40))] for layout in ("7mfk", "jk00d")}
+                images[missing] = []
+                failure, proposed = self.compare(self.model(), hashlib.sha256(bytes(2)).hexdigest(), images)
+                self.assertIsNotNone(failure)
+                self.assertIn(f"{missing} has no applicable ROM image", failure)
+                self.assertEqual(proposed, [])
+
+    def test_a_changed_byte_on_any_image_refuses_the_comparison(self):
+        images = {layout: [(layout, bytes(0x40))] for layout in ("7mfk", "jk00d")}
+        images["jk00d"].append(("changed", bytes(0x20) + b"\1" + bytes(0x1F)))
+        failure, proposed = self.compare(self.model(), hashlib.sha256(bytes(2)).hexdigest(), images)
+        self.assertIsNotNone(failure)
+        self.assertIn("changed", failure)
+        self.assertIn("differ from sha256", failure)
+        self.assertEqual(proposed, [])
+
+    def test_a_function_hash_cannot_stand_for_an_empty_or_out_of_image_range(self):
+        digest = hashlib.sha256(b"").hexdigest()
+        for address, size, expected in ((0x20, 0, "no positive byte size"), (0x40, 2, "outside")):
+            with self.subTest(address=address, size=size):
+                model = self.model(address, address, kind="fn")
+                functions = {layout: SimpleNamespace(functions={
+                    address: match.Function(address, size, size // 2, (digest, "m", "s"))})
+                    for layout in ("7mfk", "jk00d")}
+                with patch.object(match, "code", side_effect=lambda layout, root: functions[layout]):
+                    failure, proposed = self.compare(model, digest)
+                self.assertIsNotNone(failure)
+                self.assertIn(expected, failure)
+                self.assertEqual(proposed, [])
 
 
 class ApcOutputTest(unittest.TestCase):
