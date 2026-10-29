@@ -1,0 +1,18 @@
+summary = """
+Selects the 1ND request coordinate. When the flag predicates select the \
+forward path it reads fffe89ee at 000a5cf2; otherwise it selects the \
+unsigned minimum of fffe8d30 and fffe8796. It stores the selected coordinate \
+at fffe8d2a and applies the inverse curve pair before the subsequent scaled \
+output."""
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000a5cc4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5cc4"

@@ -8787,3 +8787,14 @@ detail = "reader 7mfk-ffff5690/ram -> 7mfk-0003235c/fn: no matching normalized L
 sources = ["kb/ram/cornflower-polecat.toml"]
 state = "unresolved"
 reason = "The SID22 reader follows an indirect data pointer. Normalized L0 has no matching direct RAM-read record for this cell at the declared reader; the access remains unresolved."
+
+[[reconciliation.review]]
+kind = "width"
+subject = "1nd-fffe8034/ram"
+layout = "1nd"
+claim_sha256 = "cbb86a4b1a4405bb397733e543ab95594bba9cb0f47bd434fd5314043bb928e4"
+l0 = "4726d5a7201c1cc3"
+detail = "1nd-fffe8034/ram: declared 8 bits; normalized L0 includes wider accesses of [32] bits"
+sources = ["kb/ram/normalized_load.toml"]
+state = "unresolved"
+reason = "The uint8 signal is the first byte of the state transfer from fffe8048 at 00021276 to fffe8034 at 00021294. The unchanged longword also carries neighboring snapshot bytes; 00074da8 reads the signal as a byte. The wide block store and the byte view retain an explicit unresolved width reconciliation."

@@ -1,0 +1,29 @@
+summary = """
+1ND model-produced uint16 coordinate whose high byte indexes the Fuel \
+Compensation surfaces after periodic copying to fffe93aa. Producer 0004d090 \
+forms it from the unsigned words fffea2aa and fffe89f2 through the reviewed \
+float sequence 0004d0d8..0004d126 and stores it at 0004d174. Its physical \
+input domain and engineering conversion remain unestablished."""
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9446"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004d174"
+
+[[link]]
+type = "writer"
+to = "fuel_compensation_coordinate_publisher/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0004d174"

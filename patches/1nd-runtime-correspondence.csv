@@ -119,14 +119,14 @@ can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask
 can_symbol,mailbox_record_address,000097be,0000974c,05000000,,mapped,Physical mailbox 26 is stock inactive
 can_symbol,occupied_mailbox_record_address,000097c6,00009754,04000000,,mapped,Adjacent physical mailbox 28 remains stock occupied
 can_symbol,stock_sle1_isr,000c7914,0011b334,,,mapped,Vector target supplies the complete ISR tail-chain entry
-telemetry,request_flow_raw,ffff1980,,,,unsupported,No homolog is established for the requested-torque column coordinate: the target conversion chain is not traced to a stored forward coordinate
+telemetry,request_flow_raw,ffff1980,fffe89ee,,,target-specific,The reviewed forward conversion 000a5de8 stores the curve-pair result at fffe89ee and uses it as the column of primary requested-torque table 00010048; 000a5cc4 conditionally selects the stored word. The source is a raw code coordinate with unestablished physical conversion.
 telemetry,final_timing_raw,ffff11d4,fffe81cc,,,mapped,Target command builder subtracts this byte from 110 before the primary consumer
 telemetry,apc_command_raw,ffff2022,fffe81dd,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,fuel_inhibit_mask,ffff22e0,fffe92e4,,,mapped,Multiple homologous fuel-control functions use this mask
 telemetry,maf_b1_raw,ffff101c,fffe8024,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_b2_raw,ffff101e,fffe8026,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,maf_total_raw,ffff3852,fffead0a,,,mapped,Aligned diagnostic pointer table preserves the field position
-telemetry,normalized_load_raw,ffff102c,,,,unsupported,No normalized load snapshot is established because the 32-instruction JK08A producer at 0003bd1c has no match in the target with PC-relative displacements masked
+telemetry,normalized_load_raw,ffff102c,fffe8034,,,target-specific,The reviewed producer 00044c70 forms the capped Q7 BFS/reference ratio at fffe8048. State copier 00021218 transfers the byte to fffe8034 and ignition reader 00074d98 uses it as a timing-table column. Physical cylinder-filling identity remains unestablished.
 telemetry,bfs_raw,ffff1026,fffe802e,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,injection_0_raw,ffff23c8,fffe93d6,,,mapped,Aligned diagnostic pointer table and channel-array producer agree
 telemetry,injection_1_raw,ffff23ca,fffe93d8,,,mapped,Aligned diagnostic pointer table and channel-array layout agree
@@ -166,7 +166,7 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe945b,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe945c,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
 telemetry,ltft_b1_raw,ffff2302,fffe9302,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_b2_raw,ffff2304,fffe9304,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,alpha_n_flow_raw,ffff1170,,,,unsupported,No homolog is established for the Fuel Compensation Main column coordinate: the target curve pair and its consumer are not traced
+telemetry,alpha_n_flow_raw,ffff1170,fffe93aa,,,target-specific,The high byte of snapshot word fffe93aa is the column of the target Fuel Compensation surfaces. Its independent producer and periodic-copy path are recorded in diamond-macaque/ram; the JK08A byte-producer homolog remains unresolved.
 telemetry,battery_voltage_raw,ffff1188,fffe817c,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
 telemetry,ltft_adjustment_b1_raw,ffff5648,fffecfe4,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction

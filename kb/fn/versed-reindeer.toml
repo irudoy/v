@@ -133,6 +133,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000a5de8"
+name = "utopian-kangaroo"
+level = "code"
+note = """
+The 1ND forward conversion saturates and doubles the 000149ee/00016e02 \
+lookup, stores the word at fffe8290, and forms uint32 fffe888c through \
+unsigned division. It selects 00016f22/00016d62 up to ROM16[00016da0], \
+otherwise 00016f62/00016da2 at min(65535, fffe888c>>4). It stores the uint16 \
+result at fffe89ee and passes it as the column of primary requested-torque \
+table 00010048 with row fffe875e. The returned offset-binary word is \
+centered by 0x8000 and stored at fffe8a1c. Physical engineering conversions \
+remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5de8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5e7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5e8a"
+
+[[symbol]]
 layout = "7mfk"
 address = "00073948"
 name = "versed-reindeer"

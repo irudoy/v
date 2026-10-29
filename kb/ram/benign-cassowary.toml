@@ -81,6 +81,23 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8048"
+name = "mature-rat"
+level = "code"
+note = """
+Producer 00044c70 writes \
+min(255,floor(uint16[fffe802e]*128/ROM16[0000940a])) at 00044eb2. The static \
+tail uses one unsigned division and caps its quotient before the byte store. \
+State copier 00021218 includes this byte in its longword transfer to \
+fffe8034 at 00021294."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044eb2"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1048"
 name = "benign-cassowary"
@@ -267,6 +284,17 @@ key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
 [[link]]
 type = "reader"
+to = "canram_enable_commit/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00021276"
+
+[[link]]
+type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -300,3 +328,14 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "bfs_estimation_stage/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00044eb2"

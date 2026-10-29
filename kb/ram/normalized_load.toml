@@ -196,6 +196,34 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8034"
+level = "code"
+note = """
+Periodic snapshot of the Q7 normalized-BFS byte fffe8048. Function 00021218 \
+loads the source longword at 00021276 and stores it at fffe8034 at 00021294, \
+preserving the byte without conversion. The producer 00044c70 forms \
+min(255,floor(uint16[fffe802e]*128/ROM16[0000940a])); ignition reader \
+00074d98 loads the snapshot byte at 00074da8 and passes it as the column of \
+hot/cold timing surfaces, including 0000a410 at 00074f7e. Physical \
+cylinder-filling identity remains a hypothesis."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074da8"
+note = """
+The reviewed producer 00044c70 forms the capped Q7 BFS/reference ratio at \
+fffe8048. State copier 00021218 transfers the byte to fffe8034 and ignition \
+reader 00074d98 uses it as a timing-table column. Physical cylinder-filling \
+identity remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00021294"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff102c"
 former = ["inquisitive-spoonbill/ram/7mfk-ffff102c"]
@@ -314,18 +342,6 @@ method = "masked-match"
 target = "7mfk:ffff102c"
 count = 0
 l0 = "28a4e19998ef4d2c"
-note = """
-No normalized load snapshot is established because the 32-instruction JK08A \
-producer at 0003bd1c has no match in the target with PC-relative \
-displacements masked"""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff102c"
-count = 0
-l0 = "cb701875f15725a4"
 note = """
 No normalized load snapshot is established because the 32-instruction JK08A \
 producer at 0003bd1c has no match in the target with PC-relative \
@@ -493,6 +509,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "roaring-bullmastiff/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00074da8"
+
+[[link]]
+type = "reader"
 to = "transient_fuel_term_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -528,6 +555,17 @@ to = "notorious-ringtail/ram"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00021294"
 
 [[link]]
 type = "writer"

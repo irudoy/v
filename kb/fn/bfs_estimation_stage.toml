@@ -1,0 +1,20 @@
+summary = """
+1ND preliminary fuel-schedule and normalization stage. The reviewed \
+normalization tail 00044e92..00044eb2 divides uint16[fffe802e]*128 by \
+unsigned ROM16[0000940a] through unsigned_divide/fn, caps the quotient at \
+255, and writes fffe8048. The source word is the BFS sample loaded at \
+00044e22 and preserved in R7 at 00044e40. The stock reference is 0x9f38; the \
+ratio establishes a Q7 code coordinate without promoting a physical \
+cylinder-filling interpretation."""
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00044c70"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044c70"

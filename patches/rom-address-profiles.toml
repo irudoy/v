@@ -272,7 +272,6 @@ injected_ram_end = 0xFFFF0F00
 map_variant = "sh7059-1nd"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
-    "alpha_n_flow_raw",
     "fuel_learning_permit_a_raw",
     "fuel_learning_permit_b_raw",
     "knock_branch_state_raw",
@@ -280,8 +279,6 @@ telemetry_unavailable = [
     "ltft_adjustment_b2_raw",
     "ltft_learned_b2_raw",
     "ltft_publication_neutral_control_raw",
-    "normalized_load_raw",
-    "request_flow_raw",
     "torque_transition_state_raw",
     "transmission_reduction_state_raw",
 ]
@@ -423,12 +420,14 @@ occupied_mailbox_record_stock = 0x04000000
 stock_sle1_isr = 0x0011B334
 
 [profile.1ND0A.telemetry_sources]
+request_flow_raw = 0xFFFE89EE
 final_timing_raw = 0xFFFE81CC
 apc_command_raw = 0xFFFE81DD
 fuel_inhibit_mask = 0xFFFE92E4
 maf_b1_raw = 0xFFFE8024
 maf_b2_raw = 0xFFFE8026
 maf_total_raw = 0xFFFEAD0A
+normalized_load_raw = 0xFFFE8034
 bfs_raw = 0xFFFE802E
 injection_0_raw = 0xFFFE93D6
 injection_1_raw = 0xFFFE93D8
@@ -459,6 +458,7 @@ intake_cvtc_duty_b1_raw = 0xFFFE945B
 intake_cvtc_duty_b2_raw = 0xFFFE945C
 ltft_b1_raw = 0xFFFE9302
 ltft_b2_raw = 0xFFFE9304
+alpha_n_flow_raw = 0xFFFE93AA
 battery_voltage_raw = 0xFFFE817C
 ltft_learned_b1_raw = 0xFFFE9306
 ltft_adjustment_b1_raw = 0xFFFECFE4

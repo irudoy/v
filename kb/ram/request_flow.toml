@@ -106,6 +106,38 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe89ee"
+level = "code"
+note = """
+Forward column coordinate of primary requested-torque table 00010048. \
+Producer 000a5de8 writes this word at 000a5e7a after selecting the low-range \
+00016f22/00016d62 or high-range 00016f62/00016da2 conversion, then \
+immediately passes the result as the table column. The curve input is uint32 \
+fffe888c and the row is fffe875e. This binding establishes raw code \
+coordinates; it does not establish physical flow or a percentage reference."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5e7a"
+note = """
+The reviewed forward conversion 000a5de8 stores the curve-pair result at \
+fffe89ee and uses it as the column of primary requested-torque table \
+00010048; 000a5cc4 conditionally selects the stored word. The source is a \
+raw code coordinate with unestablished physical conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a56d6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5cf2"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1980"
 former = ["voracious-goat/ram/7mfk-ffff1980"]
@@ -258,17 +290,6 @@ note = """
 No homolog is established for the requested-torque column coordinate: the \
 target conversion chain is not traced to a stored forward coordinate"""
 
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1980"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-No homolog is established for the requested-torque column coordinate: the \
-target conversion chain is not traced to a stored forward coordinate"""
-
 [[link]]
 type = "input"
 to = "arcane-jackrabbit/tbl"
@@ -320,6 +341,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "request_coordinate_path_selector/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000a5cf2"
+
+[[link]]
+type = "reader"
 to = "sexy-agouti/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -328,7 +360,7 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "versed-reindeer/fn"
-layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c", "1nd"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"

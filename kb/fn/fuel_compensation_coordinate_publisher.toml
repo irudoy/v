@@ -1,0 +1,20 @@
+summary = """
+1ND model stage with a reviewed Fuel Compensation coordinate publisher at \
+0004d0d8..0004d174. It converts the unsigned words at fffea2aa and fffe89f2 \
+to floats, multiplies them with exact ROM floating constants at 0004d2d4 and \
+0004d2dc, then applies 0004d2e0. A comparison with ROM float 0004d2e4 \
+selects 65535 or truncation after multiplication by ROM float 0004d2ec. It \
+stores the result at fffe9446. The remaining model outputs and physical \
+input units are outside this coordinate binding."""
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1nd"
+address = "0004d090"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004d090"

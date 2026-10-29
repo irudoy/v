@@ -413,6 +413,17 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
+to = "bfs_estimation_stage/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00044e22"
+
+[[link]]
+type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
