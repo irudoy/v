@@ -10,6 +10,56 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol]]
+layout = "1me3b"
+address = "000175e6"
+summary = """
+Phase of the high-load valve event pair of the VVEL idle-model stage \
+FUN_000638C0, zero at 0x8000 and 0.5 per count, looked up by engine speed \
+over the axis 0x00017566."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, \
+the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code \
+interpretation: Read by FUN_000638C0 through the literal-pool word \
+0x00063A00, loaded at 0x00063946. FUN_000638C0 holds the float literals of \
+JK78C FUN_00057208 and forms the event center with the additional literals \
+450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016F14."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063946"
+
+[[symbol]]
+layout = "1nd"
+address = "00017512"
+summary = """
+Phase of the high-load valve event pair of the VVEL idle-model stage \
+FUN_00060146, zero at 0x8000 and 0.5 per count, looked up by engine speed \
+over the axis 0x00017492."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, \
+the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code \
+interpretation: Read by FUN_00060146 through the literal-pool word \
+0x00060354, loaded at 0x00060174. FUN_00060146 holds the float literals of \
+JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016F14. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060174"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016f14"
@@ -32,6 +82,36 @@ slot = "x"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00057238"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060172"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063944"
+
+[[link]]
+type = "reader"
+to = "olivine-husky/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060354"
+
+[[link]]
+type = "reader"
+to = "stoic-baboon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063a00"
 
 [[link]]
 type = "reader"

@@ -106,6 +106,46 @@ semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and identical stock bytes do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 at callsite 0x5664A through the 8x8 uint16 wrapper 0x28058 with the same coordinates and axes as the mode 12 surface 0x0000E1CE. Stock values are identical to that surface; only the knock state selects between them."
 
 [[target.JK78C.table]]
+id = "vvel_idle_model_duration"
+address = 0x0000F54E
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "54a3e04904c8de52317c23ca54258da65d4d2686198140d873c909ebecc06ac6"
+pointer_bindings = [{ site = 0x000574F8, accessor = 0x00057322 }]
+axis_x = 0x00016EC4
+axis_y = 0x00016EF4
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration of the trimmed valve event pair of the VVEL idle-model stage FUN_00057322, zero at 0x8000 and 0.05 per count, looked up by engine speed and the VVEL load word 0xFFFF238A. With ROM8[0x8957].bit5 set (stock 0x3A), the stage writes 0xFFFFA1DC = 0.05 * (raw - 0x8000) and places the trimmed events 0xFFFFA1E4 and 0xFFFFA1E8 at the trimmed center +/- 2 * 0xFFFFA1DC; with the bit clear, the value adds to 0.25 * (0xFFFFA1EC - 0xFFFFA1F0). FUN_00057208 blends the trimmed events toward the high-load pair, and the chain of FUN_00056BAA forms the mode 5 duration 0xFFFFA1B0. Stock 33428..34108 = 33.0..67.0."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 deg; proposed editor-grid inverse x/0.05+32768. Origin: the float literals 0.05 at 0x57530 and -1638.4 at 0x57638."
+
+[[target.JK78C.table]]
+id = "vvel_duration_model_running"
+address = 0x000100CE
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "8dad7b325bb2e6a6b2237e76c6ffbbd3637f3c877f0c250c26b33eb30d8e9ef8"
+pointer_bindings = [{ site = 0x00066684, accessor = 0x000657E4 }]
+axis_x = 0x00016C84
+axis_y = 0x00016C24
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration state word of the state codes 2 and 8 (VVEL modes 5 and 15) in the state-code dispatcher FUN_000657E4, looked up by min(0xFFFF, 0xFFFF11AC << 2) over the axis 0x00016C84 and by the load byte 0xFFFF1032 << 8 over the axis 0x00016C24. On the stock path, ROM8[0x8966].bit4 set (0x50), the dispatcher reads it for the current code 0xFFFF43F2 and for the previous code 0xFFFF4480 and publishes the duration word 0xFFFF122C; the codes 1 and 3 read 0x00016D14 instead. The path for the bit clear also reads it. Stock 660..1440 = 33.0..72.0."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the 0.05 duration scale of the state words in defs/JK78C.vvel.md."
+
+[[target.JK78C.table]]
 id = "vvel_duration_model_hot_intake_idle"
 address = 0x000102CE
 width = 8
@@ -146,6 +186,46 @@ semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared dispatcher and axis inputs do not establish physical degrees for this returned word. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where r4 holds the surface selected before the call through the 8x8 uint16 wrapper 0x28058 with the coordinates and axes of the state code 5 surface 0x000102CE."
 
 [[target.JK78C.table]]
+id = "intake_cvtc_model_running"
+address = 0x000104CE
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "9bb4b80807d98ae1a091627802256c1b09981cfdfa0cb3950ff7c6a3a972ebf4"
+pointer_bindings = [{ site = 0x00066694, accessor = 0x000657E4 }]
+axis_x = 0x00016C84
+axis_y = 0x00016C24
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the state codes 2 and 8 (VVEL modes 5 and 15) in FUN_000657E4, read over the axes of 0x000100CE while 0xFFFF23CB.bit7 is set; with the bit clear the word is zero. The dispatcher publishes the VTC word 0xFFFF122E from the current and previous codes like the duration word. 0xFFFF23CB.bit7 is written by FUN_000E59F8. The stock cells range 0..120 and the first two of the 16 rows are zero, so the stock VTC word follows this surface while the bit is set."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: the zero-phase fallback of the VTC word in FUN_000657E4."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_model_default"
+address = 0x000106CE
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e76a54e601e77291905253872e6361984d038c93949cfbb84c4d1d56f740740b"
+pointer_bindings = [{ site = 0x000666A0, accessor = 0x000657E4 }]
+axis_x = 0x00016C84
+axis_y = 0x00016C24
+name = "Intake CVTC State Word - Default and Cold Modes"
+category = "Variable Valve Timing / Intake Cam"
+order = 34
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the state codes 1 and 3 in FUN_000657E4: the VVEL mode 3 and every mode without its own code, whose duration word comes from 0x00016D14. The dispatcher reads it over the axes of 0x000100CE while 0xFFFF23CB.bit7 is set; with the bit clear the word is zero. The stock cells range 0..68 and the first two of the 16 rows are zero, so the stock VTC word follows this surface while the bit is set."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: the zero-phase fallback of the VTC word in FUN_000657E4."
+
+[[target.JK78C.table]]
 id = "intake_cvtc_target_throttled"
 address = 0x000108CE
 width = 16
@@ -164,6 +244,26 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 4 intake-cam target of the VVEL selector: the VTC half of the throttled pair, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 at callsite 0x566DE through the 16x16 uint16 wrapper 0x28090 with r7 = 0xFFFF11A6 on the first axis and the load fraction 0xFFFF238A on the second axis; the literals are in the pool at 0x569D4 that follows FUN_0005693A."
+
+[[target.JK78C.table]]
+id = "vvel_idle_model_phase"
+address = 0x00010ACE
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "a1d3c24761a2e5af7046c471cd8a84915941532c24eb508b7bb66281bbcb5bd8"
+pointer_bindings = [{ site = 0x00057500, accessor = 0x00057322 }]
+axis_x = 0x00016EC4
+axis_y = 0x00016EF4
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00057322, zero at 0x8000 and 0.5 per count, looked up by engine speed and the VVEL load word 0xFFFF238A. With ROM8[0x8957].bit5 set (stock 0x3A), the stage writes 0xFFFFA1E0 = 0.5 * (raw - 0x8000) and centers the trimmed events 0xFFFFA1E4 and 0xFFFFA1E8 at 478 - 0xFFFFA1E0, where 478 = 450 + ROM16[0x8D8E] / 512; with the bit clear, the value adds to 478 - 0.5 * (0xFFFFA1EC + 0xFFFFA1F0). The mode 5 VTC target is 478 minus the mean of the blended events 0xFFFFA1B8 and 0xFFFFA1BC. Stock offsets are 0..120 counts."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals 0.5 at 0x5750C and -16384.0 at 0x57640."
 
 [[target.JK78C.table]]
 id = "timing_state_addend_alternate"
@@ -190,6 +290,44 @@ semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It 
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.JK78C.table]]
+id = "vvel_hot_intake_threshold"
+address = 0x00013F88
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "9bbdd0423ba3e77baf42c3b9579a0fc78c08e8737ff7274384e7971bedca2c02"
+pointer_bindings = [{ site = 0x00059D90, accessor = 0x00059C2C }]
+axis_x = 0x00014208
+name = "VVEL Hot-Intake Idle Threshold"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 10
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00059C2C, looked up by the coolant byte 0xFFFF1069 while the knock state 0xFFFF23C6.bit6 is clear. The interpolated value goes to 0xFFFF34FA, and 0xFFFF4569.bit5 sets when 0xFFFF268C, plus ROM8[0x85D6] = 3 while the bit is set, reaches it. 0xFFFF455B.bit7, the hot-intake idle request of the VVEL modes 12 and 13, requires this latch. Stock 255, 255, 255, 255, 255, 130, 110, 90."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: the byte comparison in FUN_00059C2C."
+
+[[target.JK78C.table]]
+id = "vvel_hot_intake_threshold_knock"
+address = 0x00013F90
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "50dba57da825d7a48f293bcb67b99dea171513cae047c9f88beaaef80a4275b9"
+pointer_bindings = [{ site = 0x00059D90, accessor = 0x00059C2C, offset = 0x8 }]
+axis_x = 0x00014208
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00059C2C while the knock state 0xFFFF23C6.bit6 is set; the reader adds 8 to the literal 0x00013F88. The rest of the latch follows 0x00013F88. Stock 90, 70, 50, 50, 50, 50, 50, 50."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: the byte comparison in FUN_00059C2C."
+
+[[target.JK78C.table]]
 id = "vvel_command_shaft_angle"
 address = 0x000156FC
 width = 16
@@ -211,6 +349,25 @@ scale_expr = "x"
 to_byte = "x"
 semantics = "Unsigned-word conversion between the paired shaft-coordinate array (axis) and the command-word domain (values). The task first uses command words as the axis and paired coordinates as values for the bound word at 0xFFFF44AA, then exchanges those roles for the returned word at 0xFFFF35BA."
 note = "Read by the task FUN_00054FD0 at callsites 0x556E2 and 0x55776, by FUN_0005693A at 0x56952 for the filtered actual duration 0xFFFFA180, and by FUN_0004D3CE at 0x4D3F0 and 0x4D40C through the 16-point uint16 wrapper 0x28320. FUN_0004D3CE reaches it as GBR + 0x20 from the literal 0x000156DC at 0x4D58C. The command-word unit is stored raw; DID 0x125C publishes the latched command 0xFFFF443E."
+
+[[target.JK78C.table]]
+id = "vvel_duration_characteristic"
+address = 0x00015AA2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "57e51be499f22bbdce4212fd13da15b0ac8e54f5f919fa27fd8783fa8a87c41c"
+pointer_bindings = [{ site = 0x00056084, accessor = 0x00055E78 }, { site = 0x000562EC, accessor = 0x00055FF2 }]
+axis_x = 0x00017004
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+confidence = "code"
+semantics = "Monotonic duration characteristic of the VVEL duration ratio correction. FUN_00055E78 looks up this curve with its lookup duration x512, clamped below 128.0, over the axis 0x00017004 and stores the value at 2^-18 per count in 0xFFFFA0D8. FUN_00055F2C and FUN_00055FF2 each clamp the ratio 0xFFFF365A / max(0xFFFF3332, 1) to their own bounds, scale the curve value by it, and look up the axis 0x00017004 over this curve to obtain a corrected duration. FUN_00055F2C clamps to ROM16[0x921E] .. ROM16[0x9220] * 2^-13 = 0 .. 0, so its corrected duration is the first axis point 25.0; FUN_00055FF2 clamps to ROM16[0x9222] .. ROM16[0x9224] * 2^-13 = 65535 / 8192 for both bounds, so its corrected duration has 7.9999 times the characteristic of the lookup duration, capped at the last axis point 95.0. The stock cells rise from 1016 to 38435 and hold 38435 from the eleventh point (73.0)."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: the float literal 2^-18 at 0x56090."
 
 [[target.JK78C.table]]
 id = "vvel_duration_startup"
@@ -327,6 +484,44 @@ semantics = "Engine-speed curve of the shaft-angle bound applied in the task bef
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00054FD0 at callsite 0x550EC through the 8-point uint16 wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF31BA. The 1/512 degree domain follows from the conversion pair; the bound composition is in JK78C.vvel.md."
 
 [[target.JK78C.table]]
+id = "vvel_idle_model_high_load_blend_end"
+address = 0x000162CA
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "709d38b8e4029ae8288e066be91e8fbdf7c0bb1d8d6c221a6fb5be736315e81d"
+pointer_bindings = [{ site = 0x000574A4, accessor = 0x00057208 }]
+axis_x = 0x0001630A
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00057208 reaches the high-load event pair, at 100/65536 percent per count and looked up by engine speed; the start curve is 0x000162EA. Stock 63360 = 96.68 % through the eighth point, 61440 and 57344 at the ninth and tenth, and 655 = 1.0 % above."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: the float literal 100/65536 at 0x574C0."
+
+[[target.JK78C.table]]
+id = "vvel_idle_model_high_load_blend_start"
+address = 0x000162EA
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "be65990a1817e686efa16fe3f5d3a5a97804dff658bc7c63885866d27f4b687e"
+pointer_bindings = [{ site = 0x000574A4, accessor = 0x00057208, offset = 0x20 }]
+axis_x = 0x0001630A
+name = "VVEL Idle Model - High-Load Blend Start"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 14
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00057208 starts to blend toward the high-load event pair, at 100/65536 percent per count and looked up by engine speed. The weight 0xFFFFA1D0 is (load - start) / (end - start), clamped to 0..1, with the VVEL load word 0xFFFF238A and the end curve 0x000162CA. The stage writes 0xFFFFA1C8 = w * upper + (1 - w) * 0xFFFFA1E4 and 0xFFFFA1CC = w * lower + (1 - w) * 0xFFFFA1E8. The reader addresses it at offset 0x20 from the literal 0x000162CA. Stock 61440 = 93.75 % through the eighth point, 57344 and 53248 at the ninth and tenth, and 1 above."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: the float literal 100/65536 at 0x574C0."
+
+[[target.JK78C.table]]
 id = "vvel_duration_cold"
 address = 0x00016A54
 width = 8
@@ -403,6 +598,63 @@ semantics = "Mode 15 duration target of the VVEL selector: the normal running mo
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic factor is not the physical duration unit. The float literal is a binary value described by its nominal decimal factor, not a measurement of degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 at callsite 0x5658C and by FUN_00056DCA at 0x56E1E, both through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6 (3.125 RPM per count). The 0.005 factor is the float literal 0x3BA3D70A at 0x56690; the unit of the scaled duration is a vendor-catalog candidate. Mode assignment and selector logic are in JK78C.vvel.md."
 
 [[target.JK78C.table]]
+id = "vvel_idle_model_floor_release_step"
+address = 0x00016BE4
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "da85a26e1b9dbaa5fa6a35281613f9505e676e708656542a9b3abedb9036e356"
+pointer_bindings = [{ site = 0x000571DC, accessor = 0x00056DCA, offset = 0x10 }]
+axis_x = 0x00016BD4
+name = "VVEL Idle Model - Floor Release Step"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 18
+format = "0"
+fine = 10
+coarse = 100
+confidence = "code"
+semantics = "Per-pass decrement of the idle-model floor weight 0xFFFFA35C in FUN_00056DCA after the hold of 0x00016D04, looked up by the demand margin over the axis 0x00016BD4; the full weight is 10000. The reader addresses it at offset 0x10 from the literal 0x00016BD4. Stock 500, 500, 500, 500, 700, 1500, 1500, 1500."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: the weight literal 10000 at 0x57068."
+
+[[target.JK78C.table]]
+id = "vvel_idle_model_duration_floor"
+address = 0x00016C64
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "0beadded49abdeb64535e4af04c17d0c5c32b138bb4a13af5fa116ea8ed376c9"
+pointer_bindings = [{ site = 0x00056F6C, accessor = 0x00056DCA }]
+axis_x = 0x00016C44
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration floor of the VVEL idle-model stage FUN_00056DCA at 1/512 per count, looked up by engine speed. The stage engages the floor while its mode argument equals 5, the model duration does not exceed this value, the demand margin reaches ROM8[0x8B05] * 0.25 = 5.0, and the counter 0xFFFFA369 of passes with the demand argument above this value reaches ROM8[0x8B07] = 1. The idle-model duration 0xFFFFA1B0 is ((10000 - w) * d + w * max(d, floor)) / 10000, with d the model duration and w the floor weight. The stock floor is 21504 = 42.0 through the ninth point and 23296 = 45.5 above it."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the float literal 1/512 at 0x56F4C."
+
+[[target.JK78C.table]]
+id = "vvel_idle_model_floor_hold_passes"
+address = 0x00016D04
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "957aee455a4ded41d501d86420fdf2b42f856d98335cc36ab2f81d926ed2a511"
+pointer_bindings = [{ site = 0x000571D8, accessor = 0x00056DCA }]
+axis_x = 0x00016BD4
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Pass count of the full idle-model floor weight in FUN_00056DCA, looked up by the demand margin over the axis 0x00016BD4. While the floor is engaged, the weight is 10000 as long as the engaged-pass counter 0xFFFFA366 does not exceed this value; afterwards the weight 0xFFFFA35C steps down by 0x00016BE4 per pass. The weight is zero while the floor is not engaged. Stock 15, 17, 20, 20, 15, 10, 10, 10."
+note = "Engineering conversion is unestablished. Retained hypothesis: x passes; proposed editor-grid inverse x. Origin: the counter comparison in FUN_00056DCA."
+
+[[target.JK78C.table]]
 id = "vvel_duration_throttled"
 address = 0x00016D14
 width = 16
@@ -422,6 +674,25 @@ semantics = "Mode 4 duration target of the VVEL selector: the throttled mode 0xF
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset arithmetic and shared dispatcher word domain do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 at callsite 0x566BA through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6, and by FUN_000657E4 at three callsites with the same axis. The resolver loads the literal from the pool at 0x569CC that follows FUN_0005693A. The 0.05 factor is the float literal 0x3D4CCCCC; the duration unit is a vendor-catalog candidate."
 
 [[target.JK78C.table]]
+id = "vvel_idle_model_high_load_duration"
+address = 0x00016D34
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "79932e9bfcaf676fd3d352a05c949d52e1b1c0fa50c404ef3d638bf203273f91"
+pointer_bindings = [{ site = 0x000574A8, accessor = 0x00057208 }]
+axis_x = 0x00016CC4
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "Duration of the high-load valve event pair of the VVEL idle-model stage FUN_00057208, looked up by engine speed. The stage places the high-load events 0xFFFFA1D4 and 0xFFFFA1D8 at C +/- 0.01 * raw, with C = 478 - 0.5 * (0x00016F14 - 0x8000), and blends them with the events 0xFFFFA1E4 and 0xFFFFA1E8 of FUN_00057322 by the load weight 0xFFFFA1D0. The half-span 0.01 * raw equals twice a duration of 0.005 * raw. Stock 10000..14400."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the float literal 0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322."
+
+[[target.JK78C.table]]
 id = "intake_cvtc_target_running"
 address = 0x00016DC4
 width = 16
@@ -439,6 +710,25 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 15 intake-cam target of the VVEL selector: the VTC half of the normal running pair, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 at callsite 0x565A6 through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6 and converted with the float literals 0xC6800000 (-16384) and 0x3F000000 (0.5). Degrees of cam advance are a vendor-catalog candidate for the scaled value."
+
+[[target.JK78C.table]]
+id = "vvel_idle_model_high_load_phase"
+address = 0x00016F14
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5c4548b9424aa3ac88915fda5d58ffbe628a55df4c942569fe528f5acae38607"
+pointer_bindings = [{ site = 0x000574B4, accessor = 0x00057208 }]
+axis_x = 0x00016E94
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the high-load valve event pair of the VVEL idle-model stage FUN_00057208, zero at 0x8000 and 0.5 per count, looked up by engine speed. The event center is C = 478 - 0.5 * (raw - 0x8000), where 478 = 450 + ROM16[0x8D8E] / 512. Stock offsets are 0..68 counts."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4."
 
 [[target.JK78C.table]]
 id = "vvel_command_shaft_angle_second"
@@ -500,6 +790,21 @@ coarse = 0.5
 confidence = "code"
 semantics = "Second copy of monitor floor B: FUN_00059B64 interpolates it by the word 0xFFFF11BC into 0xFFFF380C, one of the four floor words 0xFFFF3276, 0xFFFF3278, 0xFFFF380A, and 0xFFFF380C whose maximum the deficit monitors FUN_000BF0C0 and FUN_000BF122 compare with the measured control-shaft angle."
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_00059B64 at callsite 0x59B72 through the 8-point uint16 wrapper 0x282F4. No direct call reaches the reader; its entry address is the word at 0x21BBC of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000160AA."
+
+[[target.JK78C.axis]]
+id = "vvel_hot_intake_threshold_axis"
+address = 0x00014208
+length = 8
+storagetype = "uint8"
+values_sha256 = "3b66358cf060185ce12983bbf239137cf0ea4127020f28975158077a78bb7e3e"
+pointer_bindings = [{ site = 0x00059D98, accessor = 0x00059C2C }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the coolant byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: Coolant axis of the hot-intake idle thresholds 0x00013F88 and 0x00013F90 in FUN_00059C2C, 90..160; the coordinate is the coolant byte 0xFFFF1069."
 
 [[target.JK78C.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_axis"
@@ -577,6 +882,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.1 Nm; proposed editor-grid inverse x/0.1. Origin: the retained layout interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the temperature name do not supply an independent intake-air conversion closure. Recorded code and catalog interpretation: Second axis of the hot-intake idle surfaces, stock points 250..2000, reached as GBR + 0xE0 from the literal 0x00015FFA; the coordinate is max(0, 0xFFFF2E26) in the stack slot. 0.1 Nm per count is a catalog candidate for that word."
 
 [[target.JK78C.axis]]
+id = "vvel_idle_model_high_load_blend_axis"
+address = 0x0001630A
+length = 16
+storagetype = "uint16"
+values_sha256 = "552816954d3276d5e940e1f3ea13cba3d32b3d115807a4bee9e582720912c154"
+pointer_bindings = [{ site = 0x000574A4, accessor = 0x00057208, offset = 0x40 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000162CA and 0x000162EA in FUN_00057208, 256..2368; the coordinate is the engine-speed word 0xFFFF11A6. The reader addresses it at offset 0x40 from the literal 0x000162CA."
+
+[[target.JK78C.axis]]
 id = "vvel_cold_axis"
 address = 0x00016AC4
 length = 8
@@ -594,6 +914,51 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. The axis is reached as base literal 0x00016A54 + 0x70; coordinate 0xFFFF1069 is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.\n"
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_margin_axis"
+address = 0x00016BD4
+length = 8
+storagetype = "uint16"
+values_sha256 = "a75abc9d521a88ec94b537e79acd7aa5f5c41ba5f2d27c03afdf9ab605f58c89"
+pointer_bindings = [{ site = 0x000571DC, accessor = 0x00056DCA }]
+name = "Duration Margin [deg]"
+kind = "raw"
+format = "0.0"
+fine = 0.25
+coarse = 1
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the float literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: Demand-margin axis of the idle-model floor hold 0x00016D04 and release step 0x00016BE4 in FUN_00056DCA at 1/512 per count, 2560..20480 = 5.0..40.0. The coordinate is min(margin, 90.0) * 512, where the margin is the demand argument / 512 minus the model duration while the floor is engaged and the held margin otherwise."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_model_running_axis_y"
+address = 0x00016C24
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x0006668C, accessor = 0x000657E4 }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/256 load-byte counts; proposed editor-grid inverse x*256. Origin: the load byte 0xFFFF1032 << 8 of the state-word coordinates. Recorded code interpretation: Load axis of the state-word surfaces 0x000100CE, 0x000104CE and 0x000106CE in FUN_000657E4, 2048..32768; the coordinate is the load byte 0xFFFF1032 << 8, as for the state code 5 pair 0x000102CE."
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_duration_floor_axis"
+address = 0x00016C44
+length = 16
+storagetype = "uint16"
+values_sha256 = "696592e76f8494073396d8ae95bdea57e1e34646febd77946149b77f0ca1c144"
+pointer_bindings = [{ site = 0x00056F70, accessor = 0x00056DCA }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration floor 0x00016C64 in FUN_00056DCA, 128..2368; the coordinate is the engine-speed word 0xFFFF11A6."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_throttled_axis"
@@ -628,6 +993,21 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_high_load_duration_axis"
+address = 0x00016CC4
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x000574AC, accessor = 0x00057208 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load duration 0x00016D34 in FUN_00057208, 128..2304; the coordinate is the engine-speed word 0xFFFF11A6."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_model_hot_intake_idle_axis_y"
@@ -752,6 +1132,66 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_high_load_phase_axis"
+address = 0x00016E94
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x000574B8, accessor = 0x00057208 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load phase 0x00016F14 in FUN_00057208, 256..2176; the coordinate is the engine-speed word 0xFFFF11A6."
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_axis_x"
+address = 0x00016EC4
+length = 16
+storagetype = "uint16"
+values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
+pointer_bindings = [{ site = 0x000574E8, accessor = 0x00057322, offset = 0x10 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration 0x0000F54E and phase 0x00010ACE in FUN_00057322, 256..2176; the coordinate is the engine-speed word 0xFFFF11A6. The reader addresses it at offset 0x10 from the literal 0x00016EB4."
+
+[[target.JK78C.axis]]
+id = "vvel_idle_model_axis_y"
+address = 0x00016EF4
+length = 16
+storagetype = "uint16"
+values_sha256 = "aaf9adb491aa5bb73bdc9cc1a516d23781881e72fae90ba382509d54ae10ccf3"
+pointer_bindings = [{ site = 0x000574E8, accessor = 0x00057322, offset = 0x40 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: the load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded code interpretation: Load axis of the idle-model duration 0x0000F54E and phase 0x00010ACE in FUN_00057322, 8192..65535; the coordinate is the VVEL load word 0xFFFF238A. The reader addresses it at offset 0x40 from the literal 0x00016EB4."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_characteristic_axis"
+address = 0x00017004
+length = 16
+storagetype = "uint16"
+values_sha256 = "a581960844081bc3858bfea6d807f185f82ffbd9447537e050e4e9c1119464ea"
+pointer_bindings = [{ site = 0x00056088, accessor = 0x00055E78 }, { site = 0x000562E8, accessor = 0x00055FF2 }]
+name = "VVEL Duration [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00015AA2 at 1/512 per count, 12800..48640 = 25.0..95.0. FUN_00055E78 indexes it with its lookup duration x512, and FUN_00055F2C and FUN_00055FF2 read it as the result of the inverse lookup over 0x00015AA2."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_startup_axis"
@@ -1040,6 +1480,86 @@ semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and identical stock bytes do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A."
 
 [[target.1ND0A.table]]
+id = "vvel_idle_model_duration"
+address = 0x0000FAC8
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "c0160b2ac41a5b39e94d48a6e69fee9f4fe5c2dab0cfad65e0971c2816e752e1"
+pointer_bindings = [{ site = 0x000603A0, accessor = 0x00060244 }]
+axis_x = 0x000174C2
+axis_y = 0x000174F2
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.05 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events lie at the trimmed center +/- 2 * 0.05 * (raw - 0x8000)."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A0, loaded at 0x0006029C. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_model_running"
+address = 0x00010648
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "709f20593cb910c49b1ebfe4319b17ca918847a10a82302a62d0d8ae2d25aead"
+pointer_bindings = [{ site = 0x00071028, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_00070514, looked up by engine speed over the axis 0x00017292 and by load over the axis 0x00017232."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 duration scale of the state words in defs/JK78C.vvel.md. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071028, loaded at 0x00070EA8. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_model_running"
+address = 0x00010948
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "822f34e74986e5d65622e80121f5fa5666d58e145f124c9d9d15ea9973182b61"
+pointer_bindings = [{ site = 0x00071044, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_00070514, read over the axes 0x00017292 and 0x00017232 of the duration word 0x00010648."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071044, loaded at 0x00070F28. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000104CE: 0..130. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_model_default"
+address = 0x00010B48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e76a54e601e77291905253872e6361984d038c93949cfbb84c4d1d56f740740b"
+pointer_bindings = [{ site = 0x00071048, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "Intake CVTC State Word - Default and Cold Modes"
+category = "Variable Valve Timing / Intake Cam"
+order = 34
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the default and cold state codes in the state-code dispatcher FUN_00070514, read over the axes 0x00017292 and 0x00017232 of the duration word 0x00010648."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000106CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071048, loaded at 0x00070F3A. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x000106CE. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
 id = "intake_cvtc_target_throttled"
 address = 0x00010D48
 width = 16
@@ -1058,6 +1578,26 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 4 intake-cam target of the VVEL selector, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the stack coordinate on the second axis. Stock bytes are identical to JK78C 0x000108CE."
+
+[[target.1ND0A.table]]
+id = "vvel_idle_model_phase"
+address = 0x00010F48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "a10e0607633218bf1ec70162ca5b52ceeb42fbd5f6b8bcc021382cacfd200ab9"
+pointer_bindings = [{ site = 0x000603A8, accessor = 0x00060244 }]
+axis_x = 0x000174C2
+axis_y = 0x000174F2
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.table]]
 id = "timing_state_addend_alternate"
@@ -1084,6 +1624,44 @@ semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It 
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.1ND0A.table]]
+id = "vvel_hot_intake_threshold"
+address = 0x00014426
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "9bbdd0423ba3e77baf42c3b9579a0fc78c08e8737ff7274384e7971bedca2c02"
+pointer_bindings = [{ site = 0x0006306C, accessor = 0x00062ECC }]
+axis_x = 0x000146AE
+name = "VVEL Hot-Intake Idle Threshold"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 10
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC, looked up by the coolant temperature over the axis 0x000146AE while the knock state bit is clear; the knock threshold is 0x0001442E."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F88, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x0006306C, loaded at 0x00062F5E. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F88. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "vvel_hot_intake_threshold_knock"
+address = 0x0001442E
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "50dba57da825d7a48f293bcb67b99dea171513cae047c9f88beaaef80a4275b9"
+pointer_bindings = [{ site = 0x00063070, accessor = 0x00062ECC }]
+axis_x = 0x000146AE
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC while the knock state bit is set, looked up by the coolant temperature over the axis 0x000146AE; the threshold without knock is 0x00014426."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x00063070, loaded at 0x00062F62. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
 id = "vvel_command_shaft_angle"
 address = 0x00015C22
 width = 16
@@ -1105,6 +1683,25 @@ scale_expr = "x"
 to_byte = "x"
 semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_characteristic"
+address = 0x00016090
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "57e51be499f22bbdce4212fd13da15b0ac8e54f5f919fa27fd8783fa8a87c41c"
+pointer_bindings = [{ site = 0x000576F0, accessor = 0x0005751E }]
+axis_x = 0x00017612
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+confidence = "code"
+semantics = "Monotonic duration characteristic of the VVEL duration correction FUN_0005751E: looked up by its first duration argument x512, clamped to 0..100.0, over the axis 0x00017612 and scaled by 2^-18. FUN_0005751E subtracts from the result a 16x16 lookup of 0x0000CDC8 over the axes 0x000158D2 and 0x00017632, indexed by the margin of its second over its third argument and by the same duration index."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005751E through the literal-pool word 0x000576F0, loaded at 0x0005758C. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00015AA2. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.table]]
 id = "vvel_duration_startup"
@@ -1183,6 +1780,44 @@ semantics = "Engine-speed curve of the shaft-angle bound applied in the task bef
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA."
 
 [[target.1ND0A.table]]
+id = "vvel_idle_model_high_load_blend_end"
+address = 0x000168C8
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "709d38b8e4029ae8288e066be91e8fbdf7c0bb1d8d6c221a6fb5be736315e81d"
+pointer_bindings = [{ site = 0x00060360, accessor = 0x00060146 }]
+axis_x = 0x00016908
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00060146 reaches the high-load event pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the start curve is 0x000168E8."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060360, loaded at 0x00060188. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162CA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "vvel_idle_model_high_load_blend_start"
+address = 0x000168E8
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "be65990a1817e686efa16fe3f5d3a5a97804dff658bc7c63885866d27f4b687e"
+pointer_bindings = [{ site = 0x0006035C, accessor = 0x00060146 }]
+axis_x = 0x00016908
+name = "VVEL Idle Model - High-Load Blend Start"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 14
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00060146 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the end curve is 0x000168C8."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x0006035C, loaded at 0x0006017E. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162EA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
 id = "vvel_duration_cold"
 address = 0x00017062
 width = 8
@@ -1259,6 +1894,63 @@ semantics = "Mode 15 duration target of the VVEL selector: the normal running mo
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic factor is not the physical duration unit. The float literal is a binary value described by its nominal decimal factor, not a measurement of degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the scaled duration is a vendor-catalog candidate."
 
 [[target.1ND0A.table]]
+id = "vvel_idle_model_floor_release_step"
+address = 0x000171F2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "da85a26e1b9dbaa5fa6a35281613f9505e676e708656542a9b3abedb9036e356"
+pointer_bindings = [{ site = 0x000600A4, accessor = 0x0005FD88 }]
+axis_x = 0x000171E2
+name = "VVEL Idle Model - Floor Release Step"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 18
+format = "0"
+fine = 10
+coarse = 100
+confidence = "code"
+semantics = "Per-pass decrement of the idle-model floor weight in FUN_0005FD88 after the hold of 0x000172F2, looked up by the demand margin over the axis 0x000171E2; the full weight is 10000."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x000600A4, loaded at 0x0005FF76. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "vvel_idle_model_duration_floor"
+address = 0x00017272
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "0beadded49abdeb64535e4af04c17d0c5c32b138bb4a13af5fa116ea8ed376c9"
+pointer_bindings = [{ site = 0x0005FE50, accessor = 0x0005FD88 }]
+axis_x = 0x00017252
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration floor of the VVEL idle-model stage FUN_0005FD88 at 1/512 per count, looked up by engine speed over the axis 0x00017252. The stage engages the floor in VVEL mode 5 while the model duration does not exceed it and blends the idle-model duration toward max(duration, floor) by the floor weight."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x0005FE50, loaded at 0x0005FDAC. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C64. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "vvel_idle_model_floor_hold_passes"
+address = 0x000172F2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "957aee455a4ded41d501d86420fdf2b42f856d98335cc36ab2f81d926ed2a511"
+pointer_bindings = [{ site = 0x0006009C, accessor = 0x0005FD88 }]
+axis_x = 0x000171E2
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Pass count of the full idle-model floor weight in FUN_0005FD88, looked up by the demand margin over the axis 0x000171E2; afterwards the weight steps down by 0x000171F2 per pass."
+note = "Engineering conversion is unestablished. Retained hypothesis: x passes; proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter comparison in FUN_00056DCA. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x0006009C, loaded at 0x0005FF66. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016D04. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
 id = "vvel_duration_throttled"
 address = 0x00017302
 width = 16
@@ -1278,6 +1970,25 @@ semantics = "Mode 4 duration target of the VVEL selector: the throttled mode and
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset arithmetic and shared dispatcher word domain do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the 0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14."
 
 [[target.1ND0A.table]]
+id = "vvel_idle_model_high_load_duration"
+address = 0x00017322
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "79932e9bfcaf676fd3d352a05c949d52e1b1c0fa50c404ef3d638bf203273f91"
+pointer_bindings = [{ site = 0x00060344, accessor = 0x00060146 }]
+axis_x = 0x000172D2
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "Duration of the high-load valve event pair of the VVEL idle-model stage FUN_00060146, looked up by engine speed over the axis 0x000172D2; the high-load events lie at the event center +/- 0.01 * raw."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float literal 0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060344, loaded at 0x0006015C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016D34. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
 id = "intake_cvtc_target_running"
 address = 0x000173C2
 width = 16
@@ -1295,6 +2006,25 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 15 intake-cam target of the VVEL selector, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and converted with the float literals 0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0."
+
+[[target.1ND0A.table]]
+id = "vvel_idle_model_high_load_phase"
+address = 0x00017512
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5c4548b9424aa3ac88915fda5d58ffbe628a55df4c942569fe528f5acae38607"
+pointer_bindings = [{ site = 0x00060354, accessor = 0x00060146 }]
+axis_x = 0x00017492
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the high-load valve event pair of the VVEL idle-model stage FUN_00060146, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017492."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060354, loaded at 0x00060174. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016F14. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.table]]
 id = "vvel_command_shaft_angle_second"
@@ -1388,6 +2118,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; proposed editor-grid inverse x/50. Origin: the retained layout interpretation and defs/JK08A.axes.csv:10, able-butterfly/axis, rpm/ram. The canonical 4*12.5=50 relation is an existing representation anchor. The current 8x8 identity evidence does not bind the same breakpoint multiplication and exact coordinate on these target paths. A speed label or shared input alone is not a target-specific 50 RPM/count proof. Recorded code and catalog interpretation: First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces."
 
 [[target.1ND0A.axis]]
+id = "vvel_hot_intake_threshold_axis"
+address = 0x000146AE
+length = 8
+storagetype = "uint8"
+values_sha256 = "3b66358cf060185ce12983bbf239137cf0ea4127020f28975158077a78bb7e3e"
+pointer_bindings = [{ site = 0x00063068, accessor = 0x00062ECC }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: on JK78C 0x00014208, the coolant byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: Coolant axis of the hot-intake idle thresholds 0x00014426 and 0x0001442E in FUN_00062ECC. Read by FUN_00062ECC through the literal-pool word 0x00063068, loaded at 0x00062F5A. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00014208. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_axis"
 address = 0x000157B2
 length = 8
@@ -1448,6 +2193,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the retained layout interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant coordinate. Existing nominal-RPM and nominal-coolant proofs establish bounded encoded source domains, not this hot-idle latch and caller. A byte-sized runtime temperature coordinate is not made uint16 by the stored axis width. Recorded code and catalog interpretation: First axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, the per-pass latch that the list walker FUN_00021218 takes at 0x212E6 from the coolant temperature byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 writes at 0x30C1E from curve 0x1468E over the channel 0 ADC word; the axis is degC + 50."
 
 [[target.1ND0A.axis]]
+id = "vvel_idle_model_high_load_blend_axis"
+address = 0x00016908
+length = 16
+storagetype = "uint16"
+values_sha256 = "552816954d3276d5e940e1f3ea13cba3d32b3d115807a4bee9e582720912c154"
+pointer_bindings = [{ site = 0x00060358, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000168E8 and 0x000168C8 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060358, loaded at 0x0006017C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x0001630A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
 id = "vvel_cold_axis"
 address = 0x000170D2
 length = 8
@@ -1465,6 +2225,51 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_margin_axis"
+address = 0x000171E2
+length = 8
+storagetype = "uint16"
+values_sha256 = "a75abc9d521a88ec94b537e79acd7aa5f5c41ba5f2d27c03afdf9ab605f58c89"
+pointer_bindings = [{ site = 0x00060098, accessor = 0x0005FD88 }]
+name = "Duration Margin [deg]"
+kind = "raw"
+format = "0.0"
+fine = 0.25
+coarse = 1
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016BD4, the float literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: Demand-margin axis of the idle-model floor hold 0x000172F2 and release step 0x000171F2 in FUN_0005FD88 at 1/512 per count. Read by FUN_0005FD88 through the literal-pool word 0x00060098, loaded at 0x0005FF64. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BD4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_model_running_axis_y"
+address = 0x00017232
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x00071020, accessor = 0x00070514 }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/256 load-byte counts; proposed editor-grid inverse x*256. Origin: on JK78C 0x00016C24, the load byte 0xFFFF1032 << 8 of the state-word coordinates. Recorded code interpretation: Load axis of the state-word surfaces 0x00010648, 0x00010948 and 0x00010B48 in the dispatcher FUN_00070514. Read by FUN_00070514 through the literal-pool word 0x00071020, loaded at 0x00070EA4. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x00016C24. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_duration_floor_axis"
+address = 0x00017252
+length = 16
+storagetype = "uint16"
+values_sha256 = "696592e76f8494073396d8ae95bdea57e1e34646febd77946149b77f0ca1c144"
+pointer_bindings = [{ site = 0x0005FE4C, accessor = 0x0005FD88 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016C44, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration floor 0x00017272 in FUN_0005FD88. Read by FUN_0005FD88 through the literal-pool word 0x0005FE4C, loaded at 0x0005FDAA. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C44. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_throttled_axis"
@@ -1499,6 +2304,21 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_high_load_duration_axis"
+address = 0x000172D2
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00060340, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016CC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load duration 0x00017322 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060340, loaded at 0x0006015A. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016CC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.axis]]
 id = "vvel_shaft_angle_monitor_floor_b_axis"
@@ -1593,6 +2413,66 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_high_load_phase_axis"
+address = 0x00017492
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x00060350, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016E94, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load phase 0x00017512 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060350, loaded at 0x00060172. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016E94. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_axis_x"
+address = 0x000174C2
+length = 16
+storagetype = "uint16"
+values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
+pointer_bindings = [{ site = 0x0006039C, accessor = 0x00060244 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016EC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration 0x0000FAC8 and phase 0x00010F48 in FUN_00060244. Read by FUN_00060244 through the literal-pool word 0x0006039C, loaded at 0x0006029A. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "vvel_idle_model_axis_y"
+address = 0x000174F2
+length = 16
+storagetype = "uint16"
+values_sha256 = "aaf9adb491aa5bb73bdc9cc1a516d23781881e72fae90ba382509d54ae10ccf3"
+pointer_bindings = [{ site = 0x00060398, accessor = 0x00060244 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x00016EF4, the load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded code interpretation: VVEL load axis of the idle-model duration 0x0000FAC8 and phase 0x00010F48 in FUN_00060244. Read by FUN_00060244 through the literal-pool word 0x00060398, loaded at 0x00060296. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EF4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_characteristic_axis"
+address = 0x00017612
+length = 16
+storagetype = "uint16"
+values_sha256 = "a581960844081bc3858bfea6d807f185f82ffbd9447537e050e4e9c1119464ea"
+pointer_bindings = [{ site = 0x000576EC, accessor = 0x0005751E }]
+name = "VVEL Duration [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00016090 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005751E. Read by FUN_0005751E through the literal-pool word 0x000576EC, loaded at 0x0005758A. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_startup_axis"
@@ -1881,6 +2761,86 @@ semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and identical stock bytes do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "vvel_idle_model_duration"
+address = 0x0000FAC8
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "c0160b2ac41a5b39e94d48a6e69fee9f4fe5c2dab0cfad65e0971c2816e752e1"
+pointer_bindings = [{ site = 0x000603A0, accessor = 0x00060244 }]
+axis_x = 0x000174C2
+axis_y = 0x000174F2
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.05 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events lie at the trimmed center +/- 2 * 0.05 * (raw - 0x8000)."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A0, loaded at 0x0006029C. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_model_running"
+address = 0x00010648
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "709f20593cb910c49b1ebfe4319b17ca918847a10a82302a62d0d8ae2d25aead"
+pointer_bindings = [{ site = 0x00071028, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_00070514, looked up by engine speed over the axis 0x00017292 and by load over the axis 0x00017232."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 duration scale of the state words in defs/JK78C.vvel.md. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071028, loaded at 0x00070EA8. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_model_running"
+address = 0x00010948
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "822f34e74986e5d65622e80121f5fa5666d58e145f124c9d9d15ea9973182b61"
+pointer_bindings = [{ site = 0x00071044, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_00070514, read over the axes 0x00017292 and 0x00017232 of the duration word 0x00010648."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071044, loaded at 0x00070F28. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000104CE: 0..130. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_model_default"
+address = 0x00010B48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e76a54e601e77291905253872e6361984d038c93949cfbb84c4d1d56f740740b"
+pointer_bindings = [{ site = 0x00071048, accessor = 0x00070514 }]
+axis_x = 0x00017292
+axis_y = 0x00017232
+name = "Intake CVTC State Word - Default and Cold Modes"
+category = "Variable Valve Timing / Intake Cam"
+order = 34
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the default and cold state codes in the state-code dispatcher FUN_00070514, read over the axes 0x00017292 and 0x00017232 of the duration word 0x00010648."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000106CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_00070514 through the literal-pool word 0x00071048, loaded at 0x00070F3A. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x000106CE. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
 id = "intake_cvtc_target_throttled"
 address = 0x00010D48
 width = 16
@@ -1899,6 +2859,26 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 4 intake-cam target of the VVEL selector, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the stack coordinate on the second axis. Stock bytes are identical to JK78C 0x000108CE. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_idle_model_phase"
+address = 0x00010F48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "a10e0607633218bf1ec70162ca5b52ceeb42fbd5f6b8bcc021382cacfd200ab9"
+pointer_bindings = [{ site = 0x000603A8, accessor = 0x00060244 }]
+axis_x = 0x000174C2
+axis_y = 0x000174F2
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
 id = "timing_state_addend_alternate"
@@ -1925,6 +2905,44 @@ semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It 
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.1ND3B.table]]
+id = "vvel_hot_intake_threshold"
+address = 0x00014426
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "9bbdd0423ba3e77baf42c3b9579a0fc78c08e8737ff7274384e7971bedca2c02"
+pointer_bindings = [{ site = 0x0006306C, accessor = 0x00062ECC }]
+axis_x = 0x000146AE
+name = "VVEL Hot-Intake Idle Threshold"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 10
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC, looked up by the coolant temperature over the axis 0x000146AE while the knock state bit is clear; the knock threshold is 0x0001442E."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F88, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x0006306C, loaded at 0x00062F5E. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F88. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_hot_intake_threshold_knock"
+address = 0x0001442E
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "50dba57da825d7a48f293bcb67b99dea171513cae047c9f88beaaef80a4275b9"
+pointer_bindings = [{ site = 0x00063070, accessor = 0x00062ECC }]
+axis_x = 0x000146AE
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC while the knock state bit is set, looked up by the coolant temperature over the axis 0x000146AE; the threshold without knock is 0x00014426."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x00063070, loaded at 0x00062F62. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
 id = "vvel_command_shaft_angle"
 address = 0x00015C22
 width = 16
@@ -1946,6 +2964,25 @@ scale_expr = "x"
 to_byte = "x"
 semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_characteristic"
+address = 0x00016090
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "57e51be499f22bbdce4212fd13da15b0ac8e54f5f919fa27fd8783fa8a87c41c"
+pointer_bindings = [{ site = 0x000576F0, accessor = 0x0005751E }]
+axis_x = 0x00017612
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+confidence = "code"
+semantics = "Monotonic duration characteristic of the VVEL duration correction FUN_0005751E: looked up by its first duration argument x512, clamped to 0..100.0, over the axis 0x00017612 and scaled by 2^-18. FUN_0005751E subtracts from the result a 16x16 lookup of 0x0000CDC8 over the axes 0x000158D2 and 0x00017632, indexed by the margin of its second over its third argument and by the same duration index."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005751E through the literal-pool word 0x000576F0, loaded at 0x0005758C. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00015AA2. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
 id = "vvel_duration_startup"
@@ -2024,6 +3061,44 @@ semantics = "Engine-speed curve of the shaft-angle bound applied in the task bef
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "vvel_idle_model_high_load_blend_end"
+address = 0x000168C8
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "709d38b8e4029ae8288e066be91e8fbdf7c0bb1d8d6c221a6fb5be736315e81d"
+pointer_bindings = [{ site = 0x00060360, accessor = 0x00060146 }]
+axis_x = 0x00016908
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00060146 reaches the high-load event pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the start curve is 0x000168E8."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060360, loaded at 0x00060188. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162CA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_idle_model_high_load_blend_start"
+address = 0x000168E8
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "be65990a1817e686efa16fe3f5d3a5a97804dff658bc7c63885866d27f4b687e"
+pointer_bindings = [{ site = 0x0006035C, accessor = 0x00060146 }]
+axis_x = 0x00016908
+name = "VVEL Idle Model - High-Load Blend Start"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 14
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_00060146 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the end curve is 0x000168C8."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x0006035C, loaded at 0x0006017E. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162EA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
 id = "vvel_duration_cold"
 address = 0x00017062
 width = 8
@@ -2100,6 +3175,63 @@ semantics = "Mode 15 duration target of the VVEL selector: the normal running mo
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic factor is not the physical duration unit. The float literal is a binary value described by its nominal decimal factor, not a measurement of degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the scaled duration is a vendor-catalog candidate. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "vvel_idle_model_floor_release_step"
+address = 0x000171F2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "da85a26e1b9dbaa5fa6a35281613f9505e676e708656542a9b3abedb9036e356"
+pointer_bindings = [{ site = 0x000600A4, accessor = 0x0005FD88 }]
+axis_x = 0x000171E2
+name = "VVEL Idle Model - Floor Release Step"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 18
+format = "0"
+fine = 10
+coarse = 100
+confidence = "code"
+semantics = "Per-pass decrement of the idle-model floor weight in FUN_0005FD88 after the hold of 0x000172F2, looked up by the demand margin over the axis 0x000171E2; the full weight is 10000."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x000600A4, loaded at 0x0005FF76. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_idle_model_duration_floor"
+address = 0x00017272
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "0beadded49abdeb64535e4af04c17d0c5c32b138bb4a13af5fa116ea8ed376c9"
+pointer_bindings = [{ site = 0x0005FE50, accessor = 0x0005FD88 }]
+axis_x = 0x00017252
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration floor of the VVEL idle-model stage FUN_0005FD88 at 1/512 per count, looked up by engine speed over the axis 0x00017252. The stage engages the floor in VVEL mode 5 while the model duration does not exceed it and blends the idle-model duration toward max(duration, floor) by the floor weight."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x0005FE50, loaded at 0x0005FDAC. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C64. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_idle_model_floor_hold_passes"
+address = 0x000172F2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "957aee455a4ded41d501d86420fdf2b42f856d98335cc36ab2f81d926ed2a511"
+pointer_bindings = [{ site = 0x0006009C, accessor = 0x0005FD88 }]
+axis_x = 0x000171E2
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Pass count of the full idle-model floor weight in FUN_0005FD88, looked up by the demand margin over the axis 0x000171E2; afterwards the weight steps down by 0x000171F2 per pass."
+note = "Engineering conversion is unestablished. Retained hypothesis: x passes; proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter comparison in FUN_00056DCA. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x0006009C, loaded at 0x0005FF66. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016D04. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
 id = "vvel_duration_throttled"
 address = 0x00017302
 width = 16
@@ -2119,6 +3251,25 @@ semantics = "Mode 4 duration target of the VVEL selector: the throttled mode and
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset arithmetic and shared dispatcher word domain do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the 0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "vvel_idle_model_high_load_duration"
+address = 0x00017322
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "79932e9bfcaf676fd3d352a05c949d52e1b1c0fa50c404ef3d638bf203273f91"
+pointer_bindings = [{ site = 0x00060344, accessor = 0x00060146 }]
+axis_x = 0x000172D2
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "Duration of the high-load valve event pair of the VVEL idle-model stage FUN_00060146, looked up by engine speed over the axis 0x000172D2; the high-load events lie at the event center +/- 0.01 * raw."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float literal 0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060344, loaded at 0x0006015C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016D34. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
 id = "intake_cvtc_target_running"
 address = 0x000173C2
 width = 16
@@ -2136,6 +3287,25 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 15 intake-cam target of the VVEL selector, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and converted with the float literals 0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_idle_model_high_load_phase"
+address = 0x00017512
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5c4548b9424aa3ac88915fda5d58ffbe628a55df4c942569fe528f5acae38607"
+pointer_bindings = [{ site = 0x00060354, accessor = 0x00060146 }]
+axis_x = 0x00017492
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the high-load valve event pair of the VVEL idle-model stage FUN_00060146, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017492."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x00060354, loaded at 0x00060174. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016F14. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
 id = "vvel_command_shaft_angle_second"
@@ -2229,6 +3399,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; proposed editor-grid inverse x/50. Origin: the retained layout interpretation and defs/JK08A.axes.csv:10, able-butterfly/axis, rpm/ram. The canonical 4*12.5=50 relation is an existing representation anchor. The current 8x8 identity evidence does not bind the same breakpoint multiplication and exact coordinate on these target paths. A speed label or shared input alone is not a target-specific 50 RPM/count proof. Recorded code and catalog interpretation: First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces."
 
 [[target.1ND3B.axis]]
+id = "vvel_hot_intake_threshold_axis"
+address = 0x000146AE
+length = 8
+storagetype = "uint8"
+values_sha256 = "3b66358cf060185ce12983bbf239137cf0ea4127020f28975158077a78bb7e3e"
+pointer_bindings = [{ site = 0x00063068, accessor = 0x00062ECC }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: on JK78C 0x00014208, the coolant byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: Coolant axis of the hot-intake idle thresholds 0x00014426 and 0x0001442E in FUN_00062ECC. Read by FUN_00062ECC through the literal-pool word 0x00063068, loaded at 0x00062F5A. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00014208. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_axis"
 address = 0x000157B2
 length = 8
@@ -2289,6 +3474,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the retained layout interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant coordinate. Existing nominal-RPM and nominal-coolant proofs establish bounded encoded source domains, not this hot-idle latch and caller. A byte-sized runtime temperature coordinate is not made uint16 by the stored axis width. Recorded code and catalog interpretation: First axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, the per-pass latch that the list walker FUN_00021218 takes at 0x212E6 from the coolant temperature byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 writes at 0x30C1E from curve 0x1468E over the channel 0 ADC word; the axis is degC + 50. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.axis]]
+id = "vvel_idle_model_high_load_blend_axis"
+address = 0x00016908
+length = 16
+storagetype = "uint16"
+values_sha256 = "552816954d3276d5e940e1f3ea13cba3d32b3d115807a4bee9e582720912c154"
+pointer_bindings = [{ site = 0x00060358, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000168E8 and 0x000168C8 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060358, loaded at 0x0006017C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x0001630A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
 id = "vvel_cold_axis"
 address = 0x000170D2
 length = 8
@@ -2306,6 +3506,51 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. Its exact registered image has separate byte bindings and executable conversion/publication/copy/caller/PID paths. It shares the reviewed 1ND0A address layout and stock axis bytes. The PID05 relation A=max(T-10,0) and retained community decoder A-40 imply coordinate equality only for T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_margin_axis"
+address = 0x000171E2
+length = 8
+storagetype = "uint16"
+values_sha256 = "a75abc9d521a88ec94b537e79acd7aa5f5c41ba5f2d27c03afdf9ab605f58c89"
+pointer_bindings = [{ site = 0x00060098, accessor = 0x0005FD88 }]
+name = "Duration Margin [deg]"
+kind = "raw"
+format = "0.0"
+fine = 0.25
+coarse = 1
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016BD4, the float literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: Demand-margin axis of the idle-model floor hold 0x000172F2 and release step 0x000171F2 in FUN_0005FD88 at 1/512 per count. Read by FUN_0005FD88 through the literal-pool word 0x00060098, loaded at 0x0005FF64. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BD4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_model_running_axis_y"
+address = 0x00017232
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x00071020, accessor = 0x00070514 }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/256 load-byte counts; proposed editor-grid inverse x*256. Origin: on JK78C 0x00016C24, the load byte 0xFFFF1032 << 8 of the state-word coordinates. Recorded code interpretation: Load axis of the state-word surfaces 0x00010648, 0x00010948 and 0x00010B48 in the dispatcher FUN_00070514. Read by FUN_00070514 through the literal-pool word 0x00071020, loaded at 0x00070EA4. FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x00016C24. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_duration_floor_axis"
+address = 0x00017252
+length = 16
+storagetype = "uint16"
+values_sha256 = "696592e76f8494073396d8ae95bdea57e1e34646febd77946149b77f0ca1c144"
+pointer_bindings = [{ site = 0x0005FE4C, accessor = 0x0005FD88 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016C44, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration floor 0x00017272 in FUN_0005FD88. Read by FUN_0005FD88 through the literal-pool word 0x0005FE4C, loaded at 0x0005FDAA. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C44. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_throttled_axis"
@@ -2340,6 +3585,21 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_high_load_duration_axis"
+address = 0x000172D2
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00060340, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016CC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load duration 0x00017322 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060340, loaded at 0x0006015A. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016CC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.axis]]
 id = "vvel_shaft_angle_monitor_floor_b_axis"
@@ -2434,6 +3694,66 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_high_load_phase_axis"
+address = 0x00017492
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x00060350, accessor = 0x00060146 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016E94, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load phase 0x00017512 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060350, loaded at 0x00060172. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x00016E94. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_axis_x"
+address = 0x000174C2
+length = 16
+storagetype = "uint16"
+values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
+pointer_bindings = [{ site = 0x0006039C, accessor = 0x00060244 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016EC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration 0x0000FAC8 and phase 0x00010F48 in FUN_00060244. Read by FUN_00060244 through the literal-pool word 0x0006039C, loaded at 0x0006029A. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_idle_model_axis_y"
+address = 0x000174F2
+length = 16
+storagetype = "uint16"
+values_sha256 = "aaf9adb491aa5bb73bdc9cc1a516d23781881e72fae90ba382509d54ae10ccf3"
+pointer_bindings = [{ site = 0x00060398, accessor = 0x00060244 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x00016EF4, the load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded code interpretation: VVEL load axis of the idle-model duration 0x0000FAC8 and phase 0x00010F48 in FUN_00060244. Read by FUN_00060244 through the literal-pool word 0x00060398, loaded at 0x00060296. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EF4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_characteristic_axis"
+address = 0x00017612
+length = 16
+storagetype = "uint16"
+values_sha256 = "a581960844081bc3858bfea6d807f185f82ffbd9447537e050e4e9c1119464ea"
+pointer_bindings = [{ site = 0x000576EC, accessor = 0x0005751E }]
+name = "VVEL Duration [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00016090 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005751E. Read by FUN_0005751E through the literal-pool word 0x000576EC, loaded at 0x0005758A. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_startup_axis"
@@ -2702,6 +4022,46 @@ semantics = "Mode 13 duration surface of the VVEL resolver: the second hot-intak
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and identical stock bytes do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x631BE through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the mode 12 surface 0x0000E17C; the maximum goes to pair 12 of the output. Stock values are identical to that surface."
 
 [[target.1ME3B.table]]
+id = "vvel_idle_model_duration"
+address = 0x0000F4FC
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "c0160b2ac41a5b39e94d48a6e69fee9f4fe5c2dab0cfad65e0971c2816e752e1"
+pointer_bindings = [{ site = 0x000641F8, accessor = 0x00064042 }]
+axis_x = 0x00017596
+axis_y = 0x000175C6
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration of the trimmed valve event pair of the VVEL idle-model stage FUN_00064042, zero at 0x8000 and 0.05 per count, looked up by engine speed over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events lie at the trimmed center +/- 2 * 0.05 * (raw - 0x8000)."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x000641F8, loaded at 0x0006409A. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108."
+
+[[target.1ME3B.table]]
+id = "vvel_duration_model_running"
+address = 0x0001007C
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "709f20593cb910c49b1ebfe4319b17ca918847a10a82302a62d0d8ae2d25aead"
+pointer_bindings = [{ site = 0x00074FD4, accessor = 0x0007448C }]
+axis_x = 0x00017346
+axis_y = 0x000172E6
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_0007448C, looked up by engine speed over the axis 0x00017346 and by load over the axis 0x000172E6."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 duration scale of the state words in defs/JK78C.vvel.md. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00074FD4, loaded at 0x00074ED4. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_model_hot_intake_idle"
 address = 0x0001027C
 width = 8
@@ -2742,6 +4102,46 @@ semantics = "Duration word surface of the state-code dispatcher FUN_0007448C for
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared dispatcher and axis inputs do not establish physical degrees for this returned word. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0007448C at callsites 0x750CC and 0x75198 through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the state code 5 surface 0x0001027C."
 
 [[target.1ME3B.table]]
+id = "intake_cvtc_model_running"
+address = 0x0001047C
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "822f34e74986e5d65622e80121f5fa5666d58e145f124c9d9d15ea9973182b61"
+pointer_bindings = [{ site = 0x00075220, accessor = 0x0007448C }]
+axis_x = 0x00017346
+axis_y = 0x000172E6
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_0007448C, read over the axes 0x00017346 and 0x000172E6 of the duration word 0x0001007C."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00075220, loaded at 0x00074FF4. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000104CE: 0..130."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_model_default"
+address = 0x0001067C
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e76a54e601e77291905253872e6361984d038c93949cfbb84c4d1d56f740740b"
+pointer_bindings = [{ site = 0x00075228, accessor = 0x0007448C }]
+axis_x = 0x00017346
+axis_y = 0x000172E6
+name = "Intake CVTC State Word - Default and Cold Modes"
+category = "Variable Valve Timing / Intake Cam"
+order = 34
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake VTC state word of the default and cold state codes in the state-code dispatcher FUN_0007448C, read over the axes 0x00017346 and 0x000172E6 of the duration word 0x0001007C."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000106CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00075228, loaded at 0x00075008. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x000106CE."
+
+[[target.1ME3B.table]]
 id = "intake_cvtc_target_throttled"
 address = 0x0001087C
 width = 16
@@ -2760,6 +4160,26 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 4 intake-cam target of the VVEL resolver, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by FUN_00063534 at callsite 0x63590 through the 16x16 uint16 leaf 0x2A0B4 with r7 on the first axis and the stack coordinate on the second axis; the converted value goes to the pair 3 slot 0xFFFEF45C with the float literals 0xC6800000 at 0x637E4 and 0x3F000000 at 0x637E8. Stock bytes are identical to JK78C 0x000108CE."
+
+[[target.1ME3B.table]]
+id = "vvel_idle_model_phase"
+address = 0x00010A7C
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "a10e0607633218bf1ec70162ca5b52ceeb42fbd5f6b8bcc021382cacfd200ab9"
+pointer_bindings = [{ site = 0x00064200, accessor = 0x00064042 }]
+axis_x = 0x00017596
+axis_y = 0x000175C6
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00064042, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x00064200, loaded at 0x000640AC. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898."
 
 [[target.1ME3B.table]]
 id = "timing_state_addend_alternate"
@@ -2784,6 +4204,44 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table 0x00013A26 and is selected when the transition-completion latch is set."
 note = "Read by the coordinator FUN_0007323E at callsite 0x73378 through the implicit eight-point uint8 leaf 0x2A9F4 with the index byte 0xFFFE8194, the byte that indexes the default table 0x00013A26 at 0x73334, so neither branch carries an engine-bank identity. The selector is the latch 0xFFFEB9A4.bit2: it sets when the progress word 0xFFFEB8DA reaches ROM8[0x854E] * 256 = 0x8000 and releases below 0x8000 - ROM8[0x854F] * 256 = 0x7300. Stock bytes are identical to JK78C 0x000137F0."
+
+[[target.1ME3B.table]]
+id = "vvel_hot_intake_threshold"
+address = 0x00014292
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "9bbdd0423ba3e77baf42c3b9579a0fc78c08e8737ff7274384e7971bedca2c02"
+pointer_bindings = [{ site = 0x0006757C, accessor = 0x000673EC }]
+axis_x = 0x0001453A
+name = "VVEL Hot-Intake Idle Threshold"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 10
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_000673EC, looked up by the coolant temperature over the axis 0x0001453A while the knock state bit is clear; the knock threshold is 0x0001429A."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F88, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_000673EC through the literal-pool word 0x0006757C, loaded at 0x00067480. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F88."
+
+[[target.1ME3B.table]]
+id = "vvel_hot_intake_threshold_knock"
+address = 0x0001429A
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "50dba57da825d7a48f293bcb67b99dea171513cae047c9f88beaaef80a4275b9"
+pointer_bindings = [{ site = 0x00067580, accessor = 0x000673EC }]
+axis_x = 0x0001453A
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Threshold of the hot-intake idle latch in FUN_000673EC while the knock state bit is set, looked up by the coolant temperature over the axis 0x0001453A; the threshold without knock is 0x00014292."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_000673EC through the literal-pool word 0x00067580, loaded at 0x00067484. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90."
 
 [[target.1ME3B.table]]
 id = "vvel_duration_throttled_ramp_delay"
@@ -2830,6 +4288,25 @@ scale_expr = "x"
 to_byte = "x"
 semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and 0x58FE8, and by FUN_00066A18 at 0x66A28 and 0x66A44 through the 16-point uint16 leaf 0x2AF88; the call at 0x623DA exchanges the roles of axis and values. JK78C reads the pair for the resolver in the separate function FUN_0005693A. Stock bytes are identical to JK78C 0x000156FC. FUN_0005C7D4 reads a byte-identical second pair 0x0001B738 over 0x0001B718."
+
+[[target.1ME3B.table]]
+id = "vvel_duration_characteristic"
+address = 0x00015F54
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "57e51be499f22bbdce4212fd13da15b0ac8e54f5f919fa27fd8783fa8a87c41c"
+pointer_bindings = [{ site = 0x0005B560, accessor = 0x0005B38E }]
+axis_x = 0x000176D6
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+confidence = "code"
+semantics = "Monotonic duration characteristic of the VVEL duration correction FUN_0005B38E: looked up by its first duration argument x512, clamped to 0..100.0, over the axis 0x000176D6 and scaled by 2^-18. FUN_0005B38E subtracts from the result a 16x16 lookup of 0x0000CA7C over the axes 0x00015746 and 0x000176F6, indexed by the margin of its second over its third argument and by the same duration index."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005B38E through the literal-pool word 0x0005B560, loaded at 0x0005B3FC. FUN_0005B38E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CA7C; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005B38E, the code graph records only 0x0005F814 as a reader of the axis 0x000176D6, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00015AA2."
 
 [[target.1ME3B.table]]
 id = "vvel_duration_startup"
@@ -2946,6 +4423,44 @@ semantics = "Engine-speed curve of the shaft-angle bound applied in the task bef
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00061D46 at callsite 0x61E2E through the 8-point uint16 leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are identical to JK78C 0x000160BA."
 
 [[target.1ME3B.table]]
+id = "vvel_idle_model_high_load_blend_end"
+address = 0x0001695C
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "709d38b8e4029ae8288e066be91e8fbdf7c0bb1d8d6c221a6fb5be736315e81d"
+pointer_bindings = [{ site = 0x00063A0C, accessor = 0x000638C0 }]
+axis_x = 0x0001699C
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_000638C0 reaches the high-load event pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x0001699C; the start curve is 0x0001697C."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A0C, loaded at 0x0006395A. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x000162CA."
+
+[[target.1ME3B.table]]
+id = "vvel_idle_model_high_load_blend_start"
+address = 0x0001697C
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "be65990a1817e686efa16fe3f5d3a5a97804dff658bc7c63885866d27f4b687e"
+pointer_bindings = [{ site = 0x00063A08, accessor = 0x000638C0 }]
+axis_x = 0x0001699C
+name = "VVEL Idle Model - High-Load Blend Start"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 14
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "Load at which the VVEL idle-model stage FUN_000638C0 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x0001699C; the end curve is 0x0001695C."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A08, loaded at 0x00063950. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x000162EA."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_cold"
 address = 0x000170F6
 width = 8
@@ -3041,6 +4556,63 @@ semantics = "Mode 15 duration target of the VVEL resolver: the normal running pa
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic factor is not the physical duration unit. The float literal is a binary value described by its nominal decimal factor, not a measurement of degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63142 and by FUN_00063CD4 at 0x63D1C through the 16-point uint16 leaf 0x2AF88; the 0.005 factor is the float literal 0x3BA3D70A at 0x63404. The resolver stores the value in pair 14 of its thirty-float output, the slot that the JK78C resolver FUN_000564A4 and the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair. Stock bytes are identical to 1ND0A 0x000171C2; the unit of the scaled duration is a vendor-catalog candidate."
 
 [[target.1ME3B.table]]
+id = "vvel_idle_model_floor_release_step"
+address = 0x000172A6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "da85a26e1b9dbaa5fa6a35281613f9505e676e708656542a9b3abedb9036e356"
+pointer_bindings = [{ site = 0x00063F10, accessor = 0x00063CD4 }]
+axis_x = 0x00017296
+name = "VVEL Idle Model - Floor Release Step"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 18
+format = "0"
+fine = 10
+coarse = 100
+confidence = "code"
+semantics = "Per-pass decrement of the idle-model floor weight in FUN_00063CD4 after the hold of 0x000173C6, looked up by the demand margin over the axis 0x00017296; the full weight is 10000."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063F10, loaded at 0x00063E5A. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4."
+
+[[target.1ME3B.table]]
+id = "vvel_idle_model_duration_floor"
+address = 0x00017326
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "3b1cfe3f609f0d9b7597276fddfb7eab10d4e80096f1d5818d87f3fac8e0cb2d"
+pointer_bindings = [{ site = 0x00063ED4, accessor = 0x00063CD4 }]
+axis_x = 0x00017306
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "Duration floor of the VVEL idle-model stage FUN_00063CD4 at 1/512 per count, looked up by engine speed over the axis 0x00017306. The stage engages the floor in VVEL mode 5 while the model duration does not exceed it and blends the idle-model duration toward max(duration, floor) by the floor weight."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063ED4, loaded at 0x00063CF8. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes differ from JK78C 0x00016C64: 21504..26368."
+
+[[target.1ME3B.table]]
+id = "vvel_idle_model_floor_hold_passes"
+address = 0x000173C6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "957aee455a4ded41d501d86420fdf2b42f856d98335cc36ab2f81d926ed2a511"
+pointer_bindings = [{ site = 0x00063F08, accessor = 0x00063CD4 }]
+axis_x = 0x00017296
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "Pass count of the full idle-model floor weight in FUN_00063CD4, looked up by the demand margin over the axis 0x00017296; afterwards the weight steps down by 0x000172A6 per pass."
+note = "Engineering conversion is unestablished. Retained hypothesis: x passes; proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter comparison in FUN_00056DCA. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063F08, loaded at 0x00063E4A. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016D04."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_throttled"
 address = 0x000173D6
 width = 16
@@ -3060,6 +4632,25 @@ semantics = "Mode 4 duration target of the VVEL resolver: the throttled pair. In
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset arithmetic and shared dispatcher word domain do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_00063534 at callsite 0x63570 through the 16-point uint16 leaf 0x2AF88 and by FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same axis; the resolver FUN_00062FAC calls FUN_00063534 after the hot-intake idle pair. The 0.05 factor is the float literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps the scaled curve value at 0xFFFEF458 and publishes the pair 3 duration slot 0xFFFEF460 as that value or as 50.0 plus an offset that steps by ROM16[0x9384] * 0.001 = 0.05 toward the curve value within +/-50.0; the delay helper FUN_0002861E gates the offset with a time from the byte curve 0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store the curve value directly. Stock bytes are identical to JK78C 0x00016D14."
 
 [[target.1ME3B.table]]
+id = "vvel_idle_model_high_load_duration"
+address = 0x000173F6
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "79932e9bfcaf676fd3d352a05c949d52e1b1c0fa50c404ef3d638bf203273f91"
+pointer_bindings = [{ site = 0x000639F4, accessor = 0x000638C0 }]
+axis_x = 0x00017386
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "Duration of the high-load valve event pair of the VVEL idle-model stage FUN_000638C0, looked up by engine speed over the axis 0x00017386; the high-load events lie at the event center +/- 0.01 * raw."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float literal 0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x000639F4, loaded at 0x0006392E. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016D34."
+
+[[target.1ME3B.table]]
 id = "intake_cvtc_target_running"
 address = 0x00017496
 width = 16
@@ -3077,6 +4668,25 @@ coarse = 2.0
 confidence = "code"
 semantics = "Mode 15 intake-cam target of the VVEL resolver, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6315E through the 16-point uint16 leaf 0x2AF88 and converted with the float literals 0xC6800000 at 0x63410 and 0x3F000000 at 0x63414. Stock bytes are identical to 1ND0A 0x000173C2: the curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. Degrees of cam advance are a vendor-catalog candidate for the scaled value."
+
+[[target.1ME3B.table]]
+id = "vvel_idle_model_high_load_phase"
+address = 0x000175E6
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5c4548b9424aa3ac88915fda5d58ffbe628a55df4c942569fe528f5acae38607"
+pointer_bindings = [{ site = 0x00063A00, accessor = 0x000638C0 }]
+axis_x = 0x00017566
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Phase of the high-load valve event pair of the VVEL idle-model stage FUN_000638C0, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017566."
+note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A00, loaded at 0x00063946. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016F14."
 
 [[target.1ME3B.table]]
 id = "vvel_command_shaft_angle_second"
@@ -3168,6 +4778,21 @@ fine = 50
 coarse = 200
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; proposed editor-grid inverse x/50. Origin: the retained layout interpretation and defs/JK08A.axes.csv:10, able-butterfly/axis, rpm/ram. The canonical 4*12.5=50 relation is an existing representation anchor. The current 8x8 identity evidence does not bind the same breakpoint multiplication and exact coordinate on these target paths. A speed label or shared input alone is not a target-specific 50 RPM/count proof. Recorded code and catalog interpretation: First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces. The literal words 0x793FC hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.axis]]
+id = "vvel_hot_intake_threshold_axis"
+address = 0x0001453A
+length = 8
+storagetype = "uint8"
+values_sha256 = "3b66358cf060185ce12983bbf239137cf0ea4127020f28975158077a78bb7e3e"
+pointer_bindings = [{ site = 0x00067578, accessor = 0x000673EC }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: on JK78C 0x00014208, the coolant byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: Coolant axis of the hot-intake idle thresholds 0x00014292 and 0x0001429A in FUN_000673EC. Read by FUN_000673EC through the literal-pool word 0x00067578, loaded at 0x0006747C. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00014208."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_throttled_ramp_delay_axis"
@@ -3264,6 +4889,21 @@ confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.1 Nm; proposed editor-grid inverse x/0.1. Origin: the retained layout interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the temperature name do not supply an independent intake-air conversion closure. Recorded code and catalog interpretation: Second axis of the hot-intake idle surfaces, stock points 250..2000, loaded from its own literal pool word; the coordinate is a signed word argument clamped at zero in the stack slot. Stock bytes are identical to JK78C 0x000160DA, where 0.1 Nm per count is a catalog candidate."
 
 [[target.1ME3B.axis]]
+id = "vvel_idle_model_high_load_blend_axis"
+address = 0x0001699C
+length = 16
+storagetype = "uint16"
+values_sha256 = "552816954d3276d5e940e1f3ea13cba3d32b3d115807a4bee9e582720912c154"
+pointer_bindings = [{ site = 0x00063A04, accessor = 0x000638C0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x0001697C and 0x0001695C in FUN_000638C0. Read by FUN_000638C0 through the literal-pool word 0x00063A04, loaded at 0x0006394E. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x0001630A."
+
+[[target.1ME3B.axis]]
 id = "vvel_cold_axis"
 address = 0x00017176
 length = 8
@@ -3302,6 +4942,51 @@ to_byte = "x+50"
 note = "8-point nominal encoded-temperature axis 100..170 = 50..120 degC under x-50, inverse x+50. The coordinate is current coolant. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ME3B.axis]]
+id = "vvel_idle_model_margin_axis"
+address = 0x00017296
+length = 8
+storagetype = "uint16"
+values_sha256 = "a75abc9d521a88ec94b537e79acd7aa5f5c41ba5f2d27c03afdf9ab605f58c89"
+pointer_bindings = [{ site = 0x00063F04, accessor = 0x00063CD4 }]
+name = "Duration Margin [deg]"
+kind = "raw"
+format = "0.0"
+fine = 0.25
+coarse = 1
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016BD4, the float literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: Demand-margin axis of the idle-model floor hold 0x000173C6 and release step 0x000172A6 in FUN_00063CD4 at 1/512 per count. Read by FUN_00063CD4 through the literal-pool word 0x00063F04, loaded at 0x00063E48. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BD4."
+
+[[target.1ME3B.axis]]
+id = "vvel_duration_model_running_axis_y"
+address = 0x000172E6
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x00074FCC, accessor = 0x0007448C }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/256 load-byte counts; proposed editor-grid inverse x*256. Origin: on JK78C 0x00016C24, the load byte 0xFFFF1032 << 8 of the state-word coordinates. Recorded code interpretation: Load axis of the state-word surfaces 0x0001007C, 0x0001047C and 0x0001067C in the dispatcher FUN_0007448C. Read by FUN_0007448C through the literal-pool word 0x00074FCC, loaded at 0x00074ECE. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x00016C24."
+
+[[target.1ME3B.axis]]
+id = "vvel_idle_model_duration_floor_axis"
+address = 0x00017306
+length = 16
+storagetype = "uint16"
+values_sha256 = "dcf916c1782866cf79430b91a63fe26610c748b78c92fe3c6bb6768f3519145d"
+pointer_bindings = [{ site = 0x00063ED0, accessor = 0x00063CD4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016C44, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration floor 0x00017326 in FUN_00063CD4. Read by FUN_00063CD4 through the literal-pool word 0x00063ED0, loaded at 0x00063CF6. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes differ from JK78C 0x00016C44: 128..2240."
+
+[[target.1ME3B.axis]]
 id = "vvel_duration_throttled_axis"
 address = 0x00017346
 length = 16
@@ -3334,6 +5019,21 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ME3B.axis]]
+id = "vvel_idle_model_high_load_duration_axis"
+address = 0x00017386
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x000639F0, accessor = 0x000638C0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016CC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load duration 0x000173F6 in FUN_000638C0. Read by FUN_000638C0 through the literal-pool word 0x000639F0, loaded at 0x0006392C. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016CC4."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_model_hot_intake_idle_axis_y"
@@ -3458,6 +5158,66 @@ scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Sixteen-point nominal RPM grid 400..7200 RPM at 3.125 RPM/count. The retained stock producer, real snapshot, selected PID0C byte writer, and bounded running-axis argument path bind the count unit. The residual of 0, 3.125, 6.25, or 9.375 RPM applies to corresponding samples and preserves quantization. Independent snapshot age has no established bound. This is not a measuring-producer proof, not a sensor inverse, and no hardware proof."
+
+[[target.1ME3B.axis]]
+id = "vvel_idle_model_high_load_phase_axis"
+address = 0x00017566
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x000639FC, accessor = 0x000638C0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016E94, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model high-load phase 0x000175E6 in FUN_000638C0. Read by FUN_000638C0 through the literal-pool word 0x000639FC, loaded at 0x00063944. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016E94."
+
+[[target.1ME3B.axis]]
+id = "vvel_idle_model_axis_x"
+address = 0x00017596
+length = 16
+storagetype = "uint16"
+values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
+pointer_bindings = [{ site = 0x000641F4, accessor = 0x00064042 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016EC4, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the idle-model duration 0x0000F4FC and phase 0x00010A7C in FUN_00064042. Read by FUN_00064042 through the literal-pool word 0x000641F4, loaded at 0x00064098. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EC4."
+
+[[target.1ME3B.axis]]
+id = "vvel_idle_model_axis_y"
+address = 0x000175C6
+length = 16
+storagetype = "uint16"
+values_sha256 = "aaf9adb491aa5bb73bdc9cc1a516d23781881e72fae90ba382509d54ae10ccf3"
+pointer_bindings = [{ site = 0x000641F0, accessor = 0x00064042 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x00016EF4, the load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded code interpretation: VVEL load axis of the idle-model duration 0x0000F4FC and phase 0x00010A7C in FUN_00064042. Read by FUN_00064042 through the literal-pool word 0x000641F0, loaded at 0x00064094. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EF4."
+
+[[target.1ME3B.axis]]
+id = "vvel_duration_characteristic_axis"
+address = 0x000176D6
+length = 16
+storagetype = "uint16"
+values_sha256 = "a581960844081bc3858bfea6d807f185f82ffbd9447537e050e4e9c1119464ea"
+pointer_bindings = [{ site = 0x0005B55C, accessor = 0x0005B38E }]
+name = "VVEL Duration [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00015F54 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005B38E. Read by FUN_0005B38E through the literal-pool word 0x0005B55C, loaded at 0x0005B3FA. FUN_0005B38E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CA7C; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005B38E, the code graph records only 0x0005F814 as a reader of the axis 0x000176D6, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_startup_axis"

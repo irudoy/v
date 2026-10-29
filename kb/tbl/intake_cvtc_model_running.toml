@@ -3,14 +3,66 @@ Intake VTC state word of the state codes 2 and 8 (VVEL modes 5 and 15) in \
 FUN_000657E4, read over the axes of 0x000100CE while 0xFFFF23CB.bit7 is set; \
 with the bit clear the word is zero. The dispatcher publishes the VTC word \
 0xFFFF122E from the current and previous codes like the duration word. \
-0xFFFF23CB.bit7 is written by FUN_000E59F8. Every stock cell is zero, so the \
-stock word is zero in both cases."""
+0xFFFF23CB.bit7 is written by FUN_000E59F8. The stock cells range 0..120 and \
+the first two of the 16 rows are zero, so the stock VTC word follows this \
+surface while the bit is set."""
 level = "code"
 home = "jk78c"
 role = "table"
 cols = 16
 rows = 16
 storage = "uint16"
+
+[editor]
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol]]
+layout = "1me3b"
+address = "0001047c"
+summary = """
+Intake VTC state word of the VVEL idle-model and running state codes in the \
+state-code dispatcher FUN_0007448C, read over the axes 0x00017346 and \
+0x000172E6 of the duration word 0x0001007C."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; \
+proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the \
+zero-phase fallback of the VTC word in FUN_000657E4. Recorded code \
+interpretation: Read by FUN_0007448C through the literal-pool word \
+0x00075220, loaded at 0x00074FF4. FUN_0007448C is the state-code dispatcher \
+at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
+0x000104CE: 0..130."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ff4"
+
+[[symbol]]
+layout = "1nd"
+address = "00010948"
+summary = """
+Intake VTC state word of the VVEL idle-model and running state codes in the \
+state-code dispatcher FUN_00070514, read over the axes 0x00017292 and \
+0x00017232 of the duration word 0x00010648."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; \
+proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the \
+zero-phase fallback of the VTC word in FUN_000657E4. Recorded code \
+interpretation: Read by FUN_00070514 through the literal-pool word \
+0x00071044, loaded at 0x00070F28. FUN_00070514 is the state-code dispatcher \
+at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
+0x000104CE: 0..130. 1ND3B shares the 1ND0A code layout and its stock bytes \
+at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070f28"
 
 [[symbol]]
 layout = "jk78c"
@@ -35,6 +87,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000664d0"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ece"
+
 [[link]]
 type = "axis"
 to = "vvel_duration_throttled_axis/axis"
@@ -45,6 +107,26 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000664cc"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea6"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ed0"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071044"
+
 [[link]]
 type = "reader"
 to = "icy-platypus/fn"
@@ -54,3 +136,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00066694"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075220"

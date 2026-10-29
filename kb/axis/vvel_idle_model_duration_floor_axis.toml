@@ -4,6 +4,47 @@ quantity = "rpm"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "00017306"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016C44, the \
+0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: \
+Engine-speed axis of the idle-model duration floor 0x00017326 in \
+FUN_00063CD4. Read by FUN_00063CD4 through the literal-pool word 0x00063ED0, \
+loaded at 0x00063CF6. FUN_00063CD4 holds the float literals of JK78C \
+FUN_00056DCA. Stock bytes differ from JK78C 0x00016C44: 128..2240."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063cf6"
+
+[[symbol]]
+layout = "1nd"
+address = "00017252"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: on JK78C 0x00016C44, the \
+0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: \
+Engine-speed axis of the idle-model duration floor 0x00017272 in \
+FUN_0005FD88. Read by FUN_0005FD88 through the literal-pool word 0x0005FE4C, \
+loaded at 0x0005FDAA. FUN_0005FD88 holds the float literals of JK78C \
+FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C44. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fdaa"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016c44"
@@ -18,6 +59,26 @@ coordinate is the engine-speed word 0xFFFF11A6."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056df0"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe4c"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063ed0"
 
 [[link]]
 type = "reader"

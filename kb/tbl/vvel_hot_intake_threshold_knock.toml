@@ -9,6 +9,55 @@ cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001429a"
+summary = """
+Threshold of the hot-intake idle latch in FUN_000673EC while the knock state \
+bit is set, looked up by the coolant temperature over the axis 0x0001453A; \
+the threshold without knock is 0x00014292."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the \
+byte comparison in FUN_00059C2C. Recorded code interpretation: Read by \
+FUN_000673EC through the literal-pool word 0x00067580, loaded at 0x00067484. \
+FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are \
+identical to JK78C 0x00013F90."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00067484"
+
+[[symbol]]
+layout = "1nd"
+address = "0001442e"
+summary = """
+Threshold of the hot-intake idle latch in FUN_00062ECC while the knock state \
+bit is set, looked up by the coolant temperature over the axis 0x000146AE; \
+the threshold without knock is 0x00014426."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the \
+byte comparison in FUN_00059C2C. Recorded code interpretation: Read by \
+FUN_00062ECC through the literal-pool word 0x00063070, loaded at 0x00062F62. \
+FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are \
+identical to JK78C 0x00013F90. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062f62"
+
 [[symbol]]
 layout = "jk78c"
 address = "00013f90"
@@ -33,6 +82,26 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00059c48"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062f5a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006747c"
+
+[[link]]
+type = "reader"
+to = "benevolent-dragon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00067580"
+
 [[link]]
 type = "reader"
 to = "mysterious-pegasus/fn"
@@ -43,3 +112,13 @@ kind = "indirect"
 at = "jk78c:00059d90"
 value = 8
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "singing-wrasse/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00063070"

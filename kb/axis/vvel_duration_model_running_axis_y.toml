@@ -4,6 +4,49 @@ quantity = "load"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Engine Load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+
+[[symbol]]
+layout = "1me3b"
+address = "000172e6"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/256 \
+load-byte counts; proposed editor-grid inverse x*256. Origin: on JK78C \
+0x00016C24, the load byte 0xFFFF1032 << 8 of the state-word coordinates. \
+Recorded code interpretation: Load axis of the state-word surfaces \
+0x0001007C, 0x0001047C and 0x0001067C in the dispatcher FUN_0007448C. Read \
+by FUN_0007448C through the literal-pool word 0x00074FCC, loaded at \
+0x00074ECE. FUN_0007448C is the state-code dispatcher at the position of \
+JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x00016C24."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ece"
+
+[[symbol]]
+layout = "1nd"
+address = "00017232"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/256 \
+load-byte counts; proposed editor-grid inverse x*256. Origin: on JK78C \
+0x00016C24, the load byte 0xFFFF1032 << 8 of the state-word coordinates. \
+Recorded code interpretation: Load axis of the state-word surfaces \
+0x00010648, 0x00010948 and 0x00010B48 in the dispatcher FUN_00070514. Read \
+by FUN_00070514 through the literal-pool word 0x00071020, loaded at \
+0x00070EA4. FUN_00070514 is the state-code dispatcher at the position of \
+JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x00016C24. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea4"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016c24"
@@ -22,6 +65,16 @@ at = "jk78c:000664d0"
 
 [[link]]
 type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071020"
+
+[[link]]
+type = "reader"
 to = "icy-platypus/fn"
 role = "accessor"
 
@@ -29,3 +82,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006668c"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074fcc"

@@ -710,6 +710,60 @@
       </table>
     </table>
 
+    <!-- 0x0FAC8  16x16 uint16  map [code]
+         accessor 0x60244; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x174C2 rpm; X Axis 0x174F2 load
+         Exact 1ND0A target-native table at 0xfac8 bound to accessor 0x60244 through literal
+         0x603a0. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05
+         deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, the float
+         literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code interpretation: Read by
+         FUN_00060244 through the literal-pool word 0x000603A0, loaded at 0x0006029C.
+         FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from
+         JK78C 0x0000F54E: 33428..34108. 1ND3B shares the 1ND0A code layout and its stock bytes
+         at this address. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="VVEL Idle Model - Duration [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x0FAC8" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x174F2" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x174C2" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14426  8 uint8  map [code]
+         accessor 0x62ECC; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x146AE temp
+         Exact 1ND0A target-native table at 0x14426 bound to accessor 0x62ecc through literal
+         0x6306c. Engineering conversion is unestablished. Retained hypothesis: x counts of
+         0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F88, the byte
+         comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through
+         the literal-pool word 0x0006306C, loaded at 0x00062F5E. FUN_00062ECC holds the float
+         literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F88. 1ND3B
+         shares the 1ND0A code layout and its stock bytes at this address. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Hot-Intake Idle Threshold [stored count]"
+           category="Variable Valve Timing//VVEL Mode Selection" storagetype="uint8"
+           storageaddress="0x14426" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Coolant Temperature [stored count]" storagetype="uint8"
+             storageaddress="0x146AE" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x15C22  16 uint16  map [code]
          accessor 0x5514A, 0x5E2A0, 0x5F468; r4 operand: reviewed-target
          scaling x count [candidate]; axis 0x15C02 raw
@@ -776,6 +830,60 @@
                fineincrement="1" coarseincrement="16"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>readiness</data>
+      </table>
+    </table>
+
+    <!-- 0x10F48  16x16 uint16  map [code]
+         accessor 0x60244; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x174C2 rpm; X Axis 0x174F2 load
+         Exact 1ND0A target-native table at 0x10f48 bound to accessor 0x60244 through literal
+         0x603a8. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5
+         degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float
+         literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by
+         FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE.
+         FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from
+         JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes
+         at this address. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="VVEL Idle Model - Intake Phase [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x10F48" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x174F2" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x174C2" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1442E  8 uint8  map [code]
+         accessor 0x62ECC; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x146AE temp
+         Exact 1ND0A target-native table at 0x1442e bound to accessor 0x62ecc through literal
+         0x63070. Engineering conversion is unestablished. Retained hypothesis: x counts of
+         0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte
+         comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through
+         the literal-pool word 0x00063070, loaded at 0x00062F62. FUN_00062ECC holds the float
+         literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. 1ND3B
+         shares the 1ND0A code layout and its stock bytes at this address. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Hot-Intake Idle Threshold - Knock [stored count]"
+           category="Variable Valve Timing//VVEL Mode Selection" storagetype="uint8"
+           storageaddress="0x1442E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Coolant Temperature [stored count]" storagetype="uint8"
+             storageaddress="0x146AE" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -922,6 +1030,31 @@
       </table>
     </table>
 
+    <!-- 0x17322  16 uint16  map [code]
+         accessor 0x60146; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x172D2 rpm
+         Exact 1ND0A target-native table at 0x17322 bound to accessor 0x60146 through literal
+         0x60344. Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg;
+         proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float literal
+         0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322. Recorded code
+         interpretation: Read by FUN_00060146 through the literal-pool word 0x00060344, loaded
+         at 0x0006015C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes
+         are identical to JK78C 0x00016D34. 1ND3B shares the 1ND0A code layout and its stock
+         bytes at this address. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - High-Load Duration [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x17322" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x172D2" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x0E7C8  8x8 uint16  map [code]
          accessor 0x5F468, 0x70514; r4 operand: reviewed-target
          scaling x Stored count; Y Axis 0x166D8 temp; X Axis 0x166C8 temp
@@ -983,6 +1116,30 @@
       </table>
     </table>
 
+    <!-- 0x17512  16 uint16  map [code]
+         accessor 0x60146; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17492 rpm
+         Exact 1ND0A target-native table at 0x17512 bound to accessor 0x60146 through literal
+         0x60354. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5
+         degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, the float
+         literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code interpretation: Read by
+         FUN_00060146 through the literal-pool word 0x00060354, loaded at 0x00060174.
+         FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical
+         to JK78C 0x00016F14. 1ND3B shares the 1ND0A code layout and its stock bytes at this
+         address. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - High-Load Phase [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x17512" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x17492" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x166A8  8 uint16  map [code]
          accessor 0x5E2A0; r4 operand: reviewed-target
          scaling x Stored count; axis 0x17342 rpm
@@ -1006,6 +1163,54 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
              storageaddress="0x17342" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x168E8  16 uint16  map [code]
+         accessor 0x60146; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x16908 rpm
+         Exact 1ND0A target-native table at 0x168e8 bound to accessor 0x60146 through literal
+         0x6035c. Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %;
+         proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float
+         literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146
+         through the literal-pool word 0x0006035C, loaded at 0x0006017E. FUN_00060146 holds the
+         float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162EA.
+         1ND3B shares the 1ND0A code layout and its stock bytes at this address. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - High-Load Blend Start [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x168E8" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x16908" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x168C8  16 uint16  map [code]
+         accessor 0x60146; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x16908 rpm
+         Exact 1ND0A target-native table at 0x168c8 bound to accessor 0x60146 through literal
+         0x60360. Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %;
+         proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the float
+         literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146
+         through the literal-pool word 0x00060360, loaded at 0x00060188. FUN_00060146 holds the
+         float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162CA.
+         1ND3B shares the 1ND0A code layout and its stock bytes at this address. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - High-Load Blend End [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x168C8" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x16908" sizex="16" endian="big">
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
@@ -1068,6 +1273,30 @@
       </table>
     </table>
 
+    <!-- 0x17272  16 uint16  map [code]
+         accessor 0x5FD88; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17252 rpm
+         Exact 1ND0A target-native table at 0x17272 bound to accessor 0x5fd88 through literal
+         0x5fe50. Engineering conversion is unestablished. Retained hypothesis: x/512 deg;
+         proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float literal
+         1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_0005FD88 through the
+         literal-pool word 0x0005FE50, loaded at 0x0005FDAC. FUN_0005FD88 holds the float
+         literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016C64. 1ND3B
+         shares the 1ND0A code layout and its stock bytes at this address. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - Duration Floor [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x17272" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x17252" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x1B8DE  8 uint16  map [code]
          accessor 0x62774; r4 operand: reviewed-target
          scaling x Stored count; axis 0x1B35E rpm
@@ -1121,6 +1350,30 @@
              storageaddress="0x170D2" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
                  coarseincrement="5"/>
+      </table>
+    </table>
+
+    <!-- 0x172F2  8 uint16  map [code]
+         accessor 0x5FD88; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x171E2 raw
+         Exact 1ND0A target-native table at 0x172f2 bound to accessor 0x5fd88 through literal
+         0x6009c. Engineering conversion is unestablished. Retained hypothesis: x passes;
+         proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter comparison in
+         FUN_00056DCA. Recorded code interpretation: Read by FUN_0005FD88 through the literal-
+         pool word 0x0006009C, loaded at 0x0005FF66. FUN_0005FD88 holds the float literals of
+         JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016D04. 1ND3B shares the
+         1ND0A code layout and its stock bytes at this address. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - Floor Hold Passes [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x172F2" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duration Margin [stored count]" storagetype="uint16"
+             storageaddress="0x171E2" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1180,6 +1433,30 @@
       </table>
     </table>
 
+    <!-- 0x171F2  8 uint16  map [code]
+         accessor 0x5FD88; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x171E2 raw
+         Exact 1ND0A target-native table at 0x171f2 bound to accessor 0x5fd88 through literal
+         0x600a4. Engineering conversion is unestablished. Retained hypothesis: x/10000 of the
+         full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight
+         literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_0005FD88 through
+         the literal-pool word 0x000600A4, loaded at 0x0005FF76. FUN_0005FD88 holds the float
+         literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. 1ND3B
+         shares the 1ND0A code layout and its stock bytes at this address. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Idle Model - Floor Release Step [stored count]"
+           category="Variable Valve Timing//VVEL Idle Model" storagetype="uint16"
+           storageaddress="0x171F2" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duration Margin [stored count]" storagetype="uint16"
+             storageaddress="0x171E2" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x14324  6 uint8  map [candidate]
          scaling x/128 ratio [candidate]
          All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
@@ -1196,6 +1473,65 @@
       <table type="Static X Axis" name="Channel" sizex="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x10648  16x16 uint16  map [code]
+         accessor 0x70514; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x17292 rpm; X Axis 0x17232 load
+         Exact 1ND0A target-native table at 0x10648 bound to accessor 0x70514 through literal
+         0x71028. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg;
+         proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 duration
+         scale of the state words in defs/JK78C.vvel.md. Recorded code interpretation: Read by
+         FUN_00070514 through the literal-pool word 0x00071028, loaded at 0x00070EA8.
+         FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock
+         bytes differ from JK78C 0x000100CE: 660..1440. 1ND3B shares the 1ND0A code layout and
+         its stock bytes at this address. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="VVEL Duration State Word - Idle Model and Running [stored count]"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
+           storageaddress="0x10648" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x17232" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x17292" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x16090  16 uint16  map [code]
+         accessor 0x5751E; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17612 raw
+         Exact 1ND0A target-native table at 0x16090 bound to accessor 0x5751e through literal
+         0x576f0. Engineering conversion is unestablished. Retained hypothesis: x*2^-18;
+         proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal
+         2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005751E through the
+         literal-pool word 0x000576F0, loaded at 0x0005758C. FUN_0005751E differs from JK78C
+         FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and
+         subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the
+         scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides
+         FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis
+         0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes
+         are identical to JK78C 0x00015AA2. 1ND3B shares the 1ND0A code layout and its stock
+         bytes at this address. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Duration Characteristic [stored count]"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
+           storageaddress="0x16090" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="VVEL Duration [stored count]" storagetype="uint16"
+             storageaddress="0x17612" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 
@@ -1285,6 +1621,66 @@
              storageaddress="0x170D2" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
                  coarseincrement="5"/>
+      </table>
+    </table>
+
+    <!-- 0x10948  16x16 uint16  map [code]
+         accessor 0x70514; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x17292 rpm; X Axis 0x17232 load
+         Exact 1ND0A target-native table at 0x10948 bound to accessor 0x70514 through literal
+         0x71044. Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA;
+         proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the zero-phase
+         fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by
+         FUN_00070514 through the literal-pool word 0x00071044, loaded at 0x00070F28.
+         FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock
+         bytes differ from JK78C 0x000104CE: 0..130. 1ND3B shares the 1ND0A code layout and its
+         stock bytes at this address. Editor values are stored counts; no engineering conversion
+         is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC State Word - Idle Model and Running [stored count]"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint16"
+           storageaddress="0x10948" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x17232" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x17292" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x10B48  16x16 uint16  map [code]
+         accessor 0x70514; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x17292 rpm; X Axis 0x17232 load
+         Exact 1ND0A target-native table at 0x10b48 bound to accessor 0x70514 through literal
+         0x71048. Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA;
+         proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000106CE, the zero-phase
+         fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by
+         FUN_00070514 through the literal-pool word 0x00071048, loaded at 0x00070F3A.
+         FUN_00070514 is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock
+         bytes are identical to JK78C 0x000106CE. 1ND3B shares the 1ND0A code layout and its
+         stock bytes at this address. Editor values are stored counts; no engineering conversion
+         is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC State Word - Default and Cold Modes [stored count]"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint16"
+           storageaddress="0x10B48" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
+             storageaddress="0x17232" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+             storageaddress="0x17292" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "0005751e"
+name = "clay-galago"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005751e"

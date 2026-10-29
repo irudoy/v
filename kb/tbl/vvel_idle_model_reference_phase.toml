@@ -16,6 +16,47 @@ rows = 8
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000e47c"
+summary = """
+Stock-inert phase of the reference valve event pair of the VVEL idle-model \
+stage FUN_00064042, zero at 0x8000 and 0.5 per count, looked up by engine \
+speed over the axis 0x00017586 and by the VVEL load over the axis \
+0x000175B6. The result enters the trimmed pair only while ROM8[0x8A6A].bit5 \
+is clear; stock ROM8[0x8A6A] = 0x3A sets the bit, so no stock output depends \
+on this surface."""
+note = """
+Recorded code interpretation: Read by FUN_00064042 through the literal-pool \
+word 0x000641E8, loaded at 0x00064084. FUN_00064042 holds the float literals \
+of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x0000E4CE."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064084"
+
+[[symbol]]
+layout = "1nd"
+address = "0000ea48"
+summary = """
+Stock-inert phase of the reference valve event pair of the VVEL idle-model \
+stage FUN_00060244, zero at 0x8000 and 0.5 per count, looked up by engine \
+speed over the axis 0x000174B2 and by the VVEL load over the axis \
+0x000174E2. The result enters the trimmed pair only while ROM8[0x8A19].bit5 \
+is clear; stock ROM8[0x8A19] = 0x3A sets the bit, so no stock output depends \
+on this surface."""
+note = """
+Recorded code interpretation: Read by FUN_00060244 through the literal-pool \
+word 0x00060390, loaded at 0x00060286. FUN_00060244 holds the float literals \
+of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x0000E4CE. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060286"
+
+[[symbol]]
 layout = "jk78c"
 address = "0000e4ce"
 note = """
@@ -37,6 +78,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0005733c"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060284"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064082"
+
 [[link]]
 type = "axis"
 to = "vvel_idle_model_reference_phase_axis_y/axis"
@@ -47,6 +98,36 @@ kind = "indirect"
 at = "jk78c:0005733c"
 value = 48
 mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060282"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064080"
+
+[[link]]
+type = "reader"
+to = "inescapable-bettong/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060390"
+
+[[link]]
+type = "reader"
+to = "sophisticated-earthworm/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641e8"
 
 [[link]]
 type = "reader"

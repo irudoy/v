@@ -18,6 +18,71 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+
+[[symbol]]
+layout = "1me3b"
+address = "00015f54"
+summary = """
+Monotonic duration characteristic of the VVEL duration correction \
+FUN_0005B38E: looked up by its first duration argument x512, clamped to \
+0..100.0, over the axis 0x000176D6 and scaled by 2^-18. FUN_0005B38E \
+subtracts from the result a 16x16 lookup of 0x0000CA7C over the axes \
+0x00015746 and 0x000176F6, indexed by the margin of its second over its \
+third argument and by the same duration index."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*2^-18; \
+proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float \
+literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005B38E \
+through the literal-pool word 0x0005B560, loaded at 0x0005B3FC. FUN_0005B38E \
+differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, \
+keeps the 2^-18 scale, and subtracts the correction surface 0x0000CA7C; \
+JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections \
+FUN_00055F2C and FUN_00055FF2. Besides FUN_0005B38E, the code graph records \
+only 0x0005F814 as a reader of the axis 0x000176D6, so no inverse lookup \
+over this curve is bound on the layout. Stock bytes are identical to JK78C \
+0x00015AA2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b3fc"
+
+[[symbol]]
+layout = "1nd"
+address = "00016090"
+summary = """
+Monotonic duration characteristic of the VVEL duration correction \
+FUN_0005751E: looked up by its first duration argument x512, clamped to \
+0..100.0, over the axis 0x00017612 and scaled by 2^-18. FUN_0005751E \
+subtracts from the result a 16x16 lookup of 0x0000CDC8 over the axes \
+0x000158D2 and 0x00017632, indexed by the margin of its second over its \
+third argument and by the same duration index."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*2^-18; \
+proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float \
+literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005751E \
+through the literal-pool word 0x000576F0, loaded at 0x0005758C. FUN_0005751E \
+differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, \
+keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; \
+JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections \
+FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records \
+only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup \
+over this curve is bound on the layout. Stock bytes are identical to JK78C \
+0x00015AA2. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005758c"
+
 [[symbol]]
 layout = "jk78c"
 address = "00015aa2"
@@ -41,6 +106,36 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00055eb4"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005758a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b3fa"
+
+[[link]]
+type = "reader"
+to = "clay-galago/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000576f0"
+
+[[link]]
+type = "reader"
+to = "illegal-dragon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b560"
+
 [[link]]
 type = "reader"
 to = "lumpy-penguin/fn"
@@ -54,12 +149,11 @@ at = "jk78c:00056084"
 [[link]]
 type = "reader"
 to = "mahogany-seahorse/fn"
-role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00056084"
+at = "jk78c:00055fa0"
 
 [[link]]
 type = "reader"

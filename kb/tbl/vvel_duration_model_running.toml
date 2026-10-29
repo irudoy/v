@@ -14,6 +14,57 @@ cols = 16
 rows = 16
 storage = "uint16"
 
+[editor]
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001007c"
+summary = """
+Duration state word of the VVEL idle-model and running state codes in the \
+state-code dispatcher FUN_0007448C, looked up by engine speed over the axis \
+0x00017346 and by load over the axis 0x000172E6."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 \
+duration scale of the state words in defs/JK78C.vvel.md. Recorded code \
+interpretation: Read by FUN_0007448C through the literal-pool word \
+0x00074FD4, loaded at 0x00074ED4. FUN_0007448C is the state-code dispatcher \
+at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
+0x000100CE: 660..1440."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ed4"
+
+[[symbol]]
+layout = "1nd"
+address = "00010648"
+summary = """
+Duration state word of the VVEL idle-model and running state codes in the \
+state-code dispatcher FUN_00070514, looked up by engine speed over the axis \
+0x00017292 and by load over the axis 0x00017232."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 \
+duration scale of the state words in defs/JK78C.vvel.md. Recorded code \
+interpretation: Read by FUN_00070514 through the literal-pool word \
+0x00071028, loaded at 0x00070EA8. FUN_00070514 is the state-code dispatcher \
+at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
+0x000100CE: 660..1440. 1ND3B shares the 1ND0A code layout and its stock \
+bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea8"
+
 [[symbol]]
 layout = "jk78c"
 address = "000100ce"
@@ -37,6 +88,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000664d0"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ece"
+
 [[link]]
 type = "axis"
 to = "vvel_duration_throttled_axis/axis"
@@ -47,6 +108,26 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000664cc"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070ea6"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074ed0"
+
+[[link]]
+type = "reader"
+to = "calm-wombat/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071028"
+
 [[link]]
 type = "reader"
 to = "icy-platypus/fn"
@@ -56,3 +137,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00066684"
+
+[[link]]
+type = "reader"
+to = "spotted-ibex/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074fd4"

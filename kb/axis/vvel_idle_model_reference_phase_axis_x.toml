@@ -10,6 +10,39 @@ points = 8
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00017586"
+summary = """
+Engine-speed axis of the stock-inert idle-model reference phase 0x0000E47C \
+in FUN_00064042."""
+note = """
+Recorded code interpretation: Read by FUN_00064042 through the literal-pool \
+word 0x000641E4, loaded at 0x00064082. FUN_00064042 holds the float literals \
+of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EB4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064082"
+
+[[symbol]]
+layout = "1nd"
+address = "000174b2"
+summary = """
+Engine-speed axis of the stock-inert idle-model reference phase 0x0000EA48 \
+in FUN_00060244."""
+note = """
+Recorded code interpretation: Read by FUN_00060244 through the literal-pool \
+word 0x0006038C, loaded at 0x00060284. FUN_00060244 holds the float literals \
+of JK78C FUN_00057322. Stock bytes are identical to JK78C 0x00016EB4. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060284"
+
+[[symbol]]
 layout = "jk78c"
 address = "00016eb4"
 
@@ -17,6 +50,26 @@ address = "00016eb4"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005733c"
+
+[[link]]
+type = "reader"
+to = "inescapable-bettong/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006038c"
+
+[[link]]
+type = "reader"
+to = "sophisticated-earthworm/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641e4"
 
 [[link]]
 type = "reader"

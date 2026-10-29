@@ -10,6 +10,56 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+
+[[symbol]]
+layout = "1me3b"
+address = "0001695c"
+summary = """
+Load at which the VVEL idle-model stage FUN_000638C0 reaches the high-load \
+event pair, at 100/65536 percent per count, looked up by engine speed over \
+the axis 0x0001699C; the start curve is 0x0001697C."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the \
+float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by \
+FUN_000638C0 through the literal-pool word 0x00063A0C, loaded at 0x0006395A. \
+FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the \
+event center with the additional literals 450.0, -450.0 and -16384.0. Stock \
+bytes are identical to JK78C 0x000162CA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006395a"
+
+[[symbol]]
+layout = "1nd"
+address = "000168c8"
+summary = """
+Load at which the VVEL idle-model stage FUN_00060146 reaches the high-load \
+event pair, at 100/65536 percent per count, looked up by engine speed over \
+the axis 0x00016908; the start curve is 0x000168E8."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the \
+float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by \
+FUN_00060146 through the literal-pool word 0x00060360, loaded at 0x00060188. \
+FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are \
+identical to JK78C 0x000162CA. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060188"
+
 [[symbol]]
 layout = "jk78c"
 address = "000162ca"
@@ -33,6 +83,36 @@ kind = "indirect"
 at = "jk78c:0005721a"
 value = 64
 mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006017c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006394e"
+
+[[link]]
+type = "reader"
+to = "olivine-husky/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060360"
+
+[[link]]
+type = "reader"
+to = "stoic-baboon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063a0c"
 
 [[link]]
 type = "reader"

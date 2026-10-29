@@ -14,6 +14,57 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "00017326"
+summary = """
+Duration floor of the VVEL idle-model stage FUN_00063CD4 at 1/512 per count, \
+looked up by engine speed over the axis 0x00017306. The stage engages the \
+floor in VVEL mode 5 while the model duration does not exceed it and blends \
+the idle-model duration toward max(duration, floor) by the floor weight."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float \
+literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_00063CD4 \
+through the literal-pool word 0x00063ED4, loaded at 0x00063CF8. FUN_00063CD4 \
+holds the float literals of JK78C FUN_00056DCA. Stock bytes differ from \
+JK78C 0x00016C64: 21504..26368."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063cf8"
+
+[[symbol]]
+layout = "1nd"
+address = "00017272"
+summary = """
+Duration floor of the VVEL idle-model stage FUN_0005FD88 at 1/512 per count, \
+looked up by engine speed over the axis 0x00017252. The stage engages the \
+floor in VVEL mode 5 while the model duration does not exceed it and blends \
+the idle-model duration toward max(duration, floor) by the floor weight."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float \
+literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_0005FD88 \
+through the literal-pool word 0x0005FE50, loaded at 0x0005FDAC. FUN_0005FD88 \
+holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to \
+JK78C 0x00016C64. 1ND3B shares the 1ND0A code layout and its stock bytes at \
+this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fdac"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016c64"
@@ -36,6 +87,36 @@ slot = "x"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056df0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fdaa"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063cf6"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005fe50"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063ed4"
 
 [[link]]
 type = "reader"

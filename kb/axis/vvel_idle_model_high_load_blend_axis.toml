@@ -4,6 +4,49 @@ quantity = "rpm"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001699c"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the \
+0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: \
+Engine-speed axis of the high-load blend window curves 0x0001697C and \
+0x0001695C in FUN_000638C0. Read by FUN_000638C0 through the literal-pool \
+word 0x00063A04, loaded at 0x0006394E. FUN_000638C0 holds the float literals \
+of JK78C FUN_00057208 and forms the event center with the additional \
+literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C \
+0x0001630A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006394e"
+
+[[symbol]]
+layout = "1nd"
+address = "00016908"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the \
+0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: \
+Engine-speed axis of the high-load blend window curves 0x000168E8 and \
+0x000168C8 in FUN_00060146. Read by FUN_00060146 through the literal-pool \
+word 0x00060358, loaded at 0x0006017C. FUN_00060146 holds the float literals \
+of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x0001630A. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006017c"
+
 [[symbol]]
 layout = "jk78c"
 address = "0001630a"
@@ -20,6 +63,26 @@ kind = "indirect"
 at = "jk78c:0005721a"
 value = 64
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "olivine-husky/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060358"
+
+[[link]]
+type = "reader"
+to = "stoic-baboon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063a04"
 
 [[link]]
 type = "reader"

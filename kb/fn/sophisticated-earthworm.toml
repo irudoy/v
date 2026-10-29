@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "00064042"
+name = "sophisticated-earthworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064042"

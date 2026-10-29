@@ -4,6 +4,49 @@ quantity = "load"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Engine Load [%]"
+format = "0.0"
+fine = 0.5
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "000175c6"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x00016EF4, the \
+load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded \
+code interpretation: VVEL load axis of the idle-model duration 0x0000F4FC \
+and phase 0x00010A7C in FUN_00064042. Read by FUN_00064042 through the \
+literal-pool word 0x000641F0, loaded at 0x00064094. FUN_00064042 holds the \
+float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C \
+0x00016EF4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064094"
+
+[[symbol]]
+layout = "1nd"
+address = "000174f2"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x00016EF4, the \
+load coordinate 0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded \
+code interpretation: VVEL load axis of the idle-model duration 0x0000FAC8 \
+and phase 0x00010F48 in FUN_00060244. Read by FUN_00060244 through the \
+literal-pool word 0x00060398, loaded at 0x00060296. FUN_00060244 holds the \
+float literals of JK78C FUN_00057322. Stock bytes are identical to JK78C \
+0x00016EF4. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060296"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016ef4"
@@ -21,6 +64,26 @@ kind = "indirect"
 at = "jk78c:0005733c"
 value = 64
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "inescapable-bettong/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060398"
+
+[[link]]
+type = "reader"
+to = "sophisticated-earthworm/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641f0"
 
 [[link]]
 type = "reader"

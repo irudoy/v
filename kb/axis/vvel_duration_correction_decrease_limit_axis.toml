@@ -20,6 +20,36 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00055fae"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "masked-match"
+target = "jk78c:0001510c"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The role belongs to the JK78C ratio corrections FUN_00055F2C and \
+FUN_00055FF2, which look up the duration characteristic axis over the \
+characteristic. On this layout the duration reader FUN_0005B38E subtracts \
+the correction surface 0x0000CA7C instead, and the code graph records only \
+0x0005F814 as another reader of the characteristic axis 0x000176D6. No \
+counterpart is bound, and its absence is not established."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "masked-match"
+target = "jk78c:0001510c"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+The role belongs to the JK78C ratio corrections FUN_00055F2C and \
+FUN_00055FF2, which look up the duration characteristic axis over the \
+characteristic. On this layout the duration reader FUN_0005751E subtracts \
+the correction surface 0x0000CDC8 instead, and the code graph records only \
+0x0005B998 as another reader of the characteristic axis 0x00017612. No \
+counterpart is bound, and its absence is not established."""
+
 [[link]]
 type = "reader"
 to = "mahogany-seahorse/fn"

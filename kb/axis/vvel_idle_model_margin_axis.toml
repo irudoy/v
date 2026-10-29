@@ -4,6 +4,49 @@ quantity = "raw"
 points = 8
 storage = "uint16"
 
+[editor]
+name = "Duration Margin [deg]"
+format = "0.0"
+fine = 0.25
+coarse = 1
+
+[[symbol]]
+layout = "1me3b"
+address = "00017296"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00016BD4, the float \
+literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: \
+Demand-margin axis of the idle-model floor hold 0x000173C6 and release step \
+0x000172A6 in FUN_00063CD4 at 1/512 per count. Read by FUN_00063CD4 through \
+the literal-pool word 0x00063F04, loaded at 0x00063E48. FUN_00063CD4 holds \
+the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C \
+0x00016BD4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063e48"
+
+[[symbol]]
+layout = "1nd"
+address = "000171e2"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00016BD4, the float \
+literals 512.0 at 0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: \
+Demand-margin axis of the idle-model floor hold 0x000172F2 and release step \
+0x000171F2 in FUN_0005FD88 at 1/512 per count. Read by FUN_0005FD88 through \
+the literal-pool word 0x00060098, loaded at 0x0005FF64. FUN_0005FD88 holds \
+the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C \
+0x00016BD4. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005ff64"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016bd4"
@@ -21,6 +64,26 @@ otherwise."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056fc0"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060098"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063f04"
 
 [[link]]
 type = "reader"

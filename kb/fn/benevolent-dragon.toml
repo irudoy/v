@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1me3b"
+address = "000673ec"
+name = "benevolent-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000673ec"

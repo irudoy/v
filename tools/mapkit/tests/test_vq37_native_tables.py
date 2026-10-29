@@ -36,6 +36,21 @@ VVEL_TABLE_ROLES = {
     "vvel_command_shaft_angle_second",
     "vvel_shaft_angle_monitor_floor_a_second",
     "vvel_shaft_angle_monitor_floor_b_second",
+    "vvel_duration_characteristic",
+    "vvel_idle_model_duration_floor",
+    "vvel_idle_model_floor_hold_passes",
+    "vvel_idle_model_floor_release_step",
+    "vvel_idle_model_high_load_duration",
+    "vvel_idle_model_high_load_phase",
+    "vvel_idle_model_high_load_blend_start",
+    "vvel_idle_model_high_load_blend_end",
+    "vvel_idle_model_duration",
+    "vvel_idle_model_phase",
+    "vvel_hot_intake_threshold",
+    "vvel_hot_intake_threshold_knock",
+    "vvel_duration_model_running",
+    "intake_cvtc_model_running",
+    "intake_cvtc_model_default",
 }
 VVEL_AXIS_ROLES = {
     "vvel_duration_running_axis",
@@ -60,6 +75,16 @@ VVEL_AXIS_ROLES = {
     "vvel_shaft_angle_second_axis",
     "vvel_shaft_angle_monitor_floor_a_second_axis",
     "vvel_shaft_angle_monitor_floor_b_second_axis",
+    "vvel_duration_characteristic_axis",
+    "vvel_idle_model_duration_floor_axis",
+    "vvel_idle_model_margin_axis",
+    "vvel_idle_model_high_load_duration_axis",
+    "vvel_idle_model_high_load_phase_axis",
+    "vvel_idle_model_high_load_blend_axis",
+    "vvel_idle_model_axis_x",
+    "vvel_idle_model_axis_y",
+    "vvel_hot_intake_threshold_axis",
+    "vvel_duration_model_running_axis_y",
 }
 # The executed surfaces of the mode-selected half of the ignition coordinator.
 IGNITION_PAIR_ROLES = {
@@ -232,7 +257,10 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
         for pointer in entity.pointer_bindings
     )
     floors = {
-        t.identifier: t for t in target.tables if t.identifier.endswith("_floor")
+        t.identifier: t
+        for t in target.tables
+        if t.identifier.startswith("vvel_duration_hot_intake_idle")
+        and t.identifier.endswith("_floor")
     }
     assert {t.address for t in floors.values()} == {0x165DC, 0x165EC}
     assert all(t.axis_x == (0x165CC,) for t in floors.values())

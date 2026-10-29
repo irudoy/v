@@ -4,6 +4,47 @@ quantity = "temp"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Coolant Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "0001453a"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x-50 degC; \
+proposed editor-grid inverse x+50. Origin: on JK78C 0x00014208, the coolant \
+byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: \
+Coolant axis of the hot-intake idle thresholds 0x00014292 and 0x0001429A in \
+FUN_000673EC. Read by FUN_000673EC through the literal-pool word 0x00067578, \
+loaded at 0x0006747C. FUN_000673EC holds the float literals of JK78C \
+FUN_00059C2C. Stock bytes are identical to JK78C 0x00014208."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006747c"
+
+[[symbol]]
+layout = "1nd"
+address = "000146ae"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x-50 degC; \
+proposed editor-grid inverse x+50. Origin: on JK78C 0x00014208, the coolant \
+byte 0xFFFF1069 of vvel_cold_axis/axis. Recorded code interpretation: \
+Coolant axis of the hot-intake idle thresholds 0x00014426 and 0x0001442E in \
+FUN_00062ECC. Read by FUN_00062ECC through the literal-pool word 0x00063068, \
+loaded at 0x00062F5A. FUN_00062ECC holds the float literals of JK78C \
+FUN_00059C2C. Stock bytes are identical to JK78C 0x00014208. 1ND3B shares \
+the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062f5a"
+
 [[symbol]]
 layout = "jk78c"
 address = "00014208"
@@ -21,6 +62,16 @@ at = "jk78c:00059c48"
 
 [[link]]
 type = "reader"
+to = "benevolent-dragon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00067578"
+
+[[link]]
+type = "reader"
 to = "mysterious-pegasus/fn"
 role = "accessor"
 
@@ -28,3 +79,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00059d98"
+
+[[link]]
+type = "reader"
+to = "singing-wrasse/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00063068"

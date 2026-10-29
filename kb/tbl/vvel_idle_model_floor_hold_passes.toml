@@ -12,6 +12,55 @@ cols = 8
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol]]
+layout = "1me3b"
+address = "000173c6"
+summary = """
+Pass count of the full idle-model floor weight in FUN_00063CD4, looked up by \
+the demand margin over the axis 0x00017296; afterwards the weight steps down \
+by 0x000172A6 per pass."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x passes; \
+proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter \
+comparison in FUN_00056DCA. Recorded code interpretation: Read by \
+FUN_00063CD4 through the literal-pool word 0x00063F08, loaded at 0x00063E4A. \
+FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are \
+identical to JK78C 0x00016D04."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063e4a"
+
+[[symbol]]
+layout = "1nd"
+address = "000172f2"
+summary = """
+Pass count of the full idle-model floor weight in FUN_0005FD88, looked up by \
+the demand margin over the axis 0x000171E2; afterwards the weight steps down \
+by 0x000171F2 per pass."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x passes; \
+proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter \
+comparison in FUN_00056DCA. Recorded code interpretation: Read by \
+FUN_0005FD88 through the literal-pool word 0x0006009C, loaded at 0x0005FF66. \
+FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are \
+identical to JK78C 0x00016D04. 1ND3B shares the 1ND0A code layout and its \
+stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005ff66"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016d04"
@@ -34,6 +83,36 @@ slot = "x"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00056fc0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005ff64"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063e48"
+
+[[link]]
+type = "reader"
+to = "daft-mackerel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006009c"
+
+[[link]]
+type = "reader"
+to = "fantastic-chowchow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063f08"
 
 [[link]]
 type = "reader"

@@ -15,6 +15,59 @@ cols = 16
 rows = 16
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "0000f4fc"
+summary = """
+Duration of the trimmed valve event pair of the VVEL idle-model stage \
+FUN_00064042, zero at 0x8000 and 0.05 per count, looked up by engine speed \
+over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With \
+ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events lie at the trimmed \
+center +/- 2 * 0.05 * (raw - 0x8000)."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 \
+deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, \
+the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code \
+interpretation: Read by FUN_00064042 through the literal-pool word \
+0x000641F8, loaded at 0x0006409A. FUN_00064042 holds the float literals of \
+JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006409a"
+
+[[symbol]]
+layout = "1nd"
+address = "0000fac8"
+summary = """
+Duration of the trimmed valve event pair of the VVEL idle-model stage \
+FUN_00060244, zero at 0x8000 and 0.05 per count, looked up by engine speed \
+over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With \
+ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events lie at the trimmed \
+center +/- 2 * 0.05 * (raw - 0x8000)."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 \
+deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, \
+the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code \
+interpretation: Read by FUN_00060244 through the literal-pool word \
+0x000603A0, loaded at 0x0006029C. FUN_00060244 holds the float literals of \
+JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108. \
+1ND3B shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006029c"
+
 [[symbol]]
 layout = "jk78c"
 address = "0000f54e"
@@ -39,6 +92,16 @@ at = "jk78c:0005733c"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006029a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064098"
+
 [[link]]
 type = "axis"
 to = "vvel_idle_model_axis_y/axis"
@@ -49,6 +112,36 @@ kind = "indirect"
 at = "jk78c:0005733c"
 value = 64
 mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060296"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064094"
+
+[[link]]
+type = "reader"
+to = "inescapable-bettong/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000603a0"
+
+[[link]]
+type = "reader"
+to = "sophisticated-earthworm/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641f8"
 
 [[link]]
 type = "reader"

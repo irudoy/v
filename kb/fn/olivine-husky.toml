@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "1nd"
+address = "00060146"
+name = "olivine-husky"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060146"

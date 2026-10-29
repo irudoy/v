@@ -12,6 +12,58 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+
+[[symbol]]
+layout = "1me3b"
+address = "000173f6"
+summary = """
+Duration of the high-load valve event pair of the VVEL idle-model stage \
+FUN_000638C0, looked up by engine speed over the axis 0x00017386; the \
+high-load events lie at the event center +/- 0.01 * raw."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
+proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float \
+literal 0.01 at 0x574BC and the factor 2 of the event half-span in \
+FUN_00057322. Recorded code interpretation: Read by FUN_000638C0 through the \
+literal-pool word 0x000639F4, loaded at 0x0006392E. FUN_000638C0 holds the \
+float literals of JK78C FUN_00057208 and forms the event center with the \
+additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to \
+JK78C 0x00016D34."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006392e"
+
+[[symbol]]
+layout = "1nd"
+address = "00017322"
+summary = """
+Duration of the high-load valve event pair of the VVEL idle-model stage \
+FUN_00060146, looked up by engine speed over the axis 0x000172D2; the \
+high-load events lie at the event center +/- 0.01 * raw."""
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
+proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float \
+literal 0.01 at 0x574BC and the factor 2 of the event half-span in \
+FUN_00057322. Recorded code interpretation: Read by FUN_00060146 through the \
+literal-pool word 0x00060344, loaded at 0x0006015C. FUN_00060146 holds the \
+float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C \
+0x00016D34. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006015c"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016d34"
@@ -34,6 +86,36 @@ slot = "x"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00057228"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006015a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006392c"
+
+[[link]]
+type = "reader"
+to = "olivine-husky/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060344"
+
+[[link]]
+type = "reader"
+to = "stoic-baboon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639f4"
 
 [[link]]
 type = "reader"

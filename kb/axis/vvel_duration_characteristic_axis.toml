@@ -4,6 +4,59 @@ quantity = "raw"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "VVEL Duration [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol]]
+layout = "1me3b"
+address = "000176d6"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float \
+literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code \
+interpretation: Duration axis of the VVEL duration characteristic 0x00015F54 \
+at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup \
+duration x512 of FUN_0005B38E. Read by FUN_0005B38E through the literal-pool \
+word 0x0005B55C, loaded at 0x0005B3FA. FUN_0005B38E differs from JK78C \
+FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 \
+scale, and subtracts the correction surface 0x0000CA7C; JK78C FUN_00055E78 \
+instead passes the scaled value to the ratio corrections FUN_00055F2C and \
+FUN_00055FF2. Besides FUN_0005B38E, the code graph records only 0x0005F814 \
+as a reader of the axis 0x000176D6, so no inverse lookup over this curve is \
+bound on the layout. Stock bytes are identical to JK78C 0x00017004."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b3fa"
+
+[[symbol]]
+layout = "1nd"
+address = "00017612"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float \
+literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code \
+interpretation: Duration axis of the VVEL duration characteristic 0x00016090 \
+at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup \
+duration x512 of FUN_0005751E. Read by FUN_0005751E through the literal-pool \
+word 0x000576EC, loaded at 0x0005758A. FUN_0005751E differs from JK78C \
+FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 \
+scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 \
+instead passes the scaled value to the ratio corrections FUN_00055F2C and \
+FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 \
+as a reader of the axis 0x00017612, so no inverse lookup over this curve is \
+bound on the layout. Stock bytes are identical to JK78C 0x00017004. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005758a"
+
 [[symbol]]
 layout = "jk78c"
 address = "00017004"
@@ -23,6 +76,26 @@ at = "jk78c:00055eb4"
 
 [[link]]
 type = "reader"
+to = "clay-galago/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000576ec"
+
+[[link]]
+type = "reader"
+to = "illegal-dragon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b55c"
+
+[[link]]
+type = "reader"
 to = "lumpy-penguin/fn"
 role = "accessor"
 
@@ -34,12 +107,11 @@ at = "jk78c:00056088"
 [[link]]
 type = "reader"
 to = "mahogany-seahorse/fn"
-role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00056088"
+at = "jk78c:00055f9e"
 
 [[link]]
 type = "reader"
