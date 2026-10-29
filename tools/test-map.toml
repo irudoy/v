@@ -6,10 +6,37 @@
 # Patterns are relative to the repository root; `*` stays within one path
 # segment and `**` spans any number of them.
 #
-# Source entries list Python modules only. Data, documentation, and build files
-# stay unmapped because tests read them by path. tools/tests/test_test_map.py
+# Source entries list Python modules. Runtime data and its native owners select
+# the complete fast tier because path-based consumers span test directories.
+# Other data, documentation, and build files stay unmapped for the same reason.
+# tools/tests/test_test_map.py
 # checks that every test directory is reachable and that each source entry
 # selects every test directory whose imports reach its modules.
+
+[[subsystem]]
+name = "runtime data and owners"
+paths = [
+    "kb/**/*.toml",
+    "tools/kb/owners.toml",
+    "defs/JK08A.architecture.toml",
+    "patches/*-runtime-correspondence.csv",
+    "patches/rom-address-profiles.toml",
+    "patches/runtime-target-payloads.toml",
+    "rom-images/support-matrix.md",
+]
+pytest = [
+    "patches/tests",
+    "tools/can_dashboard/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/logs/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
+js = true
 
 [[subsystem]]
 name = "patches"

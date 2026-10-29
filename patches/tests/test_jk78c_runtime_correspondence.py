@@ -63,7 +63,6 @@ def test_jk78c_telemetry_correspondence_covers_the_complete_schema():
     assert {row["key"] for row in rows} == _canonical_telemetry_keys()
     unsupported = {row["key"] for row in rows if row["status"] == "unsupported"}
     assert unsupported == {
-        "fuel_learning_permit_a_raw",
         "ltft_publication_neutral_control_raw",
         "knock_state_snapshot_raw",
         "knock_branch_state_raw",

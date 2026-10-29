@@ -137,6 +137,28 @@ def test_one_subsystem_selects_only_its_tests():
     assert pin_tracer == changed_tests.Selection((), True, ())
 
 
+def test_runtime_data_selects_the_complete_fast_contract():
+    paths = (
+        "kb/fn/juicy-panther.toml",
+        "kb/fn/rousing-rhino.toml",
+        "kb/ram/fuel_learning_permit_a.toml",
+        "kb/feature/can_telemetry.toml",
+        "kb/tbl/precise-nuthatch.toml",
+        "tools/kb/owners.toml",
+        "defs/JK08A.architecture.toml",
+        "patches/jk78c-runtime-correspondence.csv",
+        "patches/1nd-runtime-correspondence.csv",
+        "patches/rom-address-profiles.toml",
+        "patches/runtime-target-payloads.toml",
+        "rom-images/support-matrix.md",
+    )
+    for path in paths:
+        selection = changed_tests.select([path], SUBSYSTEMS)
+        assert not selection.unmapped, path
+        assert set(selection.pytest) == _testpaths(), path
+        assert selection.js, path
+
+
 def test_patterns_keep_single_star_within_a_segment():
     assert changed_tests.glob_pattern("tools/kb/src/**/*.py").fullmatch("tools/kb/src/kb/adapters/files.py")
     assert changed_tests.glob_pattern("tools/kb/src/**/*.py").fullmatch("tools/kb/src/top.py")
