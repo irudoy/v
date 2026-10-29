@@ -166,26 +166,34 @@ layout = "1me3b"
 address = "fffe92ce"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92ce"
-to = "7mfk:ffff2304"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00086fd2"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Initializer 00086ed8 independently writes 0x6400 to word fffe92ce at \
+00086fd2 through offset 6 of R12 base fffe92c8. Reviewed publisher 000854f0 \
+writes the same word through fffe92cc+2*b at 00085584 with b=1 from \
+dispatcher 00086bd4. The runtime indexed access remains attributed to the \
+first-bank base in normalized L0, so no verified target accessor link is \
+transferred from it. Physical bank interpretation and live cadence require \
+separate target validation."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe9304"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe9304"
-to = "7mfk:ffff2304"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:000826b6"
+note = """
+Initializer 000825bc independently writes 0x6400 to word fffe9304 at \
+000826b6 through offset 6 of R12 base fffe92fe. Reviewed publisher 00080bc0 \
+writes the same word through fffe9302+2*b at 00080c52 with b=1 from \
+dispatcher 000822a0. The runtime indexed access remains attributed to the \
+first-bank base in normalized L0, so no verified target accessor link is \
+transferred from it. Physical bank interpretation and live cadence require \
+separate target validation."""
 
 [[symbol]]
 layout = "7mfk"

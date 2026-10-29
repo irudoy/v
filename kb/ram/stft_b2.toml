@@ -155,26 +155,42 @@ layout = "1me3b"
 address = "fffe92ae"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92ae"
-to = "7mfk:ffff22de"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008ba6c"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0008b958 copies the independent sibling source word fffeb7e6 \
+unchanged to fffe92ae at 0008ba6c through offset 2 of base fffe92ac. Its raw \
+override branch writes the common clamped 0x4b00..0x7d00 value at 0008ba60 \
+in a branch delay slot. These direct word stores independently bind bank-2 \
+storage; upstream producers, physical interpretation and cadence require \
+separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008ba60"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe92e2"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe92e2"
-to = "7mfk:ffff22de"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00087150"
+note = """
+Function 0008703c copies the independent sibling source word fffeb69e \
+unchanged to fffe92e2 at 00087150 through offset 2 of base fffe92e0. Its raw \
+override branch writes the common clamped 0x4b00..0x7d00 value at 00087144 \
+in a branch delay slot. These direct word stores independently bind bank-2 \
+storage; upstream producers, physical interpretation and cadence require \
+separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00087144"
 
 [[symbol]]
 layout = "7mfk"

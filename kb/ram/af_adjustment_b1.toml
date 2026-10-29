@@ -127,26 +127,52 @@ layout = "1me3b"
 address = "fffebdfa"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffebdfa"
-to = "7mfk:ffff45a0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f0b64"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The bounded update slice 000f0ab4..000f0b6e of function 000f0368 reads the \
+signed word at fffebdfa, adds an unsigned up step, subtracts an unsigned \
+down step, saturates to signed16 and applies calibrated signed lower/upper \
+limits. Direct stores at 000f0b62/000f0b64 publish bank 1 through R5 base \
+fffebdfa. The sibling word is at base+2. Physical scale and upstream \
+admission conditions require separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f0ab8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f0b62"
 
 [[symbol]]
 layout = "1nd"
 address = "fffebca2"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffebca2"
-to = "7mfk:ffff45a0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:000e59b4"
+note = """
+The bounded update slice 000e5904..000e59be of function 000e51b8 reads the \
+signed word at fffebca2, adds an unsigned up step, subtracts an unsigned \
+down step, saturates to signed16 and applies calibrated signed lower/upper \
+limits. Direct stores at 000e59b2/000e59b4 publish bank 1 through R5 base \
+fffebca2. The sibling word is at base+2. Physical scale and upstream \
+admission conditions require separate target review."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e5908"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e59b2"
 
 [[symbol]]
 layout = "7mfk"
