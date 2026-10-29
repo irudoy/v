@@ -95,26 +95,36 @@ layout = "1me3b"
 address = "fffe88b6"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe88b6"
-to = "7mfk:ffff18cc"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00097bd0"
 note = """
-Three accessor functions 000975b4 00097ae8 00097bd2 repeat the five 1ND \
-access sites including the writer in the return delay slot"""
+Publisher 00097ae8 stores the signed saturated word in its return delay slot \
+at 00097bd0 using offset 2 of literal base fffe88b4. The reviewed path \
+combines signed word fffe88b4 with unsigned word fffe93e8, applies \
+calibrated multipliers and mode selection, and clamps the final signed value \
+to -32768..32767 before publication. This independently grounds target word \
+storage and this modeled-state publisher; physical torque conversion, \
+reference location, upstream map semantics and cadence remain separate \
+qualifications."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8936"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8936"
-to = "7mfk:ffff18cc"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Three-generation homologous torque function writes this state"
+kind = "l0"
+supports = "identity"
+at = "1nd:00091f2e"
+note = """
+Publisher 00091e48 stores the signed saturated word in its return delay slot \
+at 00091f2e using offset 2 of literal base fffe8934. The reviewed path \
+combines signed word fffe8934 with unsigned word fffe941a, applies \
+calibrated multipliers and mode selection, and clamps the final signed value \
+to -32768..32767 before publication. This grounds target word storage and \
+this modeled-state publisher; physical torque conversion, reference \
+location, upstream map semantics and cadence remain separate \
+qualifications."""
 
 [[symbol]]
 layout = "7mfk"

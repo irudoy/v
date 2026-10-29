@@ -292,12 +292,18 @@ layout = "1nd"
 address = "fffe9488"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe9488"
-to = "7mfk:ffff2466"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Ignition and correction consumers test bit 0x40 to select the surface"
+kind = "l0"
+supports = "identity"
+at = "1nd:00070366"
+note = """
+Function 00070358 loads byte fffe9488 at 00070366 using the literal \
+destination address loaded at 00070364. Its bit-6 test at 00070368 selects \
+curve pair 00013e5a/00013e82 while clear and 00013e6a/00013e92 while set, \
+together with separate calibration bytes. The complete bounded consumer was \
+independently reviewed. This grounds the target selector-byte storage and \
+this bit-6 branch without transferring the canonical producer hysteresis, \
+claiming physical knock detection, or establishing cadence. Other bits \
+retain their distinct roles."""
 
 [[symbol]]
 layout = "7mfk"

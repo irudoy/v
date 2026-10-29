@@ -101,28 +101,38 @@ layout = "1me3b"
 address = "fffe81b4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe81b4"
-to = "7mfk:ffff11d4"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00078cc0"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+Coordinate builder 000788d8 joins its rate-limited, mode-dependent bounded, \
+diagnostic-override and initialization alternatives at byte store 00078cc0. \
+GBR is set to fffe8162 at 000788ee/000788f0 and offset 0x52 binds fffe81b4. \
+Command builder 00078f14 independently loads the stored byte with signed \
+MOV.B at 00079038 and subtracts it from zero-extended ROM8[000083b2]; its \
+separately published command is fffe81c3. This grounds coordinate storage \
+and the signed consumer; full upstream decomposition, physical degree \
+conversion, effective spark angle and cadence retain separate target \
+qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe81cc"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe81cc"
-to = "7mfk:ffff11d4"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1nd:00074c28"
 note = """
-Target command builder subtracts this byte from 110 before the primary \
-consumer"""
+Command builder 00074afa loads signed byte fffe81cc directly at 00074c28 \
+through GBR set from literal fffe81cc at 00074afe/00074b00. This branch \
+subtracts it from zero-extended ROM8[000083ab]; the other independently \
+reviewed branches read the same byte at 00074c2e, 00074c52, 00074cca and \
+00074ce6 before mode-dependent bounds or overrides. The joined command is \
+published separately to fffe81dd and passed to 0002e464. This binds the \
+upstream signed coordinate without equating it to the effective command, \
+transferring canonical physical degree conversion, or claiming target \
+cadence."""
 
 [[symbol]]
 layout = "7mfk"
@@ -272,14 +282,18 @@ layout = "jk78c"
 address = "ffff1f45"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff1f45"
-to = "7mfk:ffff11d4"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006984a"
 note = """
-Exact-size homologous command builder binds the final timing byte at equal \
-instruction ordinal"""
+Command builder 0006981e loads signed byte ffff1f45 at 0006984a through \
+offset 1 of literal base ffff1f44, then subtracts it from ROM8[0000838f]. \
+The independently reviewed branches read the same signed byte at 00069864, \
+000698a0, 000698f6 and 00069912 before mode-dependent bounds or overrides. \
+The joined command is published separately to ffff11cf and passed to \
+0002d6f6. This directly binds the upstream signed coordinate and \
+distinguishes it from the effective command; target producer decomposition, \
+physical degree conversion and cadence require separate qualification."""
 
 [[link]]
 type = "depends"
