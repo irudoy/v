@@ -9,6 +9,7 @@ from kb import store
 from kb.adapters import curated
 from kb.model import SymbolKey
 from kb.repo import KbError
+from tools import rom_sources
 
 
 def symbol(address, selector, *, name='owned_name', aliases=(), props=None):
@@ -49,9 +50,37 @@ def test_duplicate_rows_refuse_even_for_distinct_symbols():
         render(symbol(0x100, {'order': 0}), symbol(0x200, {'order': 0}))
 
 
+@pytest.mark.parametrize('note', ['On 1ND, the state is copied.', 'A "quoted" note.',
+                                  'First line\nsecond line', 'First line\rsecond line'])
+@pytest.mark.parametrize('source', ['note', 'title'])
+def test_selected_prose_that_requires_csv_quoting_refuses_before_projection(note, source):
+    selector = {'order': 0, 'notes': [0]} if source == 'note' else {'order': 0, 'title': True}
+    props = {'note': [note]} if source == 'note' else {'title': note}
+    with pytest.raises(KbError, match='curated note must be a single line') as caught:
+        render(symbol(0x100, selector, props=props))
+    assert caught.value.code == 3
+    assert '1nd-00000100/fn' in str(caught.value)
+
+
+def test_projected_native_note_is_readable_by_both_curated_consumers(tmp_path, monkeypatch):
+    note = "The sample's high byte selects the table; its units remain unresolved."
+    text = render(symbol(0x100, {'order': 0, 'notes': [0]}, props={'note': [note]}))
+    functions = tmp_path / 'l0/1nd/funcs.csv'
+    functions.parent.mkdir(parents=True)
+    functions.write_text('addr,size,is_thunk,is_external\n00000100,2,false,false\n')
+    projection = tmp_path / 'tools/ghidra/symbols/1nd.csv'
+    projection.parent.mkdir(parents=True)
+    projection.write_text(text)
+    monkeypatch.setattr(rom_sources, 'layout_of', lambda rom, root: '1nd')
+    assert rom_sources.function_names('T1', tmp_path) == {'00000100': 'owned_name'}
+    assert curated.rows(tmp_path, '1nd') == [
+        {'addr': '00000100', 'name': 'owned_name', 'note': note},
+    ]
+
+
 def test_native_selector_round_trip_keeps_evidence_and_uncertainty():
     document = {'level': 'candidate', 'symbol': [
         {'layout': '1nd', 'address': '00000100', 'curated': {'order': 0, 'notes': [0]},
          'evidence': [{'kind': 'l0', 'at': '1nd:00000100', 'supports': 'identity'}]}],
-        'note': ['Original source prose.']}
+        'note': ['Original source prose, with its context.']}
     assert tomllib.loads(store.render('fn', document)) == document

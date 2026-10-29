@@ -213,6 +213,9 @@ atlas read it through `tools/rom_sources.py`. Every row must name a function
 entry of the layout's L0. A generated knowledge name is not a curated function
 name.
 
+The note column is single-line literal text without commas or double quotes.
+The native projection validates selected notes and titles before writing the CSV.
+
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
 

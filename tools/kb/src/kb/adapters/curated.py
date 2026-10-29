@@ -86,6 +86,9 @@ def render(model):
             raise KbError(f"{symbol.key.key}: invalid curated note selector", code=3)
         note = meaning.props.get("title", "") if marker.get("title") else (
             notes[indices[0]] if indices else "")
+        if any(character in note for character in ',"\r\n'):
+            raise KbError(f"{symbol.key.key}: curated note must be a single line "
+                          "without commas or double quotes", code=3)
         selected[layout][order] = dict(addr=f"{symbol.address:08x}", name=name, note=note)
     output = {}
     for layout, entries in selected.items():
