@@ -58,6 +58,41 @@ note = """
 Unique aligned source accesses bind the effective reduction word in the \
 reviewed controller."""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff186c"
+level = "code"
+note = """
+The reviewed controller 00083174 maintains this unsigned word. The direct \
+request path stores uint8[ffff3517]<<8 at 000831fe when ROM8[00008968].bit4 \
+and ROM8[0000860a].bit6 select it; other paths use uint8[ffff1879]<<8, \
+retain or limit the state, rebuild it, decrease it, or clear it. Both \
+direct-selection bits are clear in the stock image, so the direct request \
+path is conditional. Publisher 000833f8 reads this word at 00083404 and \
+writes ffff1876 without conversion at 00083412. The telemetry field carries \
+raw stored counts; no physical torque scale is established."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000831fe"
+note = """
+The reviewed producer and consumer bind the uint16 effective reduction state \
+at ffff186c. The controller handles the enabled request-byte<<8 path and its \
+mode/shift alternatives; publisher 000833f8 transfers the state to ffff1876 \
+unchanged. The wire field remains raw counts without a physical torque \
+conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00083262"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00083404"
+
 [[status]]
 layout = "1me3b"
 state = "unresolved"
@@ -76,17 +111,6 @@ method = "masked-match"
 target = "7mfk:ffff1866"
 count = 0
 l0 = "cb701875f15725a4"
-note = """
-The source-access search returns no candidate. The telemetry word is \
-unavailable until a producer-consumer binding is reviewed."""
-
-[[status]]
-layout = "jk78c"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1866"
-count = 0
-l0 = "6bd18b774cb344a9"
 note = """
 The source-access search returns no candidate. The telemetry word is \
 unavailable until a producer-consumer binding is reviewed."""
@@ -121,11 +145,32 @@ supports = "identity"
 at = "7mfk:000651fe"
 
 [[link]]
+type = "reader"
+to = "transmission_reduction_state_publisher/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00083404"
+
+[[link]]
 type = "writer"
 to = "strange-mushroom/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
+relies = "structure"
+supports = "identity"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "7mfk:00064fd4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000831fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00083262"

@@ -65,7 +65,6 @@ def test_jk78c_telemetry_correspondence_covers_the_complete_schema():
     assert unsupported == {
         "ltft_publication_neutral_control_raw",
         "knock_branch_state_raw",
-        "transmission_reduction_state_raw",
     }
     for row in rows:
         if row["status"] != "unsupported":

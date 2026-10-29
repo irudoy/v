@@ -1,0 +1,20 @@
+summary = """
+Publishes the JK78C effective transmission-reduction word without \
+conversion."""
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000833f8"
+level = "code"
+note = """
+The target publication clears word ffff1874 at 00083400, reads ffff186c \
+unsigned at 00083404, and stores it at ffff1876 in the return delay slot at \
+00083412. The intervening positive-value test selects zero only when the \
+zero-extended input is zero. The published word retains its raw stored-count \
+representation."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000833f8"

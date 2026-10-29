@@ -1,3 +1,8 @@
+summary = """
+Maintains the effective unsigned transmission-reduction state through mode, \
+shift, update and inhibit branches."""
+block = "ignition_timing/block"
+
 [[symbol]]
 layout = "7mfk"
 address = "00064cb2"
@@ -7,3 +12,38 @@ name = "strange-mushroom"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00064cb2"
+
+[[symbol]]
+layout = "jk78c"
+address = "00083174"
+name = "righteous-rottweiler"
+level = "code"
+note = """
+The reviewed JK78C controller maintains the unsigned effective \
+transmission-reduction word ffff186c. The enabled direct path stores \
+uint8[ffff3517]<<8 at 000831fe; the alternate direct input is \
+uint8[ffff1879]<<8 at 0008320e. Update, retention, reconstruction, decrease \
+and clear branches converge on the same word. ROM8[00008968].bit4 and \
+ROM8[0000860a].bit6 select the direct request; both are clear in the stock \
+image. Physical torque conversion remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00083174"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083242"
+to = "7mfk:00064e88"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008333c"
+to = "7mfk:00064f76"
+count = 1
+value = 12
