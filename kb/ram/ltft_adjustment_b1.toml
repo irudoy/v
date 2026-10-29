@@ -62,16 +62,38 @@ ordinals"""
 [[symbol]]
 layout = "1nd"
 address = "fffecfe4"
+level = "code"
+width = 16
+signed = false
+note = """
+Updater 000812fa maintains the bank-1 unsigned word at fffecfe4 through \
+stores indexed by 2*b. Publisher 00080bc0 reads it at 00080bcc as the second \
+summand with selected word fffe9306 before subtracting 0x6400. Physical \
+operating-mode identity and live cadence remain unreviewed."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffecfe4"
-to = "7mfk:ffff5648"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1nd:00081448"
 note = """
-The same publisher reads this base as the second summand before the 0x6400 \
-neutral correction"""
+The reviewed updater holds fffecfe4 in R11 and 2*b in R13 through all three \
+word stores. Publisher 00080bc0 consumes the unsigned bank-1 word without a \
+representation conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00081500"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00081694"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080bcc"
 
 [[symbol]]
 layout = "7mfk"
@@ -165,15 +187,15 @@ role = "writes"
 type = "reader"
 to = "liberal-dormouse/fn"
 via = ["liberal-dormouse/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 note = """
-b=0: A=RAM16[ffff5648]. The bounded indexed MOV.W/EXTU.W supplies unsigned16 \
-A; b=1 does not read this sibling."""
+On 7mfk b=0: A=RAM16[ffff5648]. The bounded indexed MOV.W/EXTU.W supplies \
+unsigned16 A; b=1 does not read this sibling."""
 
 [[link.evidence]]
 kind = "test"
@@ -191,6 +213,33 @@ key = "test_ltft_publication_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded LTFT publication"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057b3a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080bcc"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_adjustment_updater/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00081448"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00081500"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00081694"
 
 [[link]]
 type = "writer"

@@ -95,6 +95,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00080bc0"
+name = "gabby-wren"
+level = "code"
+note = """
+The 1ND leaf publisher zero-extends the words at fffe9306+2*b and \
+fffecfe4+2*b at 00080bca/00080bcc and forms their raw sum minus 0x6400. Mask \
+fffe930e and an unsigned-versus-signed word comparison select optional \
+ROM-byte limiting. Raw control bits can force 0x6400. The return delay slot \
+at 00080c52 writes the low word to fffe9302+2*b. Dispatcher 000822a0 calls \
+this entry with b=0 and b=1. This target uses direct control-byte tests; the \
+canonical diagnostic-predicate executable contract is not transferred. \
+Physical control identities and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080bc0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080bca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080bcc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080c52"
+
+[[symbol]]
 layout = "7mfk"
 address = "00057b26"
 name = "liberal-dormouse"

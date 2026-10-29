@@ -59,8 +59,6 @@ def test_1nd_telemetry_correspondence_covers_the_complete_schema():
         "knock_state_snapshot_raw",
         "knock_branch_state_raw",
         "transmission_reduction_state_raw",
-        "ltft_learned_b2_raw",
-        "ltft_adjustment_b2_raw",
     }
     for row in rows:
         if row["status"] != "unsupported":

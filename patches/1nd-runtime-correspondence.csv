@@ -158,8 +158,8 @@ telemetry,throttle_target_channel_1_raw,ffff28be,fffeb6c6,,,mapped,Homologous ch
 telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,fffe9460,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
 telemetry,coolant_raw,ffff1079,fffe8079,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8075,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,ltft_learned_b2_raw,ffff2308,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
-telemetry,ltft_adjustment_b2_raw,ffff564a,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_learned_b2_raw,ffff2308,fffe9308,,,target-specific,Direct word initialization at 000826f8 independently grounds the bank-2 cell fffe9308. The reviewed runtime selector and publisher address the same word through base fffe9306 with bank offset 2; normalized L0 retains only the base for that runtime path. This source binding does not qualify an indexed accessor link.
+telemetry,ltft_adjustment_b2_raw,ffff564a,fffecfe6,,,target-specific,The initializer directly writes word fffecfe6 from the neutral 0x6400 value at 0008293a. The independently reviewed updater and publication arithmetic use base fffecfe4+2*b with b=1 for this bank-2 adjustment. The binding does not qualify a base-only normalized runtime access as a bank-2 relation.
 telemetry,stft_b1_raw,ffff22dc,fffe92e0,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,stft_b2_raw,ffff22de,fffe92e2,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe945b,,,mapped,Aligned diagnostic pointer table preserves the duty byte
@@ -168,8 +168,8 @@ telemetry,ltft_b1_raw,ffff2302,fffe9302,,,mapped,Aligned diagnostic pointer tabl
 telemetry,ltft_b2_raw,ffff2304,fffe9304,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,alpha_n_flow_raw,ffff1170,fffe93aa,,,target-specific,The high byte of snapshot word fffe93aa is the column of the target Fuel Compensation surfaces. Its independent producer and periodic-copy path are recorded in diamond-macaque/ram; the JK08A byte-producer homolog remains unresolved.
 telemetry,battery_voltage_raw,ffff1188,fffe817c,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
-telemetry,ltft_adjustment_b1_raw,ffff5648,fffecfe4,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction
+telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,target-specific,The reviewed bank-indexed selector and publisher bind the bank-1 selected word at fffe9306. The pointer is literal at 00080b58 and the stored bank offset is 2*uint8(R4).
+telemetry,ltft_adjustment_b1_raw,ffff5648,fffecfe4,,,target-specific,The reviewed updater holds fffecfe4 in R11 and 2*b in R13 through all three word stores. Publisher 00080bc0 consumes the unsigned bank-1 word without a representation conversion.
 telemetry,iat_raw,ffff2837,fffe98aa,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,oil_temperature_did_source_raw,ffff2876,fffe8179,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,af_state_factor_raw,ffff22e8,fffe9318,,,mapped,Aligned diagnostic pointer table and direct references agree

@@ -274,8 +274,6 @@ telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
     "knock_branch_state_raw",
     "knock_state_snapshot_raw",
-    "ltft_adjustment_b2_raw",
-    "ltft_learned_b2_raw",
     "ltft_publication_neutral_control_raw",
     "torque_transition_state_raw",
     "transmission_reduction_state_raw",
@@ -452,6 +450,8 @@ throttle_target_channel_1_raw = 0xFFFEB6C6
 exhaust_cvtc_actual_b2_raw = 0xFFFE9460
 coolant_raw = 0xFFFE8079
 fuel_temperature_did_source_raw = 0xFFFE8075
+ltft_learned_b2_raw = 0xFFFE9308
+ltft_adjustment_b2_raw = 0xFFFECFE6
 stft_b1_raw = 0xFFFE92E0
 stft_b2_raw = 0xFFFE92E2
 intake_cvtc_duty_b1_raw = 0xFFFE945B

@@ -1,0 +1,53 @@
+summary = """
+Maintains the bank-indexed learned-fuel-trim adjustment through raw gates \
+and calibrated limits."""
+note = [
+    """
+Bank-indexed learned-trim adjustment updater. Maintains fffecfe4+2*b through \
+raw bank masks and limits with neutral 0x6400. Physical gate identities and \
+cadence remain unreviewed.""",
+]
+block = "fuel_closed_loop/block"
+former = ["engine_immo_status_reporter"]
+
+[[symbol]]
+layout = "1nd"
+address = "000812fa"
+level = "code"
+former = ["engine_immo_status_reporter/fn/1nd-000812fa"]
+note = """
+The leaf updater takes b=uint8(R4), saves 2*b in R13 at 00081320 and retains \
+base fffecfe4 in R11 from 00081326 through its indexed word stores at \
+00081448, 00081500 and 00081694. Raw bank masks select maintenance paths and \
+calibrated bounds; independent control-bit paths force 0x6400. Publisher \
+00080bc0 consumes the adjustment with the selected learned word. The \
+narrower physical operating mode and cadence remain unreviewed."""
+
+[symbol.curated]
+order = 31
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000812fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0008132a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00081448"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00081500"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00081694"

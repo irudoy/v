@@ -78,16 +78,28 @@ block whose offsets 4 and 6 are the diagnostic long-term trim words"""
 [[symbol]]
 layout = "1nd"
 address = "fffe9306"
+level = "code"
+width = 16
+signed = false
+note = """
+Selector 0008097c writes the selected bank-1 word at fffe9306 through \
+00080b62 with b=0. Publisher 00080bc0 reads it unsigned at 00080bca as the \
+first summand with adjustment fffecfe4. The bank-2 path addresses fffe9308. \
+Physical coordinate identities and live cadence remain unreviewed."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe9306"
-to = "7mfk:ffff2306"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1nd:00080b62"
 note = """
-The target long-term trim publisher reads this base with the doubled bank \
-index as the first summand"""
+The reviewed bank-indexed selector and publisher bind the bank-1 selected \
+word at fffe9306. The pointer is literal at 00080b58 and the stored bank \
+offset is 2*uint8(R4)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080bca"
 
 [[symbol]]
 layout = "7mfk"
@@ -180,15 +192,15 @@ supports = "identity"
 type = "reader"
 to = "liberal-dormouse/fn"
 via = ["liberal-dormouse/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 note = """
-b=0: L=RAM16[ffff2306]. The bounded indexed MOV.W/EXTU.W supplies unsigned16 \
-L; b=1 does not read this sibling."""
+On 7mfk b=0: L=RAM16[ffff2306]. The bounded indexed MOV.W/EXTU.W supplies \
+unsigned16 L; b=1 does not read this sibling."""
 
 [[link.evidence]]
 kind = "test"
@@ -206,6 +218,14 @@ key = "test_ltft_publication_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded LTFT publication"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057b36"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080bca"
 
 [[link]]
 type = "reader"
@@ -256,7 +276,7 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "successful-tarantula/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -282,3 +302,7 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080b62"

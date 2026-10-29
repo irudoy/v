@@ -42,6 +42,31 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffecfe6"
+name = "prophetic-bonobo"
+level = "code"
+note = """
+Independent initializer 00082908 directly writes 0x6400 to word fffecfe6 at \
+0008293a. Runtime updater 000812fa retains base fffecfe4 and offset 2*b \
+through stores 00081448, 00081500 and 00081694. Publisher 00080bc0 reads the \
+corresponding unsigned adjustment as the second summand at 00080bcc; \
+dispatcher 000822a0 supplies b=1 for this bank-2 source. The runtime indexed \
+accesses remain attributed to the base in normalized L0, so their verified \
+target reader/writer relations remain unresolved. Physical operating-mode \
+identity and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0008293a"
+note = """
+The initializer directly writes word fffecfe6 from the neutral 0x6400 value \
+at 0008293a. The independently reviewed updater and publication arithmetic \
+use base fffecfe4+2*b with b=1 for this bank-2 adjustment. The binding does \
+not qualify a base-only normalized runtime access as a bank-2 relation."""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff564a"
 name = "benevolent-anteater"
@@ -152,17 +177,6 @@ method = "masked-match"
 target = "7mfk:ffff564a"
 count = 0
 l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff564a"
-count = 0
-l0 = "cb701875f15725a4"
 note = """
 The source-access search has no unique reviewed producer-consumer binding. \
 This field is unavailable on the layout until its source role is reviewed."""
