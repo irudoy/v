@@ -492,10 +492,10 @@ group = "Knock"
 panel = "Learning and knock state"
 order = 40
 description = """
-Scheduler snapshot of FFFF2466 before periodic tasks. Bit 6 permits the \
-direct high-octane minus high-detonation map-difference branch when the \
-prior coordinator state bit 7 is clear. Other bits and the physical producer \
-of the switching state remain unreviewed."""
+Scheduler input-state snapshot taken before periodic tasks. Bit 6 permits \
+the direct high-octane minus high-detonation map-difference branch when the \
+prior coordinator inhibit flag is clear. Other bits and the physical \
+producer of the switching state remain unreviewed."""
 
 [[field]]
 name = "knock_branch_state_raw"

@@ -1362,7 +1362,7 @@
             }
           ],
           "dashboard": {
-            "description": "Scheduler snapshot of FFFF2466 before periodic tasks. Bit 6 permits the direct high-octane minus high-detonation map-difference branch when the prior coordinator state bit 7 is clear. Other bits and the physical producer of the switching state remain unreviewed.",
+            "description": "Scheduler input-state snapshot taken before periodic tasks. Bit 6 permits the direct high-octane minus high-detonation map-difference branch when the prior coordinator inhibit flag is clear. Other bits and the physical producer of the switching state remain unreviewed.",
             "digits": 0,
             "group": "Knock",
             "hexadecimal": true,
