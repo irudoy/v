@@ -150,7 +150,7 @@ telemetry,exhaust_cvtc_target_raw,ffff2327,fffe9466,,,mapped,Aligned diagnostic 
 telemetry,calculated_load_raw,ffff413e,fffeb796,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,throttle_request_bounded_raw,ffff19c6,fffe944e,,,mapped,Three-generation homologous fail-safe branch reads this bounded request
 telemetry,engine_torque_state_raw,ffff18cc,fffe8936,,,mapped,Three-generation homologous torque function writes this state
-telemetry,transmission_reduction_state_raw,ffff1866,,,,unsupported,The source-access search returns no candidate. The telemetry word is unavailable until a producer-consumer binding is reviewed.
+telemetry,transmission_reduction_state_raw,ffff1866,fffe88d0,,,target-specific,The reviewed controller 00090db0 and inline publication at 00091664..00091674 bind the uint16 effective reduction state fffe88d0. Direct request-byte shifts are conditional; the source is published unchanged to fffe88da and the arithmetic consumer uses its 65536 complement. The wire field remains raw counts without a physical torque conversion.
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,fffe945f,,,mapped,Aligned diagnostic pointer table preserves the channel byte
 telemetry,throttle_target_shared_raw,ffff19b2,fffea944,,,mapped,Producer limiter and external consumer bind the shared target
 telemetry,throttle_target_channel_0_raw,ffff28bc,fffeb6c4,,,mapped,Homologous channel limiter writes channel zero with a two-byte stride

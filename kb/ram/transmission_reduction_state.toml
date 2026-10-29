@@ -9,6 +9,48 @@ signed = false
 unit = "Q16 reduction count"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe88d0"
+level = "code"
+note = """
+Controller 00090db0 maintains this unsigned word. The conditional direct \
+path writes uint8[fffea72d]<<8 at 00090e22; ROM8[00008a2e].bit4 is set and \
+ROM8[00008656].bit6 is clear in the decoded 1ND0A image. Other paths use \
+uint8[fffe88dd]<<8, retain or limit the state, rebuild it, decrease it with \
+a zero boundary, or clear it. Coordinator 00091194 reads it at 00091664, \
+zero-extends it at 00091666 and transfers the same low word to fffe88da at \
+00091674. The arithmetic consumer 00090fde uses 65536 minus that published \
+word. The telemetry field carries raw stored counts without a physical \
+torque conversion. The publication is an inline slice of a wider \
+coordinator; no full-function publisher homology is claimed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090e22"
+note = """
+The reviewed controller 00090db0 and inline publication at \
+00091664..00091674 bind the uint16 effective reduction state fffe88d0. \
+Direct request-byte shifts are conditional; the source is published \
+unchanged to fffe88da and the arithmetic consumer uses its 65536 complement. \
+The wire field remains raw counts without a physical torque conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090ece"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090f96"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00091664"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1866"
 level = "code"
@@ -104,17 +146,6 @@ note = """
 The source-access search returns no candidate. The telemetry word is \
 unavailable until a producer-consumer binding is reviewed."""
 
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1866"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-The source-access search returns no candidate. The telemetry word is \
-unavailable until a producer-consumer binding is reviewed."""
-
 [[link]]
 type = "input"
 to = "rough-panther/ram"
@@ -158,7 +189,7 @@ at = "jk78c:00083404"
 [[link]]
 type = "writer"
 to = "strange-mushroom/fn"
-layouts = ["7mfk", "jk78c"]
+layouts = ["7mfk", "jk78c", "1nd"]
 relies = "structure"
 supports = "identity"
 
@@ -174,3 +205,15 @@ at = "jk78c:000831fe"
 [[link.evidence]]
 kind = "l0"
 at = "jk78c:00083262"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00090e22"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00090ece"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00090f96"

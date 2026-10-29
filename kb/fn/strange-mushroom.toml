@@ -4,6 +4,41 @@ shift, update and inhibit branches."""
 block = "ignition_timing/block"
 
 [[symbol]]
+layout = "1nd"
+address = "00090db0"
+name = "premium-chachalaca"
+level = "code"
+note = """
+The reviewed 1ND controller maintains the unsigned effective \
+transmission-reduction word fffe88d0 with GBR=fffe87de. The direct request \
+path writes uint8[fffea72d]<<8 at 00090e22 when ROM8[00008a2e].bit4 and \
+ROM8[00008656].bit6 select it; the second bit is clear in the decoded 1ND0A \
+image. The alternative direct input is uint8[fffe88dd]<<8 at 00090e2c. Other \
+branches retain, limit, rebuild, decrease or clear the state. The \
+publication slice in 00091194 reads the word unsigned and transfers it \
+unchanged to fffe88da. Physical torque conversion remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090db0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090e22"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090ece"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090f96"
+
+[[symbol]]
 layout = "7mfk"
 address = "00064cb2"
 name = "strange-mushroom"

@@ -275,7 +275,6 @@ telemetry_unavailable = [
     "knock_branch_state_raw",
     "ltft_publication_neutral_control_raw",
     "torque_transition_state_raw",
-    "transmission_reduction_state_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -443,6 +442,7 @@ exhaust_cvtc_target_raw = 0xFFFE9466
 calculated_load_raw = 0xFFFEB796
 throttle_request_bounded_raw = 0xFFFE944E
 engine_torque_state_raw = 0xFFFE8936
+transmission_reduction_state_raw = 0xFFFE88D0
 exhaust_cvtc_actual_b1_raw = 0xFFFE945F
 throttle_target_shared_raw = 0xFFFEA944
 throttle_target_channel_0_raw = 0xFFFEB6C4
