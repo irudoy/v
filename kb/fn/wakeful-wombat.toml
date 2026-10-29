@@ -5,9 +5,9 @@ Not arithmetic: default exception and interrupt handler. It takes no \
 arguments, and every register touched by the body is written before it is \
 read. It sets SP = 0xFFFF7FFC and VBR = 0x00020004, then jumps to 00027e24 \
 for reinitialization; it does not return or produce a result. It is \
-addressed only through the vector table, in 222 of 256 slots. The body \
-extends through 0x21bb0 inclusive; Ghidra's declared size of 20 stops one \
-instruction early."""
+addressed only through the vector table, in 222 of 256 slots. Its 20-byte \
+body spans two instruction ranges around a literal pool and includes the \
+delay-slot nop at 0x21bb0."""
 contract_level = "code"
 
 [[ledger]]
