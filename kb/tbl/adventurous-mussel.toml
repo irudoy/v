@@ -7,3 +7,18 @@ name = "adventurous-mussel"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004b3a2"
+
+[[symbol]]
+layout = "jk78c"
+address = "000142b0"
+name = "amber-jackdaw"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064a62"
+to = "7mfk:00012eba"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00012EBA."""

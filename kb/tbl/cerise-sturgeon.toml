@@ -244,6 +244,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a28"
+name = "tangerine-bandicoot"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000655d6"
+to = "7mfk:0004bbba"
+count = 1
+value = 66
+
 [[link]]
 type = "depends"
 to = "cryptic-bloodhound/axis"

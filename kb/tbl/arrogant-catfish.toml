@@ -246,6 +246,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a38"
+name = "pink-rottweiler"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065666"
+to = "7mfk:0004bc94"
+count = 1
+value = 67
+
 [[link]]
 type = "depends"
 to = "cryptic-bloodhound/axis"

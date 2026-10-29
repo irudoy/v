@@ -371,6 +371,19 @@ supports = "identity"
 to = "maize-roadrunner/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c9452"
+name = "fair-stoat"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c93d8"
+to = "7mfk:000a53c2"
+count = 1
+value = 62
+
 [[link]]
 type = "depends"
 to = "defiant-galago/fn"

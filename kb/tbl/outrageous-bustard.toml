@@ -181,6 +181,21 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013600"
+name = "tasteful-anaconda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064b4e"
+to = "7mfk:00011efa"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00011EFA."""
+
 [[link]]
 type = "depends"
 to = "indigo-fossa/tbl"

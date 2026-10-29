@@ -7,3 +7,18 @@ name = "divergent-heron"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004b3a2"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d74"
+name = "marigold-bustard"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064a64"
+to = "7mfk:00012e92"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00012E92."""

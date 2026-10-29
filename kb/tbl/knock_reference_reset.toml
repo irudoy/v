@@ -38,6 +38,18 @@ kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
+[[symbol]]
+layout = "jk78c"
+address = "00008f7e"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000639d4"
+to = "7mfk:0004a146"
+count = 1
+value = 18
+
 [[link]]
 type = "reader"
 to = "knock_reference_learning/fn"

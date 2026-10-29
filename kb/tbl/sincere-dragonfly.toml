@@ -409,6 +409,21 @@ supports = "identity"
 to = "apc_reset_command_builder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015ae2"
+name = "gray-sparrow"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000691be"
+to = "7mfk:000147da"
+note = """
+The JK78C reader FUN_000690AC is the masked-match homolog of the JK08A \
+reader FUN_0004D99C; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x000147DA."""
+
 [[link]]
 type = "index"
 to = "crazy-degu/ram"

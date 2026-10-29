@@ -34,6 +34,18 @@ kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded post-acquisition knock metric"
 
+[[symbol]]
+layout = "jk78c"
+address = "000085ae"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00063716"
+to = "7mfk:00049e8a"
+count = 1
+value = 37
+
 [[link]]
 type = "reader"
 to = "knock_metric_scaler/fn"

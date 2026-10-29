@@ -58,6 +58,18 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0004e112"
 
+[[symbol]]
+layout = "jk78c"
+address = "00069a30"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00069a30"
+to = "7mfk:0004e112"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "selector"
 to = "polite-rat/ram"

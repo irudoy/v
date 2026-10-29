@@ -131,3 +131,16 @@ kind = "trace"
 supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00082af8"
+name = "elegant-unicorn"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083684"
+to = "7mfk:000654e0"
+count = 1
+value = 48

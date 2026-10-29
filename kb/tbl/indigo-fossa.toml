@@ -186,6 +186,21 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015ad2"
+name = "cryptic-shrew"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064b60"
+to = "7mfk:000147ca"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x000147CA."""
+
 [[link]]
 type = "depends"
 to = "beige-bullmastiff/tbl"

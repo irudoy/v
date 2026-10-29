@@ -187,6 +187,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001365c"
+name = "graceful-tody"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00067656"
+to = "7mfk:0004c028"
+count = 1
+value = 60
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"

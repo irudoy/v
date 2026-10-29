@@ -161,6 +161,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f48"
+name = "beige-earwig"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9494"
+to = "7mfk:000a547c"
+count = 1
+value = 34
+
 [[link]]
 type = "depends"
 to = "diligent-ammonite/tbl"

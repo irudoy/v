@@ -121,6 +121,18 @@ supports = "identity"
 to = "eminent-lynx/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00063888"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00063888"
+to = "7mfk:00049ffc"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "knock_slice_evaluator/fn"

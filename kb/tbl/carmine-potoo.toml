@@ -203,6 +203,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013473"
+name = "naughty-puma"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083d86"
+to = "7mfk:00065bc2"
+count = 1
+value = 90
+
 [[link]]
 type = "depends"
 to = "azure-deer/tbl"

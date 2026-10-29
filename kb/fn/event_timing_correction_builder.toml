@@ -411,6 +411,18 @@ supports = "identity"
 to = "jasmine-lizard/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000690ac"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00069a36"
+to = "7mfk:0004e118"
+count = 1
+value = 50
+
 [[link]]
 type = "depends"
 to = "final_timing_coordinate_builder/fn"

@@ -182,6 +182,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013c1e"
+name = "devout-wolverine"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065524"
+to = "7mfk:0004bafc"
+count = 1
+value = 55
+
 [[link]]
 type = "reader"
 to = "charming-warthog/fn"

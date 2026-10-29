@@ -70,6 +70,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000165a4"
+name = "clever-aardwolf"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006389c"
+to = "7mfk:0004a010"
+count = 1
+value = 26
+
 [[link]]
 type = "reader"
 to = "versatile-junglefowl/fn"

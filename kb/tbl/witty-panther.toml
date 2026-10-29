@@ -153,6 +153,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013c26"
+name = "petite-degu"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065470"
+to = "7mfk:0004ba98"
+count = 1
+value = 50
+
 [[link]]
 type = "depends"
 to = "fat-crayfish/tbl"

@@ -177,6 +177,21 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013710"
+name = "satisfied-cobra"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006795e"
+to = "7mfk:0001208e"
+note = """
+The JK78C reader FUN_00067830 is the masked-match homolog of the JK08A \
+reader FUN_0004C1E4; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x0001208E."""
+
 [[link]]
 type = "depends"
 to = "huge-pelican/tbl"

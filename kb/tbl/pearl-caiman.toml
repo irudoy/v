@@ -277,6 +277,21 @@ at = "7mfk:0004b3f0"
 value = {named = ["00009dba", "00012e92", "00012eba", "00026140", "00026770", "00026944", "0004afdc", "ffff1514", "ffff1515", "ffff1516", "ffff23ee"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00009b9a"
+name = "thankful-baboon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00064a5a"
+to = "7mfk:00009dba"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00009DBA."""
+
 [[link]]
 type = "depends"
 to = "adventurous-mussel/tbl"

@@ -228,3 +228,18 @@ supports = "identity"
 at = "7mfk:0004b2d2"
 value = {named = ["00011f12"], span = 1}
 key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013618"
+name = "agile-salmon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006488c"
+to = "7mfk:00011f12"
+note = """
+The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
+reader FUN_0004AFDC; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00011F12."""

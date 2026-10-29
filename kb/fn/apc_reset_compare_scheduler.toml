@@ -176,6 +176,18 @@ at = "7mfk:0002aeb6"
 value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c4", "fffff5ca", "fffff700"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0002db52"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002dcc8"
+to = "7mfk:0002ae1e"
+count = 1
+value = 69
+
 [[link]]
 type = "depends"
 to = "split_u8_by_ten/fn"

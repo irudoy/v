@@ -352,6 +352,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013568"
+name = "vagabond-scallop"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000653d6"
+to = "7mfk:0004ba00"
+count = 1
+value = 27
+
 [[link]]
 type = "depends"
 to = "dfco_lookup/fn"

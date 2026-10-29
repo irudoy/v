@@ -89,6 +89,19 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013fd8"
+name = "jovial-teal"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008272a"
+to = "7mfk:000642ec"
+count = 1
+value = 39
+
 [[link]]
 type = "depends"
 to = "fine-cockatoo/tbl"

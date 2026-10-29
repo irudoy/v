@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "jk78c"
-address = "000644d0"
-name = "remarkable-skunk"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:000646dc"

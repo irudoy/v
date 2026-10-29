@@ -171,6 +171,18 @@ at = "7mfk:0004c38e"
 value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "ffff144d", "ffff1451", "ffff1874", "ffff1875", "ffff2406", "ffff4184", "ffff4251"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00067830"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000678ec"
+to = "7mfk:0004c29e"
+count = 1
+value = 57
+
 [[link]]
 type = "selector"
 to = "futuristic-chinchilla/ram"

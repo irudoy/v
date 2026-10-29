@@ -184,6 +184,19 @@ at = "7mfk:000a52f8"
 value = {named = ["00008796", "0000abba", "0000abfa", "000a52e4", "ffff338a", "ffff3427"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c9300"
+name = "russet-snake"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9906"
+to = "7mfk:000a5904"
+count = 1
+value = 27
+
 [[link]]
 type = "selector"
 to = "nano-kangaroo/ram"

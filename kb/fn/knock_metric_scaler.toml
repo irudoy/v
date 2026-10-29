@@ -39,3 +39,15 @@ key = "test_knock_metric_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded post-acquisition knock metric"
+
+[[symbol]]
+layout = "jk78c"
+address = "00063722"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00063722"
+to = "7mfk:00049e96"
+count = 1
+value = "mnemonic"

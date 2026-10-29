@@ -37,6 +37,20 @@ kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
+[[symbol]]
+layout = "jk78c"
+address = "00008726"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00063a32"
+to = "7mfk:0000884b"
+note = """
+The JK78C reader FUN_000639A4 is the masked-match homolog of the JK08A \
+reader FUN_0004A118; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x0000884B."""
+
 [[link]]
 type = "reader"
 to = "knock_reference_learning/fn"

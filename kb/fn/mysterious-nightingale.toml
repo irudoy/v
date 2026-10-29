@@ -294,3 +294,16 @@ kind = "trace"
 supports = "identity"
 to = "precise-koala/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006538a"
+name = "bronze-weasel"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006538a"
+to = "7mfk:0004b9b4"
+count = 1
+value = "mnemonic"

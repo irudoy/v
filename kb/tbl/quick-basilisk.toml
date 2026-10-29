@@ -78,6 +78,19 @@ supports = "identity"
 to = "friendly-magpie/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014000"
+name = "amiable-whale"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008272a"
+to = "7mfk:000642ec"
+count = 1
+value = 39
+
 [[link]]
 type = "reader"
 to = "daring-koala/fn"

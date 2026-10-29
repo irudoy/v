@@ -473,6 +473,24 @@ supports = "identity"
 to = "blazing-gibbon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000644d0"
+former = ["remarkable-skunk/fn/jk78c-000644d0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000646dc"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00068b0c"
+to = "7mfk:0004d8c0"
+count = 1
+value = 48
+
 [[link]]
 type = "depends"
 to = "timing_state_compositor/fn"

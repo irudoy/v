@@ -126,7 +126,7 @@ at = "1me3b:00073404"
 
 [[link]]
 type = "reader"
-to = "remarkable-skunk/fn"
+to = "signed_timing_state_accumulator/fn"
 role = "accessor"
 
 [[link.evidence]]

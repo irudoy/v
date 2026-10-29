@@ -263,6 +263,21 @@ supports = "identity"
 to = "private-aardwolf/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000a48a"
+name = "optimistic-beaver"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c9362"
+to = "7mfk:0000abfa"
+note = """
+The JK78C reader FUN_000C9300 is the masked-match homolog of the JK08A \
+reader FUN_000A52E4; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x0000ABFA."""
+
 [[link]]
 type = "reader"
 to = "cherubic-narwhal/fn"

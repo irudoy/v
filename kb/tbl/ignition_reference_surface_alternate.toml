@@ -1,0 +1,54 @@
+summary = """
+Stock-inert alternate source of the second output 0xFFFF1632 of the ignition \
+coordinator FUN_00069AB8. When ROM8[0x8605].bit0 and 0xFFFF4501.bit5 are \
+both set, the coordinator writes 0xFFFF1632 from this 8x8 surface through \
+the kernel 0x00027F98; otherwise it looks up the hot-coolant surface \
+0x0000A10A. Stock ROM8[0x8605] = 0x42 keeps bit 0 clear, and every stock \
+cell holds 0x40."""
+note = """
+Stock bytes equal 1ND 0x0000A650. The surface carries no editor entry \
+because the stock configuration never reads it."""
+level = "code"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a30a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a0f6"
+
+[[link]]
+type = "axis"
+to = "ignition_reference_alternate_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a0fa"
+
+[[link]]
+type = "axis"
+to = "ignition_reference_alternate_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a102"
+
+[[link]]
+type = "reader"
+to = "vivid-weasel/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006a0f6"

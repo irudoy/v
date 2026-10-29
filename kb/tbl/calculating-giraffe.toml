@@ -191,6 +191,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013550"
+name = "imported-caiman"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006538a"
+to = "7mfk:0004b9b4"
+count = 1
+value = 37
+
 [[link]]
 type = "reader"
 to = "mysterious-nightingale/fn"

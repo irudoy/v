@@ -39,6 +39,18 @@ kind = "spec"
 path = "defs/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
+[[symbol]]
+layout = "jk78c"
+address = "000639a4"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00063a62"
+to = "7mfk:0004a1d4"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "knock_slice_evaluator/fn"

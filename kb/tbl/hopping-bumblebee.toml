@@ -170,6 +170,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00015df2"
+name = "dandelion-labrador"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000676ee"
+to = "7mfk:0004c0c2"
+count = 1
+value = 61
+
 [[link]]
 type = "index"
 to = "rare-sawfly/ram"

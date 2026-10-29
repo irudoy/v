@@ -7,3 +7,18 @@ name = "fine-cockatoo"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00064344"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013ff0"
+name = "fantastic-okapi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0008277a"
+to = "7mfk:00012b42"
+note = """
+The JK78C reader FUN_000826D2 is the masked-match homolog of the JK08A \
+reader FUN_0006425A; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x00012B42."""
