@@ -13,11 +13,14 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.data.ArrayDataType;
 import ghidra.program.model.data.PointerDataType;
+import ghidra.program.model.data.ShortDataType;
+import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Listing;
+import ghidra.program.model.scalar.Scalar;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.RefType;
 import ghidra.program.model.symbol.SourceType;
@@ -53,6 +56,7 @@ public class PrepareProgram extends HeadlessScript {
     List<String[]> dispatches = new ArrayList<>();
     List<String[]> dispatchRanges = new ArrayList<>();
     List<String[]> dispatchTargets = new ArrayList<>();
+    List<String[]> dataTables = new ArrayList<>();
 
     @Override
     public void run() throws Exception {
@@ -82,7 +86,7 @@ public class PrepareProgram extends HeadlessScript {
             Map.entry("site", sites), Map.entry("fragment", fragments), Map.entry("join", joins),
             Map.entry("reference", references), Map.entry("forbidden", forbidden),
             Map.entry("dispatch", dispatches), Map.entry("dispatch_range", dispatchRanges),
-            Map.entry("dispatch_target", dispatchTargets));
+            Map.entry("dispatch_target", dispatchTargets), Map.entry("data_table", dataTables));
         Set<String> keys = Set.of("schema", "layout", "digest", "image_sha256",
                 "image_size", "merges", "run_id");
         for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
@@ -107,6 +111,7 @@ public class PrepareProgram extends HeadlessScript {
         for (String[] row : dispatches) requireLength(row, 12);
         for (String[] row : dispatchRanges) requireLength(row, 4);
         for (String[] row : dispatchTargets) requireLength(row, 3);
+        for (String[] row : dataTables) requireLength(row, 8);
     }
 
     void clearStageOutputs(Path receipt, String[] outputs) throws Exception {
@@ -178,6 +183,7 @@ public class PrepareProgram extends HeadlessScript {
             modified.add(row[1]);
             modified.add(row[5]);
         }
+        for (String[] row : dataTables) modified.add(row[5]);
         for (String[] row : forbidden) {
             if (before.containsKey(row[1])) {
                 throw new IllegalStateException("unreviewed outside-function entry " + row[1]);
@@ -190,6 +196,7 @@ public class PrepareProgram extends HeadlessScript {
                 throw new IllegalStateException("fragment bytes differ at " + row[2]);
             }
         }
+        for (String[] row : dataTables) repairDataTable(row);
         for (String[] row : dispatches) repairDispatch(row);
         String[] entries = seeds.stream().map(row -> row[1]).toArray(String[]::new);
         String[] recover = new String[entries.length + 1];
@@ -208,6 +215,7 @@ public class PrepareProgram extends HeadlessScript {
         expected.addAll(Arrays.asList(entries));
         for (String[] row : joins) expected.remove(row[2]);
         for (String[] row : dispatches) expected.remove(row[5]);
+        for (String[] row : dataTables) expected.remove(row[5]);
         if (!expected.equals(after.keySet())) {
             throw new IllegalStateException("preparation changes an unreviewed function entry");
         }
@@ -277,6 +285,63 @@ public class PrepareProgram extends HeadlessScript {
             }
         }
         return false;
+    }
+
+    void repairDataTable(String[] row) throws Exception {
+        Address start = address(row[1]), end = address(row[2]);
+        Address formerEntry = address(row[5]), formerEnd = address(row[6]);
+        int length = Math.toIntExact(end.subtract(start));
+        byte[] bytes = new byte[length];
+        if (!row[3].equals("s16") || (length & 1) != 0
+                || currentProgram.getMemory().getBytes(start, bytes) != length
+                || !hash(bytes).equals(row[4])) {
+            throw new IllegalStateException("data table differs at " + start);
+        }
+        Function former = getFunctionAt(formerEntry);
+        Snapshot old = former == null ? null : snapshot(former);
+        if (old != null && (old.size != formerEnd.subtract(formerEntry)
+                || !old.exact.equals(row[7])
+                || !former.getBody().getMinAddress().equals(formerEntry)
+                || !former.getBody().getMaxAddress().equals(formerEnd.subtract(1)))) {
+            throw new IllegalStateException("former data-table body differs at " + formerEntry);
+        }
+        CodeUnit first = listing.getCodeUnitContaining(start);
+        CodeUnit last = listing.getCodeUnitContaining(end.subtract(1));
+        if (first != null && first.getMinAddress().compareTo(start) < 0
+                || last != null && last.getMaxAddress().compareTo(end) >= 0) {
+            throw new IllegalStateException("data table cuts another code unit at " + start);
+        }
+        for (Address at = start; at.compareTo(end) < 0; at = at.add(1)) {
+            Function held = getFunctionContaining(at);
+            if (held != null && !held.getEntryPoint().equals(formerEntry)) {
+                throw new IllegalStateException("data table overlaps another function at " + at);
+            }
+        }
+        int transaction = currentProgram.startTransaction("prepare-data-table");
+        boolean success = false;
+        try {
+            monitor.checkCancelled();
+            if (former != null && !currentProgram.getFunctionManager().removeFunction(formerEntry)) {
+                throw new IllegalStateException("cannot remove data-table entry " + formerEntry);
+            }
+            listing.clearCodeUnits(start, end.subtract(1), false);
+            createData(start, new ArrayDataType(ShortDataType.dataType, length / 2, 2));
+            success = true;
+        } finally {
+            currentProgram.endTransaction(transaction, success);
+        }
+        if (old != null) {
+            JsonObject classified = new JsonObject();
+            classified.addProperty("start", row[1]);
+            classified.addProperty("end", row[2]);
+            classified.addProperty("element", row[3]);
+            classified.addProperty("former_instruction_sha256", old.exact);
+            classified.addProperty("removed_instruction_count", old.instructions.size());
+            classified.addProperty("removed_reference_count", old.references.size());
+            JsonObject kept = new JsonObject();
+            kept.add("reclassified_data", classified);
+            preservation.add(row[5], kept);
+        }
     }
 
     void repairDispatch(String[] row) throws Exception {
@@ -451,6 +516,29 @@ public class PrepareProgram extends HeadlessScript {
 
     void postconditions() throws Exception {
         requireSeeds();
+        for (String[] row : dataTables) {
+            Address start = address(row[1]), end = address(row[2]);
+            int length = Math.toIntExact(end.subtract(start));
+            Data table = listing.getDefinedDataAt(start);
+            if (getFunctionAt(address(row[5])) != null || table == null
+                    || table.getLength() != length || table.getNumComponents() != length / 2) {
+                throw new IllegalStateException("prepared signed data table differs at " + start);
+            }
+            for (int i = 0; i < length / 2; i++) {
+                Data component = table.getComponent(i);
+                Object value = component.getValue();
+                if (component.getLength() != 2 || !(value instanceof Scalar scalar)
+                        || !scalar.isSigned() || scalar.getSignedValue()
+                        != currentProgram.getMemory().getShort(start.add(2L * i))) {
+                    throw new IllegalStateException("signed data-table element differs at " + component.getAddress());
+                }
+            }
+            for (Address at = start; at.compareTo(end) < 0; at = at.add(1)) {
+                if (listing.getInstructionContaining(at) != null || getFunctionContaining(at) != null) {
+                    throw new IllegalStateException("data table remains executable at " + at);
+                }
+            }
+        }
         for (String[] row : seeds) {
             Function function = getFunctionAt(address(row[1]));
             Snapshot body = snapshot(function);

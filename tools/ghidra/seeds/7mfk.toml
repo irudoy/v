@@ -96,3 +96,12 @@ ranges = [
     ["000220d8", "000220f8"],
 ]
 instruction_sha256 = "265aa3c0880df8820debd85febda18b94358001a776f12c3fcda50c23bffd1c8"
+
+[[data_table]]
+start = "0002231c"
+end = "0002235c"
+element = "s16"
+sha256 = "6d2671e815f3f34e6243940f91b9eb98f32641e808663fc7ca589b216b7e8aaf"
+former_entry = "0002234c"
+former_end = "0002235c"
+former_instruction_sha256 = "2a7a56b8c5ce0281329aaaee90f8ad3a39cca168a013d9850c46367bef5e6fd4"

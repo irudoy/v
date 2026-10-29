@@ -193,6 +193,12 @@ their bytes and non-stack references; the receipt records the reclassified
 span and the recomputed stack annotations of the shared frame. All other
 function snapshots remain exact. Both export and on-demand code apply this
 contract in memory under `-readOnly`.
+An exact-image `data_table` can replace a false function wholly contained in
+a signed 16-bit offset array. It binds the complete array and former instruction
+bytes, refuses overlaps with other functions or code units, and verifies the
+signed elements and absence of instruction ownership. Its receipt records the
+removed false instructions and references; all other function snapshots remain
+exact. The inactive native owner retains the table's description and names.
 Its image preflight checks both the imported executable digest and the current
 ROM memory before mutations. Exact
 entry-pointer, prologue, branch, literal, and restoration pins come from

@@ -80,6 +80,17 @@ class Dispatch:
 
 
 @dataclass(frozen=True)
+class DataTable:
+    start: int
+    end: int
+    element: str
+    sha256: str
+    former_entry: int
+    former_end: int
+    former_instruction_sha256: str
+
+
+@dataclass(frozen=True)
 class Plan:
     layout: str
     image: str
@@ -92,6 +103,7 @@ class Plan:
     forbidden_entries: tuple[int, ...]
     inputs: dict[str, str]
     dispatches: tuple[Dispatch, ...] = ()
+    data_tables: tuple[DataTable, ...] = ()
 
     @property
     def digest(self):
@@ -214,6 +226,29 @@ def _dispatches(rows, data, where):
     return tuple(result)
 
 
+def _data_tables(rows, data, where):
+    result = []
+    for row in _tables(rows, where):
+        _keys(row, ("start", "end", "element", "sha256", "former_entry", "former_end",
+                    "former_instruction_sha256"), where)
+        start, end, former, former_end = (
+            _address(row[key], where) for key in ("start", "end", "former_entry", "former_end"))
+        if (row["element"] != "s16" or any(at & 1 for at in (start, end, former, former_end))
+                or not start <= former < former_end <= end <= len(data)):
+            raise KbError(f"{where}: invalid signed-16 data table or former body")
+        digest = _digest(row["sha256"], where)
+        former_digest = _digest(row["former_instruction_sha256"], where)
+        if hashlib.sha256(data[start:end]).hexdigest() != digest:
+            raise KbError(f"{where}: data table differs from the exact image")
+        if hashlib.sha256(data[former:former_end]).hexdigest() != former_digest:
+            raise KbError(f"{where}: former data-table body differs from the exact image")
+        item = DataTable(start, end, row["element"], digest, former, former_end, former_digest)
+        if any(start < other.end and other.start < end for other in result):
+            raise KbError(f"{where}: data tables overlap")
+        result.append(item)
+    return tuple(result)
+
+
 def _config_bytes(root):
     """Canonical export settings; unrelated configuration is not an input."""
     settings = repo.config(root).get("l0")
@@ -269,7 +304,7 @@ def plan(layout_id, root=repo.ROOT):
         raise KbError(f"{path}: {error}") from error
     _keys(document, ("schema_version", "layout", "image", "image_sha256", "image_size",
                      "forbidden_entries", "seed", "pin", "reference")
-          + (("dispatch",) if "dispatch" in document else ()), str(path))
+          + tuple(key for key in ("dispatch", "data_table") if key in document), str(path))
     if document["schema_version"] != 1 or isinstance(document["schema_version"], bool):
         raise KbError(f"{path}: unsupported preparation schema")
     if (document["layout"], document["image"]) != (layout.id, layout.image):
@@ -351,6 +386,16 @@ def plan(layout_id, root=repo.ROOT):
            or item.former_entry in seed_entries | set(fragment_entries) | set(forbidden)
            for item in dispatches):
         raise KbError(f"{path}: dispatch conflicts with a seed, join or forbidden entry")
+    data_tables = _data_tables(document["data_table"], data, str(path)) if "data_table" in document else ()
+    known_code = seed_entries | set(fragment_entries) | set(forbidden)
+    known_code.update(site for seed in seeds for site in seed.sites)
+    known_code.update(site for pair in joins for site in pair)
+    for item in data_tables:
+        if (any(item.start <= site < item.end for site in known_code)
+                or any(any(item.start <= site < item.end for site in dispatch.sites)
+                       or item.start < dispatch.table_end and dispatch.table < item.end
+                       for dispatch in dispatches)):
+            raise KbError(f"{path}: data table conflicts with another preparation contract")
     paths = [path.relative_to(root), MERGES / f"{layout_id}.csv", repo.CATALOG, repo.HOMOLOGY,
              repo.GHIDRA_PIN, *(Path(path) for path in BUILDERS),
              *(repo.GHIDRA_SCRIPTS / name for name in SCRIPTS),
@@ -358,7 +403,7 @@ def plan(layout_id, root=repo.ROOT):
     inputs = {path.as_posix(): repo.sha256_file(root / path) for path in paths}
     inputs[CONFIG_INPUT] = hashlib.sha256(_config_bytes(root)).hexdigest()
     return Plan(layout.id, layout.image, expected_sha, size, tuple(seeds), tuple(pins),
-                tuple(references), joins, forbidden, dict(sorted(inputs.items())), dispatches)
+                tuple(references), joins, forbidden, dict(sorted(inputs.items())), dispatches, data_tables)
 
 
 def _wire_text(prepared, root, run_id, wire):
@@ -391,6 +436,9 @@ def _wire_text(prepared, root, run_id, wire):
         lines += [f"dispatch_range\t{item.entry:08x}\t{start:08x}\t{end:08x}"
                   for start, end in item.ranges]
         lines += [f"dispatch_target\t{item.entry:08x}\t{target:08x}" for target in item.targets]
+    for item in prepared.data_tables:
+        lines.append(f"data_table\t{item.start:08x}\t{item.end:08x}\t{item.element}\t{item.sha256}\t"
+                     f"{item.former_entry:08x}\t{item.former_end:08x}\t{item.former_instruction_sha256}")
     lines.append(f"merges\t{Path(root).resolve() / MERGES / (prepared.layout + '.csv')}")
     return "\n".join(lines) + "\n"
 
@@ -522,6 +570,10 @@ def check_exports(prepared, directory, root=repo.ROOT):
                 or any(holders.get(site) != {item.entry} for site in item.sites)
                 or any(site in holders for site in range(item.table, item.table_end, 2))):
             raise KbError(f"prepared export lacks the reviewed dispatch body {item.entry:08x}")
+    for item in prepared.data_tables:
+        if (any(item.start <= entry < item.end for entry in funcs)
+                or any(item.start <= site < item.end for site in holders)):
+            raise KbError(f"prepared export retains executable data table at {item.start:08x}")
     references = {(int(row["func_addr"], 16), int(row["ins_addr"], 16),
                    int(row["ref_addr"], 16), row["ref_type"])
                   for row in records("function_references.csv")}
