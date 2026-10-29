@@ -133,8 +133,14 @@ target = "7mfk:ffff2469"
 count = 0
 l0 = "28a4e19998ef4d2c"
 note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
+The reviewed 1ME3B knock coordinator 00071d64 has no canonical direct Q8 \
+timing-map difference block or corresponding inhibit-history update. Its \
+fffe945b.bit7 is the independently reviewed high-detonation surface selector \
+of knock_surface_state/ram, not the canonical inhibit role. Neither that \
+selector nor the nearby periodic state-copy cells establishes the required \
+producer-consumer binding. This field remains unresolved; the 1ND bit-6 \
+inhibit address and role are not inherited, and a missing match does not \
+establish whole-image absence."""
 
 [[status]]
 layout = "1nd"
