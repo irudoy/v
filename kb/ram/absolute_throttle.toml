@@ -41,26 +41,34 @@ layout = "1me3b"
 address = "fffe8085"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8085"
-to = "7mfk:ffff1075"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a4c8a"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 000a4be2 publishes the bounded absolute-throttle byte at fffe8085 \
+at 000a4c8a, using offset 2 of literal base fffe8083. Its selection paths \
+use word fffeb684, optionally subtract fffe9a24 with a zero boundary, \
+multiply by 0x505b with a right shift of 16, or use ROM byte 0000859a; the \
+joined value is capped at 0xff before publication. This binds target storage \
+and the software publication path; physical percentage, diagnostic identity \
+and live cadence require separate target qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8085"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8085"
-to = "7mfk:ffff1075"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:0009ecce"
+note = """
+Function 0009ec26 publishes the bounded absolute-throttle byte at fffe8085 \
+at 0009ecce, using offset 2 of literal base fffe8083. Its selection paths \
+use word fffeb534, optionally subtract fffe9978 with a zero boundary, \
+multiply by 0x505b with a right shift of 16, or use ROM byte 0000859c; the \
+joined value is capped at 0xff before publication. This binds target storage \
+and the software publication path; physical percentage, diagnostic identity \
+and live cadence require separate target qualification."""
 
 [[symbol]]
 layout = "7mfk"

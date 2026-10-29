@@ -62,26 +62,42 @@ layout = "1me3b"
 address = "fffeaa58"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffeaa58"
-to = "7mfk:ffff19b2"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a4d14"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+Function 000a4cec independently binds shared target word fffeaa58 through \
+the literal destination loaded at 000a4d10/000a4d90. Both initialization \
+branches store 0x0b5c at 000a4d14/000a4d94. This evidence establishes the \
+target word and its initialization; runtime target reconstruction, geometric \
+area conversion, actuator response and cadence require separate target \
+qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a4d94"
 
 [[symbol]]
 layout = "1nd"
 address = "fffea944"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffea944"
-to = "7mfk:ffff19b2"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Producer limiter and external consumer bind the shared target"
+kind = "l0"
+supports = "identity"
+at = "1nd:0009ed58"
+note = """
+Function 0009ed30 independently binds shared target word fffea944 through \
+the literal destination loaded at 0009ed54/0009edd4. Both initialization \
+branches store 0x0b5c at 0009ed58/0009edd8. This evidence establishes the \
+target word and its initialization; runtime target reconstruction, geometric \
+area conversion, actuator response and cadence require separate target \
+qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009edd8"
 
 [[symbol]]
 layout = "7mfk"

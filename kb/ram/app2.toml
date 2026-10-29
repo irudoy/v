@@ -88,26 +88,42 @@ layout = "1me3b"
 address = "fffe96d2"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe96d2"
-to = "7mfk:ffff26a2"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000fa9dc"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The range-monitor slice of function 000fa9ce reads word fffe96d2 at \
+000fa9dc, using base fffe96a8 plus 0x2a, and zero-extends it at 000fa9e0 \
+before comparing calibrated limits. The same word is read at 000faaac on the \
+low-limit path. This binds the second monitored target word; its indexed \
+producer, diagnostic conversion, sensor transfer and cadence require \
+separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000faaac"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe96fa"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe96fa"
-to = "7mfk:ffff26a2"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:000eebc8"
+note = """
+The range-monitor slice of function 000eebba reads word fffe96fa at \
+000eebc8, using base fffe96d0 plus 0x2a, and zero-extends it at 000eebcc \
+before comparing calibrated limits. The same word is read at 000eec98 on the \
+low-limit path. This binds the second monitored target word; its indexed \
+producer, diagnostic conversion, sensor transfer and cadence require \
+separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000eec98"
 
 [[symbol]]
 layout = "7mfk"

@@ -74,26 +74,36 @@ layout = "1me3b"
 address = "fffe941e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe941e"
-to = "7mfk:ffff19c6"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b61f8"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+The final request-publication slice of function 000b6090 stores word \
+fffe941e at 000b61f8 through offset 6 of R11 base fffe9418. The preceding \
+path sign-extends the selected request, applies signed lower/upper \
+comparisons against fffea4d6/fffea41a, applies a mode-selected word \
+boundary, and conditionally selects the pre-final-bound value before the \
+store. This binds the target signed request storage and publication site \
+without assigning a physical torque scale, actuator movement, bank identity \
+or cadence."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe944e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe944e"
-to = "7mfk:ffff19c6"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Three-generation homologous fail-safe branch reads this bounded request"
+kind = "l0"
+supports = "identity"
+at = "1nd:000aee2e"
+note = """
+The final request-publication slice of function 000aece8 stores word \
+fffe944e at 000aee2e through offset 6 of R12 base fffe9448. The preceding \
+path sign-extends the selected request, applies signed lower/upper \
+comparisons against fffea41a/fffea356, applies a mode-selected word \
+boundary, and conditionally selects the pre-final-bound value before the \
+store. This binds the target signed request storage and publication site \
+without assigning a physical torque scale, actuator movement, bank identity \
+or cadence."""
 
 [[symbol]]
 layout = "7mfk"

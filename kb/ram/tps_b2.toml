@@ -73,26 +73,42 @@ layout = "1me3b"
 address = "fffe994a"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe994a"
-to = "7mfk:ffff285c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b9a8"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The publication slices of function 0004b774 write the low word of the \
+current accumulator to fffe994a at 0004b9a8 and 0004bbe4. Each store uses \
+offset 2 of the immediately loaded literal destination base fffe9948. This \
+establishes target word storage and publication without qualifying the \
+complete sampling/filtering mechanism, physical voltage conversion, bank \
+assignment or cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004bbe4"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe98cc"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe98cc"
-to = "7mfk:ffff285c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the bank-relative field"
+kind = "l0"
+supports = "identity"
+at = "1nd:00048352"
+note = """
+The publication slices of function 00048260 write the low word of the \
+current accumulator to fffe98cc at 00048352 and 0004844e. Each store uses \
+offset 2 of the immediately loaded literal destination base fffe98ca. This \
+establishes target word storage and publication without qualifying the \
+complete sampling/filtering mechanism, physical voltage conversion, bank \
+assignment or cadence."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004844e"
 
 [[symbol]]
 layout = "7mfk"
@@ -122,34 +138,56 @@ layout = "jk00c"
 address = "ffff28fa"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00c:ffff28fa"
-to = "7mfk:ffff285c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "jk00c:0003f892"
+value = 2
+mode = "base"
+note = """
+Function 0003f882 reads and zero-extends the word at ffff2816 + 0xe2 + \
+2*uint8(channel) at 0003f892/0003f896, subtracts a channel-specific unsigned \
+calibration word, and publishes a signed bounded difference. Dispatcher \
+0003f480 calls it with channel 1 at 0003f4a6, setting R4=1 in the delay slot \
+at 0003f4a8, which binds the read to ffff28fa. The normalized access index \
+names only base ffff28f8; no direct accessor relation for the second word is \
+added. Producer, physical voltage conversion, bank assignment and cadence \
+require separate target qualification."""
 
 [[symbol]]
 layout = "jk00d"
 address = "ffff290e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00d:ffff290e"
-to = "7mfk:ffff285c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "jk00d:0003f892"
+value = 2
+mode = "base"
+note = """
+Function 0003f882 reads and zero-extends the word at ffff282a + 0xe2 + \
+2*uint8(channel) at 0003f892/0003f896, subtracts a channel-specific unsigned \
+calibration word, and publishes a signed bounded difference. Dispatcher \
+0003f480 calls it with channel 1 at 0003f4a6, setting R4=1 in the delay slot \
+at 0003f4a8, which binds the read to ffff290e. The normalized access index \
+names only base ffff290c; no direct accessor relation for the second word is \
+added. Producer, physical voltage conversion, bank assignment and cadence \
+require separate target qualification."""
 
 [[symbol]]
 layout = "jk78c"
 address = "ffff27ac"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff27ac"
-to = "7mfk:ffff285c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the bank-relative field"
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043646"
+note = """
+The bounded publication slice of function 000435ac writes the low word of \
+accumulator ffff3af8 to ffff27ac at 00043646. R10 holds literal base \
+ffff27aa plus 2 from 0004361c/00043620, and the publication runs on the \
+first loop iteration. This establishes target word storage and publication \
+without qualifying the complete sampling/filtering mechanism, physical \
+voltage conversion, bank assignment or cadence."""
 
 [[link]]
 type = "reader"

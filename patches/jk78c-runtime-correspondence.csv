@@ -138,7 +138,7 @@ telemetry,app1_raw,ffff269e,ffff25f8,,,mapped,Aligned diagnostic pointer table a
 telemetry,app2_raw,ffff26a2,ffff25fc,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,tps_b1_raw,ffff2756,ffff26ac,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,absolute_throttle_raw,ffff1075,ffff107b,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,tps_b2_raw,ffff285c,ffff27ac,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
+telemetry,tps_b2_raw,ffff285c,ffff27ac,,,target-specific,"The bounded publication slice of function 000435ac writes the low word of accumulator ffff3af8 to ffff27ac at 00043646. R10 holds literal base ffff27aa plus 2 from 0004361c/00043620, and the publication runs on the first loop iteration. This establishes target word storage and publication without qualifying the complete sampling/filtering mechanism, physical voltage conversion, bank assignment or cadence."
 telemetry,intake_cvtc_actual_b1_raw,ffff2442,ffff239c,,,mapped,Aligned diagnostic pointer table preserves the channel byte
 telemetry,intake_cvtc_actual_b2_raw,ffff2443,ffff239d,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
 telemetry,intake_cvtc_target_raw,ffff2326,ffff227a,,,mapped,Aligned diagnostic pointer table and direct references agree
@@ -149,8 +149,8 @@ telemetry,engine_torque_state_raw,ffff18cc,ffff18d0,,,mapped,Homologous torque f
 telemetry,transmission_reduction_state_raw,ffff1866,ffff186c,,,target-specific,The reviewed producer and consumer bind the uint16 effective reduction state at ffff186c. The controller handles the enabled request-byte<<8 path and its mode/shift alternatives; publisher 000833f8 transfers the state to ffff1876 unchanged. The wire field remains raw counts without a physical torque conversion.
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,ffff239e,,,mapped,Aligned diagnostic pointer table preserves the channel byte
 telemetry,throttle_target_shared_raw,ffff19b2,ffff199e,,,mapped,Producer limiter and external consumer bind the shared target
-telemetry,throttle_target_channel_0_raw,ffff28bc,ffff43d8,,,mapped,Homologous channel limiter writes channel zero with a two-byte stride
-telemetry,throttle_target_channel_1_raw,ffff28be,ffff43da,,,mapped,Homologous channel limiter writes channel one with a two-byte stride
+telemetry,throttle_target_channel_0_raw,ffff28bc,ffff43d8,,,target-specific,"Function 0008dcf2 retains 2*uint8(channel) in R14 from 0008dd34/0008dd3a and publishes its limited word at 0008df80 to ffff43d4 + 4 + R14. Dispatcher 0008db94 calls it with channel 0 at 0008db9e/0008dba0 and channel 1 at 0008dba4 after setting R4=1. This binds channel-0 target storage ffff43d8; physical opening scale, bank identity, actuator response and cadence remain separate target qualifications."
+telemetry,throttle_target_channel_1_raw,ffff28be,ffff43da,,,target-specific,"Function 0008dcf2 retains 2*uint8(channel) in R14 and publishes its limited word at 0008df80 to ffff43d4 + 4 + R14. Dispatcher 0008db94 sets R4=1 at 0008dba2 and tail-calls the function at 0008dba4, so this invocation stores word ffff43da. The normalized access index names only the array base; this reviewed indexed publication does not add a direct accessor relation for the second word. Physical opening scale, bank identity, actuator response and cadence remain separate target qualifications."
 telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,ffff239f,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
 telemetry,coolant_raw,ffff1079,ffff106f,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,fuel_temperature_did_source_raw,ffff1074,ffff106b,,,mapped,Aligned diagnostic pointer table and direct references agree
@@ -174,7 +174,7 @@ telemetry,front_af_sensor_b1_word_raw,ffff2780,ffff26d8,,,mapped,Aligned diagnos
 telemetry,front_af_sensor_b2_word_raw,ffff2782,ffff26da,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
 telemetry,af_adjustment_b1_raw,ffff45a0,ffff490a,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,secondary_tps_b1_raw,ffff275e,ffff26b4,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
+telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,target-specific,"Function 00043348 reads sample word ffff3860 at 0004337c, subtracts it from 0x0400 and publishes the low word at ffff27b4 at 00043384. R13 retains literal base ffff27b2 and the store uses offset 2. This independently binds the target complemented word; sensor transfer, bank assignment, diagnostic conversion and cadence require separate target qualification."
 telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
 capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
 capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage

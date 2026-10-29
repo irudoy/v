@@ -103,26 +103,30 @@ layout = "1me3b"
 address = "fffe9952"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe9952"
-to = "7mfk:ffff2864"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b564"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0004b524 reads sample word fffeac0c at 0004b55c, subtracts it from \
+0x0400 and publishes the low word at fffe9952 at 0004b564. R7 retains \
+literal base fffe9950 and the store uses offset 2. This independently binds \
+the target complemented word; sensor transfer, bank assignment, diagnostic \
+conversion and cadence require separate target qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe98d4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe98d4"
-to = "7mfk:ffff2864"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the bank-relative field"
+kind = "l0"
+supports = "identity"
+at = "1nd:00048050"
+note = """
+Function 00048010 reads sample word fffeaacc at 00048048, subtracts it from \
+0x0400 and publishes the low word at fffe98d4 at 00048050. R7 retains \
+literal base fffe98d2 and the store uses offset 2. This independently binds \
+the target complemented word; sensor transfer, bank assignment, diagnostic \
+conversion and cadence require separate target qualification."""
 
 [[symbol]]
 layout = "7mfk"
@@ -195,12 +199,15 @@ layout = "jk78c"
 address = "ffff27b4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff27b4"
-to = "7mfk:ffff2864"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the bank-relative field"
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043384"
+note = """
+Function 00043348 reads sample word ffff3860 at 0004337c, subtracts it from \
+0x0400 and publishes the low word at ffff27b4 at 00043384. R13 retains \
+literal base ffff27b2 and the store uses offset 2. This independently binds \
+the target complemented word; sensor transfer, bank assignment, diagnostic \
+conversion and cadence require separate target qualification."""
 
 [[link]]
 type = "input"

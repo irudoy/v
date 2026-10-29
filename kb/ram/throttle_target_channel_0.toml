@@ -49,26 +49,34 @@ layout = "1me3b"
 address = "fffeb80c"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffeb80c"
-to = "7mfk:ffff28bc"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a5396"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+Function 000a50ac publishes the final limited word to fffeb80c + \
+2*uint8(channel) at 000a5396. The channel byte is saved at 000a50d2 and all \
+assignments of the terminal R13 index retain its doubled value. Dispatcher \
+000a4e28 calls the function with channel 0 at 000a4f3e/000a4f40 and channel \
+1 at 000a4f46 after setting R4=1. This binds channel-0 target storage \
+fffeb80c; physical opening scale, bank identity, actuator response and \
+cadence remain separate target qualifications."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffeb6c4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffeb6c4"
-to = "7mfk:ffff28bc"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Homologous channel limiter writes channel zero with a two-byte stride"
+kind = "l0"
+supports = "identity"
+at = "1nd:0009f3ce"
+note = """
+Function 0009f0e4 publishes the final limited word to fffeb6c4 + \
+2*uint8(channel) at 0009f3ce. The channel byte is saved at 0009f10a and all \
+assignments of the terminal R13 index retain its doubled value. Dispatcher \
+0009ee6c calls the function with channel 0 at 0009ef7c/0009ef7e and channel \
+1 at 0009ef84 after setting R4=1. This binds channel-0 target storage \
+fffeb6c4; physical opening scale, bank identity, actuator response and \
+cadence remain separate target qualifications."""
 
 [[symbol]]
 layout = "7mfk"
@@ -118,12 +126,16 @@ layout = "jk78c"
 address = "ffff43d8"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff43d8"
-to = "7mfk:ffff28bc"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Homologous channel limiter writes channel zero with a two-byte stride"
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008df80"
+note = """
+Function 0008dcf2 retains 2*uint8(channel) in R14 from 0008dd34/0008dd3a and \
+publishes its limited word at 0008df80 to ffff43d4 + 4 + R14. Dispatcher \
+0008db94 calls it with channel 0 at 0008db9e/0008dba0 and channel 1 at \
+0008dba4 after setting R4=1. This binds channel-0 target storage ffff43d8; \
+physical opening scale, bank identity, actuator response and cadence remain \
+separate target qualifications."""
 
 [[link]]
 type = "lookup"

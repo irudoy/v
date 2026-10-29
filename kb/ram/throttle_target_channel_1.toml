@@ -55,26 +55,38 @@ layout = "1me3b"
 address = "fffeb80e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffeb80e"
-to = "7mfk:ffff28be"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "1me3b:000a5396"
+value = 2
+mode = "base"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+Function 000a50ac publishes the final limited word to fffeb80c + \
+2*uint8(channel) at 000a5396. Dispatcher 000a4e28 sets R4=1 at 000a4f42 and \
+tail-calls the same function at 000a4f46, so this invocation stores word \
+fffeb80e. The normalized access index names only the array base; this \
+reviewed indexed publication does not add a direct accessor relation for the \
+second word. Physical opening scale, bank identity, actuator response and \
+cadence remain separate target qualifications."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffeb6c6"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffeb6c6"
-to = "7mfk:ffff28be"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Homologous channel limiter writes channel one with a two-byte stride"
+kind = "indirect"
+supports = "identity"
+at = "1nd:0009f3ce"
+value = 2
+mode = "base"
+note = """
+Function 0009f0e4 publishes the final limited word to fffeb6c4 + \
+2*uint8(channel) at 0009f3ce. Dispatcher 0009ee6c sets R4=1 at 0009ef80 and \
+tail-calls the same function at 0009ef84, so this invocation stores word \
+fffeb6c6. The normalized access index names only the array base; this \
+reviewed indexed publication does not add a direct accessor relation for the \
+second word. Physical opening scale, bank identity, actuator response and \
+cadence remain separate target qualifications."""
 
 [[symbol]]
 layout = "7mfk"
@@ -105,34 +117,51 @@ layout = "jk00c"
 address = "ffff422c"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00c:ffff422c"
-to = "7mfk:ffff28be"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "jk00c:00092062"
+note = """
+Function 0009205e reads word ffff422c through offset 6 of literal base \
+ffff4226 at 00092062 and zero-extends it at 00092064. It subtracts unsigned \
+word ffff36f2 and returns the absolute difference. The observed target word \
+is two bytes above the independently bound channel-0 base ffff422a. This \
+establishes the second target word and its error consumer without qualifying \
+a physical opening scale, bank identity or cadence."""
 
 [[symbol]]
 layout = "jk00d"
 address = "ffff4240"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00d:ffff4240"
-to = "7mfk:ffff28be"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "jk00d:00092062"
+note = """
+Function 0009205e reads word ffff4240 through offset 6 of literal base \
+ffff423a at 00092062 and zero-extends it at 00092064. It subtracts unsigned \
+word ffff3706 and returns the absolute difference. The observed target word \
+is two bytes above the independently bound channel-0 base ffff423e. This \
+establishes the second target word and its error consumer without qualifying \
+a physical opening scale, bank identity or cadence."""
 
 [[symbol]]
 layout = "jk78c"
 address = "ffff43da"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff43da"
-to = "7mfk:ffff28be"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Homologous channel limiter writes channel one with a two-byte stride"
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0008df80"
+value = 2
+mode = "base"
+note = """
+Function 0008dcf2 retains 2*uint8(channel) in R14 and publishes its limited \
+word at 0008df80 to ffff43d4 + 4 + R14. Dispatcher 0008db94 sets R4=1 at \
+0008dba2 and tail-calls the function at 0008dba4, so this invocation stores \
+word ffff43da. The normalized access index names only the array base; this \
+reviewed indexed publication does not add a direct accessor relation for the \
+second word. Physical opening scale, bank identity, actuator response and \
+cadence remain separate target qualifications."""
 
 [[link]]
 type = "base"
