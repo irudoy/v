@@ -12,6 +12,34 @@ bit = 1
 name = "bank_2_composite_permit"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8482"
+level = "code"
+note = """
+Producer 000819b8 reads composite bank predicates fffee1ec and fffee1f0 and \
+updates only bits 0 and 1 through the store at 0008209c, preserving the \
+other bits. Updater 00080d94 reads this byte at 00080dc8 and requires the \
+selected bank bit together with the matching bit of fffe8483 before \
+modifying the learned grid. Dispatcher 000822a0 supplies bank arguments 0 \
+and 1. Physical causes of the composite conditions, live permission and \
+learning cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0008209c"
+note = """
+The reviewed producer 000819b8 publishes the composite bank predicates to \
+bits 0 and 1 of fffe8482. Updater 00080d94 requires the matching bit \
+together with fffe8483 before the learned-grid update. The byte encoding \
+matches the wire field; physical permission and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080dc8"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1457"
 level = "code"
@@ -115,21 +143,10 @@ note = """
 The source-access search has no unique reviewed producer-consumer binding. \
 This field is unavailable on the layout until its source role is reviewed."""
 
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1457"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
 [[link]]
 type = "reader"
 to = "rousing-rhino/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 note = "Second independent permit byte; bank b in 0..1 requires bit b."
@@ -154,3 +171,18 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080dc8"
+
+[[link]]
+type = "writer"
+to = "juicy-panther/fn"
+layouts = ["1nd"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008209c"

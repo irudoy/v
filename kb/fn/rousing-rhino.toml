@@ -112,6 +112,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00080d94"
+name = "nondescript-oryx"
+level = "code"
+note = """
+The 1ND bank-indexed learned-grid updater takes b=uint8(R4) in 0..1. Reads \
+at 00080db2 and 00080dc8 require mask b+1 in both fffe8483 and fffe8482 \
+before any grid update. The enabled dispatcher 000822a0 calls this entry at \
+0008236a and 00082394 with delay-slot arguments 0 and 1. Its raw step uses \
+fffe835e+2*b and selected learned word fffe9306+2*b relative to 0x6400, then \
+the ROM-byte bounds 0000899d/0000899e. The target stores into bank grids \
+fffec1c2 and fffec142 and calls 00081260 for auxiliary state. A packed \
+selector of 0xff addresses all 64 grid cells; this target path is distinct \
+from the ordinary 0..63 cell selection. Physical permission, signal units \
+and learning cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080d94"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080db2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080dc8"
+
+[[symbol]]
 layout = "7mfk"
 address = "00057d1e"
 name = "rousing-rhino"
@@ -319,7 +351,7 @@ key = "Bounded learned-grid update"
 [[link]]
 type = "selector"
 to = "fuel_learning_permit_a/ram"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -346,11 +378,15 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080db2"
 
 [[link]]
 type = "selector"
 to = "fuel_learning_permit_b/ram"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -377,3 +413,7 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00080dc8"
