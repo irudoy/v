@@ -75,28 +75,70 @@ layout = "1me3b"
 address = "fffe8946"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8946"
-to = "7mfk:ffff192e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084726"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+Function 000841b4 directly publishes word fffe8946 at 00084726. Its joined \
+normal lookup and bias paths cap the unsigned selected count at 209, double \
+it and store the low word through a freshly loaded literal destination. The \
+separately reviewed alternate slice 000843ca..00084472 stores \
+uint16[fffe8006]>>2, a ROM word or a distinct RAM word through the same \
+literal destination; every alternate store is listed independently. The \
+inhibited return leaves the destination unchanged. This grounds target word \
+storage and the bounded publication alternatives; physical crank angle, \
+reference-event offset, cylinder assignment, upstream lookup contracts and \
+cadence require separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000843d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000843dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084472"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe89a2"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe89a2"
-to = "7mfk:ffff192e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f982"
 note = """
-Homologous end-of-injection stage 0007f4e0 stores the doubled 209-count \
-clamp to this word"""
+Function 0007f4e0 directly publishes word fffe89a2 at 0007f982. Its joined \
+normal lookup and bias paths cap the unsigned selected count at 209, double \
+it and store the low word through a freshly loaded literal destination. The \
+separately reviewed alternate slice 0007f6d8..0007f700 stores \
+uint16[fffe8006]>>2, a ROM word or a distinct RAM word through the same \
+literal destination; every alternate store is listed independently. The \
+inhibited return leaves the destination unchanged. This grounds target word \
+storage and the bounded publication alternatives; physical crank angle, \
+reference-event offset, cylinder assignment, upstream lookup contracts and \
+cadence require separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f6e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f6f6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f700"
 
 [[symbol]]
 layout = "7mfk"

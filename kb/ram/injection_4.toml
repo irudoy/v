@@ -7,26 +7,50 @@ layout = "1me3b"
 address = "fffe93ae"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe93ae"
-to = "7mfk:ffff23d0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "1me3b:0007a574"
+value = 8
+mode = "base"
 note = """
-Contiguous six-word channel array continues the diagnostic-bound words 0 and \
-1 with the two-byte stride of the 1ND array"""
+Function 0007a44e zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to fffe93a6+2*channel at 0007a574. Caller \
+0007a582 initializes its loop at 0007a6de, passes the current index at call \
+0007a6e4, and repeats under the six-channel boundary at 0007a6ec; this \
+invocation uses index 4 and binds word fffe93ae. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+fffe93b2+2*channel. The inhibited path loads unsigned opening word fffe941a, \
+writes the transformed array at 0007a4fe and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe93de"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe93de"
-to = "7mfk:ffff23d0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Channel-indexed producer preserves the two-byte stride"
+kind = "indirect"
+supports = "identity"
+at = "1nd:00075f00"
+value = 8
+mode = "base"
+note = """
+Function 00075dda zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to fffe93d6+2*channel at 00075f00. Caller \
+00075f0e initializes its loop at 0007606a, passes the current index at call \
+00076070, and repeats under the six-channel boundary at 00076078; this \
+invocation uses index 4 and binds word fffe93de. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+fffe93e2+2*channel. The inhibited path loads unsigned opening word fffe944a, \
+writes the transformed array at 00075e8a and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "7mfk"
@@ -44,31 +68,72 @@ layout = "jk00c"
 address = "ffff244c"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00c:ffff244c"
-to = "7mfk:ffff23d0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "jk00c:000505f6"
+value = 8
+mode = "base"
+note = """
+Function 000504f0 zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to ffff2444+2*channel at 000505f6. Caller \
+00050604 initializes its loop at 0005069e, passes the current index at call \
+000506a6, and repeats under the six-channel boundary at 000506ac; this \
+invocation uses index 4 and binds word ffff244c. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+ffff2450+2*channel. The inhibited path loads unsigned opening word ffff24b6, \
+writes the transformed array at 00050528 and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "jk00d"
 address = "ffff2454"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk00d:ffff2454"
-to = "7mfk:ffff23d0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "indirect"
+supports = "identity"
+at = "jk00d:000505f2"
+value = 8
+mode = "base"
+note = """
+Function 000504ec zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to ffff244c+2*channel at 000505f2. Caller \
+00050600 initializes its loop at 0005069a, passes the current index at call \
+000506a2, and repeats under the six-channel boundary at 000506a8; this \
+invocation uses index 4 and binds word ffff2454. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+ffff2458+2*channel. The inhibited path loads unsigned opening word ffff24be, \
+writes the transformed array at 00050524 and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "jk78c"
 address = "ffff2324"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff2324"
-to = "7mfk:ffff23d0"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Channel-indexed producer preserves the two-byte stride"
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0006a8ca"
+value = 8
+mode = "base"
+note = """
+Function 0006a7ca zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to ffff231c+2*channel at 0006a8ca. Caller \
+0006a8d8 initializes its loop at 0006a972, passes the current index at call \
+0006a97a, and repeats under the six-channel boundary at 0006a980; this \
+invocation uses index 4 and binds word ffff2324. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+ffff2328+2*channel. The inhibited path loads unsigned opening word ffff238e, \
+writes the transformed array at 0006a802 and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""

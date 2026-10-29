@@ -130,26 +130,46 @@ layout = "1me3b"
 address = "fffe93a6"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe93a6"
-to = "7mfk:ffff23c8"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007a574"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0007a44e zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to fffe93a6+2*channel at 0007a574. Caller \
+0007a582 initializes its loop at 0007a6de, passes the current index at call \
+0007a6e4, and repeats under the six-channel boundary at 0007a6ec; this \
+invocation uses index 0 and binds word fffe93a6. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+fffe93b2+2*channel. The inhibited path loads unsigned opening word fffe941a, \
+writes the transformed array at 0007a4fe and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe93d6"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe93d6"
-to = "7mfk:ffff23c8"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and channel-array producer agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00075f00"
+note = """
+Function 00075dda zero-extends the channel argument, doubles it and \
+publishes its pre-transform word to fffe93d6+2*channel at 00075f00. Caller \
+00075f0e initializes its loop at 0007606a, passes the current index at call \
+00076070, and repeats under the six-channel boundary at 00076078; this \
+invocation uses index 0 and binds word fffe93d6. The normal path retains the \
+compensated word across the affine helper and writes its separate result to \
+fffe93e2+2*channel. The inhibited path loads unsigned opening word fffe944a, \
+writes the transformed array at 00075e8a and joins the same final \
+pre-transform publication. This grounds storage and the reviewed channel \
+dispatch. The normalized access index names the array base; no direct \
+accessor link is transferred to a sibling. Physical pulse duration, cylinder \
+and bank assignment, diagnostic identity, helper arithmetic and cadence \
+retain separate target qualification."""
 
 [[symbol]]
 layout = "7mfk"
