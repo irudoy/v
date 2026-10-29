@@ -343,6 +343,9 @@ questions on the command line.
   selector, the exact sensor and diagnostic bindings of the selector inputs,
   the MAP and brake-booster pressure channel, and the unit boundary of the
   target surfaces.
+- `VQ37.manual-unit-boundaries.md` reconciles factory quantities and service
+  references with raw VVEL, pressure and load words, retaining unestablished
+  scales and hardware acceptance boundaries.
 - `JK78C.cvtc.md` models the intake CVTC solenoid output stage of the VQ37
   layouts: the scheme selector, the channel-7 cycle and buffer registers, the
   command path from the 16-bit duty words to the 8-bit command cells, and the

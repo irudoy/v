@@ -1103,7 +1103,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x"
 to_byte = "x"
-semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task."
+semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC."
 
 [[target.1ND0A.table]]
@@ -1944,7 +1944,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x"
 to_byte = "x"
-semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task."
+semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
@@ -2828,7 +2828,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x"
 to_byte = "x"
-semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task."
+semantics = "Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished."
 note = "Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and 0x58FE8, and by FUN_00066A18 at 0x66A28 and 0x66A44 through the 16-point uint16 leaf 0x2AF88; the call at 0x623DA exchanges the roles of axis and values. JK78C reads the pair for the resolver in the separate function FUN_0005693A. Stock bytes are identical to JK78C 0x000156FC. FUN_0005C7D4 reads a byte-identical second pair 0x0001B738 over 0x0001B718."
 
 [[target.1ME3B.table]]

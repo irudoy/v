@@ -25,8 +25,9 @@ coarse = 64
 layout = "1me3b"
 address = "00015a76"
 summary = """
-Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
-command-word domain (values), read in both directions by the task."""
+Unsigned-word conversion between the paired shaft-coordinate array and the \
+command-word domain, read in both directions by the task. The physical \
+angular gain of the coordinate words is unestablished."""
 note = """
 Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the \
 resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and \
@@ -67,8 +68,9 @@ key = "test_vvel_command_shaft_angle_scale"
 layout = "1nd"
 address = "00015c22"
 summary = """
-Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the \
-command-word domain (values), read in both directions by the task."""
+Unsigned-word conversion between the paired shaft-coordinate array and the \
+command-word domain, read in both directions by the task. The physical \
+angular gain of the coordinate words is unestablished."""
 note = [
     """
 1ND0A: Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by \
