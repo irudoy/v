@@ -9582,13 +9582,6 @@ func_addr,ins_addr,ordinal,mnemonic,shape
 000222a6,000222b2,6,shlr,shlr r0
 000222a6,000222b4,7,rts,rts
 000222a6,000222b6,8,_mov.l,"_mov.l @r15+,r2"
-0002234c,0002234c,0,movi20,"movi20 ##,r0"
-0002234c,00022350,1,mov.l,"mov.l r1,@(r0,r0)"
-0002234c,00022352,2,mov.b,"mov.b r2,@(r0,r0)"
-0002234c,00022354,3,mov.b,"mov.b r3,@(r0,r0)"
-0002234c,00022356,4,mov.b,"mov.b r4,@(r0,r0)"
-0002234c,00022358,5,mov.l,"mov.l r5,@(r0,r0)"
-0002234c,0002235a,6,mov.b,"mov.b r6,@(r0,r0)"
 0002235c,0002235c,0,mov.l,"mov.l r2,@-r15"
 0002235c,0002235e,1,cmp/pz,cmp/pz r1
 0002235c,00022360,2,mov,"mov ##,r2"

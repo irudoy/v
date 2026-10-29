@@ -47,7 +47,7 @@ schema_version = 1
 "tools/ghidra/ExportGraph.java" = "2c450b1417b53e5401efb7aaa83de7e824a5e64f9972f47677305af4ea7055d9"
 "tools/ghidra/ExportXrefs.java" = "ae6b7be698e33f6172fc371b21fb86245d01ab887652a8471a35603fbf0c572c"
 "tools/ghidra/MergeFuncs.java" = "559b7496fbfa306846e4ee6ddf0f50826e2e9e0ed440541b2a627c0f3c70f447"
-"tools/ghidra/PrepareProgram.java" = "c3dff31acdbc92dad5bc1a6e82bac0b328970f79a6f73b3e8f8fef641a393c5d"
+"tools/ghidra/PrepareProgram.java" = "6b987955bc8d14817e96ec8751fa9fc06f66958bf736600e36f1107564dcc1c2"
 "tools/ghidra/ProgramSha256.java" = "d9d345bc21e82ce5ba939be3787c7c2fd84e24bfa4959cb2b36da679b1f107bb"
 "tools/ghidra/RecoverFuncs.java" = "6e829b36f35fc264c426ff5cacdb4e9a0035239c68da4a861032ce360b4d691b"
 "tools/ghidra/ResolveAccessors.java" = "750dc6e7736a35b9e4f9c24b0522360785454878d50a9d2956f1ad5fe4e77010"
@@ -58,9 +58,9 @@ schema_version = 1
 "tools/ghidra/merges/7mfk.csv" = "40c8963704fd8855c8a95d707c8abd36313cd6121458864d48d757f4dcd2422c"
 "tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
-"tools/ghidra/seeds/7mfk.toml" = "fc9a3641f540738dc4325f7134c56893751fce7782120ad66d2ded27f7d20269"
+"tools/ghidra/seeds/7mfk.toml" = "453270d22c70d02d51ded4273c33125920c50cb041df097032447f0db44ea070"
 "tools/kb/config.toml#l0" = "ab8f73905296678a86828401594fa789e95d680ad4309197fc7e2cf360c07a27"
-"tools/kb/src/kb/ghidra_preparation.py" = "ad4a816b02f5d51a20f975272e658509296a0cf56bb904835a8019d655927ec6"
+"tools/kb/src/kb/ghidra_preparation.py" = "f45ae22184580e592d25fcb138e977dbcef5fc0f4839965f8a4347348e612a52"
 "tools/kb/src/kb/l0.py" = "56448bfc325fe918d21b81f035d4ca21715741dbf78ca9315ada0e9c0a075798"
 
 [files."accessors.26740.csv"]
@@ -120,24 +120,24 @@ sha256 = "3e8d296369452aa097d8d9902a4a65fcf228156091ad9be9c7eb88085a288706"
 rows = 3744
 
 [files."funcs.csv"]
-sha256 = "eb752cf65d17a2376c0c10dc7ba8eb46ba7d2affb90f2f6f59544b3222a3a894"
-rows = 2317
+sha256 = "9e998cd8e18ad21767f5e5361cf6a28eacb57210d911df0b05cc1f5c95d5462f"
+rows = 2316
 
 [files."function_references.csv"]
-sha256 = "41ba93b52de934a27c4c9380df24861d45f36c246260f64bada95a35c874b5fc"
-rows = 145353
+sha256 = "cb2f65db9dfda13c12a3f848973b121f2deb5e020bc599fbaa8d6eedb7149595"
+rows = 145347
 
 [files."function_signatures.csv"]
-sha256 = "136a6aa9f198a710ea14002aa10a927dce5f8bd3052b5e3cb4bba4475d2614b7"
-rows = 2317
+sha256 = "3c936d305bca0a7897081d899b1f374addc42d2bfd156222ce1f6ef68abf81ec"
+rows = 2316
 
 [files."function_sites.csv"]
 sha256 = "20e61144892d4d59a8a62258a0378e0a0f26dc1b1388b908a071a7731b402f70"
 rows = 6899
 
 [files."function_tokens.csv"]
-sha256 = "28591a44ca86f509cc5673b70c7d7586e1358034f6c3e0dda114e4e7b68a1cd4"
-rows = 312585
+sha256 = "45112550ceb4c9c3cc79357f11c917e796cbe89100dbca5abaaadcf50e48df29"
+rows = 312578
 
 [files."xrefs.csv"]
 sha256 = "99b726bf488fb595e3e93735b08493dfccf11c1a9cb921fe97ab01cc89543f2c"

@@ -155,7 +155,6 @@ addr,size,is_thunk,is_external
 000221e6,18,false,false
 0002227c,32,false,false
 000222a6,18,false,false
-0002234c,16,false,false
 0002235c,42,false,false
 0002248a,10,false,false
 000224f8,2,false,false
