@@ -6,6 +6,7 @@ qualification operations belong to the local archive.
 
 import copy
 import difflib
+import random
 from pathlib import Path
 import re
 import tomllib
@@ -432,14 +433,22 @@ class Change:
         # Private objects for meanings created in the change. The source
         # model stays intact until the complete rendered change is checked.
         self.new_meanings = {}
+        self.bound_meanings = {}
         self.expected = []
         self._taken = self._domain = None
 
     def resolve(self, text):
-        """Resolve new meanings against their documents and existing ones
-        through the source resolver, refusing ambiguous references."""
+        """Resolve pending bindings and new meanings against their documents,
+        retaining source object identities and refusing ambiguous references."""
         text = str(text).strip()
-        pending = self._new_references(text)
+        pending = self._pending_references(text)
+        full = refs.FULL.fullmatch(text)
+        if full:
+            key = SymbolKey(full.group("layout"), full.group("kind"),
+                            int(full.group("address"), 16))
+            symbol = self._pending_symbol(key)
+            if symbol is not None and symbol.meaning is not None:
+                return symbol.meaning, symbol
         if not pending:
             return self._resolve(text)
         try:
@@ -453,61 +462,96 @@ class Change:
             if refs.ADDRESS.fullmatch(text) and text in self._reference_names(existing[0]) \
                     and not any(text in self._reference_names(meaning) for meaning, _ in pending):
                 return existing
-            pending.append(existing)
+            if not any(meaning is existing[0]
+                       and (symbol.key if symbol is not None else None)
+                       == (existing[1].key if existing[1] is not None else None)
+                       for meaning, symbol in pending):
+                pending.append(existing)
         if len(pending) != 1:
             raise KbError(f"{text!r} names {len(pending)} entities", code=4)
         return pending[0]
 
-    def _new_references(self, text):
+    def _symbols(self, meaning):
+        """Original symbols and pending bindings of a meaning. New symbols are
+        reconstructed from their entries so later assignments remain visible;
+        the source meaning and its original symbols stay unchanged."""
+        new = self.new_meanings.get(meaning.key) is meaning
+        symbols = {} if new else dict(meaning.symbols)
+        path = self._path(meaning)
+        document = self.documents.get(path, {})
+        for entry in document.get("symbol", ()):
+            layout = entry["layout"]
+            if not new and layout in meaning.symbols:
+                continue
+            key = SymbolKey(layout, meaning.kind, int(entry["address"], 16))
+            symbols[layout] = Symbol(
+                key, props={name: value for name, value in entry.items() if name not in ENTRY},
+                evidence=entry.get("evidence", []), sources={path.as_posix()}, implicit=False,
+                name=entry.get("name") or meaning.name, generated=entry.get("name"),
+                former=tuple(entry.get("former", ())), meaning=meaning)
+        return symbols
+
+    def _pending_symbol(self, key):
+        """The held symbol at a location, including earlier batch bindings."""
+        for meaning in (*self.new_meanings.values(), *self.bound_meanings.values()):
+            symbol = self._symbols(meaning).get(key.layout)
+            if symbol is not None and symbol.key == key:
+                return symbol
+        return self.model.symbols.get(key)
+
+    def _pending_references(self, text):
         """Meaning and symbol references among the pending documents."""
         full = refs.FULL.fullmatch(text)
         location = refs.LOCATION.fullmatch(text)
         named = refs.NAMED.fullmatch(text)
         address = refs.ADDRESS.fullmatch(text)
         found, addressed = [], []
-        for meaning in self.new_meanings.values():
-            path = store.path_of(meaning.kind, meaning.name)
+        for meaning in (*self.new_meanings.values(), *self.bound_meanings.values()):
+            path = self._path(meaning)
             if path not in self.documents:
                 continue
             document = self.documents[path]
-            meaning.props = {key: value for key, value in document.items()
-                             if key not in {name for name, _ in store.ARRAYS}}
-            meaning.symbols = {}
-            for entry in document.get("symbol", ()):
-                key = SymbolKey(entry["layout"], meaning.kind, int(entry["address"], 16))
-                symbol = Symbol(key, props={key: value for key, value in entry.items()
-                                           if key not in ENTRY}, evidence=entry.get("evidence", []),
-                                sources={path.as_posix()}, implicit=False,
-                                name=entry.get("name") or meaning.name,
-                                generated=entry.get("name"), former=tuple(entry.get("former", ())),
-                                meaning=meaning)
-                meaning.symbols[symbol.layout] = symbol
+            symbols = self._symbols(meaning)
+            if self.new_meanings.get(meaning.key) is meaning:
+                meaning.props = {key: value for key, value in document.items()
+                                 if key not in {name for name, _ in store.ARRAYS}}
+                meaning.symbols = symbols
             if full:
-                found.extend((meaning, symbol) for symbol in meaning.symbols.values()
-                             if text == self._ref(symbol) or text in symbol.former)
+                found.extend((meaning, symbol) for symbol in symbols.values()
+                             if symbol.layout == full.group("layout")
+                             and symbol.kind == full.group("kind")
+                             and full.group("name") in {
+                                 symbol.name, *(former.partition("/")[0]
+                                                for former in symbol.former)})
                 continue
             if location or address:
                 match = location or address
-                addressed.extend((meaning, symbol) for symbol in meaning.symbols.values()
+                addressed.extend((meaning, symbol) for symbol in symbols.values()
                                  if symbol.address == int(match.group("address"), 16)
                                  and (location is None or symbol.layout == location.group("layout")))
             if named:
                 name, second, third = named.group("name", "second", "third")
                 kind = second if second in vocab.KINDS else None
                 layout = third if kind else second
-                aliases = self._reference_names(meaning)
+                aliases = self._reference_names(meaning, symbols)
                 if name not in aliases or (kind is not None and kind != meaning.kind):
+                    continue
+                generated = [symbol for symbol in symbols.values()
+                             if symbol.generated == name and name != meaning.name]
+                if generated:
+                    found.extend((meaning, symbol) for symbol in generated)
                     continue
                 if layout is None:
                     found.append((meaning, None))
-                elif layout in meaning.symbols:
-                    found.append((meaning, meaning.symbols[layout]))
+                elif layout in symbols:
+                    found.append((meaning, symbols[layout]))
         return found or addressed
 
     @staticmethod
-    def _reference_names(meaning):
-        return Change._names(meaning) | {
-            former.partition("/")[0] for symbol in meaning.symbols.values()
+    def _reference_names(meaning, symbols=None):
+        symbols = meaning.symbols if symbols is None else symbols
+        return Change._names(meaning, symbols) | {
+            former.partition("/")[0] for symbol in symbols.values()
             for former in symbol.former}
 
     # Operations ------------------------------------------------------------
@@ -565,13 +609,13 @@ class Change:
                           code=2)
         layout, address = self._location(op["symbol"])
         key = SymbolKey(layout, kind, address)
-        held = self.model.symbols.get(key)
+        if key in self.created:
+            raise KbError(f"{key.location} starts a meaning earlier in this change", code=3)
+        held = self._pending_symbol(key)
         if held is not None and held.meaning is not None:
             hint = "" if held.meaning.semantic else (
                 f"; `kb rename {held.meaning.key} <semantic-name>` names its meaning")
             raise KbError(f"{key.location} is {self._ref(held)}{hint}", code=3)
-        if key in self.created:
-            raise KbError(f"{key.location} starts a meaning earlier in this change", code=3)
         if not op.get("evidence"):
             raise KbError("new needs the evidence of the identity of the symbol on its layout",
                           code=2)
@@ -586,7 +630,7 @@ class Change:
         if name is not None:
             self._semantic(name, kind)
         else:
-            name = former.pop(0) if former else self._draw()
+            name = former.pop(0) if former else self._draw(key)
             entry["name"] = name
         path = store.path_of(kind, name)
         self._fresh(path)
@@ -701,7 +745,7 @@ class Change:
             if named is not None and named.layout != layout:
                 raise KbError(f"{self._ref(named)} lies on {named.layout}, not on {layout}",
                               code=2)
-            named = meaning.symbols.get(layout)
+            named = self._symbols(meaning).get(layout)
             if named is None:
                 raise KbError(f"{meaning.key} has no symbol on {layout}", code=5)
         _, document = self.document(meaning)
@@ -716,7 +760,7 @@ class Change:
         layout, address = self._location(op["symbol"])
         self._free(meaning, layout)
         key = SymbolKey(layout, meaning.kind, address)
-        held = self.model.symbols.get(key)
+        held = self._pending_symbol(key)
         if held is not None and held.meaning is not None:
             raise KbError(f"{key.location} is {self._ref(held)}; `kb merge` joins two "
                           "meanings", code=3)
@@ -728,7 +772,7 @@ class Change:
         else:
             evidence = self._found(self._source(meaning, named, op.get("from")), key)
         path, document = self.document(meaning)
-        name = meaning.name if meaning.semantic else self._draw()
+        name = meaning.name if meaning.semantic else self._draw(key)
         entry = {"layout": layout, "address": f"{address:08x}"}
         if not meaning.semantic:
             entry["name"] = name
@@ -737,6 +781,8 @@ class Change:
         document["symbol"] = [*document.get("symbol", ()), entry]
         document["status"] = [status for status in document.get("status", ())
                               if status.get("layout") != layout]
+        if self.new_meanings.get(meaning.key) is not meaning:
+            self.bound_meanings[meaning.key] = meaning
         self.lines.append(f"bind {name}/{meaning.kind}/{layout}-{address:08x}: "
                           f"{'; '.join(summary(item) for item in evidence)}")
 
@@ -1403,7 +1449,7 @@ class Change:
             if generated:
                 former = [f"{generated}/{kind}/{layout}-{address}", *former]
         else:
-            name = generated or self._draw()
+            name = generated or self._draw(named.key)
             entry["name"] = name
             self._keep_home(target, [layout], document)
         current = f"{name}/{kind}/{layout}-{address}"
@@ -1516,7 +1562,7 @@ class Change:
         if address == named.address:
             raise KbError(f"{self._ref(named)} lies at {op['to']}", code=2)
         key = SymbolKey(layout, meaning.kind, address)
-        held = self.model.symbols.get(key)
+        held = self._pending_symbol(key)
         if held is not None and held.meaning is not None:
             raise KbError(f"{key.location} is {self._ref(held)}; `kb merge` joins two "
                           "meanings", code=3)
@@ -1785,7 +1831,7 @@ class Change:
 
     def _free(self, meaning, layout):
         """Refuse a layout where the meaning has a symbol."""
-        symbol = meaning.symbols.get(layout)
+        symbol = self._symbols(meaning).get(layout)
         if symbol is not None:
             raise KbError(f"{meaning.key} has {self._ref(symbol)} on {layout}; `kb move` "
                           "corrects a wrong symbol", code=3)
@@ -1794,7 +1840,7 @@ class Change:
         """The symbol that a search starts from: that of `from`, the symbol
         that the reference names, or the home symbol."""
         if layout is not None:
-            symbol = meaning.symbols.get(self._layout(layout))
+            symbol = self._symbols(meaning).get(self._layout(layout))
             if symbol is None:
                 raise KbError(f"{meaning.key} has no symbol on {layout}", code=5)
             return symbol
@@ -1829,10 +1875,11 @@ class Change:
                               f"in {src}", code=3)
 
     @staticmethod
-    def _names(meaning):
+    def _names(meaning, symbols=None):
         """The names that references of files give a meaning: its name, the
         generated names of its symbols, and its other names."""
-        return {meaning.name, *(symbol.generated for symbol in meaning.symbols.values()),
+        symbols = meaning.symbols if symbols is None else symbols
+        return {meaning.name, *(symbol.generated for symbol in symbols.values()),
                 *(name for name, _, _ in meaning.other_names)} - {None}
 
     @staticmethod
@@ -1847,12 +1894,12 @@ class Change:
             found["to"] = found["to"].location
         return found
 
-    def _draw(self):
+    def _draw(self, key):
         if self._taken is None:
             self._taken = names.Taken(names.reserved(self.model, self.model.names))
             self._domain = names.domain_dictionary(self.model, self.root)
         attempts = self.model.config.get("names", {}).get("attempts", 1000)
-        return names.draw(self._taken, self._domain, attempts)
+        return names.draw(self._taken, self._domain, attempts, random.Random(key.key))
 
 
 def _selection_row(model, key, registry, order):

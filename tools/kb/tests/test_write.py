@@ -669,6 +669,150 @@ def assign(ref, keys=None, unset=None, layout=None):
     return {key: value for key, value in op.items() if value is not None}
 
 
+@pytest.fixture
+def pending_binding_model(tmp_path, monkeypatch):
+    hashes = writer_sources.write_sources(tmp_path)
+    path = store.path_of("ram", "alpha_n_flow")
+    document = store.load(tmp_path, path)
+    document.update(unit="ratio", scale="x/128", to_raw="x*128", scale_level="candidate")
+    scale_evidence = {**SPEC, "supports": "scale"}
+    document["symbol"][0]["evidence"].append(scale_evidence)
+    text = store.render("ram", document)
+    (tmp_path / path).write_text(text, encoding="utf-8")
+    hashes[str(path)] = writer_sources.sha(text.encode())
+    domain = "# Controlled naming dictionary for writer contracts.\n"
+    (tmp_path / names.DOMAIN).write_text(domain, encoding="utf-8")
+    hashes[str(names.DOMAIN)] = writer_sources.sha(domain.encode())
+    monkeypatch.setattr(adapters, "ADAPTERS", (file_adapter,))
+    return compile.build(tmp_path), hashes
+
+
+class TestPendingBindings:
+    LOCATION = "jk78c:ffff0ff2"
+    KEY = SymbolKey("jk78c", "ram", 0xffff0ff2)
+    OVERRIDE = {"unit": "raw", "scale": "x", "to_raw": "x", "scale_level": "candidate"}
+
+    def operations(self):
+        return [bind(FLOW, self.LOCATION, level="candidate",
+                     evidence=[SPEC, {**SPEC, "supports": "scale"}]),
+                assign(FLOW, self.OVERRIDE, layout="jk78c")]
+
+    @pytest.mark.parametrize("reference", [
+        "alpha_n_flow/ram/jk78c", "alpha_n_flow/jk78c",
+        "alpha_n_flow/ram/jk78c-ffff0ff2", "jk78c:ffff0ff2", "ffff0ff2",
+        "stale-prefix/ram/jk78c-ffff0ff2",
+    ])
+    def test_existing_meaning_resolves_and_sets_its_pending_symbol(
+            self, pending_binding_model, reference):
+        base, _ = pending_binding_model
+        before = convert.dump(base)
+        source = base.meaning_of(SymbolKey("7mfk", "ram", FLOW_HOME))
+        change = write.Change(base, write.model_resolver(base), root=base.root)
+        change.run(self.operations()[0])
+        for name in (FLOW, "alpha_n_flow"):
+            assert change.resolve(name) == (source, None)
+        meaning, symbol = change.resolve(reference)
+        assert meaning is source and symbol.key == self.KEY and symbol.meaning is source
+        change.run(assign(reference, self.OVERRIDE))
+        current = change.resolve(reference)[1]
+        assert all(current.value(key) == value for key, value in self.OVERRIDE.items())
+        assert convert.dump(base) == before
+        assert self.KEY not in base.symbols and "jk78c" not in source.symbols
+
+    def test_layout_assignment_preserves_the_source_scale(self, pending_binding_model):
+        base, _ = pending_binding_model
+        before = convert.dump(base)
+        _, texts, result = write.plan(self.operations(), base, write.model_resolver(base),
+                                      root=base.root)
+        source = result.meaning_of(self.KEY)
+        assert source.props["scale"] == "x/128"
+        assert source.symbols["7mfk"].value("scale") == "x/128"
+        assert source.symbols["jk78c"].value("scale") == "x"
+        assert source.symbols["jk78c"].value("scale_level") == "candidate"
+        document = tomllib.loads(texts[store.path_of("ram", "alpha_n_flow")])
+        assert document["scale"] == "x/128"
+        assert next(s for s in document["symbol"] if s["layout"] == "jk78c")["scale"] == "x"
+        assert convert.dump(base) == before
+
+    def test_generated_binding_names_resolve_within_the_batch(self, pending_binding_model):
+        base, _ = pending_binding_model
+        change = write.Change(base, write.model_resolver(base), root=base.root)
+        change.run(bind(TABLE, "jk78c:00030004", evidence=[SPEC]))
+        _, document = change.document(change.resolve(TABLE)[0])
+        name = next(s["name"] for s in document["symbol"] if s["layout"] == "jk78c")
+        for ref in (name, f"{name}/tbl", f"{name}/tbl/jk78c-00030004",
+                    "astute-toad/tbl/jk78c-00030004", f"{name}/tbl/jk78c-00030005"):
+            assert change.resolve(ref)[0].key == TABLE
+            assert change.resolve(ref)[1].key == SymbolKey("jk78c", "tbl", 0x30004)
+        change.run(assign(f"{name}/tbl", {"note": "Target-only qualification."}))
+        assert "note" not in document
+        assert "note" not in next(s for s in document["symbol"] if s["layout"] == "7mfk")
+        assert change.resolve("jk78c:00030004")[1].props["note"] == "Target-only qualification."
+
+    @pytest.mark.parametrize("duplicate", [
+        bind(FLOW, "jk78c:ffff0ff2", evidence=[SPEC]),
+        bind(FLOW, "jk78c:ffff0ff4", evidence=[SPEC]),
+        bind(INHIBIT, "jk78c:ffff0ff2", evidence=[SPEC]),
+        new("ram", "jk78c:ffff0ff2", name="probe_duplicate", evidence=[SPEC]),
+    ])
+    def test_pending_bindings_refuse_duplicate_layouts_and_locations(
+            self, pending_binding_model, duplicate):
+        base, _ = pending_binding_model
+        before = convert.dump(base)
+        change = write.Change(base, write.model_resolver(base), root=base.root)
+        change.run(self.operations()[0])
+        with pytest.raises(KbError) as caught:
+            change.run(duplicate, 2)
+        assert caught.value.code == 3 and "op 2" in str(caught.value)
+        assert convert.dump(base) == before
+
+    def test_a_pending_binding_can_supply_the_next_search_source(self, pending_binding_model):
+        base, _ = pending_binding_model
+        change = write.Change(base, write.model_resolver(base), root=base.root)
+        change.run(self.operations()[0])
+        with mock.patch.object(change, "_found", return_value=[SPEC]) as found:
+            change.run(bind(FLOW, "jk00d:ffff0ff4", **{"from": "jk78c"}))
+        assert found.call_args.args[0].key == self.KEY
+        assert found.call_args.args[1] == SymbolKey("jk00d", "ram", 0xffff0ff4)
+
+    def test_dry_run_and_apply_have_identical_output(self, pending_binding_model):
+        base, hashes = pending_binding_model
+        before = convert.dump(base)
+        operations = [bind(TABLE, "jk78c:00030004", evidence=[SPEC]), *self.operations()]
+        with mock.patch.object(write.graph, "fresh", return_value=contextlib.nullcontext()), \
+                mock.patch.object(write, "graph_resolver", side_effect=lambda _, model, *args:
+                                  write.model_resolver(model)), \
+                mock.patch.object(write.graph, "sync_held") as synced:
+            change, planned = write.apply(operations, root=base.root, dry_run=True)
+            synced.assert_not_called()
+            assert writer_sources.unchanged(base.root, hashes)
+            diff = change.diff(planned)
+            assert '+layout = "jk78c"' in diff and '+scale = "x"' in diff
+            _, applied = write.apply(operations, root=base.root)
+            assert applied == planned
+            for path, text in planned.items():
+                assert (base.root / path).read_text(encoding="utf-8") == text
+            synced.assert_called_once()
+        assert convert.dump(base) == before
+
+    def test_a_later_failure_writes_no_files_or_graph(self, pending_binding_model):
+        base, hashes = pending_binding_model
+        before = convert.dump(base)
+        operations = [*self.operations(), assign(self.LOCATION, {"not_a_key": 1})]
+        with mock.patch.object(write.graph, "fresh", return_value=contextlib.nullcontext()), \
+                mock.patch.object(write, "graph_resolver", side_effect=lambda _, model, *args:
+                                  write.model_resolver(model)), \
+                mock.patch.object(write.store, "write") as written, \
+                mock.patch.object(write.graph, "sync_held") as synced:
+            with pytest.raises(KbError) as caught:
+                write.apply(operations, root=base.root)
+            assert caught.value.code == 2 and "op 3" in str(caught.value)
+            written.assert_not_called()
+            synced.assert_not_called()
+        assert writer_sources.unchanged(base.root, hashes)
+        assert convert.dump(base) == before
+
+
 class SetTest(unittest.TestCase):
     """`set` over a base with the feature PROBE, whose target on JK00C holds
     a table of two keys."""
