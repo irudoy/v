@@ -1,0 +1,68 @@
+summary = """
+Monotonic duration characteristic of the VVEL duration ratio correction. \
+FUN_00055E78 looks up this curve with its lookup duration x512, clamped \
+below 128.0, over the axis 0x00017004 and stores the value at 2^-18 per \
+count in 0xFFFFA0D8. FUN_00055F2C and FUN_00055FF2 scale that value by the \
+ratio 0xFFFF365A / max(0xFFFF3332, 1), clamped to ROM16[0x921E] * 2^-13 = 0 \
+.. ROM16[0x9220] * 2^-13 = 8.0, and look up the axis 0x00017004 over this \
+curve to obtain the corrected duration. The stock cells rise from 1016 to \
+38435 and hold 38435 from the eleventh point (73.0)."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015aa2"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*2^-18; \
+proposed editor-grid inverse x*2^18. Origin: the float literal 2^-18 at \
+0x56090."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055eb2"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_characteristic_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055eb4"
+
+[[link]]
+type = "reader"
+to = "lumpy-penguin/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055eb2"
+
+[[link]]
+type = "reader"
+to = "mahogany-seahorse/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055fa0"
+
+[[link]]
+type = "reader"
+to = "pistachio-crow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000560d8"

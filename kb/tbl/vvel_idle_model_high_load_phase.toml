@@ -1,0 +1,44 @@
+summary = """
+Phase of the high-load valve event pair of the VVEL idle-model stage \
+FUN_00057208, zero at 0x8000 and 0.5 per count, looked up by engine speed. \
+The event center is C = 478 - 0.5 * (raw - 0x8000), where 478 = 450 + \
+ROM16[0x8D8E] / 512. Stock offsets are 0..68 counts."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016f14"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals \
+-0.5 at 0x574DC and 16834.0 at 0x574E4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057234"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_high_load_phase_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057238"
+
+[[link]]
+type = "reader"
+to = "stylish-shrew/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057234"

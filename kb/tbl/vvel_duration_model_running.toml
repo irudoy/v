@@ -1,0 +1,58 @@
+summary = """
+Duration state word of the state codes 2 and 8 (VVEL modes 5 and 15) in the \
+state-code dispatcher FUN_000657E4, looked up by min(0xFFFF, 0xFFFF11AC << \
+2) over the axis 0x00016C84 and by the load byte 0xFFFF1032 << 8 over the \
+axis 0x00016C24. On the stock path, ROM8[0x8966].bit4 set (0x50), the \
+dispatcher reads it for the current code 0xFFFF43F2 and for the previous \
+code 0xFFFF4480 and publishes the duration word 0xFFFF122C; the codes 1 and \
+3 read 0x00016D14 instead. The path for the bit clear also reads it. Stock \
+660..1440 = 33.0..72.0."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000100ce"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
+proposed editor-grid inverse x/0.05. Origin: the 0.05 duration scale of the \
+state words in defs/JK78C.vvel.md."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664ca"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_model_running_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664d0"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_throttled_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664cc"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664ca"

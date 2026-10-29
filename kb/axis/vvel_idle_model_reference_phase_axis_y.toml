@@ -1,0 +1,30 @@
+summary = """
+Load axis of the stock-inert idle-model reference phase 0x0000E4CE in \
+FUN_00057322, 8192..49152; the coordinate is the VVEL load word 0xFFFF238A. \
+The reader addresses it at offset 0x30 from the literal 0x00016EB4."""
+level = "code"
+home = "jk78c"
+quantity = "load"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ee4"
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 48
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "translucent-cicada/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 48
+mode = "base"

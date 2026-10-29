@@ -1,0 +1,30 @@
+level = "code"
+home = "jk78c"
+quantity = "rpm"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016cc4"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
+proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of \
+the resolver axes. Recorded code interpretation: Engine-speed axis of the \
+idle-model high-load duration 0x00016D34 in FUN_00057208, 128..2304; the \
+coordinate is the engine-speed word 0xFFFF11A6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057228"
+
+[[link]]
+type = "reader"
+to = "stylish-shrew/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057228"

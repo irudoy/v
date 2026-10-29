@@ -1,0 +1,48 @@
+summary = """
+Duration floor of the VVEL idle-model stage FUN_00056DCA at 1/512 per count, \
+looked up by engine speed. The stage engages the floor while its mode \
+argument equals 5, the model duration does not exceed this value, the demand \
+margin reaches ROM8[0x8B05] * 0.25 = 5.0, and the counter 0xFFFFA369 of \
+passes with the demand argument above this value reaches ROM8[0x8B07] = 1. \
+The idle-model duration 0xFFFFA1B0 is ((10000 - w) * d + w * max(d, floor)) \
+/ 10000, with d the model duration and w the floor weight. The stock floor \
+is 21504 = 42.0 through the ninth point and 23296 = 45.5 above it."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016c64"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the float literal 1/512 at \
+0x56F4C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056dec"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_duration_floor_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056df0"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056dec"

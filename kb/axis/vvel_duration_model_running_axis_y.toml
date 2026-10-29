@@ -1,0 +1,31 @@
+level = "code"
+home = "jk78c"
+quantity = "load"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016c24"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/256 \
+load-byte counts; proposed editor-grid inverse x*256. Origin: the load byte \
+0xFFFF1032 << 8 of the state-word coordinates. Recorded code interpretation: \
+Load axis of the state-word surfaces 0x000100CE, 0x000104CE and 0x000106CE \
+in FUN_000657E4, 2048..32768; the coordinate is the load byte 0xFFFF1032 << \
+8, as for the state code 5 pair 0x000102CE."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664d0"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664d0"

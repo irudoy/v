@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "00057322"
+name = "translucent-cicada"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057322"

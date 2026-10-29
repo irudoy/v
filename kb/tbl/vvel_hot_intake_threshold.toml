@@ -1,0 +1,46 @@
+summary = """
+Threshold of the hot-intake idle latch in FUN_00059C2C, looked up by the \
+coolant byte 0xFFFF1069 while the knock state 0xFFFF23C6.bit6 is clear. The \
+interpolated value goes to 0xFFFF34FA, and 0xFFFF4569.bit5 sets when \
+0xFFFF268C, plus ROM8[0x85D6] = 3 while the bit is set, reaches it. \
+0xFFFF455B.bit7, the hot-intake idle request of the VVEL modes 12 and 13, \
+requires this latch. Stock 255, 255, 255, 255, 255, 130, 110, 90."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f88"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+0xFFFF268C; proposed editor-grid inverse x. Origin: the byte comparison in \
+FUN_00059C2C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c3c"
+
+[[link]]
+type = "axis"
+to = "vvel_hot_intake_threshold_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c48"
+
+[[link]]
+type = "reader"
+to = "mysterious-pegasus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c3c"

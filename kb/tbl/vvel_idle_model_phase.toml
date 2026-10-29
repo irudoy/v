@@ -1,0 +1,61 @@
+summary = """
+Phase of the trimmed valve event pair of the VVEL idle-model stage \
+FUN_00057322, zero at 0x8000 and 0.5 per count, looked up by engine speed \
+and the VVEL load word 0xFFFF238A. With ROM8[0x8957].bit5 set (stock 0x3A), \
+the stage writes 0xFFFFA1E0 = 0.5 * (raw - 0x8000) and centers the trimmed \
+events 0xFFFFA1E4 and 0xFFFFA1E8 at 478 - 0xFFFFA1E0, where 478 = 450 + \
+ROM16[0x8D8E] / 512; with the bit clear, the value adds to 478 - 0.5 * \
+(0xFFFFA1EC + 0xFFFFA1F0). The mode 5 VTC target is 478 minus the mean of \
+the blended events 0xFFFFA1B8 and 0xFFFFA1BC. Stock offsets are 0..120 \
+counts."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00010ace"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
+degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals \
+0.5 at 0x5750C and -16384.0 at 0x57640."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057382"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 16
+mode = "base"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 64
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "translucent-cicada/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057382"

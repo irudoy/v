@@ -1,0 +1,34 @@
+level = "code"
+home = "jk78c"
+quantity = "load"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ef4"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: the load coordinate \
+0xFFFF238A of intake_cvtc_target_throttled/tbl. Recorded code \
+interpretation: Load axis of the idle-model duration 0x0000F54E and phase \
+0x00010ACE in FUN_00057322, 8192..65535; the coordinate is the VVEL load \
+word 0xFFFF238A. The reader addresses it at offset 0x40 from the literal \
+0x00016EB4."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 64
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "translucent-cicada/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 64
+mode = "base"

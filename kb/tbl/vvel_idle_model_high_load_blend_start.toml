@@ -1,0 +1,51 @@
+summary = """
+Load at which the VVEL idle-model stage FUN_00057208 starts to blend toward \
+the high-load event pair, at 100/65536 percent per count and looked up by \
+engine speed. The weight 0xFFFFA1D0 is (load - start) / (end - start), \
+clamped to 0..1, with the VVEL load word 0xFFFF238A and the end curve \
+0x000162CA. The stage writes 0xFFFFA1C8 = w * upper + (1 - w) * 0xFFFFA1E4 \
+and 0xFFFFA1CC = w * lower + (1 - w) * 0xFFFFA1E8. The reader addresses it \
+at offset 0x20 from the literal 0x000162CA. Stock 61440 = 93.75 % through \
+the eighth point, 57344 and 53248 at the ninth and tenth, and 1 above."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000162ea"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: the float literal \
+100/65536 at 0x574C0."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:0005721a"
+value = 32
+mode = "base"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_high_load_blend_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005721a"
+value = 64
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "stylish-shrew/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005721a"
+value = 32
+mode = "base"

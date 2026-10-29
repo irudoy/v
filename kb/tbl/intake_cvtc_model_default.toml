@@ -1,0 +1,55 @@
+summary = """
+Intake VTC state word of the state codes 1 and 3 in FUN_000657E4: the VVEL \
+mode 3 and every mode without its own code, whose duration word comes from \
+0x00016D14. The dispatcher reads it over the axes of 0x000100CE while \
+0xFFFF23CB.bit7 is set; with the bit clear the word is zero. Every stock \
+cell is zero, so the stock word is zero in both cases."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000106ce"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; \
+proposed editor-grid inverse x/0.5. Origin: the zero-phase fallback of the \
+VTC word in FUN_000657E4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006650a"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_model_running_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664d0"
+
+[[link]]
+type = "axis"
+to = "vvel_duration_throttled_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000664cc"
+
+[[link]]
+type = "reader"
+to = "icy-platypus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006650a"

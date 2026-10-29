@@ -1,0 +1,46 @@
+summary = """
+Pass count of the full idle-model floor weight in FUN_00056DCA, looked up by \
+the demand margin over the axis 0x00016BD4. While the floor is engaged, the \
+weight is 10000 as long as the engaged-pass counter 0xFFFFA366 does not \
+exceed this value; afterwards the weight 0xFFFFA35C steps down by 0x00016BE4 \
+per pass. The weight is zero while the floor is not engaged. Stock 15, 17, \
+20, 20, 15, 10, 10, 10."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d04"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x passes; \
+proposed editor-grid inverse x. Origin: the counter comparison in \
+FUN_00056DCA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fbc"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_margin_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fc0"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fbc"

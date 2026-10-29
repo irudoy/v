@@ -1,0 +1,33 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016bd4"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the float literals 512.0 at \
+0x571D4 and 90.0 at 0x571CC. Recorded code interpretation: Demand-margin \
+axis of the idle-model floor hold 0x00016D04 and release step 0x00016BE4 in \
+FUN_00056DCA at 1/512 per count, 2560..20480 = 5.0..40.0. The coordinate is \
+min(margin, 90.0) * 512, where the margin is the demand argument / 512 minus \
+the model duration while the floor is engaged and the held margin \
+otherwise."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fc0"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fc0"

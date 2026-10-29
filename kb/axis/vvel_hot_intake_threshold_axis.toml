@@ -1,0 +1,30 @@
+level = "code"
+home = "jk78c"
+quantity = "temp"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014208"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x-50 degC; \
+proposed editor-grid inverse x+50. Origin: the coolant byte 0xFFFF1069 of \
+vvel_cold_axis/axis. Recorded code interpretation: Coolant axis of the \
+hot-intake idle thresholds 0x00013F88 and 0x00013F90 in FUN_00059C2C, \
+90..160; the coordinate is the coolant byte 0xFFFF1069."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c48"
+
+[[link]]
+type = "reader"
+to = "mysterious-pegasus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c48"

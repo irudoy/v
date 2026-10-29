@@ -1,0 +1,52 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017004"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
+proposed editor-grid inverse x*512. Origin: the float literals 512.0 at \
+0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of \
+the VVEL duration characteristic 0x00015AA2 at 1/512 per count, 12800..48640 \
+= 25.0..95.0. FUN_00055E78 indexes it with its lookup duration x512, and \
+FUN_00055F2C and FUN_00055FF2 read it as the result of the inverse lookup \
+over 0x00015AA2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055eb4"
+
+[[link]]
+type = "reader"
+to = "lumpy-penguin/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055eb4"
+
+[[link]]
+type = "reader"
+to = "mahogany-seahorse/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055f9e"
+
+[[link]]
+type = "reader"
+to = "pistachio-crow/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000560d6"

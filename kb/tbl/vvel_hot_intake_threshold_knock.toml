@@ -1,0 +1,45 @@
+summary = """
+Threshold of the hot-intake idle latch in FUN_00059C2C while the knock state \
+0xFFFF23C6.bit6 is set; the reader adds 8 to the literal 0x00013F88. The \
+rest of the latch follows 0x00013F88. Stock 90, 70, 50, 50, 50, 50, 50, 50."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f90"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+0xFFFF268C; proposed editor-grid inverse x. Origin: the byte comparison in \
+FUN_00059C2C."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:00059c3c"
+value = 8
+mode = "base"
+
+[[link]]
+type = "axis"
+to = "vvel_hot_intake_threshold_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059c48"
+
+[[link]]
+type = "reader"
+to = "mysterious-pegasus/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:00059c3c"
+value = 8
+mode = "base"

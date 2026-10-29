@@ -1,0 +1,46 @@
+summary = """
+Duration of the high-load valve event pair of the VVEL idle-model stage \
+FUN_00057208, looked up by engine speed. The stage places the high-load \
+events 0xFFFFA1D4 and 0xFFFFA1D8 at C +/- 0.01 * raw, with C = 478 - 0.5 * \
+(0x00016F14 - 0x8000), and blends them with the events 0xFFFFA1E4 and \
+0xFFFFA1E8 of FUN_00057322 by the load weight 0xFFFFA1D0. The half-span 0.01 \
+* raw equals twice a duration of 0.005 * raw. Stock 10000..14400."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016d34"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
+proposed editor-grid inverse x/0.005. Origin: the float literal 0.01 at \
+0x574BC and the factor 2 of the event half-span in FUN_00057322."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057224"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_high_load_duration_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057228"
+
+[[link]]
+type = "reader"
+to = "stylish-shrew/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057224"

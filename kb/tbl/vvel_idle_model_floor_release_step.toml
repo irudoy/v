@@ -1,0 +1,47 @@
+summary = """
+Per-pass decrement of the idle-model floor weight 0xFFFFA35C in FUN_00056DCA \
+after the hold of 0x00016D04, looked up by the demand margin over the axis \
+0x00016BD4; the full weight is 10000. The reader addresses it at offset 0x10 \
+from the literal 0x00016BD4. Stock 500, 500, 500, 500, 700, 1500, 1500, \
+1500."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016be4"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/10000 of the \
+full weight; proposed editor-grid inverse x. Origin: the weight literal \
+10000 at 0x57068."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:00056fc0"
+value = 16
+mode = "base"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_margin_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00056fc0"
+
+[[link]]
+type = "reader"
+to = "wealthy-turaco/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:00056fc0"
+value = 16
+mode = "base"

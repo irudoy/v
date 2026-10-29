@@ -1,0 +1,45 @@
+summary = """
+Load at which the VVEL idle-model stage FUN_00057208 reaches the high-load \
+event pair, at 100/65536 percent per count and looked up by engine speed; \
+the start curve is 0x000162EA. Stock 63360 = 96.68 % through the eighth \
+point, 61440 and 57344 at the ninth and tenth, and 655 = 1.0 % above."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000162ca"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; \
+proposed editor-grid inverse x*65536/100. Origin: the float literal \
+100/65536 at 0x574C0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005721a"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_high_load_blend_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005721a"
+value = 64
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "stylish-shrew/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005721a"

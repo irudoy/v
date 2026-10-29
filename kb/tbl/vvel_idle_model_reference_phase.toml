@@ -1,0 +1,59 @@
+summary = """
+Stock-inert phase of the reference valve event pair of the VVEL idle-model \
+stage FUN_00057322, zero at 0x8000 and 0.5 per count, looked up by engine \
+speed and the VVEL load word 0xFFFF238A. The stage places the reference \
+events 0xFFFFA1F8 and 0xFFFFA1FC at C +/- 0.025 * (0xFFFF356C - 0xFFFF356E), \
+with C = 478 - 0.5 * (raw - 0x8000), and blends them with 0.05 * 0xFFFF356C \
+and 0.05 * 0xFFFF356E by the ramped weight 0xFFFFA358 into 0xFFFFA1EC and \
+0xFFFFA1F0. Those cells enter the duration and phase of the trimmed pair \
+only while ROM8[0x8957].bit5 is clear; stock ROM8[0x8957] = 0x3A sets the \
+bit, so no stock output depends on this surface."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000e4ce"
+note = """
+The surface carries no editor entry because the stock configuration never \
+uses its result."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057350"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_reference_phase_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005733c"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_reference_phase_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:0005733c"
+value = 48
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "translucent-cicada/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057350"
