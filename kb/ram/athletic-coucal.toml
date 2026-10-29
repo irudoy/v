@@ -35,6 +35,102 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe93a0"
+name = "towering-pogona"
+level = "code"
+note = """
+Controller 00095c30 maintains this 16-bit transition state through paired \
+curve lookups, shifted assignment and gated bounded decrement. Stores \
+00095c78 and 00095e64 write a byte-derived value shifted by 8; the decrement \
+zero-extends the stored word at 00095d42 and publishes the bounded low word \
+in delay slot 00095d5a. Its local active-mode control is fffe9475.bit2. \
+Coordinator 00096e2c reads the word at 000974d0 and publishes nonzero in \
+fffe9470.bit0 at 000974da. Function 00094ea8 loads this address as its \
+structure base but does not thereby establish an arithmetic read of the \
+state word. The telemetry field preserves the complete raw stored word; an \
+event-reader conversion, physical units, producer signedness and a common \
+mode encoding remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095c78"
+note = """
+The reviewed controller 00095c30 binds transition word fffe93a0 through \
+shifted assignment and gated bounded decrement. Coordinator 00096e2c \
+consumes its nonzero state. Local mode bit2 and nonzero bit0 are \
+target-specific; the telemetry field carries the complete raw stored word \
+without an event-reader conversion, physical conversion or \
+producer-signedness claim."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095d5a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095e64"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000974d0"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe93d0"
+name = "cooperative-coot"
+level = "code"
+note = """
+Controller 0009007c maintains this 16-bit transition state through paired \
+curve lookups, shifted assignment and gated bounded decrement. Stores \
+000900c4 and 0009031c write a byte-derived value shifted by 8; the decrement \
+zero-extends the stored word at 000901a2 and publishes the bounded low word \
+in delay slot 000901ba. Its local active-mode control is fffe94a5.bit4. \
+Coordinator 00091194 reads the word at 00091838 and publishes nonzero in \
+fffe94a0.bit1 at 00091842. The conditional arithmetic slice of 000741d8 \
+reads this word at 00074208, applies EXTU.W at 0007420c and SHLR8 at \
+0007420e, then subtracts the unsigned high byte from signed byte fffe92f9 \
+before a signed minimum. The telemetry field preserves the complete raw \
+stored word; physical units, producer signedness and a common mode encoding \
+remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000900c4"
+note = """
+The reviewed controller 0009007c binds transition word fffe93d0 through \
+shifted assignment and gated bounded decrement. Coordinator 00091194 \
+consumes its nonzero state; 000741d8 conditionally consumes its unsigned \
+high byte. Local mode bit4 differs from the reference layouts. The telemetry \
+field carries the complete raw stored word without a physical conversion or \
+producer-signedness claim."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000901ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009031c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00091838"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074208"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff23c2"
 name = "athletic-coucal"
@@ -143,28 +239,6 @@ note = """
 Unique aligned word access and review of controller 00082346 bind the \
 transition storage cell with shifted assignment and bounded decrement."""
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff23c2"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search returns no candidate. The telemetry word is \
-unavailable until a producer-consumer binding is reviewed."""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff23c2"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-The source-access search returns no candidate. The telemetry word is \
-unavailable until a producer-consumer binding is reviewed."""
-
 [[link]]
 type = "input"
 to = "heretic-condor/ram"
@@ -225,8 +299,36 @@ key = "Bounded knock event retard"
 [[link]]
 type = "writer"
 to = "nonlinear_transition_controller/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00064026"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000900c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000901ba"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0009031c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00095c78"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00095d5a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00095e64"

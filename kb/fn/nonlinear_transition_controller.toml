@@ -128,6 +128,82 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00095c30"
+level = "code"
+note = """
+The reviewed 1ME3B controller maintains word fffe93a0 with GBR=fffe93a0. \
+Mode fffe9475.bit2 selects its active branch. The clear-mode path converts a \
+bounded signed-coordinate difference through byte curve pair \
+00013571/0001320c using 0002ad6c, combines it with unsigned ratio byte \
+fffe8854, exchanges the curve arguments for the inverse lookup, bounds the \
+result and stores its low word after SHLL8 at 00095e64. The active branch \
+can initialize ROM8[00008b6b]<<8 at 00095c78, retains the state under its \
+gates, or subtracts ROM16[00008fb8] with a zero boundary before the \
+delay-slot store at 00095d5a. Zero clears mode bit2 at 00095d66. Coordinator \
+00096e2c calls the controller on both outer paths and publishes the state's \
+nonzero test in fffe9470.bit0. This target binding asserts no common mode \
+mask, physical unit or producer signedness."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095c30"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095c78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095d5a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00095e64"
+
+[[symbol]]
+layout = "1nd"
+address = "0009007c"
+level = "code"
+note = """
+The reviewed 1ND controller maintains word fffe93d0 with GBR=fffe93d0. Mode \
+fffe94a5.bit4 selects its active branch. The clear-mode path converts a \
+bounded signed-coordinate difference through the byte curve pair \
+0001381d/000134d8 using 000288e4, combines it with unsigned ratio byte \
+fffe88d4, exchanges the curve arguments for the inverse lookup, bounds the \
+result and stores its low word after SHLL8 at 0009031c. The active branch \
+can initialize ROM8[00008b1d]<<8 at 000900c4, retains the state under its \
+gates, or subtracts ROM16[00008f56] with a zero boundary before the \
+delay-slot store at 000901ba. Zero clears mode bit4 at 000901c6. Coordinator \
+00091194 calls the controller on both outer paths and publishes the state's \
+nonzero test in fffe94a0.bit1. This target binding asserts no common mode \
+mask, physical unit or producer signedness."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009007c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000900c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000901ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009031c"
+
+[[symbol]]
 layout = "7mfk"
 address = "00063f30"
 

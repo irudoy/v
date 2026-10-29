@@ -27,7 +27,6 @@ telemetry_unavailable = [
     "knock_state_snapshot_raw",
     "knock_timing_state_raw",
     "ltft_publication_neutral_control_raw",
-    "torque_transition_state_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -179,6 +178,7 @@ injection_0_raw = 0xFFFE93A6
 injection_1_raw = 0xFFFE93A8
 fuel_learning_permit_b_raw = 0xFFFE844A
 fuel_learning_permit_a_raw = 0xFFFE844B
+torque_transition_state_raw = 0xFFFE93A0
 knock_surface_state = 0xFFFE945B
 app1_raw = 0xFFFE96CE
 app2_raw = 0xFFFE96D2
@@ -274,7 +274,6 @@ telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
     "knock_branch_state_raw",
     "ltft_publication_neutral_control_raw",
-    "torque_transition_state_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -427,6 +426,7 @@ injection_0_raw = 0xFFFE93D6
 injection_1_raw = 0xFFFE93D8
 fuel_learning_permit_b_raw = 0xFFFE8482
 fuel_learning_permit_a_raw = 0xFFFE8483
+torque_transition_state_raw = 0xFFFE93D0
 knock_state_snapshot_raw = 0xFFFE9489
 knock_timing_state_raw = 0xFFFE8214
 knock_surface_state = 0xFFFE9488

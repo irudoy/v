@@ -55,7 +55,6 @@ def test_1nd_telemetry_correspondence_covers_the_complete_schema():
     unsupported = {row["key"] for row in rows if row["status"] == "unsupported"}
     assert unsupported == {
         "ltft_publication_neutral_control_raw",
-        "torque_transition_state_raw",
         "knock_branch_state_raw",
     }
     for row in rows:
