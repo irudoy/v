@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -41,7 +41,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015540"
-name = "cunning-goldfish"
+former = ["cunning-goldfish/tbl/7mfk-00015540"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -172,7 +172,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "00017a42"
-name = "pompous-monkey"
+former = ["pompous-monkey/tbl/jk00c-00017a42"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -188,7 +188,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017a62"
-name = "bouncy-bullfrog"
+former = ["bouncy-bullfrog/tbl/jk00d-00017a62"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -201,6 +201,25 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00016784"
+former = ["illegal-chihuahua/tbl/jk78c-00016784"]
+note = """
+FUN_0009248A uses this 32-word array as the search axis of coordinate curve \
+16944 on the upper inverse branch at 0009253A. Its input is divided by 16 \
+before interpolation, preserving the reciprocal role of JK08A 15540/156D0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00092536"
+to = "7mfk:00015540"
+note = """
+FUN_0009248A uses this 32-word array as the search axis of coordinate curve \
+16944 on the upper inverse branch at 0009253A. Its input is divided by 16 \
+before interpolation, preserving the reciprocal role of JK08A 15540/156D0."""
+
 [[link]]
 type = "depends"
 to = "happy-anteater/axis"
@@ -211,7 +230,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

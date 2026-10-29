@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "mindful-ibex/tbl"
+to = "flow_piecewise_source_lower/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -70,7 +70,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "rugged-gerbil/tbl"
+to = "flow_piecewise_source_upper/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -279,16 +279,16 @@ target table role."""
 
 [[link]]
 type = "input"
-to = "red-sidewinder/ram"
+to = "flow_piecewise_source_upper/tbl"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "rugged-gerbil/tbl"
+to = "red-sidewinder/ram"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
@@ -307,7 +307,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "mindful-ibex/tbl"
+to = "flow_piecewise_source_lower/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

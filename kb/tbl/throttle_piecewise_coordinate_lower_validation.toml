@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "caped-pelican/tbl"
+to = "throttle_piecewise_coordinate_upper_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -41,7 +41,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00018fd6"
-name = "spicy-marmoset"
+former = ["spicy-marmoset/tbl/7mfk-00018fd6"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -172,7 +172,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "0001c034"
-name = "nippy-vulture"
+former = ["nippy-vulture/tbl/jk00c-0001c034"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -188,7 +188,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001c056"
-name = "cute-jaguarundi"
+former = ["cute-jaguarundi/tbl/jk00d-0001c056"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -201,13 +201,24 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
-[[link]]
-type = "depends"
-to = "caped-pelican/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "from_map"
+[[symbol]]
+layout = "jk78c"
+address = "0001b30a"
+former = ["tricky-starling/tbl/jk78c-0001b30a"]
+note = """
+FUN_0009265E selects this 32-word returned-coordinate curve over 1B1AA on \
+the lower inverse branch at 00092696. FUN_00093C40 independently uses that \
+pair before 1950C at 00093C7E, preserving JK08A 18FD6/18E86."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009267c"
+to = "7mfk:00018fd6"
+note = """
+FUN_0009265E selects this 32-word returned-coordinate curve over 1B1AA on \
+the lower inverse branch at 00092696. FUN_00093C40 independently uses that \
+pair before 1950C at 00093C7E, preserving JK08A 18FD6/18E86."""
 
 [[link]]
 type = "depends"
@@ -216,6 +227,14 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "throttle_piecewise_coordinate_upper_validation/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
 
 [[link]]
 type = "reader"

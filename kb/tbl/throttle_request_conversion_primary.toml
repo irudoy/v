@@ -81,7 +81,7 @@ supports = "identity"
 [[symbol]]
 layout = "1me3b"
 address = "0000fa7c"
-name = "glistening-tamarin"
+former = ["glistening-tamarin/tbl/1me3b-0000fa7c"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -96,7 +96,7 @@ and 000158a6 at the same call ordinal through 0002a388"""
 [[symbol]]
 layout = "1nd"
 address = "00010048"
-name = "outgoing-bumblebee"
+former = ["outgoing-bumblebee/tbl/1nd-00010048"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -108,7 +108,7 @@ note = "unique structural accessor pair preserves interpolation-call order"
 [[symbol]]
 layout = "7mfk"
 address = "0000e98e"
-name = "arcane-griffin"
+former = ["arcane-griffin/tbl/7mfk-0000e98e"]
 
 [[symbol.evidence]]
 kind = "registry"
@@ -151,7 +151,7 @@ value = "QH0/ Torque Conversion Map|Requested Torque (x*0.1)-3276.8"
 [[symbol]]
 layout = "jk00c"
 address = "00010492"
-name = "colossal-kingfisher"
+former = ["colossal-kingfisher/tbl/jk00c-00010492"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -167,7 +167,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "000104a2"
-name = "belligerent-ladybug"
+former = ["belligerent-ladybug/tbl/jk00d-000104a2"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -183,7 +183,7 @@ correspondence"""
 [[symbol]]
 layout = "jk78c"
 address = "0000face"
-name = "vague-termite"
+former = ["vague-termite/tbl/jk78c-0000face"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"

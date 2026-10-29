@@ -12,7 +12,7 @@ fields = ["role", "semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -206,3 +206,15 @@ supports = "identity"
 at = "7mfk:00047a9a"
 value = {named = ["0000870c", "0001473a"], span = 1}
 key = "linked"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:0001473a"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+No accepted JK78C reader is established for the JK08A 1473A implicit \
+threshold curve. Its JK08A branch is disabled by the stock ROM selector; \
+that canonical inactivity does not establish target absence or inactivity."""

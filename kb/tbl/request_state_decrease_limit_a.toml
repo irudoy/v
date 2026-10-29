@@ -67,7 +67,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00014304"
-name = "enchanted-tuatara"
+former = ["enchanted-tuatara/tbl/7mfk-00014304"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -139,7 +139,7 @@ relies = "level"
 [[symbol]]
 layout = "jk00c"
 address = "000166f6"
-name = "provocative-cockle"
+former = ["provocative-cockle/tbl/jk00c-000166f6"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -154,7 +154,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00016716"
-name = "awesome-rhino"
+former = ["awesome-rhino/tbl/jk00d-00016716"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -165,6 +165,27 @@ value = "00016716"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000156bc"
+former = ["nocturnal-jerboa/tbl/jk78c-000156bc"]
+note = """
+FUN_00094362 selects this 8-word implicit curve for an in-range byte \
+selector and forms the lookup coordinate as saturated FFFF11FA << 7. The \
+result limits a descending update of FFFF17D4, preserving the first branch \
+of JK08A FUN_00074E4E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00094418"
+to = "7mfk:00014304"
+note = """
+FUN_00094362 selects this 8-word implicit curve for an in-range byte \
+selector and forms the lookup coordinate as saturated FFFF11FA << 7. The \
+result limits a descending update of FFFF17D4, preserving the first branch \
+of JK08A FUN_00074E4E."""
 
 [[link]]
 type = "index"

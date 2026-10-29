@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_upper_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -59,14 +59,14 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_upper_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

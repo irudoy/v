@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "horned-hedgehog/tbl"
+to = "throttle_request_conversion_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -116,7 +116,7 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "horned-hedgehog/tbl"
+to = "throttle_request_conversion_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

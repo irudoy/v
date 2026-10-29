@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "horned-hedgehog/tbl"
+to = "throttle_request_conversion_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -64,7 +64,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00018ac6"
-name = "groovy-clam"
+former = ["groovy-clam/tbl/7mfk-00018ac6"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -95,7 +95,7 @@ value = "QH0/ Torque Conversion Map Trustful|Axis Percentage (x*0.00152588)"
 [[symbol]]
 layout = "jk00c"
 address = "0001bb14"
-name = "agile-perch"
+former = ["agile-perch/tbl/jk00c-0001bb14"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -111,7 +111,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001bb36"
-name = "incredible-puma"
+former = ["incredible-puma/tbl/jk00d-0001bb36"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -124,9 +124,30 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001ae5a"
+former = ["free-alligator/tbl/jk78c-0001ae5a"]
+note = """
+FUN_00092E48 interpolates the 1950C request surface across 1A8EA RPM rows, \
+uses its temporary row as the search axis and this 16-word table as returned \
+coordinates at 00092FEE. This preserves JK08A FUN_00073628 and its 18AC6 \
+inverse operand."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00092fe8"
+to = "7mfk:00018ac6"
+note = """
+FUN_00092E48 interpolates the 1950C request surface across 1A8EA RPM rows, \
+uses its temporary row as the search axis and this 16-word table as returned \
+coordinates at 00092FEE. This preserves JK08A FUN_00073628 and its 18AC6 \
+inverse operand."""
+
 [[link]]
 type = "depends"
-to = "horned-hedgehog/tbl"
+to = "throttle_request_conversion_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

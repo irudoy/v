@@ -81,7 +81,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-jackrabbit/tbl"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -97,7 +97,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

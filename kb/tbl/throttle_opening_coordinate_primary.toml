@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -93,7 +93,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "000155a0"
-name = "monumental-snake"
+former = ["monumental-snake/tbl/7mfk-000155a0"]
 
 [[symbol.evidence]]
 kind = "registry"
@@ -182,7 +182,7 @@ relies = "structure"
 [[symbol]]
 layout = "jk00c"
 address = "00017aa2"
-name = "ingenious-starling"
+former = ["ingenious-starling/tbl/jk00c-00017aa2"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -198,7 +198,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017ac2"
-name = "cheerful-panda"
+former = ["cheerful-panda/tbl/jk00d-00017ac2"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -211,6 +211,39 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000167e4"
+former = ["skinny-salmon/tbl/jk78c-000167e4"]
+scale_level = "candidate"
+note = """
+FUN_0008DBA8 returns this 32-word angle coordinate over area curve 14538 at \
+0008DBC0. The source word FFFF199E is halved before the inverse lookup; the \
+result is written to FFFF3518. The physical percentage conversion of this \
+target layout is not independently traced here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0008dbae"
+to = "7mfk:000155a0"
+note = """
+FUN_0008DBA8 returns this 32-word angle coordinate over area curve 14538 at \
+0008DBC0. The source word FFFF199E is halved before the inverse lookup; the \
+result is written to FFFF3518. The physical percentage conversion of this \
+target layout is not independently traced here."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "throttle_opening_coordinate_primary/tbl/7mfk"
+relies = "scale"
+note = """
+The target percentage conversion is a candidate retained from the reviewed \
+7mfk counterpart scale. The matching inverse lookup establishes the raw \
+coordinate role; the JK78C path to absolute-throttle publication remains \
+unresolved."""
+
 [[link]]
 type = "depends"
 to = "courageous-puma/axis"
@@ -221,7 +254,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "muscular-leech/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "esoteric-salmon/tbl"
+to = "pedal_request_compensation_gain_q15/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

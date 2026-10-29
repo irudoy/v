@@ -39,7 +39,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "soft-rooster/tbl"
+to = "throttle_target_base_addend_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "zircon-copperhead/tbl"
+to = "throttle_target_base_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

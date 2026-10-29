@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -92,7 +92,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

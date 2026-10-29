@@ -101,14 +101,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "cocky-octopus/tbl"
 type = "reader"
 end = "to"
@@ -174,6 +166,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "throttle_container/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_request_conversion_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

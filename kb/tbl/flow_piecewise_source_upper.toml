@@ -55,7 +55,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015022"
-name = "rugged-gerbil"
+former = ["rugged-gerbil/tbl/7mfk-00015022"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -164,7 +164,7 @@ relies = "structure"
 [[symbol]]
 layout = "jk00c"
 address = "000174c4"
-name = "warping-bird"
+former = ["warping-bird/tbl/jk00c-000174c4"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -179,7 +179,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "000174e4"
-name = "tuscan-degu"
+former = ["tuscan-degu/tbl/jk00d-000174e4"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -190,6 +190,27 @@ value = "000174e4"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001625a"
+former = ["tuscan-ladybug/tbl/jk78c-0001625a"]
+note = """
+FUN_0003FCA4 selects the upper 16-word implicit branch for u >= 0x3C00, with \
+coordinate u - 0x3C00, and extracts the result's high byte. The lower branch \
+is 1627A at coordinate 4*u. This is a shared throttle/airflow dependency; no \
+physical input or output conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0003fd08"
+to = "7mfk:00015022"
+note = """
+FUN_0003FCA4 selects the upper 16-word implicit branch for u >= 0x3C00, with \
+coordinate u - 0x3C00, and extracts the result's high byte. The lower branch \
+is 1627A at coordinate 4*u. This is a shared throttle/airflow dependency; no \
+physical input or output conversion is asserted."""
 
 [[link]]
 type = "reader"

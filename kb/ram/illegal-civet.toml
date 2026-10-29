@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "monumental-snake/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_opening_coordinate_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -195,14 +195,14 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "monumental-snake/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "muscular-leech/tbl"
+to = "throttle_opening_coordinate_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

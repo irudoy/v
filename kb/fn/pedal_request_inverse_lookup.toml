@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "able-bison/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
+to = "throttle_request_inverse_coordinate_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "groovy-clam/tbl"
+to = "throttle_request_conversion_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "horned-hedgehog/tbl"
+to = "throttle_request_inverse_coordinate_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

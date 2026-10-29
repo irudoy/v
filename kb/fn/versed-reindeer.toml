@@ -28,7 +28,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-jackrabbit/tbl"
+to = "throttle_opening_coordinate_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "monumental-snake/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -60,7 +60,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -68,7 +68,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_upper_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -76,7 +76,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "translucent-cormorant/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

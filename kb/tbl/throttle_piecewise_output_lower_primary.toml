@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_output_upper_primary/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -42,7 +42,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015500"
-name = "snobbish-swan"
+former = ["snobbish-swan/tbl/7mfk-00015500"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -145,7 +145,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "00017a02"
-name = "prudent-pony"
+former = ["prudent-pony/tbl/jk00c-00017a02"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -161,7 +161,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017a22"
-name = "imperial-butterfly"
+former = ["imperial-butterfly/tbl/jk00d-00017a22"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -174,13 +174,26 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
-[[link]]
-type = "depends"
-to = "cunning-goldfish/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "from_map"
+[[symbol]]
+layout = "jk78c"
+address = "00016744"
+former = ["acoustic-carp/tbl/jk78c-00016744"]
+note = """
+FUN_000948F0 passes this 32-word array as the search axis of \
+returned-coordinate curve 16904 at 000949B6, before the FACE request \
+surface. It is the lower-output member of the reciprocal 16744/16904 pair, \
+corresponding to JK08A 15500/15690."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000949b2"
+to = "7mfk:00015500"
+note = """
+FUN_000948F0 passes this 32-word array as the search axis of \
+returned-coordinate curve 16904 at 000949B6, before the FACE request \
+surface. It is the lower-output member of the reciprocal 16744/16904 pair, \
+corresponding to JK08A 15500/15690."""
 
 [[link]]
 type = "depends"
@@ -189,6 +202,14 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "throttle_piecewise_output_upper_primary/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
 
 [[link]]
 type = "reader"

@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "enchanted-tuatara/tbl"
+to = "request_state_decrease_limit_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fractal-mussel/tbl"
+to = "request_state_decrease_limit_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

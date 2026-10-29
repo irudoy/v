@@ -59,7 +59,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-jackrabbit/tbl"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -75,7 +75,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -83,7 +83,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "translucent-cormorant/tbl"
+to = "throttle_piecewise_output_upper_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -309,13 +309,6 @@ passes it as the column of surface 0000face"""
 
 [[link]]
 type = "input"
-to = "arcane-jackrabbit/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
 to = "caped-hornet/ram"
 layouts = ["7mfk"]
 relies = "level"
@@ -323,21 +316,28 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "cunning-goldfish/tbl"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "translucent-cormorant/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_piecewise_output_upper_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

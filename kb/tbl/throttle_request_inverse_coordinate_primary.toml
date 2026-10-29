@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -72,7 +72,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00014114"
-name = "able-bison"
+former = ["able-bison/tbl/7mfk-00014114"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -138,7 +138,7 @@ value = "QH0/ Torque Conversion Map|Axis Percentage (x*0.00152588)"
 [[symbol]]
 layout = "jk00c"
 address = "000164e6"
-name = "daffodil-terrier"
+former = ["daffodil-terrier/tbl/jk00c-000164e6"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -154,7 +154,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00016506"
-name = "snobbish-booby"
+former = ["snobbish-booby/tbl/jk00d-00016506"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -167,9 +167,30 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001552c"
+former = ["rebel-stallion/tbl/jk78c-0001552c"]
+note = """
+FUN_00092C74 uses this 16-word coordinate as returned values over the \
+selected or locally RPM-interpolated FACE row at 00092D70 and 00092E0E. \
+FUN_000948F0 also passes it as the FACE coordinate axis at 000949C8, \
+preserving the JK08A 14114 inverse/forward pair."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00092d68"
+to = "7mfk:00014114"
+note = """
+FUN_00092C74 uses this 16-word coordinate as returned values over the \
+selected or locally RPM-interpolated FACE row at 00092D70 and 00092E0E. \
+FUN_000948F0 also passes it as the FACE coordinate axis at 000949C8, \
+preserving the JK08A 14114 inverse/forward pair."""
+
 [[link]]
 type = "depends"
-to = "arcane-griffin/tbl"
+to = "throttle_request_conversion_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

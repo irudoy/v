@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "dashing-mongrel/tbl"
+to = "throttle_piecewise_output_upper_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -40,7 +40,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00018e86"
-name = "passionate-junglefowl"
+former = ["passionate-junglefowl/tbl/7mfk-00018e86"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -122,7 +122,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "0001bee4"
-name = "godlike-mouflon"
+former = ["godlike-mouflon/tbl/jk00c-0001bee4"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -138,7 +138,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001bf06"
-name = "alluring-mamba"
+former = ["alluring-mamba/tbl/jk00d-0001bf06"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -151,9 +151,28 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001b1aa"
+former = ["debonair-uakari/tbl/jk78c-0001b1aa"]
+note = """
+FUN_00093044 selects this 32-word output curve over 1B30A for the lower \
+coordinate branch at 0009308C. It writes the unshifted result to FFFF1C7C, \
+preserving the JK08A 18E86/18FD6 reciprocal pair."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009308a"
+to = "7mfk:00018e86"
+note = """
+FUN_00093044 selects this 32-word output curve over 1B30A for the lower \
+coordinate branch at 0009308C. It writes the unshifted result to FFFF1C7C, \
+preserving the JK08A 18E86/18FD6 reciprocal pair."""
+
 [[link]]
 type = "depends"
-to = "dashing-mongrel/tbl"
+to = "throttle_piecewise_output_upper_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -123,7 +123,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015042"
-name = "mindful-ibex"
+former = ["mindful-ibex/tbl/7mfk-00015042"]
 
 [[symbol.evidence]]
 kind = "unbound-constant"
@@ -387,7 +387,7 @@ relies = "contract"
 [[symbol]]
 layout = "jk00c"
 address = "000174e4"
-name = "ludicrous-woodlouse"
+former = ["ludicrous-woodlouse/tbl/jk00c-000174e4"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -402,7 +402,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017504"
-name = "enthusiastic-coua"
+former = ["enthusiastic-coua/tbl/jk00d-00017504"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -413,6 +413,27 @@ value = "00017504"
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001627a"
+former = ["lumpy-lizard/tbl/jk78c-0001627a"]
+note = """
+FUN_0003FCA4 selects this 16-word implicit branch for u < 0x3C00 at \
+coordinate 4*u; the upper branch is 1625A at u - 0x3C00. The high byte is \
+written to FFFF115C. The shared reader pair is JK08A FUN_0003B498; no \
+physical conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0003fcfc"
+to = "7mfk:00015042"
+note = """
+FUN_0003FCA4 selects this 16-word implicit branch for u < 0x3C00 at \
+coordinate 4*u; the upper branch is 1625A at u - 0x3C00. The high byte is \
+written to FFFF115C. The shared reader pair is JK08A FUN_0003B498; no \
+physical conversion is asserted."""
 
 [[link]]
 type = "reader"

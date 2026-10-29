@@ -95,7 +95,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "00010b0e"
-name = "esoteric-salmon"
+former = ["esoteric-salmon/tbl/7mfk-00010b0e"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -347,7 +347,7 @@ key = "body"
 [[symbol]]
 layout = "jk00c"
 address = "00012892"
-name = "beryl-impala"
+former = ["beryl-impala/tbl/jk00c-00012892"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -363,7 +363,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "000128a2"
-name = "determined-leech"
+former = ["determined-leech/tbl/jk00d-000128a2"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -375,6 +375,27 @@ value = 5
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00011cce"
+former = ["shapeless-robin/tbl/jk78c-00011cce"]
+note = """
+FUN_000948F0 reads the 8x8 uint16 gain over 00015D22/00015D12 at 000949F4. \
+It takes the maximum with FFFF18CC, caps the gain at 40960 and applies the \
+nonnegative request difference with division by 32768, preserving the JK08A \
+FUN_000753D4 role."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000949e6"
+to = "7mfk:00010b0e"
+note = """
+FUN_000948F0 reads the 8x8 uint16 gain over 00015D22/00015D12 at 000949F4. \
+It takes the maximum with FFFF18CC, caps the gain at 40960 and applies the \
+nonnegative request difference with division by 32768, preserving the JK08A \
+FUN_000753D4 role."""
 
 [[link]]
 type = "reader"

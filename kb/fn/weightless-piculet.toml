@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "monumental-snake/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_opening_coordinate_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

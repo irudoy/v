@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-jackrabbit/tbl"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "translucent-cormorant/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

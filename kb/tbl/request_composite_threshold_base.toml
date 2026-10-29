@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 [[symbol]]
 layout = "7mfk"
 address = "00015062"
-name = "ivory-dormouse"
+former = ["ivory-dormouse/tbl/7mfk-00015062"]
 
 [[symbol.evidence]]
 kind = "unverified-site"
@@ -119,7 +119,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "00017504"
-name = "spectacular-crow"
+former = ["spectacular-crow/tbl/jk00c-00017504"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -135,7 +135,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017524"
-name = "dexterous-mongoose"
+former = ["dexterous-mongoose/tbl/jk00d-00017524"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -147,6 +147,35 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001629a"
+former = ["adamant-labradoodle/tbl/jk78c-0001629a"]
+note = """
+FUN_00092A80 reads this 16-word implicit table at 00092AD4, multiplies the \
+result by the 162BA lookup, adds 0x8000 and takes the high word at \
+00092B32..00092B3E. The composite threshold is written to FFFF1746 and \
+compared with request coordinates. This preserves the 15062/15082 operation \
+of JK08A FUN_000730FC; the physical quantities remain unknown."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092aca"
+to = "7mfk:0007314c"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00092ad0"
+to = "7mfk:00015062"
+note = """
+FUN_00092A80 preserves the implicit lookup and rounded-product threshold of \
+JK08A FUN_000730FC. The other five-table pipeline at 00092734 has a \
+different role."""
 
 [[link]]
 type = "reader"

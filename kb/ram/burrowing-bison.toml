@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "caped-pelican/tbl"
+to = "throttle_piecewise_coordinate_lower_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "dashing-mongrel/tbl"
+to = "throttle_piecewise_coordinate_upper_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "passionate-junglefowl/tbl"
+to = "throttle_piecewise_output_lower_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "spicy-marmoset/tbl"
+to = "throttle_piecewise_output_upper_validation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -145,20 +145,6 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "caped-pelican/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
-to = "dashing-mongrel/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
 to = "naughty-sheep/ram"
 layouts = ["7mfk"]
 relies = "level"
@@ -166,14 +152,28 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "passionate-junglefowl/tbl"
+to = "throttle_piecewise_coordinate_lower_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "spicy-marmoset/tbl"
+to = "throttle_piecewise_coordinate_upper_validation/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_piecewise_output_lower_validation/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_piecewise_output_upper_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "translucent-cormorant/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -41,7 +41,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015690"
-name = "arcane-jackrabbit"
+former = ["arcane-jackrabbit/tbl/7mfk-00015690"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -144,7 +144,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "00017b92"
-name = "bright-mule"
+former = ["bright-mule/tbl/jk00c-00017b92"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -160,7 +160,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017bb2"
-name = "ultra-manatee"
+former = ["ultra-manatee/tbl/jk00d-00017bb2"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -173,6 +173,25 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00016904"
+former = ["peridot-caterpillar/tbl/jk78c-00016904"]
+note = """
+FUN_000948F0 interpolates this 32-word returned-coordinate curve over 16744 \
+at 000949B6 and passes the result into FACE. FUN_0009248A also reads the \
+same lower inverse pair at 000924F8, corresponding to JK08A 15690/15500."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000949b0"
+to = "7mfk:00015690"
+note = """
+FUN_000948F0 interpolates this 32-word returned-coordinate curve over 16744 \
+at 000949B6 and passes the result into FACE. FUN_0009248A also reads the \
+same lower inverse pair at 000924F8, corresponding to JK08A 15690/15500."""
+
 [[link]]
 type = "depends"
 to = "sepia-crocodile/axis"
@@ -183,7 +202,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "translucent-cormorant/tbl"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

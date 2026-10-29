@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "ivory-dormouse/tbl"
+to = "request_composite_threshold_base/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -81,7 +81,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00015082"
-name = "ruddy-harrier"
+former = ["ruddy-harrier/tbl/7mfk-00015082"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -241,7 +241,7 @@ value = "65535/65536=0.9999847412109375"
 [[symbol]]
 layout = "jk00c"
 address = "00017524"
-name = "juicy-malkoha"
+former = ["juicy-malkoha/tbl/jk00c-00017524"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -257,7 +257,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00017544"
-name = "complex-lizard"
+former = ["complex-lizard/tbl/jk00d-00017544"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -270,9 +270,31 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000162ba"
+former = ["towering-mosquito/tbl/jk78c-000162ba"]
+note = """
+FUN_00092A80 reads this 8-word implicit table at 00092B2E with a saturated \
+coordinate shifted left by seven. The zero-extended result multiplies the \
+1629A lookup; addition of 0x8000 and extraction of the high word form \
+threshold FFFF1746 at 00092B32..00092B44, preserving the JK08A 15082 UQ0.16 \
+coefficient role. The indexing and compared physical quantities remain \
+unknown."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00092b28"
+to = "7mfk:00015082"
+note = """
+The paired reader FUN_00092A80 preserves the 15062/15082 lookup order, the \
+implicit eight-point coefficient and the rounded product divided by 65536 of \
+JK08A FUN_000730FC."""
+
 [[link]]
 type = "depends"
-to = "ivory-dormouse/tbl"
+to = "request_composite_threshold_base/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

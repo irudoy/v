@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "organic-inchworm/tbl"
+to = "throttle_opening_coordinate_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -80,7 +80,7 @@ supports = "identity"
 [[symbol]]
 layout = "1me3b"
 address = "0001b078"
-name = "steadfast-seahorse"
+former = ["steadfast-seahorse/tbl/1me3b-0001b078"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -95,7 +95,7 @@ eight exact-bytes pairs 0005533e 00055826 00055f64 00055fd2 000569e8 \
 [[symbol]]
 layout = "1nd"
 address = "0001af9e"
-name = "conscious-crane"
+former = ["conscious-crane/tbl/1nd-0001af9e"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -107,7 +107,7 @@ note = "unique structural pair preserves interpolation-call order"
 [[symbol]]
 layout = "7mfk"
 address = "00018766"
-name = "discreet-mayfly"
+former = ["discreet-mayfly/tbl/7mfk-00018766"]
 
 [[symbol.evidence]]
 kind = "registry"
@@ -164,7 +164,7 @@ value = "Target Throttle Valve Opening Table (Trustful)|Opening Area (x*0.0008)"
 [[symbol]]
 layout = "jk00c"
 address = "0001b6f4"
-name = "glorious-otter"
+former = ["glorious-otter/tbl/jk00c-0001b6f4"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -180,7 +180,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001b716"
-name = "imposing-gecko"
+former = ["imposing-gecko/tbl/jk00d-0001b716"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -196,7 +196,7 @@ correspondence"""
 [[symbol]]
 layout = "jk78c"
 address = "0001a94a"
-name = "godlike-tuna"
+former = ["godlike-tuna/tbl/jk78c-0001a94a"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -217,7 +217,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "organic-inchworm/tbl"
+to = "throttle_opening_coordinate_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

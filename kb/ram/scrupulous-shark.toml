@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -95,13 +95,6 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "arcane-griffin/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
 to = "khaki-antelope/ram"
 layouts = ["7mfk"]
 relies = "level"
@@ -112,6 +105,13 @@ type = "input"
 to = "request_flow/ram"
 layouts = ["7mfk"]
 relies = "level"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "throttle_request_conversion_primary/tbl"
+layouts = ["7mfk"]
+relies = "structure"
 supports = "identity"
 
 [[link]]

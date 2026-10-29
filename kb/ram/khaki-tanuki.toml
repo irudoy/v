@@ -10,7 +10,7 @@ at = "7mfk:000747c0"
 
 [[link]]
 type = "lookup"
-to = "esoteric-salmon/tbl"
+to = "pedal_request_compensation_gain_q15/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -107,7 +107,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00012daa"
-name = "flat-fennec"
+former = ["flat-fennec/tbl/7mfk-00012daa"]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -281,6 +281,25 @@ value = "TVO Upper Limit Table"
 kind = "registry"
 supports = "scale"
 value = "TVO Upper Limit Table 2"
+
+[[symbol]]
+layout = "jk78c"
+address = "000141c0"
+former = ["inquisitive-crayfish/tbl/jk78c-000141c0"]
+note = """
+FUN_0008DCF2 reads the 8-byte curve over 000141B0 at 0008DEB0. The result is \
+multiplied by 13 and bounded by calibrated word limits before the channel \
+target is clipped, preserving the JK08A FUN_0006F48C operand role."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0008dea6"
+to = "7mfk:00012daa"
+note = """
+FUN_0008DCF2 reads the 8-byte curve over 000141B0 at 0008DEB0. The result is \
+multiplied by 13 and bounded by calibrated word limits before the channel \
+target is clipped, preserving the JK08A FUN_0006F48C operand role."""
 
 [[link]]
 type = "depends"

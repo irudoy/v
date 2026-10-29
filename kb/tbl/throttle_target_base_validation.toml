@@ -84,7 +84,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "soft-rooster/tbl"
+to = "throttle_target_base_addend_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -94,7 +94,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00018c96"
-name = "zircon-copperhead"
+former = ["zircon-copperhead/tbl/7mfk-00018c96"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -329,7 +329,7 @@ value = "ISC Opening Area Upper Limit Table 2"
 [[symbol]]
 layout = "jk00c"
 address = "0001bd04"
-name = "mini-goshawk"
+former = ["mini-goshawk/tbl/jk00c-0001bd04"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -345,7 +345,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001bd26"
-name = "puzzling-angelfish"
+former = ["puzzling-angelfish/tbl/jk00d-0001bd26"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -358,9 +358,30 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001b04a"
+former = ["silver-dormouse/tbl/jk78c-0001b04a"]
+note = """
+FUN_0009175C reads this 16-word implicit base curve at 0009176E with \
+FFFF1067 << 8, then adds the 1B02A lookup, saturates and caps the sum. The \
+code role corresponds to JK08A 18C96; its catalog opening-area conversion \
+remains candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00091762"
+to = "7mfk:00018c96"
+note = """
+FUN_0009175C reads this 16-word implicit base curve at 0009176E with \
+FFFF1067 << 8, then adds the 1B02A lookup, saturates and caps the sum. The \
+code role corresponds to JK08A 18C96; its catalog opening-area conversion \
+remains candidate."""
+
 [[link]]
 type = "depends"
-to = "soft-rooster/tbl"
+to = "throttle_target_base_addend_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

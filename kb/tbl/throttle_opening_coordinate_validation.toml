@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -79,7 +79,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -89,7 +89,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "000190d0"
-name = "organic-inchworm"
+former = ["organic-inchworm/tbl/7mfk-000190d0"]
 
 [[symbol.evidence]]
 kind = "registry"
@@ -146,7 +146,7 @@ value = "Target Throttle Valve Opening Table (Trustful)|Degrees (x*0.0275)"
 [[symbol]]
 layout = "jk00c"
 address = "0001c1de"
-name = "brave-llama"
+former = ["brave-llama/tbl/jk00c-0001c1de"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -162,7 +162,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001c200"
-name = "hopping-dove"
+former = ["hopping-dove/tbl/jk00d-0001c200"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -175,13 +175,24 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
-[[link]]
-type = "depends"
-to = "discreet-mayfly/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = ["identity", "scale"]
-role = "from_map"
+[[symbol]]
+layout = "jk78c"
+address = "0001b4aa"
+former = ["diamond-toucanet/tbl/jk78c-0001b4aa"]
+note = """
+FUN_000917EC returns this 32-word angle coordinate over 1A94A at 000917FE, \
+using half of FFFF1C76 and writing FFFF1C82. The forward consumer \
+FUN_00093044 uses the same pair at 0009305C, preserving JK08A 190D0/18766."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000917f2"
+to = "7mfk:000190d0"
+note = """
+FUN_000917EC returns this 32-word angle coordinate over 1A94A at 000917FE, \
+using half of FFFF1C76 and writing FFFF1C82. The forward consumer \
+FUN_00093044 uses the same pair at 0009305C, preserving JK08A 190D0/18766."""
 
 [[link]]
 type = "depends"
@@ -190,6 +201,14 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "throttle_angle_to_area_validation/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+role = "from_map"
 
 [[link]]
 type = "reader"

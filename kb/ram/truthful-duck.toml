@@ -32,14 +32,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arcane-griffin/tbl"
-type = "input"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "khaki-aardwolf/tbl"
 type = "lookup"
 end = "owner"
@@ -50,6 +42,14 @@ supports = "identity"
 role = "from_map"
 to = "poetic-stallion/tbl"
 type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_request_conversion_primary/tbl"
+type = "input"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -157,7 +157,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "arcane-griffin/tbl"
+to = "throttle_request_conversion_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

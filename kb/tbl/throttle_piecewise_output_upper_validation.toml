@@ -36,7 +36,7 @@ scale = [11, 12, 13, 14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "passionate-junglefowl/tbl"
+to = "throttle_piecewise_output_lower_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -55,7 +55,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00018e46"
-name = "dashing-mongrel"
+former = ["dashing-mongrel/tbl/7mfk-00018e46"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -186,7 +186,7 @@ key = "reference"
 [[symbol]]
 layout = "jk00c"
 address = "0001bea4"
-name = "hopeful-mouse"
+former = ["hopeful-mouse/tbl/jk00c-0001bea4"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -202,7 +202,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001bec6"
-name = "clever-dragonfly"
+former = ["clever-dragonfly/tbl/jk00d-0001bec6"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -215,6 +215,26 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001b16a"
+former = ["faithful-koala/tbl/jk78c-0001b16a"]
+unit = "FFFF1C7C internal units"
+note = """
+FUN_00093044 selects this 32-word output curve over 1B2CA for the upper \
+coordinate branch at 00093098, multiplies the lookup result by 16 and writes \
+the combined uint32 output to FFFF1C7C. This preserves JK08A 18E46/18F96."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00093094"
+to = "7mfk:00018e46"
+note = """
+FUN_00093044 selects this 32-word output curve over 1B2CA for the upper \
+coordinate branch at 00093098, multiplies the lookup result by 16 and writes \
+the combined uint32 output to FFFF1C7C. This preserves JK08A 18E46/18F96."""
+
 [[link]]
 type = "depends"
 to = "arboreal-cormorant/axis"
@@ -225,7 +245,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "passionate-junglefowl/tbl"
+to = "throttle_piecewise_output_lower_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

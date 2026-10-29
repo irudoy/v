@@ -71,7 +71,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00012db2"
-name = "singing-goshawk"
+former = ["singing-goshawk/tbl/7mfk-00012db2"]
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -223,6 +223,27 @@ supports = "scale"
 at = "7mfk:00072616"
 value = {named = ["00012db2", "0001632c", "0001632e", "00026474", "00026740", "00026944", "00026c78", "0007249e"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "000141c8"
+former = ["ultra-silkworm/tbl/jk78c-000141c8"]
+note = """
+FUN_00091878 reads the 8-byte curve over 000141B8 at 000919B4. The result is \
+multiplied by 13 and bounded before limiting the channel target, preserving \
+the JK08A FUN_0007249E role. The catalog engineering conversion remains \
+candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000919ac"
+to = "7mfk:00012db2"
+note = """
+FUN_00091878 reads the 8-byte curve over 000141B8 at 000919B4. The result is \
+multiplied by 13 and bounded before limiting the channel target, preserving \
+the JK08A FUN_0007249E role. The catalog engineering conversion remains \
+candidate."""
 
 [[link]]
 type = "reader"

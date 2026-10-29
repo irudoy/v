@@ -173,6 +173,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:0000bb5a"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+No accepted JK78C homolog of the JK08A BB5A 8x8 flag-setting threshold is \
+established. FUN_00093534 instead reads two 16x16 centered-output surfaces \
+18E8C/1908C and writes FFFF1C94/FFFF1C96; that reader is not a qualified \
+counterpart of FUN_00073BDC. No absence is claimed."""
+
 [[link]]
 type = "reader"
 to = "faithful-carp/fn"

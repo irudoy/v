@@ -48,7 +48,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "flat-fennec/tbl"
+to = "throttle_target_upper_bound_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

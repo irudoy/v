@@ -26,7 +26,7 @@ scale = [1]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -122,7 +122,7 @@ note = "unique structural axis pair preserves interpolation-call order"
 
 [[link]]
 type = "depends"
-to = "discreet-mayfly/tbl"
+to = "throttle_angle_to_area_validation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "scale"

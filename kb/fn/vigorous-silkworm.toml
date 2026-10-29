@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "horned-hedgehog/tbl"
+to = "throttle_piecewise_output_lower_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -60,7 +60,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "passionate-junglefowl/tbl"
+to = "throttle_request_conversion_validation/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

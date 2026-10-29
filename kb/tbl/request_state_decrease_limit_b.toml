@@ -55,7 +55,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00014314"
-name = "fractal-mussel"
+former = ["fractal-mussel/tbl/7mfk-00014314"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -113,7 +113,7 @@ relies = "level"
 [[symbol]]
 layout = "jk00c"
 address = "00016706"
-name = "electric-shellfish"
+former = ["electric-shellfish/tbl/jk00c-00016706"]
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -129,7 +129,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00016726"
-name = "mahogany-bulldog"
+former = ["mahogany-bulldog/tbl/jk00d-00016726"]
 
 [[symbol.evidence]]
 kind = "masked-match"
@@ -141,6 +141,28 @@ value = 102
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000156cc"
+former = ["passionate-caterpillar/tbl/jk78c-000156cc"]
+note = """
+FUN_00094362 selects base 000156BC + 0x10 for the out-of-range selector \
+branch at 00094442..00094444. The common call 0009444A limits a descending \
+FFFF17D4 update with the selected decrement, preserving the second JK08A \
+FUN_00074E4E branch."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00094442"
+value = 16
+mode = "base"
+note = """
+FUN_00094362 selects base 000156BC + 0x10 for the out-of-range selector \
+branch at 00094442..00094444. The common call 0009444A limits a descending \
+FFFF17D4 update with the selected decrement, preserving the second JK08A \
+FUN_00074E4E branch."""
 
 [[link]]
 type = "reader"

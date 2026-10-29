@@ -15,7 +15,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "flat-fennec/tbl"
+to = "throttle_target_upper_bound_primary/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "flat-fennec/tbl"
+to = "throttle_target_upper_bound_primary/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

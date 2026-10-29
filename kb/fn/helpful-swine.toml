@@ -34,14 +34,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-goldfish/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "ivory-gecko/tbl"
 type = "reader"
 end = "to"
@@ -50,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "monumental-snake/tbl"
+to = "throttle_angle_to_area_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -58,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "muscular-leech/tbl"
+to = "throttle_opening_coordinate_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -66,7 +58,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "snobbish-swan/tbl"
+to = "throttle_piecewise_output_lower_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_piecewise_output_upper_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

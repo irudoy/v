@@ -152,7 +152,7 @@ stock 0x89fb.bit5 set, coefficient max(ffff18c8, lookup 0x10b0e), capped at \
 32768.\",\"sign\":\"positive\",\"to\":\"maize-firefly/ram\",\"via\":[\"pedal_request_compensator/fn\"]}"""
 
 [[step]]
-from = "esoteric-salmon/tbl"
+from = "pedal_request_compensation_gain_q15/tbl"
 to = "maize-firefly/ram"
 effect = "multiplies"
 sign = "positive"
@@ -252,7 +252,7 @@ with 0x89fb.bit5 clear it copies \
 ffff19d0.\",\"sign\":\"positive\",\"to\":\"maize-firefly/ram\",\"via\":[\"pedal_request_compensator/fn\"]}"""
 
 [[step]]
-from = "arcane-griffin/tbl"
+from = "throttle_request_conversion_primary/tbl"
 to = "maize-firefly/ram"
 effect = "looks-up"
 sign = "none"
@@ -293,7 +293,7 @@ the lesser of it and the 0xe98e cap as APP request \
 ffff243c.\",\"sign\":\"positive\",\"to\":\"vigorous-binturong/ram\",\"via\":[\"pedal_request_inverse_lookup/fn\"]}"""
 
 [[step]]
-from = "arcane-griffin/tbl"
+from = "throttle_request_conversion_primary/tbl"
 to = "vigorous-binturong/ram"
 effect = "limits"
 sign = "positive"
@@ -433,7 +433,7 @@ interpolates the current-RPM row of 0xe98e and inverse-searches ffff19c6 + \
 0x14114.\",\"sign\":\"positive\",\"to\":\"accelerated-whippet/ram\",\"via\":[\"primary_request_inverse_lookup/fn\"]}"""
 
 [[step]]
-from = "arcane-griffin/tbl"
+from = "throttle_request_conversion_primary/tbl"
 to = "accelerated-whippet/ram"
 effect = "converts"
 sign = "negative"
@@ -552,7 +552,7 @@ correction, and clamps from ROM16[0x9574] = 15 to the upper \
 bound.\",\"sign\":\"positive\",\"to\":\"throttle_target_channel_0/ram\",\"via\":[\"channel_throttle_target_builder/fn\"]}"""
 
 [[step]]
-from = "muscular-leech/tbl"
+from = "throttle_angle_to_area_primary/tbl"
 to = "throttle_target_channel_0/ram"
 effect = "converts"
 sign = "negative"
@@ -573,7 +573,7 @@ lookup: larger 0x13202 opening-area cells reach a given area at a lower \
 coordinate.\",\"sign\":\"negative\",\"specs\":[\"defs/JK08A.throttle-control.md\"],\"to\":\"throttle_target_channel_0/ram\",\"via\":[\"channel_throttle_target_builder/fn\"]}"""
 
 [[step]]
-from = "flat-fennec/tbl"
+from = "throttle_target_upper_bound_primary/tbl"
 to = "throttle_target_channel_0/ram"
 effect = "limits"
 sign = "positive"
