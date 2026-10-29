@@ -177,26 +177,66 @@ layout = "1me3b"
 address = "fffe802e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe802e"
-to = "7mfk:ffff1026"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00047e06"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 00047ce8 independently publishes word fffe802e at 00047e06/00047e14 \
+after selecting an unsigned working word, adding signed correction words, \
+flooring at zero and capping by a lookup byte shifted left by eight. Its \
+alternate bit-7 branch publishes a selected grid byte shifted left by eight \
+at 00047d4e, or zero at 00047d5e. All four stores use an immediately loaded \
+literal destination fffe802e. This grounds storage and the bounded \
+publication alternatives; upstream producers, physical time conversion, \
+diagnostic identity and cadence retain separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00047e14"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00047d4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00047d5e"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe802e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe802e"
-to = "7mfk:ffff1026"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:000447de"
+note = """
+Function 000446c0 independently publishes word fffe802e at 000447de/000447ec \
+after selecting an unsigned working word, adding signed correction words, \
+flooring at zero and capping by a lookup byte shifted left by eight. Its \
+alternate bit-7 branch publishes a selected grid byte shifted left by eight \
+at 00044726, or zero at 00044736. All four stores use an immediately loaded \
+literal destination fffe802e. This grounds storage and the bounded \
+publication alternatives; upstream producers, physical time conversion, \
+diagnostic identity and cadence retain separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000447ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044726"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044736"
 
 [[symbol]]
 layout = "7mfk"

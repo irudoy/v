@@ -132,26 +132,36 @@ layout = "1me3b"
 address = "fffeb8f8"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffeb8f8"
-to = "7mfk:ffff413e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:000c8fce"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 000c8f10 joins its calculated result and explicit zero/0xff \
+alternatives at the return-delay byte store 000c8fce to fffeb8f8. The normal \
+path consumes unsigned word fffe802c and a lookup result, applies a \
+conditional second arithmetic step and caps the published byte at 0xff. The \
+literal destination is loaded at 000c8fc8. This directly grounds target \
+storage and byte publication; the lookup/arithmetic contracts, diagnostic \
+identity, physical percentage and cadence require separate target \
+qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffeb796"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffeb796"
-to = "7mfk:ffff413e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:000bf518"
+note = """
+Function 000bf45a joins its calculated result and explicit zero/0xff \
+alternatives at the return-delay byte store 000bf518 to fffeb796. The normal \
+path consumes unsigned word fffe802c and a lookup result, applies a \
+conditional second arithmetic step and caps the published byte at 0xff. The \
+literal destination is loaded at 000bf512. This directly grounds target \
+storage and byte publication; the lookup/arithmetic contracts, diagnostic \
+identity, physical percentage and cadence require separate target \
+qualification."""
 
 [[symbol]]
 layout = "7mfk"

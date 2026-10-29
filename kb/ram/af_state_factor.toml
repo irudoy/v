@@ -186,26 +186,34 @@ layout = "1me3b"
 address = "fffe92e2"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92e2"
-to = "7mfk:ffff22e8"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082c16"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Selector 00082b64 publishes word fffe92e2 in return delay slot 00082c16. \
+ROM8[00008a82].bit0 and ROM8[00008647].bit1 select uint8[fffe97c0]<<7, \
+uint16[fffecf6a], or ROM16[00008fc0]. The chosen unsigned word is clamped to \
+inclusive 0x1000..0x6000 before publication. This directly grounds target \
+storage and this selector path; other writer paths, physical mixture \
+interpretation, diagnostic identity and cadence require separate target \
+qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe9318"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe9318"
-to = "7mfk:ffff22e8"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e10a"
+note = """
+Selector 0007e052 publishes word fffe9318 in return delay slot 0007e10a. \
+ROM8[00008a31].bit0 and ROM8[0000863f].bit1 select uint8[fffe9794]<<7, \
+uint16[fffece6e], or ROM16[00008f5e]. The chosen unsigned word is clamped to \
+inclusive 0x1000..0x6000 before publication. This directly grounds target \
+storage and this selector path; other writer paths, physical mixture \
+interpretation, diagnostic identity and cadence require separate target \
+qualification."""
 
 [[symbol]]
 layout = "7mfk"

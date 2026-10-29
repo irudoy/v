@@ -137,26 +137,34 @@ layout = "1me3b"
 address = "fffe8024"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8024"
-to = "7mfk:ffff101c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048daa"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 00048d66 saves uint8(channel) in R14 at 00048d70, doubles it and \
+publishes a scaler-result word to fffe8024+2*channel at 00048daa. The \
+corresponding raw source is fffe8d1a+2*channel; an original source equal to \
+0x03ff increments the returned word before publication. Caller 00048cc0 \
+supplies channel zero in delay slot 00048cce. This grounds the first \
+diagnostic-word storage and its publication without inheriting the scaler \
+contract, physical voltage conversion, diagnostic bank identity or cadence."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8024"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8024"
-to = "7mfk:ffff101c"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00045726"
+note = """
+Function 000456e2 saves uint8(channel) in R14 at 000456ec, doubles it and \
+publishes a scaler-result word to fffe8024+2*channel at 00045726. The \
+corresponding raw source is fffe8d76+2*channel; an original source equal to \
+0x03ff increments the returned word before publication. Caller 0004563c \
+supplies channel zero in delay slot 0004564a. This grounds the first \
+diagnostic-word storage and its publication without inheriting the scaler \
+contract, physical voltage conversion, diagnostic bank identity or cadence."""
 
 [[symbol]]
 layout = "7mfk"

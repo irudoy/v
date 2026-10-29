@@ -134,26 +134,32 @@ layout = "1me3b"
 address = "fffeae4e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffeae4e"
-to = "7mfk:ffff3852"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048d58"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The terminal slice 00048d34..00048d58 of coordinator 00048cc0 multiplies \
+uint16[fffe804e] by ROM8[000083c1], shifts the unsigned product right by \
+eight and caps it at 0xffff. Store 00048d58 publishes the low word to \
+fffeacb4+0x19a=fffeae4e. This independently grounds target storage and its \
+product publication; upstream combined-flow production, physical mass-flow \
+conversion, diagnostic identity and cadence retain separate qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffead0a"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffead0a"
-to = "7mfk:ffff3852"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the field position"
+kind = "l0"
+supports = "identity"
+at = "1nd:000456d4"
+note = """
+The terminal slice 000456b0..000456d4 of coordinator 0004563c multiplies \
+uint16[fffe8052] by ROM8[000083ba], shifts the unsigned product right by \
+eight and caps it at 0xffff. Store 000456d4 publishes the low word to \
+fffeab70+0x19a=fffead0a. This independently grounds target storage and its \
+product publication; upstream combined-flow production, physical mass-flow \
+conversion, diagnostic identity and cadence retain separate qualification."""
 
 [[symbol]]
 layout = "7mfk"

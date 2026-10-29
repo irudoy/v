@@ -137,26 +137,34 @@ layout = "1me3b"
 address = "fffe8026"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe8026"
-to = "7mfk:ffff101e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048d10"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The inline second-channel slice of coordinator 00048cc0 reads raw word \
+fffe8d1c, calls scaler 0009a0a0 and increments the returned word when the \
+original source equals 0x03ff. It independently stores the resulting word to \
+fffe8026 at 00048d10 through offset 2 of literal base fffe8024. This direct \
+store grounds the sibling storage independently of the indexed helper; the \
+scaler contract, physical voltage conversion, diagnostic bank identity and \
+cadence retain separate qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8026"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe8026"
-to = "7mfk:ffff101e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:0004568c"
+note = """
+The inline second-channel slice of coordinator 0004563c reads raw word \
+fffe8d78, calls scaler 000942a0 and increments the returned word when the \
+original source equals 0x03ff. It independently stores the resulting word to \
+fffe8026 at 0004568c through offset 2 of literal base fffe8024. This direct \
+store grounds the sibling storage independently of the indexed helper; the \
+scaler contract, physical voltage conversion, diagnostic bank identity and \
+cadence retain separate qualification."""
 
 [[symbol]]
 layout = "7mfk"
@@ -231,12 +239,17 @@ layout = "jk78c"
 address = "ffff1026"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff1026"
-to = "7mfk:ffff101e"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a47e2"
+note = """
+Function 000a47c2 independently reads word ffff1026 at 000a47e2 through \
+offset 6 of preserved R4 base ffff1020 and zero-extends it at 000a47e4. A \
+comparison against unsigned ROM16[00008cd0] controls a separate \
+fallback-word and countdown update. Its first comparison separately reads \
+sibling ffff1024. This grounds the second monitored word and its bounded \
+unsigned consumer; producer, physical voltage conversion, diagnostic bank \
+identity and cadence require separate target qualification."""
 
 [[link]]
 type = "input"
