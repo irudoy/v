@@ -155,8 +155,14 @@ target = "7mfk:ffff2469"
 count = 0
 l0 = "6bd18b774cb344a9"
 note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
+The target-specific inhibit state is reviewed as \
+knock_direct_difference_inhibit_state/ram at ffff23c9: coordinator 00062780 \
+reads and updates bit 6. The canonical source and the ROM-neutral profile-8 \
+host schema name bit 7 as DIRECT_DIFFERENCE_INHIBIT. Direct raw capture \
+would mislabel bit 7, which target function 00090790 updates independently. \
+This telemetry source remains unresolved until an explicit wire \
+normalization or host encoding contract preserves the inhibit role; a failed \
+masked search does not establish absence."""
 
 [[link]]
 type = "depends"

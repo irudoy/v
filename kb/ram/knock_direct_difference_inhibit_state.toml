@@ -1,0 +1,67 @@
+summary = """
+JK78C multipurpose state byte whose bit 6 inhibits the direct Q8 timing-map \
+difference."""
+block = "ignition_timing/block"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[bit]]
+bit = 6
+name = "direct_difference_inhibit"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23c9"
+level = "code"
+note = """
+On the normal table path of coordinator 00062780, GBR is ffff23b8. The byte \
+read at 00062e74 inhibits the direct map-difference path when bit 6 is set; \
+with that bit clear, snapshot ffff23c7.bit6 must be set at 00062e7a. The \
+read at 00062eb8 and shared delay-slot store at 00062ec2 preserve the other \
+bits and copy snapshot.bit6 into this bit through the 0xbf/0x40 paths. \
+Independent function 00090790 changes bit 7 through the store at 00090856 \
+and preserves bit 6; the byte is not a single-purpose boolean. This \
+target-specific byte is distinct from the canonical bit-7 encoding required \
+by knock_branch_state_raw/field. Other bit roles and physical causes remain \
+unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062e74"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062ec2"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00090856"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00062e74"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00062eb8"
+
+[[link]]
+type = "writer"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00062ec2"
