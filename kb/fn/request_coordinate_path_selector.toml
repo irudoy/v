@@ -8,6 +8,28 @@ role = "accessor"
 block = "throttle_target/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ac27c"
+level = "code"
+note = """
+The 1ME3B selector reads fffe898e at 000ac2aa when fffe9479 bit 1 and \
+fffe94bd bit 0 are set and fffeb9f4 bit 5 is clear. Otherwise it selects the \
+unsigned minimum of fffe8cd4 and fffe8706. It stores the selected coordinate \
+at fffe8cce, then applies the inverse curve pair and the subsequent scaled \
+output. The preliminary call to 000abfb0 and the remaining output logic are \
+retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac27c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac2aa"
+
+[[symbol]]
 layout = "1nd"
 address = "000a5cc4"
 level = "code"

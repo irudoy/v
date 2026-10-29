@@ -55,8 +55,6 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
     assert {row["key"] for row in rows} == _canonical_telemetry_keys()
     unsupported = {row["key"] for row in rows if row["status"] == "unsupported"}
     assert unsupported == {
-        "request_flow_raw",
-        "normalized_load_raw",
         "fuel_learning_permit_b_raw",
         "fuel_learning_permit_a_raw",
         "ltft_publication_neutral_control_raw",
@@ -67,7 +65,6 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
         "transmission_reduction_state_raw",
         "ltft_learned_b2_raw",
         "ltft_adjustment_b2_raw",
-        "alpha_n_flow_raw",
     }
     for row in rows:
         if row["status"] != "unsupported":

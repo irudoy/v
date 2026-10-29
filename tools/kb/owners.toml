@@ -8798,3 +8798,14 @@ detail = "1nd-fffe8034/ram: declared 8 bits; normalized L0 includes wider access
 sources = ["kb/ram/normalized_load.toml"]
 state = "unresolved"
 reason = "The uint8 signal is the first byte of the state transfer from fffe8048 at 00021276 to fffe8034 at 00021294. The unchanged longword also carries neighboring snapshot bytes; 00074da8 reads the signal as a byte. The wide block store and the byte view retain an explicit unresolved width reconciliation."
+
+[[reconciliation.review]]
+kind = "width"
+subject = "1me3b-fffe8034/ram"
+layout = "1me3b"
+claim_sha256 = "7a2388c115401d15d987b461eabc497df289ab26a56e006560f5e2bf66e43a15"
+l0 = "10d8209b9d4c6235"
+detail = "1me3b-fffe8034/ram: declared 8 bits; normalized L0 includes wider accesses of [32] bits"
+sources = ["kb/ram/normalized_load.toml"]
+state = "unresolved"
+reason = "The uint8 signal is the first byte of the state transfer from fffe8048 at 00021298 to fffe8034 at 000212da. The unchanged longword also carries neighboring snapshot bytes; 000797cc reads the signal as a byte. The wide block store and the byte view retain an explicit unresolved width reconciliation."

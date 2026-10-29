@@ -196,6 +196,39 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe8034"
+level = "code"
+note = """
+Periodic snapshot of the Q7 normalized-BFS byte fffe8048. Function 00021240 \
+loads the source longword at 00021298 and stores it at fffe8034 at 000212da, \
+preserving its first byte without conversion. Producer 00048298 forms \
+min(255,floor(uint16[fffe802e]*128/ROM16[000094d4])). Ignition reader \
+000797cc loads the snapshot byte at 000799ee and 00079a44 and passes it as \
+the column of cold/hot surfaces 0000a444 and 0000a344. Physical \
+cylinder-filling identity remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000799ee"
+note = """
+The reviewed producer 00048298 forms the capped Q7 BFS/reference ratio at \
+fffe8048. Copier 00021240 transfers its byte to fffe8034 and ignition reader \
+000797cc uses it as a timing-table column. Physical cylinder-filling \
+identity remains unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000212da"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079a44"
+
+[[symbol]]
 layout = "1nd"
 address = "fffe8034"
 level = "code"
@@ -335,18 +368,6 @@ note = """
 Homologous producer 0004068c writes the Q7 ratio to ffff1042, and the \
 scheduler copy at 00020f84 snapshots it into this byte"""
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff102c"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-No normalized load snapshot is established because the 32-instruction JK08A \
-producer at 0003bd1c has no match in the target with PC-relative \
-displacements masked"""
-
 [[link]]
 type = "copy"
 to = "benign-cassowary/ram"
@@ -428,6 +449,17 @@ to = "precise-nuthatch/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "accomplished-sponge/fn"
+layouts = ["1me3b"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000799ee"
 
 [[link]]
 type = "reader"
@@ -559,13 +591,17 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "canram_enable_commit/fn"
-layouts = ["1nd"]
+layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00021294"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000212da"
 
 [[link]]
 type = "writer"

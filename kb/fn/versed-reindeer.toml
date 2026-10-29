@@ -133,6 +133,37 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ac3a0"
+name = "denim-quetzal"
+level = "code"
+note = """
+The 1ME3B forward conversion saturates and doubles the 00014832/00016e86 \
+lookup, stores the doubled word at fffe826c, and forms uint32 fffe8808 \
+through unsigned division by ROM8[00008c43] and RPM word fffe820a. It \
+selects 00016fa6/00016de6 up to ROM16[00016e24], otherwise 00016fe6/00016e26 \
+at min(65535, fffe8808>>4). It stores the uint16 result at fffe898e at \
+000ac432 and passes it as the column of primary requested-torque table \
+0000fa7c at 000ac440. The returned offset-binary word is centered by 0x8000 \
+and stored at fffe89c0. Physical engineering conversions remain \
+unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac3a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac432"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac440"
+
+[[symbol]]
 layout = "1nd"
 address = "000a5de8"
 name = "utopian-kangaroo"

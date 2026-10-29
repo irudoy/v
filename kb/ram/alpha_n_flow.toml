@@ -257,8 +257,11 @@ target = "7mfk:ffff1170"
 count = 0
 l0 = "28a4e19998ef4d2c"
 note = """
-No homolog is established for the Fuel Compensation Main column coordinate: \
-the target curve pair and its consumer are not traced"""
+The homolog of the JK08A byte producer 0003b498 remains unresolved. The \
+target Fuel Compensation surfaces use the high byte of diamond-macaque/ram \
+at fffe937a, copied from fffe9416; can_telemetry binds that reviewed \
+table-coordinate role independently. The live-word producer and common \
+physical flow scale remain unresolved."""
 
 [[status]]
 layout = "1nd"

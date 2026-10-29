@@ -1,8 +1,43 @@
+summary = """
+Periodic state copier and task dispatcher with independently reviewed \
+layout-specific transfers."""
 note = [
     """
-periodic copy 0xFFFEB7F4 -> 0xFFFEB7F3 (injection-enable byte); \
-unconditional; NOT immo""",
+On 1ND the unconditional byte transfer fffeb7f4 -> fffeb7f3 carries \
+injection-enable state; this is not an immobilizer stage. The \
+layout-specific symbol notes identify additional reviewed snapshot \
+transfers.""",
 ]
+role = "accessor"
+block = "scheduler/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00021240"
+level = "code"
+note = """
+The 1ME3B periodic state copier and task dispatcher transfers the \
+normalized-load longword from fffe8048 at 00021298 to fffe8034 at 000212da. \
+It also unconditionally copies the byte fffeb954 to fffeb953 at \
+00021624..00021626. Call 000217ac invokes 000228ec with R2=fffe939c, \
+R1=fffe9300 and R0=0x9c; offset 0x7a copies the live word fffe9416 to \
+snapshot fffe937a. This binding does not identify the producer or physical \
+units of that live word."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00021240"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00021626"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000217ac"
 
 [[symbol]]
 layout = "1nd"

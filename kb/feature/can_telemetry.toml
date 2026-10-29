@@ -79,6 +79,14 @@ feedback_payload_offset = "Target serializer writes the eight payload bytes at b
 mailbox_index = "Target uses physical mailbox 26"
 mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
 
+[target.roles.alpha_n_flow_raw]
+note = """
+The high byte of snapshot word fffe937a is the target Fuel Compensation \
+table column. Its direct consumer and periodic-copy path are recorded in \
+diamond-macaque/ram; the live-word producer and JK08A byte-producer homolog \
+remain unresolved."""
+symbol = "diamond-macaque/ram"
+
 [target.symbols]
 coherent_snapshot = "coherent_snapshot/fn"
 feedback_config_record_address = "feedback_config_record_address/tbl"

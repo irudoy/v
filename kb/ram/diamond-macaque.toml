@@ -14,6 +14,44 @@ home = "jk78c"
 width = 16
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe937a"
+name = "qualified-lori"
+level = "code"
+note = """
+Snapshot word whose high byte indexes both target Fuel Compensation \
+surfaces. Copier 00021240 calls byte copier 000228ec at 000217ac with \
+R2=fffe939c, R1=fffe9300 and R0=0x9c; offset 0x7a transfers live fffe9416 to \
+fffe937a without conversion. Consumer 00048564 reads this word at 000489d4 \
+and 000489f8, shifts it right by eight and passes that byte as the column of \
+0000a0f4 and 0000a1f4 through 000298b4. Startup 0003357c also reads the live \
+word directly at 00033cac and 00033cd0 for these surfaces. The live-word \
+producer, physical conversion and JK08A byte-producer homolog remain \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000489d4"
+note = """
+The reviewed target consumer 00048564 uses the high byte of fffe937a as the \
+column of both Fuel Compensation surfaces. The direct 00021240/000228ec copy \
+maps live word fffe9416 to this snapshot. The live-word producer and \
+physical engineering conversion remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000489f8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "1me3b:000217ac"
+value = {named = ["00021240", "000228ec", "fffe92e8", "fffe939c"], span = 1}
+key = "reference"
+
+[[symbol]]
 layout = "1nd"
 address = "fffe93aa"
 name = "courageous-fossa"
@@ -80,3 +118,18 @@ supports = "identity"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00045356"
+
+[[link]]
+type = "reader"
+to = "thundering-seahorse/fn"
+layouts = ["1me3b"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000489d4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000489f8"
