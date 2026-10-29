@@ -48,16 +48,38 @@ supports = "identity"
 [[symbol]]
 layout = "1me3b"
 address = "fffed0e4"
+level = "code"
+width = 16
+signed = false
+note = """
+Updater 00085c2e maintains the bank-1 unsigned word at fffed0e4 through \
+stores indexed by 2*b. Publisher 000854f0 reads it at 000854fc as the second \
+summand with selected word fffe92d0 before subtracting 0x6400. Physical \
+operating-mode identity and live cadence remain unreviewed."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffed0e4"
-to = "7mfk:ffff5648"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085d7e"
 note = """
-Matched 1ND consumer functions reference this cell at the same instruction \
-ordinals"""
+The reviewed updater holds fffed0e4 in R11 and 2*b in R13 through all three \
+word stores. Publisher 000854f0 consumes the unsigned bank-1 word without a \
+representation conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085e38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085fca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000854fc"
 
 [[symbol]]
 layout = "1nd"
@@ -187,7 +209,7 @@ role = "writes"
 type = "reader"
 to = "liberal-dormouse/fn"
 via = ["liberal-dormouse/fn"]
-layouts = ["7mfk", "1nd"]
+layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -222,10 +244,14 @@ at = "7mfk:00057b3a"
 kind = "l0"
 at = "1nd:00080bcc"
 
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000854fc"
+
 [[link]]
 type = "writer"
 to = "fuel_trim_adjustment_updater/fn"
-layouts = ["1nd"]
+layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
@@ -240,6 +266,18 @@ at = "1nd:00081500"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00081694"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00085d7e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00085e38"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00085fca"
 
 [[link]]
 type = "writer"

@@ -95,6 +95,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000854f0"
+name = "wondrous-chital"
+level = "code"
+note = """
+The 1ME3B leaf publisher zero-extends the words at fffe92d0+2*b and \
+fffed0e4+2*b at 000854fa/000854fc and forms their raw sum minus 0x6400. Mask \
+fffe92d8 and an unsigned-versus-signed word comparison select optional \
+ROM-byte limiting. Raw control bits can force 0x6400. The return delay slot \
+at 00085584 writes the low word to fffe92cc+2*b. Dispatcher 00086bd4 calls \
+this entry with b=0 and b=1. This target uses direct control-byte tests; the \
+canonical diagnostic-predicate executable contract is not transferred. \
+Physical control identities and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000854f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000854fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000854fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085584"
+
+[[symbol]]
 layout = "1nd"
 address = "00080bc0"
 name = "gabby-wren"

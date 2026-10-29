@@ -42,6 +42,31 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffed0e6"
+name = "illegal-booby"
+level = "code"
+note = """
+Independent initializer 00087218 directly writes 0x6400 to word fffed0e6 at \
+0008724a. Runtime updater 00085c2e retains base fffed0e4 and offset 2*b \
+through stores 00085d7e, 00085e38 and 00085fca. Publisher 000854f0 reads the \
+corresponding unsigned adjustment as the second summand at 000854fc; \
+dispatcher 00086bd4 supplies b=1 for this bank-2 source. The runtime indexed \
+accesses remain attributed to the base in normalized L0, so their verified \
+target reader/writer relations remain unresolved. Physical operating-mode \
+identity and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008724a"
+note = """
+The initializer directly writes word fffed0e6 from the neutral 0x6400 value \
+at 0008724a. The independently reviewed updater and publication arithmetic \
+use base fffed0e4+2*b with b=1 for this bank-2 adjustment. The binding does \
+not qualify a base-only normalized runtime access as a bank-2 relation."""
+
+[[symbol]]
 layout = "1nd"
 address = "fffecfe6"
 name = "prophetic-bonobo"
@@ -169,17 +194,6 @@ value = 74
 note = """
 Unique aligned source accesses bind this storage cell. This code \
 correspondence does not establish hardware behavior."""
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff564a"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "depends"

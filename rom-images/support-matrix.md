@@ -29,7 +29,7 @@ required meanings without a symbol there, each by the state of its status.
 
 | Layout | Images | Runtime allocation | Map Switching | Rolling Launch | CAN telemetry | Editor definitions |
 | --- | --- | --- | --- | --- | --- | --- |
-| `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | supported | supported; mailbox 26; 8 fields unavailable (1 absent, 7 unresolved) | supported; 18 meanings without a symbol (16 absent, 2 unresolved) |
+| `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | supported | supported; mailbox 26; 6 fields unavailable (1 absent, 5 unresolved) | supported; 18 meanings without a symbol (16 absent, 2 unresolved) |
 | `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | supported | supported; mailbox 26; 5 fields unavailable (5 unresolved) | supported; 15 meanings without a symbol (13 absent, 2 unresolved) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |
 | `jk00c` | JK00C | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | supported | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |

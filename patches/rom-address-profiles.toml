@@ -26,8 +26,6 @@ telemetry_unavailable = [
     "knock_branch_state_raw",
     "knock_state_snapshot_raw",
     "knock_timing_state_raw",
-    "ltft_adjustment_b2_raw",
-    "ltft_learned_b2_raw",
     "ltft_publication_neutral_control_raw",
     "torque_transition_state_raw",
     "transmission_reduction_state_raw",
@@ -202,6 +200,8 @@ throttle_target_channel_1_raw = 0xFFFEB80E
 exhaust_cvtc_actual_b2_raw = 0xFFFE9430
 coolant_raw = 0xFFFE8079
 fuel_temperature_did_source_raw = 0xFFFE8075
+ltft_learned_b2_raw = 0xFFFE92D2
+ltft_adjustment_b2_raw = 0xFFFED0E6
 stft_b1_raw = 0xFFFE92AC
 stft_b2_raw = 0xFFFE92AE
 intake_cvtc_duty_b1_raw = 0xFFFE942B

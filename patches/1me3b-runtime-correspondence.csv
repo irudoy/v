@@ -158,8 +158,8 @@ telemetry,throttle_target_channel_1_raw,ffff28be,fffeb80e,,,mapped,Matched 1ND c
 telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,fffe9430,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,coolant_raw,ffff1079,fffe8079,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8075,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,ltft_learned_b2_raw,ffff2308,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
-telemetry,ltft_adjustment_b2_raw,ffff564a,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,ltft_learned_b2_raw,ffff2308,fffe92d2,,,target-specific,Direct word initialization at 00087016 independently grounds the bank-2 cell fffe92d2. The reviewed runtime selector and publisher address the same word through base fffe92d0 with bank offset 2; normalized L0 retains only the base for that runtime path. This source binding does not qualify an indexed accessor link.
+telemetry,ltft_adjustment_b2_raw,ffff564a,fffed0e6,,,target-specific,The initializer directly writes word fffed0e6 from the neutral 0x6400 value at 0008724a. The independently reviewed updater and publication arithmetic use base fffed0e4+2*b with b=1 for this bank-2 adjustment. The binding does not qualify a base-only normalized runtime access as a bank-2 relation.
 telemetry,stft_b1_raw,ffff22dc,fffe92ac,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,stft_b2_raw,ffff22de,fffe92ae,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe942b,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
@@ -168,8 +168,8 @@ telemetry,ltft_b1_raw,ffff2302,fffe92cc,,,mapped,Aligned diagnostic pointer tabl
 telemetry,ltft_b2_raw,ffff2304,fffe92ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,alpha_n_flow_raw,ffff1170,fffe937a,,,target-specific,The high byte of snapshot word fffe937a is the target Fuel Compensation table column. Its direct consumer and periodic-copy path are recorded in diamond-macaque/ram; the live-word producer and JK08A byte-producer homolog remain unresolved.
 telemetry,battery_voltage_raw,ffff1188,fffe8164,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
-telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim block whose offsets 4 and 6 are the diagnostic long-term trim words
-telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,target-specific,The reviewed bank-indexed selector and publisher bind the bank-1 selected word at fffe92d0. The pointer is literal at 00085488 and the stored bank offset is 2*uint8(R4).
+telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,target-specific,The reviewed updater holds fffed0e4 in R11 and 2*b in R13 through all three word stores. Publisher 000854f0 consumes the unsigned bank-1 word without a representation conversion.
 telemetry,iat_raw,ffff2837,fffe9928,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,oil_temperature_did_source_raw,ffff2876,fffe8161,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
 telemetry,af_state_factor_raw,ffff22e8,fffe92e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source

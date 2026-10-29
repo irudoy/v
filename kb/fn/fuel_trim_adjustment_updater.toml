@@ -3,12 +3,49 @@ Maintains the bank-indexed learned-fuel-trim adjustment through raw gates \
 and calibrated limits."""
 note = [
     """
-Bank-indexed learned-trim adjustment updater. Maintains fffecfe4+2*b through \
-raw bank masks and limits with neutral 0x6400. Physical gate identities and \
-cadence remain unreviewed.""",
+Bank-indexed learned-trim adjustment updater. Maintains the unsigned \
+adjustment word through raw bank masks and limits with neutral 0x6400. \
+Physical gate identities and cadence remain unreviewed.""",
 ]
 block = "fuel_closed_loop/block"
 former = ["engine_immo_status_reporter"]
+
+[[symbol]]
+layout = "1me3b"
+address = "00085c2e"
+level = "code"
+note = """
+The leaf updater takes b=uint8(R4), saves 2*b in R13 at 00085c54 and retains \
+base fffed0e4 in R11 from 00085c5a through its indexed word stores at \
+00085d7e, 00085e38 and 00085fca. Raw bank masks select maintenance paths and \
+calibrated bounds; independent control-bit paths force 0x6400. Publisher \
+000854f0 consumes the adjustment with the selected learned word. The \
+narrower physical operating mode and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085c2e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085c5e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085d7e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085e38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085fca"
 
 [[symbol]]
 layout = "1nd"

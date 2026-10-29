@@ -57,6 +57,32 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe92d2"
+name = "spry-parakeet"
+level = "code"
+note = """
+The independent initializer 00086ed8 directly writes 0x6400 to word fffe92d2 \
+at 00087016. Runtime selector 000852a8 publishes fffe92d0+2*b at 00085492 \
+after selecting bank-2 grid fffec292 for b=1; publisher 000854f0 reads this \
+word as its unsigned first summand at 000854fa. Dispatcher 00086bd4 supplies \
+0 and 1. The runtime indexed accesses remain attributed to the base in \
+normalized L0, so no verified target reader/writer relation is transferred \
+from those records. Physical coordinate identity and cadence remain \
+unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00087016"
+note = """
+Direct word initialization at 00087016 independently grounds the bank-2 cell \
+fffe92d2. The reviewed runtime selector and publisher address the same word \
+through base fffe92d0 with bank offset 2; normalized L0 retains only the \
+base for that runtime path. This source binding does not qualify an indexed \
+accessor link."""
+
+[[symbol]]
 layout = "1nd"
 address = "fffe9308"
 name = "true-antelope"
@@ -185,17 +211,6 @@ value = 74
 note = """
 Unique aligned source accesses bind this storage cell. This code \
 correspondence does not establish hardware behavior."""
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff2308"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
 
 [[link]]
 type = "input"

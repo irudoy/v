@@ -64,16 +64,28 @@ supports = "identity"
 [[symbol]]
 layout = "1me3b"
 address = "fffe92d0"
+level = "code"
+width = 16
+signed = false
+note = """
+Selector 000852a8 writes the selected bank-1 word at fffe92d0 through \
+00085492 with b=0. Publisher 000854f0 reads it unsigned at 000854fa as the \
+first summand with adjustment fffed0e4. The bank-2 path addresses fffe92d2. \
+Physical coordinate identities and live cadence remain unreviewed."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92d0"
-to = "7mfk:ffff2306"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085492"
 note = """
-Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim \
-block whose offsets 4 and 6 are the diagnostic long-term trim words"""
+The reviewed bank-indexed selector and publisher bind the bank-1 selected \
+word at fffe92d0. The pointer is literal at 00085488 and the stored bank \
+offset is 2*uint8(R4)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000854fa"
 
 [[symbol]]
 layout = "1nd"
@@ -192,7 +204,7 @@ supports = "identity"
 type = "reader"
 to = "liberal-dormouse/fn"
 via = ["liberal-dormouse/fn"]
-layouts = ["7mfk", "1nd"]
+layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -226,6 +238,10 @@ at = "7mfk:00057b36"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00080bca"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000854fa"
 
 [[link]]
 type = "reader"
@@ -276,7 +292,7 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "successful-tarantula/fn"
-layouts = ["7mfk", "1nd"]
+layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -306,3 +322,7 @@ key = "Learned-grid selection"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00080b62"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00085492"

@@ -116,6 +116,35 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000852a8"
+name = "successful-antelope"
+level = "code"
+note = """
+The 1ME3B selector takes b=uint8(R4) in 0..1. Two raw index searches with \
+results in 0..7 and prior packed index fffe82e8+b select a word from bank \
+grids fffec312 or fffec292. The bank-2 load is at 0008542e. Range bounds \
+ROM8[000089cf/000089d0] shifted by 8 and independent raw control bits select \
+the candidate or a 0x6400 reset. The common indexed store at 00085492 \
+publishes fffe92d0+2*b. Dispatcher 00086bd4 supplies both bank arguments. \
+Physical coordinate identities, reset causes and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000852a8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008542e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085492"
+
+[[symbol]]
 layout = "1nd"
 address = "0008097c"
 name = "beautiful-chihuahua"
