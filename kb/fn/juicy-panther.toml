@@ -1,6 +1,36 @@
 block = "fuel_closed_loop/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000862ec"
+name = "idealistic-rottweiler"
+level = "code"
+note = """
+The reviewed 1ME3B publisher slices update bank bits 0 and 1 while \
+preserving bits 2..7. The loop at 000869a6..000869d0 reads uint32 composite \
+predicates fffee354 and fffee358 and stores the corresponding bits in \
+fffe844a through the conditional branch delay slot. The loop at \
+00086af4..00086b1e reads independent bounded-change predicates fffee34c and \
+fffee350 and stores the corresponding bits in fffe844b. The first loop has \
+count 2 and masks 1,2; the second declares those bounds locally. Physical \
+input identities, live permission and task cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000862ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000869d0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00086b1e"
+
+[[symbol]]
 layout = "1nd"
 address = "000819b8"
 name = "chirpy-saluki"

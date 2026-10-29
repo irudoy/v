@@ -12,6 +12,34 @@ bit = 1
 name = "bank_2_composite_permit"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe844a"
+level = "code"
+note = """
+Producer 000862ec reads composite bank predicates fffee354 and fffee358 and \
+updates only bits 0 and 1 through the store at 000869d0, preserving the \
+other bits. Updater 000856c8 reads this byte at 000856fc and requires the \
+selected bank bit together with the matching bit of fffe844b before \
+modifying the learned grid. Dispatcher 00086bd4 supplies bank arguments 0 \
+and 1. Physical causes of the composite conditions, live permission and \
+learning cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000869d0"
+note = """
+The reviewed producer 000862ec publishes the composite bank predicates to \
+bits 0 and 1 of fffe844a. Updater 000856c8 requires the matching bit \
+together with fffe844b before the learned-grid update. The byte encoding \
+matches the wire field; physical permission and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000856fc"
+
+[[symbol]]
 layout = "1nd"
 address = "fffe8482"
 level = "code"
@@ -132,21 +160,10 @@ note = """
 Unique aligned source accesses bind this storage cell. This code \
 correspondence does not establish hardware behavior."""
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1457"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
 [[link]]
 type = "reader"
 to = "rousing-rhino/fn"
-layouts = ["7mfk", "1nd"]
+layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 note = "Second independent permit byte; bank b in 0..1 requires bit b."
@@ -176,13 +193,21 @@ key = "Bounded learned-grid update"
 kind = "l0"
 at = "1nd:00080dc8"
 
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000856fc"
+
 [[link]]
 type = "writer"
 to = "juicy-panther/fn"
-layouts = ["1nd"]
+layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
 [[link.evidence]]
 kind = "l0"
 at = "1nd:0008209c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000869d0"

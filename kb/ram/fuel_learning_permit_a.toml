@@ -12,6 +12,33 @@ bit = 1
 name = "bank_2_stability_permit"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe844b"
+level = "code"
+note = """
+Producer 000862ec reads the bounded-change predicates fffee34c and fffee350 \
+and updates only bank bits 0 and 1 at 00086b1e, preserving the other bits. \
+Updater 000856c8 reads this byte at 000856e6 and requires the selected bank \
+bit together with the matching bit of fffe844a before modifying the learned \
+grid. Dispatcher 00086bd4 supplies bank arguments 0 and 1. Physical input \
+identities, live permission and learning cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00086b1e"
+note = """
+The reviewed producer 000862ec and learned-grid updater 000856c8 bind \
+fffe844b. Bits 0 and 1 independently gate the corresponding banks with the \
+second permit byte; the producer preserves all other bits. Physical \
+permission and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000856e6"
+
+[[symbol]]
 layout = "1nd"
 address = "fffe8483"
 level = "code"
@@ -136,21 +163,10 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0007428e"
 
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1458"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
 [[link]]
 type = "reader"
 to = "rousing-rhino/fn"
-layouts = ["7mfk", "jk78c", "1nd"]
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 note = "First independent permit byte; bank b in 0..1 requires bit b."
@@ -180,10 +196,14 @@ key = "Bounded learned-grid update"
 kind = "l0"
 at = "1nd:00080db2"
 
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000856e6"
+
 [[link]]
 type = "writer"
 to = "juicy-panther/fn"
-layouts = ["jk78c", "1nd"]
+layouts = ["jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
@@ -194,3 +214,7 @@ at = "jk78c:00075628"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000821ea"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00086b1e"

@@ -23,8 +23,6 @@ injected_ram_end = 0xFFFF0F00
 map_variant = "sh7059-1me3b"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
-    "fuel_learning_permit_a_raw",
-    "fuel_learning_permit_b_raw",
     "knock_branch_state_raw",
     "knock_state_snapshot_raw",
     "knock_timing_state_raw",
@@ -182,6 +180,8 @@ normalized_load_raw = 0xFFFE8034
 bfs_raw = 0xFFFE802E
 injection_0_raw = 0xFFFE93A6
 injection_1_raw = 0xFFFE93A8
+fuel_learning_permit_b_raw = 0xFFFE844A
+fuel_learning_permit_a_raw = 0xFFFE844B
 knock_surface_state = 0xFFFE945B
 app1_raw = 0xFFFE96CE
 app2_raw = 0xFFFE96D2
