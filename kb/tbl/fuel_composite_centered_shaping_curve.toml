@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "kind-kittiwake/tbl"
+to = "fuel_composite_surface_multiplier/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -55,7 +55,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "meticulous-slug/tbl"
+to = "fuel_composite_word_index_multiplier/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -81,7 +81,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0001242a"
-name = "steady-turtle"
+former = ["steady-turtle/tbl/7mfk-0001242a"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -149,7 +149,7 @@ key = "body"
 [[symbol]]
 layout = "jk00c"
 address = "00014727"
-name = "yellow-teal"
+former = ["yellow-teal/tbl/jk00c-00014727"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -165,7 +165,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00014747"
-name = "pastel-hummingbird"
+former = ["pastel-hummingbird/tbl/jk00d-00014747"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -178,9 +178,26 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a18"
+level = "code"
+former = ["shapeless-weasel/tbl/jk78c-00013a18"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e728"
+note = """
+Reader 0006e6f0 establishes centered shaping of second multiplier. The \
+paired canonical reader 000526a0 supplies the comparison with 7mfk:0001242a. \
+Literal operands, lookup geometry and the local result use are reviewed \
+independently; physical quantity and units retain their existing \
+qualification."""
+
 [[link]]
 type = "depends"
-to = "kind-kittiwake/tbl"
+to = "fuel_composite_surface_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -188,7 +205,7 @@ role = "from_map"
 
 [[link]]
 type = "depends"
-to = "meticulous-slug/tbl"
+to = "fuel_composite_word_index_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

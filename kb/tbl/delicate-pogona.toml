@@ -301,6 +301,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013838"
+name = "charcoal-termite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006d868"
+note = """
+Reader 0006d7e8 establishes cascaded lookup multiplier from RPM byte. The \
+paired canonical reader 0005185c supplies the comparison with 7mfk:000121d6. \
+Literal operands, lookup geometry and the local result use are reviewed \
+independently; physical quantity and units retain their existing \
+qualification."""
+
 [[link]]
 type = "reader"
 to = "sly-chowchow/fn"

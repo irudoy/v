@@ -142,6 +142,23 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ef0"
+name = "deft-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f870"
+note = """
+Reader 0006f75c establishes second component of capped normalized reduction \
+fraction. The paired canonical reader 00053698 supplies the comparison with \
+7mfk:000129f2. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "married-whippet/tbl"

@@ -145,3 +145,26 @@ supports = "identity"
 at = "7mfk:000525cc"
 value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006e4f6"
+name = "marvellous-toad"
+level = "code"
+note = """
+Reader 0006e4f6 uses implicit byte surface 0000a34a and word curve 0001608a, \
+then multiplies that product by the byte from native surface 0000a38a before \
+final normalization by 16384 and saturation to uint16 at ffff1666. The \
+additional factor distinguishes this target from the canonical two-factor \
+product. Physical interpretation remains unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e4f6"
+note = """
+Reader 0006e4f6 uses implicit byte surface 0000a34a and word curve 0001608a, \
+then multiplies that product by the byte from native surface 0000a38a before \
+final normalization by 16384 and saturation to uint16 at ffff1666. The \
+additional factor distinguishes this target from the canonical two-factor \
+product. Physical interpretation remains unresolved."""

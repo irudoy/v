@@ -1,0 +1,83 @@
+summary = """
+Unsigned multiplier in FUN_0006e8c6. The surface output scales the original \
+curve 000137c8 by a right shift of 7 and the scaled alternative is capped at \
+255. The reader selects the maximum of the original and scaled values, \
+halves that value while signed word ffff1a4c is negative and substitutes 64 \
+otherwise before publishing ffff14de."""
+note = [
+    """
+The active reader uses wrapper 00027ee0 with two explicit eight-byte axes \
+and byte bilinear row stride 8. Coordinates derive from words ffff33a6 and \
+ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and \
+clamp the signed intermediates to 0..255. Inputs and output retain \
+stored-count presentation; physical input quantities and an engineering \
+output conversion remain unresolved.""",
+    """
+Editor publication remains unresolved under issue #110. The native registry \
+requires common role coverage across the supported VQ37 images, while \
+independently qualified 1nd and 1me3b bindings are not established. \
+Partial-layout publication and native-axis metadata need schema \
+reconciliation.""",
+]
+level = "code"
+role = "table"
+block = "fuel_quantity/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009b1a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e984"
+note = """
+0006e8c6 loads the surface base for its explicit 8x8 lookup. Unsigned \
+multiplier in FUN_0006e8c6. The surface output scales the original curve \
+000137c8 by a right shift of 7 and the scaled alternative is capped at 255. \
+The reader selects the maximum of the original and scaled values, halves \
+that value while signed word ffff1a4c is negative and substitutes 64 \
+otherwise before publishing ffff14de."""
+
+[[link]]
+type = "axis"
+to = "transient_fuel_multiplier_x_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e984"
+note = "The reviewed wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "axis"
+to = "transient_fuel_multiplier_y_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e984"
+note = "The reviewed wrapper call passes this axis in the y slot."
+
+[[link]]
+type = "reader"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006eb90"
+note = """
+The literal-pool word contains the complete surface address passed by this \
+reader."""

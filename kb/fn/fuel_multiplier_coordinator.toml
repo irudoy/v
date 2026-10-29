@@ -112,7 +112,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -284,7 +284,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

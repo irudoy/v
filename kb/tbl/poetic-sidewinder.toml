@@ -106,6 +106,23 @@ supports = "identity"
 to = "fuel_multiplier_coordinator/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000a0ba"
+name = "mauve-nightingale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071480"
+note = """
+Reader 00071390 establishes 4x4 coefficient of additional saturating \
+composite term. The paired canonical reader 00054ee0 supplies the comparison \
+with 7mfk:0000a49a. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "reader"
 to = "fanatic-snail/fn"

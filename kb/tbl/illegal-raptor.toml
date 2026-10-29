@@ -212,6 +212,23 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013c36"
+name = "inescapable-macaque"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f2b0"
+note = """
+Reader 0006eff0 establishes first lookup of minimum used by weighted blend. \
+The paired canonical reader 00052f00 supplies the comparison with \
+7mfk:000126b8. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "remarkable-oriole/tbl"

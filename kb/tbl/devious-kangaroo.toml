@@ -166,6 +166,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f78"
+name = "large-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004099e"
+note = """
+Reader 00040958 establishes state-zero initialization lookup before \
+transition to state one. The paired canonical reader 0003bd74 supplies the \
+comparison with 7mfk:00012ab2. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "fuel_compensation_coordinator/fn"

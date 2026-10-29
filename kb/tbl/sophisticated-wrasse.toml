@@ -283,6 +283,23 @@ supports = "identity"
 to = "careful-terrier/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00009c2a"
+name = "sepia-adder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040c14"
+note = """
+Reader 00040958 establishes bit7-set selection of second 8x8 compensation \
+coefficient. The paired canonical reader 0003bd74 supplies the comparison \
+with 7mfk:00009e8a. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "brass-rooster/tbl"

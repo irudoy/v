@@ -165,6 +165,23 @@ at = "7mfk:00054f64"
 value = {named = ["00012572", "0004ab94", "00054ee0", "000554ae", "ffff230c"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013b38"
+name = "adept-pelican"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000713e6"
+note = """
+Reader 00071390 establishes explicit-axis Q6 multiplier of additional \
+composite term. The paired canonical reader 00054ee0 supplies the comparison \
+with 7mfk:00012572. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "reader"
 to = "fanatic-snail/fn"

@@ -398,6 +398,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013810"
+name = "futuristic-lorikeet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006d6c2"
+note = """
+Reader 0006d68c establishes shared centered Q13 shape factor. The paired \
+canonical reader 00051700 supplies the comparison with 7mfk:000121ae. \
+Literal operands, lookup geometry and the local result use are reviewed \
+independently; physical quantity and units retain their existing \
+qualification."""
+
 [[link]]
 type = "reader"
 to = "sly-chowchow/fn"

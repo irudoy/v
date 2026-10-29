@@ -315,6 +315,28 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001608a"
+name = "polite-wapiti"
+level = "code"
+note = """
+JK78C reader 0006e4f6 uses the saturated index 32*uint16[ffff120e], \
+multiplies this word lookup by byte surface 0000a34a and additional native \
+surface 0000a38a, then normalizes by a right shift of 14 before the uint16 \
+cap. The target does not inherit the canonical two-factor normalization."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e530"
+note = """
+Reader 0006e4f6 establishes implicit uint16 multiplicand with additional \
+target-native multiplier. The paired canonical reader 00052576 supplies the \
+comparison with 7mfk:00014ed2. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "artichoke-wapiti/tbl"

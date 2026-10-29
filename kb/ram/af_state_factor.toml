@@ -84,7 +84,7 @@ note = "writes"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "large-tamarin/fn/7mfk"
+to = "target_mixture_stage/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -175,7 +175,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -507,8 +507,8 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "large-tamarin/fn"
-via = ["large-tamarin/fn"]
+to = "target_mixture_stage/fn"
+via = ["target_mixture_stage/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -152,6 +152,23 @@ at = "7mfk:00051d34"
 value = {named = ["000121ee"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013850"
+name = "magnificent-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006dc74"
+note = """
+Reader 0006da20 establishes byte multiplier before unsigned division by 1600 \
+and per-channel scaling. The paired canonical reader 00051a98 supplies the \
+comparison with 7mfk:000121ee. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "discerning-snake/fn"

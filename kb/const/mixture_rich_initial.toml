@@ -52,8 +52,8 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
-via = ["large-tamarin/fn"]
+to = "target_mixture_stage/fn"
+via = ["target_mixture_stage/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

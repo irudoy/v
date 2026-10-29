@@ -282,6 +282,23 @@ supports = "identity"
 to = "knowing-potoo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a10"
+name = "curious-bull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071852"
+note = """
+Reader 00071736 establishes shifted byte-coordinate multiplier before \
+direct-grid selected byte. The paired canonical reader 0005525a supplies the \
+comparison with 7mfk:00012422. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "knowing-potoo/fn"

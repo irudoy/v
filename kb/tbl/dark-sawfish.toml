@@ -258,6 +258,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f20"
+name = "notorious-mosquito"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006c8b6"
+note = """
+Reader 0006c84a establishes doubled table output used as unsigned RPM \
+hysteresis threshold. The paired canonical reader 000507ce supplies the \
+comparison with 7mfk:00012a32. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "dark-sawfish/tbl"

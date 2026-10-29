@@ -184,6 +184,23 @@ at = "7mfk:00053808"
 value = {named = ["000129e2", "000129f2", "00026388", "00026740", "00053698"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ee0"
+name = "ultra-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f85a"
+note = """
+Reader 0006f75c establishes first component of capped normalized reduction \
+fraction. The paired canonical reader 00053698 supplies the comparison with \
+7mfk:000129e2. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "greedy-sunfish/tbl"

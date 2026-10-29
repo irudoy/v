@@ -10,14 +10,14 @@ at = "7mfk:0004e5b4"
 
 [[link]]
 type = "lookup"
-to = "kind-kittiwake/tbl"
+to = "fuel_composite_centered_shaping_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "steady-turtle/tbl"
+to = "fuel_composite_word_index_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

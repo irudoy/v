@@ -14,7 +14,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -59,14 +59,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

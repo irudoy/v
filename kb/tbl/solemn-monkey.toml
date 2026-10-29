@@ -182,6 +182,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00016674"
+name = "amusing-bug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071a30"
+note = """
+Reader 000719b6 establishes explicit uint16 conditional term capped at 3768. \
+The paired canonical reader 000554f8 supplies the comparison with \
+7mfk:000154b0. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "prompt-hummingbird/axis"

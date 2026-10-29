@@ -15,10 +15,10 @@ order = 4
 
 [[step]]
 from = "normalized_load/ram"
-to = "prudent-numbat/tbl"
+to = "target_mixture_main/tbl"
 effect = "indexes"
 sign = "none"
-via = ["large-tamarin/fn"]
+via = ["target_mixture_stage/fn"]
 note = """
 W = \
 min(1,max(0,RAM8[ffff3528]+8*((RAM8[ffff2468]>>3)&1)-lookup(0001214e,RAM8[ffff11b3])+1)); \
@@ -28,21 +28,21 @@ specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
 from = "rpm/ram"
-to = "prudent-numbat/tbl"
+to = "target_mixture_main/tbl"
 effect = "indexes"
 sign = "none"
-via = ["large-tamarin/fn"]
+via = ["target_mixture_stage/fn"]
 note = """
 R = uint16(from); to = \
 min(1,max(0,R-4*ROM8[00011cc1]+1))+min(1,max(0,R-4*ROM8[00011cc2]+1))+min(1,max(0,R-4*ROM8[00011cc3]+1))+min(1,max(0,R-4*ROM8[00011cc4]+1))+min(1,max(0,R-4*ROM8[00011cc5]+1))+min(1,max(0,R-4*ROM8[00011cc6]+1))+min(1,max(0,R-4*ROM8[00011cc7]+1))"""
 specs = ["defs/JK08A.fuel.md"]
 
 [[step]]
-from = "prudent-numbat/tbl"
+from = "target_mixture_main/tbl"
 to = "inquisitive-crow/ram"
 effect = "looks-up"
 sign = "none"
-via = ["large-tamarin/fn"]
+via = ["target_mixture_stage/fn"]
 note = """
 M = lookup(0000a9aa,x); C = lookup(00012552,RAM8[ffff11ae]); E = \
 (RAM8[ffff2466]>>6)&1; M = \
@@ -57,7 +57,7 @@ from = "inquisitive-crow/ram"
 to = "af_state_factor/ram"
 effect = "limits"
 sign = "positive"
-via = ["large-tamarin/fn"]
+via = ["target_mixture_stage/fn"]
 note = """
 P = RAM16[ffff1278]; T = 128*uint8(from); E = (RAM8[ffff84c3]>>7)&1; D = \
 (1-E)*P+E*max(16384,P-8*ROM8[0000849b]); U = \

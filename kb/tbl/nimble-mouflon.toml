@@ -168,6 +168,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000140ac"
+name = "papaya-tamarin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071676"
+note = """
+Reader 0007154c establishes byte multiplier in four-factor composite \
+product. The paired canonical reader 00055098 supplies the comparison with \
+7mfk:00012c56. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "index"
 to = "succinct-pudu/ram"

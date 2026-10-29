@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "prudent-numbat/tbl"
+to = "target_mixture_high_detonation_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -58,7 +58,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "spry-quokka/tbl"
+to = "target_mixture_main/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -250,7 +250,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0005594a"
-name = "large-tamarin"
+former = ["large-tamarin/fn/7mfk-0005594a"]
 note = [
     """
 Bounded original prefix0005594a..00055a52 executes wide-open hysteresis \
@@ -375,10 +375,35 @@ kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
+[[symbol]]
+layout = "jk78c"
+address = "00071dfa"
+level = "code"
+former = ["electric-marmoset/fn/jk78c-00071dfa"]
+note = """
+Target mixture stage 00071dfa is the unconditional second call of \
+coordinator 00073b8c. Its reviewed entry selects the load coordinate through \
+the wide-open latch, reads main mixture surface 0000a3ca on axes \
+0001340f/000132b6, and conditionally applies centered multiplier 00013ad8 on \
+axis 00013417. Target addresses, flag encoding and downstream publication \
+retain layout-specific evidence; canonical prose is scoped to home 7mfk."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071dfa"
+note = """
+Target mixture stage 00071dfa is the unconditional second call of \
+coordinator 00073b8c. Its reviewed entry selects the load coordinate through \
+the wide-open latch, reads main mixture surface 0000a3ca on axes \
+0001340f/000132b6, and conditionally applies centered multiplier 00013ad8 on \
+axis 00013417. Target addresses, flag encoding and downstream publication \
+retain layout-specific evidence; canonical prose is scoped to home 7mfk."""
+
 [[link]]
 type = "depends"
 to = "frisky-beluga/fn"
-via = ["large-tamarin/fn", "frisky-beluga/fn"]
+via = ["target_mixture_stage/fn", "frisky-beluga/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

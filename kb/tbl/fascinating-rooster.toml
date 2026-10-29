@@ -149,6 +149,23 @@ at = "7mfk:000568a4"
 value = {named = ["00011f2a", "0002227c"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013630"
+name = "unyielding-foxhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072cf4"
+note = """
+Reader 00072bb8 establishes common-gain intermediate multiplier before \
+five-output scaling. The paired canonical reader 00056714 supplies the \
+comparison with 7mfk:00011f2a. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "black-cicada/fn"

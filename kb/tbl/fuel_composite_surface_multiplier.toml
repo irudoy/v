@@ -77,7 +77,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00009eda"
-name = "meticulous-slug"
+former = ["meticulous-slug/tbl/7mfk-00009eda"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -134,6 +134,23 @@ supports = "identity"
 at = "7mfk:000526e6"
 value = {named = ["00009eda", "000526a0", "ffff106f", "ffff10f0"], span = 64}
 key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009c7a"
+level = "code"
+former = ["lyrical-lemur/tbl/jk78c-00009c7a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e708"
+note = """
+Reader 0006e6f0 establishes complete implicit 8x8 lookup and subsequent \
+multiplication. The paired canonical reader 000526a0 supplies the comparison \
+with 7mfk:00009eda. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
 
 [[link]]
 type = "index"

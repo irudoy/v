@@ -162,6 +162,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00015c42"
+name = "quixotic-platypus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071644"
+note = """
+Reader 0007154c establishes uint16 decrement in saturating raw-state update. \
+The paired canonical reader 00055098 supplies the comparison with \
+7mfk:00014a2a. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "reader"
 to = "adaptable-eel/fn"

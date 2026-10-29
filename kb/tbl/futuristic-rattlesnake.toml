@@ -130,6 +130,23 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000137b0"
+name = "axiomatic-caribou"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006ed6e"
+note = """
+Reader 0006eccc establishes subtractive correction lookup in per-channel \
+transient processing. The paired canonical reader 00052be8 supplies the \
+comparison with 7mfk:0001215e. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "index"
 to = "daffodil-gibbon/ram"

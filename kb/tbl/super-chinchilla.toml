@@ -244,6 +244,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013830"
+name = "augmented-seriema"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006d79a"
+note = """
+Reader 0006d68c establishes second curve of bit3-set cascaded branch. The \
+paired canonical reader 00051700 supplies the comparison with 7mfk:000121ce. \
+Literal operands, lookup geometry and the local result use are reviewed \
+independently; physical quantity and units retain their existing \
+qualification."""
+
 [[link]]
 type = "index"
 to = "daffodil-gibbon/ram"

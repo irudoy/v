@@ -242,6 +242,23 @@ kind = "arithmetic"
 supports = "scale"
 value = "100/100=1"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ac0"
+name = "judicious-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077274"
+note = """
+Reader 00077202 establishes nonnegative mismatch coefficient before unsigned \
+division and plus-500 update. The paired canonical reader 0005ac54 supplies \
+the comparison with 7mfk:00012522. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "index"
 to = "meaty-pheasant/ram"

@@ -128,6 +128,23 @@ kind = "registry"
 supports = "scale"
 value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e6a"
+name = "energetic-fennec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b35c"
+note = """
+Reader 0006b338 establishes BFS hysteresis release threshold second explicit \
+lookup. The paired canonical reader 0004f662 supplies the comparison with \
+7mfk:00012984. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "reader"
 to = "stock_inert_bfs_hysteresis_inhibit/fn"

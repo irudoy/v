@@ -117,6 +117,23 @@ supports = "identity"
 to = "literate-hornet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00009bda"
+name = "sexy-barnacle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040efa"
+note = """
+Reader 00040958 establishes alternate 4x4 compensation lookup on paired byte \
+coordinates. The paired canonical reader 0003bd74 supplies the comparison \
+with 7mfk:00009e3a. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "rainbow-oarfish/tbl"

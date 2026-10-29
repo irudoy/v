@@ -164,8 +164,25 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "large-tamarin/fn/7mfk"
+to = "target_mixture_stage/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013770"
+name = "puzzling-chimpanzee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071e0c"
+note = """
+Reader 00071dfa establishes wide-open latch threshold with plus-eight \
+release hysteresis. The paired canonical reader 0005594a supplies the \
+comparison with 7mfk:0001214e. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
 
 [[link]]
 type = "depends"
@@ -184,7 +201,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -144,3 +144,20 @@ kind = "trace"
 supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a43a"
+name = "unnatural-asp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f042"
+note = """
+Reader 0006eff0 establishes 4x4 unsigned multiplier before bounded product \
+times four. The paired canonical reader 00052f00 supplies the comparison \
+with 7mfk:0000ab6a. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""

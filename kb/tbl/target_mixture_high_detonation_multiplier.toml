@@ -44,7 +44,7 @@ scale = [9, 10]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "prudent-numbat/tbl"
+to = "target_mixture_main/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -62,7 +62,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "00012552"
-name = "spry-quokka"
+former = ["spry-quokka/tbl/7mfk-00012552"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -144,7 +144,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "0001487f"
-name = "dancing-silkworm"
+former = ["dancing-silkworm/tbl/jk00c-0001487f"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -158,7 +158,7 @@ lookup site; storage contents equal the JK00D target"""
 [[symbol]]
 layout = "jk00d"
 address = "0001489f"
-name = "radical-baboon"
+former = ["radical-baboon/tbl/jk00d-0001489f"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -172,7 +172,7 @@ displacement word, and carries this literal at the homologous lookup site"""
 [[symbol]]
 layout = "jk78c"
 address = "00013ad8"
-name = "successful-doberman"
+former = ["successful-doberman/tbl/jk78c-00013ad8"]
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -212,7 +212,7 @@ recur as exact storage in the target image"""
 
 [[link]]
 type = "depends"
-to = "prudent-numbat/tbl"
+to = "target_mixture_main/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -220,7 +220,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

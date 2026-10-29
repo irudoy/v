@@ -312,3 +312,20 @@ value = 2
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000139d0"
+name = "colorful-swan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071594"
+note = """
+Reader 0007154c establishes byte lookup shifted left eight as separate word \
+addend. The paired canonical reader 00055098 supplies the comparison with \
+7mfk:000123d2. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""

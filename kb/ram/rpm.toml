@@ -460,14 +460,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "main_rpm_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -510,6 +502,14 @@ at = "1me3b:0007b338"
 [[link]]
 type = "reader"
 to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

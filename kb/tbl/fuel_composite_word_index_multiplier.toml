@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "meticulous-slug/tbl"
+to = "fuel_composite_centered_shaping_curve/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -80,7 +80,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "steady-turtle/tbl"
+to = "fuel_composite_surface_multiplier/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -106,7 +106,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "00012432"
-name = "kind-kittiwake"
+former = ["kind-kittiwake/tbl/7mfk-00012432"]
 
 [[symbol.evidence]]
 kind = "unverified-site"
@@ -276,7 +276,7 @@ relies = "contract"
 [[symbol]]
 layout = "jk00c"
 address = "0001472f"
-name = "fortunate-grouse"
+former = ["fortunate-grouse/tbl/jk00c-0001472f"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -292,7 +292,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001474f"
-name = "invaluable-squirrel"
+former = ["invaluable-squirrel/tbl/jk00d-0001474f"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -305,9 +305,26 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a20"
+level = "code"
+former = ["adaptable-reindeer/tbl/jk78c-00013a20"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e730"
+note = """
+Reader 0006e6f0 establishes Q7 multiplier from saturated shifted word index. \
+The paired canonical reader 000526a0 supplies the comparison with \
+7mfk:00012432. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
-to = "meticulous-slug/tbl"
+to = "fuel_composite_centered_shaping_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -315,7 +332,7 @@ role = "from_map"
 
 [[link]]
 type = "depends"
-to = "steady-turtle/tbl"
+to = "fuel_composite_surface_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

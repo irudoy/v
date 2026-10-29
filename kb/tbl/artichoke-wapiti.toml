@@ -244,6 +244,28 @@ kind = "arithmetic"
 supports = "scale"
 value = "21/128=0.1640625"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000a34a"
+name = "courageous-butterfly"
+level = "code"
+note = """
+JK78C reader 0006e4f6 multiplies the product with word curve 0001608a by the \
+byte from native surface 0000a38a and normalizes the complete product by a \
+right shift of 14 before the uint16 cap. The canonical two-factor formula \
+remains scoped to home 7mfk."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e50c"
+note = """
+Reader 0006e4f6 establishes implicit 8x8 unsigned factor with additional \
+target-native multiplier. The paired canonical reader 00052576 supplies the \
+comparison with 7mfk:0000a8ea. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "serious-warthog/tbl"

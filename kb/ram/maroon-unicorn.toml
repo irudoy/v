@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "large-tamarin/fn"
+to = "main_rpm_fuel_cut_state_machine/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "main_rpm_fuel_cut_state_machine/fn"
+to = "target_mixture_stage/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -142,13 +142,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "main_rpm_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -172,6 +165,13 @@ path = "defs/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
 [[link]]
+type = "reader"
+to = "target_mixture_stage/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
 type = "selector"
 to = "notorious-ringtail/ram"
 layouts = ["7mfk"]
@@ -187,7 +187,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -147,18 +147,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "large-tamarin/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "red-mantis/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "target_mixture_stage/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -388,16 +388,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
+to = "red-mantis/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "red-mantis/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[link]]

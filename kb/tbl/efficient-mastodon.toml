@@ -122,6 +122,23 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001314e"
+name = "cherry-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f314"
+note = """
+Reader 0006eff0 establishes signed byte-derived second reference in final \
+conditional calculation. The paired canonical reader 00052f00 supplies the \
+comparison with 7mfk:0001198e. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "outstanding-marmot/ram"

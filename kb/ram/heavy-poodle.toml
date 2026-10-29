@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -77,7 +77,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

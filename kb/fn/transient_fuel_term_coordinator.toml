@@ -171,3 +171,25 @@ key = "test_fuel_upstream_stock_regions_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006e8c6"
+level = "code"
+note = """
+Reader 0006e8c6 obtains the saturated doubled-load curve 000137c8, forms a \
+separately capped product with native surface 00009b1a, selects the maximum \
+of the original and scaled curve, halves that value for negative signed \
+state ffff1a4c and substitutes 64 otherwise. It publishes ffff14de and \
+returns naturally; the adjacent additive stage remains separate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e8c6"
+note = """
+Reader 0006e8c6 obtains the saturated doubled-load curve 000137c8, forms a \
+separately capped product with native surface 00009b1a, selects the maximum \
+of the original and scaled curve, halves that value for negative signed \
+state ffff1a4c and substitutes 64 otherwise. It publishes ffff14de and \
+returns naturally; the adjacent additive stage remains separate."""

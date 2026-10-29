@@ -144,6 +144,23 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015a02"
+name = "interesting-snake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c4fce"
+note = """
+Reader 000c4874 establishes selector-two word decrement for two bounded \
+signed channel updates. The paired canonical reader 000a0ee8 supplies the \
+comparison with 7mfk:0001463a. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "astonishing-leech/tbl"

@@ -32,14 +32,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "large-tamarin/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "maf_range_performance_bank_1_monitor/fn"
 type = "reader"
 end = "owner"
@@ -52,6 +44,14 @@ to = "maf_range_performance_bank_2_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "target_mixture_stage/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -103,16 +103,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "maf_range_performance_bank_1_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -124,3 +114,13 @@ to = "maf_range_performance_bank_2_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "target_mixture_stage/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"

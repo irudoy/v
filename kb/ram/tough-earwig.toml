@@ -221,14 +221,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "large-tamarin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "low_speed_rpm_exposure_accumulator_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -315,6 +307,14 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
+
+[[link]]
+type = "reader"
+to = "target_mixture_stage/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"

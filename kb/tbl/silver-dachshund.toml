@@ -279,3 +279,20 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001369c"
+name = "beryl-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071580"
+note = """
+Reader 0007154c establishes stored byte decrement in saturating raw-state \
+update. The paired canonical reader 00055098 supplies the comparison with \
+7mfk:00012016. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""

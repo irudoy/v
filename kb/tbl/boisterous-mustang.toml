@@ -141,6 +141,23 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014080"
+name = "huge-honeybee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000731ca"
+note = """
+Reader 000730cc establishes raw difference threshold before transient \
+injection-angle addition. The paired canonical reader 00056bd0 supplies the \
+comparison with 7mfk:00012c12. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "enthusiastic-salmon/fn"

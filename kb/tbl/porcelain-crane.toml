@@ -207,6 +207,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013858"
+name = "fluorescent-toucanet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006d6b8"
+note = """
+Reader 0006d68c establishes second curve of bit3-clear coefficient branch. \
+The paired canonical reader 00051700 supplies the comparison with \
+7mfk:000121f6. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"

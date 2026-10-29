@@ -160,6 +160,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000139b0"
+name = "gigantic-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071b5e"
+note = """
+Reader 00071b0a establishes lookup byte shifted left eight as a lower word \
+threshold. The paired canonical reader 00055648 supplies the comparison with \
+7mfk:000123b2. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "reader"
 to = "cherry-oryx/fn"

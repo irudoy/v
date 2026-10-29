@@ -225,6 +225,23 @@ supports = "scale"
 to = "unsigned_divide/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ac4"
+name = "cunning-beetle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077266"
+note = """
+Reader 00077202 establishes negative mismatch coefficient before unsigned \
+division and minus-from-500 update. The paired canonical reader 0005ac54 \
+supplies the comparison with 7mfk:00012526. Literal operands, lookup \
+geometry and the local result use are reviewed independently; physical \
+quantity and units retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "independent-leopard/fn"

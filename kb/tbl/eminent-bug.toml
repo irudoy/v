@@ -273,6 +273,23 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013708"
+name = "economic-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b418"
+note = """
+Reader 0006b3ea establishes low speed latch lower byte threshold from \
+saturated BFS word index. The paired canonical reader 0004f758 supplies the \
+comparison with 7mfk:00012086. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "low_speed_bfs_rpm_latch_update/fn"

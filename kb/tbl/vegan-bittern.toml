@@ -221,6 +221,29 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000137c8"
+name = "hungry-snake"
+level = "code"
+note = """
+JK78C reader 0006e8c6 scales this original curve through native surface \
+00009b1a, caps the scaled alternative at 255 and selects the larger of the \
+original and scaled values before the negative-state halving. The target \
+retains a separate native surface; the canonical direct coefficient formula \
+is scoped to home 7mfk."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e932"
+note = """
+Reader 0006e8c6 establishes negative signed-state coefficient with \
+target-native surface and maximum selection. The paired canonical reader \
+000528be supplies the comparison with 7mfk:00012176. Literal operands, \
+lookup geometry and the local result use are reviewed independently; \
+physical quantity and units retain their existing qualification."""
+
 [[link]]
 type = "reader"
 to = "transient_fuel_additive/fn"

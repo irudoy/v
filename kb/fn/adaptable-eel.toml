@@ -213,6 +213,29 @@ supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0007154c"
+name = "ochre-smilodon"
+level = "code"
+note = """
+Reader 0007154c retains conditional byte and word decay, two calibration \
+addends and the capped four-byte product normalized by 4096. Target-native \
+surface 0000b1ca supplies the factor that replaces the canonical \
+minimum-intake-cam curve 00012ede. The factor uses two bounded raw \
+coordinates, and no target physical cam-angle dependency is inherited."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007154c"
+note = """
+Reader 0007154c retains conditional byte and word decay, two calibration \
+addends and the capped four-byte product normalized by 4096. Target-native \
+surface 0000b1ca supplies the factor that replaces the canonical \
+minimum-intake-cam curve 00012ede. The factor uses two bounded raw \
+coordinates, and no target physical cam-angle dependency is inherited."""
+
 [[link]]
 type = "depends"
 to = "conscious-groundhog/axis"

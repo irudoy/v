@@ -210,6 +210,23 @@ kind = "arithmetic"
 supports = "scale"
 value = "128*0.78125=100"
 
+[[symbol]]
+layout = "jk78c"
+address = "000135d8"
+name = "mini-quail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000729ca"
+note = """
+Reader 000729b6 establishes normalized-load hysteresis threshold before \
+mixture-state ramp. The paired canonical reader 0005651c supplies the \
+comparison with 7mfk:00011ede. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
 [[link]]
 type = "depends"
 to = "cooperative-caracara/tbl"

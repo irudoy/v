@@ -1255,6 +1255,76 @@ The JK08A hardware boundaries apply to every target: the mechanical
 offset between the crank sensor and the signal plate, and the injector channel
 order from the family Power Balance bit assignment.
 
+### JK78C fuel-calibration compatibility
+
+The canonical calculation descriptions use the `7mfk` coordinates. JK78C
+bindings carry their independently reviewed operand sites and local reader
+roles. The target-specific additions below qualify the shared meanings.
+
+Reader `0006E4F6` combines implicit byte surface `0000A34A` with the word
+curve `0001608A`, indexed by `min(32*u16[FFFF120E],65535)`. It multiplies
+that product by the byte from native surface `0000A38A`, shifts the complete
+product right by 14, caps it to `uint16`, and publishes `FFFF1666`. The
+separate surface byte is stored at `FFFF1668`. The canonical two-factor
+normalization remains specific to `00052576`.
+
+Reader `0006E8C6` interpolates `000137C8` using the saturated doubled load
+byte. Native surface `00009B1A` supplies a multiplier for a separately
+bounded scaled alternative. The reader selects the maximum of the original
+and scaled values, halves the selected value while signed word `FFFF1A4C`
+is negative, and substitutes 64 otherwise before publishing `FFFF14DE`.
+Its natural return keeps the adjacent transient additive stage separate.
+
+Reader `0007154C` uses native surface `0000B1CA` as one factor in the
+four-byte product normalized by a right shift of 12. A separate word addend
+precedes the `uint16` cap. This replaces the canonical `00055098` choice
+of one-dimensional curve `00012EDE` by the lower of the centered intake-cam
+bytes. The reviewed target reader establishes the local replacement; the
+location of that one-dimensional role elsewhere in JK78C remains unresolved.
+
+These native surfaces use wrapper `00027EE0`, explicit byte axes and the
+byte bilinear kernel with row stride 8. The coordinates derive from words
+`FFFF33A6` and `FFFF33A4` through helper `00021CE8`, subtract 220 and 420,
+respectively, and clamp the signed intermediate to `0..255`. The native
+owners retain stored-count presentation. Physical input names and an
+engineering output conversion remain unresolved.
+
+Editor publication of these native surfaces remains unresolved under issue
+#110. The target-native registry requires common role coverage across every
+supported VQ37 image; independently qualified bindings on `1nd` and
+`1me3b` are not established. The native adapter also maps an axis summary
+to `semantics`, which the native axis schema excludes. The KB owners retain
+the reviewed roles, geometry, coordinates and pointer bindings while these
+publication contracts require reconciliation.
+
+The EOI writer `000730CC` reads default curve `00015F22` and conditional
+curve `00015F42` through wrapper `000282F4` on explicit word axis
+`00015F32`, using the engine-speed word `FFFF11AC`. Each curve has eight
+`uint16` cells. The canonical `00012302` and `0001230A` curves use byte
+cells and an implicit engine-speed axis. Both writers cap the selected
+cell-derived result at 209 and double it before publishing their EOI word;
+the target event geometry above supports the same cell conversion
+`x*4-590` degrees after intake TDC. Target editor publication requires the
+reviewed word storage and explicit axis. The canonical-address projection
+currently copies canonical geometry and editor settings, so those two
+target curves retain a publication gap under issue #110.
+
+Additional target-native candidates remain in the subsystem review:
+`00013780`, `00013800` and `00013AE8` in reader `00040958`;
+`00013A90`, `00013AA0` and `00014228` in `00072BB8`; and `00013990`
+in `000730CC`. The direct-indexed `0000957A` control in `00071736`
+is outside the interpolation census. Their individual input identities and
+calibration interpretations require separate reasoning within the same
+subsystem package.
+
+The candidate `00079708` for canonical reader `0005CBEC` has a different
+entry and control organization and does not retain the `00023752` lookup.
+The candidate `0008FD6C` for `0005D6AE` computes signed channel limits
+rather than the canonical threshold `100*lookup(00012312)`. Neither
+candidate establishes that table binding. Canonical reader `000BEFB0`
+and its `0000AB0A`/`0000B23A` pair have no accepted JK78C counterpart.
+These search dispositions leave the corresponding roles unresolved.
+
 ## Hardware validation priorities
 
 The minimum controlled validation set is:

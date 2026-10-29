@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "prudent-numbat/tbl"
+to = "target_mixture_high_detonation_multiplier/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "spry-quokka/tbl"
+to = "target_mixture_main/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "large-tamarin/fn"
+to = "target_mixture_stage/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -165,14 +165,14 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "input"
-to = "prudent-numbat/tbl"
+to = "target_mixture_high_detonation_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "spry-quokka/tbl"
+to = "target_mixture_main/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -207,8 +207,8 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "large-tamarin/fn"
-via = ["large-tamarin/fn"]
+to = "target_mixture_stage/fn"
+via = ["target_mixture_stage/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

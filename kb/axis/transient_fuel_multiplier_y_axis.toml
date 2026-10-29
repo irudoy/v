@@ -1,0 +1,45 @@
+note = [
+    """
+The y coordinate is the bounded raw result derived from word ffff33a4 \
+through helper 00021ce8 and offset 420. The explicit byte-axis resolver \
+bounds the final index at 7. Physical quantity and conversion remain \
+unresolved.""",
+    """
+Editor publication remains unresolved under issue #110. The native registry \
+requires common role coverage across the supported VQ37 images, while \
+independently qualified 1nd and 1me3b bindings are not established. \
+Partial-layout publication and native-axis metadata need schema \
+reconciliation.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e988"
+note = """
+Reader 0006e8c6 passes this monotonic eight-byte axis to wrapper 00027ee0. \
+The y coordinate is the bounded raw result derived from word ffff33a4 \
+through helper 00021ce8 and offset 420. The explicit byte-axis resolver \
+bounds the final index at 7. Physical quantity and conversion remain \
+unresolved."""
+
+[[link]]
+type = "reader"
+to = "transient_fuel_term_coordinator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006eb94"
+note = "The literal-pool word contains the complete axis address."

@@ -124,6 +124,23 @@ at = "7mfk:00053280"
 value = {named = ["000126b0", "000126b8", "000532ae", "ffff11b2", "ffff15df"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013c2e"
+name = "precious-rook"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f2bc"
+note = """
+Reader 0006eff0 establishes second lookup limiting the weighted-blend \
+minimum. The paired canonical reader 00052f00 supplies the comparison with \
+7mfk:000126b0. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "depends"
 to = "illegal-raptor/tbl"

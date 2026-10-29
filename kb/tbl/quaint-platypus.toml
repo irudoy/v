@@ -127,6 +127,23 @@ supports = "identity"
 to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013a80"
+name = "sparkling-fennec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072c1e"
+note = """
+Reader 00072bb8 establishes first curve selected below first raw selection \
+threshold. The paired canonical reader 00056714 supplies the comparison with \
+7mfk:000124e2. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
 [[link]]
 type = "index"
 to = "rare-sawfly/ram"
