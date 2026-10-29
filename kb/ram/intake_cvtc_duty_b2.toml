@@ -53,14 +53,16 @@ address = "fffe942c"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe942c"
-to = "7mfk:ffff2441"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119b3c"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The inline second-channel slice of controller 00119b00 reads word fffe966c \
+at 00119b30, zero-extends it, shifts it right by eight, and writes its high \
+byte to fffe942c at 00119b3c. GBR is loaded with literal fffe942c at \
+00119b12/00119b14. The store is conditional on bit 2 of ROM8[00008576]. This \
+independently binds the second live-duty byte; the existing scale evidence \
+retains its scope."""
 
 [[symbol.evidence]]
 kind = "spec"
@@ -88,12 +90,17 @@ address = "fffe945c"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe945c"
-to = "7mfk:ffff2441"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent duty byte"
+kind = "indirect"
+supports = "identity"
+at = "1nd:0010eb0a"
+value = 1
+mode = "base"
+note = """
+The indexed byte publication of function 0010ea78 uses destination fffe945b \
++ uint8(channel) and the high byte of uint16[fffe9694 + 2*uint8(channel)] \
+while ROM8[00008561].bit2 is set. Caller 0010dd1c supplies R4=1 in the delay \
+slot at 0010dd42 of call 0010dd40. This binds the second byte fffe945c \
+independently of the first; the existing scale evidence retains its scope."""
 
 [[symbol.evidence]]
 kind = "spec"
@@ -164,12 +171,18 @@ address = "ffff239b"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff239b"
-to = "7mfk:ffff2441"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent duty byte"
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000e6258"
+value = 1
+mode = "base"
+note = """
+The set-bit-2 branch of function 000e6226 reads uint16[ffff25a4 + \
+2*uint8(channel)] and stores its high byte at ffff239a + uint8(channel). \
+GBR=ffff2314 and the destination adds 0x86 before the indexed byte store. \
+Caller 000e5930 supplies R4=1 in the delay slot at 000e5940 of call \
+000e593e. This binds the second live-duty byte ffff239b; the existing scale \
+evidence retains its independent scope."""
 
 [[symbol.evidence]]
 kind = "spec"

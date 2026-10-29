@@ -66,14 +66,15 @@ address = "fffe942b"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe942b"
-to = "7mfk:ffff2440"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011aa3c"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Function 0011aa10 reads uint16[fffe966a + 2*uint8(channel)] and stores its \
+high byte at fffe942b + uint8(channel) while ROM8[00008576].bit2 is set. \
+Caller 00119b00 sets R4=0 at 00119b1c before call 00119b1e, binding byte \
+fffe942b. This is target storage evidence; the existing scale evidence \
+retains its independent scope."""
 
 [[symbol.evidence]]
 kind = "spec"
@@ -101,12 +102,15 @@ address = "fffe945b"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe945b"
-to = "7mfk:ffff2440"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the duty byte"
+kind = "l0"
+supports = "identity"
+at = "1nd:0010eb0a"
+note = """
+With bit 2 of ROM8[00008561] set, function 0010ea78 reads uint16[fffe9694 + \
+2*uint8(channel)], shifts it right by eight and publishes its high byte at \
+fffe945b + uint8(channel). Caller 0010dd1c sets R4=0 at 0010dd3a before call \
+0010dd3c, binding the first byte. This independently grounds target storage; \
+the existing scale evidence has its own scope."""
 
 [[symbol.evidence]]
 kind = "spec"

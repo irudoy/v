@@ -138,28 +138,40 @@ supports = "identity"
 [[symbol]]
 layout = "1me3b"
 address = "fffe8aa6"
+level = "candidate"
+note = """
+Unresolved 1me3b address candidate for exhaust_cvtc_duty_b2_word. Historical \
+diagnostic-pointer-table alignment names fffe8aa6, but the normalized access \
+index supplies no resolved accessor and no independently reviewed target \
+publisher or consumer grounds this quantity. Storage role, physical bank \
+identity, conversion and cadence require target review."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
+kind = "unverified-site"
+supports = "identity"
 at = "1me3b:fffe8aa6"
-to = "7mfk:ffff1aae"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Historical address candidate without an independently reviewed target \
+producer-consumer binding."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe8b12"
+level = "candidate"
+note = """
+Unresolved 1nd address candidate for exhaust_cvtc_duty_b2_word. Historical \
+diagnostic-pointer-table alignment names fffe8b12, but the normalized access \
+index supplies no resolved accessor and no independently reviewed target \
+publisher or consumer grounds this quantity. Storage role, physical bank \
+identity, conversion and cadence require target review."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
+kind = "unverified-site"
+supports = "identity"
 at = "1nd:fffe8b12"
-to = "7mfk:ffff1aae"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent word"
+note = """
+Historical address candidate without an independently reviewed target \
+producer-consumer binding."""
 
 [[symbol]]
 layout = "7mfk"
@@ -227,14 +239,21 @@ value = 20
 [[symbol]]
 layout = "jk78c"
 address = "ffff1a8a"
+level = "candidate"
+note = """
+Unresolved jk78c address candidate for exhaust_cvtc_duty_b2_word. Historical \
+diagnostic-pointer-table alignment names ffff1a8a, but the normalized access \
+index supplies no resolved accessor and no independently reviewed target \
+publisher or consumer grounds this quantity. Storage role, physical bank \
+identity, conversion and cadence require target review."""
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
+kind = "unverified-site"
+supports = "identity"
 at = "jk78c:ffff1a8a"
-to = "7mfk:ffff1aae"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent word"
+note = """
+Historical address candidate without an independently reviewed target \
+producer-consumer binding."""
 
 [[link]]
 type = "reader"

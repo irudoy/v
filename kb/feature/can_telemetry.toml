@@ -36,14 +36,16 @@ can = """
 Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
 payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
-ECU-RAM fields to 1ME3B source symbols, which hold the evidence of each \
-binding. A field whose source meaning has a status on this layout is encoded \
-from cleared reserved RAM and remains explicitly unavailable in metadata. \
-The intake solenoid duty fields decode their x*25/64 percent source cells \
-with the x*39/100 wire scale, within 0.16 percentage points. The payload \
-moves bit 7 of the knock surface state into bit 6 of the wire byte, the bit \
-that the wire contract decodes, and clears the other bits of the byte."""
+ECU-RAM fields use per-layout source symbols, whose records own each address \
+qualification. A source with an unresolved layout status or an explicitly \
+unsupported wire role is encoded from cleared reserved RAM and remains \
+unavailable in metadata. The exhaust CVTC candidates require independently \
+reviewed target producer-consumer bindings before their fields can be \
+exposed. The intake solenoid duty fields decode their x*25/64 percent source \
+cells with the x*39/100 wire scale, within 0.16 percentage points. The \
+payload moves bit 7 of the knock surface state into bit 6 of the wire byte, \
+the bit that the wire contract decodes, and clears the other bits of the \
+byte."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -108,6 +110,27 @@ mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
 
+[[target.unsupported]]
+note = """
+The 1me3b address fffe942f is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b1/ram"
+
+[[target.unsupported]]
+note = """
+The 1me3b address fffe9430 is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b2/ram"
+
+[[target.unsupported]]
+note = """
+The 1me3b address fffe9436 is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_target/ram"
+
 [[target]]
 layout = "1nd"
 status = "supported"
@@ -123,12 +146,13 @@ can = """
 Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, \
 payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
-ECU-RAM fields to 1ND0A source symbols, which hold the evidence of each \
-binding. A field whose source meaning has a status on this layout is encoded \
-from cleared reserved RAM and remains explicitly unavailable in metadata. \
-The intake solenoid duty fields decode their x*25/64 percent source cells \
-with the x*39/100 wire scale, within 0.16 percentage points."""
+ECU-RAM fields use per-layout source symbols, whose records own each address \
+qualification. A source with an unresolved layout status or an explicitly \
+unsupported wire role is encoded from cleared reserved RAM and remains \
+unavailable in metadata. The exhaust CVTC candidates require independently \
+reviewed target producer-consumer bindings before their fields can be \
+exposed. The intake solenoid duty fields decode their x*25/64 percent source \
+cells with the x*39/100 wire scale, within 0.16 percentage points."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -192,6 +216,27 @@ mailbox_data = "mailbox_data/reg"
 mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target.unsupported]]
+note = """
+The 1nd address fffe945f is an unresolved candidate without an independently \
+reviewed target producer-consumer binding. The shared field remains \
+unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b1/ram"
+
+[[target.unsupported]]
+note = """
+The 1nd address fffe9460 is an unresolved candidate without an independently \
+reviewed target producer-consumer binding. The shared field remains \
+unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b2/ram"
+
+[[target.unsupported]]
+note = """
+The 1nd address fffe9466 is an unresolved candidate without an independently \
+reviewed target producer-consumer binding. The shared field remains \
+unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_target/ram"
 
 [[target]]
 layout = "7mfk"
@@ -438,9 +483,12 @@ can = """
 HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox \
 records, payload binding, and knock-event path bind the transport runtime."""
 telemetry = """
-Aligned diagnostic tables and reviewed producer-consumer evidence bind the \
-ECU-RAM fields to JK78C source symbols, which hold the evidence of each \
-binding. The intake solenoid duty fields decode their x*25/64 percent source \
+ECU-RAM fields use per-layout source symbols, whose records own each address \
+qualification. A source with an unresolved layout status or an explicitly \
+unsupported wire role is encoded from cleared reserved RAM and remains \
+unavailable in metadata. The exhaust CVTC candidates require independently \
+reviewed target producer-consumer bindings before their fields can be \
+exposed. The intake solenoid duty fields decode their x*25/64 percent source \
 cells with the x*39/100 wire scale, within 0.16 percentage points."""
 
 [target.hooks.coherent_snapshot_call]
@@ -511,6 +559,27 @@ Native FFFF4514 carries the neutralization pulse in bit 6; FUN 00073E78 sets \
 and clears mask 0x40. The shared profile decodes bit 0 and has no conversion \
 for this source, so this field is unavailable on JK78C."""
 symbol = "ltft_publication_neutral_control/ram"
+
+[[target.unsupported]]
+note = """
+The jk78c address ffff239e is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b1/ram"
+
+[[target.unsupported]]
+note = """
+The jk78c address ffff239f is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_actual_b2/ram"
+
+[[target.unsupported]]
+note = """
+The jk78c address ffff23a4 is an unresolved candidate without an \
+independently reviewed target producer-consumer binding. The shared field \
+remains unavailable until its native source identity is qualified."""
+symbol = "exhaust_cvtc_target/ram"
 
 [[contexts]]
 name = "temperatures_and_b2_trim_terms"

@@ -113,26 +113,44 @@ layout = "1me3b"
 address = "fffe92f4"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe92f4"
-to = "7mfk:ffff2326"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00077346"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+The bounded comparison slice 00077340..000773a8 of function 000772c4 reads \
+common unsigned target byte fffe92f4 at 00077346 and 00077378. It subtracts \
+unsigned actual bytes fffe942d and fffe942e independently, clamps each \
+signed difference to -128..127, and publishes centered errors after adding \
+128. This grounds common target storage and both channel comparisons; target \
+production, physical angle conversion, diagnostic identity and cadence \
+require separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00077378"
 
 [[symbol]]
 layout = "1nd"
 address = "fffe9326"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe9326"
-to = "7mfk:ffff2326"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "1nd:00073360"
+note = """
+The bounded comparison slice 0007335a..000733b0 of function 000732de reads \
+common unsigned target byte fffe9326 at 00073360 and 00073392. It \
+independently subtracts unsigned actual bytes fffe945d and fffe945e, clamps \
+each signed difference to -128..127, and publishes centered error bytes \
+after adding 128. This grounds common target storage and its use for both \
+intake channels; target production, physical angle conversion, diagnostic \
+identity and cadence require separate target qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00073392"
 
 [[symbol]]
 layout = "7mfk"
@@ -217,12 +235,21 @@ layout = "jk78c"
 address = "ffff227a"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff227a"
-to = "7mfk:ffff2326"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table and direct references agree"
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006876c"
+note = """
+The bounded comparison slice 00068760..000687dc of function 000686e0 reads \
+common unsigned target byte ffff227a at 0006876c and 000687a2 through R10. \
+It subtracts unsigned bytes ffff239c and ffff239d, clamps signed differences \
+to -128..127, and publishes centered error bytes. This independently grounds \
+the common target and both intake comparisons; producer, physical angle \
+conversion, diagnostic identity and cadence retain separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000687a2"
 
 [[link]]
 type = "input"

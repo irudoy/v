@@ -187,14 +187,18 @@ address = "ffff2309"
 scale = "x*25/64"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff2309"
-to = "7mfk:ffff23b5"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e7b1c"
 note = """
-The same function reads the adjacent cell before writing buffer register \
-fffff590"""
+The second byte-selected branch of programmer 000e7994 independently loads \
+ffff2309 at 000e7b1c from literal base ffff2282 plus zero-extended offset \
+0x87. With ROM8[0000852a].bit2 clear and without the override, it \
+zero-extends the saved byte at 000e7b40 and uses the byte-scheme conversion \
+before writing word BFR7A fffff590 at 000e7b58. The alternate set-bit-2 \
+branch reads word ffff25c6 at 000e7b10. This independently grounds the \
+second byte consumer; scheduler copy, bank identity and cadence remain \
+separately qualified, and existing scale evidence retains its scope."""
 
 [[symbol.evidence]]
 kind = "spec"

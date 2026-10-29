@@ -66,26 +66,35 @@ layout = "1me3b"
 address = "fffe942e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1me3b:fffe942e"
-to = "7mfk:ffff2443"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119be4"
 note = """
-Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every \
-index of the 1ND source"""
+Controller 00119b00 implements channel 1 of the actual-angle calculation \
+inline. Its saved channel byte is set to 1 at 00119b22..00119b26 and \
+reloaded into R1 at 00119b5e/00119b62. The slice reads words fffebfd4 and \
+fffe9298, forms and conditions a centered difference through fffe8abe and \
+fffe9434, then clamps the byte to 0..255. The literal fffe942c is reloaded \
+at 00119bbc, incremented by one at 00119be0 and indexed by R1=1 at the \
+store, binding fffe942e. Physical angle conversion, diagnostic identity and \
+cadence retain separate qualification."""
 
 [[symbol]]
 layout = "1nd"
 address = "fffe945e"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "1nd:fffe945e"
-to = "7mfk:ffff2443"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent channel byte"
+kind = "l0"
+supports = "identity"
+at = "1nd:00073394"
+note = """
+The second comparison of function 000732de reads unsigned byte fffe945e at \
+00073394 through offset 4 of literal base fffe945a. It independently \
+subtracts this byte from common target fffe9326, clamps the signed \
+difference to -128..127 and publishes its centered error. This directly \
+binds second actual-byte storage without transferring an indexed accessor \
+from the first channel. Producer, physical angle conversion, diagnostic \
+identity and cadence require separate target qualification."""
 
 [[symbol]]
 layout = "7mfk"
@@ -147,12 +156,16 @@ layout = "jk78c"
 address = "ffff239d"
 
 [[symbol.evidence]]
-kind = "byte-identical"
-supports = "homology"
-at = "jk78c:ffff239d"
-to = "7mfk:ffff2443"
-sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-note = "Aligned diagnostic pointer table preserves the adjacent channel byte"
+kind = "l0"
+supports = "identity"
+at = "jk78c:000687aa"
+note = """
+The second comparison of function 000686e0 reads unsigned byte ffff239d at \
+000687aa using preserved R14 base ffff2314 plus zero-extended offset 0x89. \
+It subtracts this actual from common target ffff227a and clamps the signed \
+difference to -128..127 before centered-error publication. This directly \
+grounds second actual-byte storage; producer, physical angle conversion, \
+diagnostic identity and cadence require separate target qualification."""
 
 [[link]]
 type = "input"
