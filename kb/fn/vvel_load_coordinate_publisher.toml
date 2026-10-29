@@ -1,0 +1,19 @@
+summary = """
+JK78C model stage with a reviewed unsigned-word coordinate publisher for the \
+VVEL intake-phase path."""
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004726c"
+level = "code"
+note = """
+The reviewed output subpath converts unsigned words ffff310c and ffff197a \
+through the F32 constants at 00047450/54/58/5c and stores the bounded \
+coordinate at ffff238a at 00047326. This binding does not classify the other \
+outputs of the function."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004726c"

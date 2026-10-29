@@ -1,0 +1,59 @@
+summary = """
+Computed unsigned-word load coordinate supplied to the mode-4 VVEL \
+intake-phase lookup."""
+block = "airflow_load/block"
+width = 16
+signed = false
+unit = "count"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff238a"
+level = "code"
+note = """
+Unsigned stored-count coordinate produced by 0004726c. Read U16[ffff310c] \
+and U16[ffff197a], convert to single precision, multiply in instruction \
+order by each other and F32(307fffff), then by F32(42c80000). A result above \
+F32(42c7fef9) stores 65535; otherwise FTRC of the result times F32(4423d70a) \
+supplies the low word. Task 00054fd0 reads it at 00055466 into caller \
+SP+0x3a. Resolver 000564a4 reads the same word at its SP+0xaa and passes it \
+as the stack coordinate of the 000108ce lookup at 000566de. This is separate \
+from the Q7 normalized-BFS byte ffff1032. A physical-percent interpretation, \
+including 100*x/65535, is unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047326"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00055466"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/JK78C.vvel-load-coordinate.md"
+key = "Stored-count producer"
+
+[[link]]
+type = "reader"
+to = "spectral-yak/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00055466"
+
+[[link]]
+type = "writer"
+to = "vvel_load_coordinate_publisher/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00047326"

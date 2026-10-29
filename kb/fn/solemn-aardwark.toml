@@ -16,6 +16,12 @@ anchor = "FUN_000564A4"
 layout = "jk78c"
 address = "000564a4"
 name = "solemn-aardwark"
+note = """
+The 0x70-byte stack displacement from the entry to the body makes SP+0xaa at \
+000566d8 the caller word SP+0x3a containing ffff238a. The word is forwarded \
+through the delay slot at 000566e0 to stack coordinate +2 of the 000108ce \
+lookup at 000566de, with axes 00016de4/00016e04. The centered numeric phase \
+result has no independently established physical degree unit."""
 
 [[symbol.evidence]]
 kind = "l0"

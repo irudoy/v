@@ -16,6 +16,11 @@ anchor = "FUN_00054FD0"
 layout = "jk78c"
 address = "00054fd0"
 name = "spectral-yak"
+note = """
+The mode-4 load coordinate ffff238a is read as a word at 00055466 and stored \
+at SP+0x3a at 0005546a before the resolver call at 000554ac. Its coordinate \
+role is distinct from normalized-BFS byte ffff1032 and does not establish a \
+physical-percent scale."""
 
 [[symbol.evidence]]
 kind = "l0"
