@@ -524,8 +524,8 @@ class ProfileAdapterTest(unittest.TestCase):
         meaning = model().meaning_of(SymbolKey("jk00d", "ram", 0xFFFF1034))
         self.assertEqual((meaning.key, meaning.tier), ("normalized_load/ram", "file"))
         self.assertEqual(meaning.symbols["7mfk"].address, 0xFFFF102C)
-        self.assertEqual({layout: status.state for layout, status in meaning.statuses.items()},
-                         {"1nd": "unresolved", "1me3b": "unresolved"})
+        self.assertEqual((meaning.symbols["1nd"].address, meaning.symbols["1nd"].value("level")),
+                         (0xFFFE8034, "code"))
         self.assertEqual(meaning.symbols["jk78c"].address, 0xFFFF1032)
 
     def test_an_unavailable_field_states_absent_or_unresolved_by_its_evidence(self):
@@ -656,12 +656,15 @@ class ProfileAdapterTest(unittest.TestCase):
         role = target["roles"]["alpha_n_flow_raw"]
         self.assertEqual(role["symbol"], SymbolKey("jk78c", "ram", 0xFFFF22F8))
         self.assertIn("column of the target Fuel Compensation surfaces", role["note"])
-        self.assertEqual(sorted(m.meaning_of(role["symbol"]).symbols), ["jk78c"])
+        snapshot = m.meaning_of(role["symbol"])
+        self.assertEqual((snapshot.key, snapshot.symbols["1nd"].address),
+                         ("diamond-macaque/ram", 0xFFFE93AA))
         self.assertNotIn("alpha_n_flow_raw", target.get("symbols", {}))
         # The source meaning of the field keeps the homolog of its producer.
         flow = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF1170))
         self.assertEqual((flow.key, flow.symbols["jk78c"].address),
                          ("alpha_n_flow/ram", 0xFFFF115C))
+        self.assertIsNot(snapshot, flow)
 
     def test_a_record_of_the_image_byte_keys_is_one_32_bit_word(self):
         m = model()

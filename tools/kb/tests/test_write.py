@@ -260,18 +260,30 @@ class PlanTest(unittest.TestCase):
         # correspondence rows state the statuses of the telemetry sources.
         order = tuple(adapter for adapter in adapters.ORDER
                       if adapter not in adapters.CONVERTED or adapter is profiles)
-        with mock.patch.object(adapters, "ADAPTERS", order):
+        profile_facts = profiles.Profiles
+
+        def unresolved_profile_facts(*args, **kwargs):
+            facts = profile_facts(*args, **kwargs)
+            # The compatibility adapter classifies legacy status prose. Give
+            # the registry fixture an explicit unresolved search result.
+            for row in facts.rows["1nd"][1]:
+                if (row["domain"], row["key"]) == ("telemetry", "fuel_learning_permit_b_raw"):
+                    row["evidence"] = "No homolog is established for this fixture source."
+            return facts
+
+        with mock.patch.object(adapters, "ADAPTERS", order), \
+                mock.patch.object(profiles, "Profiles", side_effect=unresolved_profile_facts):
             base = compile.build(repo.ROOT)
             meaning = next(meaning for meaning in base.meanings
-                           if meaning.key == "normalized_load/ram")
+                           if meaning.key == "fuel_learning_permit_b/ram")
             self.assertEqual(meaning.statuses["1nd"].state, "unresolved")
             with self.assertRaises(KbError) as caught:
-                write.plan([bind("normalized_load/ram", "1nd:fffec000", evidence=[
+                write.plan([bind("fuel_learning_permit_b/ram", "1nd:fffec000", evidence=[
                     {"kind": "registry", "path": "patches/rom-address-profiles.toml"}])],
                     base, write.model_resolver(base))
         self.assertEqual(caught.exception.code, 3, str(caught.exception))
         message = str(caught.exception)
-        self.assertIn("symbols: patches/1nd-runtime-correspondence.csv: normalized_load/ram: "
+        self.assertIn("symbols: patches/1nd-runtime-correspondence.csv: fuel_learning_permit_b/ram: "
                       "status unresolved on 1nd, where the meaning has 1nd-fffec000/ram", message)
 
     def test_operations_refuse_what_the_model_contradicts(self):

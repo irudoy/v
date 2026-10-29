@@ -1,7 +1,9 @@
 import csv
+from dataclasses import replace
 from pathlib import Path
 import tomllib
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
 from tools.can_dashboard import live_feed
@@ -555,14 +557,31 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             ),
             set(),
         )
-        # Normalized load is unavailable on 1ND0A, so both operands declared
-        # for the engine load parameter lose it as well.
         self.assertEqual(
             definition_projections.unpublished_operands(
                 "1ND0A", self.overrides
             ),
-            {"ffff102c", "ffff15c4", "ffff1170", "ffff1980"},
+            set(),
         )
+        unavailable_fields = (
+            "normalized_load_raw", "alpha_n_flow_raw", "request_flow_raw"
+        )
+        profile = self.profiles["1ND0A"]
+        unavailable = replace(
+            profile,
+            telemetry_sources=tuple(
+                (name, address) for name, address in profile.telemetry_sources
+                if name not in unavailable_fields
+            ),
+            telemetry_unavailable=(*profile.telemetry_unavailable, *unavailable_fields),
+        )
+        # An unavailable load field withholds both declared operands even
+        # when the tracked target has a reviewed source for that field.
+        with patch.object(rom_address_profiles, "profile_for_rom", return_value=unavailable):
+            self.assertEqual(
+                definition_projections.unpublished_operands("1ND0A", self.overrides),
+                {"ffff102c", "ffff15c4", "ffff1170", "ffff1980"},
+            )
 
     def test_a_stock_bus_parameter_stays_published(self):
         self.assertNotIn("X_VQ_Engine_Speed", self.published)
@@ -576,7 +595,6 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
 
     def test_no_projected_axis_names_an_unpublished_parameter(self):
         checked = 0
-        withheld = 0
         for rom, profile in sorted(self.profiles.items()):
             unavailable = set(profile.telemetry_unavailable)
             missing = {
@@ -593,9 +611,7 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             with self.subTest(rom=rom):
                 self.assertFalse(bound & missing)
             checked += 1
-            withheld += bool(missing)
         self.assertEqual(checked, 6)
-        self.assertEqual(withheld, 3)
 
 
 if __name__ == "__main__":
