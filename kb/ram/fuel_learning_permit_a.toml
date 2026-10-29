@@ -85,6 +85,30 @@ note = """
 Unique aligned source accesses bind this storage cell. This code \
 correspondence does not establish hardware behavior."""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff144b"
+level = "code"
+note = """
+FUN 00074d04 writes bank bits 0 and 1 from the bounded change predicates at \
+ffff88c8 and ffff88cc, preserving the other bits. FUN 00074270 requires the \
+matching bank bit together with ffff144a before updating the learned grid. \
+Physical signal identities, permission and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00075628"
+note = """
+The reviewed producer 00074d04 and bank-indexed consumer 00074270 bind this \
+permit byte. Bits 0 and 1 gate the corresponding banks; physical permission \
+and cadence remain unreviewed."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007428e"
+
 [[status]]
 layout = "1me3b"
 state = "unresolved"
@@ -107,21 +131,10 @@ note = """
 The source-access search has no unique reviewed producer-consumer binding. \
 This field is unavailable on the layout until its source role is reviewed."""
 
-[[status]]
-layout = "jk78c"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1458"
-count = 0
-l0 = "6bd18b774cb344a9"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
 [[link]]
 type = "reader"
 to = "rousing-rhino/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 note = "First independent permit byte; bank b in 0..1 requires bit b."
@@ -146,3 +159,14 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[link]]
+type = "writer"
+to = "juicy-panther/fn"
+layouts = ["jk78c"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00075628"

@@ -961,7 +961,6 @@ injected_ram_end = 0xFFFF0F00
 map_variant = "sh7058-jk78"
 telemetry_completion_variant = "mailbox26-tail-chain"
 telemetry_unavailable = [
-    "fuel_learning_permit_a_raw",
     "knock_branch_state_raw",
     "knock_state_snapshot_raw",
     "ltft_publication_neutral_control_raw",
@@ -1112,6 +1111,7 @@ bfs_raw = 0xFFFF102E
 injection_0_raw = 0xFFFF231C
 injection_1_raw = 0xFFFF231E
 fuel_learning_permit_b_raw = 0xFFFF144A
+fuel_learning_permit_a_raw = 0xFFFF144B
 torque_transition_state_raw = 0xFFFF2318
 knock_timing_state_raw = 0xFFFF1204
 knock_surface_state = 0xFFFF23C6

@@ -1,3 +1,5 @@
+block = "fuel_closed_loop/block"
+
 [[symbol]]
 layout = "7mfk"
 address = "00058740"
@@ -7,3 +9,21 @@ name = "juicy-panther"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00058740"
+
+[[symbol]]
+layout = "jk78c"
+address = "00074d04"
+name = "primitive-turkey"
+level = "code"
+note = """
+Publishes the bank permission bits. The final loop reads predicates at \
+ffff88c8 and ffff88cc and updates only bits 0 and 1 of ffff144b at 00075628. \
+Physical permission and task cadence remain separate questions."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074d04"
+to = "7mfk:00058740"
+count = 1
+value = 39

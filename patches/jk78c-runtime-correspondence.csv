@@ -127,7 +127,7 @@ telemetry,bfs_raw,ffff1026,ffff102e,,,mapped,Aligned diagnostic pointer table an
 telemetry,injection_0_raw,ffff23c8,ffff231c,,,mapped,Aligned diagnostic pointer table and channel-array producer agree
 telemetry,injection_1_raw,ffff23ca,ffff231e,,,mapped,Aligned diagnostic pointer table and channel-array layout agree
 telemetry,fuel_learning_permit_b_raw,ffff1457,ffff144a,,,mapped,Unique aligned source accesses bind this storage cell. This code correspondence does not establish hardware behavior.
-telemetry,fuel_learning_permit_a_raw,ffff1458,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.
+telemetry,fuel_learning_permit_a_raw,ffff1458,ffff144b,,,target-specific,The reviewed producer 00074d04 and bank-indexed consumer 00074270 bind this permit byte. Bits 0 and 1 gate the corresponding banks; physical permission and cadence remain unreviewed.
 telemetry,ltft_publication_neutral_control_raw,ffff41b5,,,,unsupported,"Native FFFF4514 carries the neutralization pulse in bit 6; FUN 00073E78 sets and clears mask 0x40. The shared profile decodes bit 0 and has no conversion for this source, so this field is unavailable on JK78C."
 telemetry,torque_transition_state_raw,ffff23c2,ffff2318,,,mapped,Unique aligned word access and review of controller 00082346 bind the transition storage cell with shifted assignment and bounded decrement.
 telemetry,knock_state_snapshot_raw,ffff2467,,,,unsupported,The source-access search has no unique reviewed producer-consumer binding. This field is unavailable on the layout until its source role is reviewed.

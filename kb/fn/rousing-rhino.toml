@@ -203,6 +203,25 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
+[[symbol]]
+layout = "jk78c"
+address = "00074270"
+name = "mustard-elk"
+level = "code"
+note = """
+For bank b in 0..1, reads ffff144b at 0007428e and ffff144a at 0007429c, \
+requiring bit b of both before the learned-grid update. The selected learned \
+word begins at ffff225e; this binding does not establish live learning \
+cadence or physical permission."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074290"
+to = "7mfk:00057d40"
+count = 1
+value = 95
+
 [[link]]
 type = "depends"
 to = "clay-capuchin/fn"
