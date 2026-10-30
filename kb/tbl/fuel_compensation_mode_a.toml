@@ -9,6 +9,34 @@ storage = "uint8"
 unit = "bitfield"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008a82"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000488dc"
+to = "jk78c:0000896b"
+note = """
+Coordinator 00048564 tests bit 5 of this byte at 000488dc (GBR-relative \
+TST.B) and bit 0 at 000488e8 before the bypass selection, in the positions \
+where JK78C 00040958 tests bits 5 and 0 of 0000896b."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008a31"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00045274"
+to = "jk78c:0000896b"
+note = """
+Coordinator 00044f1c tests bit 5 of this byte at 00045274 (GBR-relative \
+TST.B) and bit 0 at 00045280 before the bypass selection, in the positions \
+where JK78C 00040958 tests bits 5 and 0 of 0000896b."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008b42"
 level = "code"

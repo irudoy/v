@@ -43,6 +43,52 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014232"
+name = "alluring-cat"
+level = "candidate"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00045598"
+to = "jk78c:00013f28"
+note = """
+Target reader 00045478 corresponds to JK78C FUN_0003E1C0: both run a \
+three-state gate and, on the entry from state 0, look up this 8-point curve \
+by the coolant index through idle_ignition_lookup. MOV.L 00045598 loads it \
+for the call at 0004559e by fffe8077, and the result is written to fffe8f12 \
+and fffe953d, as MOV.L jk78c:0003e1dc loads 00013f28 for the call at \
+0003e1e2 by ffff106d before ffff1ece and ffff249a. Both readers then compare \
+the byte two above the coolant index, with a hysteresis of 4, against ROM \
+byte 000086c2 (00008655 on JK78C), and the Base Fuel Schedule word against \
+bounds formed from ROM byte 00008a02 (0000891a) shifted left by eight and \
+four times the quarter-BFS word. Every stock cell is zero, as on JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000143c6"
+name = "carmine-jackal"
+level = "candidate"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000420a0"
+to = "jk78c:00013f28"
+note = """
+Target reader 00041f80 corresponds to JK78C FUN_0003E1C0: both run a \
+three-state gate and, on the entry from state 0, look up this 8-point curve \
+by the coolant index through idle_ignition_lookup. MOV.L 000420a0 loads it \
+for the call at 000420a6 by fffe8077, and the result is written to fffe8f64 \
+and fffe9561, as MOV.L jk78c:0003e1dc loads 00013f28 for the call at \
+0003e1e2 by ffff106d before ffff1ece and ffff249a. Both readers then compare \
+the byte two above the coolant index, with a hysteresis of 4, against ROM \
+byte 000086b2 (00008655 on JK78C), and the Base Fuel Schedule word against \
+bounds formed from ROM byte 000089c8 (0000891a) shifted left by eight and \
+four times the quarter-BFS word. Every stock cell is zero, as on JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a3a"
 name = "rapid-ocelot"

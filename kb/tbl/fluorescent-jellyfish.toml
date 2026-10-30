@@ -74,6 +74,44 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "000143d2"
+name = "lilac-hamster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00046cd4"
+to = "jk78c:000140a0"
+note = """
+Target MAF correction reader 00046878 corresponds to JK78C FUN_0003F17C: it \
+keeps the two-phase per-bank latch and looks up the same two curves. MOV.L \
+00046cd4 loads this curve with axis 00013468 for the call at 00046cd6 by the \
+high byte of the latched per-bank word fffeaf92, and the result is stored \
+per bank at fffeaf97, as MOV.L jk78c:0003f4b6 loads 000140a0 with axis \
+0001337a for the call at 0003f4c0 before ffff3be3. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014546"
+name = "ivory-kagu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000436b8"
+to = "jk78c:000140a0"
+note = """
+Target MAF correction reader 0004324c corresponds to JK78C FUN_0003F17C: it \
+keeps the two-phase per-bank latch and looks up the same two curves. MOV.L \
+000436b8 loads this curve with axis 00013714 for the call at 000436ba by the \
+high byte of the latched per-bank word fffeae4e, and the result is stored \
+per bank at fffeae53, as MOV.L jk78c:0003f4b6 loads 000140a0 with axis \
+0001337a for the call at 0003f4c0 before ffff3be3. Stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012c4a"
 name = "fluorescent-jellyfish"

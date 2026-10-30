@@ -8,6 +8,34 @@ storage = "uint8"
 unit = "raw compensation byte"
 
 [[symbol]]
+layout = "1me3b"
+address = "000084b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048904"
+to = "jk78c:0000847c"
+note = """
+Coordinator 00048564 loads this byte as the first bypass source when \
+source-mode bit 1 is set and clamps it to 0x40..0xC0 before the published \
+byte, as JK78C 00040958 loads 0000847c."""
+
+[[symbol]]
+layout = "1nd"
+address = "000084ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004529c"
+to = "jk78c:0000847c"
+note = """
+Coordinator 00044f1c loads this byte as the first bypass source when \
+source-mode bit 1 is set and clamps it to 0x40..0xC0 before the published \
+byte, as JK78C 00040958 loads 0000847c."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000851a"
 level = "code"

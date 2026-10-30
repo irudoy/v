@@ -66,6 +66,7 @@ outside this slice.""",
 level = "code"
 role = "accessor"
 block = "airflow_load/block"
+former = ["bfs_estimation_stage"]
 
 [[ledger]]
 registry = "curated"
@@ -289,6 +290,75 @@ type = "writer"
 end = "to"
 relies = "structure"
 supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00048298"
+level = "code"
+former = ["bfs_estimation_stage/fn/1me3b-00048298"]
+note = """
+The 1ME3B normalization tail 00048534..00048554 divides uint16[fffe802e]*128 \
+by unsigned ROM16[000094d4] through unsigned_divide/fn, caps the quotient at \
+255, and writes fffe8048. The source is the BFS word loaded at 000484c4 and \
+preserved in R7 at 000484e2. The stock reference is 0x9f38. This establishes \
+the Q7 code ratio without a physical cylinder-filling interpretation."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048298"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048554"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048298"
+to = "jk78c:0004068c"
+note = """
+Entry 00048298 runs the program of JK78C FUN_0004068C through the 1ME3B \
+wrappers: the fallback lookup by coolant index into a raw and a quarter \
+word, the primary branch with the split multiply, the speed count clamped to \
+at least 64 and the fixed cap 0x726F9, the Q7 compensated quarter word \
+against the published compensation byte fffe8ed4, and the normalization tail \
+that divides the Base Fuel Schedule word times 128 by ROM16 000094d4. Its \
+fallback branch adds the 000137c6 multiplier."""
+
+[[symbol]]
+layout = "1nd"
+address = "00044c70"
+level = "code"
+former = ["bfs_estimation_stage/fn/1nd-00044c70"]
+note = """
+1ND producer 00044c70 with helpers 000446c0 (capped schedule and direct \
+grid) and 00044984 (signed rate correction and alpha-N latch), the \
+counterparts of JK78C FUN_000401D4 and FUN_000403A2. The normalization tail \
+00044e92..00044eb2 divides uint16[fffe802e]*128 by unsigned ROM16[0000940a] \
+through unsigned_divide/fn, caps the quotient at 255 and writes fffe8048; \
+the source word is the BFS sample loaded at 00044e22 and preserved in R7 at \
+00044e40. The stock reference is 0x9f38; the ratio establishes a Q7 code \
+coordinate without a physical cylinder-filling interpretation."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044c70"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044c70"
+to = "jk78c:0004068c"
+note = """
+Entry 00044c70 runs the program of JK78C FUN_0004068C: the fallback lookup \
+by coolant index into a raw and a quarter word, the primary branch with the \
+split multiply, the speed count clamped to at least 64 and the fixed cap \
+0x726F9, the Q7 compensated quarter word against the published compensation \
+byte fffe8154, and the normalization tail that divides the Base Fuel \
+Schedule word times 128 by ROM16 0000940a."""
 
 [[symbol]]
 layout = "7mfk"

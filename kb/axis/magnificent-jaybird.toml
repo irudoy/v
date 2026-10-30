@@ -1,4 +1,34 @@
 [[symbol]]
+layout = "1me3b"
+address = "00013468"
+name = "mottled-rattlesnake"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00046cc8"
+to = "jk78c:0001337a"
+note = """
+Axis of 000143d2 in target reader 00046878: MOV.L 00046cc8 loads it for the \
+call at 00046cd6, as MOV.L jk78c:0003f4ba loads 0001337a for the call at \
+0003f4c0. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013714"
+name = "sexy-deer"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000436ac"
+to = "jk78c:0001337a"
+note = """
+Axis of 00014546 in target reader 0004324c: MOV.L 000436ac loads it for the \
+call at 000436ba, as MOV.L jk78c:0003f4ba loads 0001337a for the call at \
+0003f4c0. Stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011bbb"
 name = "magnificent-jaybird"

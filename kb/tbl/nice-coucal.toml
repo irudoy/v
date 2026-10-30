@@ -138,6 +138,50 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016f36"
+name = "gainful-mink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048426"
+to = "jk78c:00016894"
+note = """
+Target producer 00048298 corresponds to JK78C FUN_0004068C. On the fallback \
+branch MOV.L 00048426 loads this map for the call at 0004842a by \
+coolant_index fffe8077 shifted left by eight, and the producer writes the \
+result to fffe8dec and a quarter of it to fffe8de8, as MOV.L jk78c:000407ec \
+loads 00016894 for the call at 000407f8 by ffff106d before ffff1db8 and \
+ffff1db4. The startup initializer 0003357c also reads it. On 1ME3B, with bit \
+4 of ROM byte 0000865c clear and bit 2 of 0000865f set, which stock bytes \
+0x28 and 0x0C satisfy, the producer first multiplies the result by the \
+lookup of 000137c6 at the signed high byte of fffed096 and divides by 128; \
+that multiplier has no JK78C counterpart in this reader. Stock words equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016eb2"
+name = "garrulous-zebu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044dbc"
+to = "jk78c:00016894"
+note = """
+Target producer 00044c70 corresponds to JK78C FUN_0004068C. On the fallback \
+branch MOV.L 00044dbc loads this map for the call at 00044dc4 by \
+coolant_index fffe8077 shifted left by eight, and the producer writes the \
+result to fffe8e44 and a quarter of it to fffe8e40, as MOV.L jk78c:000407ec \
+loads 00016894 for the call at 000407f8 by ffff106d before ffff1db8 and \
+ffff1db4. The startup initializer 00030810 also reads it. Stock words equal \
+JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015630"
 name = "nice-coucal"

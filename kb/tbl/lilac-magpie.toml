@@ -71,6 +71,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014416"
+name = "scrupulous-tody"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00047de8"
+to = "jk78c:000140e4"
+note = """
+In target helper 00047ce8, MOV.L 00047de8 loads this curve for the \
+dfco_lookup call at 00047df0 by byte fffe81cd; the helper stores the result \
+in fffe8dee and caps the nonnegative corrected schedule at the result \
+shifted left by eight before fffe802e, as MOV.L jk78c:00040246 loads \
+000140e4 for the call at 0004024c in FUN_000401D4 by byte ffff11d7 before \
+ffff102e. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001458a"
+name = "greedy-marten"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000447c0"
+to = "jk78c:000140e4"
+note = """
+In target helper 000446c0, MOV.L 000447c0 loads this curve for the \
+dfco_lookup call at 000447c8 by byte fffe81e5; the helper stores the result \
+in fffe8e46 and caps the nonnegative corrected schedule at the result \
+shifted left by eight before fffe802e, as MOV.L jk78c:00040246 loads \
+000140e4 for the call at 0004024c in FUN_000401D4 by byte ffff11d7 before \
+ffff102e. Stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012c9e"
 name = "lilac-magpie"

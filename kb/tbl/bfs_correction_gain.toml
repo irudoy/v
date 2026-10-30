@@ -9,6 +9,42 @@ storage = "uint8"
 unit = "raw_u8"
 
 [[symbol]]
+layout = "1me3b"
+address = "000085b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004816e"
+to = "jk78c:0000856a"
+note = """
+In target correction helper 00047fac, MOV.L 0004816e loads this byte, which \
+multiplies the unsigned word difference fffeaefc - fffeacbe. A negative \
+product receives 63 and 00048182..00048190 shift it right arithmetically six \
+times inline, so the division by 64 truncates toward zero as on JK78C, where \
+FUN_000403A2 loads 0000856a at 0004055e, adds 63 to a negative product and \
+calls the shift-chain entry 00022562. Both cap the result to a signed word. \
+Stock 13, as on JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000085b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044b46"
+to = "jk78c:0000856a"
+note = """
+In target correction helper 00044984, MOV.L 00044b46 loads this byte, which \
+multiplies the unsigned word difference fffeadb8 - fffeab78. A negative \
+product receives 63 and 00044b5a..00044b68 shift it right arithmetically six \
+times inline, so the division by 64 truncates toward zero as on JK78C, where \
+FUN_000403A2 loads 0000856a at 0004055e, adds 63 to a negative product and \
+calls the shift-chain entry 00022562. Both cap the result to a signed word. \
+Stock 13, as on JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000865a"
 level = "code"

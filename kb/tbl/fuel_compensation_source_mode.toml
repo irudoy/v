@@ -8,6 +8,38 @@ storage = "uint8"
 unit = "bitfield"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008647"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048900"
+to = "jk78c:000085f6"
+note = """
+Coordinator 00048564 tests bit 1 of this byte at 00048900 (GBR-relative \
+TST.B) to choose between ROM byte 000084b8 and RAM byte fffed0c3 as the \
+first bypass source, as JK78C 00040958 tests bit 1 of 000085f6. Bit 5 is \
+also tested in 0004656a at 00046616, the reader that corresponds to JK78C \
+0003f038, whose callee 0003fa48 tests bit 5 of 000085f6."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000863f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00045298"
+to = "jk78c:000085f6"
+note = """
+Coordinator 00044f1c tests bit 1 of this byte at 00045298 (GBR-relative \
+TST.B) to choose between ROM byte 000084ae and RAM byte fffecfc3 as the \
+first bypass source, as JK78C 00040958 tests bit 1 of 000085f6. Bit 5 is \
+also tested in 00042f50 at 00042ffc, the reader that corresponds to JK78C \
+0003f038, whose callee 0003fa48 tests bit 5 of 000085f6."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000086f9"
 level = "code"

@@ -20,6 +20,44 @@ storage = "uint8"
 unit = "bitfield"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008c46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00047da8"
+to = "jk78c:00008b10"
+note = """
+Target helper 00047ce8 corresponds to JK78C FUN_000401D4 of the Base Fuel \
+Schedule family. With bit 7 of fffe943b clear, MOV.L 00047da8 loads this \
+byte and bit 4 selects word fffe8d90 when set or fffe8d92 when clear as the \
+corrected schedule source, as MOV.L jk78c:000401e6 loads 00008b10 and \
+selects ffff1d60 or ffff1d62. The correction helper 00047fac tests bit 3 at \
+000480e8, 000480f2 and 00048100 through GBR-relative TST.B, where JK78C \
+FUN_000403A2 tests bit 3 of 00008b10. Stock 0x7E, against 0x1E on JK78C; \
+bits 3 and 4 are set on both."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008bf2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044780"
+to = "jk78c:00008b10"
+note = """
+Target helper 000446c0 corresponds to JK78C FUN_000401D4 of the Base Fuel \
+Schedule family. With bit 7 of fffe946b clear, MOV.L 00044780 loads this \
+byte and bit 4 selects word fffe8dec when set or fffe8dee when clear as the \
+corrected schedule source, as MOV.L jk78c:000401e6 loads 00008b10 and \
+selects ffff1d60 or ffff1d62. The correction helper 00044984 tests bit 3 at \
+00044ac0, 00044aca and 00044ad8 through GBR-relative TST.B, where JK78C \
+FUN_000403A2 tests bit 3 of 00008b10. Stock 0x7E, against 0x1E on JK78C; \
+bits 3 and 4 are set on both."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008d92"
 level = "code"

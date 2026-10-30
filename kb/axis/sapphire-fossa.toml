@@ -1,4 +1,34 @@
 [[symbol]]
+layout = "1me3b"
+address = "00013478"
+name = "burgundy-corgi"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00046bb0"
+to = "jk78c:0001338a"
+note = """
+Axis of 000144ca in target reader 00046878: MOV.L 00046bb0 loads it for the \
+call at 00046bb6, as MOV.L jk78c:0003f41e loads 0001338a for the call at \
+0003f422. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013724"
+name = "ambitious-bulldog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004355c"
+to = "jk78c:0001338a"
+note = """
+Axis of 0001463e in target reader 0004324c: MOV.L 0004355c loads it for the \
+call at 00043562, as MOV.L jk78c:0003f41e loads 0001338a for the call at \
+0003f422. Stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011bc3"
 name = "sapphire-fossa"

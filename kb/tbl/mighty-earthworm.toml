@@ -29,6 +29,44 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[symbol]]
+layout = "1me3b"
+address = "000144ca"
+name = "energetic-gharial"
+level = "candidate"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00046bb2"
+to = "jk78c:00014198"
+note = """
+Target MAF correction reader 00046878 corresponds to JK78C FUN_0003F17C: it \
+keeps the two-phase per-bank latch and looks up the same two curves. MOV.L \
+00046bb2 loads this curve with axis 00013478 for the call at 00046bb6 by the \
+per-bank mean byte and the result is stored per bank at fffeaf99, as MOV.L \
+jk78c:0003f41c loads 00014198 with axis 0001338a for the call at 0003f422 \
+before ffff3be5. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001463e"
+name = "jovial-markhor"
+level = "candidate"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004355e"
+to = "jk78c:00014198"
+note = """
+Target MAF correction reader 0004324c corresponds to JK78C FUN_0003F17C: it \
+keeps the two-phase per-bank latch and looks up the same two curves. MOV.L \
+0004355e loads this curve with axis 00013724 for the call at 00043562 by the \
+per-bank mean byte and the result is stored per bank at fffeae55, as MOV.L \
+jk78c:0003f41c loads 00014198 with axis 0001338a for the call at 0003f422 \
+before ffff3be5. Stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d82"
 name = "mighty-earthworm"

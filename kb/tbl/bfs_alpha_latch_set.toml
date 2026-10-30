@@ -8,6 +8,41 @@ storage = "uint8"
 unit = "raw_u8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008311"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00047fe6"
+to = "jk78c:00008300"
+note = """
+Target correction helper 00047fac corresponds to JK78C FUN_000403A2. MOV.L \
+00047fe6 loads the address of this byte, the base of both thresholds, and \
+MOV.B 00047fea reads it as the upper threshold: byte fffe8150 at or above \
+it, with word fffeae50 at or above fffeae58, sets bit 7 of fffe94a1, as \
+JK78C compares byte ffff115c with 00008300 (loaded at 000403de) and words \
+ffff3a9c and ffff3aa4 before setting bit 7 of ffff240a. Stock 0xCA, as on \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000830f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000449c2"
+to = "jk78c:00008300"
+note = """
+Target correction helper 00044984 corresponds to JK78C FUN_000403A2. MOV.L \
+000449be loads base 0000830e and MOV.B 000449c2 reads this byte at offset 1 \
+as the upper threshold: byte fffe8164 at or above it, with word fffead0c at \
+or above fffead14, sets bit 7 of fffe94d1, as JK78C compares byte ffff115c \
+with 00008300 (loaded at 000403de) and words ffff3a9c and ffff3aa4 before \
+setting bit 7 of ffff240a. Stock 0xCA, as on JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008319"
 level = "code"

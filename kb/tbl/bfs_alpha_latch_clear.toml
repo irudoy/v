@@ -8,6 +8,38 @@ storage = "uint8"
 unit = "raw_u8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008312"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048000"
+to = "jk78c:00008301"
+note = """
+In target correction helper 00047fac, MOV.B 00048000 reads this byte at \
+offset 1 of base 00008311 as the lower threshold: when the set arm is not \
+taken, byte fffe8150 below it clears bit 7 of fffe94a1 and a byte at or \
+above it preserves the latch, as JK78C FUN_000403A2 compares byte ffff115c \
+with 00008301 (loaded at 00040478). Stock 0xC8, as on JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008310"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000449d8"
+to = "jk78c:00008301"
+note = """
+In target correction helper 00044984, MOV.B 000449d8 reads this byte at \
+offset 2 of base 0000830e as the lower threshold: when the set arm is not \
+taken, byte fffe8164 below it clears bit 7 of fffe94d1 and a byte at or \
+above it preserves the latch, as JK78C FUN_000403A2 compares byte ffff115c \
+with 00008301 (loaded at 00040478). Stock 0xC8, as on JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000831a"
 level = "code"

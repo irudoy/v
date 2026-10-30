@@ -70,6 +70,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000097c0"
+name = "diligent-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00047d40"
+to = "jk78c:0000943e"
+note = """
+With bit 7 of fffe943b set, target helper 00047ce8 selects a row by byte \
+fffe81cc below 0x40, 0x80 and 0xC0 and a column by byte fffe8085 at \
+thresholds 7, 15 and 22, reads the cell through MOV.L 00047d40 and writes it \
+shifted left by eight to fffe802e, or zero at or above 0xC0, as MOV.L \
+jk78c:000402b6 in FUN_000401D4 with bit 7 of ffff23a9 set. Stock bytes \
+differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000096dc"
+name = "poetic-teal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044718"
+to = "jk78c:0000943e"
+note = """
+With bit 7 of fffe946b set, target helper 000446c0 selects a row by byte \
+fffe81e4 below 0x40, 0x80 and 0xC0 and a column by byte fffe8085 at \
+thresholds 7, 15 and 22, reads the cell through MOV.L 00044718 and writes it \
+shifted left by eight to fffe802e, or zero at or above 0xC0, as MOV.L \
+jk78c:000402b6 in FUN_000401D4 with bit 7 of ffff23a9 set. Stock bytes equal \
+JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000974e"
 name = "almond-orca"

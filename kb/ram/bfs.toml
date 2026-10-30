@@ -453,7 +453,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "bfs_estimation_stage/fn"
+to = "base_fuel_schedule_producer/fn"
 layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
