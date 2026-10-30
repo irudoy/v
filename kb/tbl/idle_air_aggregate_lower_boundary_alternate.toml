@@ -1,0 +1,50 @@
+summary = """
+Implicit eight-point byte curve of FUN_0005B418, read through 00028198 with \
+clamp(2*(uint8[ffff10e0]-0x50),0,255). It replaces 0x13CC6 \
+(peculiar-centipede) when ffff23c6.bit6 is clear. The result is stored at \
+ffff16c9, and the local uint8 aggregate takes the maximum of it and the \
+running value. JK08A FUN_000420B8 reads only the counterpart of 0x13CC6. \
+Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013cce"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005c7ca"
+note = """
+Implicit eight-point byte curve of FUN_0005B418, read through 00028198 with \
+clamp(2*(uint8[ffff10e0]-0x50),0,255). It replaces 0x13CC6 \
+(peculiar-centipede) when ffff23c6.bit6 is clear. The result is stored at \
+ffff16c9, and the local uint8 aggregate takes the maximum of it and the \
+running value. JK08A FUN_000420B8 reads only the counterpart of 0x13CC6. \
+Physical quantity and conversion remain unresolved."""
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005c7ca"
+note = "The reviewed reader passes this table to its interpolation primitive."

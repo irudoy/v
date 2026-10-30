@@ -1,0 +1,69 @@
+summary = """
+Weighted curve of floor pair b in FUN_0005FB58, read through 00028378 with \
+uint16[ffff11a8] over axis 0x154EC and stored at ffff3695. The floor branch \
+selects pair a (0x13DCE, 0x13DDE) when ffff45c7.bit2 or ffff23ff.bit3 is set \
+and pair b (0x13DFE, 0x13E0E) otherwise. It forms (base*(0x8000-w) + \
+weighted*w)/0x8000 with w = uint16[ffff447e], divided with truncation toward \
+zero, limited to 0..255 and stored at ffff172a. JK08A FUN_00046938 selects \
+one curve, 0x12908 or 0x12918, at this position. Physical quantity and \
+conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013e0e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ff1c"
+note = """
+Weighted curve of floor pair b in FUN_0005FB58, read through 00028378 with \
+uint16[ffff11a8] over axis 0x154EC and stored at ffff3695. The floor branch \
+selects pair a (0x13DCE, 0x13DDE) when ffff45c7.bit2 or ffff23ff.bit3 is set \
+and pair b (0x13DFE, 0x13E0E) otherwise. It forms (base*(0x8000-w) + \
+weighted*w)/0x8000 with w = uint16[ffff447e], divided with truncation toward \
+zero, limited to 0..255 and stored at ffff172a. JK08A FUN_00046938 selects \
+one curve, 0x12908 or 0x12918, at this position. Physical quantity and \
+conversion remain unresolved."""
+
+[[link]]
+type = "axis"
+to = "idle_air_floor_pair_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ff06"
+note = """
+The reviewed explicit wrapper call passes axis 000154ec in the x slot for \
+table 00013e0e."""
+
+[[link]]
+type = "reader"
+to = "dramatic-roadrunner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ff1c"
+note = "The reviewed reader passes this table to its interpolation primitive."

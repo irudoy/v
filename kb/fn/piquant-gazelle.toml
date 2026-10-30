@@ -175,8 +175,9 @@ name = "dexterous-chamois"
 note = """
 FUN_0005AA84 holds the position of JK08A FUN_00041750 in the calls of \
 FUN_0005B1B4 (JK08A FUN_00041E40) and repeats its structure (1244 bytes on \
-JK78C, 1172 on JK08A). It adds a second lookup of 0x16594 over axis 0x16F54 \
-beside the curve 0x15E22."""
+JK78C, 1172 on JK08A). It adds the lookup of 0x13808 over axis 0x132FE \
+before the counterpart of 0x125B2, and the second word lookup of 0x16594 \
+over axis 0x14F7C beside the curve 0x15E22 over axis 0x16F54."""
 
 [[symbol.evidence]]
 kind = "l0"

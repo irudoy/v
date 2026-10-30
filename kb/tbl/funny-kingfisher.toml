@@ -7,3 +7,18 @@ name = "funny-kingfisher"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006d392"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014adc"
+name = "zircon-ibex"
+note = """
+Passed by FUN_00087BD0 (JK08A FUN_00069374) in r5 to the explicit \
+eight-point word lookup of 0x14748 through the literal-pool word loaded at \
+0x8BBC2, as JK08A passes 0x137D8 for 0x13468. Stock bytes are identical to \
+JK08A 0x137D8."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008bbc2"

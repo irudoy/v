@@ -1,0 +1,58 @@
+summary = """
+First implicit eight-point word curve of FUN_00087288, read through 00028200 \
+with min(0xFFFF, 2*uint16[ffff1016]). The base 0x15D62 is loaded at 0x872AC, \
+and the delay slot of the call at 0x872B2 adds 0x10. The lookup holds the \
+first-lookup position of JK08A 0x120CE (athletic-swallow), whose JK78C \
+binding stays unresolved because the index inputs are not qualified as the \
+same quantity. The sum (l1+l2-0x8000)*8 saturates to the signed 16-bit range \
+before the store to ffff1f6c. Physical quantity and conversion remain \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015d72"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000872ac"
+value = 16
+mode = "base"
+note = """
+First implicit eight-point word curve of FUN_00087288, read through 00028200 \
+with min(0xFFFF, 2*uint16[ffff1016]). The base 0x15D62 is loaded at 0x872AC, \
+and the delay slot of the call at 0x872B2 adds 0x10. The lookup holds the \
+first-lookup position of JK08A 0x120CE (athletic-swallow), whose JK78C \
+binding stays unresolved because the index inputs are not qualified as the \
+same quantity. The sum (l1+l2-0x8000)*8 saturates to the signed 16-bit range \
+before the store to ffff1f6c. Physical quantity and conversion remain \
+unresolved."""
+
+[[link]]
+type = "reader"
+to = "finicky-capybara/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000872ac"
+value = 16
+mode = "base"
+note = "The reviewed reader passes this table to its interpolation primitive."

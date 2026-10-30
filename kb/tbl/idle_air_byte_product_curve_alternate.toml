@@ -1,0 +1,50 @@
+summary = """
+Implicit 16-point byte curve of FUN_0005FB58, read through 000281b0 with \
+min(uint16[ffff11a8]/2, 255). It replaces 0x136D8 (burrowing-dormouse) when \
+ffff23ab.bit7 or ffff23b0.bit7 is set; on both paths the result times \
+uint8[ffff19fc] is stored as word ffff1730. JK08A FUN_00046938 reads only \
+the counterpart of 0x136D8. Physical quantity and conversion remain \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000136c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fc7a"
+note = """
+Implicit 16-point byte curve of FUN_0005FB58, read through 000281b0 with \
+min(uint16[ffff11a8]/2, 255). It replaces 0x136D8 (burrowing-dormouse) when \
+ffff23ab.bit7 or ffff23b0.bit7 is set; on both paths the result times \
+uint8[ffff19fc] is stored as word ffff1730. JK08A FUN_00046938 reads only \
+the counterpart of 0x136D8. Physical quantity and conversion remain \
+unresolved."""
+
+[[link]]
+type = "reader"
+to = "dramatic-roadrunner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fc7a"
+note = "The reviewed reader passes this table to its interpolation primitive."

@@ -112,6 +112,23 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014748"
+name = "quizzical-ostrich"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x8BBC0. The sequence 0x8BBBA-0x8BBD6 repeats JK08A \
+0x6D386-0x6D3A2: while uint32[ffff9128] (JK08A ffff90e8) is nonzero, the \
+explicit eight-point word lookup 000282F4 (JK08A 000264CC) over axis 0x14ADC \
+(JK08A 0x137D8) is stored without conversion at ffff13e8 (JK08A ffff13f4). \
+Stock values differ from JK08A 0x13468."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008bbc0"
+
 [[link]]
 type = "depends"
 to = "funny-kingfisher/tbl"

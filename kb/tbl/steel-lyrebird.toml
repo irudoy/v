@@ -150,3 +150,21 @@ kind = "trace"
 supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013d9e"
+name = "naughty-mustang"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x8AC6C. The sequence 0x8AC5E-0x8AC90 repeats JK08A \
+0x6C42A-0x6C45C: the index min(word, 0x7F80)>>7, the explicit eight-point \
+byte lookup 0002829C (JK08A 00026474) over axis 0x132C6 (JK08A 0x11AFF), and \
+the result shifted left by 8, stored at ffff331c (JK08A ffff31ca) and \
+compared with uint16[ffff8fee] (JK08A ffff8fae). Stock bytes are identical \
+to JK08A 0x128B0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ac6c"

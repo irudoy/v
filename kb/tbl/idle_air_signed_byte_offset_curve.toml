@@ -1,0 +1,61 @@
+summary = """
+Explicit eight-point byte curve of FUN_0005AA84 over axis 0x132FE, read \
+through 0002829c with uint8[ffff11d7]. The result minus 128 is stored as \
+signed byte ffff1f81. JK08A FUN_00041750 has no lookup at this position. \
+Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013808"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ac2a"
+note = """
+Explicit eight-point byte curve of FUN_0005AA84 over axis 0x132FE, read \
+through 0002829c with uint8[ffff11d7]. The result minus 128 is stored as \
+signed byte ffff1f81. JK08A FUN_00041750 has no lookup at this position. \
+Physical quantity and conversion remain unresolved."""
+
+[[link]]
+type = "axis"
+to = "idle_air_signed_byte_offset_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ac2e"
+note = """
+The reviewed explicit wrapper call passes axis 000132fe in the x slot for \
+table 00013808."""
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ac2a"
+note = "The reviewed reader passes this table to its interpolation primitive."

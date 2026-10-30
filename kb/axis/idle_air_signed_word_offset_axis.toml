@@ -1,0 +1,29 @@
+summary = """
+Explicit eight-point word axis of 0x16594 in FUN_0005AA84. Its input is \
+uint16[ffff1136]; the companion curve 0x15E22 uses the separate axis \
+0x16F54. Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014f7c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ad72"
+note = """
+The reviewed explicit wrapper call receives this axis from the literal-pool \
+word loaded here."""

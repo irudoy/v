@@ -1,0 +1,29 @@
+summary = """
+Explicit 16-point word axis of the four floor curves of FUN_0005FB58, loaded \
+at 0x5FEBE for pair a and at 0x5FF06 for pair b. Its input is \
+uint16[ffff11a8]. Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000154ec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005febe"
+note = """
+The reviewed explicit wrapper call receives this axis from the literal-pool \
+word loaded here."""

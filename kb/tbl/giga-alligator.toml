@@ -135,3 +135,21 @@ kind = "trace"
 supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013b90"
+name = "talented-fossa"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750) through the literal-pool word \
+loaded at 0x5AC54. Both layouts look up an explicit eight-point byte curve \
+(0002829C, JK08A 00026474) indexed by the byte at base+0x254 (ffff2198; \
+JK08A base+0x250, ffff2244) and store the result at base+0x228 (ffff216c; \
+JK08A base+0x224, ffff2218). The gate differs: JK78C requires ffff23b1.bit0 \
+clear and ffff2417.bit4 set; JK08A requires a zero local flag and \
+ffff24c2.bit5 set. Stock values differ from JK08A 0x125B2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ac54"

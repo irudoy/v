@@ -1,0 +1,52 @@
+summary = """
+Second implicit eight-point word curve of FUN_00087288, read in place \
+through 00028200 with clamp((uint16[ffff1f74]-144)*256, 0, 0xFFFF) and \
+biased by 0x8000. It holds the position of the JK08A stack copy of the \
+unclassified curve 0x237AC; after the bias its stock values repeat those of \
+0x237AC except the fourth point (-8 against -7). The sum (l1+l2-0x8000)*8 \
+saturates to the signed 16-bit range before the store to ffff1f6c. Physical \
+quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015d62"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000872e4"
+note = """
+Second implicit eight-point word curve of FUN_00087288, read in place \
+through 00028200 with clamp((uint16[ffff1f74]-144)*256, 0, 0xFFFF) and \
+biased by 0x8000. It holds the position of the JK08A stack copy of the \
+unclassified curve 0x237AC; after the bias its stock values repeat those of \
+0x237AC except the fourth point (-8 against -7). The sum (l1+l2-0x8000)*8 \
+saturates to the signed 16-bit range before the store to ffff1f6c. Physical \
+quantity and conversion remain unresolved."""
+
+[[link]]
+type = "reader"
+to = "finicky-capybara/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000872e4"
+note = "The reviewed reader passes this table to its interpolation primitive."

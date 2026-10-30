@@ -1,0 +1,48 @@
+summary = """
+Implicit 16-point byte curve of FUN_0005B418, read through 000281b0 with \
+min(uint16[ffff10ca]*16/20, 255), the quotient of the division helper \
+00021ce8. The result is stored at ffff16c6 after ffff16c8 is cleared. JK08A \
+FUN_000420B8 has no lookup at this position, and the consumer is not \
+established. Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013d56"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005c052"
+note = """
+Implicit 16-point byte curve of FUN_0005B418, read through 000281b0 with \
+min(uint16[ffff10ca]*16/20, 255), the quotient of the division helper \
+00021ce8. The result is stored at ffff16c6 after ffff16c8 is cleared. JK08A \
+FUN_000420B8 has no lookup at this position, and the consumer is not \
+established. Physical quantity and conversion remain unresolved."""
+
+[[link]]
+type = "reader"
+to = "quirky-silkworm/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005c052"
+note = "The reviewed reader passes this table to its interpolation primitive."

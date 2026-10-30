@@ -52,3 +52,21 @@ key = "linked"
 kind = "unverified-site"
 supports = "identity"
 at = "7mfk:00054152"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013e3a"
+name = "smart-asp"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) through the literal-pool word \
+loaded at 0x5DC9E. Both layouts look up this table and the next one with the \
+same input byte (JK78C uint8[ffff1067], JK08A uint8[ffff106f]) through the \
+implicit eight-point primitive (00028198, JK08A 00026370), store the results \
+at ffff173f and ffff173e (JK08A ffff172f and ffff172e), and then read \
+0x13CA6 and 0x13CB6 (JK08A 0x12738 and 0x12748). Stock values differ from \
+JK08A 0x12954."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005dc9e"

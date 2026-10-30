@@ -211,6 +211,24 @@ kind = "arithmetic"
 supports = "scale"
 value = "500/10=50"
 
+[[symbol]]
+layout = "jk78c"
+address = "000140bc"
+name = "abstract-unicorn"
+note = """
+Read by FUN_0005B418 (JK08A FUN_000420B8) through the literal-pool word \
+loaded at 0x5B43E, the counterpart of the JK08A load at 0x420E6; both calls \
+sit at offset 0x34 of their functions. The implicit eight-point lookup \
+00028198 (JK08A 00026370) takes uint8[ffff1068] where JK08A takes \
+uint8[ffff1070]. The result is stored at ffff194a (JK08A ffff1958) and \
+multiplied by ten in the comparison with uint32[ffff10ac] (JK08A ffff10c0). \
+Stock values differ from JK08A 0x12C66."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005b43e"
+
 [[link]]
 type = "index"
 to = "ambitious-galago/ram"

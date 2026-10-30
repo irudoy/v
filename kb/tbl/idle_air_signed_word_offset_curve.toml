@@ -1,0 +1,65 @@
+summary = """
+Explicit eight-point word curve of FUN_0005AA84 over axis 0x14F7C, read \
+through 000282f4 with uint16[ffff1136] directly after the lookup of 0x15E22 \
+with the same input over axis 0x16F54. The result minus 0x8000 is stored as \
+signed word ffff21e6, as the 0x15E22 result is stored at ffff1f7a. JK08A \
+FUN_00041750 reads only the counterpart of 0x15E22. Physical quantity and \
+conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "idle_air/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016594"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ad6e"
+note = """
+Explicit eight-point word curve of FUN_0005AA84 over axis 0x14F7C, read \
+through 000282f4 with uint16[ffff1136] directly after the lookup of 0x15E22 \
+with the same input over axis 0x16F54. The result minus 0x8000 is stored as \
+signed word ffff21e6, as the 0x15E22 result is stored at ffff1f7a. JK08A \
+FUN_00041750 reads only the counterpart of 0x15E22. Physical quantity and \
+conversion remain unresolved."""
+
+[[link]]
+type = "axis"
+to = "idle_air_signed_word_offset_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ad72"
+note = """
+The reviewed explicit wrapper call passes axis 00014f7c in the x slot for \
+table 00016594."""
+
+[[link]]
+type = "reader"
+to = "piquant-gazelle/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ad6e"
+note = "The reviewed reader passes this table to its interpolation primitive."

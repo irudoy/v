@@ -312,6 +312,23 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00010d4e"
+name = "muscular-panda"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x8A7DE. The sequence 0x8A7D6-0x8A804 repeats JK08A \
+0x6BF9E-0x6BFCC: the explicit 8x8 word lookup 00028058 (JK08A 00026270) over \
+axes 0x14AEC and 0x14ACC (JK08A 0x137E8 and 0x137C8), the product with \
+ROM16[00008dc2] (JK08A ROM16[0000908e]) and the unsigned division by 5120. \
+Stock values differ from JK08A 0xFC0E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008a7de"
+
 [[link]]
 type = "depends"
 to = "loud-crab/tbl"
