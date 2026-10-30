@@ -27,11 +27,19 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 [[symbol]]
 layout = "jk78c"
 address = "0000856a"
+summary = """
+Fixed-address unsigned scalar byte multiplying the difference of the words \
+0xFFFF3B48 and 0xFFFF390C in FUN_000403A2. The signed correction divides the \
+product by 64 with truncation toward zero and caps it to a signed word."""
 note = """
-FUN_000403A2 multiplies the difference of the words 0xFFFF3B48 and \
-0xFFFF390C by this byte, divides by 64 with floor rounding and caps the \
-result to a signed word; loaded at 0x0004055E. Stock 13, against 160 on \
-JK08A."""
+FUN_000403A2 multiplies the unsigned-word difference 0xFFFF3B48 - 0xFFFF390C \
+by this byte (0x00040560..0x00040570), adds 63 to a negative product \
+(0x00040572..0x00040576) and calls the shift-chain entry 0x00022562, which \
+shifts right arithmetically six times; the division by 64 therefore \
+truncates toward zero, and the result is capped to a signed word. JK08A \
+calls the six-shift helper 0x000224FA without the bias and floors. With the \
+stock gain 13 and a difference of -1 the correction is 0, where floor \
+division gives -1. Loaded at 0x0004055E. Stock 13, against 160 on JK08A."""
 
 [[symbol.evidence]]
 kind = "l0"
