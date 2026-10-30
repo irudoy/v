@@ -10,7 +10,7 @@ at = "7mfk:000765d0"
 
 [[link]]
 type = "lookup"
-to = "apricot-angelfish/tbl"
+to = "request_centered_correction_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

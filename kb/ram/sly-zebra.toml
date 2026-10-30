@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "rare-baboon/tbl"
+to = "request_secondary_signed_endpoint_a/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "rigorous-shrimp/tbl"
+to = "request_secondary_signed_endpoint_b/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -85,14 +85,14 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "rigorous-shrimp/tbl"
+to = "request_secondary_signed_endpoint_b/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "rare-baboon/tbl"
+to = "request_secondary_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

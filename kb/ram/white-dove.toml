@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "throttle_container/tbl"
+to = "speed_limiter_filter_blend_gain_q10/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -137,7 +137,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "throttle_container/tbl"
+to = "speed_limiter_filter_blend_gain_q10/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

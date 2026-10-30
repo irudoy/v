@@ -10,7 +10,7 @@ at = "7mfk:000796f0"
 
 [[link]]
 type = "lookup"
-to = "roaring-newt/tbl"
+to = "request_counter_threshold_floor/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

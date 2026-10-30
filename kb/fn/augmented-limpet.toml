@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intelligent-chipmunk/tbl"
+to = "engine_torque_speed_correction/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

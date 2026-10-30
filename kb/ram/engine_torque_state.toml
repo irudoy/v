@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "encouraging-buzzard/tbl"
+to = "engine_torque_state_attenuation/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -60,7 +60,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -219,7 +219,7 @@ note = "Homologous torque functions write this state at aligned call order"
 
 [[link]]
 type = "input"
-to = "encouraging-buzzard/tbl"
+to = "engine_torque_state_attenuation/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -240,7 +240,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

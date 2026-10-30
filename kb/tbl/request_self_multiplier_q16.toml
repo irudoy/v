@@ -1,0 +1,137 @@
+summary = """
+Unsigned 1D coefficient table: the value interpolated by ffff177c is used as \
+a Q0.16 multiplier of the same ffff177c; the high 16 bits of the product are \
+stored in ffff181a."""
+note = [
+    """
+All map and axis cells are zero, so the current image yields a zero \
+coefficient. This does not prove unreachability or a physical subsystem. \
+ffff1836 has no external readers, but the same returned r2/r6 value is \
+consumed directly by mul.l at 000767d2. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 300
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+scale = [7, 8, 9]
+
+[[symbol]]
+layout = "7mfk"
+address = "000153e0"
+former = ["nickel-owl/tbl/7mfk-000153e0"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767b6"
+value = {named = ["000153e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767ba"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767be"
+value = {named = ["000153e0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767c8"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767cc"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767d2"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000767dc"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767c6"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767d4"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000767d6"
+value = {named = ["000153e0"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016614"
+former = ["granite-kagu/tbl/jk78c-00016614"]
+note = """
+Reader 00095eb4 reads 8x1 uint16 at 00016614. Q16 coefficient multiplied by \
+its own lookup input before conditional bounds and slew processing. The \
+reviewed operand and arithmetic role correspond to 000153e0 of canonical \
+reader 00076770. Canonical physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00095efa"
+to = "7mfk:000153e0"
+note = """
+Reader 00095eb4 reads 8x1 uint16 at 00016614. Q16 coefficient multiplied by \
+its own lookup input before conditional bounds and slew processing. The \
+reviewed operand and arithmetic role correspond to 000153e0 of canonical \
+reader 00076770. Canonical physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "pygmy-junglefowl/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

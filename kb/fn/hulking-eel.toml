@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "unnatural-petrel/tbl"
+to = "request_alternate_byte_ratio_divisor/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -18,7 +18,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intelligent-capybara/tbl"
+to = "request_state_mixing_weight_q8/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ at = "7mfk:0007a28c"
 
 [[link]]
 type = "input"
-to = "intelligent-capybara/tbl"
+to = "request_state_mixing_weight_q8/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

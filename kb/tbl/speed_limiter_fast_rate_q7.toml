@@ -1,0 +1,201 @@
+summary = """
+Fast Q7 ramp-rate coefficient for signed request state ffff19da. It applies \
+while ffff25b0 is nonzero and ffff24a3.bit2 is clear; the intermediate has \
+an additional zero floor before the RPM-row baseline and upper saturation."""
+note = [
+    """
+The stock raw value 1500 is coefficient 11.71875 per scheduler pass. \
+Inactive/reset handling loads ffff25b0 with 100 and clears the latch; a \
+nonpositive entry ramp sets the latch.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "Q7 request-rate coefficient"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[editor]
+name = "Throttle Rev Limiter Fast Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 192
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["fast rate"]
+
+[[ledger]]
+registry = "findings"
+order = 27
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3]
+scale = [4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "porcelain-boobook/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "white-dove/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "adorable-rhino/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "spirited-taipan/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "truthful-duck/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009428"
+former = ["poetic-stallion/tbl/7mfk-00009428"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009428"
+value = "0x05dc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a3e"
+value = {named = ["00009428", "000224f8", "0007584e", "ffff1794", "ffff1798", "ffff19da", "ffff24a3", "ffff25b0"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a54"
+value = {named = ["00009428", "000224f8", "0007584e", "ffff1794", "ffff1798", "ffff19da", "ffff24a3", "ffff25b0"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075a84"
+value = {named = ["00009428", "000224f8", "0007584e", "ffff1794", "ffff1798", "ffff19da", "ffff24a3", "ffff25b0"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "000224f8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00075a56"
+value = {named = ["00009428", "000224f8", "0007584e", "ffff1794", "ffff1798", "ffff19da", "ffff24a3", "ffff25b0"], span = 2}
+key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000911a"
+former = ["nostalgic-hyrax/tbl/jk78c-0000911a"]
+note = """
+Reader 00094d6c reads 1x1 uint16 at 0000911a. The reviewed operational role \
+is speed_limiter_fast_rate_q7. The reviewed operand and arithmetic role \
+correspond to 00009428 of canonical reader 0007584e. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00094d80"
+value = 4
+mode = "base"
+note = """
+Reader 00094d6c reads 1x1 uint16 at 0000911a. The reviewed operational role \
+is speed_limiter_fast_rate_q7. The reviewed operand and arithmetic role \
+correspond to 00009428 of canonical reader 0007584e. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "index"
+to = "porcelain-boobook/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "white-dove/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "adorable-rhino/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "spirited-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

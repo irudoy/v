@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "expert-ammonite/tbl"
+to = "request_channel_1_endpoint_a_bit_clear/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gifted-mantis/tbl"
+to = "request_channel_1_endpoint_a_bit_set/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "malachite-avocet/tbl"
+to = "request_channel_1_endpoint_b_bit_clear/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -51,7 +51,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "ochre-horse/tbl"
+to = "request_channel_1_endpoint_b_bit_set/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -59,7 +59,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "topaz-gharial/tbl"
+to = "request_channel_1_trim_q15/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -108,35 +108,35 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "expert-ammonite/tbl"
+to = "request_channel_1_endpoint_a_bit_clear/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "gifted-mantis/tbl"
+to = "request_channel_1_endpoint_a_bit_set/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "malachite-avocet/tbl"
+to = "request_channel_1_endpoint_b_bit_clear/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "ochre-horse/tbl"
+to = "request_channel_1_endpoint_b_bit_set/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "topaz-gharial/tbl"
+to = "request_channel_1_trim_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

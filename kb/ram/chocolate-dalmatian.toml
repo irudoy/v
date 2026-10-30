@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tangerine-rook/tbl"
+to = "alternate_inverse_request_surface/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "ubiquitous-beagle/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -97,14 +97,14 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "tangerine-rook/tbl"
+to = "alternate_inverse_request_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "ubiquitous-beagle/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "demonic-hound/tbl"
+to = "request_gated_centered_surface/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -162,7 +162,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "demonic-hound/tbl"
+to = "request_gated_centered_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

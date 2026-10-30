@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "precise-nuthatch/tbl"
+to = "base_fuel_schedule_reference/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

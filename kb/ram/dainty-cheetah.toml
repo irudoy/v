@@ -59,7 +59,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "agate-yak/tbl"
+to = "speed_limiter_threshold_down_step/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tasteful-porpoise/tbl"
+to = "speed_limiter_threshold_up_step/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -233,13 +233,6 @@ role = "writes"
 
 [[link]]
 type = "input"
-to = "agate-yak/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
 to = "artichoke-quail/ram"
 layouts = ["7mfk"]
 relies = "structure"
@@ -247,14 +240,21 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "tasteful-caiman/ram"
+to = "speed_limiter_threshold_down_step/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "tasteful-porpoise/tbl"
+to = "speed_limiter_threshold_up_step/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "tasteful-caiman/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

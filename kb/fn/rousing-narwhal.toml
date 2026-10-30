@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "natural-hedgehog/tbl"
+to = "request_counter_duration_coefficient/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "roaring-newt/tbl"
+to = "request_counter_threshold_floor/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

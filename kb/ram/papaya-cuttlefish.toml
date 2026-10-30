@@ -10,7 +10,7 @@ at = "7mfk:00070ec2"
 
 [[link]]
 type = "lookup"
-to = "cute-shark/tbl"
+to = "request_conditioning_crossfade_weight_q16/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = ["identity", "scale"]

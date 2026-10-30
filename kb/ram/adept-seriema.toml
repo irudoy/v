@@ -28,7 +28,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "lyrical-dragon/tbl"
+to = "base_fuel_schedule_reference/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "precise-nuthatch/tbl"
+to = "engine_torque_surface/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -105,23 +105,23 @@ key = "reference"
 
 [[link]]
 type = "input"
+to = "base_fuel_schedule_reference/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "engine_torque_surface/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
 to = "kickass-mole/ram"
 layouts = ["7mfk"]
 relies = "level"
-supports = "identity"
-
-[[link]]
-type = "input"
-to = "lyrical-dragon/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
-to = "precise-nuthatch/tbl"
-layouts = ["7mfk"]
-relies = "structure"
 supports = "identity"
 
 [[link]]

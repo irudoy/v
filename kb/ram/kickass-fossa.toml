@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -83,7 +83,7 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

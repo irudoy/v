@@ -10,7 +10,7 @@ at = "7mfk:00071706"
 
 [[link]]
 type = "lookup"
-to = "tunneling-fennec/tbl"
+to = "request_paired_byte_multiplier_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

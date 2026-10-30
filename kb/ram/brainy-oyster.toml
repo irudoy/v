@@ -130,14 +130,14 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "flat-cat/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tangerine-rook/tbl"
+to = "request_conditional_signed_endpoint_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

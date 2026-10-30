@@ -30,22 +30,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "agate-yak/tbl"
-type = "lookup"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "amiable-bug/tbl"
-type = "lookup"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "rev_limit_throttle_cut/tbl"
 type = "lookup"
 end = "owner"
@@ -54,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "robust-uakari/tbl"
+to = "speed_limiter_alternate_threshold_scalar/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -62,7 +46,23 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tasteful-porpoise/tbl"
+to = "speed_limiter_mode_cap/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_threshold_down_step/tbl"
+type = "lookup"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_threshold_up_step/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -181,24 +181,6 @@ value = 28
 
 [[link]]
 type = "lookup"
-to = "agate-yak/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "lookup"
-to = "amiable-bug/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "lookup"
 to = "rev_limit_throttle_cut/tbl"
 layouts = ["7mfk"]
 relies = "structure"
@@ -208,7 +190,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "robust-uakari/tbl"
+to = "speed_limiter_alternate_threshold_scalar/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -217,7 +199,25 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tasteful-porpoise/tbl"
+to = "speed_limiter_mode_cap/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "speed_limiter_threshold_down_step/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "speed_limiter_threshold_up_step/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

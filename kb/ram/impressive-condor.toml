@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "swinging-frigatebird/tbl"
+to = "request_channel_0_trim_q15/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -73,7 +73,7 @@ key = "body"
 
 [[link]]
 type = "lookup"
-to = "swinging-frigatebird/tbl"
+to = "request_channel_0_trim_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

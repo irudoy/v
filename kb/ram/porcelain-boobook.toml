@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "throttle_container/tbl"
+to = "speed_limiter_filter_blend_gain_q10/tbl"
 type = "index"
 end = "to"
 relies = "structure"

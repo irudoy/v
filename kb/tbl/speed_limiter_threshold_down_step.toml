@@ -1,0 +1,140 @@
+summary = """
+Per-pass decrement of dynamic speed threshold ffff1796 when the \
+coolant-indexed desired threshold is lower and ffff84c3.bit7 is set. The \
+result is floored at 0x9434."""
+note = [
+    """
+The stock zero value prevents downward movement. Passive target-CAN timing \
+establishes one call every 10.24 ms.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw threshold counts per pass"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Throttle Rev Limiter Threshold Down Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 203
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["down rate"]
+
+[[ledger]]
+registry = "findings"
+order = 30
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "dainty-cheetah/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_runtime/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009430"
+former = ["tasteful-porpoise/tbl/7mfk-00009430"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009430"
+value = "0x0000"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007591c"
+value = {named = ["00009430", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075924"
+value = {named = ["00009430", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007592a"
+value = {named = ["00009430", "0007584e", "ffff1796", "ffff84c3"], span = 2}
+key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009122"
+former = ["granite-warthog/tbl/jk78c-00009122"]
+note = """
+Reader 00094d6c reads 1x1 uint16 at 00009122. Gated downward threshold step, \
+with the native word curve supplying the floor. The reviewed operand and \
+arithmetic role correspond to 00009430 of canonical reader 0007584e. \
+Canonical physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00094d80"
+value = 12
+mode = "base"
+note = """
+Reader 00094d6c reads 1x1 uint16 at 00009122. Gated downward threshold step, \
+with the native word curve supplying the floor. The reviewed operand and \
+arithmetic role correspond to 00009430 of canonical reader 0007584e. \
+Canonical physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "dainty-cheetah/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

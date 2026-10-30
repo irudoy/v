@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "opal-camel/tbl"
+to = "request_blend_step_a_q16/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "origami-kangaroo/tbl"
+to = "request_blend_step_b_q16/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

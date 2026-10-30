@@ -10,14 +10,14 @@ at = "7mfk:00071722"
 
 [[link]]
 type = "lookup"
-to = "terrestrial-sparrow/tbl"
+to = "request_paired_byte_multiplier_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tunneling-fennec/tbl"
+to = "request_paired_byte_multiplier_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

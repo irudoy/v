@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "hairy-lori/tbl"
+to = "alternate_inverse_request_coordinate/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tangerine-rook/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -136,14 +136,14 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "tangerine-rook/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "hairy-lori/tbl"
+to = "alternate_inverse_request_coordinate/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

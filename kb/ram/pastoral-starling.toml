@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "petite-cobra/tbl"
+to = "request_state_upper_bound/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -92,7 +92,7 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "petite-cobra/tbl"
+to = "request_state_upper_bound/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

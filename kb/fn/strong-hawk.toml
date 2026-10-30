@@ -57,7 +57,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "brown-rook/tbl"
+to = "request_channel_0_crossfade_weight_q15/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -65,7 +65,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "debonair-kestrel/tbl"
+to = "request_channel_0_endpoint_a_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -73,7 +73,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "idealistic-mastiff/tbl"
+to = "request_channel_0_endpoint_a_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -81,7 +81,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "mauve-turtle/tbl"
+to = "request_channel_0_endpoint_b_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "secret-spider/tbl"
+to = "request_channel_0_endpoint_b_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -97,7 +97,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "swinging-frigatebird/tbl"
+to = "request_channel_0_trim_q15/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

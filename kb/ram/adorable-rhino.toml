@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "khaki-aardwolf/tbl"
+to = "speed_limiter_fast_rate_q7/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "poetic-stallion/tbl"
+to = "speed_limiter_normal_rate_q7/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -121,14 +121,14 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "khaki-aardwolf/tbl"
+to = "speed_limiter_fast_rate_q7/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "poetic-stallion/tbl"
+to = "speed_limiter_normal_rate_q7/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -35,16 +35,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "lyrical-dragon/tbl"
-type = "input"
+to = "engine_torque_base_term/tbl"
+type = "lookup"
 end = "owner"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "pristine-deer/tbl"
-type = "lookup"
+to = "engine_torque_surface/tbl"
+type = "input"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -100,7 +100,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -114,7 +114,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "pristine-deer/tbl"
+to = "engine_torque_base_term/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

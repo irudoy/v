@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "truthful-pronghorn/tbl"
+to = "request_channel_1_crossfade_weight_q15/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -102,7 +102,7 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "truthful-pronghorn/tbl"
+to = "request_channel_1_crossfade_weight_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

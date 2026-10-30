@@ -1,0 +1,353 @@
+summary = """
+RPM-indexed unsigned base term in the engine-torque calculation. FUN \
+00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), \
+where D is proportional to current Base Fuel Schedule divided by \
+ROM16[00009534] and C is a calibrated nonnegative correction."""
+note = [
+    """
+FUN 000659ae adds ffff2408 without rescaling to the signed centered output \
+of Engine Torque Map 00010b8e. This continuous path establishes a common \
+internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The \
+physical x*0.1 Nm conversion follows the Engine Torque Map catalog and \
+requires hardware validation. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Engine Torque [Nm]"
+scale = "x*0.1"
+to_raw = "x/0.1"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Torque Base Term vs RPM"
+category = "Torque Model / Engine Torque"
+order = 211
+format = "0.0"
+fine = 1
+coarse = 10
+
+[[ledger]]
+registry = "findings"
+order = 302
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+scale = [20]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nocturnal-mammoth/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-malkoha/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dangerous-sawfish/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-vulture/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00016d06"
+former = ["mellow-crayfish/tbl/1me3b-00016d06"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00097df2"
+to = "7mfk:000154a0"
+note = """
+normalized-shape pair 000920fa/00097d8c reads the exact eight-word base \
+table at the same call ordinal through 0002aeac"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c82"
+former = ["uber-skylark/tbl/1nd-00016c82"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00092160"
+to = "7mfk:000154a0"
+note = """
+shared torque interpolation contract preserves the exact eight-word base \
+table"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000154a0"
+former = ["pristine-deer/tbl/7mfk-000154a0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000092ac=0x00b9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c98"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c9e"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca2"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca6"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ca8"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cac"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cae"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cb0"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cb4"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cb8"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cbe"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cc0"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065cc4"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065ccc"
+value = {named = ["000092ac", "00009534", "00014aba", "000154a0", "000264cc", "00026740", "00026984", "00026c78", "000659ae", "00065c26", "ffff1024", "ffff2408"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-dodo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Engine Torque Map|Metric Engine Torque (x*0.1-3276.8)"
+
+[[symbol]]
+layout = "jk00c"
+address = "000179a2"
+former = ["vigorous-dinosaur/tbl/jk00c-000179a2"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067f5e"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000179c2"
+former = ["rustling-moose/tbl/jk00d-000179c2"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067f5e"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00016664"
+former = ["vagabond-scorpion/tbl/jk78c-00016664"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk78c:00083e62"
+to = "7mfk:00065c9e"
+count = 1
+value = 1
+note = "unique structural pair preserves normalized geometry"
+
+[[link]]
+type = "depends"
+to = "dangerous-sawfish/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "kickass-mole/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

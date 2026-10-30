@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "towering-newt/tbl"
+to = "request_secondary_ratio_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

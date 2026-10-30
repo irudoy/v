@@ -81,7 +81,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "throttle_request_conversion_primary/tbl"
+to = "request_conditioning_blend_reference/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "yellow-caracal/tbl"
+to = "throttle_request_conversion_primary/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "carmine-potoo/tbl"
+to = "nonlinear_weighting_forward_curve/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -140,19 +140,19 @@ value = 90
 
 [[link]]
 type = "depends"
-to = "carmine-potoo/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "from_map"
-
-[[link]]
-type = "depends"
 to = "demonic-wrasse/axis"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "nonlinear_weighting_forward_curve/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
 
 [[link]]
 type = "reader"

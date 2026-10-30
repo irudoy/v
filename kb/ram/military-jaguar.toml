@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gray-chimpanzee/tbl"
+to = "request_conditioning_channel_0_surface_a/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intrepid-raptor/tbl"
+to = "request_conditioning_channel_0_surface_b/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -120,7 +120,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "gray-chimpanzee/tbl"
+to = "request_conditioning_channel_0_surface_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -129,7 +129,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "intrepid-raptor/tbl"
+to = "request_conditioning_channel_0_surface_b/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

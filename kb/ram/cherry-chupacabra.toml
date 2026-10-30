@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tunneling-woodpecker/tbl"
+to = "speed_limiter_auxiliary_duration/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -113,7 +113,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tunneling-woodpecker/tbl"
+to = "speed_limiter_auxiliary_duration/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

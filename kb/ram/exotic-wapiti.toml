@@ -10,7 +10,7 @@ at = "7mfk:00074098"
 
 [[link]]
 type = "lookup"
-to = "rigorous-shrimp/tbl"
+to = "request_secondary_signed_endpoint_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

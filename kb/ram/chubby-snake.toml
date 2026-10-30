@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "carmine-potoo/tbl"
+to = "nonlinear_weighting_forward_curve/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -109,14 +109,14 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "carmine-potoo/tbl"
+to = "engine_torque_state/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "engine_torque_state/ram"
+to = "nonlinear_weighting_forward_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

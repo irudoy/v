@@ -1,0 +1,260 @@
+summary = """
+RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN \
+000658a4 multiplies the interpolated value by a nonnegative byte difference, \
+divides by 256, and writes the result to ffff14e2 for the downstream \
+torque-state arithmetic."""
+note = [
+    """
+The direct scratch copy ffff14e4 has no external reader, but the same live \
+lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is \
+written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same \
+raw domain as offset-binary Engine Torque Map 00010b8e. The continuous \
+consumer path assigns an engine-torque correction role. The physical x*0.1 \
+Nm conversion follows the Engine Torque Map catalog and requires hardware \
+validation. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Engine Torque [Nm]"
+scale = "x*0.1"
+to_raw = "x/0.1"
+scale_level = "candidate"
+
+[editor]
+name = "Engine Torque Correction Coefficient vs RPM"
+category = "Torque Model / Engine Torque"
+order = 212
+format = "0.0"
+fine = 1
+coarse = 10
+
+[[ledger]]
+registry = "findings"
+order = 268
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+scale = [11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "augmented-limpet/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ginger-hedgehog/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dangerous-sawfish/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "voracious-stingray/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000163b4"
+former = ["brave-otter/tbl/1me3b-000163b4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000979da"
+to = "7mfk:00014c1a"
+note = """
+exact-bytes pair 00091d2c/000979cc reads the exact eight-word coefficient \
+table at the same call ordinal through 0002aeac"""
+
+[[symbol]]
+layout = "1nd"
+address = "00016410"
+former = ["masterful-ape/tbl/1nd-00016410"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00091d3a"
+to = "7mfk:00014c1a"
+note = """
+shared torque interpolation contract preserves the exact eight-word \
+coefficient table"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00014c1a"
+former = ["intelligent-chipmunk/tbl/7mfk-00014c1a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658ae"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b0"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b2"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b8"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658c2"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065900"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065908"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006591e"
+value = {named = ["00014aba", "00014c1a", "000264cc", "00026740", "00026984", "00064a1c", "000658a4", "ffff14e2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "jasmine-lizard/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Engine Torque Map|Metric Engine Torque (x*0.1-3276.8)"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001700c"
+former = ["honored-bull/tbl/jk00c-0001700c"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067b78"
+to = "7mfk:000658b8"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001702c"
+former = ["kind-pegasus/tbl/jk00d-0001702c"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067b78"
+to = "7mfk:000658b8"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015e12"
+former = ["infrared-heron/tbl/jk78c-00015e12"]
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00083c80"
+to = "7mfk:00065aa4"
+value = "00015e12"
+note = "unique structural pair preserves mapped neighbors"
+
+[[link]]
+type = "depends"
+to = "dangerous-sawfish/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "augmented-limpet/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ginger-hedgehog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

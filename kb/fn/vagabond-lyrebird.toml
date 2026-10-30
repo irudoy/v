@@ -21,7 +21,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intelligent-capybara/tbl"
+to = "request_state_mixing_weight_q8/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

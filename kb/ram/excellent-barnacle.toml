@@ -157,7 +157,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "hairy-lori/tbl"
+to = "alternate_inverse_request_coordinate/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = ["identity", "scale"]

@@ -10,14 +10,14 @@ at = "7mfk:00074b94"
 
 [[link]]
 type = "lookup"
-to = "opal-camel/tbl"
+to = "request_blend_step_a_q16/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "origami-kangaroo/tbl"
+to = "request_blend_step_b_q16/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

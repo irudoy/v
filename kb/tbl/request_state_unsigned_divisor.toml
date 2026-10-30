@@ -1,0 +1,248 @@
+summary = """
+Unsigned 8-bit table-derived divisor y for calculating ffff2c74: y=0 selects \
+0xffff; otherwise min(0xffff, floor(200 * uint16[ffff2c78] / y)) is \
+written."""
+note = [
+    """
+The result is written to ffff2be4 in a delay slot and tested for zero \
+immediately. All map cells equal 0, so the current image always selects the \
+0xffff branch. The call and comparison execute, so the map is not dead. The \
+physical quantities of the divisor and result are unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 107
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "base"
+to = "huge-okapi/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vagabond-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-guan/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "boisterous-porcupine/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "chestnut-scorpion/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011fd6"
+former = ["spirited-hamster/tbl/7mfk-00011fd6"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "200"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "65535"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a20a"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a20e"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a212"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a216"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a21a"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a21e"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a226"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a22c"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a230"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a232"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a238"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a242"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a246"
+value = {named = ["00011a83", "00011fd6", "00021ce0", "00026474", "00026740", "00026944", "0007a090", "ffff2be4", "ffff2c74", "ffff2c78"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013664"
+former = ["unique-muskox/tbl/jk78c-00013664"]
+note = """
+Reader 00099db0 reads 8x1 uint8 at 00013664. Unsigned divisor of the \
+request-state calculation with numerator multiplied by 200; zero selects \
+65535. The reviewed operand and arithmetic role correspond to 00011fd6 of \
+canonical reader 0007a090. Canonical physical-conversion confidence is \
+retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00099f30"
+to = "7mfk:00011fd6"
+note = """
+Reader 00099db0 reads 8x1 uint8 at 00013664. Unsigned divisor of the \
+request-state calculation with numerator multiplied by 200; zero selects \
+65535. The reviewed operand and arithmetic role correspond to 00011fd6 of \
+canonical reader 0007a090. Canonical physical-conversion confidence is \
+retained."""
+
+[[link]]
+type = "depends"
+to = "glistening-guan/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "huge-okapi/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "vagabond-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

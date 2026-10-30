@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gifted-mantis/tbl"
+to = "request_channel_0_trim_q15/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "swinging-frigatebird/tbl"
+to = "request_channel_1_trim_q15/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -98,14 +98,14 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "gifted-mantis/tbl"
+to = "request_channel_0_trim_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "swinging-frigatebird/tbl"
+to = "request_channel_1_trim_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "rare-baboon/tbl"
+to = "request_secondary_signed_endpoint_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -57,7 +57,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "rigorous-shrimp/tbl"
+to = "request_secondary_signed_endpoint_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -10,7 +10,7 @@ at = "7mfk:0002d99e"
 
 [[link]]
 type = "lookup"
-to = "independent-boar/tbl"
+to = "request_surface_multiplier_q12/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

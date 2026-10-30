@@ -18,7 +18,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cute-shark/tbl"
+to = "request_conditioning_crossfade_weight_q16/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ at = "7mfk:00070eaa"
 
 [[link]]
 type = "input"
-to = "cute-shark/tbl"
+to = "request_conditioning_crossfade_weight_q16/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

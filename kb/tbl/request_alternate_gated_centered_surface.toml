@@ -1,0 +1,182 @@
+summary = """
+Stock-gated two-dimensional additive correction: the offset-centered uint16 \
+lookup is stored in ffff2c6e, read as signed word, added to a signed term, \
+limited to ffff413a..ffff4138, and conditionally replaced by either bound \
+into ffff2c6c. The owned stock JK08A map branch is inactive; the physical \
+quantity is unresolved."""
+note = [
+    """
+Identity confidence: candidate. ROM8[0x83c1] is 0x2c; test of mask 0x02 at \
+0007b2dc bypasses the map to the ffff243c copy at 0007b39e. The active \
+branch binds map 0000c98e and axes 00013478/00013498 to wrapper 000262a8. \
+Centering stores ffff2c6e at 0007b308; MOV.W at 0007b35e supplies its signed \
+value to the clamps and final delay-slot store at 0007b390. ffff41fb.bit5 \
+selects the upper bound; bit4 then selects the lower bound. The regression \
+gate executes exact/end-point lookup and these consumer regions with the \
+other signed term as an explicit input; its producer and divider are outside \
+the gate. Scale confidence: candidate. The separate named scale gate \
+independently SHA-locks and executes JK00A/JK03A/JK03B/JK08A against fixed \
+spans. x-32768 describes the local signed counts after word storage and \
+signed read, not a physical unit. The forced enabled path does not establish \
+stock reachability; fractional explicit-axis interpolation and \
+complete-function behavior are outside the gate. Sample domains, retained \
+inverse x+32768, and separate byte-binding and execution mutants are \
+specified in defs/JK08A.local-count-scales.md. No hardware validation is \
+asserted.""",
+]
+level = "candidate"
+role = "dead"
+access = "explicit"
+unit = "raw with offset 32768"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 83
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
+scale = [1]
+
+[[symbol]]
+layout = "7mfk"
+address = "0000c98e"
+former = ["accomplished-alpaca/tbl/7mfk-0000c98e"]
+
+[[symbol.evidence]]
+kind = "test"
+supports = "identity"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_candidate_identity_paths.py"""
+key = "test_c98e_signed_correction_and_stock_gate"
+
+[[symbol.evidence]]
+kind = "test"
+supports = "scale"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_local_count_scales.py"""
+key = "test_c98e_centered_word_scale"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2d8"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2dc"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2de"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2e2"
+value = {named = ["0000c98e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2f2"
+value = {named = ["0000c98e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b308"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b35e"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b364"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b36e"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b378"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b384"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b390"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b39e"
+value = {named = ["0000c98e"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000cd4e"
+former = ["arboreal-binturong/tbl/jk78c-0000cd4e"]
+note = """
+Reader 0009aff4 reads 16x16 uint16 at 0000cd4e. ROM-gated centered surface \
+term bounded by lower and upper request states. Stock ROM8[00008383].bit1 is \
+clear and bypasses the branch. The reviewed operand and arithmetic role \
+correspond to 0000c98e of canonical reader 0007b2c8. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009b006"
+to = "7mfk:0000c98e"
+note = """
+Reader 0009aff4 reads 16x16 uint16 at 0000cd4e. ROM-gated centered surface \
+term bounded by lower and upper request states. Stock ROM8[00008383].bit1 is \
+clear and bypasses the branch. The reviewed operand and arithmetic role \
+correspond to 0000c98e of canonical reader 0007b2c8. Canonical \
+physical-conversion confidence is retained."""

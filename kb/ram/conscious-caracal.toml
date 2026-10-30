@@ -163,14 +163,14 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "gray-chimpanzee/tbl"
+to = "request_conditioning_channel_0_surface_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "intrepid-raptor/tbl"
+to = "request_conditioning_channel_0_surface_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

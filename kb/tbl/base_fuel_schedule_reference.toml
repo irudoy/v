@@ -1,0 +1,322 @@
+summary = """
+Fixed Base Fuel Schedule normalization reference shared by the internal Q7 \
+load coordinate and engine-torque filling calculations. FUN 0003b75c writes \
+ffff1048=min(255,floor(uint16[ffff1026]*128/scaler)); scheduler 00020dfe \
+snapshots it to ffff102c. FUN 00065928 forms the Engine Torque Map \
+coordinate min(65535,floor(uint16[ffff1024]*40960/scaler)), and FUN 00065c26 \
+uses the same divisor in its torque base term."""
+note = [
+    """
+Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common \
+fixed-reference role and makes internal raw 128 equal Base Fuel Schedule \
+divided by this reference at ratio 1. The HR A2L calls the calibration \
+Cylinder Filling Up Efficiency Scaler and describes it as the BFS at maximum \
+airflow. That physical name and the raw/2048 BFS conversion remain \
+source-derived candidates. Editing this scalar shifts ignition, CVTC, \
+candidate AFR, and torque coordinates together.""",
+    """
+The 7mfk normalization consumer reads this one-cell uint16 scalar directly \
+at fixed ROM address 00009534 for both divisions; the BFS word is the \
+numerator and does not index its address. A nonzero denominator gives the \
+stated Q7 ratio with the stock coherent cached numerator. A zero denominator \
+returns zero and writes fault code 0x44e to ffff9818; controlled \
+reference-word cases establish this alternative without a stock calibration \
+or hardware claim.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+storage = "uint16"
+unit = "BFS"
+scale = "x/2048"
+to_raw = "x*2048"
+scale_level = "candidate"
+
+[editor]
+name = "Internal Load Normalization Reference"
+category = "Fuelling / Load Model"
+order = 40
+emit = true
+format = "0.000"
+fine = 0.001
+coarse = 0.01
+static_axis = ["100% BFS reference"]
+
+[[ledger]]
+registry = "findings"
+order = 345
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "base_fuel_schedule_producer/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nocturnal-mammoth/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "primitive-lizard/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "benign-cassowary/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "normalized_load/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000094d4"
+former = ["hopeful-stingray/tbl/1me3b-000094d4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048536"
+to = "7mfk:00009534"
+note = """
+normalized-shape pair 000920fa/00097d8c reads the 0x9f38 normalization \
+reference at the same call ordinal and 00048298 reads it together with the \
+K-value and the MAF factor"""
+
+[[symbol]]
+layout = "1nd"
+address = "0000940a"
+former = ["massive-iguana/tbl/1nd-0000940a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044e94"
+to = "7mfk:00009534"
+note = """
+homologous fuel and torque consumers preserve the 0x9f38 normalization \
+reference"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00009534"
+former = ["precise-nuthatch/tbl/7mfk-00009534"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd1c"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd24"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd2a"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd3a"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd3c"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd4c"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bd5a"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006592e"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065938"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c30"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065c36"
+value = {named = ["00009534", "00021ce0", "0003b75c", "00065928", "00065c26", "ffff1026", "ffff102c", "ffff1048"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cylinder Filling Up Efficiency Scaler|BFS|x*0.000488"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "13.2939453125*2048=27226"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "27226/2048=13.2939453125"
+
+[[symbol]]
+layout = "jk00c"
+address = "000095e8"
+former = ["amusing-wapiti/tbl/jk00c-000095e8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003cacc"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk00d"
+address = "000095f6"
+former = ["clever-griffin/tbl/jk00d-000095f6"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003cacc"
+note = "target literals and reviewed homologous consumer topology"
+
+[[symbol]]
+layout = "jk78c"
+address = "000091ee"
+former = ["camouflaged-starling/tbl/jk78c-000091ee"]
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:00083cac"
+to = "7mfk:00065ad0"
+value = "000091ee"
+note = "normalized homologous consumers preserve the primary limiter scalar role"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "reader"
+to = "bfs_estimation_stage/fn"
+layouts = ["1nd", "1me3b"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00044e9a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004853c"
+
+[[link]]
+type = "reader"
+to = "maf_range_model_byte_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nocturnal-mammoth/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "primitive-lizard/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

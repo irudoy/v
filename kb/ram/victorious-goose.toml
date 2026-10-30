@@ -28,16 +28,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "flat-cat/tbl"
-type = "input"
+to = "request_conditional_signed_endpoint_a/tbl"
+type = "lookup"
 end = "owner"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tangerine-rook/tbl"
-type = "lookup"
+to = "request_conditional_signed_endpoint_b/tbl"
+type = "input"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -85,14 +85,14 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "flat-cat/tbl"
+to = "request_conditional_signed_endpoint_b/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tangerine-rook/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

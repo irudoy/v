@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "upbeat-barracuda/tbl"
+to = "request_conditional_signed_byte_offset/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

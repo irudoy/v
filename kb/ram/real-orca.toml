@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cooperative-elk/tbl"
+to = "request_normalization_lower_reference/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "glaring-chachalaca/tbl"
+to = "request_normalization_upper_reference/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -121,7 +121,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "cooperative-elk/tbl"
+to = "request_normalization_lower_reference/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -130,7 +130,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "glaring-chachalaca/tbl"
+to = "request_normalization_upper_reference/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

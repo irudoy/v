@@ -1,0 +1,215 @@
+summary = """
+Unsigned attenuation curve in the engine-torque state calculation. FUN \
+000659ae converts lookup result A to Q8 complement 256-A and multiplies the \
+intermediate signed state by that complement before division by 256."""
+note = [
+    """
+The complete path is 0001245a -> 00026474 -> 00026944/00026740 -> 00065a4a \
+-> 256-A -> signed product -> truncation toward zero by 256 -> ffff18cc. All \
+eight map cells and all eight points of axis 00011a55 are zero in stock \
+JK08A, so A=0 and the multiplier is unity. The physical condition \
+represented by the curve input remains unresolved. Result disposition: \
+consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Engine Torque State Attenuation - raw u8 (0x1245A)"
+category = "Internal Calculations"
+order = 213
+emit = false
+format = "0"
+fine = 1
+coarse = 8
+
+[[ledger]]
+registry = "findings"
+order = 142
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "white-malkoha/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "savvy-bobcat/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001245a"
+former = ["encouraging-buzzard/tbl/7mfk-0001245a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a40"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a42"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a44"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a46"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a4a"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a4c"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a4e"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a52"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a58"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065a5a"
+value = {named = ["00011a55", "0001245a", "00026474", "00026740", "00026944", "000659ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014757"
+former = ["accelerated-tarantula/tbl/jk00c-00014757"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00067d06"
+to = "7mfk:00065a46"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014777"
+former = ["poetic-seriema/tbl/jk00d-00014777"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00067d06"
+to = "7mfk:00065a46"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013a48"
+former = ["mustard-wrasse/tbl/jk78c-00013a48"]
+note = """
+Reader 00083b54 reads 8x1 uint8 at 00013a48. The reviewed operational role \
+is engine_torque_state_attenuation. The reviewed operand and arithmetic role \
+correspond to 0001245a of canonical reader 000659ae. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00083be8"
+to = "7mfk:0001245a"
+note = """
+Reader 00083b54 reads 8x1 uint8 at 00013a48. The reviewed operational role \
+is engine_torque_state_attenuation. The reviewed operand and arithmetic role \
+correspond to 0001245a of canonical reader 000659ae. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "savvy-bobcat/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "white-malkoha/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

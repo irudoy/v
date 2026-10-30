@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "carmine-potoo/tbl"
+to = "nonlinear_weighting_forward_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

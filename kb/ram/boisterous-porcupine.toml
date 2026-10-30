@@ -10,7 +10,7 @@ at = "7mfk:0007a246"
 
 [[link]]
 type = "lookup"
-to = "spirited-hamster/tbl"
+to = "request_state_unsigned_divisor/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

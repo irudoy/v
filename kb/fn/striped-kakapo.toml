@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "vigilant-rat/tbl"
+to = "request_primary_ratio_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

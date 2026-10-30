@@ -1,0 +1,269 @@
+summary = """
+The interpolated uint16 output is written to ffff1d16; FUN_00074478 \
+zero-extends it and uses it as a multiplier in mul.l at 0007448c, after \
+which the derived product is shifted and multiplied again before call \
+00021bbc."""
+note = [
+    """
+The physical torque-converter-ratio identity and scale x*0.000976563 remain \
+candidate. The code claim is limited to the visible arithmetic in \
+FUN_00074478. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Torque Ratio"
+scale = "x*0.000976563"
+to_raw = "x/0.000976563"
+scale_level = "candidate"
+
+[editor]
+name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
+category = "Internal Calculations"
+order = 129
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
+[[ledger]]
+registry = "findings"
+order = 329
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+scale = [19, 20]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "persimmon-binturong/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "proficient-turkey/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00019190"
+former = ["towering-newt/tbl/7mfk-00019190"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007443c"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074442"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074446"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007444a"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074488"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007448a"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007448c"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074490"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074492"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074494"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007449a"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007449c"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000744a2"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000744a4"
+value = {named = ["00019190", "00021bbc", "000224fa", "000266a0", "00026af8", "00026c1c", "00074478", "ffff1d16"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "careful-chital/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "defiant-tapir/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sparkling-warthog/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Torque Converter Torque Ratio Table"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Torque Converter Torque Ratio Table 2"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001c29e"
+former = ["blond-dragonfly/tbl/jk00c-0001c29e"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00076be2"
+to = "7mfk:00074442"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c2c0"
+former = ["ivory-hornet/tbl/jk00d-0001c2c0"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00076be2"
+to = "7mfk:00074442"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b58a"
+former = ["denim-quail/tbl/jk78c-0001b58a"]
+note = """
+Reader 000938d8 reads 16x1 uint16 at 0001b58a. The reviewed operational role \
+is request_secondary_ratio_curve. The reviewed operand and arithmetic role \
+correspond to 00019190 of canonical reader 000743c4. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00093952"
+to = "7mfk:00019190"
+note = """
+Reader 000938d8 reads 16x1 uint16 at 0001b58a. The reviewed operational role \
+is request_secondary_ratio_curve. The reviewed operand and arithmetic role \
+correspond to 00019190 of canonical reader 000743c4. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "nifty-partridge/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "persimmon-binturong/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

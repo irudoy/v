@@ -1,0 +1,207 @@
+summary = """
+16-bit table limit in offset-binary: after decoding x-32768, the value is \
+compared with 32767, and the minimum becomes a candidate for RAM ffff34b0 \
+update logic."""
+note = [
+    """
+The physical unit and subsystem are unknown. All 8 cells equal 65535, so in \
+this ROM the decoded limit is 32767 and does not tighten the parallel limit \
+32767. The lookup result has no direct RAM sink. Round-trip check for the \
+actual value: 65535-32768=32767; 32767+32768=65535. Index: implicit 1D-8; \
+input >= 57344 selects terminal cell 7, lower input uses interpolation. \
+Output trace: 000148ea -> site 0007182c -> call site 00071830 -> 000263d8 -> \
+(00026a60 -> 00026740 or terminal cell 000148f8) -> site 00071836 -> site \
+0007183a -> site 0007183e -> consumer site 00071844. Result disposition: \
+inline_comparison; Result target: site 00071844.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "signed raw count"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 424
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+scale = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "courageous-snake/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000148ea"
+former = ["curvy-leopard/tbl/7mfk-000148ea"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007182c"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071830"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071844"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071848"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007184e"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071850"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071856"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00071834"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00071836"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00071838"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007183a"
+value = {named = ["000148ea", "000263d8", "00026740", "00026a60", "0007173c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "-32768+32768=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0+32768=32768"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0-32768=-32768"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "32767+32768=65535"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "32768-32768=0"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "65535-32768=32767"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015b72"
+former = ["dynamic-crayfish/tbl/jk78c-00015b72"]
+note = """
+Reader 00090af8 reads 8x1 uint16 at 00015b72. Centered context upper bound \
+minimized with a calibrated limit before downward or rate-limited upward \
+state updates. The reviewed operand and arithmetic role correspond to \
+000148ea of canonical reader 0007173c. Canonical physical-conversion \
+confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00090bf2"
+to = "7mfk:000148ea"
+note = """
+Reader 00090af8 reads 8x1 uint16 at 00015b72. Centered context upper bound \
+minimized with a calibrated limit before downward or rate-limited upward \
+state updates. The reviewed operand and arithmetic role correspond to \
+000148ea of canonical reader 0007173c. Canonical physical-conversion \
+confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "courageous-snake/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

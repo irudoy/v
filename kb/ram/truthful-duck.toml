@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "khaki-aardwolf/tbl"
+to = "speed_limiter_fast_rate_q7/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "poetic-stallion/tbl"
+to = "speed_limiter_normal_rate_q7/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -171,26 +171,26 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "khaki-aardwolf/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "lookup"
-to = "poetic-stallion/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "lookup"
 to = "rev_limit_throttle_cut/tbl"
 layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "speed_limiter_fast_rate_q7/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "speed_limiter_normal_rate_q7/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 

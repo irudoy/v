@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cute-shark/tbl"
+to = "request_conditioning_channel_0_surface_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gray-chimpanzee/tbl"
+to = "request_conditioning_channel_0_surface_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -70,7 +70,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intrepid-raptor/tbl"
+to = "request_conditioning_crossfade_weight_q16/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

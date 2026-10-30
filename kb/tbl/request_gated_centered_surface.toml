@@ -1,0 +1,345 @@
+summary = """
+Stock-disabled two-dimensional centered correction surface in FUN 0007b3f4. \
+In the alternate branch its uint16 interpolation result is converted to \
+signed raw by subtracting 32768 and written to ffff35d0 before a bounded \
+combination publishes ffff35d2."""
+note = [
+    """
+Stock ROM8[000083c1]=0x2c has bit 1 clear. Sites 0007b3fe..0007b40e \
+therefore copy ffff1d26 directly to ffff35d2 and bypass the map block. Every \
+map cell is 0x8000, which would decode to zero if the branch were enabled. \
+Result disposition: dead_control_flow. Result target: ffff35d2 receives \
+ffff1d26 in unmodified JK08A. The physical correction quantity and \
+engineering unit remain unresolved.""",
+]
+level = "code"
+role = "dead"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 6
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+scale = [15, 16, 17, 18, 19, 20, 21]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "functional-chachalaca/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glorious-grasshopper/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glossy-auk/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "private-sloth/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "umber-coyote/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prompt-turaco/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wandering-horse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00016948"
+former = ["demonic-hound/tbl/7mfk-00016948"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000083c1"
+value = "0x2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b3fc"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b3fe"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b400"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b402"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b404"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b40e"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b434"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b436"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b43c"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b444"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b456"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b45a"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "striped-stallion/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "garnet-caracara/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b448"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b44c"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b44e"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b450"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b454"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b456"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b45a"
+value = {named = ["000083c1", "00016948", "00018846", "00018866", "00026628", "00026b84", "0007b3f4", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000192b8"
+former = ["optimistic-magpie/tbl/jk00c-000192b8"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007e324"
+to = "7mfk:0007b444"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000192d8"
+former = ["electric-auk/tbl/jk00d-000192d8"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007e324"
+to = "7mfk:0007b444"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001810c"
+former = ["loud-skua/tbl/jk78c-0001810c"]
+note = """
+Reader 0009b120 reads 16x16 uint16 at 0001810c. ROM-gated centered surface \
+correction between request endpoints. Stock ROM8[00008383].bit1 is clear and \
+bypasses the branch. The reviewed operand and arithmetic role correspond to \
+00016948 of canonical reader 0007b3f4. Canonical physical-conversion \
+confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009b162"
+to = "7mfk:00016948"
+note = """
+Reader 0009b120 reads 16x16 uint16 at 0001810c. ROM-gated centered surface \
+correction between request endpoints. Stock ROM8[00008383].bit1 is clear and \
+bypasses the branch. The reviewed operand and arithmetic role correspond to \
+00016948 of canonical reader 0007b3f4. Canonical physical-conversion \
+confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "glorious-grasshopper/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "umber-coyote/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "index"
+to = "glossy-auk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "index"
+to = "private-sloth/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

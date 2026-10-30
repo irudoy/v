@@ -12,7 +12,7 @@ order = 14
 
 [[step]]
 from = "functional-jackrabbit/axis"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 effect = "indexes"
 sign = "none"
 
@@ -31,7 +31,7 @@ RPM.\",\"sign\":\"none\",\"to\":\"lyrical-dragon/tbl\"}"""
 
 [[step]]
 from = "capable-buffalo/axis"
-to = "lyrical-dragon/tbl"
+to = "engine_torque_surface/tbl"
 effect = "indexes"
 sign = "none"
 
@@ -49,7 +49,7 @@ floor(ffff1024*40960/ROM16[0x9534])), which 00065928 stores in \
 ffff15c4.\",\"sign\":\"none\",\"to\":\"lyrical-dragon/tbl\"}"""
 
 [[step]]
-from = "lyrical-dragon/tbl"
+from = "engine_torque_surface/tbl"
 to = "engine_torque_state/ram"
 effect = "looks-up"
 sign = "positive"
@@ -109,7 +109,7 @@ F)/256); F <= 179 keeps the factor \
 positive.\",\"sign\":\"positive\",\"to\":\"chubby-snake/ram\",\"via\":[\"silky-vulture/fn\"]}"""
 
 [[step]]
-from = "carmine-potoo/tbl"
+from = "nonlinear_weighting_forward_curve/tbl"
 to = "chubby-snake/ram"
 effect = "multiplies"
 sign = "negative"
@@ -168,7 +168,7 @@ subtracts the unscaled base term ffff2408 after the efficiency and cylinder \
 scaling.\",\"sign\":\"negative\",\"to\":\"unbiased-pug/ram\",\"via\":[\"messy-perch/fn\"]}"""
 
 [[step]]
-from = "intelligent-chipmunk/tbl"
+from = "engine_torque_speed_correction/tbl"
 to = "voracious-stingray/ram"
 effect = "multiplies"
 sign = "positive"

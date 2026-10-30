@@ -93,7 +93,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "armored-cricket/tbl"
+to = "request_filter_new_sample_weight_q16/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

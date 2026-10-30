@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "secret-spider/tbl"
+to = "request_channel_0_crossfade_weight_q15/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -102,7 +102,7 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "secret-spider/tbl"
+to = "request_channel_0_crossfade_weight_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "vivacious-sawfish/tbl"
+to = "request_slew_upper_bound/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

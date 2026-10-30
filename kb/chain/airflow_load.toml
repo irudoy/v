@@ -299,7 +299,7 @@ via = ["base_fuel_schedule_producer/fn"]
 note = "ffff1048 = min(255,floor(uint16(ffff1026)*128/ROM16[0x00009534]))"
 
 [[step]]
-from = "precise-nuthatch/tbl"
+from = "base_fuel_schedule_reference/tbl"
 to = "benign-cassowary/ram"
 effect = "scales"
 sign = "negative"

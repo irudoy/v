@@ -1,0 +1,159 @@
+summary = """
+Endpoint B curve for the ffff249f.bit1-clear branch of the Q15 crossfade in \
+FUN 0007a592. Its interpolated uint16 result is multiplied by weight w from \
+0000d78e, while endpoint A 0001480a is multiplied by max(0, 32768-w)."""
+note = [
+    """
+The shared input is ffff2698 and the breakpoint axis is 00014f82. The two \
+products form ffff2a7c after a right shift by 15 and uint16 saturation. This \
+curve is byte-identical to second-channel endpoint 00018d16. Code proves the \
+endpoint role and raw representation; the physical quantity and engineering \
+unit are unresolved. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 12
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "strong-hawk/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-koala/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "resolute-bullfinch/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001482a"
+former = ["debonair-kestrel/tbl/7mfk-0001482a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a684"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a68c"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a690"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a69e"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6ba"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6c0"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a6d6"
+value = {named = ["0001482a", "000264f8", "00026984", "0007a592", "ffff249f", "ffff2698"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eminent-lynx/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "versatile-junglefowl/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015b12"
+former = ["scrupulous-kangaroo/tbl/jk78c-00015b12"]
+note = """
+Reader 0009a2be reads 16x1 uint16 at 00015b12. The reviewed operational role \
+is request_channel_0_endpoint_b_bit_clear. The reviewed operand and \
+arithmetic role correspond to 0001482a of canonical reader 0007a592. \
+Canonical physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009a3b0"
+to = "7mfk:0001482a"
+note = """
+Reader 0009a2be reads 16x1 uint16 at 00015b12. The reviewed operational role \
+is request_channel_0_endpoint_b_bit_clear. The reviewed operand and \
+arithmetic role correspond to 0001482a of canonical reader 0007a592. \
+Canonical physical-conversion confidence is retained."""
+
+[[link]]
+type = "index"
+to = "ruddy-koala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "strong-hawk/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "resolute-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

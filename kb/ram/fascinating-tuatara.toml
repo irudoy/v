@@ -10,7 +10,7 @@ at = "7mfk:00076434"
 
 [[link]]
 type = "lookup"
-to = "upbeat-barracuda/tbl"
+to = "request_conditional_signed_byte_offset/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

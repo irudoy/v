@@ -85,62 +85,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "agate-yak/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "amiable-bug/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "cocky-octopus/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "glittering-cuttlefish/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "independent-koel/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "khaki-aardwolf/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "poetic-stallion/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "rev_limit_throttle_cut/tbl"
 type = "reader"
 end = "to"
@@ -149,7 +93,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "robust-uakari/tbl"
+to = "speed_limiter_alternate_threshold_scalar/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -157,7 +101,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tasteful-porpoise/tbl"
+to = "speed_limiter_auxiliary_duration/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -165,7 +109,71 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "throttle_container/tbl"
+to = "speed_limiter_fast_rate_q7/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_filter_blend_gain_q10/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_final_rate_q7/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_mode_cap/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_normal_rate_q7/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_recovery_step_other_relation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_recovery_step_target_above_phase/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_threshold_down_step/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "speed_limiter_threshold_up_step/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -174,14 +182,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "throttle_request_conversion_primary/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "tunneling-woodpecker/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

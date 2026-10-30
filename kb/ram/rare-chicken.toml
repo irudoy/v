@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "pristine-deer/tbl"
+to = "engine_torque_base_term/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -75,7 +75,7 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "pristine-deer/tbl"
+to = "engine_torque_base_term/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

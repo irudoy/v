@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "crazy-spider/tbl"
+to = "request_conditioning_channel_1_surface_a/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "granite-seagull/tbl"
+to = "request_conditioning_channel_1_surface_b/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -105,7 +105,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "crazy-spider/tbl"
+to = "request_conditioning_channel_1_surface_a/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -114,7 +114,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "granite-seagull/tbl"
+to = "request_conditioning_channel_1_surface_b/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

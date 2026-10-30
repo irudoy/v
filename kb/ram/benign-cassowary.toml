@@ -58,7 +58,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "precise-nuthatch/tbl"
+to = "base_fuel_schedule_reference/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -275,7 +275,7 @@ key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
 [[link]]
 type = "lookup"
-to = "precise-nuthatch/tbl"
+to = "base_fuel_schedule_reference/tbl"
 via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
 relies = "structure"

@@ -108,9 +108,10 @@ def test_normalized_bfs_keeps_cached_cap_zero_reference_and_fixed_scalar_contrac
     assert [ref.address for ref in lookup.props['via']] == [0x3b75c]
     assert 'fixed ROM address' in lookup.props['note'] and 'zero reference' in lookup.props['note']
     producer = model.meaning_of(SymbolKey('7mfk', 'fn', 0x3b75c))
+    expected_thresholds = {'benign-cassowary/ram', reference.key}
     thresholds = [link for link in producer.links if link.type == 'threshold'
-                  and link.to.key in {'benign-cassowary/ram', 'precise-nuthatch/tbl'}]
-    assert {link.to.key for link in thresholds} == {'benign-cassowary/ram', 'precise-nuthatch/tbl'}
+                  and link.to.key in expected_thresholds]
+    assert {link.to.key for link in thresholds} == expected_thresholds
     for link in thresholds:
         assert link.stated == {'7mfk'} and [ref.address for ref in link.props['via']] == [0x3b75c]
     assert any('stock coherent cached word' in link.props['note'] for link in thresholds)

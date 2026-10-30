@@ -10,7 +10,7 @@ at = "7mfk:0007b31c"
 
 [[link]]
 type = "lookup"
-to = "unnatural-petrel/tbl"
+to = "request_alternate_byte_ratio_divisor/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

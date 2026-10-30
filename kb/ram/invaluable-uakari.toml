@@ -104,14 +104,14 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "rare-baboon/tbl"
+to = "request_secondary_signed_endpoint_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "rigorous-shrimp/tbl"
+to = "request_secondary_signed_endpoint_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

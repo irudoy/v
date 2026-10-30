@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "crazy-spider/tbl"
+to = "request_conditioning_channel_1_surface_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "granite-seagull/tbl"
+to = "request_conditioning_channel_1_surface_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

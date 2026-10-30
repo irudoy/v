@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "glittering-cuttlefish/tbl"
+to = "speed_limiter_recovery_step_other_relation/tbl"
 type = "index"
 end = "to"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "independent-koel/tbl"
+to = "speed_limiter_recovery_step_target_above_phase/tbl"
 type = "index"
 end = "to"
 relies = "structure"

@@ -152,6 +152,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
+to = "base_fuel_schedule_reference/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
 to = "lilac-magpie/tbl"
 type = "reader"
 end = "to"
@@ -161,14 +169,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "nice-coucal/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "precise-nuthatch/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -651,6 +651,29 @@ test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_s
 
 [[link]]
 type = "threshold"
+to = "base_fuel_schedule_reference/tbl"
+via = ["base_fuel_schedule_producer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk, unsigned reference ROM16[00009534] nonzero selects normal division. \
+A zero word selects the stock divider fault path on both calls, returns \
+zero, records 0x44e at ffff9818, and publishes zero. Stock \
+ROM16[00009534]=27226 keeps this alternative inactive; explicit controlled \
+calibration cases execute it without changing tested instructions."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003bd24"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_load_normalization.py"
+key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
+
+[[link]]
+type = "threshold"
 to = "benign-cassowary/ram"
 via = ["base_fuel_schedule_producer/fn"]
 layouts = ["7mfk"]
@@ -695,29 +718,6 @@ kind = "test"
 path = "tools/kb/tests/test_airflow_bfs_limit.py"
 key = """
 test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
-
-[[link]]
-type = "threshold"
-to = "precise-nuthatch/tbl"
-via = ["base_fuel_schedule_producer/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-On 7mfk, unsigned reference ROM16[00009534] nonzero selects normal division. \
-A zero word selects the stock divider fault path on both calls, returns \
-zero, records 0x44e at ffff9818, and publishes zero. Stock \
-ROM16[00009534]=27226 keeps this alternative inactive; explicit controlled \
-calibration cases execute it without changing tested instructions."""
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:0003bd24"
-
-[[link.evidence]]
-kind = "test"
-path = "tools/kb/tests/test_load_normalization.py"
-key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
 [[link]]
 type = "threshold"

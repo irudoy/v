@@ -10,7 +10,7 @@ at = "7mfk:0007a4a6"
 
 [[link]]
 type = "lookup"
-to = "crimson-chinchilla/tbl"
+to = "request_state_threshold_surface/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

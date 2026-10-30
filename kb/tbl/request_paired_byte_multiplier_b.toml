@@ -1,0 +1,313 @@
+summary = """
+One of two unsigned 8-bit table multipliers: the interpolated output is \
+multiplied by the output of map 00012a22, after which the product is \
+lower-capped at 0x4000 and written to RAM ffff19a4."""
+note = [
+    """
+All 8 cells in the current image equal 128, so the lookup returns byte 128 \
+for every q. Code proves only the operational multiplier role: the result is \
+stored in ffff17c8, read again, and multiplied by the output of adjacent map \
+00012a22; the product is lower-capped at 0x4000 and written to ffff19a4. The \
+physical subsystem and a nontrivial scale do not follow from the artifact. \
+Index: q = min(max((u8[ffff10f4] - 80)*2, 0), 255); for q < 224, wrapper \
+00026370 passes q to the linear-interpolation kernel for adjacent uint8 \
+cells in the implicit 1D-8 grid; for q >= 224, it returns cell 7. Output \
+trace: 000716c0 -> 000716c2 -> 00026370 -> 00026a80 -> 00026aac -> 00026aae \
+-> 00026740 -> 000716c4 -> 000716ca -> ffff17c8 -> 0007170c -> 00071710 -> \
+00071718 -> 00071722 -> ffff19a4 -> 000718d8/00071a10/00071b7e. Result \
+disposition: consumer; Result target: site 00071710.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Paired Product Multiplier B - raw u8 (0x12A2A)"
+category = "Internal Calculations"
+order = 185
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 404
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-walrus/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "splendid-beaver/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wine-collie/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_paired_byte_multiplier_a/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "innocent-mayfly/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "almond-llama/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "astonishing-wrasse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012a2a"
+former = ["terrestrial-sparrow/tbl/7mfk-00012a2a"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716a2"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716a6"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716ac"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716b0"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716b8"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716c0"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716c2"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000716ca"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007170c"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071710"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071718"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00071722"
+value = {named = ["00012a22", "00012a2a", "00026370", "00026740", "000718d8", "00071a10", "00071b7e", "ffff10f4", "ffff17c8", "ffff19a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014daf"
+former = ["saffron-anteater/tbl/jk00c-00014daf"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00073964"
+to = "7mfk:000716c0"
+count = 1
+value = 6
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014dcf"
+former = ["hypersonic-swan/tbl/jk00d-00014dcf"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00073964"
+to = "7mfk:000716c0"
+count = 1
+value = 6
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f18"
+former = ["heavy-bird/tbl/jk78c-00013f18"]
+note = """
+Reader 000909ec reads 8x1 uint8 at 00013f18. Second byte factor of the \
+paired product, with a minimum product of 16384 before publication. The \
+reviewed operand and arithmetic role correspond to 00012a2a of canonical \
+reader 00071650. Canonical physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00090a74"
+value = 8
+mode = "base"
+note = """
+Reader 000909ec reads 8x1 uint8 at 00013f18. Second byte factor of the \
+paired product, with a minimum product of 16384 before publication. The \
+reviewed operand and arithmetic role correspond to 00012a2a of canonical \
+reader 00071650. Canonical physical-conversion confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "request_paired_byte_multiplier_a/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "index"
+to = "innocent-mayfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-walrus/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "splendid-beaver/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "uppish-cheetah/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wine-collie/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,182 @@
+summary = """
+Operational table-based upper limit in a minimum-selection cascade for a \
+signed 16-bit value. The lookup result is capped at 0x7fff, written to \
+ffff34d4, and compared at 00071508 with other candidates to select the lower \
+value."""
+note = [
+    """
+All eight cells equal 32767, so in this calibration the limit is neutral for \
+the signed-minimum selection cascade. The physical quantity is unknown. \
+Branch q = 0xe000 returns the last cell directly and bypasses the \
+interpolation kernel. Index: implicit 1D-8; q = min(u16[ffff11b6], 448)*128, \
+range 0..0xe000. For q < 0xe000, interpolation proceeds through 00026a60 and \
+00026740; q = 0xe000 selects the last cell at 00015750+0x0e. Output trace: \
+00015750 -> 000714da -> 000714e6 -> 000263d8 -> 00026a60 -> 00026740 -> \
+000714ec -> 000714ee -> 000714fc -> ffff34d4 -> 00071508. Result \
+disposition: consumer; Result target: RAM ffff34d4, consumer 00071508.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 432
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "red-mantis/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015750"
+former = ["imaginary-kakapo/tbl/7mfk-00015750"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "32767"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ce"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714d2"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714da"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714e6"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ec"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714ee"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000714fc"
+value = {named = ["00015750", "000263d8", "00026740", "00026a60", "00071448"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00071508"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "urban-potoo/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "precise-koala/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017c52"
+former = ["umber-herring/tbl/jk00c-00017c52"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007377a"
+to = "7mfk:000714e6"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017c72"
+former = ["evasive-mustang/tbl/jk00d-00017c72"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007377a"
+to = "7mfk:000714e6"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000169d4"
+former = ["functional-ermine/tbl/jk78c-000169d4"]
+note = """
+Reader 00090664 reads 8x1 uint16 at 000169d4. The reviewed operational role \
+is request_upper_limit_curve. The reviewed operand and arithmetic role \
+correspond to 00015750 of canonical reader 00071448. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000906b2"
+to = "7mfk:00015750"
+note = """
+Reader 00090664 reads 8x1 uint16 at 000169d4. The reviewed operational role \
+is request_upper_limit_curve. The reviewed operand and arithmetic role \
+correspond to 00015750 of canonical reader 00071448. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "red-mantis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

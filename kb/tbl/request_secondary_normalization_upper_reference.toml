@@ -1,0 +1,159 @@
+summary = """
+Upper reference curve of a range relative to 00018e06; the centered range \
+width serves as the divisor in a downstream calculation."""
+note = [
+    """
+The output of 00018de6 is reduced by 32768 to form the upper reference; the \
+output of 00018e06 forms the lower reference in the same way. Their \
+difference is tested for zero and passed as the divisor to 00021bbc. The \
+physical range quantity is unknown, so map identity remains candidate. All \
+points of both maps equal zero.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "signed raw"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 322
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1]
+scale = [2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_secondary_normalization_lower_reference/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018de6"
+former = ["vagabond-seagull/tbl/7mfk-00018de6"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0f4"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b0fc"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "32768"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0f8"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007b0fc"
+value = {named = ["00018de6", "00018e06", "00021bbc"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001be44"
+former = ["tentacled-marmoset/tbl/jk00c-0001be44"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007dfd4"
+to = "7mfk:0007b0f4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001be66"
+former = ["unnatural-eagle/tbl/jk00d-0001be66"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007dfd4"
+to = "7mfk:0007b0f4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b10a"
+former = ["tidy-slug/tbl/jk78c-0001b10a"]
+note = """
+Reader 0009add0 reads 16x1 uint16 at 0001b10a. Upper centered reference \
+supplying the normalization range above the separately looked-up lower \
+centered reference. The reviewed operand and arithmetic role correspond to \
+00018de6 of canonical reader 0007b0a0. Canonical physical-conversion \
+confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009ae12"
+to = "7mfk:00018de6"
+note = """
+Reader 0009add0 reads 16x1 uint16 at 0001b10a. Upper centered reference \
+supplying the normalization range above the separately looked-up lower \
+centered reference. The reviewed operand and arithmetic role correspond to \
+00018de6 of canonical reader 0007b0a0. Canonical physical-conversion \
+confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "request_secondary_normalization_lower_reference/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

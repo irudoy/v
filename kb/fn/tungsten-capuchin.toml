@@ -85,7 +85,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "grinning-peacock/tbl"
+to = "request_state_byte_threshold_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -1,0 +1,485 @@
+summary = """
+Q15 multiplicative trim applied to the blend result when ffff245e bit6=1 \
+(target *= interp(00018d36)>>15, 0007a8de). The calibration is flat at \
+0x8000, trim=1.0 (no-op); the branch is not dead because the gate is runtime \
+and the map is always read."""
+note = [
+    """
+Q15 multiplicative trim applied to the blend result when ffff245e bit6=1 \
+(target *= interp(00018d36)>>15, 0007a8de). The calibration is flat at \
+0x8000, trim=1.0 (no-op); the branch is not dead because the gate is runtime \
+and the map is always read. Result disposition: consumer. Result target: \
+0007a8e6. Machine trace: 00018d36[1D-16 uint16, 32768..32768] -> \
+0007a8c6(r4=00018d36, r5=00018f76, r6=extu.w(ffff2698)) -> 0007a8cc(call \
+000266e8) -> 00026b84/00026d10/00026af8(unsigned linear uint16 \
+interpolation) -> 0007a8d0(r0->r2) -> 0007a8d6(write uint16 to ffff35fc) -> \
+0007a8d8/0007a8da(test ffff245e & 0x40) -> [bit set] 0007a8e0(extu.w map \
+result) -> 0007a8e2/0007a8e4(extu.w ffff35ca) -> 0007a8e6(mul.l) -> \
+0007a8e8..0007a8f4(>>15) -> r14; [bit clear] 0007a8dc -> \
+0007a8f6..0007a8fa(r14=extu.w ffff35ca, bypass multiplier). Scale \
+confidence: code. Scale: x/32768; inverse encoding: x*32768; units: Q15 \
+fraction. Scale trace: 00018d36 -> 0007a8c6 (r4 points to the target map) -> \
+0007a8cc (call to uint16 interpolation 000266e8 through 00026b84/00026d10 \
+and 00026af8) -> 0007a8d0 (result r0 is copied to r2) -> 0007a8d6 (raw \
+uint16 is written to RAM ffff35fc) -> 0007a8d8..0007a8dc (branch on bit \
+0x40) -> active branch 0007a8e0 (extu.w raw map value) -> 0007a8e2..0007a8e4 \
+(read and extu.w of the second multiplier from RAM ffff35ca) -> \
+0007a8e6..0007a8e8 (32-bit product in MACL/r14) -> \
+0007a8ea,0007a8ec,0007a8ee,0007a8f0,0007a8f4 (total logical right shift of \
+15) -> 0007a8fc; bypass branch 0007a8f6..0007a8fa passes ffff35ca without \
+applying the map.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Q15 fraction"
+scale = "x/32768"
+to_raw = "x*32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 320
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+scale = [
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_channel_1_trim_q15/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_channel_1_trim_q15/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018d36"
+former = ["gifted-mantis/tbl/7mfk-00018d36"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00018d36"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8c6"
+value = {span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8cc"
+value = {span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8d8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8da"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8dc"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e2"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e4"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8e8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8ea"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8ec"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8ee"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8f0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8f4"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8f6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8f8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007a8fa"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000266e8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00026af8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00026b84"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "scale"
+at = "7mfk:00026d10"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8c6"
+value = {span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8cc"
+value = {span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8d0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8d6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8d8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8da"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8dc"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8e0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8e2"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8e4"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8e6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8e8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8ea"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8ec"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8ee"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8f0"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8f4"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8f6"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8f8"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8fa"
+value = {span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007a8fc"
+value = {span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b0da"
+former = ["judicious-tarsier/tbl/jk78c-0001b0da"]
+note = """
+Reader 0009a530 reads 16x1 uint16 at 0001b0da. The reviewed operational role \
+is request_channel_1_trim_q15. The reviewed operand and arithmetic role \
+correspond to 00018d36 of canonical reader 0007a804. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009a5f2"
+to = "7mfk:00018d36"
+note = """
+Reader 0009a530 reads 16x1 uint16 at 0001b0da. The reviewed operational role \
+is request_channel_1_trim_q15. The reviewed operand and arithmetic role \
+correspond to 00018d36 of canonical reader 0007a804. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "request_channel_1_trim_q15/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "depends"
+to = "request_channel_1_trim_q15/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "crazy-toucan/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "robust-uakari/tbl"
+to = "speed_limiter_alternate_threshold_scalar/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -106,7 +106,7 @@ supports = "identity"
 
 [[link]]
 type = "input"
-to = "robust-uakari/tbl"
+to = "speed_limiter_alternate_threshold_scalar/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -148,7 +148,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "demonic-hound/tbl"
+to = "request_gated_centered_surface/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

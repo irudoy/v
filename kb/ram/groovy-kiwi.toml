@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "amiable-bug/tbl"
+to = "speed_limiter_mode_cap/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -86,7 +86,7 @@ role = "writes"
 
 [[link]]
 type = "input"
-to = "amiable-bug/tbl"
+to = "speed_limiter_mode_cap/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

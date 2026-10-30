@@ -10,7 +10,7 @@ at = "7mfk:0007a378"
 
 [[link]]
 type = "lookup"
-to = "infrared-uakari/tbl"
+to = "request_state_terminal_byte_surface/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

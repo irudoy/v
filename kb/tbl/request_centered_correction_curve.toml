@@ -1,0 +1,176 @@
+summary = """
+Interpolated 1D calibration quantity of unknown physical purpose; a uint16 \
+cell is converted to an offset raw result and written to RAM ffff1792."""
+note = [
+    """
+Code proves only an interpolated 1D calibration and offset raw \
+representation. After x - 32768, values range from 457..1255. Shape and \
+catalogs permit several incompatible physical purposes, so unit and purpose \
+are not inferred. Result disposition: writes. Blocking condition: The trace \
+stops at site 000765d0, where the result is written to RAM ffff1792. \
+ffff1792 has no external readers; code 0007654c neither reads this sink for \
+an inline comparison nor returns it. Physical semantics after exact stopping \
+point ffff1792 are therefore unobservable.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x - 32768"
+to_raw = "x + 32768"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 297
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "resilient-mongoose/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tan-grebe/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015276"
+former = ["apricot-angelfish/tbl/7mfk-00015276"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765b8"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765c2"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000765d0"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000765c6"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000765ca"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000765ce"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000765d0"
+value = {named = ["00015276", "00015286", "ffff1792"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017768"
+former = ["free-wasp/tbl/jk00c-00017768"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00078f86"
+to = "7mfk:000765c2"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017788"
+former = ["mutant-raccoon/tbl/jk00d-00017788"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00078f86"
+to = "7mfk:000765c2"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000164c4"
+former = ["neat-wrasse/tbl/jk78c-000164c4"]
+note = """
+Reader 00095c90 reads 8x1 uint16 at 000164c4. The reviewed operational role \
+is request_centered_correction_curve. The reviewed operand and arithmetic \
+role correspond to 00015276 of canonical reader 0007654c. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00095cfc"
+to = "7mfk:00015276"
+note = """
+Reader 00095c90 reads 8x1 uint16 at 000164c4. The reviewed operational role \
+is request_centered_correction_curve. The reviewed operand and arithmetic \
+role correspond to 00015276 of canonical reader 0007654c. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "resilient-mongoose/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "spiritual-alligator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

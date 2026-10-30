@@ -1,0 +1,148 @@
+summary = """
+Alternate dynamic speed threshold selected as min(0x942c,raw) while \
+coolant-indexed latch ffff249e.bit0 is set. The same word is the floor for \
+threshold decrements."""
+note = [
+    """
+The latch sets at raw coolant 255, retains through 239, and clears at 238. \
+Exact raw-50 deg C diagnostic conversion rules out an ordinary warm-engine \
+interpretation. The stock 0xffff value is neutral.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 1
+storage = "uint16"
+unit = "raw speed x4"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Throttle Rev Limiter Coolant-Latch Threshold"
+category = "Limiters / Rev Limit / Internal State"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["alternate threshold"]
+
+[[ledger]]
+registry = "findings"
+order = 31
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotational_speed_request_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "encouraging-octopus/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "throttle_runtime/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00009434"
+former = ["robust-uakari/tbl/7mfk-00009434"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009434"
+value = "0xffff"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075902"
+value = {named = ["00009434", "0007584e", "ffff1796", "ffff249e"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075906"
+value = {named = ["00009434", "0007584e", "ffff1796", "ffff249e"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007590a"
+value = {named = ["00009434", "0007584e", "ffff1796", "ffff249e"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075928"
+value = {named = ["00009434", "0007584e", "ffff1796", "ffff249e"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007592e"
+value = {named = ["00009434", "0007584e", "ffff1796", "ffff249e"], span = 2}
+key = "body"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:00009434"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The canonical scalar 00009434 is not a qualified single-cell JK78C \
+counterpart. Reader 00094d6c obtains its alternate desired threshold and \
+decrement floor from the explicit eight-point uint16 curve 00016c14 on axis \
+00016a64, and also uses the separately gated uint8 curve 00013c96. The \
+changed geometry and selector path remain distinct native roles; no \
+scalar-to-curve homology or target absence is asserted."""
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link]]
+type = "selector"
+to = "encouraging-octopus/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

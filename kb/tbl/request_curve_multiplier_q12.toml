@@ -1,0 +1,199 @@
+summary = """
+Dimensionless Q12 multiplier for the result of map 0000d68e: output 000153f0 \
+multiplies ffff31ba and is normalized by a right shift of 12 bits."""
+note = [
+    """
+The result of 0000d68e is stored in ffff31ba, while 000153f0 is stored in \
+ffff3354. Multiplication at 0007abcc followed by SHLR8, SHLR2, SHLR2 divides \
+the product by 4096 before writing to ffff3078. All 000153f0 points equal \
+4096, so the current calibration gives a unity multiplier. The physical \
+quantity of the result is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "dimensionless coefficient"
+scale = "x/4096"
+to_raw = "x*4096"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 301
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+scale = [8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_surface_multiplier_q12/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000153f0"
+former = ["rational-inchworm/tbl/7mfk-000153f0"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff3078"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff31ba"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+value = "ffff3354"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007abaa"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007abb8"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007abc0"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007abcc"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007abd6"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "4096"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007abcc"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007abd0"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007abd2"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007abd4"
+value = {named = ["0000d68e", "000153f0", "ffff3078", "ffff31ba", "ffff3354"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk00c"
+address = "000178f2"
+former = ["enthusiastic-ant/tbl/jk00c-000178f2"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007da98"
+to = "7mfk:0007abb8"
+count = 1
+value = 3
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017912"
+former = ["unselfish-pronghorn/tbl/jk00d-00017912"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007da98"
+to = "7mfk:0007abb8"
+count = 1
+value = 3
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00016624"
+former = ["accomplished-turkey/tbl/jk78c-00016624"]
+note = """
+Reader 0009a848 reads 16x1 uint16 at 00016624. The reviewed operational role \
+is request_curve_multiplier_q12. The reviewed operand and arithmetic role \
+correspond to 000153f0 of canonical reader 0007ab18. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009a8e4"
+to = "7mfk:000153f0"
+note = """
+Reader 0009a848 reads 16x1 uint16 at 00016624. The reviewed operational role \
+is request_curve_multiplier_q12. The reviewed operand and arithmetic role \
+correspond to 000153f0 of canonical reader 0007ab18. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "depends"
+to = "request_surface_multiplier_q12/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "saffron-moose/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

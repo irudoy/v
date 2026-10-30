@@ -10,7 +10,7 @@ at = "7mfk:000796ac"
 
 [[link]]
 type = "lookup"
-to = "natural-hedgehog/tbl"
+to = "request_counter_duration_coefficient/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

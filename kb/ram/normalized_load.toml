@@ -445,7 +445,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "precise-nuthatch/tbl"
+to = "base_fuel_schedule_reference/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -1,0 +1,302 @@
+summary = """
+The interpolated uint16 output is written to ffff19a2 and used as a \
+zero-protected divisor for call 00021bbc in the seven shown consumers."""
+note = [
+    """
+Range 1024..1884, monotonic decrease toward 1024, an implicit normalized \
+axis, and use of the result as a divisor are consistent with two catalog \
+variants of Torque Converter Torque Ratio Table. Code proves the full chain \
+to arithmetic consumption but does not identify the physical input ratio or \
+consumer quantities, so the claim and scale remain candidate. The artifact \
+has no separately addressable axis. Blocking condition: The trace stops at \
+00021bbc: consumers 00074b04, 00075306, 000718d8, 00071a10, 00071b7e, \
+0007654c, and 000ceabc prove use of ffff19a2 as a zero-protected divisor, \
+but the artifact does not link the numerators or division results to torque \
+and torque-converter speeds. Physical semantics and multiplier 0.000976563 \
+are confirmed only by the catalog. Promotion rejected: Attribution is \
+supported by the machine chain: 000751f6 loads address 00015770 into r4, \
+000751fc calls table wrapper 000263f4, 00075200 copies return value r0, and \
+00075204 writes a word to ffff19a2. The table-wrapper call and reads of \
+adjacent uint16 cells at 00026aa0 and 00026aa2 confirm role=table. \
+Disposition=consumer is supported by the structural set of seven ffff19a2 \
+readers. The promoted semantics and its code evidence are disproven: the \
+kernel listing ends immediately after reading two cells and does not show \
+interpolation arithmetic through r0, while machine listings for the seven \
+consumers are absent. Because of the nonstandard register contract, the \
+shown C pseudocode does not reconstruct arguments to 00021bbc by itself. In \
+five pseudocode listings, ffff19a2 appears only in a zero test, while in \
+00074b04 and 0007654c it appears in neither pseudocode nor expression \
+tables. Those two functions show 000224fa before 00021bbc, so the artifact \
+does not establish whether the divisor is the raw output, its shifted \
+derivative, or another quantity. A complete machine trace for all seven \
+consumers is absent. No separate scale or scale evidence is claimed. Result \
+disposition: consumer.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "Torque Ratio"
+scale = "x*0.000976563"
+to_raw = "x/0.000976563"
+scale_level = "candidate"
+
+[editor]
+name = "Protected Division Denominator - catalog torque-ratio scale (0x15770)"
+category = "Internal Calculations"
+order = 127
+emit = false
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
+[[ledger]]
+registry = "findings"
+order = 311
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+scale = [9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crouching-shrew/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "grinning-walrus/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pedal_request_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "proficient-sunfish/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spiritual-alligator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "splendid-beaver/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "wine-collie/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00015770"
+former = ["vigilant-rat/tbl/7mfk-00015770"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751f6"
+value = {named = ["00015770", "00021bbc", "000224fa", "000263f4", "000718d8", "00071a10", "00071b7e", "00074b04", "00075306", "0007654c", "000ceabc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000751fc"
+value = {named = ["00015770", "00021bbc", "000224fa", "000263f4", "000718d8", "00071a10", "00071b7e", "00074b04", "00075306", "0007654c", "000ceabc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075200"
+value = {named = ["00015770", "00021bbc", "000224fa", "000263f4", "000718d8", "00071a10", "00071b7e", "00074b04", "00075306", "0007654c", "000ceabc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00075204"
+value = {named = ["00015770", "00021bbc", "000224fa", "000263f4", "000718d8", "00071a10", "00071b7e", "00074b04", "00075306", "0007654c", "000ceabc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Torque Converter Torque Ratio Table 2 scale x*0.000976563"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Torque Converter Torque Ratio Table scale x*0.000976563"
+
+[[symbol]]
+layout = "jk00c"
+address = "00017c72"
+former = ["intelligent-kangaroo/tbl/jk00c-00017c72"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000779a0"
+to = "7mfk:000751fc"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00017c92"
+former = ["gay-cow/tbl/jk00d-00017c92"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000779a0"
+to = "7mfk:000751fc"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000169f4"
+former = ["pompous-sparrow/tbl/jk78c-000169f4"]
+note = """
+Reader 00094690 reads 16x1 uint16 at 000169f4. The reviewed operational role \
+is request_primary_ratio_curve. The reviewed operand and arithmetic role \
+correspond to 00015770 of canonical reader 00075174. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00094712"
+to = "7mfk:00015770"
+note = """
+Reader 00094690 reads 16x1 uint16 at 000169f4. The reviewed operational role \
+is request_primary_ratio_curve. The reviewed operand and arithmetic role \
+correspond to 00015770 of canonical reader 00075174. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "crouching-shrew/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-walrus/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pedal_request_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "proficient-sunfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "spiritual-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "splendid-beaver/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "striped-kakapo/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "wine-collie/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

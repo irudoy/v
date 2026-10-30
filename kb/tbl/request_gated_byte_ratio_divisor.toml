@@ -1,0 +1,247 @@
+summary = """
+Interpolated 1D table of an unsigned denominator: when value != 0, \
+floor((uint16(ffff35ce) * 255) / value) is calculated, capped at 255, and \
+written to ffff35d6; when value == 0, 255 is selected."""
+note = [
+    """
+Code proves the computational role but not the physical quantity or catalog \
+identity. The interpolated value is written without conversion to ffff35d8; \
+with no external readers, the same result instance in r6 is used inside the \
+accessor as a denominator. Result disposition: writes.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 321
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-chipmunk/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018dd6"
+former = ["micro-penguin/tbl/7mfk-00018dd6"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b452"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b462"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b466"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b46a"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b46e"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b470"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b472"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b478"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b47a"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b47c"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b47e"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b480"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b482"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b484"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b486"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b48a"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b48c"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b490"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b498"
+value = {named = ["00018dd6", "00021ce0", "ffff35d8"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001be34"
+former = ["purring-dogfish/tbl/jk00c-0001be34"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0007e342"
+to = "7mfk:0007b462"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001be56"
+former = ["tourmaline-puffin/tbl/jk00d-0001be56"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0007e342"
+to = "7mfk:0007b462"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b0fa"
+former = ["annoying-slug/tbl/jk78c-0001b0fa"]
+note = """
+Reader 0009b120 reads 8x1 uint16 at 0001b0fa. Divisor of the gated \
+byte-ratio calculation capped at 255; zero selects the saturated fallback. \
+Stock ROM8[00008383].bit1 is clear. The reviewed operand and arithmetic role \
+correspond to 00018dd6 of canonical reader 0007b3f4. Canonical \
+physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009b17e"
+to = "7mfk:00018dd6"
+note = """
+Reader 0009b120 reads 8x1 uint16 at 0001b0fa. Divisor of the gated \
+byte-ratio calculation capped at 255; zero selects the saturated fallback. \
+Stock ROM8[00008383].bit1 is clear. The reviewed operand and arithmetic role \
+correspond to 00018dd6 of canonical reader 0007b3f4. Canonical \
+physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "functional-chachalaca/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

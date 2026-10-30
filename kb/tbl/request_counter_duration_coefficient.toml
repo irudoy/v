@@ -1,0 +1,180 @@
+summary = """
+Dynamic counter-threshold coefficient: (uint8(ffff3448) * raw)/10; the \
+result is bounded below by ffff3449 and compared with uint16 counter \
+ffff3446 to complete the state branch"""
+note = [
+    """
+Code proves the computational role but does not connect the state branch to \
+a specific physical subsystem. Inside 00079538, the integer product of \
+uint8(ffff3448) and raw is divided by 10 with truncation toward zero; the \
+result is bounded below by the output of the adjacent map in ffff3449. \
+Catalog names are not used as evidence for physical semantics. Result \
+disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "ratio"
+scale = "x/10"
+to_raw = "x*10"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 60
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2]
+scale = [3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rousing-narwhal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "observant-emu/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "scarlet-caracara/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000aafa"
+former = ["natural-hedgehog/tbl/7mfk-0000aafa"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079692"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007969c"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000796ac"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007971e"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00079720"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00079722"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00079724"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00079728"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0007972a"
+value = {named = ["0000aafa", "00021bbc", "00079538", "ffff3446", "ffff351c"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a41a"
+former = ["idealistic-mamba/tbl/jk78c-0000a41a"]
+note = """
+Reader 000991d6 reads 4x4 uint8 at 0000a41a. Byte coefficient of the \
+counter-duration calculation with division by 10. The reviewed operand and \
+arithmetic role correspond to 0000aafa of canonical reader 00079538. \
+Canonical physical-conversion confidence is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00099328"
+to = "7mfk:0000aafa"
+note = """
+Reader 000991d6 reads 4x4 uint8 at 0000a41a. Byte coefficient of the \
+counter-duration calculation with division by 10. The reviewed operand and \
+arithmetic role correspond to 0000aafa of canonical reader 00079538. \
+Canonical physical-conversion confidence is retained."""
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "rousing-narwhal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "observant-emu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

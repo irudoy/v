@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "flat-cat/tbl"
+to = "request_conditional_signed_endpoint_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tangerine-rook/tbl"
+to = "request_conditional_signed_endpoint_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

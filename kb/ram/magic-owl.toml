@@ -10,7 +10,7 @@ at = "7mfk:000720fa"
 
 [[link]]
 type = "lookup"
-to = "granite-seagull/tbl"
+to = "request_conditioning_channel_1_surface_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

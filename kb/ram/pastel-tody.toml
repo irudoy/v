@@ -15,7 +15,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gifted-mantis/tbl"
+to = "request_channel_1_trim_q15/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -79,7 +79,7 @@ key = "body"
 
 [[link]]
 type = "input"
-to = "gifted-mantis/tbl"
+to = "request_channel_1_trim_q15/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
