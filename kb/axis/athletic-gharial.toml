@@ -30,3 +30,15 @@ name = "statuesque-puma"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006aee0"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094eae"
+note = "The complete reader and literal-pool operand establish this access."

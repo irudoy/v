@@ -575,6 +575,36 @@ supports = "identity"
 to = "request_limit_source_dispatch/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00094d6c"
+level = "code"
+summary = """
+JK78C rotational-speed request-limit builder. ROM16[0000911e]=65535 selects \
+the neutral-output return. The enabled path updates the filtered rotational \
+coordinate, reads gated byte curve 00013c96 and dynamic threshold curve \
+00016c14, combines the threshold with calibrated downward/upward steps and \
+cap, and updates the signed request through the separately calibrated ramp, \
+baseline, final rate and recovery envelope. Target flags, RAM addresses, \
+native curves and branch conditions differ from the canonical layout; the \
+canonical coolant-threshold mechanism and numerical rates are not inherited. \
+Physical conversion and hardware behavior require separate evidence."""
+note = """
+JK78C rotational-speed request-limit builder. ROM16[0000911e]=65535 selects \
+the neutral-output return. The enabled path updates the filtered rotational \
+coordinate, reads gated byte curve 00013c96 and dynamic threshold curve \
+00016c14, combines the threshold with calibrated downward/upward steps and \
+cap, and updates the signed request through the separately calibrated ramp, \
+baseline, final rate and recovery envelope. Target flags, RAM addresses, \
+native curves and branch conditions differ from the canonical layout; the \
+canonical coolant-threshold mechanism and numerical rates are not inherited. \
+Physical conversion and hardware behavior require separate evidence."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094d6c"
+
 [[link]]
 type = "depends"
 to = "signed_request_limit_arbiter/fn"

@@ -1,0 +1,28 @@
+title = "Select the native request-conditioning path"
+summary = """
+Call setup stages 000967e2, 00096914, 00096a9c and 00096b5a. When \
+ROM8[00008383].bit0 is clear, select reader 00096ce0 if ROM8[00008968].bit7 \
+is clear, otherwise call 00097298 and 000978d6; then call 0009864e. Finish \
+with 00096c48. These branch conditions establish the selected conditioning \
+mechanism; physical interpretation of the alternative stages remains \
+unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "dispatch"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009679a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009679a"

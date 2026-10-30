@@ -1,0 +1,49 @@
+title = "Request transition reference multiplier"
+summary = """
+Eight-word reference multiplier indexed by min(current-gear index \
+uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear \
+index uint8[ffff1077],7). The latched gear indices follow \
+defs/JK78C.vvel.md, section \"Data flow\". The low 32-bit product with \
+uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the \
+result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored \
+at ffff3492."""
+note = [
+    """
+Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
+and ffff1077 latch the zero-based current-gear and target-gear indices \
+ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
+frame 0x174. Scaling, engineering units, editor qualification and \
+later-layout correspondence remain unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-indexed"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00016464"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096f8c"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096f8c"
+note = "The complete reader and literal-pool operand establish this access."

@@ -1,0 +1,60 @@
+title = "Request conditioning mode flags"
+summary = """
+Bit7 selects the request-conditioning mechanism in caller 0009679a: when \
+ROM8[00008383].bit0 is clear, a clear bit7 calls 00096ce0, while a set bit7 \
+calls 00097298 and 000978d6. The same bit selects the native limiter \
+context-gate branch and qualifies its held-transition neutral override with \
+ffff45ca.bit6. Other bit meanings remain unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008968"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e26"
+
+[[link]]
+type = "reader"
+to = "request_transition_dispatch/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000967b4"
+note = """
+The dispatcher reads bit7 to choose the conditioning mechanism after the \
+common bit0 gate."""
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e26"
+note = "The complete reader and literal-pool operand establish this access."

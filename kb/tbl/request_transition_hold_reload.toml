@@ -1,0 +1,45 @@
+title = "Request transition hold reload"
+summary = """
+Byte reloaded into ffff477d on an active state transition. The held-state \
+flag ffff45ca.bit5 remains set while either the active-transition bit or \
+this hold byte is nonzero. The timer's decrementing producer and physical \
+time unit remain unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008937"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096dfe"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096dfe"
+note = "The complete reader and literal-pool operand establish this access."

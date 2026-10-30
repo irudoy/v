@@ -1,0 +1,58 @@
+title = "Speed limiter context request curve"
+summary = """
+Gated byte curve in the JK78C rotational-speed limiter, read through \
+0002829c on axis 00013c9e. Its raw coordinate is \
+max(0,min(uint8[ffff10f1]+int8[00008233],uint8[ffff1069])). The lookup \
+result is multiplied by 64 and stored at ffff16c0; the disabled branch \
+stores 65535. Physical coordinate and output conversion remain unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00013c96"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e8c"
+
+[[link]]
+type = "axis"
+to = "speed_limiter_context_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e8c"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e8c"
+note = "The complete reader and literal-pool operand establish this access."

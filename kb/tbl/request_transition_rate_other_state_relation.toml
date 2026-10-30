@@ -1,0 +1,72 @@
+title = "Request transition rate for current < target + 2"
+summary = """
+Selected rate surface when the special branch is inactive and the latched \
+current-gear index uint8[ffff1076] < min(target-gear index \
+uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the \
+target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data \
+flow\". The byte result is multiplied by ten before the signed \
+request-update calculation."""
+note = [
+    """
+Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
+and ffff1077 latch the zero-based current-gear and target-gear indices \
+ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
+frame 0x174. Scaling, engineering units, editor qualification and \
+later-layout correspondence remain unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "explicit"
+cols = 4
+rows = 4
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b3aa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009709c"
+
+[[link]]
+type = "axis"
+to = "request_transition_rate_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009709c"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "axis"
+to = "request_transition_rate_state_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009709c"
+note = "The reviewed explicit wrapper call passes this axis in the y slot."
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009709c"
+note = "The complete reader and literal-pool operand establish this access."

@@ -1,0 +1,44 @@
+title = "Request transition word gate threshold"
+summary = """
+Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), \
+augmented by 50 while the bit is set, against this word. Values at or above \
+the threshold set the bit."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "threshold"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00009184"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096d8c"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096d8c"
+note = "The complete reader and literal-pool operand establish this access."

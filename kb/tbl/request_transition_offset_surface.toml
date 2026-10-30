@@ -1,0 +1,48 @@
+title = "Request transition offset surface"
+summary = """
+Implicit word surface read through 00027ddc with min(target-gear index \
+uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. \
+The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", \
+and these coordinates select integer grid points. The low word of the result \
+minus 32768 supplies signed request bound ffff36ec while the duration and \
+gear-transition gates permit it; the disabled value is -32768."""
+note = [
+    """
+Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
+and ffff1077 latch the zero-based current-gear and target-gear indices \
+ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
+frame 0x174. Scaling, engineering units, editor qualification and \
+later-layout correspondence remain unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "implicit-2d"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0001164e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096eb0"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096eb0"
+note = "The complete reader and literal-pool operand establish this access."

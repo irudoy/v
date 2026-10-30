@@ -1,0 +1,49 @@
+title = "Request transition recovery decrement"
+summary = """
+Eight-word recovery array indexed by min(latched target-gear index \
+uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section \"Data \
+flow\". When the selected recovery byte is zero, subtract the unsigned entry \
+from signed state ffff36b0 with a -32768 floor, then publish the maximum of \
+that state and the independently bounded current candidate at ffff36ae. The \
+inactive-transition path forces the recovery byte to zero; the active path \
+uses the target-gear index ffff1077, which can also be zero."""
+note = [
+    """
+Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
+and ffff1077 latch the zero-based current-gear and target-gear indices \
+ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
+frame 0x174. Scaling, engineering units, editor qualification and \
+later-layout correspondence remain unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-indexed"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "000158d2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009724c"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009724c"
+note = "The complete reader and literal-pool operand establish this access."

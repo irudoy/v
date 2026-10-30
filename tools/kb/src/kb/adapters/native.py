@@ -708,7 +708,8 @@ def _table_entry(meaning, symbol, rom, image, notes, carriers):
 def tables_document(model, notes=None):
     """The document of `defs/vq37-native-tables.toml`: for each target, an
     entry of every native meaning with a symbol on its layout that the image
-    carries, by address, and the native meanings absent there, by name.
+    carries and whose effective editor policy permits publication, by address,
+    and the native meanings absent there, by name.
     `notes` gives the notes of the symbols, by default those of the files."""
     chosen = meanings(model)
     notes = file_notes(model, chosen) if notes is None else notes
@@ -721,6 +722,8 @@ def tables_document(model, notes=None):
             for meaning in chosen:
                 symbol = meaning.symbols.get(layout)
                 if meaning.kind != kind or symbol is None:
+                    continue
+                if (symbol.value("editor") or {}).get("emit", True) is False:
                     continue
                 carriers = symbol.props.get("images") or list(layout_images[layout])
                 if rom not in carriers:

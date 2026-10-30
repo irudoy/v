@@ -1,0 +1,48 @@
+title = "Request transition duration table"
+summary = """
+Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index \
+uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), \
+using the latched indices of defs/JK78C.vvel.md, section \"Data flow\". The \
+caller shifts both indices left by five and the helper recovers them without \
+interpolation. The unsigned result bounds the saturating elapsed byte \
+ffff3648 while the gear transition is active."""
+note = [
+    """
+Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
+and ffff1077 latch the zero-based current-gear and target-gear indices \
+ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
+frame 0x174. Scaling, engineering units, editor qualification and \
+later-layout correspondence remain unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-row-major"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b34a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096e70"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096e70"
+note = "The complete reader and literal-pool operand establish this access."

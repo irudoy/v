@@ -1,0 +1,43 @@
+title = "Speed limiter context coordinate offset"
+summary = """
+Signed byte added to uint8[ffff10f1] before its minimum with uint8[ffff1069] \
+and lower clamp at zero. The result indexes the gated byte curve 00013c96."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "int8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008233"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e70"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e70"
+note = "The complete reader and literal-pool operand establish this access."

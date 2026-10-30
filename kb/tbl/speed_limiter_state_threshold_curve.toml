@@ -1,0 +1,62 @@
+title = "Speed limiter state threshold curve"
+summary = """
+Native eight-word dynamic threshold curve read through 000282f4 on explicit \
+word axis 00016a64, shared with rev_limit_fuel_cut_curves/tbl. Its input is \
+rev_fuel_cut_selector/ram at ffff10e5. The word is published at ffff1a3c and \
+can lower the calibrated threshold when ffff4573.bit4 is set. It also bounds \
+the downward threshold ramp. This curve has no scalar-to-curve binding to \
+the canonical alternate threshold. The existing shared axis contains \
+repeated breakpoints; its source and other readers are preserved. Editor \
+publication and behavior at those boundaries require separate \
+qualification."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00016c14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094eac"
+
+[[link]]
+type = "axis"
+to = "athletic-gharial/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094eac"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094eac"
+note = "The complete reader and literal-pool operand establish this access."

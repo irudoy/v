@@ -1,0 +1,48 @@
+title = "Request transition special branch threshold"
+summary = """
+Shared threshold compared with uint16[ffff11fa]. With ffff23be.bit7 clear \
+and the input above this word, the offset-duration gate is disabled and the \
+special rate surface 0000b39a is selected."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "threshold"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000918e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00096ee4"
+value = 10
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00096ee4"
+value = 10
+mode = "base"
+note = "The base load feeds the offset word read in the reviewed reader."

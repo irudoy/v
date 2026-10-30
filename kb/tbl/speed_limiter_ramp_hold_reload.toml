@@ -1,0 +1,44 @@
+title = "Speed limiter ramp hold reload"
+summary = """
+Byte reloaded into ffff2508 when the limiter's engagement relation resets. \
+Its physical time unit depends on a separate timer producer and call-period \
+qualification."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "000088ed"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000950d8"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000950d8"
+note = "The complete reader and literal-pool operand establish this access."

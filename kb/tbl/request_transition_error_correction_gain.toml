@@ -1,0 +1,49 @@
+title = "Request transition error correction gain"
+summary = """
+Gain multiplying signed filtered-coordinate error ffff348e when its absolute \
+value does not exceed ROM16[00009188]. The signed product is divided by 128 \
+with truncation toward zero and subtracted from the signed request \
+candidate."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00009186"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000971be"
+value = 2
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000971be"
+value = 2
+mode = "base"
+note = "The base load feeds the offset word read in the reviewed reader."

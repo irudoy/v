@@ -1,0 +1,47 @@
+title = "Request transition reference floor"
+summary = """
+Lower floor applied to the state-scaled word reference after the upper cap \
+from rev_limit_throttle_cut. The resulting word is stored at ffff3492."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "threshold"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000918c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00096fbc"
+value = 8
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "request_transition_conditioner/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00096fbc"
+value = 8
+mode = "base"
+note = "The complete reader and literal-pool operand establish this access."

@@ -1,0 +1,42 @@
+title = "Speed limiter context coordinate axis"
+summary = """
+Eight unsigned byte breakpoints of curve 00013c96. Its coordinate is the \
+nonnegative bounded sum of unsigned ffff10f1 and signed calibration \
+00008233, capped by unsigned ffff1069. Physical quantity and conversion \
+remain unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00013c9e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e8e"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e8e"
+note = "The complete reader and literal-pool operand establish this access."

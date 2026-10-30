@@ -1,0 +1,44 @@
+title = "Speed limiter signed ramp floor"
+summary = """
+Signed floor used to latch ramp state and to bound the alternative \
+request-rate update before the independently looked-up baseline and signed \
+upper cap."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "limiters/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "int16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008c64"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094f94"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094f94"
+note = "The complete reader and literal-pool operand establish this access."

@@ -1,0 +1,44 @@
+title = "Request rise step state multiplier"
+summary = """
+Eight-byte array indexed by min(uint8[ffff12ea],7). This unsigned byte \
+multiplies the native word-surface result before the two gated byte factors \
+and the ordered right shifts of 8 and 13."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-indexed"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0001316e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ffce"
+
+[[link]]
+type = "reader"
+to = "request_rise_step_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ffce"
+note = "The complete reader and literal-pool operand establish this access."

@@ -1,0 +1,49 @@
+title = "Request rise step mode multiplier b"
+summary = """
+Second request-rise-step multiplier, selected by ffff23d4.bit2. A clear bit \
+substitutes 128. The reader applies this byte after the earlier eight-bit \
+right shift, then shifts the low 32-bit product right by thirteen and caps \
+the upward step at 65535."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "000082d9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0008ffe4"
+value = 1
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "request_rise_step_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0008ffe4"
+value = 1
+mode = "base"
+note = "The complete reader and literal-pool operand establish this access."

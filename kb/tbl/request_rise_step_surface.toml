@@ -1,0 +1,45 @@
+title = "Request rise step surface"
+summary = """
+Implicit word surface read through 00027ddc. Its first coordinate is \
+min(uint16[ffff25f0],672)*256/3 and its second is \
+min(uint16[ffff11a6],2240)*256/10. The lookup participates in the weighted \
+and saturated upward step published at ffff12f0."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "table"
+block = "torque_request/block"
+access = "implicit-2d"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b97a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ffb8"
+
+[[link]]
+type = "reader"
+to = "request_rise_step_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ffb8"
+note = "The complete reader and literal-pool operand establish this access."

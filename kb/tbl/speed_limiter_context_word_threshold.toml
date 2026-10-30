@@ -1,0 +1,46 @@
+title = "Speed limiter context word threshold"
+summary = """
+Unsigned context threshold compared with uint16[ffff10a8]. The gated byte \
+curve is eligible only when that input is at or below this word. An input \
+above the word disables the curve and publishes 65535 at ffff16c0. With mode \
+bit7 clear, ffff23af.bit0 or raw mode ffff2608=4 admits the comparison; mode \
+bit7 set requires ffff23af.bit0."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "threshold"
+block = "limiters/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000903e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e4a"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00094e4a"
+note = "The complete reader and literal-pool operand establish this access."

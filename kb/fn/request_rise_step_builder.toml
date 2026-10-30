@@ -1,0 +1,33 @@
+title = "Build the upward step of a conditioned request"
+summary = """
+Read the implicit word surface 0000b97a with \
+R5=min(uint16[ffff25f0],672)*256/3 and R6=min(uint16[ffff11a6],2240)*256/10. \
+Multiply the result by byte array 0001316e indexed by \
+min(uint8[ffff12ea],7), and by two independently gated bytes at \
+000082d8/000082d9 whose fallback is 128. Apply the reviewed right shifts of \
+8 and 13 in their instruction order, saturate to uint16 and publish the \
+upward step at ffff12f0. Caller 0008fc8e adds this step to signed prior \
+ffff12f4, caps the increase at signed target ffff12f2 and applies a \
+separately computed lower candidate before storing ffff12f4. Arithmetic \
+retains the processor's 32-bit products. Physical input and output units \
+remain unresolved."""
+note = [
+    """
+Editor publication and later-layout correspondence remain unresolved under \
+issue #110. Only the reviewed JK78C reader qualifies this operational role; \
+physical input identities and engineering conversions require separate \
+evidence.""",
+]
+level = "code"
+role = "consumer"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0008ff76"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ff76"
