@@ -28,6 +28,86 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013515"
+name = "rebel-corgi"
+level = "code"
+scale_level = "candidate"
+note = """
+Stage 00082eb2 passes this eight-byte axis with byte coordinate fffe818e. \
+The resolver compares the byte coordinate directly against the stored \
+points. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082f2a"
+to = "7mfk:00011cd8"
+note = """
+Stage 00082eb2 passes this eight-byte axis with byte coordinate fffe818e. \
+The resolver compares the byte coordinate directly against the stored \
+points. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f2a"
+note = """
+The target instruction loads this explicit eight-byte axis for the reviewed \
+lookup."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "lush-sponge/axis/7mfk"
+relies = "scale"
+note = """
+The RPM conversion is retained as a candidate from the reviewed canonical \
+axis scale; target producer units remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "000137c1"
+name = "exotic-peacock"
+level = "code"
+scale_level = "candidate"
+note = """
+Stage 0007e3ae passes this eight-byte axis with byte coordinate fffe81a8. \
+The resolver compares the byte coordinate directly against the stored \
+points. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e426"
+to = "7mfk:00011cd8"
+note = """
+Stage 0007e3ae passes this eight-byte axis with byte coordinate fffe81a8. \
+The resolver compares the byte coordinate directly against the stored \
+points. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e426"
+note = """
+The target instruction loads this explicit eight-byte axis for the reviewed \
+lookup."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "lush-sponge/axis/7mfk"
+relies = "scale"
+note = """
+The RPM conversion is retained as a candidate from the reviewed canonical \
+axis scale; target producer units remain unresolved."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011cd8"
 name = "lush-sponge"

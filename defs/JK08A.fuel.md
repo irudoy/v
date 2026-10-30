@@ -1289,13 +1289,11 @@ respectively, and clamp the signed intermediate to `0..255`. The native
 owners retain stored-count presentation. Physical input names and an
 engineering output conversion remain unresolved.
 
-Editor publication of these native surfaces remains unresolved under issue
-#110. The target-native registry requires common role coverage across every
-supported VQ37 image; independently qualified bindings on `1nd` and
-`1me3b` are not established. The native adapter also maps an axis summary
-to `semantics`, which the native axis schema excludes. The KB owners retain
-the reviewed roles, geometry, coordinates and pointer bindings while these
-publication contracts require reconciliation.
+The native definition owners publish these surfaces and their explicit axes
+in stored counts on each supported VQ37 image. Each layout retains its own
+reader, pointer and axis-storage contract. Native axis descriptions use notes
+and editor names rather than a summary field. The raw views establish no
+physical input quantity or engineering conversion for the complete term.
 
 The EOI writer `000730CC` reads default curve `00015F22` and conditional
 curve `00015F42` through wrapper `000282F4` on explicit word axis
@@ -1307,7 +1305,7 @@ the target event geometry above supports the same cell conversion
 `x*4-590` degrees after intake TDC. Target editor publication requires the
 reviewed word storage and explicit axis. The canonical-address projection
 currently copies canonical geometry and editor settings, so those two
-target curves retain a publication gap under issue #110.
+target curves retain a publication gap under issue #111.
 
 Additional target-native candidates remain in the subsystem review:
 `00013780`, `00013800` and `00013AE8` in reader `00040958`;
@@ -1324,6 +1322,53 @@ rather than the canonical threshold `100*lookup(00012312)`. Neither
 candidate establishes that table binding. Canonical reader `000BEFB0`
 and its `0000AB0A`/`0000B23A` pair have no accepted JK78C counterpart.
 These search dispositions leave the corresponding roles unresolved.
+
+### 1ND and 1ME3B fuel-calibration compatibility
+
+The mixture stages `1nd:0007E3AE` and `1me3b:00082EB2` are the
+unconditional second calls of their coordinators `000805F0` and `00084F14`.
+Their main surfaces are `0000A7D0` and `0000A704`, respectively. Each
+uses the normalized-BFS snapshot byte `FFFE8034` or substitutes 255 under
+its wide-open latch. The row coordinates are the RPM words `FFFE81B6`
+and `FFFE819E`. The separate high-detonation curves `00013F0A` and
+`00013CE6` scale the main surface's deviation from 128 by a Q7 factor.
+Their selectors are `FFFE9488.bit6` and `FFFE945B.bit7`.
+
+Both stages apply the enrichment latch, select and ramp Q14 state words,
+combine the primary and auxiliary alternatives, apply neutral and cap
+conditions, and publish `af_state_factor` at `FFFE9318` and `FFFE92E2`.
+The main table's stored value has the Q7 conversion `x/128`; the later
+word representation has neutral 16384. The inherited RPM conversions of
+the target axes remain candidate while their physical producer chains are
+unresolved. The normalized-BFS axis represents the reviewed Q7 reference
+ratio and does not assert physical cylinder filling.
+
+The native composite readers `0007A384` and `0007ED2C` combine their
+implicit byte surface, word curve and additional byte surface before the
+complete-product right shift of 14 and `uint16` cap. The 1ND additional
+surface `0000A790` uses two explicit byte axes over the bounded coordinates
+derived from `FFFEA560` and `FFFEA55E` by division by 20 and offsets 220
+and 420. The 1ME3B additional surface `0000A684` uses byte row axis
+`00013E7C` and `uint16` column axis `0001667C`. Its fused reader
+`00028FF0` directly indexes byte `FFFE8071` and word `FFFEA636` and
+addresses cells as `row*8+column`. These are different input contracts of
+the same multiplier role.
+
+The transient readers `0007A73A` and `0007F0D0` use additional surfaces
+`00009E20` and `00009D94` in the capped scaled alternative, retain the
+maximum with the original curve, and preserve the signed-state half/64
+selection. The four-factor readers `0007DB36` and `000826C4` use
+`0000B610` and `0000B6C4` before the right shift of 12, selected word
+addend and final `uint16` cap. Their target-native owners retain raw
+coordinates and layout-specific pointer bindings; no physical cam-angle
+input or absolute scale of the complete term is inherited.
+
+Editor-visible canonical homologs retain the canonical presentation, with
+the target bindings and qualification of their axes. Hidden canonical
+homologs remain KB facts. The native surfaces use stored-count views in
+both editor formats. The EOI storage-and-axis projection remains under
+#111; request-component axis `000119B2` and the unqualified native
+candidates remain unresolved under #36 and #110.
 
 ## Hardware validation priorities
 

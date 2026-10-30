@@ -1,25 +1,71 @@
 note = [
     """
-The x coordinate is the bounded raw result derived from word ffff33a6 \
-through helper 00021ce8 and offset 220. The explicit byte-axis resolver \
-bounds the final index at 7. Physical quantity and conversion remain \
-unresolved.""",
-    """
-Editor publication remains unresolved under issue #110. The native registry \
-requires common role coverage across the supported VQ37 images, while \
-independently qualified 1nd and 1me3b bindings are not established. \
-Partial-layout publication and native-axis metadata need schema \
-reconciliation.""",
+Raw row coordinate of the owning fuel surface. Each layout declares the \
+coordinate source, storage and eight-point resolver contract. Physical \
+quantity and engineering conversion remain unresolved.""",
 ]
 level = "code"
 quantity = "raw"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Transient Multiplier - Input 1"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "000139ee"
+level = "code"
+note = """
+Reader 0007f0d0 passes this uint8 axis to 00028e10 as the row coordinate \
+axis. The raw row coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). \
+The explicit axis contains eight uint8 points. The final index is bounded at \
+7; physical quantity and conversion remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f15c"
+note = """
+Reader 0007f0d0 passes this uint8 axis to 00028e10 as the row coordinate \
+axis. The raw row coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). \
+The explicit axis contains eight uint8 points. The final index is bounded at \
+7; physical quantity and conversion remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013bf2"
+level = "code"
+note = """
+Reader 0007a73a passes this uint8 axis to 000284fc as the row coordinate \
+axis. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). \
+The explicit axis contains eight uint8 points. The final index is bounded at \
+7; physical quantity and conversion remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a7c6"
+note = """
+Reader 0007a73a passes this uint8 axis to 000284fc as the row coordinate \
+axis. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). \
+The explicit axis contains eight uint8 points. The final index is bounded at \
+7; physical quantity and conversion remain unresolved."""
+
 [[symbol]]
 layout = "jk78c"
 address = "000137c0"
 level = "code"
+note = [
+    """
+The x coordinate is the bounded raw result derived from word ffff33a6 \
+through helper 00021ce8 and offset 220. The explicit byte-axis resolver \
+bounds the final index at 7. Physical quantity and conversion remain \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -35,7 +81,7 @@ unresolved."""
 [[link]]
 type = "reader"
 to = "transient_fuel_term_coordinator/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
@@ -43,3 +89,19 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0006eb80"
 note = "The literal-pool word contains the complete axis address."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a8b4"
+note = """
+The literal-pool word contains the complete row-axis address passed by \
+reader 0007a73a to 000284fc."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f23c"
+note = """
+The literal-pool word contains the complete row-axis address passed by \
+reader 0007f0d0 to 00028e10."""

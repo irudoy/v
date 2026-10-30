@@ -200,9 +200,9 @@ for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the reviewed VQ37 semantic set
 to the SH7059 1ND layout. It owns the mapped and unsupported roles, including
-the unsupported maps of JK78C, the target mixture map, and its
-high-detonation multiplier, whose mixture stage
-has no candidate in the 1ND0A export. The projection is established from
+the reviewed target mixture map and its high-detonation multiplier. Their
+stage, target axes and remaining conversion qualifications are described in
+`JK08A.fuel.md`. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
@@ -234,6 +234,12 @@ by the adapter of the separate 8x8 lookup `0x0285B4`. The homologs of the
 canonical trio, `0x009880`, `0x009980`, and `0x009A80`, hold three
 byte-identical copies in the gated half that the stock byte leaves unexecuted;
 the trio is recorded as unsupported.
+
+The native registry publishes the additional composite, transient and
+four-factor fuel multipliers on JK78C, 1ND0A, 1ND3B and 1ME3B. Each uses
+stored-count views and its own reader, pointer and axis evidence. The 1ME3B
+composite multiplier uses a word column axis where the other layouts use a
+byte axis; its direct input contract remains explicit in the owning meaning.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the reviewed 1ND semantic set
 to the fused-library 1ME3B image. It owns the mapped and unsupported roles.

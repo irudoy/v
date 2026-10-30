@@ -70,10 +70,11 @@ def test_all_models_build_with_exact_registered_identities():
     # target-native VVEL tables (thirty-six on JK78C, thirty-three on the 1ND
     # layout), the ten slot tables of the two executed 16x16 ignition surfaces,
     # and the twenty slot tables of the four 8x8 state-code ignition surfaces of
-    # the 1ND layout.
-    assert by_id["JK78C"]["counts"]["maps"] == 134
+    # the 1ND layout, plus three native fuel multipliers on every VQ37 image
+    # and the main mixture surface with its high-detonation multiplier on 1ND.
+    assert by_id["JK78C"]["counts"]["maps"] == 137
     for rom_id in ("1ND0A", "1ND3B"):
-        assert by_id[rom_id]["counts"]["maps"] == 149
+        assert by_id[rom_id]["counts"]["maps"] == 154
 
 
 @pytest.mark.slow
@@ -86,11 +87,12 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
     assert rom["counts"]["diagnostics"] == 76
-    assert rom["counts"]["maps"] == 154
+    assert rom["counts"]["maps"] == 159
     # The definition carries the Engine Load axis of the engine-torque map,
     # which lies outside the builder writable ranges, as static labels without
     # a ROM address, so it is no axis object of the model.
-    assert rom["counts"]["axes"] == 46
+    # Fuel adds six native axes and three axes of the canonical mixture roles.
+    assert rom["counts"]["axes"] == 55
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
@@ -292,7 +294,7 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
 
     assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"]["maps"] == 149
+    assert rom["counts"]["maps"] == 154
     assert maf_factor["start"] == 0x08939
     assert maf_factor["source"] == f"defs/{rom_id}.xml"
     assert any(

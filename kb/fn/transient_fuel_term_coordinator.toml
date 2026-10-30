@@ -54,6 +54,74 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007f0d0"
+level = "code"
+note = """
+Reader 0007f0d0 looks up curve 000139f6 on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009d94 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe84e0 while \
+signed word fffe8a7a is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f0d0"
+note = """
+Reader 0007f0d0 looks up curve 000139f6 on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009d94 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe84e0 while \
+signed word fffe8a7a is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007a73a"
+level = "code"
+note = """
+Reader 0007a73a looks up curve 00013bfa on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009e20 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe851c while \
+signed word fffe8ad4 is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a73a"
+note = """
+Reader 0007a73a looks up curve 00013bfa on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009e20 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe851c while \
+signed word fffe8ad4 is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000528be"
 note = [

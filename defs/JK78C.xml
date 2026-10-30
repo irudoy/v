@@ -1819,6 +1819,90 @@
       </table>
     </table>
 
+    <!-- 0x0A38A  8x8 uint8  map [code]
+         accessor 0x6E4F6; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13BA0 raw; X Axis 0x13B98 raw
+         Exact JK78C target-native table at 0xa38a bound to accessor 0x6e4f6 through literal
+         0x6e6c8. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and
+         byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through
+         helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates
+         to 0..255. Inputs and output retain stored-count presentation; physical input
+         quantities and an engineering output conversion remain unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Fuel Composite - Additional Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A38A"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Composite Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x13B98" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Composite Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x13BA0" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09B1A  8x8 uint8  map [code]
+         accessor 0x6E8C6; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x137C0 raw; X Axis 0x137B8 raw
+         Exact JK78C target-native table at 0x9b1a bound to accessor 0x6e8c6 through literal
+         0x6eb90. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and
+         byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through
+         helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates
+         to 0..255. Inputs and output retain stored-count presentation; physical input
+         quantities and an engineering output conversion remain unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Transient Fuel Term - Additional Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x09B1A"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Transient Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x137B8" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Transient Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x137C0" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0B1CA  8x8 uint8  map [code]
+         accessor 0x7154C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x14258 raw; X Axis 0x14250 raw
+         Exact JK78C target-native table at 0xb1ca bound to accessor 0x7154c through literal
+         0x71834. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and
+         byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through
+         helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates
+         to 0..255. Inputs and output retain stored-count presentation; physical input
+         quantities and an engineering output conversion remain unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Fuel Four-Factor Term - Surface Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0B1CA"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Four-Factor Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x14250" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Four-Factor Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x14258" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x11F4E  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
          On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16

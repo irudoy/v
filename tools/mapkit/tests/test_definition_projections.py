@@ -20,7 +20,6 @@ VQ37_UNSUPPORTED = frozenset({
     "00008e3b",
     "00008e3c",
     "0000934e",
-    "0000a9aa",
     "0000ab4a",
     "0000ab5a",
     "0000b2fa",
@@ -29,7 +28,6 @@ VQ37_UNSUPPORTED = frozenset({
     "0000b53a",
     "00012302",
     "0001230a",
-    "00012552",
     # The canonical ignition trio reaches only the gated coordinator half of
     # JK78C and 1ND, which the stock configuration byte leaves unexecuted, and
     # has no counterpart in 1ME3B. The executed surfaces are target-native.
@@ -37,9 +35,7 @@ VQ37_UNSUPPORTED = frozenset({
     "00009a1a",
     "00009b1a",
 })
-# The JK78C mixture stage 00071dfa repeats the source stage; the 1ND and 1ME3B
-# exports have no candidate for it.
-JK78C_UNSUPPORTED = VQ37_UNSUPPORTED - {"0000a9aa", "00012552"}
+JK78C_UNSUPPORTED = VQ37_UNSUPPORTED
 
 
 def test_registry_binds_relocated_targets_without_a_default():
@@ -73,23 +69,23 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14
-    assert stats["JK78C"]["native_maps"] == 42
+    assert stats["JK78C"]["native_maps"] == 45
     assert stats["JK78C"]["rolling_configuration"] == 0x1E960
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
-        assert values["mapped"] == 40
+        assert values["mapped"] == 45
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 18
-        assert values["native_maps"] == 43
+        assert values["native_maps"] == 46
         assert values["rolling_configuration"] == 0x133F60
-    assert stats["1ME3B"]["mapped"] == 40
+    assert stats["1ME3B"]["mapped"] == 45
     assert stats["1ME3B"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
     assert stats["1ME3B"]["map_families"] == 18
-    assert stats["1ME3B"]["native_maps"] == 48
+    assert stats["1ME3B"]["native_maps"] == 51
     assert stats["1ME3B"]["rolling_configuration"] == 0x13CF60
 
 

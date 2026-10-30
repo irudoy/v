@@ -1,4 +1,109 @@
 summary = """
+Unsigned-byte surface multiplier in the four-factor fuel term. The reader \
+normalizes the four-byte product by a right shift of 12, adds a separately \
+selected word term and caps the result at 65535. The physical quantities of \
+the coordinates and complete term remain unresolved."""
+note = [
+    """
+The editor exposes stored counts. Input-coordinate quantities and \
+engineering conversions remain unresolved. Each layout states its own \
+coordinate transform and axis storage.""",
+]
+level = "code"
+role = "table"
+block = "fuel_quantity/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[editor]
+name = "Fuel Four-Factor Term - Surface Multiplier"
+category = "Fuelling / Compensation"
+order = 82
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "0000b6c4"
+level = "code"
+summary = """
+Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe85a4. The \
+factor's physical interpretation remains unresolved."""
+note = """
+Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe85a4. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082820"
+note = """
+Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe85a4. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000b610"
+level = "code"
+summary = """
+Reader 0007db36 uses surface 0000b610 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe8630. The \
+factor's physical interpretation remains unresolved."""
+note = """
+Reader 0007db36 uses surface 0000b610 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe8630. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007dd1c"
+note = """
+Reader 0007db36 uses surface 0000b610 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe8630. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b1ca"
+level = "code"
+summary = """
 Unsigned multiplier in FUN_0007154c. This explicit 8x8 byte lookup supplies \
 one factor of a four-byte product normalized by a right shift of 12. A \
 separately selected word addend is added before the uint16 cap. This target \
@@ -12,25 +117,7 @@ ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and \
 clamp the signed intermediates to 0..255. Inputs and output retain \
 stored-count presentation; physical input quantities and an engineering \
 output conversion remain unresolved.""",
-    """
-Editor publication remains unresolved under issue #110. The native registry \
-requires common role coverage across the supported VQ37 images, while \
-independently qualified 1nd and 1me3b bindings are not established. \
-Partial-layout publication and native-axis metadata need schema \
-reconciliation.""",
 ]
-level = "code"
-role = "table"
-block = "fuel_quantity/block"
-access = "explicit"
-cols = 8
-rows = 8
-storage = "uint8"
-
-[[symbol]]
-layout = "jk78c"
-address = "0000b1ca"
-level = "code"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -48,7 +135,7 @@ physical quantity remains unresolved."""
 type = "axis"
 to = "fuel_four_factor_surface_x_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -56,11 +143,27 @@ supports = "identity"
 at = "jk78c:000716d6"
 note = "The reviewed wrapper call passes this axis in the x slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007dd1a"
+note = """
+Reader 0007db36 passes this axis in the r5 row slot; the selected resolver \
+bounds its final index at 7."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008281e"
+note = """
+Reader 000826c4 passes this axis in the r5 row slot; the selected resolver \
+bounds its final index at 7."""
+
 [[link]]
 type = "axis"
 to = "fuel_four_factor_surface_y_axis/axis"
 slot = "y"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -68,10 +171,26 @@ supports = "identity"
 at = "jk78c:000716d6"
 note = "The reviewed wrapper call passes this axis in the y slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007dd18"
+note = """
+Reader 0007db36 passes this axis in the r6 column slot; the selected \
+resolver bounds its final index at 7."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008281c"
+note = """
+Reader 000826c4 passes this axis in the r6 column slot; the selected \
+resolver bounds its final index at 7."""
+
 [[link]]
 type = "reader"
 to = "adaptable-eel/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
@@ -81,3 +200,19 @@ at = "jk78c:00071834"
 note = """
 The literal-pool word contains the complete surface address passed by this \
 reader."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007de3c"
+note = """
+The literal-pool word contains the complete surface address passed by reader \
+0007db36 to 000284fc."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082954"
+note = """
+The literal-pool word contains the complete surface address passed by reader \
+000826c4 to 00028e10."""

@@ -72,6 +72,72 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007ed2c"
+name = "abiding-raptor"
+level = "code"
+note = """
+Reader 0007ed2c multiplies the implicit byte surface 0000a6c4, the word \
+curve 0001666c and the additional byte surface 0000a684. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe861e; \
+the separate lookup byte is stored at fffe8620. The raw row coordinate is \
+byte fffe8071. The first explicit axis contains eight uint8 points. The raw \
+column coordinate is word fffea636. The second explicit axis contains eight \
+uint16 points; the fused resolver compares the complete word without the \
+JK78C coordinate transform. Wrapper 00028ff0 bounds both indices at 7 and \
+reads unsigned-byte cells at row*8+column. Physical quantities and \
+conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007ed2c"
+note = """
+Reader 0007ed2c multiplies the implicit byte surface 0000a6c4, the word \
+curve 0001666c and the additional byte surface 0000a684. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe861e; \
+the separate lookup byte is stored at fffe8620. The raw row coordinate is \
+byte fffe8071. The first explicit axis contains eight uint8 points. The raw \
+column coordinate is word fffea636. The second explicit axis contains eight \
+uint16 points; the fused resolver compares the complete word without the \
+JK78C coordinate transform. Wrapper 00028ff0 bounds both indices at 7 and \
+reads unsigned-byte cells at row*8+column. Physical quantities and \
+conversions remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007a384"
+name = "spicy-condor"
+level = "code"
+note = """
+Reader 0007a384 multiplies the implicit byte surface 0000a750, the word \
+curve 00016688 and the additional byte surface 0000a790. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe86a6; \
+the separate lookup byte is stored at fffe86a8. The raw row coordinate is \
+clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a384"
+note = """
+Reader 0007a384 multiplies the implicit byte surface 0000a750, the word \
+curve 00016688 and the additional byte surface 0000a790. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe86a6; \
+the separate lookup byte is stored at fffe86a8. The raw row coordinate is \
+clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00052576"
 name = "vivacious-cheetah"

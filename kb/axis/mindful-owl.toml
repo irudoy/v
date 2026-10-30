@@ -28,6 +28,86 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001350d"
+name = "peach-turkey"
+level = "code"
+scale_level = "candidate"
+note = """
+Stage 00082eb2 passes this eight-byte axis with word coordinate fffe819e. \
+The resolver compares axis cells multiplied by four against the complete \
+word. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082f12"
+to = "7mfk:00011cc0"
+note = """
+Stage 00082eb2 passes this eight-byte axis with word coordinate fffe819e. \
+The resolver compares axis cells multiplied by four against the complete \
+word. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f12"
+note = """
+The target instruction loads this explicit eight-byte axis for the reviewed \
+lookup."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "mindful-owl/axis/7mfk"
+relies = "scale"
+note = """
+The RPM conversion is retained as a candidate from the reviewed canonical \
+axis scale; target producer units remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "000137b9"
+name = "primitive-dog"
+level = "code"
+scale_level = "candidate"
+note = """
+Stage 0007e3ae passes this eight-byte axis with word coordinate fffe81b6. \
+The resolver compares axis cells multiplied by four against the complete \
+word. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e40e"
+to = "7mfk:00011cc0"
+note = """
+Stage 0007e3ae passes this eight-byte axis with word coordinate fffe81b6. \
+The resolver compares axis cells multiplied by four against the complete \
+word. The inherited x*50 RPM conversion remains candidate; the target \
+physical producer chain is not independently established here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e40e"
+note = """
+The target instruction loads this explicit eight-byte axis for the reviewed \
+lookup."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "mindful-owl/axis/7mfk"
+relies = "scale"
+note = """
+The RPM conversion is retained as a candidate from the reviewed canonical \
+axis scale; target producer units remain unresolved."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011cc0"
 name = "mindful-owl"

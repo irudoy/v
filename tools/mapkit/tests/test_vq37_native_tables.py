@@ -11,6 +11,19 @@ SELECTOR_ROLES = {
     "fuel_compensation_alternate",
     "timing_state_addend_alternate",
 }
+FUEL_TABLE_ROLES = {
+    "fuel_composite_additional_surface",
+    "transient_fuel_additional_surface",
+    "fuel_four_factor_surface",
+}
+FUEL_AXIS_ROLES = {
+    "fuel_composite_surface_x_axis",
+    "fuel_composite_surface_y_axis",
+    "transient_fuel_multiplier_x_axis",
+    "transient_fuel_multiplier_y_axis",
+    "fuel_four_factor_surface_x_axis",
+    "fuel_four_factor_surface_y_axis",
+}
 VVEL_TABLE_ROLES = {
     "vvel_duration_running",
     "vvel_duration_throttled",
@@ -108,6 +121,8 @@ IGNITION_STATE_ROLES = IGNITION_STATE_TABLE_ROLES | IGNITION_STATE_AXIS_ROLES
 IGNITION_TABLE_ROLES = IGNITION_PAIR_ROLES | IGNITION_STATE_TABLE_ROLES
 ROLES = (
     SELECTOR_ROLES
+    | FUEL_TABLE_ROLES
+    | FUEL_AXIS_ROLES
     | VVEL_TABLE_ROLES
     | VVEL_AXIS_ROLES
     | IGNITION_TABLE_ROLES
@@ -188,8 +203,8 @@ def test_registry_declares_every_role_on_every_target():
         tables = {table.identifier for table in target.tables}
         axes = {axis.identifier for axis in target.axes}
 
-        assert tables <= SELECTOR_ROLES | VVEL_TABLE_ROLES | IGNITION_TABLE_ROLES
-        assert axes <= VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
+        assert tables <= SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES | IGNITION_TABLE_ROLES
+        assert axes <= FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
         for reason in target.absent.values():

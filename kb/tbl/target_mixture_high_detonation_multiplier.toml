@@ -60,6 +60,70 @@ relies = "contract"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013ce6"
+level = "code"
+note = """
+Stage 00082eb2 enables this eight-byte curve under fffe945b.bit7, indexes it \
+by byte fffe818e over explicit axis 00013515 and applies it as a Q7 \
+multiplier of the main surface's deviation from 128 before byte saturation. \
+Its factor normalization is code; the RPM-byte conversion remains a \
+candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f2c"
+note = """
+Stage 00082eb2 enables this eight-byte curve under fffe945b.bit7, indexes it \
+by byte fffe818e over explicit axis 00013515 and applies it as a Q7 \
+multiplier of the main surface's deviation from 128 before byte saturation. \
+Its factor normalization is code; the RPM-byte conversion remains a \
+candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1me3b:00082f38"
+note = """
+The reader subtracts 128 from the main lookup, multiplies the deviation by \
+the selected byte coefficient, normalizes by a signed right shift of 7 and \
+restores neutral 128. Its later Q14 path uses the mixture byte shifted left \
+by 7 and neutral 16384."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f0a"
+level = "code"
+note = """
+Stage 0007e3ae enables this eight-byte curve under fffe9488.bit6, indexes it \
+by byte fffe81a8 over explicit axis 000137c1 and applies it as a Q7 \
+multiplier of the main surface's deviation from 128 before byte saturation. \
+Its factor normalization is code; the RPM-byte conversion remains a \
+candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e428"
+note = """
+Stage 0007e3ae enables this eight-byte curve under fffe9488.bit6, indexes it \
+by byte fffe81a8 over explicit axis 000137c1 and applies it as a Q7 \
+multiplier of the main surface's deviation from 128 before byte saturation. \
+Its factor normalization is code; the RPM-byte conversion remains a \
+candidate."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1nd:0007e434"
+note = """
+The reader subtracts 128 from the main lookup, multiplies the deviation by \
+the selected byte coefficient, normalizes by a signed right shift of 7 and \
+restores neutral 128. Its later Q14 path uses the mixture byte shifted left \
+by 7 and neutral 16384."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012552"
 former = ["spry-quokka/tbl/7mfk-00012552"]
@@ -185,30 +249,6 @@ target mixture stage 00071dfa repeats source stage 0005594a instruction for \
 instruction and, while bit 6 of ffff23c6 selects the high-detonation \
 surface, passes this multiplier with RPM/50 snapshot ffff119d to the \
 homologous wrapper 0002829c"""
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:00012552"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
-normalized-shape candidate in the 1ND0A export, and the multiplier does not \
-recur as exact storage in the 1ME3B image"""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:00012552"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
-normalized-shape candidate in the target export, and the multiplier does not \
-recur as exact storage in the target image"""
 
 [[link]]
 type = "depends"

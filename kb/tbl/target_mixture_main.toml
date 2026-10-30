@@ -107,6 +107,70 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a704"
+level = "code"
+note = """
+Stage 00082eb2 passes this 8x8 byte surface with row axis 0001350d and \
+column axis 00013384. The column is normalized-BFS snapshot fffe8034 or 255 \
+under the wide-open latch, and the row coordinate is word fffe819e. The Q7 \
+result has neutral 128 and reaches the Q14 af_state_factor path at fffe92e2 \
+after the reader's native latches and state selection."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f14"
+note = """
+Stage 00082eb2 passes this 8x8 byte surface with row axis 0001350d and \
+column axis 00013384. The column is normalized-BFS snapshot fffe8034 or 255 \
+under the wide-open latch, and the row coordinate is word fffe819e. The Q7 \
+result has neutral 128 and reaches the Q14 af_state_factor path at fffe92e2 \
+after the reader's native latches and state selection."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1me3b:00082f38"
+note = """
+The reader subtracts 128 from the main lookup, multiplies the deviation by \
+the selected byte coefficient, normalizes by a signed right shift of 7 and \
+restores neutral 128. Its later Q14 path uses the mixture byte shifted left \
+by 7 and neutral 16384."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a7d0"
+level = "code"
+note = """
+Stage 0007e3ae passes this 8x8 byte surface with row axis 000137b9 and \
+column axis 00013640. The column is normalized-BFS snapshot fffe8034 or 255 \
+under the wide-open latch, and the row coordinate is word fffe81b6. The Q7 \
+result has neutral 128 and reaches the Q14 af_state_factor path at fffe9318 \
+after the reader's native latches and state selection."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e410"
+note = """
+Stage 0007e3ae passes this 8x8 byte surface with row axis 000137b9 and \
+column axis 00013640. The column is normalized-BFS snapshot fffe8034 or 255 \
+under the wide-open latch, and the row coordinate is word fffe81b6. The Q7 \
+result has neutral 128 and reaches the Q14 af_state_factor path at fffe9318 \
+after the reader's native latches and state selection."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1nd:0007e434"
+note = """
+The reader subtracts 128 from the main lookup, multiplies the deviation by \
+the selected byte coefficient, normalizes by a signed right shift of 7 and \
+restores neutral 128. Its later Q14 path uses the mixture byte shifted left \
+by 7 and neutral 16384."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000a9aa"
 former = ["prudent-numbat/tbl/7mfk-0000a9aa"]
@@ -361,30 +425,6 @@ target mixture stage 00071dfa repeats source stage 0005594a instruction for \
 instruction and passes this literal with RPM word ffff11ac and \
 normalized-load snapshot ffff1032 to the homologous explicit-axis wrapper \
 00027f58"""
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:0000a9aa"
-count = 0
-l0 = "28a4e19998ef4d2c"
-note = """
-mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
-normalized-shape candidate in the 1ND0A export, and neither the map nor its \
-axes 00011cc0 and 00011ac7 recur as exact storage in the 1ME3B image"""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:0000a9aa"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or \
-normalized-shape candidate in the target export, and neither the map nor its \
-axes 00011cc0 and 00011ac7 recur as exact storage in the target image"""
 
 [[link]]
 type = "depends"

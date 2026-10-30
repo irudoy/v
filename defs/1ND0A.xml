@@ -1535,6 +1535,34 @@
       </table>
     </table>
 
+    <!-- 0x0A7D0  8x8 uint8  map [code]
+         scaling x/128 ratio [code]; Y Axis 0x137B9 rpm [candidate]; X Axis 0x13640 load [code]
+         Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes Cylinder
+         Filling Up Efficiency (x*0.78125 percent) and Engine Speed (x*50); the AFR scale is a
+         candidate, the Q7 ratio and the stoichiometric neutral are code. Three 2026-08-26
+         vehicle recordings match the lookup in 98.3..100 percent of settled records. Result
+         disposition: consumer. Definition address projected from JK08A 0000a9aa through
+         JK08A-1ND.definition-addresses.csv: Stage 0007e3ae passes this 8x8 byte surface with
+         row axis 000137b9 and column axis 00013640. The column is normalized-BFS snapshot
+         fffe8034 or 255 under the wide-open latch, and the row coordinate is word fffe81b6. The
+         Q7 result has neutral 128 and reaches the Q14 af_state_factor path at fffe9318 after
+         the reader's native latches and state selection..
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Target Mixture - Main" category="Fuelling//Target Mixture"
+           storagetype="uint8" storageaddress="0x0A7D0" sizex="8" sizey="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13640"
+             sizex="8" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x137B9" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x173C2  16 uint16  map [code]
          accessor 0x5F468; r4 operand: reviewed-target
          scaling x Stored count; axis 0x17472 rpm [code]
@@ -1594,6 +1622,27 @@
              storageaddress="0x173E2" sizey="16" endian="big">
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x13F0A  8 uint8  map [code]
+         scaling x/128 ratio [code]; axis 0x137C1 rpm [candidate]
+         Public HR A2L name Target AFR Table (High Detonation). The physical purpose follows the
+         consumer chain 0005594a -> ffff15eb -> ffff22e8. Definition address projected from
+         JK08A 00012552 through JK08A-1ND.definition-addresses.csv: Stage 0007e3ae enables this
+         eight-byte curve under fffe9488.bit6, indexes it by byte fffe81a8 over explicit axis
+         000137c1 and applies it as a Q7 multiplier of the main surface's deviation from 128
+         before byte saturation. Its factor normalization is code; the RPM-byte conversion
+         remains a candidate..
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Target Mixture Multiplier - High-Detonation State"
+           category="Fuelling//Target Mixture" storagetype="uint8" storageaddress="0x13F0A"
+           sizex="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x137C1" sizex="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1743,6 +1792,102 @@
                coarseincrement="100"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>K-Value</data>
+      </table>
+    </table>
+
+    <!-- 0x0A790  8x8 uint8  map [code]
+         accessor 0x7A384; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13FFA raw; X Axis 0x13FF2 raw
+         Exact 1ND0A target-native table at 0xa790 bound to accessor 0x7a384 through literal
+         0x7a5e4. Reader 0007a384 multiplies the implicit byte surface 0000a750, the word curve
+         00016688 and the additional byte surface 0000a790. It shifts the complete product right
+         by 14, caps it at 65535 and publishes word fffe86a6; the separate lookup byte is stored
+         at fffe86a8. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The
+         explicit axis contains eight uint8 points. The raw column coordinate is
+         clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains eight uint8
+         points. Wrapper 000284fc bounds both indices at 7 and reads unsigned-byte cells at
+         row*8+column. Physical quantities and conversions remain unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Fuel Composite - Additional Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A790"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Composite Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x13FF2" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Composite Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x13FFA" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09E20  8x8 uint8  map [code]
+         accessor 0x7A73A; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13BF2 raw; X Axis 0x13BEA raw
+         Exact 1ND0A target-native table at 0x9e20 bound to accessor 0x7a73a through literal
+         0x7a8b8. Reader 0007a73a looks up curve 00013bfa on the saturated doubled normalized-
+         BFS byte, scales that value by surface 00009e20 with a right shift of 7 and byte
+         saturation, and selects the larger of the original and scaled alternatives. It
+         publishes half of that value at fffe851c while signed word fffe8ad4 is negative and
+         substitutes 64 otherwise. The raw row coordinate is
+         clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8
+         points. The raw column coordinate is clamp(floor(uint16[fffea55e]/20)-420,0,255). The
+         explicit axis contains eight uint8 points. Wrapper 000284fc bounds both indices at 7
+         and reads unsigned-byte cells at row*8+column. Physical quantities and conversions
+         remain unresolved. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Transient Fuel Term - Additional Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x09E20"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Transient Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x13BEA" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Transient Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x13BF2" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0B610  8x8 uint8  map [code]
+         accessor 0x7DB36; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x146EE raw; X Axis 0x146E6 raw
+         Exact 1ND0A target-native table at 0xb610 bound to accessor 0x7db36 through literal
+         0x7de3c. Reader 0007db36 uses surface 0000b610 as one factor of its four-byte product.
+         The product is shifted right by 12, combined with the separately selected word addend
+         and capped at 65535 before publication at fffe8630. The factor's physical
+         interpretation remains unresolved. The raw row coordinate is
+         clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8
+         points. The raw column coordinate is clamp(floor(uint16[fffea55e]/20)-420,0,255). The
+         explicit axis contains eight uint8 points. Wrapper 000284fc bounds both indices at 7
+         and reads unsigned-byte cells at row*8+column. Physical quantities and conversions
+         remain unresolved. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Fuel Four-Factor Term - Surface Multiplier [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0B610"
+           sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Four-Factor Multiplier - Input 2 [stored count]"
+             storagetype="uint8" storageaddress="0x146E6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Four-Factor Multiplier - Input 1 [stored count]"
+             storagetype="uint8" storageaddress="0x146EE" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 

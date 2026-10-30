@@ -150,22 +150,22 @@ def test_1me3b_census_ledger_matches_the_stock_images(ledger):
 
     assert summary["map"] == {
         "total": 768,
-        "homolog": 590,
+        "homolog": 591,
         "ambiguous": 4,
-        "unpaired": 174,
+        "unpaired": 173,
         "aligned-reference": 500,
         "unique-exact-content": 82,
-        "published-registry": 8,
+        "published-registry": 9,
         "bytes_equal": 559,
     }
     assert summary["axis"] == {
         "total": 432,
-        "homolog": 360,
+        "homolog": 362,
         "ambiguous": 2,
-        "unpaired": 70,
+        "unpaired": 68,
         "aligned-reference": 310,
         "unique-exact-content": 40,
-        "published-registry": 10,
+        "published-registry": 12,
         "bytes_equal": 349,
     }
 
@@ -188,6 +188,14 @@ def test_1me3b_census_ledger_carries_every_published_census_pair(ledger):
     assert by_target[0x0001027C]["source"] == "0000e748"
     assert by_target[0x0000E17C]["method"] == "published-registry"
     assert by_target[0x0001027C]["method"] == "aligned-reference"
+
+    for target, source in ((0xA684, "0000a790"), (0x13E7C, "00013ffa"),
+                           (0x1667C, "00013ff2")):
+        row = by_target[target]
+        assert row["source"] == source
+        assert row["method"] == "published-registry"
+        assert row["bytes_equal"] == "no"
+    assert by_target[0x1667C]["geometry"] == "8:uint16"
 
 
 def test_census_ledger_mutations_are_rejected(ledger):

@@ -248,6 +248,70 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00082eb2"
+level = "code"
+note = """
+Reader 00082eb2 is the unconditional second call of coordinator 00084f14. \
+Its entry reads main mixture surface 0000a704 using RPM word fffe819e and \
+normalized-BFS snapshot fffe8034, with 255 substituted under the native \
+wide-open latch. Selector fffe945b.bit7 enables curve 00013ce6 over byte \
+fffe818e and forms the byte-saturated value 128+((main-128)*multiplier>>7). \
+The enrichment latch can replace the byte by 128. The subsequent native \
+state machine selects and ramps Q14 words, combines the primary and \
+auxiliary alternatives, applies its neutral-16384 force and final cap, and \
+publishes the af_state_factor word at fffe92e2. Physical RPM-byte conversion \
+and state-machine cadence retain separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082eb2"
+note = """
+Reader 00082eb2 is the unconditional second call of coordinator 00084f14. \
+Its entry reads main mixture surface 0000a704 using RPM word fffe819e and \
+normalized-BFS snapshot fffe8034, with 255 substituted under the native \
+wide-open latch. Selector fffe945b.bit7 enables curve 00013ce6 over byte \
+fffe818e and forms the byte-saturated value 128+((main-128)*multiplier>>7). \
+The enrichment latch can replace the byte by 128. The subsequent native \
+state machine selects and ramps Q14 words, combines the primary and \
+auxiliary alternatives, applies its neutral-16384 force and final cap, and \
+publishes the af_state_factor word at fffe92e2. Physical RPM-byte conversion \
+and state-machine cadence retain separate qualification."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007e3ae"
+level = "code"
+note = """
+Reader 0007e3ae is the unconditional second call of coordinator 000805f0. \
+Its entry reads main mixture surface 0000a7d0 using RPM word fffe81b6 and \
+normalized-BFS snapshot fffe8034, with 255 substituted under the native \
+wide-open latch. Selector fffe9488.bit6 enables curve 00013f0a over byte \
+fffe81a8 and forms the byte-saturated value 128+((main-128)*multiplier>>7). \
+The enrichment latch can replace the byte by 128. The subsequent native \
+state machine selects and ramps Q14 words, combines the primary and \
+auxiliary alternatives, applies its neutral-16384 force and final cap, and \
+publishes the af_state_factor word at fffe9318. Physical RPM-byte conversion \
+and state-machine cadence retain separate qualification."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e3ae"
+note = """
+Reader 0007e3ae is the unconditional second call of coordinator 000805f0. \
+Its entry reads main mixture surface 0000a7d0 using RPM word fffe81b6 and \
+normalized-BFS snapshot fffe8034, with 255 substituted under the native \
+wide-open latch. Selector fffe9488.bit6 enables curve 00013f0a over byte \
+fffe81a8 and forms the byte-saturated value 128+((main-128)*multiplier>>7). \
+The enrichment latch can replace the byte by 128. The subsequent native \
+state machine selects and ramps Q14 words, combines the primary and \
+auxiliary alternatives, applies its neutral-16384 force and final cap, and \
+publishes the af_state_factor word at fffe9318. Physical RPM-byte conversion \
+and state-machine cadence retain separate qualification."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0005594a"
 former = ["large-tamarin/fn/7mfk-0005594a"]
@@ -434,6 +498,66 @@ key = "test_fuel_upstream_stock_regions_contract"
 kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "depends"
+to = "target_mixture_high_detonation_multiplier/tbl"
+layouts = ["jk78c", "1nd", "1me3b"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071e78"
+note = "The target mixture stage passes this table to its reviewed lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e428"
+note = """
+Stage 0007e3ae directly passes this table to the reviewed lookup and applies \
+its output in the native mixture path."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f2c"
+note = """
+Stage 00082eb2 directly passes this table to the reviewed lookup and applies \
+its output in the native mixture path."""
+
+[[link]]
+type = "depends"
+to = "target_mixture_main/tbl"
+layouts = ["jk78c", "1nd", "1me3b"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071e5c"
+note = "The target mixture stage passes this table to its reviewed lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e410"
+note = """
+Stage 0007e3ae directly passes this table to the reviewed lookup and applies \
+its output in the native mixture path."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f14"
+note = """
+Stage 00082eb2 directly passes this table to the reviewed lookup and applies \
+its output in the native mixture path."""
 
 [[link]]
 type = "depends"

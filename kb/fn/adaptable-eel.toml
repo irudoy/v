@@ -112,6 +112,72 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000826c4"
+name = "brilliant-pudu"
+level = "code"
+note = """
+Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe85a4. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000826c4"
+note = """
+Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe85a4. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007db36"
+name = "visionary-oarfish"
+level = "code"
+note = """
+Reader 0007db36 uses surface 0000b610 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe8630. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007db36"
+note = """
+Reader 0007db36 uses surface 0000b610 as one factor of its four-byte \
+product. The product is shifted right by 12, combined with the separately \
+selected word addend and capped at 65535 before publication at fffe8630. The \
+factor's physical interpretation remains unresolved. The raw row coordinate \
+is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00055098"
 name = "adaptable-eel"

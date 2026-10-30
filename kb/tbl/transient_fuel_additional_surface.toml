@@ -1,4 +1,115 @@
 summary = """
+Unsigned-byte multiplier of the doubled-load transient curve. The reader \
+caps the scaled alternative at 255 after a right shift of 7, selects the \
+larger of the original and scaled values, halves that value under the \
+negative signed state and otherwise substitutes 64."""
+note = [
+    """
+The editor exposes stored counts. Input-coordinate quantities and \
+engineering conversions remain unresolved. Each layout states its own \
+coordinate transform and axis storage.""",
+]
+level = "code"
+role = "table"
+block = "fuel_quantity/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[editor]
+name = "Transient Fuel Term - Additional Multiplier"
+category = "Fuelling / Compensation"
+order = 81
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00009d94"
+level = "code"
+summary = """
+Reader 0007f0d0 looks up curve 000139f6 on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009d94 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe84e0 while \
+signed word fffe8a7a is negative and substitutes 64 otherwise."""
+note = """
+Reader 0007f0d0 looks up curve 000139f6 on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009d94 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe84e0 while \
+signed word fffe8a7a is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f15e"
+note = """
+Reader 0007f0d0 looks up curve 000139f6 on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009d94 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe84e0 while \
+signed word fffe8a7a is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009e20"
+level = "code"
+summary = """
+Reader 0007a73a looks up curve 00013bfa on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009e20 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe851c while \
+signed word fffe8ad4 is negative and substitutes 64 otherwise."""
+note = """
+Reader 0007a73a looks up curve 00013bfa on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009e20 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe851c while \
+signed word fffe8ad4 is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a7c8"
+note = """
+Reader 0007a73a looks up curve 00013bfa on the saturated doubled \
+normalized-BFS byte, scales that value by surface 00009e20 with a right \
+shift of 7 and byte saturation, and selects the larger of the original and \
+scaled alternatives. It publishes half of that value at fffe851c while \
+signed word fffe8ad4 is negative and substitutes 64 otherwise. The raw row \
+coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis \
+contains eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "jk78c"
+address = "00009b1a"
+level = "code"
+summary = """
 Unsigned multiplier in FUN_0006e8c6. The surface output scales the original \
 curve 000137c8 by a right shift of 7 and the scaled alternative is capped at \
 255. The reader selects the maximum of the original and scaled values, \
@@ -12,25 +123,7 @@ ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and \
 clamp the signed intermediates to 0..255. Inputs and output retain \
 stored-count presentation; physical input quantities and an engineering \
 output conversion remain unresolved.""",
-    """
-Editor publication remains unresolved under issue #110. The native registry \
-requires common role coverage across the supported VQ37 images, while \
-independently qualified 1nd and 1me3b bindings are not established. \
-Partial-layout publication and native-axis metadata need schema \
-reconciliation.""",
 ]
-level = "code"
-role = "table"
-block = "fuel_quantity/block"
-access = "explicit"
-cols = 8
-rows = 8
-storage = "uint8"
-
-[[symbol]]
-layout = "jk78c"
-address = "00009b1a"
-level = "code"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -48,7 +141,7 @@ otherwise before publishing ffff14de."""
 type = "axis"
 to = "transient_fuel_multiplier_x_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -56,11 +149,27 @@ supports = "identity"
 at = "jk78c:0006e984"
 note = "The reviewed wrapper call passes this axis in the x slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a7c6"
+note = """
+Reader 0007a73a passes this axis in the r5 row slot; the selected resolver \
+bounds its final index at 7."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f15c"
+note = """
+Reader 0007f0d0 passes this axis in the r5 row slot; the selected resolver \
+bounds its final index at 7."""
+
 [[link]]
 type = "axis"
 to = "transient_fuel_multiplier_y_axis/axis"
 slot = "y"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -68,10 +177,26 @@ supports = "identity"
 at = "jk78c:0006e984"
 note = "The reviewed wrapper call passes this axis in the y slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a7c4"
+note = """
+Reader 0007a73a passes this axis in the r6 column slot; the selected \
+resolver bounds its final index at 7."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f15a"
+note = """
+Reader 0007f0d0 passes this axis in the r6 column slot; the selected \
+resolver bounds its final index at 7."""
+
 [[link]]
 type = "reader"
 to = "transient_fuel_term_coordinator/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
@@ -81,3 +206,19 @@ at = "jk78c:0006eb90"
 note = """
 The literal-pool word contains the complete surface address passed by this \
 reader."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a8b8"
+note = """
+The literal-pool word contains the complete surface address passed by reader \
+0007a73a to 000284fc."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f240"
+note = """
+The literal-pool word contains the complete surface address passed by reader \
+0007f0d0 to 00028e10."""

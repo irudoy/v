@@ -2385,6 +2385,132 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x423B" flags="0x0">
+    <title>Fuel Composite - Additional Multiplier [stored count]</title>
+    <description>Exact JK78C. Address 0xA38A; 8 rows x 8 columns; uint8; map confidence code. Additional unsigned multiplier in FUN_0006e4f6. The output of this explicit 8x8 byte surface multiplies the product of implicit surface 0000a34a and word curve 0001608a; the complete product is shifted right by 14, capped to uint16 and published at ffff1666. The separate lookup byte is stored at ffff1668. Exact JK78C target-native table at 0xa38a bound to accessor 0x6e4f6 through literal 0x6e6c8. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates to 0..255. Inputs and output retain stored-count presentation; physical input quantities and an engineering output conversion remain unresolved. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13B98" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13BA0" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xA38A" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9AB8" flags="0x0">
+    <title>Transient Fuel Term - Additional Multiplier [stored count]</title>
+    <description>Exact JK78C. Address 0x9B1A; 8 rows x 8 columns; uint8; map confidence code. Unsigned multiplier in FUN_0006e8c6. The surface output scales the original curve 000137c8 by a right shift of 7 and the scaled alternative is capped at 255. The reader selects the maximum of the original and scaled values, halves that value while signed word ffff1a4c is negative and substitutes 64 otherwise before publishing ffff14de. Exact JK78C target-native table at 0x9b1a bound to accessor 0x6e8c6 through literal 0x6eb90. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates to 0..255. Inputs and output retain stored-count presentation; physical input quantities and an engineering output conversion remain unresolved. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x137B8" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x137C0" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x9B1A" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xBD24" flags="0x0">
+    <title>Fuel Four-Factor Term - Surface Multiplier [stored count]</title>
+    <description>Exact JK78C. Address 0xB1CA; 8 rows x 8 columns; uint8; map confidence code. Unsigned multiplier in FUN_0007154c. This explicit 8x8 byte lookup supplies one factor of a four-byte product normalized by a right shift of 12. A separately selected word addend is added before the uint16 cap. This target factor replaces the canonical one-dimensional minimum-intake-cam lookup; its physical quantity remains unresolved. Exact JK78C target-native table at 0xb1ca bound to accessor 0x7154c through literal 0x71834. The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates to 0..255. Inputs and output retain stored-count presentation; physical input quantities and an engineering output conversion remain unresolved. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14250" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14258" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB1CA" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x367" flags="0x0">
     <title>Knock Threshold by Evaluator Channel</title>
     <description>Exact JK78C. Address 0x11F4E; 6 rows x 16 columns; uint16; map confidence candidate. Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A calculated metric exceeding the interpolated threshold contributes to increasing the knock count. On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its bounded domain is 1 &lt;= c &lt;= 6; the accessor has no channel guard. JK08A stock rows 3 and 5 contain raw threshold 65535 at every cell. The selected raw word enters comparison in 0004a238; metric production, comparison outcome and count publication are outside the bounded lookup proof. Both neighboring cells are loaded, including 0001114e on the last row endpoint. The catalog identifies rows as cylinders, but exact lookup code does not establish physical cylinder or sensor order. The engineering threshold scale remains candidate. Definition address projected from JK08A 0001108e through JK08A-JK78C.definition-addresses.csv: exact normalized accessor shape preserves the direct-row-major table operand.</description>

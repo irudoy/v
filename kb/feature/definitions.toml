@@ -69,6 +69,9 @@ requires = [
     "umber-bull/tbl",
     "wealthy-woodlouse/tbl",
     "wooden-moose/tbl",
+    "mindful-owl/axis",
+    "uptight-tanuki/axis",
+    "lush-sponge/axis",
 ]
 
 [target.images.1ME3B]
@@ -181,6 +184,9 @@ requires = [
     "umber-bull/tbl",
     "wealthy-woodlouse/tbl",
     "wooden-moose/tbl",
+    "mindful-owl/axis",
+    "uptight-tanuki/axis",
+    "lush-sponge/axis",
 ]
 
 [target.images.1ND0A]

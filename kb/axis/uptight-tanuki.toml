@@ -48,6 +48,80 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013384"
+name = "gifted-kittiwake"
+level = "code"
+note = """
+Stage 00082eb2 loads this eight-byte column axis for normalized_load \
+snapshot fffe8034, with a substituted value of 255 under its wide-open \
+latch. The reviewed target normalized-BFS producer and snapshot preserve the \
+Q7 reference ratio, so the axis conversion is x*100/128 percent of that \
+reference; this asserts no physical cylinder-filling identity."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082f10"
+note = """
+Stage 00082eb2 loads this eight-byte column axis for normalized_load \
+snapshot fffe8034, with a substituted value of 255 under its wide-open \
+latch. The reviewed target normalized-BFS producer and snapshot preserve the \
+Q7 reference ratio, so the axis conversion is x*100/128 percent of that \
+reference; this asserts no physical cylinder-filling identity."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "normalized_load/ram/1me3b"
+relies = "level"
+note = """
+The reviewed target normalized-BFS byte is the capped BFS/reference ratio in \
+Q7 representation. The axis receives that byte directly."""
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "100/128=0.78125"
+
+[[symbol]]
+layout = "1nd"
+address = "00013640"
+name = "ultra-peacock"
+level = "code"
+note = """
+Stage 0007e3ae loads this eight-byte column axis for normalized_load \
+snapshot fffe8034, with a substituted value of 255 under its wide-open \
+latch. The reviewed target normalized-BFS producer and snapshot preserve the \
+Q7 reference ratio, so the axis conversion is x*100/128 percent of that \
+reference; this asserts no physical cylinder-filling identity."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e40c"
+note = """
+Stage 0007e3ae loads this eight-byte column axis for normalized_load \
+snapshot fffe8034, with a substituted value of 255 under its wide-open \
+latch. The reviewed target normalized-BFS producer and snapshot preserve the \
+Q7 reference ratio, so the axis conversion is x*100/128 percent of that \
+reference; this asserts no physical cylinder-filling identity."""
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "normalized_load/ram/1nd"
+relies = "level"
+note = """
+The reviewed target normalized-BFS byte is the capped BFS/reference ratio in \
+Q7 representation. The axis receives that byte directly."""
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "100/128=0.78125"
+
+[[symbol]]
 layout = "7mfk"
 address = "00011ac7"
 name = "uptight-tanuki"

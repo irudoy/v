@@ -821,8 +821,14 @@ class DefinitionAdapterTest(unittest.TestCase):
         m = model()
         self.assertEqual(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000AB4A)).statuses["1nd"].state,
                          "absent")
-        self.assertEqual(m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000A9AA)).statuses["1nd"].state,
-                         "unresolved")
+        for source, targets in (
+            (0xA9AA, (("1nd", 0xA7D0), ("1me3b", 0xA704))),
+            (0x12552, (("1nd", 0x13F0A), ("1me3b", 0x13CE6))),
+        ):
+            meaning = m.meaning_of(SymbolKey("7mfk", "tbl", source))
+            for layout, address in targets:
+                self.assertIs(m.meaning_of(SymbolKey(layout, "tbl", address)), meaning)
+                self.assertNotIn(layout, meaning.statuses)
         inert = m.meaning_of(SymbolKey("7mfk", "tbl", 0x0000991A))
         self.assertEqual(inert.symbols["1nd"].address, 0x00009880)
         omitted = m.targets[("definitions", "1nd")].props["omitted"]

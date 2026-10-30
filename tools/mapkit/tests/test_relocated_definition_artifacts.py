@@ -81,6 +81,83 @@ def _xdf_table_address(table):
     )
 
 
+def test_native_fuel_artifacts_preserve_stored_counts_and_mixed_axis_storage():
+    names = (
+        "Fuel Composite - Additional Multiplier [stored count]",
+        "Transient Fuel Term - Additional Multiplier [stored count]",
+        "Fuel Four-Factor Term - Surface Multiplier [stored count]",
+    )
+    # Table, row axis, column axis, column element width.
+    bindings = {
+        "JK78C": ((0xA38A, 0x13BA0, 0x13B98, 8),
+                  (0x9B1A, 0x137C0, 0x137B8, 8),
+                  (0xB1CA, 0x14258, 0x14250, 8)),
+        "1ND0A": ((0xA790, 0x13FFA, 0x13FF2, 8),
+                   (0x9E20, 0x13BF2, 0x13BEA, 8),
+                   (0xB610, 0x146EE, 0x146E6, 8)),
+        "1ME3B": ((0xA684, 0x13E7C, 0x1667C, 16),
+                   (0x9D94, 0x139EE, 0x139E6, 8),
+                   (0xB6C4, 0x145A2, 0x1459A, 8)),
+    }
+    bindings["1ND3B"] = bindings["1ND0A"]
+    for rom, rows in bindings.items():
+        _, xml = _xml_tables(rom)
+        xdf = _xdf_tables(ET.parse(DEFS / f"{rom}.xdf").getroot())
+        for name, (address, row, column, column_bits) in zip(names, rows):
+            table = xml[name]
+            assert int(table.get("storageaddress"), 16) == address
+            assert (table.get("storagetype"), table.get("sizex"), table.get("sizey")) == (
+                "uint8", "8", "8"
+            )
+            for entity in (table, *table.findall("table")):
+                scale = entity.find("scaling")
+                assert (scale.get("units"), scale.get("expression"), scale.get("to_byte")) == (
+                    "Stored count", "x", "x"
+                )
+            for kind, axis_address, bits, identifier in (
+                ("X Axis", column, column_bits, "x"),
+                ("Y Axis", row, 8, "y"),
+            ):
+                axis = table.find(f"table[@type='{kind}']")
+                assert int(axis.get("storageaddress"), 16) == axis_address
+                assert axis.get("storagetype") == f"uint{bits}"
+                data = xdf[name].find(f"XDFAXIS[@id='{identifier}']/EMBEDDEDDATA")
+                assert int(data.get("mmedaddress"), 16) == axis_address
+                assert int(data.get("mmedelementsizebits")) == bits
+                assert data.get("mmedcolcount") == "8"
+            assert int(_xdf_table_address(xdf[name]), 16) == address
+            for axis in xdf[name].findall("XDFAXIS"):
+                assert axis.findtext("units") == "Stored count"
+                assert axis.find("MATH").get("equation") == "X"
+
+
+def test_sh7059_mixture_artifacts_keep_q7_values_and_candidate_rpm_axes():
+    bindings = {
+        "1ND0A": (0xA7D0, 0x13F0A, 0x137B9, 0x13640, 0x137C1),
+        "1ND3B": (0xA7D0, 0x13F0A, 0x137B9, 0x13640, 0x137C1),
+        "1ME3B": (0xA704, 0x13CE6, 0x1350D, 0x13384, 0x13515),
+    }
+    for rom, (main, high, rpm, load, high_rpm) in bindings.items():
+        _, xml = _xml_tables(rom)
+        xdf = _xdf_tables(ET.parse(DEFS / f"{rom}.xdf").getroot())
+        for name, address, axis_type, rpm_address, identifier in (
+            ("Target Mixture - Main", main, "Y Axis", rpm, "y"),
+            ("Target Mixture Multiplier - High-Detonation State", high,
+             "X Axis", high_rpm, "x"),
+        ):
+            table = xml[name]
+            assert int(table.get("storageaddress"), 16) == address
+            assert table.find("scaling").get("expression") == "x/128"
+            axis = table.find(f"table[@type='{axis_type}']")
+            assert int(axis.get("storageaddress"), 16) == rpm_address
+            assert axis.find("scaling").get("units") == "RPM [cand]"
+            assert int(_xdf_table_address(xdf[name]), 16) == address
+            assert xdf[name].findtext(f"XDFAXIS[@id='{identifier}']/units") == "RPM [cand]"
+        load_axis = xml["Target Mixture - Main"].find("table[@type='X Axis']")
+        assert int(load_axis.get("storageaddress"), 16) == load
+        assert load_axis.find("scaling").get("units") == "Normalized BFS [%]"
+
+
 def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
     for rom, expected in TARGETS.items():
         target, tables = _xml_tables(rom)
@@ -172,8 +249,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 215
-    assert len(tables) == 215
+    assert len(target.findall("table")) == 218
+    assert len(tables) == 218
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
     assert tables["Map 1 - Ignition Timing Surface - Hot Coolant [stored count]"].get(
@@ -221,7 +298,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 134
+    assert len(root.findall("XDFTABLE")) == 137
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -281,8 +358,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 231
-        assert len(tables) == 231
+        assert len(target.findall("table")) == 236
+        assert len(tables) == 236
         # The ignition families select the two executed 16x16 surfaces and the
         # four 8x8 state-code surfaces; the canonical trio reaches only the
         # gated coordinator half.
@@ -352,7 +429,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 149
+        assert len(root.findall("XDFTABLE")) == 154
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches
@@ -421,8 +498,8 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 233
-    assert len(tables) == 233
+    assert len(target.findall("table")) == 238
+    assert len(tables) == 238
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Map 1 - Fuel Compensation - Main - Default"].get(
@@ -441,6 +518,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert tables["Developer Immobilizer"].get("storageaddress") == "0x8671"
     assert not any(
         name.endswith(("Cold State", "High-Octane State", "High-Detonation State"))
+        and "Ignition" in name
         for name in tables
     )
     # The coordinator dispatches by the VVEL state code alone: two 16x16 and
@@ -494,7 +572,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 154
+    assert len(root.findall("XDFTABLE")) == 159
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
     patches_by_title = {
