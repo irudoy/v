@@ -1,0 +1,28 @@
+summary = """
+First coordinate of request_difference_reference_surface, read from byte \
+ffff11a2. Physical conversion remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013453"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092126"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092126"

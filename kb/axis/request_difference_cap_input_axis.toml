@@ -1,0 +1,28 @@
+summary = """
+First coordinate vector of request_difference_intermediate_cap_surface. The \
+computed input's physical quantity remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001530c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092238"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092238"

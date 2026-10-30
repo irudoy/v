@@ -1,0 +1,17 @@
+summary = """
+Select the native parameter pair from gated fixed values or the \
+surface/curve path, retaining the hysteretic selectors and pair assembly. \
+Curve 00013738 supplies the secondary lookup component; physical component \
+conversions remain unresolved."""
+level = "code"
+block = "fuel_quantity/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006be58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006be58"

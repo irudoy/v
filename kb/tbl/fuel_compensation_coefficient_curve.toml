@@ -1,0 +1,59 @@
+summary = """
+Explicit byte curve over axis 00013b08. Initialization reads input zero; \
+00040958 refreshes ffff1e90 from min(uint16[ffff11e0]>>2,255). Its \
+fuel-compensation context is established; coefficient meaning and conversion \
+remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013ae8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040e16"
+
+[[link]]
+type = "axis"
+to = "fuel_compensation_coefficient_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040e18"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002fd40"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_state_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040e16"
+
+[[link]]
+type = "reader"
+to = "startup_initializer/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002fd3c"

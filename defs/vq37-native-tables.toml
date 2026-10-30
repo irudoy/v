@@ -1304,7 +1304,7 @@ address = 0x00016EC4
 length = 16
 storagetype = "uint16"
 values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
-pointer_bindings = [{ site = 0x000574E8, accessor = 0x00057322, offset = 0x10 }]
+pointer_bindings = [{ site = 0x000574E8, accessor = 0x00057322, offset = 0x10 }, { site = 0x000925F0, accessor = 0x0009248A }]
 name = "Engine Speed [RPM]"
 kind = "rpm"
 format = "0"

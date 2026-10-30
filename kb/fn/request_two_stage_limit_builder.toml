@@ -1,0 +1,16 @@
+summary = """
+Read the context curve and speed/context ceiling surface, select the enabled \
+ceiling, and apply the two input-range conversion paths with their separate \
+caps. Physical request and context conversions remain unresolved."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009248a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009248a"

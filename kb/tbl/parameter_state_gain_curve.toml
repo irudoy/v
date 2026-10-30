@@ -1,0 +1,32 @@
+summary = """
+Implicit byte gain in one state-selected branch of 00082cb0. Its result \
+multiplies a selected byte term before the stored word contribution is \
+formed. The same ROM cluster also contains distinct directly indexed \
+constants. Physical parameter units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013674"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082e12"
+
+[[link]]
+type = "reader"
+to = "parameter_mode_selected_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082e12"

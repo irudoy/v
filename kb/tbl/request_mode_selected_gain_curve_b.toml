@@ -1,0 +1,42 @@
+summary = """
+Explicit byte curve in the alternate configuration branch of 00090664 over \
+axis 00014248. The selector and input preparation differ from the adjacent \
+word-curve stages. Physical gain and input units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013dae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000906ee"
+
+[[link]]
+type = "axis"
+to = "request_mode_selected_gain_b_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000906ee"
+
+[[link]]
+type = "reader"
+to = "request_mode_selected_coefficient_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000906ee"

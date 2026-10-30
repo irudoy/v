@@ -1,0 +1,32 @@
+summary = """
+Implicit byte response in 000811d4. Its coordinate is twice the nonnegative \
+complement of a value capped at 128, capped to 255. The response \
+participates in the signed parameter comparison path; physical \
+interpretation remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000812b0"
+
+[[link]]
+type = "reader"
+to = "parameter_difference_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000812b0"

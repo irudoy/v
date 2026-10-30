@@ -1387,7 +1387,7 @@ class MoveMeaningTest(unittest.TestCase):
     WRONG = f"{INHIBIT}/jk78c-{THROTTLE_JK78C:08x}"
     INHIBIT_FILE = store.path_of("ram", "fuel_inhibit")
     THROTTLE_FILE = store.path_of("ram", "throttle_runtime")
-    WRAPPER, WRAPPER_JK00C, ACCESSOR = "amusing-ara/fn", 0x26C84, "asparagus-scallop/fn"
+    WRAPPER, WRAPPER_JK00C = "amusing-ara/fn", 0x26C84
 
     @classmethod
     def setUpClass(cls):
@@ -1396,6 +1396,11 @@ class MoveMeaningTest(unittest.TestCase):
                                    "evidence": [SPEC]})
         document["note"] = f"probe of [[{cls.WRONG}]] and [[{INHIBIT}/jk78c]]"
         cls.base = compile.build(repo.ROOT, {cls.INHIBIT_FILE: store.render("ram", document)})
+        cls.ACCESSOR = min(
+            meaning.key for meaning, _ in cls.base.files.values()
+            if meaning is not None and meaning.kind == "fn" and not meaning.semantic
+            and not meaning.props and not meaning.tables
+            and set(meaning.symbols) == {"jk78c"})
 
     def plan(self, *ops):
         return write.plan(list(ops), self.base, write.model_resolver(self.base))
@@ -1432,7 +1437,7 @@ class MoveMeaningTest(unittest.TestCase):
         key = SymbolKey("jk00c", "fn", self.WRAPPER_JK00C)
         name = self.base.symbols[key].generated
         change, texts, result = self.plan(move(key.location, self.ACCESSOR, evidence=[SPEC]))
-        target = tomllib.loads(texts[store.path_of("fn", "asparagus-scallop")])
+        target = tomllib.loads(texts[store.path_of("fn", self.ACCESSOR.removesuffix("/fn"))])
         self.assertEqual(target["home"], "jk78c")
         self.assertIn({"layout": "jk00c", "address": f"{self.WRAPPER_JK00C:08x}", "name": name,
                        "evidence": [SPEC]}, target["symbol"])

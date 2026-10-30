@@ -1,0 +1,17 @@
+summary = """
+Form separate bounded difference encodings, read the paired correction and \
+excess curves with independent fallbacks, and combine them in the timing \
+path. The sample-reference curve and selector state remain distinct \
+operations."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000686e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000686e0"

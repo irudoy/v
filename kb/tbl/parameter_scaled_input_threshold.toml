@@ -1,0 +1,32 @@
+summary = """
+Implicit byte threshold in 00081dde. The coordinate is formed from a bounded \
+scaled byte input, and the result participates in a hysteretic comparison \
+with another raw byte. Physical input and threshold units remain \
+unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000136b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008204c"
+
+[[link]]
+type = "reader"
+to = "parameter_scaled_input_gate_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008204c"

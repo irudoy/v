@@ -1,0 +1,17 @@
+summary = """
+Load the two request hold states from state-indexed bytes, optionally scaled \
+by speed-indexed curve 00013196 with a seven-bit shift and byte cap. The \
+resulting gates retain their independent conditions and unresolved time \
+unit."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0008f9c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008f9c4"

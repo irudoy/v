@@ -1,0 +1,31 @@
+summary = """
+First implicit byte gain in 0008fd6c. It multiplies the centered \
+state-indexed word jointly with 0001317e before the signed-word result is \
+selected. The first coordinate's physical meaning remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013176"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fd9e"
+
+[[link]]
+type = "reader"
+to = "request_state_offset_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fd9e"

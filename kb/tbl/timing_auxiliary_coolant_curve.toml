@@ -1,0 +1,42 @@
+summary = """
+Explicit byte curve in 00067122 over the sampled coolant index and axis \
+000135e0. It supplies auxiliary byte ffff1343 in the gated correction path. \
+Engineering timing conversion remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013608"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006733e"
+
+[[link]]
+type = "axis"
+to = "timing_auxiliary_coolant_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067342"
+
+[[link]]
+type = "reader"
+to = "timing_auxiliary_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006733e"

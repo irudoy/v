@@ -1,0 +1,29 @@
+summary = """
+Four byte breakpoints for the selected state coordinate of \
+parameter_mode_selected_gain_surface. The state-to-physical-mode \
+correspondence remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 4
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001366c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d40"
+
+[[link]]
+type = "reader"
+to = "parameter_mode_selected_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d40"

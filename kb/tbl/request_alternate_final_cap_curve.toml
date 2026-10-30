@@ -1,0 +1,42 @@
+summary = """
+Explicit word curve in 00092734 over word ffff11bc and axis 0001ac1a. Its \
+result limits the separately computed terminal request. Physical request \
+units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b08a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009292a"
+
+[[link]]
+type = "axis"
+to = "request_alternate_final_cap_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092936"
+
+[[link]]
+type = "reader"
+to = "request_alternate_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009292a"

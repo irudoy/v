@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "jk78c"
-address = "00040958"
-name = "asparagus-scallop"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00040e00"

@@ -1,0 +1,16 @@
+summary = """
+Maintain the mode-selected raw parameter and its hysteretic gates. Curve \
+000136b8 converts the bounded scaled input to one gate threshold; physical \
+parameter and threshold units remain unresolved."""
+level = "code"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00081dde"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00081dde"

@@ -1,0 +1,16 @@
+summary = """
+Maintain gated timing corrections and signed byte outputs, including \
+sampled-coolant curve 00013608 and word surface 0000cace. The raw lookup \
+roles are established; physical coordinate conversions remain unresolved."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00067122"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067122"

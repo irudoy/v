@@ -1,0 +1,53 @@
+summary = """
+Word surface in 0009248a over ffff11a6 and the result of 00016864. The \
+enable path selects this result or 65535 as the subsequent conversion \
+ceiling. Physical output units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000fece"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000924bc"
+
+[[link]]
+type = "axis"
+to = "request_two_stage_context_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000924c0"
+
+[[link]]
+type = "axis"
+to = "vvel_idle_model_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000924be"
+
+[[link]]
+type = "reader"
+to = "request_two_stage_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000924bc"

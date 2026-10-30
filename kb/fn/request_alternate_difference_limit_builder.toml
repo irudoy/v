@@ -1,0 +1,17 @@
+summary = """
+Evaluate the alternate centered reference, repeated difference gain, \
+intermediate cap and reciprocal divisor stages, followed by the terminal cap \
+curve. Model-shared divisor 0001aeea retains its deferred physical I/O \
+qualification."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00092734"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092734"

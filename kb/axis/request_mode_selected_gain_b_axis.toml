@@ -1,0 +1,28 @@
+summary = """
+Explicit byte grid of request_mode_selected_gain_curve_b. Its normalized \
+state input has no qualified physical conversion."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014248"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000906ee"
+
+[[link]]
+type = "reader"
+to = "request_mode_selected_coefficient_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000906ee"

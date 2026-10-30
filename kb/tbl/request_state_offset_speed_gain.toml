@@ -1,0 +1,31 @@
+summary = """
+Second implicit byte gain in the primary product of 0008fd6c. The \
+speed-word-derived index is shared with the separately gated alternate gain \
+00013186. Engineering conversion remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001317e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fdba"
+
+[[link]]
+type = "reader"
+to = "request_state_offset_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fdba"

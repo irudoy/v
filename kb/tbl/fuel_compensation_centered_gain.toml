@@ -1,0 +1,43 @@
+summary = """
+Explicit byte gain in 00040958 over the centered byte encoding of saturated \
+signed word ffff1ebe, with axis 00013483. Stored at ffff1e80 and used with \
+00013780 in the gated compensation product. Physical coefficient units \
+remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013800"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041030"
+
+[[link]]
+type = "axis"
+to = "fuel_compensation_centered_gain_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041034"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_state_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041030"

@@ -1,0 +1,43 @@
+summary = """
+Explicit word curve in 00095442 over word ffff1710 and axis 000151ac. Its \
+centered result participates in the enabled reference/blending path before \
+signed transition and rate limits. Physical quantity and conversion remain \
+unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015e82"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095498"
+
+[[link]]
+type = "axis"
+to = "request_centered_transition_reference_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009549c"
+
+[[link]]
+type = "reader"
+to = "request_centered_transition_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095498"

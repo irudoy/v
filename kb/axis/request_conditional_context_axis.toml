@@ -1,0 +1,32 @@
+summary = """
+Second coordinate vector of request_conditional_signed_endpoint_a. Reader \
+0009621c uses this grid to build the stack slice for the inverse lookup. \
+Physical context quantity and conversion remain unresolved."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001509c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095870"
+
+[[link]]
+type = "reader"
+to = "request_conditional_surface_inverse_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009626e"
+note = """
+Read the grid at GBR base 0001507c plus 32 while preparing the inverse \
+surface slice."""

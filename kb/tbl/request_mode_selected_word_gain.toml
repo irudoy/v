@@ -1,0 +1,31 @@
+summary = """
+Implicit word curve in 00090664 over the bounded word coordinate shifted \
+left by seven. It contributes the configuration-selected word gain alongside \
+other existing word curves. Physical coefficient units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000169c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00090718"
+
+[[link]]
+type = "reader"
+to = "request_mode_selected_coefficient_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00090718"

@@ -1,0 +1,42 @@
+summary = """
+Explicit word curve in 000920ea over word ffff11bc and axis 000150fc. The \
+terminal result is capped by the separately computed request limit before \
+publication. Physical request units remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015ac2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009234a"
+
+[[link]]
+type = "axis"
+to = "request_difference_final_cap_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009234e"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009234a"

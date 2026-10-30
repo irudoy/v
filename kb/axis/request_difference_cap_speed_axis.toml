@@ -1,0 +1,28 @@
+summary = """
+Word speed-coordinate vector of request_difference_intermediate_cap_surface, \
+read with ffff11a6. Engineering conversion remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001569c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092242"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092242"

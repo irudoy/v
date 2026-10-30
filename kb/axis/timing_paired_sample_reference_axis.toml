@@ -1,0 +1,28 @@
+summary = """
+Byte ffff119d coordinate of timing_paired_sample_reference. Physical sample \
+identity and conversion remain unresolved."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000142fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068752"
+
+[[link]]
+type = "reader"
+to = "timing_paired_difference_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068752"

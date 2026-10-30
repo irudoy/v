@@ -1,0 +1,53 @@
+summary = """
+Byte reference surface in 000920ea. Its centered result supplies the \
+reference for the two bounded difference inputs of 00014188. The physical \
+request quantity and engineering conversion remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a0ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092124"
+
+[[link]]
+type = "axis"
+to = "request_difference_reference_input_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092126"
+
+[[link]]
+type = "axis"
+to = "request_difference_reference_request_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009212a"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092124"

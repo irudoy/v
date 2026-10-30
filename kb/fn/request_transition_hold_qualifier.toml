@@ -1,0 +1,24 @@
+summary = """
+Form the bounded normalized request difference, convert it through 00013404 \
+to a hold threshold, and maintain the counter and qualification flags before \
+selecting the output. Physical request and time conversions remain \
+unresolved."""
+level = "code"
+block = "torque_request/block"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Data flow"]
+anchor = "FUN_0009832C"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009832c"
+former = ["quick-myna/fn/jk78c-0009832c"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009832c"

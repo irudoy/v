@@ -1,0 +1,16 @@
+summary = """
+Select the state-dependent byte contribution, evaluate the four-by-four gain \
+surface or the implicit gain branch, and store the resulting word product. \
+The source and output physical quantities remain unresolved."""
+level = "code"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00082cb0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082cb0"

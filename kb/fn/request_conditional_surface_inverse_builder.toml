@@ -1,0 +1,17 @@
+summary = """
+Build a sixteen-word slice of request_conditional_signed_endpoint_a on the \
+stack, then read coordinate axis 0001507c as inverse values over that \
+runtime slice. Endpoint and zero-span cases use separate paths. The runtime \
+slice has no fixed ROM axis."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009621c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009621c"

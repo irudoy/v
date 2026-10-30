@@ -1,0 +1,16 @@
+summary = """
+Build a nonnegative difference gain from 00014188 and a complementary \
+response from 00013f00, then apply the signed parameter selection and clamp \
+paths. The physical parameter identity remains unresolved."""
+level = "code"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000811d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000811d4"

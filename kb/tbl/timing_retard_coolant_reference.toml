@@ -1,0 +1,32 @@
+summary = """
+First implicit byte reference in 000655c8, indexed by sampled coolant index \
+ffff1067 and stored at ffff12c1. The function subtracts it from the \
+separately indexed 00013588 result and floors the difference at zero. \
+Engineering timing conversion remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013578"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655d2"
+
+[[link]]
+type = "reader"
+to = "timing_retard_reference_delta_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655d2"

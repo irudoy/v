@@ -1,0 +1,32 @@
+summary = """
+Implicit byte threshold in 0009832c. Its index comes from a bounded \
+normalized request difference; the result limits the hold threshold compared \
+with the saturating counter. Physical difference and time conversions remain \
+unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009842a"
+
+[[link]]
+type = "reader"
+to = "request_transition_hold_qualifier/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009842a"

@@ -1,0 +1,16 @@
+summary = """
+Maintain the saved/current word transition gate with its latched byte, hold \
+states and curve-derived delta threshold. The clock and physical delta \
+quantity remain unresolved."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00068df8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068df8"

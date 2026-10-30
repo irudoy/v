@@ -1,0 +1,53 @@
+summary = """
+Word correction surface in 00067122, read with words ffff10b6 and ffff102c. \
+The result is capped to a byte before the auxiliary timing path uses it. \
+Physical coordinate conversions remain unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000cace"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067358"
+
+[[link]]
+type = "axis"
+to = "timing_auxiliary_word_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006735a"
+
+[[link]]
+type = "axis"
+to = "timing_auxiliary_word_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006735c"
+
+[[link]]
+type = "reader"
+to = "timing_auxiliary_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067358"

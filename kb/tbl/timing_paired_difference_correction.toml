@@ -1,0 +1,37 @@
+summary = """
+Implicit byte curve read separately for the two stored difference encodings \
+in 000686e0. Its two results are combined in the paired correction path, \
+with independent gate fallbacks. Physical sample identities remain \
+unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000142d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000687f4"
+
+[[link]]
+type = "reader"
+to = "timing_paired_difference_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000687f4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068882"

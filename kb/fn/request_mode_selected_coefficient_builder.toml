@@ -1,0 +1,16 @@
+summary = """
+Select the native word and byte coefficient curves through the configuration \
+branch, prepare their bounded coordinates, and cap the resulting \
+coefficient. Physical input/output dimensions remain unresolved."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00090664"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00090664"

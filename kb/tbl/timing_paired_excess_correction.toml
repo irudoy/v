@@ -1,0 +1,37 @@
+summary = """
+Four-point implicit byte correction in 000686e0. Each paired path indexes \
+twice the nonnegative excess of its stored byte over 32, capped to 255; \
+disabled paths use the separate fixed fallback. Engineering timing \
+conversion remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 4
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000142c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068900"
+
+[[link]]
+type = "reader"
+to = "timing_paired_difference_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068900"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068950"

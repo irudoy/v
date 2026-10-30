@@ -1,0 +1,31 @@
+summary = """
+Implicit byte gain in 0008f9c4 over the bounded speed word divided by ten. \
+It multiplies a selected hold byte with a seven-bit shift and byte cap \
+before the two hold states are loaded. No time unit is established."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013196"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fa4a"
+
+[[link]]
+type = "reader"
+to = "request_state_hold_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008fa4a"

@@ -1,0 +1,17 @@
+summary = """
+Maintain the alternate request-transition selectors and bounded histories, \
+and use centered curve 0001482c in the signed limiting path. The dispatch \
+selects this alternate mechanism through its configuration bits; physical \
+state identities remain unresolved."""
+level = "code"
+block = "torque_request/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000978d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000978d6"

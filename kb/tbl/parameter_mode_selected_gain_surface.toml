@@ -1,0 +1,53 @@
+summary = """
+Four-by-four byte gain surface in 00082cb0. A mode-selected byte and raw \
+sample supply its coordinates; its result multiplies the selected byte term. \
+The physical parameter remains unresolved."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 4
+rows = 4
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b3ba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d2a"
+
+[[link]]
+type = "axis"
+to = "parameter_gain_mode_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d40"
+
+[[link]]
+type = "axis"
+to = "parameter_gain_sample_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d30"
+
+[[link]]
+type = "reader"
+to = "parameter_mode_selected_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d2a"
