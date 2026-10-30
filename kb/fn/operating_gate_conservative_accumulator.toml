@@ -1,19 +1,21 @@
 title = "Accumulate minimum-factor reference and compare its level"
 summary = """
 Scan all eight words of each factor array 000160ea and 00015902 and use \
-their independent minima in the gated, saturating two-factor reference \
-increment. Retain the accumulator when the gate is clear; cap updates at \
-0x00feff01. The override flag substitutes 255 times curve 0001622a on axis \
-00014f3c. Return ROM16[000090d8] <= floor(accumulator/255), store the \
-accumulator at ffff4370 and retain it at ffffa63c. The direct minimum scans \
-do not perform an interpolation."""
+their independent minima to weight the coordinator-selected BFS-derived \
+reference of operating_gate_reference_mode_flags. The gated increment has \
+successive right shifts by six and ten with separate uint16 saturation. \
+Retain the accumulator when the gate is clear and cap updates at 0x00feff01. \
+The override flag substitutes 255 times curve 0001622a on axis 00014f3c. \
+Return ROM16[000090d8] <= floor(accumulator/255), store the accumulator at \
+ffff4370 and retain it at ffffa63c. The direct minimum scans do not perform \
+an interpolation."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "monitor"

@@ -1,21 +1,23 @@
 title = "Compare concurrent gate fractions with calibrated bounds"
 summary = """
-Update three unsigned word counters through 00027b72 from the incoming \
-operating gate, ffff23b9.bit6 and ffff23b1.bit0. Compare \
-low8(floor(100*counter[ffff433c]/max(counter[ffff4340],1))) with \
-ROM8[00008394], then compare \
-low8(floor(100*counter[ffff433e]/max(counter[ffff433c],1))) with word curve \
-00015bf2 on axis 00014fac. Publish the conjunction through the result \
-pointer and ffff45b2.bit2. Each counter increments while its gate is nonzero \
-and otherwise retains its value, with saturation at 65535; every call passes \
-reset=0. Invocation cadence and external reset producers remain unresolved."""
+Update three unsigned word counters through 00027b72: ffff4340 counts the \
+incoming operating gate, ffff433c additionally requires ffff23b9.bit6, and \
+ffff433e additionally requires both that bit and ffff23b1.bit0. Each \
+increments while its condition is nonzero, otherwise retains its value, and \
+saturates at 65535; every call passes reset=0. Require \
+low8(floor(100*counter[ffff433c]/max(counter[ffff4340],1))) >= \
+ROM8[00008394] and \
+low8(floor(100*counter[ffff433e]/max(counter[ffff433c],1))) >= word curve \
+00015bf2 on axis 00014fac by ffff106c. Publish the conjunction through the \
+result pointer and ffff45b2.bit2. Invocation cadence and external reset \
+producers remain unresolved."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "monitor"

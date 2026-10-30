@@ -1,17 +1,22 @@
 title = "Qualify raw coolant windows and held permission"
 summary = """
-Select one inclusive raw-byte interval at 00008757 or the union of two \
-intervals at 0000851e according to ffff23b9.bit6. The input is raw coolant \
-byte ffff106f. Combine the interval result with held byte ffffa637 and \
-ffff44f4.bit0, publish ffff45b2.bit4, and select the returned interval or \
-combined gate through ROM8[0000895a].bit5."""
+Select inclusive coolant window W at 00008757 when ffff23b9.bit6 is clear, \
+or the union of the two windows at 0000851e when it is set. The input is \
+coolant/ram at ffff106f, with degC = raw-50: the stock default interval is \
+10..60 degC and both mode intervals are 5..40 degC. Update ffffa637 to \
+previous_ffffa637 && W. This latch only clears inside the family; BD3A0 arms \
+it to one, called at A0DFA by A08CC under ambitious-starfish/fn (000302d4). \
+The cadence of A08CC remains unresolved. Publish (previous_ffffa637 && W) || \
+ffff44f4.bit0 at ffff45b2.bit4 and through the combined-result pointer. \
+ROM8[0000895a].bit5 selects this combined result when set, or W when clear, \
+for the other result pointer."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "monitor"

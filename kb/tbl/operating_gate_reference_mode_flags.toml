@@ -1,15 +1,19 @@
 title = "Operating gate reference mode flags"
 summary = """
-Bit7 selects floor(uint16[ffff102e]*8160/65536) as the common reference. A \
-clear bit selects the low 32-bit product uint16[ffff102e]*uint16[ffff2242] \
-divided by 131586. Other bits remain unresolved."""
+Bit7 selects floor(uint16[ffff102e]*8160/65536), equivalently \
+floor(255*BFS_ms) for bfs/ram with ms = raw/2048, as the reference shared by \
+BD25A and BD0D0. A clear bit selects the low 32-bit product \
+uint16[ffff102e]*uint16[ffff2242] divided unsigned by 131586. The physical \
+quantity of ffff2242 and the interpretation of this second scaling remain \
+unresolved. BCC6C separately receives the raw BFS word. Other flag bits \
+remain unresolved."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "table"

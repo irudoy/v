@@ -1,15 +1,16 @@
 title = "Operating gate word latch threshold"
 summary = """
-Threshold of the held gate based on uint16[ffff11e0]. A value at or above \
-this word sets the local gate; an already nonzero held byte ffffa646 also \
-retains it."""
+Unsigned threshold for uint16[ffff11e0]. Reaching it sets word latch \
+ffffa646, which remains set inside the reader and enables the saturating \
+counter. While that latch is set, a clear ffff23b1.bit4 sets the separate \
+failure latch ffffa647. The input quantity remains unresolved."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "threshold"

@@ -1,17 +1,19 @@
 title = "Operating gate timing coordinate factor"
 summary = """
-Word factor looked up with 32768+int8[ffff1f45] on centered word axis \
-00014f9c. The weighted accumulator multiplies this result by the raw \
-reference and shifts right six with uint16 saturation before applying its \
-second factor. The conservative accumulator uses the minimum of all eight \
-entries."""
+Word factor looked up with 32768 + final_timing/ram in degBTDC from signed \
+byte ffff1f45 on centered word axis 00014f9c. The weighted accumulator \
+multiplies this result by the coordinator-selected BFS-derived reference of \
+operating_gate_reference_mode_flags and shifts right six with uint16 \
+saturation before applying the word-coordinate factor. The conservative \
+accumulator uses the minimum of all eight entries. The factor's output \
+conversion remains unresolved."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "table"

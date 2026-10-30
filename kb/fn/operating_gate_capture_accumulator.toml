@@ -1,20 +1,26 @@
 title = "Accumulate gated reference and publish capture state"
 summary = """
-Select threshold curve 00016a44 or 00016884 from the raw flag supplied by \
-ffff5c0e, look it up on axis 0001502c with raw ffff106c and multiply the \
-word by 64. Store the threshold at ffffa630. When the incoming operating \
-gate permits, scale the raw reference by ROM8[00008382]/2048, then by the \
-previous feedback byte and 91/2213, cap the increment to uint16 and \
-accumulate at ffff437c with cap 0x00a00000. Invoke \
-operating_gate_capture_state, return three state bytes through stack-passed \
-pointers and retain the accumulator at ffffa638."""
+Select threshold curve 00016a44 or 00016884 from flag ffff5c0e, look it up \
+on axis 0001502c with ffff106c and multiply the word by 64 into ffffa630. \
+While the incoming operating gate permits, multiply raw bfs/ram at ffff102e \
+(ms = raw/2048) by ROM8[00008382] and shift right eleven, retaining the low \
+word; multiply by the same-pass inverse feedback ffff4332 from \
+operating_gate_weighted_accumulator and by 91, divide unsigned by 2213, \
+saturate to uint16, and accumulate at ffff437c with cap 0x00a00000. A clear \
+gate retains ffffa638. Set ffff45b2.bit7 from Z = (ffff4332 == 0), and \
+ffffa634 from Z && !ffffa645 && the fraction-qualifier result. The \
+previous-pass Z is retained at ffffa645, so ffffa634 is an edge trigger. \
+Store the coordinator's ffff45bc.bit2 at ffffa635. Invoke \
+operating_gate_capture_state, return its three state bytes through \
+stack-passed pointers, publish ffffa62c at ffff45b2.bit3, and retain the \
+accumulator at ffffa638."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "monitor"

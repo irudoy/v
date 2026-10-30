@@ -1,20 +1,24 @@
 title = "Coordinate operating gates and accumulated state"
 summary = """
-Coordinate all seven immediate helpers of the BCA1C family. Pass raw context \
-byte ffff106c, coolant byte ffff106f, voltage byte ffff1174, signed timing \
-byte ffff1f45, word ffff11e0 and several existing flags through registers \
-and reviewed stack slots. Select the reference from uint16[ffff102e] using \
-ROM8[000087d3].bit7 and optional word ffff2242. Publish helper results in \
-ffff44fc bits 2, 3, 4 and 5, and copy the captured state byte to ffffa644. \
-Stack byte parameters are recovered from their caller stores; the \
-decompiler's uninitialized high-byte temporary does not define an input."""
+Coordinate all seven immediate helpers of the BCA1C family. Pass context \
+byte ffff106c, coolant/ram at ffff106f (degC = raw-50), battery_voltage/ram \
+at ffff1174 (V = raw*0.08), final_timing/ram at ffff1f45 (signed degBTDC), \
+word ffff11e0 and existing flags through registers and reviewed stack slots. \
+Select a BFS-derived reference through operating_gate_reference_mode_flags \
+from bfs/ram at ffff102e (ms = raw/2048) and optional word ffff2242. Both \
+BD25A and BD0D0 receive this selected reference; BCC6C receives the raw BFS \
+word. BD25A publishes ffff4332 before BCC6C reads it in the same pass. \
+Publish helper results in ffff44fc bits 2, 3, 4 and 5, then copy capture \
+latch ffffa62c to ffffa644 for the next pass. Stack byte parameters follow \
+their caller stores, rather than the decompiler's uninitialized high-byte \
+temporary."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "dispatch"

@@ -1,16 +1,19 @@
 title = "Combine window permission and blocking state"
 summary = """
-Combine the prior held-window permission with the inverse context blocker. \
-Return that combined state separately from the state additionally qualified \
-by raw byte ffffa644 being zero. Publish the latter at ffff45b2.bit1 and the \
-former at ffff45b3.bit7. The two outputs retain distinct roles."""
+Combine the coolant-window helper's held permission with the inverse context \
+blocker. Publish that combined state at ffff45b3.bit7 and return it as the \
+gate of the conservative accumulator. Additionally require ffffa644 == 0 for \
+the result at ffff45b2.bit1, which gates the fraction qualifier, weighted \
+accumulator and capture accumulator. The coordinator copies capture latch \
+ffffa62c to ffffa644 at the end of the preceding pass. The conservative \
+accumulator therefore retains its separate gate after capture."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "consumer"

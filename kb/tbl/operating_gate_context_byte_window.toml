@@ -1,16 +1,17 @@
 title = "Operating gate context byte window"
 summary = """
-Inclusive upper/lower raw byte interval used by the alternative \
-context-blocking branch. The input is uint8[ffff106c], and the branch also \
-requires raw ffff5c0f to be zero and its other word/held-state conditions to \
-hold."""
+Inclusive upper/lower byte bounds for uint8[ffff106c]. A value outside \
+[ROM8[00008396],ROM8[00008395]] sets the failure latch ffffa647 and prevents \
+the context blocker from clearing. The latch also sets for nonzero ffff5c0f \
+or the reader's other failure conditions. The input quantity remains \
+unresolved."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "table"

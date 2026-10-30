@@ -1,15 +1,17 @@
 title = "Operating gate capture increment gain"
 summary = """
-Unsigned capture increment gain. Multiply the raw reference by this byte and \
-shift right eleven; the low word then multiplies the previous feedback byte \
-and 91 before unsigned division by 2213 and uint16 saturation."""
+Unsigned gain applied to raw bfs/ram at ffff102e (ms = raw/2048). Multiply \
+the raw BFS word by this byte and shift right eleven, yielding \
+floor(gain*BFS_ms). The retained low word multiplies the same-pass inverse \
+feedback ffff4332 of operating_gate_weighted_accumulator and 91 before \
+unsigned division by 2213 and uint16 saturation."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "table"

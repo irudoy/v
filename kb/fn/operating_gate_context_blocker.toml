@@ -1,18 +1,23 @@
 title = "Qualify contextual blocking with a held word gate"
 summary = """
-Use raw word ffff11e0, byte ffff106c, voltage byte ffff1174, word ffff22bc \
-and incoming flags to qualify a blocking output. ROM16[00008d98] and held \
-byte ffffa646 govern the word gate; the 00008395 byte interval, the 00008d9c \
-word interval, and held byte ffffa647 govern an alternative branch. Update \
-the counter through 00027b00 and compare it with ROM16[00008d9a]. Publish \
-the result at ffff45b2.bit0 and through the stack-passed result pointer."""
+Form set-only word latch L = (uint16[ffff11e0] >= ROM16[00008d98]) || \
+ffffa646, then retain L at ffffa646. Update counter ffffa628 through \
+00027b00: increment with uint16 saturation while L holds and reset to zero \
+otherwise. Form set-only failure latch F = ffffa647 || (L && !ffff23b1.bit4) \
+|| uint8[ffff106c] outside the inclusive interval \
+[ROM8[00008396],ROM8[00008395]] || ffff5c0f != 0 || (uint16[ffff11e0] >= 32 \
+&& uint16[ffff22bc] outside [ROM16[00008d9e],ROM16[00008d9c]]), then retain \
+F at ffffa647. The blocker is clear only when battery_voltage/ram ffff1174 \
+is greater than 137 stored counts (10.96 V), ffff45bc.bit7 is clear, counter \
+>= ROM16[00008d9a] and F is clear. Publish the blocker at ffff45b2.bit0 and \
+through the stack-passed pointer. Neither latch clears in this reader."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "monitor"

@@ -1,20 +1,24 @@
 title = "Operating gate timing coordinate axis"
 summary = """
-Explicit eight-word axis for factor 00015902. The input is 32768 plus the \
-signed byte at ffff1f45. The addition is an operational coordinate bias; no \
-degree conversion is inferred."""
+Explicit eight-word axis for factor 00015902. The lookup coordinate is 32768 \
++ final_timing/ram at ffff1f45, whose signed byte is in degBTDC. Subtract \
+32768 from stored breakpoints to obtain degBTDC; stock 0x7ff6 and 0x8000 \
+represent -10 and 0 degBTDC."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
-quantity = "raw"
+quantity = "angle"
 points = 8
 storage = "uint16"
+unit = "degBTDC"
+scale = "x-32768"
+to_raw = "x+32768"
 
 [editor]
 emit = false

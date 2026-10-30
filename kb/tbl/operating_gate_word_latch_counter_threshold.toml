@@ -1,15 +1,17 @@
 title = "Operating gate word latch counter threshold"
 summary = """
-Counter threshold compared with the unsigned word at ffffa628 after the \
-shared 00027b00 update. Voltage, mode and alternative context conditions \
-also qualify the blocking output."""
+Threshold for unsigned counter ffffa628 after its 00027b00 update. The \
+counter increments with saturation while set-only word latch ffffa646 holds \
+and resets to zero otherwise. Reaching this threshold is necessary to clear \
+the blocker, together with battery voltage above 10.96 V, ffff45bc.bit7 \
+clear and failure latch ffffa647 clear."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "threshold"

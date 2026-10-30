@@ -1,14 +1,16 @@
 title = "Operating gate coolant default window"
 summary = """
-Inclusive upper/lower raw coolant interval used when ffff23b9.bit6 is clear. \
-The reader compares uint8[ffff106f] with both byte bounds."""
+Inclusive coolant interval encoded as upper/lower byte bounds, used when \
+ffff23b9.bit6 is clear. Both bounds share the coolant/ram conversion degC = \
+raw-50 of uint8[ffff106f]. The stock bounds define 10..60 degC. Leaving the \
+interval clears the held coolant-window latch."""
 note = [
     """
-The physical subsystem and invocation period remain unresolved under issue \
-#110. The complete JK78C family establishes stored-count lookup and \
-state-update roles. Engineering conversions of these calibration operands, \
-editor publication and later-layout counterparts require separate \
-qualification.""",
+Known BFS, coolant, battery-voltage and final-timing inputs retain their \
+tracked conversions. The enclosing physical subsystem, invocation period and \
+other input quantities remain unresolved under issue #110. Curve-output \
+conversions, editor publication and later-layout counterparts require \
+separate qualification.""",
 ]
 level = "code"
 role = "table"
@@ -17,6 +19,9 @@ access = "direct-indexed"
 cols = 2
 rows = 1
 storage = "uint8"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
 
 [editor]
 emit = false
