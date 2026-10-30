@@ -104,6 +104,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c2e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007ee98"
+to = "jk78c:00013a20"
+note = """
+Target reader 0007ee5c corresponds to JK78C reader 0006e6f0. MOV.L 0007ee98 \
+loads this table for call 2 of 4 at 0007ee9c (idle_ignition_lookup), the \
+call position where the delay-slot ADD #8 at jk78c:0006e730 forms 00013a20 \
+from base 00013a18 for call 2 of 6 at 0006e72e (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e52"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007a53e"
+to = "jk78c:00013a20"
+note = """
+Target reader 0007a508 corresponds to JK78C reader 0006e6f0. MOV.L 0007a53e \
+loads this table for call 2 of 3 at 0007a542 (idle_ignition_lookup), the \
+call position where the delay-slot ADD #8 at jk78c:0006e730 forms 00013a20 \
+from base 00013a18 for call 2 of 6 at 0006e72e (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012432"
 former = ["kind-kittiwake/tbl/7mfk-00012432"]

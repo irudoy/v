@@ -100,6 +100,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001397e"
+name = "dangerous-coyote"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00084326"
+to = "jk78c:00013750"
+note = """
+JK78C helper 0007341a, called by 000730cc, is inlined into the corresponding \
+target reader 000841b4. MOV.L 00084326 loads this table for call 3 of 9 at \
+0008432a (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000735b8 loads 00013750 for call 2 of 2 at 000735be \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b82"
+name = "tidy-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f640"
+to = "jk78c:00013750"
+note = """
+JK78C helper 0007341a, called by 000730cc, is inlined into the corresponding \
+target reader 0007f4e0. MOV.L 0007f640 loads this table for call 3 of 9 at \
+0007f644 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000735b8 loads 00013750 for call 2 of 2 at 000735be \
+(idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012136"
 name = "inquisitive-caracara"

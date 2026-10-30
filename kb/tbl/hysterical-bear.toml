@@ -71,6 +71,40 @@ identity = [
 scale = [28, 29, 30]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013be6"
+name = "fierce-chinchilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0008270c"
+to = "jk78c:000139d0"
+note = """
+Target reader 000826c4 corresponds to JK78C reader 0007154c. MOV.L 0008270c \
+loads this table for call 3 of 6 at 00082712 (dfco_lookup), the call \
+position where MOV.L jk78c:00071594 loads 000139d0 for call 3 of 8 at \
+00071596 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e02"
+name = "radical-prawn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007db7e"
+to = "jk78c:000139d0"
+note = """
+Target reader 0007db36 corresponds to JK78C reader 0007154c. MOV.L 0007db7e \
+loads this table for call 3 of 6 at 0007db84 (dfco_lookup), the call \
+position where MOV.L jk78c:00071594 loads 000139d0 for call 3 of 8 at \
+00071596 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000123d2"
 name = "hysterical-bear"

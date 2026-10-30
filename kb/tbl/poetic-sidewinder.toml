@@ -52,6 +52,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a2f4"
+name = "sly-bug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082582"
+to = "jk78c:0000a0ba"
+note = """
+Target reader 00082450 corresponds to JK78C reader 00071390. MOV.L 00082582 \
+loads this table for call 4 of 5 at 00082586 (furry-puffin), the call \
+position where MOV.L jk78c:00071480 loads 0000a0ba for call 4 of 5 at \
+00071488 (gleaming-walrus)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a3c0"
+name = "axiomatic-dugong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007da7e"
+to = "jk78c:0000a0ba"
+note = """
+Target reader 0007d94c corresponds to JK78C reader 00071390. MOV.L 0007da7e \
+loads this table for call 4 of 5 at 0007da82 (gleaming-walrus), the call \
+position where MOV.L jk78c:00071480 loads 0000a0ba for call 4 of 5 at \
+00071488 (gleaming-walrus)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000a49a"
 name = "poetic-sidewinder"

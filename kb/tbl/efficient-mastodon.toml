@@ -65,6 +65,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000131fc"
+name = "nostalgic-snail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007fa64"
+to = "jk78c:0001314e"
+note = """
+Target reader 0007f7b4 corresponds to JK78C reader 0006eff0. MOV.L 0007fa64 \
+loads this table for call 6 of 7 at 0007fa6a (FUN_0002AC3C), the call \
+position where MOV.L jk78c:0006f314 loads 0001314e for call 7 of 8 at \
+0006f318 (realistic-cormorant)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000134c8"
+name = "ochre-sturgeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007b0dc"
+to = "jk78c:0001314e"
+note = """
+Target reader 0007ae28 corresponds to JK78C reader 0006eff0. MOV.L 0007b0dc \
+loads this table for call 6 of 8 at 0007b0e2 (realistic-cormorant), the call \
+position where MOV.L jk78c:0006f314 loads 0001314e for call 7 of 8 at \
+0006f318 (realistic-cormorant)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001198e"
 name = "efficient-mastodon"

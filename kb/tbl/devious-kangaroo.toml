@@ -44,6 +44,40 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014282"
+name = "defiant-wolverine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000485a2"
+to = "jk78c:00013f78"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 000485a2 \
+loads this table for call 1 of 9 at 000485a8 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0004099e loads 00013f78 for call 1 of 9 at \
+000409a2 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014416"
+name = "monumental-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044f5a"
+to = "jk78c:00013f78"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 00044f5a \
+loads this table for call 1 of 9 at 00044f60 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0004099e loads 00013f78 for call 1 of 9 at \
+000409a2 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012ab2"
 name = "devious-kangaroo"

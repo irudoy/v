@@ -82,6 +82,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a7e"
+name = "aboriginal-dragonfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007deae"
+to = "jk78c:00013840"
+note = """
+Target reader 0007dd1e corresponds to JK78C reader 0006d7e8. MOV.L 0007deae \
+loads this table for call 6 of 6 at 0007deb0 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d964 loads 00013840 for call 9 of 9 at \
+0006d966 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c72"
+name = "lavender-oarfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000794a2"
+to = "jk78c:00013840"
+note = """
+Target reader 00079312 corresponds to JK78C reader 0006d7e8. MOV.L 000794a2 \
+loads this table for call 6 of 6 at 000794a4 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d964 loads 00013840 for call 9 of 9 at \
+0006d966 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121de"
 name = "outrageous-lynx"

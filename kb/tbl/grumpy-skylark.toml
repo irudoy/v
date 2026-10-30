@@ -78,6 +78,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001396e"
+name = "encouraging-mackerel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007a910"
+to = "jk78c:00013740"
+note = """
+JK78C helper 0006b338, called by 0006a9b0, is inlined into the corresponding \
+target reader 0007a740. MOV.L 0007a910 loads this table for call 6 of 19 at \
+0007a914 (jolly-guan), the call position where MOV.L jk78c:0006b34a loads \
+00013740 for call 1 of 2 at 0006b356 (brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b72"
+name = "innocent-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007629c"
+to = "jk78c:00013740"
+note = """
+JK78C helper 0006b338, called by 0006a9b0, is inlined into the corresponding \
+target reader 000760cc. MOV.L 0007629c loads this table for call 6 of 19 at \
+000762a0 (brilliant-ibis), the call position where MOV.L jk78c:0006b34a \
+loads 00013740 for call 1 of 2 at 0006b356 (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012116"
 name = "grumpy-skylark"

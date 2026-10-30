@@ -88,6 +88,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001446a"
+name = "gregarious-wolverine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083b50"
+to = "jk78c:00014138"
+note = """
+Target reader 00083b34 corresponds to JK78C reader 00072bb8. MOV.L 00083b50 \
+loads this table for call 1 of 15 at 00083b56 (dfco_lookup), the call \
+position where MOV.L jk78c:00072bce loads 00014138 for call 1 of 17 at \
+00072bd4 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000145de"
+name = "mighty-wildcat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f05c"
+to = "jk78c:00014138"
+note = """
+Target reader 0007f040 corresponds to JK78C reader 00072bb8. MOV.L 0007f05c \
+loads this table for call 1 of 15 at 0007f062 (dfco_lookup), the call \
+position where MOV.L jk78c:00072bce loads 00014138 for call 1 of 17 at \
+00072bd4 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d22"
 name = "swinging-dugong"

@@ -33,6 +33,40 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a66"
+name = "sturdy-cicada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007de1c"
+to = "jk78c:00013828"
+note = """
+Target reader 0007dd1e corresponds to JK78C reader 0006d7e8. MOV.L 0007de1c \
+loads this table for call 5 of 6 at 0007de1e (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d8b6 loads 00013828 for call 8 of 9 at \
+0006d8be (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c5a"
+name = "married-wapiti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00079410"
+to = "jk78c:00013828"
+note = """
+Target reader 00079312 corresponds to JK78C reader 0006d7e8. MOV.L 00079410 \
+loads this table for call 5 of 6 at 00079412 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d8b6 loads 00013828 for call 8 of 9 at \
+0006d8be (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121c6"
 name = "incredible-tortoise"

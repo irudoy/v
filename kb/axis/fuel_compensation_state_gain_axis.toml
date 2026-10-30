@@ -9,6 +9,38 @@ points = 16
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001352d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048c08"
+to = "jk78c:0001342f"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048c08 \
+loads this axis for call 8 of 9 at 00048c0c (groovy-lynx), the call position \
+where MOV.L jk78c:00041010 loads 0001342f for call 8 of 9 at 00041012 \
+(fortunate-adder)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000137d9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00045584"
+to = "jk78c:0001342f"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 00045584 \
+loads this axis for call 8 of 9 at 00045588 (fortunate-adder), the call \
+position where MOV.L jk78c:00041010 loads 0001342f for call 8 of 9 at \
+00041012 (fortunate-adder)."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0001342f"
 level = "code"
@@ -20,11 +52,23 @@ at = "jk78c:00041010"
 
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
-layouts = ["jk78c"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00041010"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045584"
+note = "The coordinator passes this axis in r5 to fortunate-adder at 00045588."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048c08"
+note = "The coordinator passes this axis in r5 to groovy-lynx at 00048c0c."

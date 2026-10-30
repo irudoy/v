@@ -35,6 +35,40 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 scale = [12]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001416c"
+name = "festive-macaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007a920"
+to = "jk78c:00013e6a"
+note = """
+JK78C helper 0006b338, called by 0006a9b0, is inlined into the corresponding \
+target reader 0007a740. MOV.L 0007a920 loads this table for call 7 of 19 at \
+0007a924 (jolly-guan), the call position where MOV.L jk78c:0006b35c loads \
+00013e6a for call 2 of 2 at 0006b366 (brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014300"
+name = "magnetic-tamarin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000762ac"
+to = "jk78c:00013e6a"
+note = """
+JK78C helper 0006b338, called by 0006a9b0, is inlined into the corresponding \
+target reader 000760cc. MOV.L 000762ac loads this table for call 7 of 19 at \
+000762b0 (brilliant-ibis), the call position where MOV.L jk78c:0006b35c \
+loads 00013e6a for call 2 of 2 at 0006b366 (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012984"
 name = "complex-tuna"

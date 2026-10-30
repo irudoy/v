@@ -103,6 +103,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a9e"
+name = "bouncy-waxbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007dd44"
+to = "jk78c:00013860"
+note = """
+Target reader 0007dd1e corresponds to JK78C reader 0006d7e8. MOV.L 0007dd44 \
+loads this table for call 2 of 6 at 0007dd46 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d80e loads 00013860 for call 2 of 9 at \
+0006d810 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c92"
+name = "free-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00079338"
+to = "jk78c:00013860"
+note = """
+Target reader 00079312 corresponds to JK78C reader 0006d7e8. MOV.L 00079338 \
+loads this table for call 2 of 6 at 0007933a (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d80e loads 00013860 for call 2 of 9 at \
+0006d810 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121fe"
 name = "honest-cuttlefish"

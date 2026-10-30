@@ -172,23 +172,23 @@ at = "1me3b:00033cec"
 
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
+to = "fuel_compensation_coordinator/fn"
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00040f70"
-
-[[link]]
-type = "reader"
-to = "huge-bonobo/fn"
-role = "accessor"
+at = "1me3b:00048b7c"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "1nd:000454f8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040f70"
 
 [[link]]
 type = "reader"
@@ -209,13 +209,3 @@ at = "1nd:00031164"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00033ed8"
-
-[[link]]
-type = "reader"
-to = "thundering-seahorse/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00048b7c"

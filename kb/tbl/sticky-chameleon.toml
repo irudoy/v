@@ -60,6 +60,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013bc6"
+name = "impartial-malkoha"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082c68"
+to = "jk78c:000139b0"
+note = """
+Target reader 00082c18 corresponds to JK78C reader 00071b0a. MOV.L 00082c68 \
+loads this table for call 1 of 2 at 00082c6e (dfco_lookup), the call \
+position where MOV.L jk78c:00071b5e loads 000139b0 for call 1 of 2 at \
+00071b64 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013de2"
+name = "bright-bug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e15c"
+to = "jk78c:000139b0"
+note = """
+Target reader 0007e10c corresponds to JK78C reader 00071b0a. MOV.L 0007e15c \
+loads this table for call 1 of 2 at 0007e162 (dfco_lookup), the call \
+position where MOV.L jk78c:00071b5e loads 000139b0 for call 1 of 2 at \
+00071b64 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000123b2"
 name = "sticky-chameleon"

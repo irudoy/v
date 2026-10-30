@@ -110,19 +110,8 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "huge-bonobo/fn"
-layouts = ["1nd"]
-relies = "structure"
-supports = "identity"
-
-[[link.evidence]]
-kind = "l0"
-at = "1nd:00045356"
-
-[[link]]
-type = "reader"
-to = "thundering-seahorse/fn"
-layouts = ["1me3b"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 
@@ -133,3 +122,7 @@ at = "1me3b:000489d4"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:000489f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00045356"

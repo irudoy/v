@@ -62,6 +62,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000139de"
+name = "teal-mongoose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007f54a"
+to = "jk78c:000137b0"
+note = """
+Target reader 0007f49a corresponds to JK78C reader 0006eccc. MOV.L 0007f54a \
+loads this table for call 1 of 1 at 0007f550 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006ed6e loads 000137b0 for call 1 of 1 at \
+0006ed74 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013be2"
+name = "pompous-meerkat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007abbe"
+to = "jk78c:000137b0"
+note = """
+Target reader 0007ab0e corresponds to JK78C reader 0006eccc. MOV.L 0007abbe \
+loads this table for call 1 of 1 at 0007abc4 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006ed6e loads 000137b0 for call 1 of 1 at \
+0006ed74 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001215e"
 name = "futuristic-rattlesnake"

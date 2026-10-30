@@ -55,6 +55,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a96"
+name = "cerise-eel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007dbce"
+to = "jk78c:00013858"
+note = """
+Target reader 0007dba0 corresponds to JK78C reader 0006d68c. MOV.L 0007dbce \
+loads this table for call 2 of 6 at 0007dbd0 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d6b8 loads 00013858 for call 2 of 10 at \
+0006d6ba (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c8a"
+name = "ludicrous-earthworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000791c2"
+to = "jk78c:00013858"
+note = """
+Target reader 00079194 corresponds to JK78C reader 0006d68c. MOV.L 000791c2 \
+loads this table for call 2 of 6 at 000791c4 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d6b8 loads 00013858 for call 2 of 10 at \
+0006d6ba (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121f6"
 name = "porcelain-crane"

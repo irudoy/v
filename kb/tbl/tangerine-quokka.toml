@@ -63,6 +63,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009bd4"
+name = "jade-stork"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048754"
+to = "jk78c:00009a1a"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048754 \
+loads this table for call 2 of 9 at 00048758 (rainbow-dove), the call \
+position where MOV.L jk78c:00040ab4 loads 00009a1a for call 2 of 9 at \
+00040ac2 (amusing-ara)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009ce0"
+name = "gay-barnacle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00045092"
+to = "jk78c:00009a1a"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 00045092 \
+loads this table for call 2 of 9 at 00045096 (amusing-ara), the call \
+position where MOV.L jk78c:00040ab4 loads 00009a1a for call 2 of 9 at \
+00040ac2 (amusing-ara)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009cea"
 name = "tangerine-quokka"

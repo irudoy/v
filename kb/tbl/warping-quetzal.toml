@@ -40,6 +40,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a874"
+name = "impartial-mammoth"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007f7fa"
+to = "jk78c:0000a43a"
+note = """
+Target reader 0007f7b4 corresponds to JK78C reader 0006eff0. MOV.L 0007f7fa \
+loads this table for call 2 of 7 at 0007f7fe (furry-puffin), the call \
+position where MOV.L jk78c:0006f042 loads 0000a43a for call 2 of 8 at \
+0006f04a (gleaming-walrus)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a840"
+name = "fearless-saluki"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007ae70"
+to = "jk78c:0000a43a"
+note = """
+Target reader 0007ae28 corresponds to JK78C reader 0006eff0. MOV.L 0007ae70 \
+loads this table for call 2 of 8 at 0007ae74 (gleaming-walrus), the call \
+position where MOV.L jk78c:0006f042 loads 0000a43a for call 2 of 8 at \
+0006f04a (gleaming-walrus)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000ab6a"
 name = "warping-quetzal"

@@ -87,6 +87,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a6c4"
+name = "functional-bat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007ed38"
+to = "jk78c:0000a34a"
+note = """
+Target reader 0007ed2c corresponds to JK78C reader 0006e4f6. MOV.L 0007ed38 \
+loads this table for call 1 of 3 at 0007ed44 (FUN_000288B4), the call \
+position where MOV.L jk78c:0006e50c loads 0000a34a for call 1 of 5 at \
+0006e518 (FUN_00027D74)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a750"
+name = "icy-wasp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007a396"
+to = "jk78c:0000a34a"
+note = """
+Target reader 0007a384 corresponds to JK78C reader 0006e4f6. MOV.L 0007a396 \
+loads this table for call 1 of 3 at 0007a39c (FUN_00028390), the call \
+position where MOV.L jk78c:0006e50c loads 0000a34a for call 1 of 5 at \
+0006e518 (FUN_00027D74)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000a8ea"
 name = "artichoke-wapiti"

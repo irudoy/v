@@ -79,6 +79,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c26"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007eea2"
+to = "jk78c:00013a18"
+note = """
+Target reader 0007ee5c corresponds to JK78C reader 0006e6f0. MOV.L 0007eea2 \
+loads this table for call 3 of 4 at 0007eea8 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006e738 loads 00013a18 for call 3 of 6 at \
+0006e73c (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007a548"
+to = "jk78c:00013a18"
+note = """
+Target reader 0007a508 corresponds to JK78C reader 0006e6f0. MOV.L 0007a548 \
+loads this table for call 3 of 3 at 0007a550 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006e738 loads 00013a18 for call 3 of 6 at \
+0006e73c (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001242a"
 former = ["steady-turtle/tbl/7mfk-0001242a"]

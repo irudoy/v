@@ -3,12 +3,56 @@ Explicit byte curve over axis 00013b08. Initialization reads input zero; \
 00040958 refreshes ffff1e90 from min(uint16[ffff11e0]>>2,255). Its \
 fuel-compensation context is established; coefficient meaning and conversion \
 remain unresolved."""
+note = [
+    """
+Editor publication is withheld on jk78c, 1nd and 1me3b. The coordinator \
+publishes this curve channel only while the current or previous state code \
+is 8. On jk78c coherent_snapshot (00020f1a) copies the current code ffff43ee \
+from the pair ffff43f0/ffff43f2, and the producer of codes 2 and 8 is \
+unestablished, so the stock path does not qualify the curve for \
+publication.""",
+]
 level = "code"
 role = "table"
 access = "explicit"
 cols = 16
 rows = 1
 storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "1me3b"
+address = "00013cf6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048a2c"
+to = "jk78c:00013ae8"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048a2c \
+loads this table for call 6 of 9 at 00048a30 (groovy-lynx), the call \
+position where MOV.L jk78c:00040e16 loads 00013ae8 for call 6 of 9 at \
+00040e1e (fortunate-adder)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f1a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000453ae"
+to = "jk78c:00013ae8"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 000453ae \
+loads this table for call 6 of 9 at 000453b2 (fortunate-adder), the call \
+position where MOV.L jk78c:00040e16 loads 00013ae8 for call 6 of 9 at \
+00040e1e (fortunate-adder)."""
 
 [[symbol]]
 layout = "jk78c"
@@ -24,7 +68,7 @@ at = "jk78c:00040e16"
 type = "axis"
 to = "fuel_compensation_coefficient_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -36,10 +80,41 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0002fd40"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000453ac"
+note = """
+The coordinator passes this axis with the curve to fortunate-adder at \
+000453b2."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f82"
+note = """
+The startup initializer passes this axis with the curve to fortunate-adder \
+at 00030f8a."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048a2a"
+note = """
+The coordinator passes this axis with the curve to groovy-lynx at 00048a30."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cf2"
+note = """
+The startup initializer passes this axis with the curve to groovy-lynx at \
+00033cfa."""
+
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
-layouts = ["jk78c"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
@@ -47,13 +122,44 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00040e16"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000453ae"
+note = """
+The coordinator passes this curve in r4 to fortunate-adder at 000453b2 and \
+stores the result in curve channel fffe8f28."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048a2c"
+note = """
+The coordinator passes this curve in r4 to groovy-lynx at 00048a30 and \
+stores the result in curve channel fffe8ed5."""
+
 [[link]]
 type = "reader"
 to = "startup_initializer/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002fd3c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f84"
+note = """
+The startup initializer passes this curve in r4 to fortunate-adder at \
+00030f8a."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cf4"
+note = """
+The startup initializer passes this curve in r4 to groovy-lynx at 00033cfa."""

@@ -53,6 +53,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015eb4"
+name = "fantastic-locust"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f0a4c"
+to = "jk78c:00015a02"
+note = """
+Target reader 000f0368 corresponds to JK78C reader 000c4874. MOV.L 000f0a4c \
+loads this table for call 3 of 4 at 000f0a50 (astonishing-teal), the call \
+position where MOV.L jk78c:000c4fce loads 00015a02 for call 3 of 4 at \
+000c4fd4 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015ff0"
+name = "premium-leopard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000e589c"
+to = "jk78c:00015a02"
+note = """
+Target reader 000e51b8 corresponds to JK78C reader 000c4874. MOV.L 000e589c \
+loads this table for call 3 of 4 at 000e58a0 (jasmine-lizard), the call \
+position where MOV.L jk78c:000c4fce loads 00015a02 for call 3 of 4 at \
+000c4fd4 (jasmine-lizard)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001463a"
 name = "topaz-chameleon"

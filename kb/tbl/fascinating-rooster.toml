@@ -47,6 +47,40 @@ relies = "contract"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000137b6"
+name = "coral-toad"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083d3e"
+to = "jk78c:00013630"
+note = """
+Target reader 00083b34 corresponds to JK78C reader 00072bb8. MOV.L 00083d3e \
+loads this table for call 9 of 15 at 00083d40 (dfco_lookup), the call \
+position where MOV.L jk78c:00072cf4 loads 00013630 for call 9 of 17 at \
+00072cfe (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013a02"
+name = "sassy-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f152"
+to = "jk78c:00013630"
+note = """
+Target reader 0007f040 corresponds to JK78C reader 00072bb8. MOV.L 0007f152 \
+loads this table for call 9 of 15 at 0007f154 (dfco_lookup), the call \
+position where MOV.L jk78c:00072cf4 loads 00013630 for call 9 of 17 at \
+00072cfe (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011f2a"
 name = "fascinating-rooster"

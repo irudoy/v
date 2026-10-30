@@ -56,6 +56,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001422a"
+name = "sly-ocelot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c9b8"
+to = "jk78c:00013f20"
+note = """
+Target reader 0007c95e corresponds to JK78C reader 0006c84a. MOV.L 0007c9b8 \
+loads this table for call 1 of 1 at 0007c9bc (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006c8b6 loads 00013f20 for call 1 of 1 at \
+0006c8ba (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000143be"
+name = "portable-caracara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00077fd6"
+to = "jk78c:00013f20"
+note = """
+Target reader 00077f3c corresponds to JK78C reader 0006c84a. MOV.L 00077fd6 \
+loads this table for call 1 of 1 at 00077fda (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006c8b6 loads 00013f20 for call 1 of 1 at \
+0006c8ba (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a32"
 name = "dark-sawfish"

@@ -62,6 +62,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001399e"
+name = "sparkling-octopus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082ed0"
+to = "jk78c:00013770"
+note = """
+Target reader 00082eb2 corresponds to JK78C reader 00071dfa. MOV.L 00082ed0 \
+loads this table for call 1 of 4 at 00082ed8 (dfco_lookup), the call \
+position where MOV.L jk78c:00071e0c loads 00013770 for call 1 of 5 at \
+00071e14 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ba2"
+name = "malachite-rooster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e3cc"
+to = "jk78c:00013770"
+note = """
+Target reader 0007e3ae corresponds to JK78C reader 00071dfa. MOV.L 0007e3cc \
+loads this table for call 1 of 4 at 0007e3d2 (dfco_lookup), the call \
+position where MOV.L jk78c:00071e0c loads 00013770 for call 1 of 5 at \
+00071e14 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001214e"
 name = "acrid-hound"

@@ -57,6 +57,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013d46"
+name = "hospitable-hare"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082496"
+to = "jk78c:00013b38"
+note = """
+Target reader 00082450 corresponds to JK78C reader 00071390. MOV.L 00082496 \
+loads this table for call 2 of 5 at 0008249a (jolly-guan), the call position \
+where MOV.L jk78c:000713e6 loads 00013b38 for call 2 of 5 at 000713ec \
+(brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f6a"
+name = "outrageous-duck"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007d992"
+to = "jk78c:00013b38"
+note = """
+Target reader 0007d94c corresponds to JK78C reader 00071390. MOV.L 0007d992 \
+loads this table for call 2 of 5 at 0007d996 (brilliant-ibis), the call \
+position where MOV.L jk78c:000713e6 loads 00013b38 for call 2 of 5 at \
+000713ec (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012572"
 name = "cocky-lion"

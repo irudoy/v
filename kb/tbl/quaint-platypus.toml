@@ -53,6 +53,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c8e"
+name = "industrious-herring"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083b96"
+to = "jk78c:00013a80"
+note = """
+Target reader 00083b34 corresponds to JK78C reader 00072bb8. MOV.L 00083b96 \
+loads this table for call 6 of 15 at 00083b9c (dfco_lookup), the call \
+position where MOV.L jk78c:00072c1e loads 00013a80 for call 6 of 17 at \
+00072c24 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013eb2"
+name = "sandy-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f0a2"
+to = "jk78c:00013a80"
+note = """
+Target reader 0007f040 corresponds to JK78C reader 00072bb8. MOV.L 0007f0a2 \
+loads this table for call 6 of 15 at 0007f0a8 (dfco_lookup), the call \
+position where MOV.L jk78c:00072c1e loads 00013a80 for call 6 of 17 at \
+00072c24 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000124e2"
 name = "quaint-platypus"

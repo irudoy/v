@@ -83,6 +83,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c1e"
+name = "sociable-nautilus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000829a4"
+to = "jk78c:00013a10"
+note = """
+Target reader 00082874 corresponds to JK78C reader 00071736. MOV.L 000829a4 \
+loads this table for call 1 of 2 at 000829a8 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:00071852 loads 00013a10 for call 1 of 2 at \
+0007185a (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e42"
+name = "victorious-sturgeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007de90"
+to = "jk78c:00013a10"
+note = """
+Target reader 0007dd70 corresponds to JK78C reader 00071736. MOV.L 0007de90 \
+loads this table for call 1 of 2 at 0007de94 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:00071852 loads 00013a10 for call 1 of 2 at \
+0007185a (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012422"
 name = "fair-horse"

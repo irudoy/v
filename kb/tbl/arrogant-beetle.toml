@@ -63,6 +63,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016134"
+name = "tuscan-slug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082786"
+to = "jk78c:00015c42"
+note = """
+Target reader 000826c4 corresponds to JK78C reader 0007154c. MOV.L 00082786 \
+loads this table for call 4 of 6 at 00082790 (aspiring-kittiwake), the call \
+position where MOV.L jk78c:00071644 loads 00015c42 for call 4 of 8 at \
+00071650 (urban-potoo)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016250"
+name = "turquoise-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007dc82"
+to = "jk78c:00015c42"
+note = """
+Target reader 0007db36 corresponds to JK78C reader 0007154c. MOV.L 0007dc82 \
+loads this table for call 4 of 6 at 0007dc8c (urban-potoo), the call \
+position where MOV.L jk78c:00071644 loads 00015c42 for call 4 of 8 at \
+00071650 (urban-potoo)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014a2a"
 name = "arrogant-beetle"

@@ -63,6 +63,40 @@ identity = [
 scale = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013d4e"
+name = "voracious-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000824a6"
+to = "jk78c:00013b40"
+note = """
+Target reader 00082450 corresponds to JK78C reader 00071390. MOV.L 000824a6 \
+loads this table for call 3 of 5 at 000824aa (jolly-guan), the call position \
+where MOV.L jk78c:000713f8 loads 00013b40 for call 3 of 5 at 000713fc \
+(brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f72"
+name = "true-loon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007d9a2"
+to = "jk78c:00013b40"
+note = """
+Target reader 0007d94c corresponds to JK78C reader 00071390. MOV.L 0007d9a2 \
+loads this table for call 3 of 5 at 0007d9a6 (brilliant-ibis), the call \
+position where MOV.L jk78c:000713f8 loads 00013b40 for call 3 of 5 at \
+000713fc (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012582"
 name = "awesome-raven"

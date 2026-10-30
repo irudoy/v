@@ -55,6 +55,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016d16"
+name = "elastic-doberman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082b3e"
+to = "jk78c:00016674"
+note = """
+Target reader 00082aca corresponds to JK78C reader 000719b6. MOV.L 00082b3e \
+loads this table for call 1 of 1 at 00082b42 (astonishing-teal), the call \
+position where MOV.L jk78c:00071a30 loads 00016674 for call 1 of 1 at \
+00071a36 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c92"
+name = "classy-guppy"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e02c"
+to = "jk78c:00016674"
+note = """
+Target reader 0007dfb6 corresponds to JK78C reader 000719b6. MOV.L 0007e02c \
+loads this table for call 1 of 1 at 0007e030 (jasmine-lizard), the call \
+position where MOV.L jk78c:00071a30 loads 00016674 for call 1 of 1 at \
+00071a36 (jasmine-lizard)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000154b0"
 name = "solemn-monkey"

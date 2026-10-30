@@ -85,6 +85,42 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013736"
+name = "transparent-bison"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083806"
+to = "jk78c:000135d8"
+note = """
+JK78C helper 000729b6, called by 00071dfa, is inlined into the corresponding \
+target reader 00082eb2. MOV.L 00083806 loads this table for call 4 of 4 at \
+0008380c (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000729ca loads 000135d8 for call 1 of 1 at 000729d0 \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000139aa"
+name = "merciful-dogfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007ed12"
+to = "jk78c:000135d8"
+note = """
+JK78C helper 000729b6, called by 00071dfa, is inlined into the corresponding \
+target reader 0007e3ae. MOV.L 0007ed12 loads this table for call 4 of 4 at \
+0007ed18 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000729ca loads 000135d8 for call 1 of 1 at 000729d0 \
+(idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011ede"
 name = "cooperative-caracara"

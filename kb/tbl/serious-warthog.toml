@@ -94,6 +94,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001666c"
+name = "amaranth-uakari"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007ed60"
+to = "jk78c:0001608a"
+note = """
+Target reader 0007ed2c corresponds to JK78C reader 0006e4f6. MOV.L 0007ed60 \
+loads this table for call 2 of 3 at 0007ed64 (aspiring-kittiwake), the call \
+position where MOV.L jk78c:0006e530 loads 0001608a for call 2 of 5 at \
+0006e534 (urban-potoo)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016688"
+name = "opal-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007a3b8"
+to = "jk78c:0001608a"
+note = """
+Target reader 0007a384 corresponds to JK78C reader 0006e4f6. MOV.L 0007a3b8 \
+loads this table for call 2 of 3 at 0007a3bc (urban-potoo), the call \
+position where MOV.L jk78c:0006e530 loads 0001608a for call 2 of 5 at \
+0006e534 (urban-potoo)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014ed2"
 name = "serious-warthog"

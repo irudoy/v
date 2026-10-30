@@ -81,6 +81,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013bd6"
+name = "cherubic-platypus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000826dc"
+to = "jk78c:000139c0"
+note = """
+Target reader 000826c4 corresponds to JK78C reader 0007154c. MOV.L 000826dc \
+loads this table for call 1 of 6 at 000826e6 (dfco_lookup), the call \
+position where MOV.L jk78c:00071568 loads 000139c0 for call 1 of 8 at \
+00071570 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013df2"
+name = "affable-antelope"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007db4e"
+to = "jk78c:000139c0"
+note = """
+Target reader 0007db36 corresponds to JK78C reader 0007154c. MOV.L 0007db4e \
+loads this table for call 1 of 6 at 0007db58 (dfco_lookup), the call \
+position where MOV.L jk78c:00071568 loads 000139c0 for call 1 of 8 at \
+00071570 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000123c2"
 name = "exotic-aardwolf"

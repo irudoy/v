@@ -76,6 +76,40 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a4e"
+name = "heavy-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007dbb6"
+to = "jk78c:00013810"
+note = """
+Target reader 0007dba0 corresponds to JK78C reader 0006d68c. MOV.L 0007dbb6 \
+loads this table for call 3 of 6 at 0007dbdc (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d6c2 loads 00013810 for call 3 of 10 at \
+0006d6c4 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c42"
+name = "cautious-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000791aa"
+to = "jk78c:00013810"
+note = """
+Target reader 00079194 corresponds to JK78C reader 0006d68c. MOV.L 000791aa \
+loads this table for call 3 of 6 at 000791d0 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d6c2 loads 00013810 for call 3 of 10 at \
+0006d6c4 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121ae"
 name = "monumental-cockle"

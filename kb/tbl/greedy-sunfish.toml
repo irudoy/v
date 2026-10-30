@@ -52,6 +52,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000141fa"
+name = "tuscan-wolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00080282"
+to = "jk78c:00013ef0"
+note = """
+Target reader 00080134 corresponds to JK78C reader 0006f75c. MOV.L 00080282 \
+loads this table for call 3 of 4 at 0008028c (dfco_lookup), the call \
+position where MOV.L jk78c:0006f870 loads 00013ef0 for call 5 of 7 at \
+0006f874 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001438e"
+name = "loud-moose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007b7bc"
+to = "jk78c:00013ef0"
+note = """
+Target reader 0007b670 corresponds to JK78C reader 0006f75c. MOV.L 0007b7bc \
+loads this table for call 3 of 4 at 0007b7c6 (dfco_lookup), the call \
+position where MOV.L jk78c:0006f870 loads 00013ef0 for call 5 of 7 at \
+0006f874 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000129f2"
 name = "greedy-sunfish"

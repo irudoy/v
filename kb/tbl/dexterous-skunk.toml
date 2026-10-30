@@ -80,6 +80,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009e64"
+name = "tough-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048848"
+to = "jk78c:00009bea"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048848 \
+loads this table for call 3 of 9 at 00048850 (dashing-badger), the call \
+position where MOV.L jk78c:00040c1c loads 00009bea for call 3 of 9 at \
+00040c2e (rousing-kingfisher)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009ef0"
+name = "hidden-mosquito"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000451e0"
+to = "jk78c:00009bea"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 000451e0 \
+loads this table for call 3 of 9 at 000451e8 (rousing-kingfisher), the call \
+position where MOV.L jk78c:00040c1c loads 00009bea for call 3 of 9 at \
+00040c2e (rousing-kingfisher)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009e4a"
 name = "dexterous-skunk"

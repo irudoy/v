@@ -26,6 +26,7 @@ unresolved, and no reader of ffff1f81 was found.""",
 level = "code"
 role = "accessor"
 block = "fuel_quantity/block"
+former = ["fuel_compensation_state_builder"]
 
 [[ledger]]
 registry = "curated"
@@ -195,6 +196,75 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00048564"
+former = [
+    "thundering-seahorse/fn/1me3b-00048564",
+    "thundering-seahorse/fn/1me3b-000486e0",
+]
+summary = """
+1ME3B coordinator with the three-state gate fffe8f80 and the bounded bypass \
+gates of ROM bytes 0x8A82, 0x8A71 and 0x8647, addressed through GBR. On the \
+lookup path it stores Fuel Compensation Main 0xA0F4 in channel fffe8ed6, \
+fuel_compensation_alternate 0xA1F4 in fffe8ed7 and \
+fuel_compensation_coefficient_curve 0x13CF6 in fffe8ed5. State codes \
+fffeb822 and fffeb850 each select a channel: code 2 selects the alternate \
+channel, code 8 the curve channel and every other code the main channel. The \
+published byte fffe8ed4 is the crossfade of the fffeb822 channel, weighted \
+by word fffeb820 with 0x8000 as 1.0, against the fffeb850 channel, or \
+against the held byte fffe8ed8 while bit 0 of fffeba3a is set. Curves \
+0x139AE and 0x13A3E supply the gated gain states. Physical conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048a10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048564"
+to = "7mfk:0003bd74"
+note = """
+Entry 00048564 has the callee order of JK78C 00040958 through the 1ME3B \
+wrappers, the same three-state gate and bounded bypass gates, and the same \
+main, alternate and curve channels with the state-code crossfade."""
+
+[[symbol]]
+layout = "1nd"
+address = "00044f1c"
+former = ["huge-bonobo/fn/1nd-00044f1c"]
+summary = """
+1ND coordinator with the three-state gate fffe8fc4 and the bounded bypass \
+gates of ROM bytes 0x8A31, 0x8A20 and 0x863F, addressed through GBR. On the \
+lookup path it stores Fuel Compensation Main 0xA1C0 in channel fffe8f29, \
+fuel_compensation_alternate 0xA2C0 in fffe8f2a and \
+fuel_compensation_coefficient_curve 0x13F1A in fffe8f28. State codes \
+fffeb6da and fffeb706 each select a channel: code 2 selects the alternate \
+channel, code 8 the curve channel and every other code the main channel. The \
+published byte fffe8154 is the crossfade of the fffeb6da channel, weighted \
+by word fffeb6d8 with 0x8000 as 1.0, against the fffeb706 channel, or \
+against the held byte fffe8f2b while bit 4 of fffeb8d0 is set. Curves \
+0x13BB2 and 0x13C32 supply the gated gain states. Physical conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045392"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044f1c"
+to = "7mfk:0003bd74"
+note = """
+Entry 00044f1c has the callee order of JK78C 00040958, the same three-state \
+gate and bounded bypass gates, and the same main, alternate and curve \
+channels with the state-code crossfade."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0003bd74"
 former = ["pistachio-bullfinch/fn/7mfk-0003bd74"]
@@ -362,6 +432,32 @@ kind = "trace"
 supports = "identity"
 to = "careful-terrier/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00040958"
+former = [
+    "fuel_compensation_state_builder/fn/jk78c-00040958",
+    "asparagus-scallop/fn/jk78c-00040958",
+]
+summary = """
+JK78C coordinator with the three-state gate ffff1f2c and the bounded bypass \
+gates of ROM bytes 0x896B, 0x895C and 0x85F6. On the lookup path it stores \
+Fuel Compensation Main 0x9EBA in channel ffff1e91, \
+fuel_compensation_alternate 0x9FBA in ffff1e92 and \
+fuel_compensation_coefficient_curve 0x13AE8 in ffff1e90. State codes \
+ffff43ee and ffff4414 each select a channel: code 2 selects the alternate \
+channel, code 8 the curve channel and every other code the main channel. The \
+published byte ffff114c is the crossfade of the ffff43ee channel, weighted \
+by word ffff43ec with 0x8000 as 1.0, against the ffff4414 channel, or \
+against the held byte ffff1e93 while bit 4 of ffff45a3 is set. Curves \
+0x13780 and 0x13800 supply the gated gain states. Physical conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040e00"
 
 [[link]]
 type = "depends"

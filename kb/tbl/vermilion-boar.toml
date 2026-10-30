@@ -80,6 +80,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001449a"
+name = "fluorescent-boar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083b72"
+to = "jk78c:00014168"
+note = """
+Target reader 00083b34 corresponds to JK78C reader 00072bb8. MOV.L 00083b72 \
+loads this table for call 4 of 15 at 00083b74 (dfco_lookup), the call \
+position where MOV.L jk78c:00072bf0 loads 00014168 for call 4 of 17 at \
+00072bf2 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001460e"
+name = "wild-gorilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f07e"
+to = "jk78c:00014168"
+note = """
+Target reader 0007f040 corresponds to JK78C reader 00072bb8. MOV.L 0007f07e \
+loads this table for call 4 of 15 at 0007f080 (dfco_lookup), the call \
+position where MOV.L jk78c:00072bf0 loads 00014168 for call 4 of 17 at \
+00072bf2 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d52"
 name = "vermilion-boar"

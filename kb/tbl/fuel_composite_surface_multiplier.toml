@@ -75,6 +75,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009ef4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007ee76"
+to = "jk78c:00009c7a"
+note = """
+Target reader 0007ee5c corresponds to JK78C reader 0006e6f0. MOV.L 0007ee76 \
+loads this table for call 1 of 4 at 0007ee7e (FUN_000288B4), the call \
+position where MOV.L jk78c:0006e708 loads 00009c7a for call 1 of 6 at \
+0006e712 (FUN_00027D74)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009f80"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007a51a"
+to = "jk78c:00009c7a"
+note = """
+Target reader 0007a508 corresponds to JK78C reader 0006e6f0. MOV.L 0007a51a \
+loads this table for call 1 of 3 at 0007a522 (FUN_00028390), the call \
+position where MOV.L jk78c:0006e708 loads 00009c7a for call 1 of 6 at \
+0006e712 (FUN_00027D74)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009eda"
 former = ["meticulous-slug/tbl/7mfk-00009eda"]

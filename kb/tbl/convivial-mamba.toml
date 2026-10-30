@@ -64,6 +64,40 @@ relies = "contract"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "000146ca"
+name = "clay-gharial"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007e8ca"
+to = "jk78c:00014380"
+note = """
+Target reader 0007e874 corresponds to JK78C reader 0006e248. MOV.L 0007e8ca \
+loads this table for call 1 of 31 at 0007e8d0 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006e2a0 loads 00014380 for call 1 of 41 at \
+0006e2a4 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014816"
+name = "elastic-tuatara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00079ec2"
+to = "jk78c:00014380"
+note = """
+Target reader 00079e6c corresponds to JK78C reader 0006e248. MOV.L 00079ec2 \
+loads this table for call 1 of 30 at 00079ec8 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006e2a0 loads 00014380 for call 1 of 41 at \
+0006e2a4 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001300e"
 name = "convivial-mamba"

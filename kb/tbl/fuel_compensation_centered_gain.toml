@@ -3,12 +3,56 @@ Explicit byte gain in 00040958 over the centered byte encoding of saturated \
 signed word ffff1ebe, with axis 00013483. Stored at ffff1e80 and used with \
 00013780 in the gated compensation product. Physical coefficient units \
 remain unresolved."""
+note = [
+    """
+Editor publication is withheld on jk78c, 1nd and 1me3b. On jk78c the \
+coordinator multiplies this gain, the state gain and signed word ffff1ebe \
+into word ffff1ef8 only while bit 7 of ffff45bd is clear and bit 0 of \
+ffff23c2 is set, and writes zero otherwise. The producers of both gate bits \
+and the role of FUN_000401D4, the reader of ffff1ef8, are unestablished, so \
+the stock path does not qualify the gain for publication.""",
+]
 level = "code"
 role = "table"
 access = "explicit"
 cols = 8
 rows = 1
 storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "1me3b"
+address = "00013a3e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048c30"
+to = "jk78c:00013800"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048c30 \
+loads this table for call 9 of 9 at 00048c34 (jolly-guan), the call position \
+where MOV.L jk78c:00041030 loads 00013800 for call 9 of 9 at 00041038 \
+(brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c32"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000455ac"
+to = "jk78c:00013800"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 000455ac \
+loads this table for call 9 of 9 at 000455b0 (brilliant-ibis), the call \
+position where MOV.L jk78c:00041030 loads 00013800 for call 9 of 9 at \
+00041038 (brilliant-ibis)."""
 
 [[symbol]]
 layout = "jk78c"
@@ -24,20 +68,47 @@ at = "jk78c:00041030"
 type = "axis"
 to = "fuel_compensation_centered_gain_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00041034"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000455aa"
+note = """
+The coordinator passes this axis with the gain to brilliant-ibis at \
+000455b0."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048c2e"
+note = """
+The coordinator passes this axis with the gain to jolly-guan at 00048c34."""
+
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
-layouts = ["jk78c"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00041030"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000455ac"
+note = "The coordinator passes this gain in r4 to brilliant-ibis at 000455b0."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048c30"
+note = "The coordinator passes this gain in r4 to jolly-guan at 00048c34."

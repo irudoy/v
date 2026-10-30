@@ -51,6 +51,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015ea4"
+name = "visionary-nyala"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f0842"
+to = "jk78c:000159f2"
+note = """
+Target reader 000f0368 corresponds to JK78C reader 000c4874. MOV.L 000f0842 \
+loads this table for call 1 of 4 at 000f0846 (astonishing-teal), the call \
+position where MOV.L jk78c:000c4d8e loads 000159f2 for call 1 of 4 at \
+000c4d9c (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015fe0"
+name = "modest-ermine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000e5692"
+to = "jk78c:000159f2"
+note = """
+Target reader 000e51b8 corresponds to JK78C reader 000c4874. MOV.L 000e5692 \
+loads this table for call 1 of 4 at 000e5696 (jasmine-lizard), the call \
+position where MOV.L jk78c:000c4d8e loads 000159f2 for call 1 of 4 at \
+000c4d9c (jasmine-lizard)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001462a"
 name = "thick-goshawk"

@@ -36,6 +36,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000143b2"
+name = "ludicrous-badger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0008450c"
+to = "jk78c:00014080"
+note = """
+Target reader 000841b4 corresponds to JK78C reader 000730cc. MOV.L 0008450c \
+loads this table for call 4 of 9 at 0008450e (jolly-guan), the call position \
+where MOV.L jk78c:000731ca loads 00014080 for call 5 of 10 at 000731d2 \
+(brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014526"
+name = "glorious-mongrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f830"
+to = "jk78c:00014080"
+note = """
+Target reader 0007f4e0 corresponds to JK78C reader 000730cc. MOV.L 0007f830 \
+loads this table for call 5 of 9 at 0007f832 (brilliant-ibis), the call \
+position where MOV.L jk78c:000731ca loads 00014080 for call 5 of 10 at \
+000731d2 (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012c12"
 name = "boisterous-mustang"

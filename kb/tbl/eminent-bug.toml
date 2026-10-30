@@ -61,6 +61,42 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013926"
+name = "swinging-oriole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007aa32"
+to = "jk78c:00013708"
+note = """
+JK78C helper 0006b3ea, called by 0006a9b0, is inlined into the corresponding \
+target reader 0007a740. MOV.L 0007aa32 loads this table for call 8 of 19 at \
+0007aa36 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:0006b418 loads 00013708 for call 1 of 1 at 0006b41c \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b3a"
+name = "dainty-bustard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000763be"
+to = "jk78c:00013708"
+note = """
+JK78C helper 0006b3ea, called by 0006a9b0, is inlined into the corresponding \
+target reader 000760cc. MOV.L 000763be loads this table for call 8 of 19 at \
+000763c2 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:0006b418 loads 00013708 for call 1 of 1 at 0006b41c \
+(idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012086"
 name = "eminent-bug"

@@ -105,6 +105,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013cce"
+name = "solid-mosquito"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00088dd4"
+to = "jk78c:00013ac0"
+note = """
+Target reader 00088db0 corresponds to JK78C reader 00077202. MOV.L 00088dd4 \
+loads this table for call 2 of 2 at 00088e26 (magic-grouse), the call \
+position where MOV.L jk78c:00077274 loads 00013ac0 for call 2 of 3 at \
+00077278 (hypnotic-dugong)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ef2"
+name = "hissing-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000844c8"
+to = "jk78c:00013ac0"
+note = """
+Target reader 000844a4 corresponds to JK78C reader 00077202. MOV.L 000844c8 \
+loads this table for call 2 of 2 at 0008451a (hypnotic-dugong), the call \
+position where MOV.L jk78c:00077274 loads 00013ac0 for call 2 of 3 at \
+00077278 (hypnotic-dugong)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012522"
 name = "fuzzy-giraffe"

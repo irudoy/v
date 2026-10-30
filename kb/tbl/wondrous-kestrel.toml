@@ -34,6 +34,40 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013aae"
+name = "sophisticated-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007dd36"
+to = "jk78c:00013870"
+note = """
+Target reader 0007dd1e corresponds to JK78C reader 0006d7e8. MOV.L 0007dd36 \
+loads this table for call 1 of 6 at 0007dd3c (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d7fe loads 00013870 for call 1 of 9 at \
+0006d806 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ca2"
+name = "secret-pig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007932a"
+to = "jk78c:00013870"
+note = """
+Target reader 00079312 corresponds to JK78C reader 0006d7e8. MOV.L 0007932a \
+loads this table for call 1 of 6 at 00079330 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d7fe loads 00013870 for call 1 of 9 at \
+0006d806 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001220e"
 name = "wondrous-kestrel"

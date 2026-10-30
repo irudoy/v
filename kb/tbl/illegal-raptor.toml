@@ -72,6 +72,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013e9c"
+name = "cautious-degu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007fa10"
+to = "jk78c:00013c36"
+note = """
+Target reader 0007f7b4 corresponds to JK78C reader 0006eff0. MOV.L 0007fa10 \
+loads this table for call 4 of 7 at 0007fa14 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006f2b0 loads 00013c36 for call 5 of 8 at \
+0006f2b2 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014090"
+name = "pumpkin-capybara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007b088"
+to = "jk78c:00013c36"
+note = """
+Target reader 0007ae28 corresponds to JK78C reader 0006eff0. MOV.L 0007b088 \
+loads this table for call 4 of 8 at 0007b08c (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006f2b0 loads 00013c36 for call 5 of 8 at \
+0006f2b2 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000126b8"
 name = "illegal-raptor"

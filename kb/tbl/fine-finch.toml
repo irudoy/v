@@ -67,6 +67,40 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a86"
+name = "tuscan-cuttlefish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007dc6a"
+to = "jk78c:00013848"
+note = """
+Target reader 0007dba0 corresponds to JK78C reader 0006d68c. MOV.L 0007dc6a \
+loads this table for call 4 of 6 at 0007dc70 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d73c loads 00013848 for call 6 of 10 at \
+0006d742 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c7a"
+name = "huge-pig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007925e"
+to = "jk78c:00013848"
+note = """
+Target reader 00079194 corresponds to JK78C reader 0006d68c. MOV.L 0007925e \
+loads this table for call 4 of 6 at 00079264 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d73c loads 00013848 for call 6 of 10 at \
+0006d742 (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121e6"
 name = "fine-finch"

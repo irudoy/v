@@ -54,6 +54,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000141ea"
+name = "invisible-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00080276"
+to = "jk78c:00013ee0"
+note = """
+Target reader 00080134 corresponds to JK78C reader 0006f75c. MOV.L 00080276 \
+loads this table for call 2 of 4 at 0008027c (dfco_lookup), the call \
+position where MOV.L jk78c:0006f85a loads 00013ee0 for call 4 of 7 at \
+0006f860 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001437e"
+name = "private-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007b7b0"
+to = "jk78c:00013ee0"
+note = """
+Target reader 0007b670 corresponds to JK78C reader 0006f75c. MOV.L 0007b7b0 \
+loads this table for call 2 of 4 at 0007b7b6 (dfco_lookup), the call \
+position where MOV.L jk78c:0006f85a loads 00013ee0 for call 4 of 7 at \
+0006f860 (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000129e2"
 name = "married-whippet"

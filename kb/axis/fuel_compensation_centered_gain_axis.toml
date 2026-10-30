@@ -8,6 +8,38 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013581"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048c2e"
+to = "jk78c:00013483"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048c2e \
+loads this axis for call 9 of 9 at 00048c34 (jolly-guan), the call position \
+where MOV.L jk78c:00041034 loads 00013483 for call 9 of 9 at 00041038 \
+(brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001382d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000455aa"
+to = "jk78c:00013483"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 000455aa \
+loads this axis for call 9 of 9 at 000455b0 (brilliant-ibis), the call \
+position where MOV.L jk78c:00041034 loads 00013483 for call 9 of 9 at \
+00041038 (brilliant-ibis)."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013483"
 level = "code"
@@ -19,11 +51,23 @@ at = "jk78c:00041034"
 
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
-layouts = ["jk78c"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00041034"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000455aa"
+note = "The coordinator passes this axis in r5 to brilliant-ibis at 000455b0."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048c2e"
+note = "The coordinator passes this axis in r5 to jolly-guan at 00048c34."

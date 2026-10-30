@@ -47,6 +47,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009e54"
+name = "aquamarine-ferret"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048b10"
+to = "jk78c:00009bda"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048b10 \
+loads this table for call 7 of 9 at 00048b14 (rainbow-dove), the call \
+position where MOV.L jk78c:00040efa loads 00009bda for call 7 of 9 at \
+00040f08 (amusing-ara)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009ee0"
+name = "awesome-trout"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00045492"
+to = "jk78c:00009bda"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 00045492 \
+loads this table for call 7 of 9 at 00045496 (amusing-ara), the call \
+position where MOV.L jk78c:00040efa loads 00009bda for call 7 of 9 at \
+00040f08 (amusing-ara)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009e3a"
 name = "interesting-coucal"

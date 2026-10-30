@@ -76,6 +76,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013d3e"
+name = "calculating-sponge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082466"
+to = "jk78c:00013b30"
+note = """
+Target reader 00082450 corresponds to JK78C reader 00071390. MOV.L 00082466 \
+loads this table for call 1 of 5 at 0008246a (idle_ignition_lookup), the \
+call position where MOV.L jk78c:000713a6 loads 00013b30 for call 1 of 5 at \
+000713ae (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f62"
+name = "adamant-orangutan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007d962"
+to = "jk78c:00013b30"
+note = """
+Target reader 0007d94c corresponds to JK78C reader 00071390. MOV.L 0007d962 \
+loads this table for call 1 of 5 at 0007d966 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:000713a6 loads 00013b30 for call 1 of 5 at \
+000713ae (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012562"
 name = "loutish-markhor"

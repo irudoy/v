@@ -7,6 +7,38 @@ points = 16
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013d16"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048a2a"
+to = "jk78c:00013b08"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 00048a2a \
+loads this axis for call 6 of 9 at 00048a30 (groovy-lynx), the call position \
+where MOV.L jk78c:00040e18 loads 00013b08 for call 6 of 9 at 00040e1e \
+(fortunate-adder)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f3a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000453ac"
+to = "jk78c:00013b08"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 000453ac \
+loads this axis for call 6 of 9 at 000453b2 (fortunate-adder), the call \
+position where MOV.L jk78c:00040e18 loads 00013b08 for call 6 of 9 at \
+00040e1e (fortunate-adder)."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013b08"
 level = "code"
@@ -18,8 +50,8 @@ at = "jk78c:00040e18"
 
 [[link]]
 type = "reader"
-to = "fuel_compensation_state_builder/fn"
-layouts = ["jk78c"]
+to = "fuel_compensation_coordinator/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
@@ -27,13 +59,40 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00040e18"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000453ac"
+note = "The coordinator passes this axis in r5 to fortunate-adder at 000453b2."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048a2a"
+note = "The coordinator passes this axis in r5 to groovy-lynx at 00048a30."
+
 [[link]]
 type = "reader"
 to = "startup_initializer/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002fd40"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00030f82"
+note = """
+The startup initializer passes this axis in r5 to fortunate-adder at \
+00030f8a."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00033cf2"
+note = """
+The startup initializer passes this axis in r5 to groovy-lynx at 00033cfa."""

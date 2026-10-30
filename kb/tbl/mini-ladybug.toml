@@ -34,6 +34,40 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013a8e"
+name = "dainty-quokka"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007e054"
+to = "jk78c:00013850"
+note = """
+Target reader 0007df60 corresponds to JK78C reader 0006da20. MOV.L 0007e054 \
+loads this table for call 2 of 4 at 0007e19e (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006dc74 loads 00013850 for call 2 of 6 at \
+0006dc7c (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c82"
+name = "gigantic-cricket"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007964a"
+to = "jk78c:00013850"
+note = """
+Target reader 00079554 corresponds to JK78C reader 0006da20. MOV.L 0007964a \
+loads this table for call 2 of 4 at 00079796 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006dc74 loads 00013850 for call 2 of 6 at \
+0006dc7c (idle_ignition_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000121ee"
 name = "mini-ladybug"

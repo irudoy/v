@@ -80,6 +80,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001447a"
+name = "melodic-leopard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083b5e"
+to = "jk78c:00014148"
+note = """
+Target reader 00083b34 corresponds to JK78C reader 00072bb8. MOV.L 00083b5e \
+loads this table for call 2 of 15 at 00083b60 (dfco_lookup), the call \
+position where MOV.L jk78c:00072bdc loads 00014148 for call 2 of 17 at \
+00072bde (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000145ee"
+name = "onyx-cougar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007f06a"
+to = "jk78c:00014148"
+note = """
+Target reader 0007f040 corresponds to JK78C reader 00072bb8. MOV.L 0007f06a \
+loads this table for call 2 of 15 at 0007f06c (dfco_lookup), the call \
+position where MOV.L jk78c:00072bdc loads 00014148 for call 2 of 17 at \
+00072bde (dfco_lookup)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d32"
 name = "fluffy-bison"
