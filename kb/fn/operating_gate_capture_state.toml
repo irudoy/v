@@ -1,0 +1,28 @@
+title = "Publish captured accumulator threshold state"
+summary = """
+Copy uint32[ffff437c] to ffffa624. When ffffa635 is zero and both ffffa634 \
+and ffffa636 equal one, latch ffffa62c and capture the accumulator at \
+ffff4384; set ffffa62b below the threshold at ffffa630, otherwise set \
+ffffa62a. A nonzero ffffa635 clears the two comparison-result bytes. Paths \
+that return early preserve their prior state bytes."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "consumer"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bc9dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bc9dc"

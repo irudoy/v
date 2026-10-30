@@ -1,0 +1,57 @@
+title = "Operating gate capture threshold flag set"
+summary = """
+Alternative capture-threshold curve selected when raw flag ffff5c0e is \
+nonzero. The lookup and multiplication by 64 share the default curve's path; \
+zero stock values do not establish absence or inactivity."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00016884"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bccb2"
+
+[[link]]
+type = "axis"
+to = "operating_gate_capture_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bccb2"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "reader"
+to = "operating_gate_capture_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bccb2"
+note = "The complete reader and literal-pool operand establish this access."

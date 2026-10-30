@@ -1,0 +1,45 @@
+title = "Operating gate capture increment gain"
+summary = """
+Unsigned capture increment gain. Multiply the raw reference by this byte and \
+shift right eleven; the low word then multiplies the previous feedback byte \
+and 91 before unsigned division by 2213 and uint16 saturation."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008382"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcce2"
+
+[[link]]
+type = "reader"
+to = "operating_gate_capture_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcce2"
+note = "The complete reader and literal-pool operand establish this access."

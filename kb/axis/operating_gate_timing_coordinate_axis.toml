@@ -1,0 +1,42 @@
+title = "Operating gate timing coordinate axis"
+summary = """
+Explicit eight-word axis for factor 00015902. The input is 32768 plus the \
+signed byte at ffff1f45. The addition is an operational coordinate bias; no \
+degree conversion is inferred."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00014f9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd292"
+
+[[link]]
+type = "reader"
+to = "operating_gate_weighted_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd292"
+note = "The complete reader and literal-pool operand establish this access."

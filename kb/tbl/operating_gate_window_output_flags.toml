@@ -1,0 +1,49 @@
+title = "Operating gate window output flags"
+summary = """
+Bit5 selects the combined held permission as the first window helper output. \
+A clear bit returns the raw interval-membership result. The second output \
+always returns the combined permission."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "0000895a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000bcdac"
+value = 1084
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "operating_gate_coolant_windows/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000bcdac"
+value = 1084
+mode = "base"
+note = "The complete reader and literal-pool operand establish this access."

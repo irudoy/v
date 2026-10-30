@@ -1,0 +1,41 @@
+title = "Operating gate fraction coordinate axis"
+summary = """
+Explicit eight-word axis for the concurrent-fraction threshold. The input is \
+raw byte ffff106c. Its physical conversion remains unresolved."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00014fac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcea4"
+
+[[link]]
+type = "reader"
+to = "operating_gate_fraction_qualifier/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcea4"
+note = "The complete reader and literal-pool operand establish this access."

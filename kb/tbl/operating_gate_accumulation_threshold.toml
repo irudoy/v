@@ -1,0 +1,60 @@
+title = "Operating gate accumulation threshold"
+summary = """
+Shared accumulated-state threshold. The weighted accumulator divides its \
+stored count by max(this word,1) before capping to 255 and emitting inverse \
+feedback. The conservative accumulator compares this word with floor(its \
+accumulator/255). These operations retain stored-count units."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "threshold"
+block = "unattributed/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "000090d8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd2a2"
+
+[[link]]
+type = "reader"
+to = "operating_gate_conservative_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd224"
+note = """
+The conservative accumulator compares this word with \
+floor(accumulator/255)."""
+
+[[link]]
+type = "reader"
+to = "operating_gate_weighted_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd2a2"
+note = "The complete reader and literal-pool operand establish this access."

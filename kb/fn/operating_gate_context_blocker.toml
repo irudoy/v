@@ -1,0 +1,29 @@
+title = "Qualify contextual blocking with a held word gate"
+summary = """
+Use raw word ffff11e0, byte ffff106c, voltage byte ffff1174, word ffff22bc \
+and incoming flags to qualify a blocking output. ROM16[00008d98] and held \
+byte ffffa646 govern the word gate; the 00008395 byte interval, the 00008d9c \
+word interval, and held byte ffffa647 govern an alternative branch. Update \
+the counter through 00027b00 and compare it with ROM16[00008d9a]. Publish \
+the result at ffff45b2.bit0 and through the stack-passed result pointer."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "monitor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bcfc2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcfc2"

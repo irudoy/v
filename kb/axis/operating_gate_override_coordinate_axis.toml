@@ -1,0 +1,53 @@
+title = "Operating gate override coordinate axis"
+summary = """
+Shared explicit eight-word axis for override curve 0001622a, indexed by raw \
+byte ffff106c in both accumulators. Physical conversion remains unresolved."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00014f3c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd344"
+
+[[link]]
+type = "reader"
+to = "operating_gate_conservative_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd1f8"
+note = "Both override paths pass this explicit axis to wrapper 000282f4."
+
+[[link]]
+type = "reader"
+to = "operating_gate_weighted_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd344"
+note = "The complete reader and literal-pool operand establish this access."

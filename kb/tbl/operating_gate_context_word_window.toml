@@ -1,0 +1,49 @@
+title = "Operating gate context word window"
+summary = """
+Inclusive upper/lower word interval applied to uint16[ffff22bc] in the \
+alternative context branch when uint16[ffff11e0] is at least 32. The first \
+and second word are the upper and lower bounds respectively."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "direct-indexed"
+cols = 2
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008d9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000bcfd6"
+value = 4
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "operating_gate_context_blocker/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000bcfd6"
+value = 4
+mode = "base"
+note = "The complete reader and literal-pool operand establish this access."

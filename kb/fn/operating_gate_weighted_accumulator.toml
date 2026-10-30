@@ -1,0 +1,31 @@
+title = "Accumulate weighted reference and emit inverse feedback"
+summary = """
+Read word curve 000160ea with raw uint16[ffff11e0] on axis 00014fcc and \
+curve 00015902 with 32768+int8[ffff1f45] on axis 00014f9c. While permitted, \
+multiply the raw reference by the second factor and shift right six with \
+uint16 saturation, multiply by the first factor and shift right ten with \
+uint16 saturation, then accumulate with cap 0x00feff01. The override flag \
+ffff974c.bit3 substitutes 255 times curve 0001622a. Divide by \
+max(ROM16[000090d8],1), cap to 255 and publish the inverse byte 255-result \
+at ffff4332. Retain the accumulated value at ffffa640."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "consumer"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bd25a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd25a"

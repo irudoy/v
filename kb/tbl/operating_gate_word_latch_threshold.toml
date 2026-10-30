@@ -1,0 +1,45 @@
+title = "Operating gate word latch threshold"
+summary = """
+Threshold of the held gate based on uint16[ffff11e0]. A value at or above \
+this word sets the local gate; an already nonzero held byte ffffa646 also \
+retains it."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "threshold"
+block = "unattributed/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00008d98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcfde"
+
+[[link]]
+type = "reader"
+to = "operating_gate_context_blocker/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcfde"
+note = "The complete reader and literal-pool operand establish this access."

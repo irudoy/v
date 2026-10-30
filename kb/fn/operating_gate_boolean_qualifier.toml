@@ -1,0 +1,27 @@
+title = "Combine window permission and blocking state"
+summary = """
+Combine the prior held-window permission with the inverse context blocker. \
+Return that combined state separately from the state additionally qualified \
+by raw byte ffffa644 being zero. Publish the latter at ffff45b2.bit1 and the \
+former at ffff45b3.bit7. The two outputs retain distinct roles."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "consumer"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bcf68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcf68"

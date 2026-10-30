@@ -1,0 +1,32 @@
+title = "Compare concurrent gate fractions with calibrated bounds"
+summary = """
+Update three unsigned word counters through 00027b72 from the incoming \
+operating gate, ffff23b9.bit6 and ffff23b1.bit0. Compare \
+low8(floor(100*counter[ffff433c]/max(counter[ffff4340],1))) with \
+ROM8[00008394], then compare \
+low8(floor(100*counter[ffff433e]/max(counter[ffff433c],1))) with word curve \
+00015bf2 on axis 00014fac. Publish the conjunction through the result \
+pointer and ffff45b2.bit2. Each counter increments while its gate is nonzero \
+and otherwise retains its value, with saturation at 65535; every call passes \
+reset=0. Invocation cadence and external reset producers remain unresolved."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "monitor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bce88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bce88"

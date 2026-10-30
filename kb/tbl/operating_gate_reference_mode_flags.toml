@@ -1,0 +1,45 @@
+title = "Operating gate reference mode flags"
+summary = """
+Bit7 selects floor(uint16[ffff102e]*8160/65536) as the common reference. A \
+clear bit selects the low 32-bit product uint16[ffff102e]*uint16[ffff2242] \
+divided by 131586. Other bits remain unresolved."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "000087d3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcb06"
+
+[[link]]
+type = "reader"
+to = "operating_gate_coordinator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcb06"
+note = "The complete reader and literal-pool operand establish this access."

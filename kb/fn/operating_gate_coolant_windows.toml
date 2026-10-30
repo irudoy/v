@@ -1,0 +1,28 @@
+title = "Qualify raw coolant windows and held permission"
+summary = """
+Select one inclusive raw-byte interval at 00008757 or the union of two \
+intervals at 0000851e according to ffff23b9.bit6. The input is raw coolant \
+byte ffff106f. Combine the interval result with held byte ffffa637 and \
+ffff44f4.bit0, publish ffff45b2.bit4, and select the returned interval or \
+combined gate through ROM8[0000895a].bit5."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "monitor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bcda2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bcda2"

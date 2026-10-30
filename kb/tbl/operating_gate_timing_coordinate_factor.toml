@@ -1,0 +1,73 @@
+title = "Operating gate timing coordinate factor"
+summary = """
+Word factor looked up with 32768+int8[ffff1f45] on centered word axis \
+00014f9c. The weighted accumulator multiplies this result by the raw \
+reference and shifts right six with uint16 saturation before applying its \
+second factor. The conservative accumulator uses the minimum of all eight \
+entries."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "table"
+block = "unattributed/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[editor]
+emit = false
+
+[[symbol]]
+layout = "jk78c"
+address = "00015902"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd28e"
+
+[[link]]
+type = "axis"
+to = "operating_gate_timing_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd28e"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link]]
+type = "reader"
+to = "operating_gate_conservative_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd144"
+note = """
+The conservative reader scans all eight unsigned words directly and selects \
+their minimum; it performs no lookup of this factor."""
+
+[[link]]
+type = "reader"
+to = "operating_gate_weighted_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bd28e"
+note = "The complete reader and literal-pool operand establish this access."

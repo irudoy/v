@@ -1,0 +1,31 @@
+title = "Coordinate operating gates and accumulated state"
+summary = """
+Coordinate all seven immediate helpers of the BCA1C family. Pass raw context \
+byte ffff106c, coolant byte ffff106f, voltage byte ffff1174, signed timing \
+byte ffff1f45, word ffff11e0 and several existing flags through registers \
+and reviewed stack slots. Select the reference from uint16[ffff102e] using \
+ROM8[000087d3].bit7 and optional word ffff2242. Publish helper results in \
+ffff44fc bits 2, 3, 4 and 5, and copy the captured state byte to ffffa644. \
+Stack byte parameters are recovered from their caller stores; the \
+decompiler's uninitialized high-byte temporary does not define an input."""
+note = [
+    """
+The physical subsystem and invocation period remain unresolved under issue \
+#110. The complete JK78C family establishes stored-count lookup and \
+state-update roles. Engineering conversions of these calibration operands, \
+editor publication and later-layout counterparts require separate \
+qualification.""",
+]
+level = "code"
+role = "dispatch"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bca1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bca1c"
