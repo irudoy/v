@@ -5,16 +5,19 @@ selected centered gain. The input's physical meaning remains unresolved."""
 note = [
     """
 Editor publication is withheld on jk78c, 1nd and 1me3b. On jk78c the \
-coordinator multiplies this gain, signed word ffff1ebe and the centered gain \
-into word ffff1ef8 only while bit 7 of ffff45bd is clear and bit 0 of \
+coordinator writes word ffff1ef8 = sat16(trunc0(ffff1ebe * state gain * \
+centered gain / 256)) only while bit 7 of ffff45bd is clear and bit 0 of \
 ffff23c2 is set, and writes zero otherwise. The same coordinator latches bit \
 0 of ffff23c2 at 00040a64..00040a8c: a set bit 7 of ffff23a9 or of ffff45c7 \
 clears it, gate state 2 with both bits clear sets it, and any other state \
-retains it. FUN_000401D4 adds the signed word ffff1ef8 to the Base Fuel \
-Schedule candidate before the upper-limit curve. The producers of bit 7 of \
-ffff45bd and of word ffff1ebe and the stock reachability of a nonzero \
-product are unestablished, so the stock path does not qualify the gain for \
-publication.""",
+retains it. Signed word ffff1ebe has one writer, the coordinator at \
+00040be2: byte ffff115c (alpha_n_flow) minus its copy delayed by \
+min(ROM8[0x8434], 10) samples in the 11-byte history ffff1ee8..ffff1ef2, \
+with stock ROM byte 0x8434 = 0x01. FUN_000401D4 adds the signed word \
+ffff1ef8 to the Base Fuel Schedule candidate before the upper-limit curve. \
+Bit 7 of ffff45bd has no writer in the JK78C code export, and the stock \
+reachability of a nonzero product is unestablished, so the stock path does \
+not qualify the gain for publication.""",
 ]
 level = "code"
 role = "table"
