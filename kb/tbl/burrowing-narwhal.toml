@@ -167,6 +167,21 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f60"
+name = "copper-basilisk"
+note = """
+Read by FUN_000E59F8 through the literal-pool word 0x000E5BC0, loaded at \
+0x000E5B24, over the axis 0x00013362 (50..130) by byte 0xFFFF10F1 while \
+ROM8[0x852A] bit 0 is set; stock ROM8[0x852A] = 0x05 selects it. Every stock \
+cell holds 40, against 30 on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5b24"
+
 [[link]]
 type = "reader"
 to = "tomato-trout/fn"

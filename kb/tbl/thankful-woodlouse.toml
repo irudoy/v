@@ -267,6 +267,20 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000138f8"
+name = "icy-jacamar"
+note = """
+Read by FUN_000E63A8 through the literal-pool word 0x000E6588, loaded at \
+0x000E63B4, over the axis 0x0001431C by byte 0xFFFF119D; the result is \
+stored in 0xFFFF152A. Every stock cell holds 0, against 128..168 on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e63b4"
+
 [[link]]
 type = "depends"
 to = "jade-reindeer/axis"

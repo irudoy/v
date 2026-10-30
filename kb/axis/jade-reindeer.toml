@@ -39,3 +39,16 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001431c"
+name = "quantum-sawfly"
+note = """
+Axis of 0x000138F8 in FUN_000E63A8, read through the literal-pool word \
+0x000E658C, loaded at 0x000E63B8; stock 16..44 by byte 0xFFFF119D."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e63b8"

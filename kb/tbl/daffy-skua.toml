@@ -196,6 +196,22 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000142e4"
+name = "opal-reindeer"
+note = """
+Read by FUN_000E63A8 at offset 8 from the literal 0x000142DC of the pool \
+word 0x000E65B4, loaded at 0x000E645A, by byte 0xFFFF1067 while ROM8[0x852A] \
+bit 0 is clear, so the stock image does not select it. Every stock cell \
+holds 0, against 5 on JK08A."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:000e645a"
+value = 8
+mode = "base"
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"

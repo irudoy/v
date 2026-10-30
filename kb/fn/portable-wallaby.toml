@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "000e841a"
+name = "portable-wallaby"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e841a"

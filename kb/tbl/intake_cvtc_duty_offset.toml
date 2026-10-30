@@ -1,0 +1,56 @@
+summary = """
+Duty offset of the intake CVTC solenoids. FUN_000E841A stores x / 65536 in \
+0xFFFFAA54; while the byte 0xFFFFABDC is zero the term of each bank is \
++offset for a non-negative bank error of FUN_000E8968 and -offset otherwise, \
+and while it is nonzero the terms are the feedback outputs 0xFFFFAB88 and \
+0xFFFFAB8C. Stock 4456..6226 = 0.068..0.095."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000120ce"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/65536; \
+proposed editor-grid inverse x*65536. Origin: the float literal 0x377FFFFF, \
+1/65536 less one unit in the last place, at 0xE857C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8482"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e843c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e843c"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "portable-wallaby/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8580"

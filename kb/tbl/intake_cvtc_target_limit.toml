@@ -1,0 +1,46 @@
+summary = """
+Upper bound of the intake CVTC target word 0xFFFF227C. FUN_000E6492 looks up \
+this curve over the axis 0x00016B94 by the larger of the words 0xFFFF2674 \
+and 0xFFFF2676, stores the result in 0xFFFF1ACE, and writes 0xFFFF227C = \
+min(selected target, bound) on every path; the default selected target is \
+0x8000. The stock cells hold 32898 = 0x8000 + 130 through the sixth point \
+and fall to 32798 = 0x8000 + 30 at the last."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016aa4"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x-32768 \
+counts; proposed editor-grid inverse x+32768. Origin: the default target \
+0x8000 of FUN_000E6492."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e64b4"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_target_limit_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e64b6"
+
+[[link]]
+type = "reader"
+to = "finicky-booby/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e65c8"

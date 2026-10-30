@@ -1,0 +1,31 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016b94"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts; \
+proposed editor-grid inverse x. Origin: the word coordinate max(0xFFFF2674, \
+0xFFFF2676) of FUN_000E6492, which applies no scale literal. Recorded code \
+interpretation: Coordinate axis of the intake CVTC target bound 0x00016AA4 \
+in FUN_000E6492, 0..18322. The coordinate is the larger of the words \
+0xFFFF2674 and 0xFFFF2676 that FUN_000EDF62 latches."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e64b6"
+
+[[link]]
+type = "reader"
+to = "finicky-booby/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e65cc"

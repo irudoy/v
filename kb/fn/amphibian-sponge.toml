@@ -202,6 +202,28 @@ at = "7mfk:000bdc2a"
 value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000e63a8"
+name = "gray-petrel"
+note = """
+FUN_000E63A8 reproduces the JK08A arithmetic: S from 0x000138F8 over axis \
+0x0001431C by byte 0xFFFF119D into 0xFFFF152A, W from 0x00013900 by byte \
+0xFFFF1067 into 0xFFFF152B, and idle source 0xFFFF1529 = clamp_u8(128 + \
+trunc0((S-128)*W/128)), with the division by 128 performed by the \
+arithmetic-shift chain at 0x00022560. While 0xFFFF2403 bit 2 is clear it \
+sets 0xFFFF23DC bit 7 and loads 0xFFFF19FD and 0xFFFF2537 from 0x000142DC by \
+the result of FUN_00021CE8, clamped to 255, while ROM8[0x852A] bit 0 is set, \
+or from 0x000142E4 by byte 0xFFFF1067 otherwise; while 0xFFFF2403 bit 2 is \
+set it clears 0xFFFF23DC bit 7 once 0xFFFF1529 is at or below the byte \
+0xFFFF227A. Every stock cell of the four tables is zero, so the stock idle \
+source is 128."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e63a8"
+
 [[link]]
 type = "selector"
 to = "flat-doberman/ram"

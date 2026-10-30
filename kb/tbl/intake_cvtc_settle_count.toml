@@ -1,0 +1,64 @@
+summary = """
+Load value of the countdown byte 0xFFFF24BF of the intake CVTC stage \
+FUN_000E7FB4, selected while ROM8[0x852A] bit 0 is set and looked up over \
+the axis 0x00013392 by byte 0xFFFF10F1. The stage loads the countdown and \
+sets 0xFFFF23EC bit 3 when 0xFFFF23CB bit 7 and 0xFFFF2403 bit 2 are set, \
+the target word 0xFFFF227C is at least ROM8[0x8B44] - 128 = 6 counts above \
+0x8000, the countdown 0xFFFF24C0 is zero, and the bit is clear. A lower \
+target, either bit clear, or both word pairs 0xFFFF1AA6/0xFFFF1C1A and \
+0xFFFF1AA8/0xFFFF1C1C apart by more than ROM8[0x8B6C] = 14 reloads \
+0xFFFF24C0 from ROM8[0x8A5D] = 70 instead. The stage clears the bit once \
+0xFFFF24BF is zero while 0xFFFF23B8 bit 6 is set. The initializer \
+FUN_000E56D4 loads 0xFFFF24BF from this curve by the live byte 0xFFFF1171 \
+and 0xFFFF24C0 from ROM8[0x8A5D]. The routine that counts the two bytes down \
+is not identified. Every stock cell holds 5; stock ROM8[0x852A] = 0x05 \
+selects this curve."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014230"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+the countdown 0xFFFF24BF; proposed editor-grid inverse x. Origin: the byte \
+store of FUN_000E7FB4 at 0x000E815E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e80a0"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_settle_count_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e80a4"
+
+[[link]]
+type = "reader"
+to = "myrtle-crab/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5900"
+
+[[link]]
+type = "reader"
+to = "rugged-stallion/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e81c0"

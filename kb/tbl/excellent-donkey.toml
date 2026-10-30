@@ -205,6 +205,21 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000142dc"
+name = "screeching-asp"
+note = """
+Read by FUN_000E63A8 through the literal-pool word 0x000E65B4, loaded at \
+0x000E6450, by the result of FUN_00021CE8 clamped to 255 while ROM8[0x852A] \
+bit 0 is set; stock ROM8[0x852A] = 0x05 selects it. The result goes to \
+0xFFFF19FD and 0xFFFF2537. Every stock cell holds 0, against 5 on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6450"
+
 [[link]]
 type = "reader"
 to = "amphibian-sponge/fn"

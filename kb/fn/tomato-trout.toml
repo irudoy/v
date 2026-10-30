@@ -493,6 +493,29 @@ supports = "identity"
 to = "glaring-cuckoo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000e59f8"
+name = "crystal-sunfish"
+note = """
+FUN_000E59F8 holds the threshold and counter structure of JK08A \
+FUN_000BD20A. At start event 0xFFFF44DF bit 6 it zeroes byte counter \
+0xFFFF1994 and writes threshold 0xFFFF17FA from 0x00013F60 over axis \
+0x00013362 by byte 0xFFFF10F1 while ROM8[0x852A] bit 0 is set, or from \
+0x00013F68 over axis 0x0001336A by byte 0xFFFF1067 otherwise. Later calls \
+count 0xFFFF1994 up with saturation while 0xFFFF84C3 bit 7 is set, and \
+0xFFFF17FA < 0xFFFF1994 enters the condition that sets 0xFFFF23EB bit 6. The \
+byte 0xFFFF10F1 sits at offset 0x6D of the block 0xFFFF1084 as the \
+oil-temperature DID source 0xFFFF1171 does of the block 0xFFFF1104, matching \
+the JK08A oil-temperature coordinate 0xFFFF2772. The other bit addresses of \
+the JK08A summary are not individually mapped on JK78C. The intake CVTC \
+coordinator FUN_000E5930 calls it first."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e59f8"
+
 [[link]]
 type = "selector"
 to = "aloof-lyrebird/ram"

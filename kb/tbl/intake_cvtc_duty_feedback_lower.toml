@@ -1,0 +1,54 @@
+summary = """
+Lower bound of the feedback term of the intake CVTC duty controller. \
+FUN_000E81F8 stores x / 65535 - 1 in 0xFFFFAA44. Stock 42001..57494 = \
+-0.359..-0.123."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000130ce"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/65535-1; \
+proposed editor-grid inverse (x+1)*65535. Origin: the float literals 1/65535 \
+at 0xE8540 and -1.0 at 0xE8544."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e827e"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8206"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e8206"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "vermilion-beluga/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e853c"

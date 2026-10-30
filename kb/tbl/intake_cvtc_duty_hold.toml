@@ -1,0 +1,55 @@
+summary = """
+Hold duty of the intake CVTC solenoids. FUN_000E841A stores x / 65536 in \
+0xFFFFAA58 and adds it to the term of each bank before FUN_000E9310 forms \
+the duty outputs 0xFFFF44BC and 0xFFFF44BE, which FUN_000E946C writes to the \
+duty words 0xFFFF25C4 and 0xFFFF25C6. Stock 35193..37355 = 0.537..0.570."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001204e"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x/65536; \
+proposed editor-grid inverse x*65536. Origin: the float literal 0x377FFFFF, \
+1/65536 less one unit in the last place, at 0xE857C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e844c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e843c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e843c"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "portable-wallaby/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8578"

@@ -1,0 +1,9 @@
+[[symbol]]
+layout = "jk78c"
+address = "000e7fb4"
+name = "rugged-stallion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e7fb4"

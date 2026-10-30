@@ -1,0 +1,55 @@
+level = "code"
+home = "jk78c"
+quantity = "temp"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017134"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x-50 degC; \
+proposed editor-grid inverse x+50. Origin: the byte 0xFFFF10F1 at the offset \
+of the oil-temperature DID source 0xFFFF1171 in the scheduler block \
+0xFFFF1084 and the raw-50 conversion of the JK08A oil-temperature snapshot \
+0xFFFF2772. Recorded code interpretation: Second axis of the eight 8x8 \
+intake CVTC duty surfaces, 40..170, read at offset 0x10 from the literal \
+0x00017124 with byte 0xFFFF10F1."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:000e8206"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "clay-dachshund/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e87f8"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "portable-wallaby/fn"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e843c"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "vermilion-beluga/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e8518"
+value = 16
+mode = "base"

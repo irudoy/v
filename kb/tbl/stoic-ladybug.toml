@@ -167,6 +167,21 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013900"
+name = "muscular-sawfly"
+note = """
+Read by FUN_000E63A8 at offset 8 from the literal 0x000138F8 of the pool \
+word 0x000E6588, loaded at 0x000E63B4 and advanced at 0x000E63C4, by byte \
+0xFFFF1067; the result is stored in 0xFFFF152B. Every stock cell holds 0."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:000e63b4"
+value = 8
+mode = "base"
+
 [[link]]
 type = "reader"
 to = "amphibian-sponge/fn"

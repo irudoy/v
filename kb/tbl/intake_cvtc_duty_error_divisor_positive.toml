@@ -1,0 +1,55 @@
+summary = """
+Error divisor of the intake CVTC duty controller for a non-negative bank \
+error. FUN_000E8630 stores x * 0.3 in 0xFFFFAA78 and, while the bank flag of \
+FUN_000E8968 is set, divides the float 0xFFFFAA9C (first bank) or 0xFFFFAAA0 \
+(second bank) times ROM16[0x9256] * 0.2 = 1000 by it. Stock 1155..3394."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001214e"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*0.3; \
+proposed editor-grid inverse x/0.3. Origin: the float literal 0.3 at \
+0xE8808."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e865c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e863c"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e863c"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "clay-dachshund/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e87fc"

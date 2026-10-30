@@ -1,0 +1,55 @@
+summary = """
+Coefficient v of the first-order filter of the intake CVTC duty controller \
+for a negative controller error. FUN_000E81F8 stores v = x * 3.0e-5 in \
+0xFFFFAA4C, and FUN_000E8794 uses it in place of the surface 0x0001294E \
+while the error of FUN_000E91FA is negative. Stock 973..6123."""
+level = "code"
+home = "jk78c"
+role = "table"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000129ce"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x*3e-5 s; \
+proposed editor-grid inverse x/3e-5. Origin: the float literal 3.0e-5 at \
+0xE8538 and the terms 2v + 0.01 and 2v - 0.01 of FUN_000E8794."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8230"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_x/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8206"
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_duty_axis_y/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e8206"
+value = 16
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "vermilion-beluga/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e852c"

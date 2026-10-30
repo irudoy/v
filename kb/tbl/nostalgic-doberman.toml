@@ -101,6 +101,21 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f68"
+name = "carrot-orangutan"
+note = """
+Read by FUN_000E59F8 through the literal-pool word 0x000E5BCC, loaded at \
+0x000E5B3A, over the axis 0x0001336A (64..255) by byte 0xFFFF1067 while \
+ROM8[0x852A] bit 0 is clear, so the stock image does not select it. Every \
+stock cell holds 0, as on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5b3a"
+
 [[link]]
 type = "reader"
 to = "tomato-trout/fn"

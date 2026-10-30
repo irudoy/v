@@ -1,0 +1,40 @@
+level = "code"
+home = "jk78c"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001339a"
+note = """
+Engineering conversion is unestablished. Retained hypothesis: x counts of \
+the normalized coolant index; proposed editor-grid inverse x. Origin: the \
+coolant index coolant_index 0xFFFF106D that FUN_000E56D4 reads and its copy \
+0xFFFF1067 that FUN_000E7FB4 reads. Recorded code interpretation: \
+Coolant-index axis of the settle count 0x00014238, 0..224 in steps of 32."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e80ba"
+
+[[link]]
+type = "reader"
+to = "myrtle-crab/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5914"
+
+[[link]]
+type = "reader"
+to = "rugged-stallion/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e81d4"
