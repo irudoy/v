@@ -1325,7 +1325,6 @@ class RenameMeaningTest(unittest.TestCase):
                          "probe")
 
 
-@pytest.mark.slow
 class MoveMeaningTest(unittest.TestCase):
     """`move` of a symbol into another meaning over a base whose file of
     INHIBIT states the JK78C counterpart of THROTTLE, which the search from
@@ -1356,6 +1355,7 @@ class MoveMeaningTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, code, str(caught.exception))
         return str(caught.exception)
 
+    @pytest.mark.slow
     def test_move_joins_a_symbol_with_the_meaning_whose_search_finds_it(self):
         home = self.base.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
         found = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
@@ -1376,6 +1376,7 @@ class MoveMeaningTest(unittest.TestCase):
         self.assertEqual(change.lines, [f"move {self.WRONG} to {THROTTLE}: "
                                         f"{write.summary(evidence)}; 2 references rewritten"])
 
+    @pytest.mark.slow
     def test_a_symbol_keeps_its_generated_name_in_an_unnamed_meaning(self):
         key = SymbolKey("jk00c", "fn", self.WRAPPER_JK00C)
         name = self.base.symbols[key].generated
@@ -1391,6 +1392,7 @@ class MoveMeaningTest(unittest.TestCase):
         self.assertEqual(change.lines, [f"move {name}/fn/jk00c-{self.WRAPPER_JK00C:08x} to "
                                         f"{self.ACCESSOR}: spec path tools/kb/SPEC.md"])
 
+    @pytest.mark.slow
     def test_a_move_that_the_compiled_model_undoes_is_refused(self):
         change = write.Change(self.base, write.model_resolver(self.base))
         change.run(move(self.SYMBOL, THROTTLE, evidence=[SPEC]))
@@ -1414,6 +1416,7 @@ class MoveMeaningTest(unittest.TestCase):
     def test_moves_into_a_meaning_refuse_what_the_model_contradicts(self):
         alternate = next(meaning for meaning in self.base.meanings
                          if meaning.key == "fuel_compensation_alternate/tbl")
+        inverse = self.base.meaning_of(SymbolKey("7mfk", "tbl", 0x14114))
         wrapper = f"jk00c:{self.WRAPPER_JK00C:08x}"
         cases = [
             (move(self.SYMBOL, INHIBIT), 2, f"{self.WRONG} is a symbol of {INHIBIT}"),
@@ -1426,7 +1429,7 @@ class MoveMeaningTest(unittest.TestCase):
             (move("7mfk:00026100", "fuel_cut_coordinator/fn"), 3,
              f"{self.WRAPPER}/7mfk-00026100 is the home symbol of {self.WRAPPER} and gives its "
              f"name; `kb rename {self.WRAPPER} <semantic-name>` names the meaning first"),
-            (move(alternate.symbols["jk78c"].key.location, "able-bison/tbl"), 3,
+            (move(alternate.symbols["jk78c"].key.location, inverse.key), 3,
              f"the home of {alternate.key} is jk78c; `kb set {alternate.key} home=` unsets it "
              "first"),
             (move(self.SYMBOL, THROTTLE, level="sure"), 2, "level 'sure'"),
