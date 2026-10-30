@@ -450,14 +450,29 @@ ffff43ee and ffff4414 each select a channel: code 2 selects the alternate \
 channel, code 8 the curve channel and every other code the main channel. The \
 published byte ffff114c is the crossfade of the ffff43ee channel, weighted \
 by word ffff43ec with 0x8000 as 1.0, against the ffff4414 channel, or \
-against the held byte ffff1e93 while bit 4 of ffff45a3 is set. Curves \
-0x13780 and 0x13800 supply the gated gain states. Physical conversions \
-remain unresolved."""
+against the held byte ffff1e93 while bit 4 of ffff45a3 is set. After the \
+gate update (00040a64..00040a8c) the entry latches bit 0 of ffff23c2: a set \
+bit 7 of ffff23a9 or of ffff45c7 clears it, gate state 2 with both bits \
+clear sets it, and any other state retains it. While bit 7 of ffff45bd is \
+clear and bit 0 of ffff23c2 is set, the entry writes the saturated product \
+of curves 0x13780 and 0x13800 and signed word ffff1ebe to word ffff1ef8, and \
+zero otherwise. Physical conversions remain unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00040e00"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00040958"
+to = "7mfk:0003bd74"
+note = """
+Entries 0003bd74 and 00040958 run the same three-state gate, the same \
+bounded bypass gates and the same call order through the main compensation \
+lookup; the JK78C entry adds the alternate and curve channels and the \
+state-code crossfade before its published byte."""
 
 [[link]]
 type = "depends"

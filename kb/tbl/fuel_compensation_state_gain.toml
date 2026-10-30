@@ -7,9 +7,14 @@ note = [
 Editor publication is withheld on jk78c, 1nd and 1me3b. On jk78c the \
 coordinator multiplies this gain, signed word ffff1ebe and the centered gain \
 into word ffff1ef8 only while bit 7 of ffff45bd is clear and bit 0 of \
-ffff23c2 is set, and writes zero otherwise. The producers of both gate bits \
-and the role of FUN_000401D4, the reader of ffff1ef8, are unestablished, so \
-the stock path does not qualify the gain for publication.""",
+ffff23c2 is set, and writes zero otherwise. The same coordinator latches bit \
+0 of ffff23c2 at 00040a64..00040a8c: a set bit 7 of ffff23a9 or of ffff45c7 \
+clears it, gate state 2 with both bits clear sets it, and any other state \
+retains it. FUN_000401D4 adds the signed word ffff1ef8 to the Base Fuel \
+Schedule candidate before the upper-limit curve. The producers of bit 7 of \
+ffff45bd and of word ffff1ebe and the stock reachability of a nonzero \
+product are unestablished, so the stock path does not qualify the gain for \
+publication.""",
 ]
 level = "code"
 role = "table"

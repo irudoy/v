@@ -963,8 +963,8 @@ class NativeAdapterTest(unittest.TestCase):
     def test_an_accessor_takes_evidence_at_its_first_census_call_of_a_bound_entry(self):
         accessor = model().symbols[SymbolKey("jk78c", "fn", 0x00040958)]
         self.assertFalse(accessor.implicit)
-        self.assertEqual(accessor.evidence,
-                         [{"kind": "l0", "supports": "identity", "at": "jk78c:00040e00"}])
+        self.assertEqual(accessor.evidence[0],
+                         {"kind": "l0", "supports": "identity", "at": "jk78c:00040e00"})
 
     def test_an_axis_link_takes_evidence_at_the_first_census_call_that_passes_both(self):
         table = model().meaning_of(SymbolKey("jk78c", "tbl", 0x00009FBA))
