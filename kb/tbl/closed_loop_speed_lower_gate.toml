@@ -40,6 +40,19 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol]]
+layout = "jk78c"
+address = "00009298"
+note = """
+Lower speed gate of FUN_000442A0, loaded at 0x4444C and compared at 0x44452, \
+as JK08A FUN_0003EF74 uses 0x95C6. Stock bytes are identical to JK08A \
+0x95C6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004444c"
+
 [[link]]
 type = "reader"
 to = "enlightened-orangutan/fn"

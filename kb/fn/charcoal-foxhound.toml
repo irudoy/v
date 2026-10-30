@@ -53,6 +53,25 @@ supports = "identity"
 to = "heavenly-jaguar/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003d092"
+name = "efficient-chowchow"
+note = """
+FUN_0003D092 is the seventh call of FUN_0003CD74 (at 0x3CDC6), as JK08A \
+FUN_0003995A is the seventh call of FUN_00039788, whose first call is the \
+counterpart of FUN_0003CE08. It filters word ffff1012 into ffff1e28 (JK08A \
+ffff100a into ffff1ecc), reads 0x14090 and 0x13720 once through 000281B0 \
+(JK08A 00026388) by byte ffff1edb (JK08A ffff1f88) into ffff192e and \
+ffff304e (JK08A ffff1934 and ffff2ea2) under latch ffff240f.bit7 (JK08A \
+ffff24b8.bit2), and converts the filtered word through 0x141E8 (JK08A \
+0x12DEA) into ffff1162 (JK08A ffff1179)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003d092"
+
 [[link]]
 type = "selector"
 to = "splendid-cheetah/ram"

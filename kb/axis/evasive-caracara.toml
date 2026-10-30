@@ -87,3 +87,16 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013306"
+name = "acrid-tuatara"
+note = """
+Axis of the divisor curve of FUN_000442A0, loaded at 0x442CA, as JK08A \
+passes 0x11B47. Stock bytes are identical to JK08A 0x11B47."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000442ca"

@@ -1,6 +1,8 @@
 summary = """
-Byte ffff11d7 coordinate of fuel_compensation_state_gain. The physical input \
-quantity remains unresolved."""
+Explicit 16-point byte axis shared by two readers: FUN_00040958 indexes it \
+with byte ffff11d7 for fuel_compensation_state_gain, and FUN_000402E0 with \
+byte ffff11a3 for the difference-gain curves 0x13790 and 0x137A0. The \
+physical input quantities remain unresolved."""
 level = "code"
 quantity = "raw"
 points = 16

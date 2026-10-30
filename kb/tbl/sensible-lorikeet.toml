@@ -150,6 +150,23 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013fb0"
+name = "pistachio-ringtail"
+note = """
+State-0 curve of the FUN_0003BD78 state machine ffff3c1c, loaded at 0x3C0EC \
+and read through 0002829C over axis 0x13FD0 by uint8[ffff2707] into ffff2511 \
+before state 2 is selected, as the explicit path of JK08A FUN_00038618 reads \
+0x12AE2 over 0x12B02 by uint8[ffff27b5] into ffff25bf. JK08A also holds an \
+implicit alternative by ffff107f (0x12ADA); JK78C reads only the explicit \
+curve. Stock values differ from JK08A 0x12AE2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c0ec"
+
 [[link]]
 type = "depends"
 to = "pink-gharial/tbl"

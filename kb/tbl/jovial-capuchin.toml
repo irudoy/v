@@ -121,6 +121,20 @@ supports = "identity"
 to = "charcoal-foxhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013720"
+name = "hopeful-pudu"
+note = """
+Second one-time curve of FUN_0003D092, loaded at 0x3D102 and read through \
+000281B0 by the same byte into ffff304e, as JK08A FUN_0003995A reads 0x120BE \
+into ffff2ea2. Stock bytes are identical to JK08A 0x120BE."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003d102"
+
 [[link]]
 type = "index"
 to = "vivacious-ibex/ram"

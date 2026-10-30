@@ -336,6 +336,20 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000138b0"
+name = "quartz-kudu"
+note = """
+Divisor curve of FUN_000442A0, loaded at 0x442C6 and read through 000282C8 \
+over axis 0x13306 by the high byte of the third argument, as JK08A \
+FUN_0003EF74 reads 0x12292. Stock bytes are identical to JK08A 0x12292."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000442c6"
+
 [[link]]
 type = "depends"
 to = "esoteric-chachalaca/tbl"

@@ -115,6 +115,13 @@ end = "to"
 relies = "structure"
 supports = "identity"
 
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Recovered periodic entries"]
+anchor = "FUN_0003C394"
+
 [[symbol]]
 layout = "7mfk"
 address = "00038d44"
@@ -202,6 +209,26 @@ supports = "identity"
 at = "7mfk:00039152"
 value = {named = ["000123aa", "00012a9a", "00038d44", "ffff1077", "ffff1164", "ffff1188", "ffff11ea", "ffff1f44", "ffff24ae", "ffff25a4", "ffff4185"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003c394"
+former = ["smoky-crane/fn/jk78c-0003c394"]
+note = """
+FUN_0003C394 holds the slot of JK08A FUN_00038D44 in the periodic task \
+table: its word at 0x21960 follows FUN_0003BD78 and precedes FUN_000FD96C \
+and FUN_000432A0, as the JK08A word at 0x21870 follows FUN_00038618 and \
+precedes FUN_000D0F44 and FUN_0003E410. It reads 0x13F70 and 0x139A8 through \
+00028198 (JK08A 00026370) by coolant index ffff106d (JK08A ffff1077) into \
+ffff1f00 and ffff2439, then ffff1ea0 (JK08A ffff1fab, ffff24e1 and \
+ffff1f44), and publishes the start-state Boolean at ffff44e0.bit6 with \
+mirrors ffff2407.bit7 and ffff1150.bit1 (JK08A ffff4185.bit6, ffff24ae.bit7 \
+and ffff1164.bit1)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c394"
 
 [[link]]
 type = "threshold"

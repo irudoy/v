@@ -1,0 +1,68 @@
+summary = """
+Explicit eight-point byte curve of FUN_00043CDE over axis 0x132D6, read \
+through 0002829C with uint8[ffff11a3] and stored at ffff2948. While \
+uint16[ffff10b6]*4 is above ROM8[0000877e], a byte ffff1078 below the result \
+reloads countdown ffff4772 from ROM8[00008814]; with the countdown at zero \
+and ffff107e at most ffff1078, word ffff375e is averaged toward ffff57c4 in \
+ROM8[000082ec] halving steps. Otherwise the countdown is reloaded and one \
+halving step is applied. The word is passed to FUN_00043C94. Physical \
+quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000135e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043cfc"
+note = """
+Explicit eight-point byte curve of FUN_00043CDE over axis 0x132D6, read \
+through 0002829C with uint8[ffff11a3] and stored at ffff2948. While \
+uint16[ffff10b6]*4 is above ROM8[0000877e], a byte ffff1078 below the result \
+reloads countdown ffff4772 from ROM8[00008814]; with the countdown at zero \
+and ffff107e at most ffff1078, word ffff375e is averaged toward ffff57c4 in \
+ROM8[000082ec] halving steps. Otherwise the countdown is reloaded and one \
+halving step is applied. The word is passed to FUN_00043C94. Physical \
+quantity and conversion remain unresolved."""
+
+[[link]]
+type = "axis"
+to = "averaging_hold_threshold_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043cfe"
+note = """
+The reviewed explicit wrapper call passes axis 000132d6 in the x slot for \
+table 000135e8."""
+
+[[link]]
+type = "reader"
+to = "pumpkin-armadillo/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043cfc"
+note = "The reviewed reader passes this table to its interpolation primitive."

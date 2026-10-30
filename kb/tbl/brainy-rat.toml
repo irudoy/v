@@ -39,3 +39,17 @@ key = "test_registered_conversion_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
+
+[[symbol]]
+layout = "jk78c"
+address = "000150bc"
+name = "garrulous-reindeer"
+note = """
+First axis of both 8x8 channel lookups of FUN_000440E4, loaded at 0x44100 \
+and passed in r5, as JK08A passes 0x13D54. Stock bytes are identical to \
+JK08A 0x13D54."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00044100"

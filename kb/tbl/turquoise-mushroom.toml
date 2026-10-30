@@ -249,6 +249,20 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000136b4"
+name = "enchanted-mandrill"
+note = """
+Implicit four-point Boolean table of FUN_0004306A, loaded at 0x43160 and \
+read through 00028180 by the sample minus 0x60, as JK08A FUN_0003E1DA reads \
+0x1202E. Stock values differ from JK08A 0x1202E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043160"
+
 [[link]]
 type = "index"
 to = "sophisticated-magpie/ram"

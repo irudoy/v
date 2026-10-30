@@ -178,6 +178,21 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f70"
+name = "rousing-iguana"
+note = """
+First readiness curve of FUN_0003C394, loaded at 0x3C4BE and read through \
+00028198 by coolant index ffff106d into ffff1f00 and ffff2439, as JK08A \
+FUN_00038D44 reads 0x12A9A by ffff1077. Initializer FUN_0002F596 performs \
+the same lookup at 0x3002A. Stock bytes are identical to JK08A 0x12A9A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c4be"
+
 [[link]]
 type = "index"
 to = "coolant_index/ram"

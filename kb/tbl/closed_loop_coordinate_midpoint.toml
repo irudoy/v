@@ -40,6 +40,19 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol]]
+layout = "jk78c"
+address = "00008cdc"
+note = """
+Midpoint word of FUN_000442A0, loaded at 0x442E2 and subtracted from both \
+selected sources, as JK08A FUN_0003EF74 uses 0x8F98. Stock bytes are \
+identical to JK08A 0x8F98."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000442e2"
+
 [[link]]
 type = "reader"
 to = "enlightened-orangutan/fn"

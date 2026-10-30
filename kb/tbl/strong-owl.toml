@@ -84,6 +84,21 @@ supports = "identity"
 to = "charcoal-foxhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014090"
+name = "zippy-monkey"
+note = """
+First one-time curve of FUN_0003D092, loaded at 0x3D0EC and read through \
+000281B0 by byte ffff1edb into ffff192e under latch ffff240f.bit7, as JK08A \
+FUN_0003995A reads 0x12C3A into ffff1934. Stock bytes are identical to JK08A \
+0x12C3A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003d0ec"
+
 [[link]]
 type = "reader"
 to = "charcoal-foxhound/fn"

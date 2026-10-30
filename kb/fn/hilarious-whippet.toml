@@ -177,6 +177,22 @@ supports = "identity"
 to = "auburn-sambar/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003ce08"
+name = "dandelion-giraffe"
+note = """
+FUN_0003CE08 is the first call of FUN_0003CD74 (at 0x3CD7E), as JK08A \
+FUN_000397E8 is the first call of FUN_00039788. It filters sample ffff1012 \
+(JK08A ffff100a) through 0003E050 (JK08A 0003A5E0) with state word ffff1efe \
+(JK08A ffff1fa8), stores the byte ffff1161 (JK08A ffff1178) and converts it \
+through 0x141E8 (JK08A 0x12DEA) into ffff1edc (JK08A ffff1f89)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ce08"
+
 [[link]]
 type = "depends"
 to = "venomous-sturgeon/fn"

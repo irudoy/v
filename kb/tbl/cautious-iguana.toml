@@ -505,6 +505,22 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000141e8"
+name = "rigorous-markhor"
+note = """
+Shared byte conversion of the analog temperature samples: FUN_0002F460 loads \
+it at 0x2F47E and 0x2F4A0, and FUN_0003CE08, FUN_0003D092, FUN_000A2700, \
+FUN_0003CB6C, FUN_00041FB8 and FUN_00042208 read it through 000281C8, as \
+JK08A reads 0x12DEA through 000263A0. Stock bytes are identical to JK08A \
+0x12DEA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f47e"
+
 [[link]]
 type = "index"
 to = "adventurous-mushroom/ram"

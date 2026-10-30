@@ -39,3 +39,19 @@ key = "test_registered_conversion_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
+
+[[symbol]]
+layout = "jk78c"
+address = "000150cc"
+name = "nonchalant-earthworm"
+note = """
+Second axis of both 8x8 channel lookups of FUN_000440E4: the base 0x150BC \
+loaded at 0x44100 plus 0x10 (add at 0x4410C and 0x4411C), passed in r6, as \
+JK08A passes the literal 0x13D94. Stock values differ from JK08A 0x13D94."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00044100"
+value = 16
+mode = "base"

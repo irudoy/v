@@ -1,0 +1,43 @@
+summary = """
+Implicit 64-point word curve of FUN_0003CE9C, read through 00028238 with \
+(filtered word & 0x0FFF) << 4 and stored at ffff2792. Physical quantity and \
+conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+cols = 64
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000166c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ced2"
+note = """
+Implicit 64-point word curve of FUN_0003CE9C, read through 00028238 with \
+(filtered word & 0x0FFF) << 4 and stored at ffff2792. Physical quantity and \
+conversion remain unresolved."""
+
+[[link]]
+type = "reader"
+to = "filtered_adc_word_converter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ced2"
+note = "The reviewed reader passes this table to its interpolation primitive."

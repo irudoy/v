@@ -1,0 +1,30 @@
+summary = """
+Filters ADC word ffff1012 through 0003E050 with state word ffff428c, status \
+byte ffff4230 and enable ffff45aa.bit2, stores the filtered word at ffff428c \
+and ffff422e, converts (word & 0x0FFF) << 4 through the implicit 64-point \
+word curve 0x166C4 into ffff2792 and copies two filter flags to \
+ffff45aa.bit2 and ffff240d.bit5. FUN_0003CE08, the counterpart of JK08A \
+FUN_000397E8, filters the same sample with separate state. The physical \
+channel and quantity remain unresolved."""
+level = "code"
+role = "accessor"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ce9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ce9c"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader. Filters ADC word ffff1012 through 0003E050 with state \
+word ffff428c, status byte ffff4230 and enable ffff45aa.bit2, stores the \
+filtered word at ffff428c and ffff422e, converts (word & 0x0FFF) << 4 \
+through the implicit 64-point word curve 0x166C4 into ffff2792 and copies \
+two filter flags to ffff45aa.bit2 and ffff240d.bit5. FUN_0003CE08, the \
+counterpart of JK08A FUN_000397E8, filters the same sample with separate \
+state. The physical channel and quantity remain unresolved."""

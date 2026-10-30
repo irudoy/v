@@ -1,0 +1,70 @@
+summary = """
+Primary word curve, loaded at 0x42A0E in the active branch and at 0x42B8E in \
+the reset branch and stored at ffff2782. FUN_00042882 reads both curves \
+through 00028320 over axis 0x14E3C by word ffff274a; 0x15DC2 is read only \
+while ROM8[000087d5].bit1 is set. Physical quantity and conversion remain \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015da2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042a0e"
+note = """
+Primary word curve, loaded at 0x42A0E in the active branch and at 0x42B8E in \
+the reset branch and stored at ffff2782. FUN_00042882 reads both curves \
+through 00028320 over axis 0x14E3C by word ffff274a; 0x15DC2 is read only \
+while ROM8[000087d5].bit1 is set. Physical quantity and conversion remain \
+unresolved."""
+
+[[link]]
+type = "axis"
+to = "dual_curve_word_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042a12"
+note = """
+The reviewed explicit wrapper call passes axis 00014e3c in the x slot for \
+table 00015da2."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042b9c"
+note = """
+The reviewed explicit wrapper call passes axis 00014e3c in the x slot for \
+table 00015da2."""
+
+[[link]]
+type = "reader"
+to = "dual_curve_word_converter/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042a0e"
+note = "The reviewed reader passes this table to its interpolation primitive."

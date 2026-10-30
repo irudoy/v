@@ -130,6 +130,22 @@ supports = "scale"
 to = "prudent-loon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000140c4"
+name = "thick-earthworm"
+note = """
+Engine-oil-temperature conversion of FUN_000439C0, loaded at 0x43A42 and \
+read through 000281C8 by the filtered byte ffff1164 into ffff1ee4. The same \
+function publishes oil_temperature_did_source/ram at ffff1171 with the \
+3..241 range check, as JK08A FUN_0003EB84 converts ffff117b through 0x12C6E. \
+Stock values differ from JK08A 0x12C6E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043a42"
+
 [[link]]
 type = "depends"
 to = "cautious-iguana/tbl"

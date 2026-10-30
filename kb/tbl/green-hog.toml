@@ -105,6 +105,22 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000141a0"
+name = "nostalgic-nautilus"
+note = """
+Implicit 16-point byte curve of FUN_0002F460, loaded at 0x2F4C8 and read \
+through 000281B0 by coolant index ffff106d; the result is added to word \
+ffff5bb2 and stored at ffff1f06, as JK08A FUN_0002C4F8 adds the lookup of \
+0x12D8A by ffff1077 to ffff5620 and stores ffff1fb0. Stock bytes are \
+identical to JK08A 0x12D8A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f4c8"
+
 [[link]]
 type = "depends"
 to = "amethyst-oyster/ram"

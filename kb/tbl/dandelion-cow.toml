@@ -166,6 +166,21 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000c5ce"
+name = "persimmon-marmot"
+note = """
+First 8x8 word channel table of FUN_000440E4, loaded at 0x4410A and read \
+through 00028058 over axes 0x150BC and 0x150CC, as JK08A FUN_0003EDB4 reads \
+0xC10E over 0x13D54 and 0x13D94. The result is the first channel addend. \
+Stock values differ from JK08A 0xC10E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004410a"
+
 [[link]]
 type = "depends"
 to = "brainy-rat/tbl"

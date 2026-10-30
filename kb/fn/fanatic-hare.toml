@@ -96,3 +96,19 @@ kind = "trace"
 supports = "identity"
 to = "prudent-loon/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a2700"
+name = "perky-eel"
+note = """
+FUN_000A2700 is the fourth of four calls of FUN_000A2726 (at 0xA2734), as \
+JK08A FUN_0008092E is the fourth of four calls of FUN_00080954; both callers \
+call the same helper twice before it. It converts byte ffff1172 (JK08A \
+ffff1186) through 0x141E8 (JK08A 0x12DEA), subtracts 10 with a floor at zero \
+and stores ffff44ba (JK08A ffff3fa4)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a2700"

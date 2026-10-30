@@ -1,0 +1,28 @@
+summary = """
+Explicit eight-point byte axis of 0x135E8 in FUN_00043CDE. Its input is \
+uint8[ffff11a3]. Physical quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000132d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00043cfe"
+note = """
+The reviewed explicit wrapper call receives this axis from the literal-pool \
+word loaded here."""

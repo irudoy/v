@@ -229,6 +229,25 @@ at = "7mfk:0003e31a"
 value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0004306a"
+name = "juicy-oriole"
+note = """
+FUN_0004306A is the ninth of ten calls of FUN_000432A0 (at 0x432C2), as \
+JK08A FUN_0003E1DA is the ninth of ten calls of FUN_0003E410; FUN_000432A0 \
+holds the slot of FUN_0003E410 in the periodic task table, two entries after \
+FUN_0003C394. It keeps four samples of word ffff1136 (JK08A ffff114a), \
+filters the positive four-sample drop, reads 0x136B4 through 00028180 (JK08A \
+00026358) by the sample minus 0x60 bounded to 0..255, retains the Boolean \
+result at ffff24d4 (JK08A ffff257a) and conditionally publishes the filtered \
+high byte at ffff111e (JK08A ffff1072)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004306a"
+
 [[link]]
 type = "selector"
 to = "nickel-magpie/ram"

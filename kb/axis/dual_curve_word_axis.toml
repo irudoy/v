@@ -1,0 +1,29 @@
+summary = """
+Explicit 16-point word axis of 0x15DA2 and 0x15DC2 in FUN_00042882. Its \
+input is uint16[ffff274a]. Physical quantity and conversion remain \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014e3c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042a12"
+note = """
+The reviewed explicit wrapper call receives this axis from the literal-pool \
+word loaded here."""

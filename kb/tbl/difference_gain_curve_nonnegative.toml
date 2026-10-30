@@ -1,0 +1,56 @@
+summary = """
+Gain curve for a nonnegative difference. FUN_000402E0 selects 0x13790 when d \
+= sat_s16(uint16[ffff43de] - uint16[ffff43ea]) is at least zero and 0x137A0 \
+otherwise, and reads it through 000282C8 over axis 0x1342F by \
+uint8[ffff11a3] into ffff14d0. While ffff23be.bit0 is set, ffff1962 = \
+sat_s16(d*ROM8[00008adc]*gain/125); otherwise ffff1962 is zero. Physical \
+quantity and conversion remain unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+    """
+Reader FUN_000402E0 has no function meaning: its input ffff43de comes from \
+the deferred cylinder-fill model FUN_0004C2B2, and its output ffff1962 is an \
+addend of FUN_000401D4, so its architecture block is not established.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013790"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040342"
+note = """
+Gain curve for a nonnegative difference. FUN_000402E0 selects 0x13790 when d \
+= sat_s16(uint16[ffff43de] - uint16[ffff43ea]) is at least zero and 0x137A0 \
+otherwise, and reads it through 000282C8 over axis 0x1342F by \
+uint8[ffff11a3] into ffff14d0. While ffff23be.bit0 is set, ffff1962 = \
+sat_s16(d*ROM8[00008adc]*gain/125); otherwise ffff1962 is zero. Physical \
+quantity and conversion remain unresolved."""
+
+[[link]]
+type = "axis"
+to = "fuel_compensation_state_gain_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040348"
+note = """
+The reviewed explicit wrapper call passes axis 0001342f in the x slot for \
+table 00013790."""

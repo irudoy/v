@@ -258,6 +258,25 @@ kind = "spec"
 path = "defs/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
+[[symbol]]
+layout = "jk78c"
+address = "000442a0"
+name = "messy-bettong"
+note = """
+FUN_000442A0 is the third call of FUN_000440E4 (at 0x441AA), as JK08A \
+FUN_0003EF74 is the third call of FUN_0003EDB4 (at 0x3EE7A). It reads the \
+divisor curve 0x138B0 through 000282C8 (JK08A 000264A0) over axis 0x13306, \
+stores the divisor byte at ffff30d6 (JK08A ffff2f8e), subtracts the midpoint \
+0x8CDC (JK08A 0x8F98) from both selected sources, divides through 00021CE8 \
+(JK08A 00021BBC), applies the gates 0x9298, 0x9076 and 0x9078 (JK08A 0x95C6, \
+0x9384 and 0x9386) and returns the two conditioned coordinates to its \
+caller."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000442a0"
+
 [[link]]
 type = "depends"
 to = "enlightened-orangutan/fn"
