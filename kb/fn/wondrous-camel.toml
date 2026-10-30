@@ -140,6 +140,19 @@ supports = "identity"
 to = "copper-crayfish/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003f9a8"
+name = "hidden-coucal"
+note = """
+FUN_03F9A8 carries the instruction structure and call position of JK08A \
+FUN_03B27E (160 bytes on JK78C, 162 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f9a8"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_coordinator/fn"

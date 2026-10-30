@@ -71,3 +71,16 @@ kind = "trace"
 supports = "identity"
 to = "notorious-goat/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00086cec"
+name = "pompous-buzzard"
+note = """
+FUN_086CEC carries the instruction structure and call position of JK08A \
+FUN_068724 (80 bytes on JK78C, 80 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00086cec"

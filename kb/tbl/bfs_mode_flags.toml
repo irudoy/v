@@ -71,6 +71,18 @@ kind = "spec"
 path = "defs/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
+[[symbol]]
+layout = "jk78c"
+address = "00008b10"
+note = """
+Mode byte of the schedule helpers FUN_000401D4, FUN_000403A2 and \
+FUN_000405F0, loaded at 0x000401E6. Stock 0x1E, against 0x7A on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000401e6"
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"

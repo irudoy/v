@@ -231,6 +231,19 @@ supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003f5ba"
+name = "crouching-dolphin"
+note = """
+FUN_03F5BA carries the instruction structure and call position of JK08A \
+FUN_03AE8A (184 bytes on JK78C, 184 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f5ba"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_coordinator/fn"

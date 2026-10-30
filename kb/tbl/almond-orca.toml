@@ -160,6 +160,19 @@ kind = "arithmetic"
 supports = "scale"
 value = "97/8=12.125"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000943e"
+name = "calm-jerboa"
+note = """
+Direct 3x4 grid of FUN_000401D4 for the mode-bit-set branch, loaded at \
+0x000402B6. Stock bytes are identical to JK08A 0x0000974E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402b6"
+
 [[link]]
 type = "index"
 to = "absolute_throttle/ram"

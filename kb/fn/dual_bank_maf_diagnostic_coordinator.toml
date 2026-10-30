@@ -203,6 +203,18 @@ supports = "identity"
 to = "diagnostic_group_summary_update/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000410cc"
+note = """
+FUN_0410CC carries the instruction structure and call position of JK08A \
+FUN_03C3AC (92 bytes on JK78C, 92 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000410cc"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_fault_rpm_inhibit/fn"

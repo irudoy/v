@@ -98,6 +98,20 @@ supports = "identity"
 to = "clay-capuchin/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003c944"
+name = "jumping-dove"
+note = """
+FUN_03C944 carries the instruction structure and call position of JK08A \
+FUN_039316 (218 bytes on JK78C, 226 on JK08A). It reads ROM8[0x8990] and \
+ROM8[0x859A] in the positions of JK08A ROM8[0x8B7E] and ROM8[0x8692]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c944"
+
 [[link]]
 type = "depends"
 to = "tall-quoll/ram"

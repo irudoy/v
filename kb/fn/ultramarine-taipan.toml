@@ -176,6 +176,21 @@ at = "7mfk:0003a8c2"
 value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "ffff1077"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003e1c0"
+name = "adaptable-woodpecker"
+note = """
+FUN_03E1C0 carries the instruction structure and call position of JK08A \
+FUN_03A750 (384 bytes on JK78C, 380 on JK08A). It looks up 0x00013F28 in \
+place of JK08A 0x00012A3A and reads ROM8[0x8655] and ROM8[0x891A] in the \
+positions of ROM8[0x875C] and ROM8[0x8AD9]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e1c0"
+
 [[link]]
 type = "depends"
 to = "tall-quoll/ram"

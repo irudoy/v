@@ -210,6 +210,21 @@ supports = "identity"
 to = "wondrous-camel/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003f038"
+note = """
+FUN_03F038 carries the instruction structure and call position of JK08A \
+FUN_03A904 (118 bytes on JK78C, 126 on JK08A). It reads the bank curves \
+0x0001561C and 0x0001559C and calls the homologs of nine of the ten JK08A \
+callees; the per-bank corrected-MAF helper FUN_0003B224 has no JK78C \
+callee."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f038"
+
 [[link]]
 type = "depends"
 to = "base_fuel_schedule_producer/fn"

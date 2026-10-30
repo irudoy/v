@@ -39,3 +39,16 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001337a"
+name = "beige-pony"
+note = """
+Axis of 0x000140A0 in FUN_0003F17C, loaded at 0x0003F4BA. Stock bytes are \
+identical to JK08A 0x00011BBB."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f4ba"

@@ -593,6 +593,25 @@ supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "0004068c"
+note = """
+FUN_0004068C holds the primary branch of JK08A FUN_0003B75C: it reads \
+ROM16[0x8F80], ROM8[0x8896] and ROM8[0x87AB] = 3 in the positions of K, F \
+and E, clamps the selected speed count to at least 64, caps the fixed result \
+at 0x726F9, and looks up the fallback 0x00016894 by coolant_index \
+0xFFFF106D; it writes min(255, ...) with ROM16[0x91EE] to the byte \
+0xFFFF1042 (618 bytes on JK78C, 1436 on JK08A). The capped schedule and the \
+3x4 grid run in FUN_000401D4 (curve 0x000140E4, grid 0x0000943E), and the \
+signed rate correction with gain ROM8[0x856A] and the latch bytes \
+ROM8[0x8300] and ROM8[0x8301] in FUN_000403A2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004068c"
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

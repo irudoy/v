@@ -258,6 +258,20 @@ supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003fd32"
+name = "amphibian-zebra"
+note = """
+FUN_03FD32 carries the instruction structure and call position of JK08A \
+FUN_03B520 (448 bytes on JK78C, 456 on JK08A). It reads the bank curves and \
+the primary throttle tables already bound on JK78C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fd32"
+
 [[link]]
 type = "depends"
 to = "truthful-quail/fn"

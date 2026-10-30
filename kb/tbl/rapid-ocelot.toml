@@ -144,6 +144,19 @@ supports = "identity"
 to = "ultramarine-taipan/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f28"
+name = "witty-owl"
+note = """
+Read by FUN_0003E1C0 through the literal-pool word loaded at 0x0003E1DC. \
+Every stock cell holds 0, as on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e1dc"
+
 [[link]]
 type = "reader"
 to = "ultramarine-taipan/fn"

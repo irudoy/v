@@ -24,6 +24,16 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_fuel_compensatio
 key = """
 test_fuel_compensation_axes_interpolation_selectors_bypass_and_store_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0000895c"
+note = "Read by FUN_00040958, loaded at 0x00040CC6. Stock 0x81, as on JK08A."
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040cc6"
+
 [[link]]
 type = "reader"
 to = "fuel_compensation_coordinator/fn"

@@ -222,6 +222,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000140a0"
+name = "teal-swift"
+note = """
+Read by FUN_0003F17C over axis 0x0001337A through the literal-pool word \
+loaded at 0x0003F4B6. Stock bytes are identical to JK08A 0x00012C4A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f4b6"
+
 [[link]]
 type = "depends"
 to = "pearl-mouflon/ram"

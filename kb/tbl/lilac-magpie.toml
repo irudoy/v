@@ -178,6 +178,21 @@ kind = "arithmetic"
 supports = "scale"
 value = "31.875*8=255"
 
+[[symbol]]
+layout = "jk78c"
+address = "000140e4"
+name = "poetic-kiwi"
+note = """
+Upper-limit curve of FUN_000401D4: with the mode bit clear it caps the \
+summed schedule at the curve byte << 8, looked up by the byte at offset 0x17 \
+of its coordinate block; loaded at 0x00040246. Stock 173 at the first two \
+points and 255 above, against 101 on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040246"
+
 [[link]]
 type = "index"
 to = "liberal-falcon/ram"

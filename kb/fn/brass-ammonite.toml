@@ -92,6 +92,19 @@ at = "7mfk:0003a9a0"
 value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003f0ec"
+name = "glorious-limpet"
+note = """
+FUN_03F0EC carries the instruction structure and call position of JK08A \
+FUN_03A982 (40 bytes on JK78C, 40 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f0ec"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_coordinator/fn"

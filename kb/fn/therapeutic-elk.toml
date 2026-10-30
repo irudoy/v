@@ -161,6 +161,20 @@ at = "7mfk:0003b3de"
 value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003fa48"
+name = "rose-lionfish"
+note = """
+FUN_03FA48 carries the instruction structure and call position of JK08A \
+FUN_03B320 (126 bytes on JK78C, 132 on JK08A). It reads the source-mode byte \
+ROM8[0x85F6] in the position of JK08A ROM8[0x86F9]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fa48"
+
 [[link]]
 type = "depends"
 to = "artichoke-mantis/fn"

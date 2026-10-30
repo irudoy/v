@@ -155,6 +155,18 @@ supports = "identity"
 to = "dual_bank_maf_coordinator/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003f97c"
+note = """
+FUN_03F97C carries the instruction structure and call position of JK08A \
+FUN_03B252 (44 bytes on JK78C, 44 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f97c"
+
 [[link]]
 type = "depends"
 to = "base_fuel_schedule_producer/fn"

@@ -106,6 +106,19 @@ supports = "identity"
 to = "optimistic-bobcat/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00041128"
+name = "ambitious-wrasse"
+note = """
+FUN_041128 carries the instruction structure and call position of JK08A \
+FUN_03C408 (76 bytes on JK78C, 84 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041128"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_diagnostic_coordinator/fn"

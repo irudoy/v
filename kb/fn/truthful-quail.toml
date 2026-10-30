@@ -82,6 +82,19 @@ at = "7mfk:0003b496"
 value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003fc74"
+name = "savvy-adder"
+note = """
+FUN_03FC74 carries the instruction structure and call position of JK08A \
+FUN_03B468 (48 bytes on JK78C, 48 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fc74"
+
 [[link]]
 type = "depends"
 to = "spiritual-rattlesnake/fn"
