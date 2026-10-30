@@ -212,6 +212,20 @@ supports = "identity"
 to = "versatile-junglefowl/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000138e0"
+name = "enchanted-platypus"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750), FUN_0005A57C (JK08A FUN_0004121C) \
+and FUN_00060B44 (JK08A FUN_0004776C) through the literal-pool words loaded \
+at 0x5AAE8, 0x5A5E6, 0x60B80. Stock values differ from JK08A 0x122D2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005aae8"
+
 [[link]]
 type = "depends"
 to = "polite-oryx/axis"

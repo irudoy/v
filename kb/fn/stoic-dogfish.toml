@@ -304,6 +304,20 @@ at = "7mfk:0006b6f2"
 value = {named = ["000124f2", "00013798", "00014e22", "00021bbc", "000237b4", "000237c4", "000237d4", "000237e4", "000237f4", "00023804", "00023814", "00069374", "ffff10f0", "ffff31dc", "ffff420b", "ffff8f08", "ffff8f0a", "ffff90d0"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00087bd0"
+name = "independent-slug"
+note = """
+FUN_00087BD0 holds the position of JK08A FUN_00069374 in the calls of \
+FUN_0008767C (JK08A FUN_000690B8) and repeats its structure (17168 bytes on \
+JK78C, 17182 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087bd0"
+
 [[link]]
 type = "depends"
 to = "busy-barracuda/const"

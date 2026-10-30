@@ -117,6 +117,20 @@ at = "7mfk:0004746e"
 value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0005444c", "ffff10f4", "ffff2fc1", "ffff41d0"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000606f8"
+name = "inescapable-slug"
+note = """
+FUN_000606F8 holds the position of JK08A FUN_000473AC in the calls of \
+FUN_000609C4 (JK08A FUN_000475A2) and repeats its structure (362 bytes on \
+JK78C, 240 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000606f8"
+
 [[link]]
 type = "depends"
 to = "astonishing-macaw/fn"

@@ -166,6 +166,19 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000246c4"
+name = "encouraging-wombat"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x87E9C. Stock bytes are identical to JK08A 0x237E4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087e9c"
+
 [[link]]
 type = "depends"
 to = "grinning-macaw/const"

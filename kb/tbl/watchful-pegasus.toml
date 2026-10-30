@@ -186,6 +186,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e32"
+name = "purple-basilisk"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) through the literal-pool word \
+loaded at 0x5E76E. Stock values differ from JK08A 0x12944."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005e76e"
+
 [[link]]
 type = "index"
 to = "saffron-manul/ram"

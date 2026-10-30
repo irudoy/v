@@ -7,3 +7,16 @@ name = "subtle-pelican"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00047008"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001345b"
+name = "vivacious-lyrebird"
+note = """
+Read by FUN_0005FFC4 (JK08A FUN_00046C70) through the literal-pool words \
+loaded at 0x6035A, 0x6037A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006035a"

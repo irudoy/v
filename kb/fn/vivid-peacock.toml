@@ -194,6 +194,22 @@ supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005e88c"
+name = "cautious-lyrebird"
+note = """
+FUN_0005E88C holds the position of JK08A FUN_0004569C in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (146 bytes on \
+JK78C, 148 on JK08A). It selects among axis 0x13CE6 + 0x10, + 0x20, + 0x30 \
+and + 0x40 as JK08A selects among 0x12778 + 0x20, + 0x30, + 0x60 and + 0x70, \
+under a different branch bit."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005e88c"
+
 [[link]]
 type = "depends"
 to = "hopeful-turtle/axis"

@@ -161,6 +161,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000137d8"
+name = "icy-bobcat"
+note = """
+Read by FUN_0005B418 (JK08A FUN_000420B8) through the literal-pool word \
+loaded at 0x5B46E. Stock bytes are identical to JK08A 0x1218E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005b46e"
+
 [[link]]
 type = "index"
 to = "coolant_index/ram"

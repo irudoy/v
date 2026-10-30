@@ -141,6 +141,19 @@ kind = "unbound-constant"
 supports = "scale"
 value = "128"
 
+[[symbol]]
+layout = "jk78c"
+address = "000141d0"
+name = "horned-falcon"
+note = """
+Read by FUN_000606F8 (JK08A FUN_000473AC) through the literal-pool word \
+loaded at 0x60846. Stock bytes are identical to JK08A 0x12DD2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060846"
+
 [[link]]
 type = "reader"
 to = "astonishing-macaw/fn"

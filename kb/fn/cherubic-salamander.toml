@@ -102,6 +102,20 @@ at = "7mfk:00046552"
 value = {named = ["000128d8", "000420b8", "000464de", "ffff1693", "ffff1716", "ffff1742", "ffff22e4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005f710"
+name = "primitive-lemming"
+note = """
+FUN_0005F710 holds the position of JK08A FUN_000464DE in the calls of \
+FUN_0005EA58 (JK08A FUN_0004586C) and repeats its structure (142 bytes on \
+JK78C, 152 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005f710"
+
 [[link]]
 type = "depends"
 to = "quirky-silkworm/fn"

@@ -7,3 +7,16 @@ name = "careful-mastodon"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00042204"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137d0"
+name = "psychedelic-kingfisher"
+note = """
+Read by FUN_0005B418 (JK08A FUN_000420B8) through the literal-pool word \
+loaded at 0x5B560."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005b560"

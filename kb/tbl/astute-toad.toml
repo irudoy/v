@@ -207,6 +207,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013684"
+name = "tall-gerbil"
+note = """
+Read by FUN_00060474 (JK08A FUN_00047120) through the literal-pool words \
+loaded at 0x605EA, 0x605FE. Stock values differ from JK08A 0x11FF6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000605ea"
+
 [[link]]
 type = "reader"
 to = "astonishing-macaw/fn"

@@ -292,6 +292,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013fc8"
+name = "whimsical-ara"
+note = """
+Read by FUN_0005D068 (JK08A FUN_00043AEE) through the literal-pool word \
+loaded at 0x5D074. Stock values differ from JK08A 0x12AFA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005d074"
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"

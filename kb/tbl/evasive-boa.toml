@@ -7,3 +7,16 @@ name = "evasive-boa"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00041b72"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ff4"
+name = "obedient-sidewinder"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750) through the literal-pool words \
+loaded at 0x5AEF6, 0x5AF06."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005aef6"

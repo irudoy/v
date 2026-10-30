@@ -166,6 +166,20 @@ at = "7mfk:00046866"
 value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005f95c"
+name = "free-crayfish"
+note = """
+FUN_0005F95C holds the position of JK08A FUN_0004673C in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (308 bytes on \
+JK78C, 308 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005f95c"
+
 [[link]]
 type = "depends"
 to = "astonishing-macaw/fn"

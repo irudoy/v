@@ -7,3 +7,16 @@ name = "romantic-squid"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00044526"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016fc4"
+name = "zealous-mouflon"
+note = """
+Read by FUN_0005DA78 (JK08A FUN_00044500) through the literal-pool word \
+loaded at 0x5DA96."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005da96"

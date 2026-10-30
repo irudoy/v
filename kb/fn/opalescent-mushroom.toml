@@ -110,6 +110,20 @@ at = "7mfk:00043b18"
 value = {named = ["00012afa", "00043aee", "ffff106f", "ffff2462", "ffff246c", "ffff254d"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005d068"
+name = "sandy-newt"
+note = """
+FUN_0005D068 holds the position of JK08A FUN_00043AEE in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (66 bytes on \
+JK78C, 62 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005d068"
+
 [[link]]
 type = "selector"
 to = "burrowing-platypus/ram"

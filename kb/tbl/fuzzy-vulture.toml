@@ -139,6 +139,19 @@ at = "7mfk:00041b7e"
 value = {named = ["00014e92", "00015d90", "000264cc", "00026740", "00026984", "00026c78", "00041750", "ffff221a"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001605a"
+name = "succinct-whale"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750) through the literal-pool word \
+loaded at 0x5AEF2. Stock values differ from JK08A 0x14E92."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005aef2"
+
 [[link]]
 type = "depends"
 to = "evasive-boa/tbl"

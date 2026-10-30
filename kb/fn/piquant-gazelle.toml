@@ -168,6 +168,21 @@ supports = "identity"
 to = "sly-tuna/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005aa84"
+name = "dexterous-chamois"
+note = """
+FUN_0005AA84 holds the position of JK08A FUN_00041750 in the calls of \
+FUN_0005B1B4 (JK08A FUN_00041E40) and repeats its structure (1244 bytes on \
+JK78C, 1172 on JK08A). It adds a second lookup of 0x16594 over axis 0x16F54 \
+beside the curve 0x15E22."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005aa84"
+
 [[link]]
 type = "depends"
 to = "polite-oryx/axis"

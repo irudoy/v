@@ -152,6 +152,19 @@ supports = "identity"
 to = "versatile-junglefowl/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000246e4"
+name = "meteoric-rook"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x87F14. Stock bytes are identical to JK08A 0x23804."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087f14"
+
 [[link]]
 type = "depends"
 to = "psychedelic-ostrich/const"

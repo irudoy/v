@@ -264,6 +264,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013950"
+name = "hallowed-crayfish"
+note = """
+Read by FUN_0005F95C (JK08A FUN_0004673C) through the literal-pool words \
+loaded at 0x5FA3A, 0x5FA54. Stock values differ from JK08A 0x12342."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fa3a"
+
 [[link]]
 type = "depends"
 to = "quaint-lion/tbl"

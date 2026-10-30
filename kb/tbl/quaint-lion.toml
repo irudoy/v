@@ -328,6 +328,21 @@ supports = "identity"
 to = "sceptical-dingo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013958"
+name = "brown-armadillo"
+note = """
+Read by FUN_0005F95C (JK08A FUN_0004673C) at the literal-pool base 0x13950 \
+loaded at 0x5FA3A plus 0x8, where JK08A reads 0x1234A at 0x12342 plus 0x8. \
+Stock values differ from JK08A 0x1234A."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:0005fa3a"
+value = 8
+mode = "base"
+
 [[link]]
 type = "depends"
 to = "maize-cuttlefish/tbl"

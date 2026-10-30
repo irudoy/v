@@ -1,20 +1,22 @@
 summary = """
-Implicit eight-point byte-correction table. The accessor combines two \
-linearly interpolated results of this map as (lookup@00068d08 + \
-lookup@00068d3a - 128)*8 and writes the value as signed16 to ffff2018. \
-Consumer 00068d58 adds the correction to the result of unsigned division \
-00021ce0, constrains the sum to range 125..(u16[ffff201a]-125), and writes \
-the result to ffff201e."""
+Implicit eight-point byte-correction table, the first of the two curves of \
+accessor 00068cb8. The accessor combines the linearly interpolated result of \
+this map with that of a stack copy of the eight-byte curve 000237ac as \
+(lookup@00068d08 + lookup@00068d3a - 128)*8 and writes the value as signed16 \
+to ffff2018. Consumer 00068d58 adds the correction to the result of unsigned \
+division 00021ce0, constrains the sum to range 125..(u16[ffff201a]-125), and \
+writes the result to ffff201e."""
 note = [
     """
 The physical name and unit of the quantity are unknown. Code does not define \
 a single decoding scale for an individual cell: offset 128 applies only to \
-the second lookup result, while multiplication by 8 occurs after the two \
-results are added. The map has no addressable axes, so axes is empty. Index: \
-Implicit 1D-8 with a byte selector and linear interpolation: for selector \
-<224, 00026370 passes calculation to 00026a80/00026740; for selector >=224, \
-it returns cell 7. Site 00068d08 uses the byte after an arithmetic right \
-shift by 7 through 000224f8; site 00068d3a uses \
+the result of the second curve 000237ac, while multiplication by 8 occurs \
+after the two results are added. The map has no addressable axes, so axes is \
+empty. Index: Implicit 1D-8 with a byte selector and linear interpolation: \
+for selector <224, 00026370 passes calculation to 00026a80/00026740; for \
+selector >=224, it returns cell 7. Site 00068d08 uses \
+min(255,u16[ffff1024]>>7), the arithmetic right shift by 7 of 000224f8; the \
+lookup of the second curve at site 00068d3a uses \
 clamp(u16[ffff2020]-144,0,255). Result disposition: consumer (ffff2018 -> \
 00068d58 -> ffff201e).""",
 ]
@@ -197,6 +199,26 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:000120ce"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+FUN_00087288, the homolog of FUN_00068CB8, reads the uint16 curve 00015D72 \
+at the first-lookup position of 000120CE, but the index of that lookup has \
+no qualified counterpart. JK78C indexes by min(0xFFFF, 2*u16[ffff1016]), the \
+snapshot copy of ffff1022 that FUN_0004003A computes; JK08A indexes by \
+min(255, u16[ffff1024]>>7), the Base Fuel Schedule sample, whose counterpart \
+in the JK78C snapshot copier FUN_00020F1A is ffff102C. The breakpoints \
+coincide only if ffff1022 carries the quantity and scale of ffff1024. The \
+cells are uint16 words read through the 8192-step primitive 00028200 in \
+place of bytes read through the 32-step primitive; the stock values 0030 \
+0032 0035 0042 0042 003D 0051 0074 differ from 2F 37 3E 4E 75 FE FE FE. No \
+target absence is asserted."""
 
 [[link]]
 type = "reader"

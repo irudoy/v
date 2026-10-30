@@ -239,6 +239,20 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e52"
+name = "analytic-rhino"
+note = """
+Read by FUN_0005E944 (JK08A FUN_00045758) and FUN_0008CC28 (JK08A \
+FUN_0006E3D8) through the literal-pool words loaded at 0x5E94A, 0x8CC36, \
+0x8CC54. Stock values differ from JK08A 0x1296C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005e94a"
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"

@@ -106,6 +106,21 @@ supports = "identity"
 to = "sly-tuna/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00060b44"
+name = "blond-basilisk"
+note = """
+FUN_00060B44 holds the position of JK08A FUN_0004776C in the calls of \
+FUN_000615A0 (JK08A FUN_000481F4) and repeats its structure (682 bytes on \
+JK78C, 512 on JK08A). It reads the shared gate curve 0x138E0 over axis \
+0x15F02 as JK08A reads 0x122D2 over 0x14D2A; the JK78C body is longer."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060b44"
+
 [[link]]
 type = "depends"
 to = "polite-oryx/axis"

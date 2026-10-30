@@ -128,6 +128,20 @@ at = "7mfk:0006e440"
 value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "ffff1300", "ffff1766", "ffff1f86"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0008cc28"
+name = "skilled-caiman"
+note = """
+FUN_0008CC28 holds the position of JK08A FUN_0006E3D8 in the calls of \
+FUN_0008CE54 (JK08A FUN_0006E71C) and repeats its structure (106 bytes on \
+JK78C, 106 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008cc28"
+
 [[link]]
 type = "depends"
 to = "cobalt-fossa/fn"

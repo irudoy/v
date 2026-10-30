@@ -131,6 +131,20 @@ at = "7mfk:00044572"
 value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "ffff128c", "ffff170a", "ffff1712", "ffff2458"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005da78"
+name = "satisfied-polecat"
+note = """
+FUN_0005DA78 holds the position of JK08A FUN_00044500 in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (180 bytes on \
+JK78C, 190 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005da78"
+
 [[link]]
 type = "depends"
 to = "outstanding-marmot/ram"

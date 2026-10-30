@@ -185,6 +185,19 @@ at = "7mfk:00046ed6"
 value = {named = ["00012808", "00012a42", "000224fa", "ffff1754"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013d36"
+name = "portable-husky"
+note = """
+Read by FUN_0005FFC4 (JK08A FUN_00046C70) through the literal-pool word \
+loaded at 0x6021C. Stock values differ from JK08A 0x12808."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006021c"
+
 [[link]]
 type = "depends"
 to = "magenta-jellyfish/tbl"

@@ -147,6 +147,19 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013694"
+name = "strict-partridge"
+note = """
+Read by FUN_0005B418 (JK08A FUN_000420B8) through the literal-pool word \
+loaded at 0x5B55C. Stock bytes are identical to JK08A 0x1200E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005b55c"
+
 [[link]]
 type = "depends"
 to = "careful-mastodon/tbl"

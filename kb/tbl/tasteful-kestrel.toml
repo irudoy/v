@@ -7,3 +7,16 @@ name = "tasteful-kestrel"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006ae82"
+
+[[symbol]]
+layout = "jk78c"
+address = "000132be"
+name = "flashy-ibis"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x896CA."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000896ca"

@@ -59,3 +59,16 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013ce6"
+name = "intelligent-pug"
+note = """
+Read by FUN_0005E88C (JK08A FUN_0004569C) through the literal-pool word \
+loaded at 0x5E890."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005e890"

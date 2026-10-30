@@ -301,6 +301,19 @@ kind = "registry"
 supports = "scale"
 value = "ISC Opening Area Upper Limit Table 2"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015a22"
+name = "electric-seal"
+note = """
+Read by FUN_00060AA8 (JK08A FUN_000476D2) through the literal-pool word \
+loaded at 0x60AB4. Stock values differ from JK08A 0x1465A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060ab4"
+
 [[link]]
 type = "reader"
 to = "idle_opening_area_builder/fn"

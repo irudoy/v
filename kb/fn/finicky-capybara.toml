@@ -1,8 +1,10 @@
 summary = """
-Accessor for map 0x120CE gated by ffff24c0. Two lookups of the same map \
-combine as (lookup1+lookup2-128)*8, and the correction is written to \
-ffff2018. FUN 00068d58, gated by the same bit, adds it to a quotient and \
-limits the sum to 125..(ffff201a-125) before it writes ffff201e."""
+Accessor gated by ffff24c0. It copies the eight-byte curve 0x237AC to the \
+stack, looks up map 0x120CE by min(255,ffff1024>>7) and the stack copy by \
+clamp(ffff2020-144,0,255), combines the results as (lookup1+lookup2-128)*8, \
+and writes the correction to ffff2018. FUN 00068d58, gated by the same bit, \
+adds it to a quotient and limits the sum to 125..(ffff201a-125) before it \
+writes ffff201e."""
 note = ["The physical purpose of the correction is unresolved."]
 level = "code"
 role = "accessor"
@@ -122,6 +124,31 @@ supports = "identity"
 at = "7mfk:00068d4c"
 value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "00087288"
+name = "funky-anaconda"
+note = """
+FUN_00087288 holds the position of JK08A FUN_00068CB8 in the calls of \
+FUN_00087624 (JK08A FUN_00069064) and repeats its structure (154 bytes on \
+JK78C, 158 on JK08A). Both layouts combine two eight-point curves. JK78C \
+reads the uint16 curves 0x15D72 and 0x15D62 in place through the implicit \
+primitive 0x28200 (step 8192); JK08A reads the byte map 0x120CE and a stack \
+copy of the byte curve 0x237AC through 0x26370 (step 32). The first index is \
+min(0xFFFF, 2*u16[ffff1016]), the snapshot copy of ffff1022, against \
+min(255, u16[ffff1024]>>7), the Base Fuel Schedule sample, on JK08A. The \
+second index is clamp((u16[ffff1F74]-144)*256, 0, 0xFFFF) against \
+clamp(u16[ffff2020]-144, 0, 255). The second curve is biased by 0x8000 in \
+place of 0x80, and the sum (l1+l2-0x8000)*8 saturates to the signed 16-bit \
+range before the store to ffff1F6C. After the bias, the stock values of \
+0x15D62 repeat those of 0x237AC except the fourth point (-8 against -7). The \
+curve 0x237AC is not classified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087288"
 
 [[link]]
 type = "depends"

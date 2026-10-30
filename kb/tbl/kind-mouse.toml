@@ -152,6 +152,19 @@ at = "7mfk:0002c63c"
 value = {named = ["000122e2", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000138f0"
+name = "rare-hedgehog"
+note = """
+Read by FUN_0002F572 (JK08A FUN_0002C626) through the literal-pool word \
+loaded at 0x2F576. Stock values differ from JK08A 0x122E2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f576"
+
 [[link]]
 type = "index"
 to = "coolant_index/ram"

@@ -114,6 +114,20 @@ supports = "identity"
 to = "sly-tuna/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005a57c"
+name = "roaring-stingray"
+note = """
+FUN_0005A57C holds the position of JK08A FUN_0004121C in the calls of \
+FUN_0005B1B4 (JK08A FUN_00041E40) and repeats its structure (410 bytes on \
+JK78C, 426 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005a57c"
+
 [[link]]
 type = "depends"
 to = "polite-oryx/axis"

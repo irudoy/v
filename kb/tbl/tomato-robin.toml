@@ -106,6 +106,19 @@ at = "7mfk:000419e8"
 value = {named = ["00014c2a", "ffff2026"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015e22"
+name = "stalwart-buzzard"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750) through the literal-pool word \
+loaded at 0x5AD5C. Stock values differ from JK08A 0x14C2A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ad5c"
+
 [[link]]
 type = "reader"
 to = "piquant-gazelle/fn"

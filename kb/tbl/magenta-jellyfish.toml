@@ -428,6 +428,19 @@ supports = "scale"
 to = "illustrious-vulture/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f30"
+name = "idealistic-sunfish"
+note = """
+Read by FUN_0005FFC4 (JK08A FUN_00046C70) through the literal-pool word \
+loaded at 0x602D6. Stock values differ from JK08A 0x12A42."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000602d6"
+
 [[link]]
 type = "depends"
 to = "gentle-moth/tbl"

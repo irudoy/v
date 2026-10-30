@@ -346,6 +346,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e22"
+name = "super-terrier"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) through the literal-pool word \
+loaded at 0x5DCD4. Stock bytes are identical to JK08A 0x12930."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005dcd4"
+
 [[link]]
 type = "reader"
 to = "peach-basilisk/fn"

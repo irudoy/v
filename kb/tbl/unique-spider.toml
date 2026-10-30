@@ -342,6 +342,20 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ca6"
+name = "imaginary-tamarin"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) and FUN_0005B418 (JK08A \
+FUN_000420B8) through the literal-pool words loaded at 0x5DCBC, 0x5BA94, \
+0x5BADA, 0x5BBE8. Stock values differ from JK08A 0x12738."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005dcbc"
+
 [[link]]
 type = "depends"
 to = "dexterous-bobcat/tbl"

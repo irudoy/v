@@ -178,6 +178,20 @@ supports = "identity"
 to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005ffc4"
+name = "savvy-axolotl"
+note = """
+FUN_0005FFC4 holds the position of JK08A FUN_00046C70 in the calls of \
+FUN_000609C4 (JK08A FUN_000475A2) and repeats its structure (956 bytes on \
+JK78C, 966 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ffc4"
+
 [[link]]
 type = "depends"
 to = "illustrious-vulture/fn"

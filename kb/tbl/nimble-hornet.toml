@@ -145,6 +145,19 @@ at = "7mfk:00047030"
 value = {named = ["00011d04", "00012d0a", "00026474", "00026740", "00026944", "00026c78", "00046c70", "ffff17dc", "ffff19a8"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014130"
+name = "nano-lion"
+note = """
+Read by FUN_0005FFC4 (JK08A FUN_00046C70) through the literal-pool word \
+loaded at 0x60376. Stock values differ from JK08A 0x12D0A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060376"
+
 [[link]]
 type = "depends"
 to = "subtle-pelican/tbl"

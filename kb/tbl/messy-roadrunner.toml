@@ -283,6 +283,19 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013640"
+name = "magic-macaw"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x896C6. Stock values differ from JK08A 0x11F3A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000896c6"
+
 [[link]]
 type = "depends"
 to = "bouncy-dolphin/ram"

@@ -133,6 +133,19 @@ at = "7mfk:00047728"
 value = {named = ["0001469a"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015a42"
+name = "agate-pronghorn"
+note = """
+Read by FUN_00060AA8 (JK08A FUN_000476D2) through the literal-pool word \
+loaded at 0x60ACC. Stock values differ from JK08A 0x1469A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060acc"
+
 [[link]]
 type = "depends"
 to = "fierce-tamarin/tbl"

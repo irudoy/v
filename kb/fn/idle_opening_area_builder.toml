@@ -148,6 +148,19 @@ at = "7mfk:00047728"
 value = {named = ["0001465a", "0001469a", "000476d2", "00072c3c", "ffff106f", "ffff11bc", "ffff12fa", "ffff12fc", "ffff1340", "ffff1e74"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00060aa8"
+note = """
+FUN_00060AA8 holds the position of JK08A FUN_000476D2 in the calls of \
+FUN_00060B08 (JK08A FUN_00047752) and repeats its structure (96 bytes on \
+JK78C, 96 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060aa8"
+
 [[link]]
 type = "depends"
 to = "throttle_area_compositor/fn"

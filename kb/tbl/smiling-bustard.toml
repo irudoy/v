@@ -136,6 +136,19 @@ supports = "identity"
 to = "cherubic-salamander/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013db6"
+name = "rose-chinchilla"
+note = """
+Read by FUN_0005F710 (JK08A FUN_000464DE) through the literal-pool word \
+loaded at 0x5F774. Stock values differ from JK08A 0x128D8."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005f774"
+
 [[link]]
 type = "index"
 to = "saffron-manul/ram"

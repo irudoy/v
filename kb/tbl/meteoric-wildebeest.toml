@@ -278,6 +278,19 @@ kind = "arithmetic"
 supports = "scale"
 value = "254/128=1.984375"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ab0"
+name = "pastel-octopus"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x88588. Stock values differ from JK08A 0x124F2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00088588"
+
 [[link]]
 type = "depends"
 to = "daft-caracal/axis"

@@ -202,6 +202,20 @@ at = "7mfk:00046912"
 value = {named = ["0000870c", "000468b0", "000474a4", "ffff1230", "ffff13f7", "ffff15ac", "ffff170a", "ffff173a", "ffff1748", "ffff1752", "ffff1765", "ffff1f62"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005fad0"
+name = "tentacled-labrador"
+note = """
+FUN_0005FAD0 holds the position of JK08A FUN_000468B0 in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (106 bytes on \
+JK78C, 104 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fad0"
+
 [[link]]
 type = "depends"
 to = "astonishing-macaw/fn"

@@ -150,6 +150,19 @@ at = "7mfk:00047072"
 value = {named = ["00011d04", "00012c1a", "00046c70"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014088"
+name = "smoky-narwhal"
+note = """
+Read by FUN_0005FFC4 (JK08A FUN_00046C70) through the literal-pool word \
+loaded at 0x60352. Stock values differ from JK08A 0x12C1A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060352"
+
 [[link]]
 type = "depends"
 to = "subtle-pelican/tbl"

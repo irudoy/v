@@ -73,6 +73,22 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:00046938"
 
+[[symbol]]
+layout = "jk78c"
+address = "0005fb58"
+name = "towering-vulture"
+note = """
+FUN_0005FB58 holds the position of JK08A FUN_00046938 in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (922 bytes on \
+JK78C, 678 on JK08A). Its floor branch blends two curves per selector state \
+(0x13DCE with 0x13DDE, 0x13DFE with 0x13E0E, over axis 0x154EC) where JK08A \
+selects 0x12908 or 0x12918."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fb58"
+
 [[link]]
 type = "depends"
 to = "astonishing-macaw/fn"

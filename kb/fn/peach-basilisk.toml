@@ -74,3 +74,17 @@ supports = "identity"
 at = "7mfk:00044d18"
 value = {named = ["0001292c", "00044910"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005db74"
+name = "functional-stoat"
+note = """
+FUN_0005DB74 holds the position of JK08A FUN_00044910 in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (2898 bytes on \
+JK78C, 3008 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005db74"

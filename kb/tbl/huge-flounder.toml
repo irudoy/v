@@ -351,6 +351,19 @@ supports = "scale"
 to = "amiable-bloodhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000e64e"
+name = "overjoyed-cheetah"
+note = """
+Read by FUN_0005DA78 (JK08A FUN_00044500) through the literal-pool word \
+loaded at 0x5DA94. Stock values differ from JK08A 0x0D80E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005da94"
+
 [[link]]
 type = "depends"
 to = "romantic-squid/tbl"

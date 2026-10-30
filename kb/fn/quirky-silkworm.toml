@@ -133,6 +133,13 @@ end = "to"
 relies = "structure"
 supports = "identity"
 
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Selector inputs"]
+anchor = "FUN_0005B418"
+
 [[symbol]]
 layout = "7mfk"
 address = "000420b8"
@@ -274,6 +281,20 @@ supports = "identity"
 at = "7mfk:000432ca"
 value = {named = ["0000870e", "00008909", "00012754", "00012758", "00041f2c", "000420b8", "ffff10da", "ffff10f4", "ffff16b0", "ffff3168", "ffff316a", "ffff41b9", "ffff41ef", "ffff56f6"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005b418"
+name = "zippy-hound"
+note = """
+FUN_0005B418 holds the position of JK08A FUN_000420B8 in the calls of \
+FUN_0005D068 (JK08A FUN_00043AEE) and repeats its structure (4810 bytes on \
+JK78C, 4640 on JK08A). It holds 124 calibration loads against 111 on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005b418"
 
 [[link]]
 type = "depends"

@@ -321,6 +321,20 @@ kind = "registry"
 supports = "scale"
 value = "Target Idle RPM Table RPM x*12.5"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013cb6"
+name = "sophisticated-ostrich"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) and FUN_0005B418 (JK08A \
+FUN_000420B8) through the literal-pool words loaded at 0x5DCCA, 0x5BB90. \
+Stock values differ from JK08A 0x12748."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005dcca"
+
 [[link]]
 type = "reader"
 to = "peach-basilisk/fn"

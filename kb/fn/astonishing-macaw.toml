@@ -37,3 +37,17 @@ name = "astonishing-macaw"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000474a4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00060872"
+name = "ubiquitous-mussel"
+note = """
+FUN_00060872 holds the position of JK08A FUN_000474A4 in the calls of \
+FUN_000609C4 (JK08A FUN_000475A2) and repeats its structure (256 bytes on \
+JK78C, 254 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060872"

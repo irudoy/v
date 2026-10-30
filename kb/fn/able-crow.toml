@@ -131,6 +131,20 @@ at = "7mfk:0002c63c"
 value = {named = ["000122e2", "0002c626", "00043e62", "000468b0", "00047120", "00053df4", "00054152", "000a81b4", "ffff1077", "ffff1230"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0002f572"
+name = "free-marten"
+note = """
+FUN_0002F572 holds the position of JK08A FUN_0002C626 in the calls of \
+FUN_0002F596 (JK08A FUN_0002C648) and repeats its structure (30 bytes on \
+JK78C, 30 on JK08A). FUN_0005DB74 calls it as JK08A FUN_00044910 does."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f572"
+
 [[link]]
 type = "depends"
 to = "cheerful-hornet/fn"

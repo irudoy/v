@@ -336,6 +336,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013960"
+name = "ubiquitous-dogfish"
+note = """
+Read by FUN_000606F8 (JK08A FUN_000473AC) through the literal-pool word \
+loaded at 0x6081E. Stock bytes are identical to JK08A 0x12352."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006081e"
+
 [[link]]
 type = "index"
 to = "innocent-mayfly/ram"

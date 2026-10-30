@@ -213,6 +213,21 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013d26"
+name = "gigantic-malamute"
+note = """
+Read by FUN_0005E88C (JK08A FUN_0004569C) at the literal-pool base 0x13CE6 \
+loaded at 0x5E890 plus 0x40, where JK08A reads 0x127E8 at 0x12778 plus 0x70. \
+Stock values differ from JK08A 0x127E8."""
+
+[[symbol.evidence]]
+kind = "indirect"
+at = "jk78c:0005e890"
+value = 64
+mode = "base"
+
 [[link]]
 type = "depends"
 to = "hopeful-turtle/axis"

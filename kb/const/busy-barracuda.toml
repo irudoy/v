@@ -7,3 +7,16 @@ name = "busy-barracuda"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006961e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00024694"
+name = "observant-skua"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x87E72."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087e72"

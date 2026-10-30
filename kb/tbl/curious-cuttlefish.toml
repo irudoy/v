@@ -127,6 +127,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e1e"
+name = "ambrosial-lobster"
+note = """
+Read by FUN_0005DB74 (JK08A FUN_00044910) through the literal-pool word \
+loaded at 0x5DF36. Stock values differ from JK08A 0x1292C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005df36"
+
 [[link]]
 type = "reader"
 to = "peach-basilisk/fn"

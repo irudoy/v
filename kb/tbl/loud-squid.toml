@@ -224,6 +224,19 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013cf6"
+name = "rousing-hoatzin"
+note = """
+Read by FUN_0005A71A (JK08A FUN_000413CC) through the literal-pool words \
+loaded at 0x5A938, 0x5A958. Stock values differ from JK08A 0x12798."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005a938"
+
 [[link]]
 type = "reader"
 to = "cyan-pronghorn/fn"

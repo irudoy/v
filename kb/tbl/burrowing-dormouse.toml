@@ -146,6 +146,19 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000136d8"
+name = "funny-toad"
+note = """
+Read by FUN_0005FB58 (JK08A FUN_00046938) through the literal-pool word \
+loaded at 0x5FC32. Stock values differ from JK08A 0x12042."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005fc32"
+
 [[link]]
 type = "reader"
 to = "dramatic-roadrunner/fn"

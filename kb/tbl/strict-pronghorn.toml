@@ -7,3 +7,16 @@ name = "strict-pronghorn"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00044540"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014378"
+name = "ludicrous-raven"
+note = """
+Read by FUN_0005DA78 (JK08A FUN_00044500) through the literal-pool word \
+loaded at 0x5DAAE."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005daae"

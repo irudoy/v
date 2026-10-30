@@ -26,3 +26,16 @@ name = "opal-fox"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00069590"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014a9c"
+name = "lyrical-capuchin"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x87DE0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087de0"

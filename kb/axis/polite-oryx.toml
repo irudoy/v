@@ -26,3 +26,17 @@ name = "polite-oryx"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00041296"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015f02"
+name = "brawny-magpie"
+note = """
+Read by FUN_0005AA84 (JK08A FUN_00041750), FUN_0005A57C (JK08A FUN_0004121C) \
+and FUN_00060B44 (JK08A FUN_0004776C) through the literal-pool words loaded \
+at 0x5AAEC, 0x5A5EA, 0x60B84."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005aaec"

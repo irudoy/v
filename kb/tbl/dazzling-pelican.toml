@@ -391,6 +391,19 @@ supports = "scale"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013e4a"
+name = "unselfish-barnacle"
+note = """
+Read by FUN_0005DA78 (JK08A FUN_00044500) through the literal-pool word \
+loaded at 0x5DAAC. Stock bytes are identical to JK08A 0x12964."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005daac"
+
 [[link]]
 type = "depends"
 to = "strict-pronghorn/tbl"

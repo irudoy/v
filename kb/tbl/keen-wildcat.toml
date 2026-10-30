@@ -158,6 +158,19 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00010dce"
+name = "lyrical-mammoth"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x8AA06. Stock values differ from JK08A 0x0FC8E."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008aa06"
+
 [[link]]
 type = "depends"
 to = "bipedal-tortoise/ram"

@@ -198,6 +198,19 @@ kind = "registry"
 supports = "scale"
 value = "Target Idle RPM Table scale x*12.5"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013cd6"
+name = "tireless-pegasus"
+note = """
+Read by FUN_0005B418 (JK08A FUN_000420B8) through the literal-pool word \
+loaded at 0x5BA4A. Stock values differ from JK08A 0x12768."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ba4a"
+
 [[link]]
 type = "reader"
 to = "quirky-silkworm/fn"

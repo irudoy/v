@@ -95,6 +95,19 @@ at = "7mfk:000476cc"
 value = {named = ["000092fc", "000476a0", "000476d2", "ffff122a", "ffff133e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00060a74"
+note = """
+FUN_00060A74 holds the position of JK08A FUN_000476A0 in the calls of \
+FUN_00060B08 (JK08A FUN_00047752) and repeats its structure (52 bytes on \
+JK78C, 50 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060a74"
+
 [[link]]
 type = "depends"
 to = "idle_opening_area_builder/fn"

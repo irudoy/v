@@ -276,6 +276,19 @@ kind = "arithmetic"
 supports = "scale"
 value = "16/128=0.125"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015fda"
+name = "prehistoric-dragonfly"
+note = """
+Read by FUN_00087BD0 (JK08A FUN_00069374) through the literal-pool word \
+loaded at 0x87DDC. Stock values differ from JK08A 0x14E22."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087ddc"
+
 [[link]]
 type = "depends"
 to = "opal-fox/axis"
