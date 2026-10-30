@@ -326,6 +326,166 @@ semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals 0.5 at 0x5750C and -16384.0 at 0x57640."
 
 [[target.JK78C.table]]
+id = "intake_cvtc_duty_hold"
+address = 0x0001204E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "d5c8ab89ac7c3d3530858046e392d4566a2d81ecefa6eb2f59c4e03bea074b8e"
+pointer_bindings = [{ site = 0x000E8578, accessor = 0x000E841A }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Hold duty of the intake CVTC solenoids. FUN_000E841A stores x / 65536 in 0xFFFFAA58 and adds it to the term of each bank before FUN_000E9310 forms the duty outputs 0xFFFF44BC and 0xFFFF44BE, which FUN_000E946C writes to the duty words 0xFFFF25C4 and 0xFFFF25C6. Stock 35193..37355 = 0.537..0.570."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/65536; proposed editor-grid inverse x*65536. Origin: the float literal 0x377FFFFF, 1/65536 less one unit in the last place, at 0xE857C."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_offset"
+address = 0x000120CE
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "690d3a691d655929c0fb970f0fe813df88c6799a8b8a628a0fbff3095d45e8c8"
+pointer_bindings = [{ site = 0x000E8580, accessor = 0x000E841A }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Duty offset of the intake CVTC solenoids. FUN_000E841A stores x / 65536 in 0xFFFFAA54; while the byte 0xFFFFABDC is zero the term of each bank is +offset for a non-negative bank error of FUN_000E8968 and -offset otherwise, and while it is nonzero the terms are the feedback outputs 0xFFFFAB88 and 0xFFFFAB8C. Stock 4456..6226 = 0.068..0.095."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/65536; proposed editor-grid inverse x*65536. Origin: the float literal 0x377FFFFF, 1/65536 less one unit in the last place, at 0xE857C."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_error_divisor_positive"
+address = 0x0001214E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "3f362829becef06fe996926595e82f89cdc6149c7f2211df7b1b93811ba90e7d"
+pointer_bindings = [{ site = 0x000E87FC, accessor = 0x000E8630 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Error divisor of the intake CVTC duty controller for a non-negative bank error. FUN_000E8630 stores x * 0.3 in 0xFFFFAA78 and, while the bank flag of FUN_000E8968 is set, divides the float 0xFFFFAA9C (first bank) or 0xFFFFAAA0 (second bank) times ROM16[0x9256] * 0.2 = 1000 by it. Stock 1155..3394."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.3; proposed editor-grid inverse x/0.3. Origin: the float literal 0.3 at 0xE8808."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_error_divisor_negative"
+address = 0x000121CE
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "40bbafb68e62d81a6ef7e41b68046cc9a706080c631731137675cdcfd0805cab"
+pointer_bindings = [{ site = 0x000E8804, accessor = 0x000E8630 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Error divisor of the intake CVTC duty controller for a negative bank error. FUN_000E8630 stores x * 0.1 in 0xFFFFAA74 and uses it in place of the surface 0x0001214E while the bank flag of FUN_000E8968 is clear. Stock 3112..5531."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*0.1; proposed editor-grid inverse x/0.1. Origin: the float literal 0.1 at 0xE880C."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_filter_positive"
+address = 0x0001294E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "acfe19ef5f90b1a14fada287ce3aa2382e19df46f036db7e39560d880ed51c52"
+pointer_bindings = [{ site = 0x000E8524, accessor = 0x000E81F8 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Coefficient v of the first-order filter of the intake CVTC duty controller for a non-negative controller error. FUN_000E81F8 looks up this surface and stores v = x * 2.0e-5 in 0xFFFFAA50. FUN_000E91FA forms the error e and its sign, and FUN_000E8794 selects v by the sign and divides by 2v + 0.01 with the coefficient 2v - 0.01 on the previous output. Stock 2500..7325."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*2e-5 s; proposed editor-grid inverse x/2e-5. Origin: the float literal 2.0e-5 at 0xE8530 and the terms 2v + 0.01 and 2v - 0.01 of FUN_000E8794."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_filter_negative"
+address = 0x000129CE
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "e453ff89c7affff7cc3d2fdf146dcf25b5eb25cafaf09e4d7896f3a0c7fdd324"
+pointer_bindings = [{ site = 0x000E852C, accessor = 0x000E81F8 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Negative Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Coefficient v of the first-order filter of the intake CVTC duty controller for a negative controller error. FUN_000E81F8 stores v = x * 3.0e-5 in 0xFFFFAA4C, and FUN_000E8794 uses it in place of the surface 0x0001294E while the error of FUN_000E91FA is negative. Stock 973..6123."
+note = "Engineering conversion is unestablished. Retained hypothesis: x*3e-5 s; proposed editor-grid inverse x/3e-5. Origin: the float literal 3.0e-5 at 0xE8538 and the terms 2v + 0.01 and 2v - 0.01 of FUN_000E8794."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_feedback_upper"
+address = 0x0001304E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "fbd86cd5a3860d429f89e7fb5898de55c1e9866c790227df1571b1a4ef9d48d3"
+pointer_bindings = [{ site = 0x000E8534, accessor = 0x000E81F8 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Feedback Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper bound of the feedback term of the intake CVTC duty controller. FUN_000E81F8 stores x / 65535 in 0xFFFFAA48 and passes it with the lower bound 0x000130CE along the calls FUN_000E841A, FUN_000E8630, FUN_000E8794 and FUN_000E91FA to FUN_000E9250. Stock 1146..16646 = 0.017..0.254."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/65535; proposed editor-grid inverse x*65535. Origin: the float literal 1/65535 at 0xE8540."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_duty_feedback_lower"
+address = 0x000130CE
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "0a53b1b9961b4b34d422754849e49be9ae39855a94409fd1ea55c0373b143163"
+pointer_bindings = [{ site = 0x000E853C, accessor = 0x000E81F8 }]
+axis_x = 0x00017124
+axis_y = 0x00017134
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Lower bound of the feedback term of the intake CVTC duty controller. FUN_000E81F8 stores x / 65535 - 1 in 0xFFFFAA44. Stock 42001..57494 = -0.359..-0.123."
+note = "Engineering conversion is unestablished. Retained hypothesis: x/65535-1; proposed editor-grid inverse (x+1)*65535. Origin: the float literals 1/65535 at 0xE8540 and -1.0 at 0xE8544."
+
+[[target.JK78C.table]]
 id = "timing_state_addend_alternate"
 address = 0x000137F0
 width = 8
@@ -386,6 +546,25 @@ coarse = 5
 confidence = "code"
 semantics = "Threshold of the hot-intake idle latch in FUN_00059C2C while the knock state 0xFFFF23C6.bit6 is set; the reader adds 8 to the literal 0x00013F88. The rest of the latch follows 0x00013F88. Stock 90, 70, 50, 50, 50, 50, 50, 50."
 note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: the byte comparison in FUN_00059C2C."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_settle_count"
+address = 0x00014230
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "48c17af06b4a12aceb9f2a844630e0a8e4538f59a23b4e5fd81bdbeddc9df661"
+pointer_bindings = [{ site = 0x000E5900, accessor = 0x000E56D4 }, { site = 0x000E81C0, accessor = 0x000E7FB4 }]
+axis_x = 0x00013392
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Load value of the countdown byte 0xFFFF24BF of the intake CVTC stage FUN_000E7FB4, selected while ROM8[0x852A] bit 0 is set and looked up over the axis 0x00013392 by byte 0xFFFF10F1. The stage loads the countdown and sets 0xFFFF23EC bit 3 when 0xFFFF23CB bit 7 and 0xFFFF2403 bit 2 are set, the target word 0xFFFF227C is at least ROM8[0x8B44] - 128 = 6 counts above 0x8000, the countdown 0xFFFF24C0 is zero, and the bit is clear. A lower target, either bit clear, or both word pairs 0xFFFF1AA6/0xFFFF1C1A and 0xFFFF1AA8/0xFFFF1C1C apart by more than ROM8[0x8B6C] = 14 reloads 0xFFFF24C0 from ROM8[0x8A5D] = 70 instead. The stage clears the bit once 0xFFFF24BF is zero while 0xFFFF23B8 bit 6 is set. The initializer FUN_000E56D4 loads 0xFFFF24BF from this curve by the live byte 0xFFFF1171 and 0xFFFF24C0 from ROM8[0x8A5D]. The routine that counts the two bytes down is not identified. Every stock cell holds 5; stock ROM8[0x852A] = 0x05 selects this curve."
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts of the countdown 0xFFFF24BF; proposed editor-grid inverse x. Origin: the byte store of FUN_000E7FB4 at 0x000E815E."
 
 [[target.JK78C.table]]
 id = "vvel_command_shaft_angle"
@@ -639,6 +818,25 @@ semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by cool
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by FUN_00056A14 at callsite 0x56A4A through the 8-point uint16 wrapper 0x282F4 as the base literal 0x00016A54 + 0x40 with the axis at + 0x70."
 
 [[target.JK78C.table]]
+id = "intake_cvtc_target_limit"
+address = 0x00016AA4
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "102c30a4101ea1ece1a7bd2907428b3c677aa7e1703ac19da0fcbcfd5a7a0a07"
+pointer_bindings = [{ site = 0x000E65C8, accessor = 0x000E6492 }]
+axis_x = 0x00016B94
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper bound of the intake CVTC target word 0xFFFF227C. FUN_000E6492 looks up this curve over the axis 0x00016B94 by the larger of the words 0xFFFF2674 and 0xFFFF2676, stores the result in 0xFFFF1ACE, and writes 0xFFFF227C = min(selected target, bound) on every path; the default selected target is 0x8000. The stock cells hold 32898 = 0x8000 + 130 through the sixth point and fall to 32798 = 0x8000 + 30 at the last."
+note = "Engineering conversion is unestablished. Retained hypothesis: x-32768 counts; proposed editor-grid inverse x+32768. Origin: the default target 0x8000 of FUN_000E6492."
+
+[[target.JK78C.table]]
 id = "vvel_duration_running"
 address = 0x00016BB4
 width = 16
@@ -850,6 +1048,21 @@ coarse = 0.5
 confidence = "code"
 semantics = "Second copy of monitor floor B: FUN_00059B64 interpolates it by the word 0xFFFF11BC into 0xFFFF380C, one of the four floor words 0xFFFF3276, 0xFFFF3278, 0xFFFF380A, and 0xFFFF380C whose maximum the deficit monitors FUN_000BF0C0 and FUN_000BF122 compare with the measured control-shaft angle."
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_00059B64 at callsite 0x59B72 through the 8-point uint16 wrapper 0x282F4. No direct call reaches the reader; its entry address is the word at 0x21BBC of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000160AA."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_settle_count_axis"
+address = 0x00013392
+length = 8
+storagetype = "uint8"
+values_sha256 = "4455db1be5060c5833f747d22d0909679fb50cfa4dd28cbc92001700c9cb2d58"
+pointer_bindings = [{ site = 0x000E5904, accessor = 0x000E56D4 }, { site = 0x000E81C4, accessor = 0x000E7FB4 }]
+name = "Settle Countdown - Selected Temperature"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the byte 0xFFFF10F1 at the offset of the oil-temperature DID source 0xFFFF1171 in the scheduler block 0xFFFF1084 and the raw-50 conversion of the JK08A oil-temperature snapshot 0xFFFF2772. Recorded code interpretation: Oil-temperature axis of the settle count 0x00014230, 50..190, read by FUN_000E7FB4 with byte 0xFFFF10F1 and by FUN_000E56D4 with the live byte 0xFFFF1171."
 
 [[target.JK78C.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -1064,6 +1277,21 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. The axis is reached as base literal 0x00016A54 + 0x70; coordinate 0xFFFF1069 is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.\n"
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_target_limit_axis"
+address = 0x00016B94
+length = 16
+storagetype = "uint16"
+values_sha256 = "d8a380d30fc1ff753566c4f6200432307dc12aee2f4d827349bc165a93301b78"
+pointer_bindings = [{ site = 0x000E65CC, accessor = 0x000E6492 }]
+name = "Target Bound - Input Coordinate"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x counts; proposed editor-grid inverse x. Origin: the word coordinate max(0xFFFF2674, 0xFFFF2676) of FUN_000E6492, which applies no scale literal. Recorded code interpretation: Coordinate axis of the intake CVTC target bound 0x00016AA4 in FUN_000E6492, 0..18322. The coordinate is the larger of the words 0xFFFF2674 and 0xFFFF2676 that FUN_000EDF62 latches."
 
 [[target.JK78C.axis]]
 id = "vvel_idle_model_margin_axis"
@@ -1342,6 +1570,36 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00015AA2 at 1/512 per count, 12800..48640 = 25.0..95.0. FUN_00055E78 indexes it with its lookup duration x512, and FUN_00055F2C and FUN_00055FF2 read it as the result of the inverse lookup over 0x00015AA2."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_duty_axis_x"
+address = 0x00017124
+length = 8
+storagetype = "uint16"
+values_sha256 = "97963255f9c8dd9a78340b6d39b2614869e4efe5865725934a269fcc5e16f20d"
+pointer_bindings = [{ site = 0x000E8518, accessor = 0x000E841A }, { site = 0x000E87F8, accessor = 0x000E8630 }]
+name = "Duty Controller - Input 1"
+kind = "rpm"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; proposed editor-grid inverse x/50. Origin: the byte 0xFFFF119D, which the homologous reader FUN_000E63A8 uses in place of the JK08A engine-speed/50 byte 0xFFFF11AE. Recorded code interpretation: First axis of the eight 8x8 intake CVTC duty surfaces, 16..120, read by FUN_000E81F8, FUN_000E841A and FUN_000E8630 with byte 0xFFFF119D."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_duty_axis_y"
+address = 0x00017134
+length = 8
+storagetype = "uint16"
+values_sha256 = "d89c8cfda05a099e53bc5ce6093ceac6bbdb98ab1819afaa50dce76e177def77"
+pointer_bindings = [{ site = 0x000E8518, accessor = 0x000E841A, offset = 0x10 }, { site = 0x000E87F8, accessor = 0x000E8630, offset = 0x10 }]
+name = "Duty Controller - Input 2"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the byte 0xFFFF10F1 at the offset of the oil-temperature DID source 0xFFFF1171 in the scheduler block 0xFFFF1084 and the raw-50 conversion of the JK08A oil-temperature snapshot 0xFFFF2772. Recorded code interpretation: Second axis of the eight 8x8 intake CVTC duty surfaces, 40..170, read at offset 0x10 from the literal 0x00017124 with byte 0xFFFF10F1."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_startup_axis"
@@ -1810,6 +2068,166 @@ semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.table]]
+id = "intake_cvtc_duty_hold"
+address = 0x000123C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "d5c8ab89ac7c3d3530858046e392d4566a2d81ecefa6eb2f59c4e03bea074b8e"
+pointer_bindings = [{ site = 0x00111764, accessor = 0x001115C8 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Hold-duty surface 123c8 in 1115c8, added to each selected bank term after multiplication by float literal 377fffff. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The hold-duty role follows the reviewed reader and its float transformation; no physical duty conversion is asserted."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_offset"
+address = 0x00012448
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "690d3a691d655929c0fb970f0fe813df88c6799a8b8a628a0fbff3095d45e8c8"
+pointer_bindings = [{ site = 0x00111770, accessor = 0x001115C8 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Signed-offset magnitude surface 12448 in 1115c8. The bank-error sign selects its positive or negative float contribution; the alternate controller path uses feedback outputs. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The reader selects the sign of this offset magnitude independently for each bank; no physical duty conversion is asserted."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_error_divisor_positive"
+address = 0x000124C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "3f362829becef06fe996926595e82f89cdc6149c7f2211df7b1b93811ba90e7d"
+pointer_bindings = [{ site = 0x00111A08, accessor = 0x0011188E }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error divisor surface 124c8 in 11188e, distinct from the separately read negative-error divisor. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_error_divisor_negative"
+address = 0x00012548
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "40bbafb68e62d81a6ef7e41b68046cc9a706080c631731137675cdcfd0805cab"
+pointer_bindings = [{ site = 0x00111A18, accessor = 0x0011188E }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error divisor surface 12548 in 11188e, selected independently for each bank from its error sign. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_filter_positive"
+address = 0x00012CC8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "acfe19ef5f90b1a14fada287ce3aa2382e19df46f036db7e39560d880ed51c52"
+pointer_bindings = [{ site = 0x0011170C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error first-order filter coefficient surface 12cc8 in 1113e0, one of four separately read duty-controller surfaces. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_filter_negative"
+address = 0x00012D48
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "e453ff89c7affff7cc3d2fdf146dcf25b5eb25cafaf09e4d7896f3a0c7fdd324"
+pointer_bindings = [{ site = 0x0011171C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Negative Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error first-order filter coefficient surface 12d48 in 1113e0, distinct from coefficient 12cc8 and both feedback bounds. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_feedback_upper"
+address = 0x000133C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "fbd86cd5a3860d429f89e7fb5898de55c1e9866c790227df1571b1a4ef9d48d3"
+pointer_bindings = [{ site = 0x00111724, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Feedback Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper feedback bound surface 133c8 in 1113e0, retained separately from lower bound 13448 and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The upper feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_duty_feedback_lower"
+address = 0x00013448
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "0a53b1b9961b4b34d422754849e49be9ae39855a94409fd1ea55c0373b143163"
+pointer_bindings = [{ site = 0x0011172C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Lower feedback bound surface 13448 in 1113e0, retained separately from upper bound 133c8 and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The lower feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ND0A.table]]
 id = "timing_state_addend_alternate"
 address = 0x00013C22
 width = 8
@@ -1870,6 +2288,25 @@ coarse = 5
 confidence = "code"
 semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC while the knock state bit is set, looked up by the coolant temperature over the axis 0x000146AE; the threshold without knock is 0x00014426."
 note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x00063070, loaded at 0x00062F62. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_settle_count"
+address = 0x000146D6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "48c17af06b4a12aceb9f2a844630e0a8e4538f59a23b4e5fd81bdbeddc9df661"
+pointer_bindings = [{ site = 0x0010DCE4, accessor = 0x0010DB04 }, { site = 0x00111234, accessor = 0x001110DA }]
+axis_x = 0x0001372C
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Oil-indexed settle-count reload 146d6 over axis 1372c, read by initializer 10db04 and stage 1110da. Both stock images set scheme byte 8561 bit0 and select this arm. The countdown time unit remains unresolved."
+note = "Scheme bit0 set selects this oil-indexed curve in initializer 10db04 and control stage 1110da. Stock byte 8561=05 selects this arm. The result reloads a countdown; its time unit and the countdown routine remain unresolved."
 
 [[target.1ND0A.table]]
 id = "vvel_command_shaft_angle"
@@ -2085,6 +2522,25 @@ semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by the 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes are identical to JK78C 0x00016A94."
 
 [[target.1ND0A.table]]
+id = "intake_cvtc_target_limit"
+address = 0x000170B2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "102c30a4101ea1ece1a7bd2907428b3c677aa7e1703ac19da0fcbcfd5a7a0a07"
+pointer_bindings = [{ site = 0x0010EF00, accessor = 0x0010ECF8 }]
+axis_x = 0x000171A2
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper bound 170b2 over the sixteen-word axis 171a2 in 10ecf8. The larger of input words fffe977e/fffe9780 indexes the curve; every target-selection path applies the resulting bound. Engineering conversion remains unestablished."
+note = "Sixteen-point uint16 target-bound curve read by 10ecf8 over 171a2 from the greater of words fffe977e/fffe9780. The bound is applied on every target-selection path."
+
+[[target.1ND0A.table]]
 id = "vvel_duration_running"
 address = 0x000171C2
 width = 16
@@ -2296,6 +2752,21 @@ coarse = 0.5
 confidence = "code"
 semantics = "Second copy of monitor floor B: FUN_0006275C interpolates it by the word 0xFFFE81C8 into 0xFFFEAA78, one of the four floor words 0xFFFEA422, 0xFFFEA424, 0xFFFEAA76, and 0xFFFEAA78 whose maximum the deficit monitors FUN_000DFFE6 compare with the measured control-shaft angle."
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_0006275C at callsite 0x62768 through the 8-point uint16 wrapper 0x28910. No direct call reaches the reader; its entry address is the word at 0x221D4 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000166A8."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_settle_count_axis"
+address = 0x0001372C
+length = 8
+storagetype = "uint8"
+values_sha256 = "4455db1be5060c5833f747d22d0909679fb50cfa4dd28cbc92001700c9cb2d58"
+pointer_bindings = [{ site = 0x0010DCE0, accessor = 0x0010DB04 }, { site = 0x00111230, accessor = 0x001110DA }]
+name = "Settle Countdown - Selected Temperature"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
 
 [[target.1ND0A.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -2525,6 +2996,21 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. The independently executed stock PID05 relation is A=max(T-10,0); the retained community decoder is A-40. Equality with a decoded PID05 value requires T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_target_limit_axis"
+address = 0x000171A2
+length = 16
+storagetype = "uint16"
+values_sha256 = "d8a380d30fc1ff753566c4f6200432307dc12aee2f4d827349bc165a93301b78"
+pointer_bindings = [{ site = 0x0010EEFC, accessor = 0x0010ECF8 }]
+name = "Target Bound - Input Coordinate"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Sixteen uint16 points indexed by the greater of words fffe977e/fffe9780 in 10ecf8. Physical coordinate and conversion remain unresolved."
 
 [[target.1ND0A.axis]]
 id = "vvel_idle_model_margin_axis"
@@ -2773,6 +3259,36 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00016090 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005751E. Read by FUN_0005751E through the literal-pool word 0x000576EC, loaded at 0x0005758A. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_duty_axis_x"
+address = 0x00017732
+length = 8
+storagetype = "uint16"
+values_sha256 = "97963255f9c8dd9a78340b6d39b2614869e4efe5865725934a269fcc5e16f20d"
+pointer_bindings = [{ site = 0x00111708, accessor = 0x001115C8 }, { site = 0x00111A04, accessor = 0x0011188E }]
+name = "Duty Controller - Input 1"
+kind = "rpm"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 first-coordinate points shared by the three duty-controller readers. Stored counts retain the source engine-speed interpretation without an engineering conversion."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_duty_axis_y"
+address = 0x00017742
+length = 8
+storagetype = "uint16"
+values_sha256 = "d89c8cfda05a099e53bc5ce6093ceac6bbdb98ab1819afaa50dce76e177def77"
+pointer_bindings = [{ site = 0x00111704, accessor = 0x001115C8 }, { site = 0x00111A00, accessor = 0x0011188E }]
+name = "Duty Controller - Input 2"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 second-coordinate points of the duty surfaces. The target has a direct axis pointer; the JK78C base+16 encoding is not copied."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_startup_axis"
@@ -3241,6 +3757,166 @@ semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "intake_cvtc_duty_hold"
+address = 0x000123C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "d5c8ab89ac7c3d3530858046e392d4566a2d81ecefa6eb2f59c4e03bea074b8e"
+pointer_bindings = [{ site = 0x00111764, accessor = 0x001115C8 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Hold-duty surface 123c8 in 1115c8, added to each selected bank term after multiplication by float literal 377fffff. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The hold-duty role follows the reviewed reader and its float transformation; no physical duty conversion is asserted."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_offset"
+address = 0x00012448
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "690d3a691d655929c0fb970f0fe813df88c6799a8b8a628a0fbff3095d45e8c8"
+pointer_bindings = [{ site = 0x00111770, accessor = 0x001115C8 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Signed-offset magnitude surface 12448 in 1115c8. The bank-error sign selects its positive or negative float contribution; the alternate controller path uses feedback outputs. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The reader selects the sign of this offset magnitude independently for each bank; no physical duty conversion is asserted."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_error_divisor_positive"
+address = 0x000124C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "3f362829becef06fe996926595e82f89cdc6149c7f2211df7b1b93811ba90e7d"
+pointer_bindings = [{ site = 0x00111A08, accessor = 0x0011188E }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error divisor surface 124c8 in 11188e, distinct from the separately read negative-error divisor. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_error_divisor_negative"
+address = 0x00012548
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "40bbafb68e62d81a6ef7e41b68046cc9a706080c631731137675cdcfd0805cab"
+pointer_bindings = [{ site = 0x00111A18, accessor = 0x0011188E }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error divisor surface 12548 in 11188e, selected independently for each bank from its error sign. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_filter_positive"
+address = 0x00012CC8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "acfe19ef5f90b1a14fada287ce3aa2382e19df46f036db7e39560d880ed51c52"
+pointer_bindings = [{ site = 0x0011170C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error first-order filter coefficient surface 12cc8 in 1113e0, one of four separately read duty-controller surfaces. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_filter_negative"
+address = 0x00012D48
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "e453ff89c7affff7cc3d2fdf146dcf25b5eb25cafaf09e4d7896f3a0c7fdd324"
+pointer_bindings = [{ site = 0x0011171C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Negative Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error first-order filter coefficient surface 12d48 in 1113e0, distinct from coefficient 12cc8 and both feedback bounds. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_feedback_upper"
+address = 0x000133C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "fbd86cd5a3860d429f89e7fb5898de55c1e9866c790227df1571b1a4ef9d48d3"
+pointer_bindings = [{ site = 0x00111724, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Feedback Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper feedback bound surface 133c8 in 1113e0, retained separately from lower bound 13448 and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The upper feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_duty_feedback_lower"
+address = 0x00013448
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "0a53b1b9961b4b34d422754849e49be9ae39855a94409fd1ea55c0373b143163"
+pointer_bindings = [{ site = 0x0011172C, accessor = 0x001113E0 }]
+axis_x = 0x00017732
+axis_y = 0x00017742
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Lower feedback bound surface 13448 in 1113e0, retained separately from upper bound 133c8 and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The lower feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ND3B.table]]
 id = "timing_state_addend_alternate"
 address = 0x00013C22
 width = 8
@@ -3301,6 +3977,25 @@ coarse = 5
 confidence = "code"
 semantics = "Threshold of the hot-intake idle latch in FUN_00062ECC while the knock state bit is set, looked up by the coolant temperature over the axis 0x000146AE; the threshold without knock is 0x00014426."
 note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_00062ECC through the literal-pool word 0x00063070, loaded at 0x00062F62. FUN_00062ECC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_settle_count"
+address = 0x000146D6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "48c17af06b4a12aceb9f2a844630e0a8e4538f59a23b4e5fd81bdbeddc9df661"
+pointer_bindings = [{ site = 0x0010DCE4, accessor = 0x0010DB04 }, { site = 0x00111234, accessor = 0x001110DA }]
+axis_x = 0x0001372C
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Oil-indexed settle-count reload 146d6 over axis 1372c, read by initializer 10db04 and stage 1110da. Both stock images set scheme byte 8561 bit0 and select this arm. The countdown time unit remains unresolved."
+note = "Scheme bit0 set selects this oil-indexed curve in initializer 10db04 and control stage 1110da. Stock byte 8561=0d selects this arm. The result reloads a countdown; its time unit and the countdown routine remain unresolved."
 
 [[target.1ND3B.table]]
 id = "vvel_command_shaft_angle"
@@ -3516,6 +4211,25 @@ semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by the 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes are identical to JK78C 0x00016A94. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "intake_cvtc_target_limit"
+address = 0x000170B2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "102c30a4101ea1ece1a7bd2907428b3c677aa7e1703ac19da0fcbcfd5a7a0a07"
+pointer_bindings = [{ site = 0x0010EF00, accessor = 0x0010ECF8 }]
+axis_x = 0x000171A2
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper bound 170b2 over the sixteen-word axis 171a2 in 10ecf8. The larger of input words fffe977e/fffe9780 indexes the curve; every target-selection path applies the resulting bound. Engineering conversion remains unestablished."
+note = "Sixteen-point uint16 target-bound curve read by 10ecf8 over 171a2 from the greater of words fffe977e/fffe9780. The bound is applied on every target-selection path."
+
+[[target.1ND3B.table]]
 id = "vvel_duration_running"
 address = 0x000171C2
 width = 16
@@ -3727,6 +4441,21 @@ coarse = 0.5
 confidence = "code"
 semantics = "Second copy of monitor floor B: FUN_0006275C interpolates it by the word 0xFFFE81C8 into 0xFFFEAA78, one of the four floor words 0xFFFEA422, 0xFFFEA424, 0xFFFEAA76, and 0xFFFEAA78 whose maximum the deficit monitors FUN_000DFFE6 compare with the measured control-shaft angle."
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_0006275C at callsite 0x62768 through the 8-point uint16 wrapper 0x28910. No direct call reaches the reader; its entry address is the word at 0x221D4 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000166A8."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_settle_count_axis"
+address = 0x0001372C
+length = 8
+storagetype = "uint8"
+values_sha256 = "4455db1be5060c5833f747d22d0909679fb50cfa4dd28cbc92001700c9cb2d58"
+pointer_bindings = [{ site = 0x0010DCE0, accessor = 0x0010DB04 }, { site = 0x00111230, accessor = 0x001110DA }]
+name = "Settle Countdown - Selected Temperature"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
 
 [[target.1ND3B.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -3956,6 +4685,21 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point nominal encoded-temperature axis for coolant in the cold duration and cold CVTC curves; stock points 20..90 display as -30..40 degC using x-50. Its exact registered image has separate byte bindings and executable conversion/publication/copy/caller/PID paths. It shares the reviewed 1ND0A address layout and stock axis bytes. The PID05 relation A=max(T-10,0) and retained community decoder A-40 imply coordinate equality only for T>=10, x=T and corresponding samples. Hysteresis, independent refresh, override and fail-safe do not establish that equality. x+50 is the inverse of the nominal coordinate grid, not the sensor or publication chain; it is not a sensor inverse. Measured temperature and physical accuracy are unverified; no hardware proof is established. Runtime input is an unsigned byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_target_limit_axis"
+address = 0x000171A2
+length = 16
+storagetype = "uint16"
+values_sha256 = "d8a380d30fc1ff753566c4f6200432307dc12aee2f4d827349bc165a93301b78"
+pointer_bindings = [{ site = 0x0010EEFC, accessor = 0x0010ECF8 }]
+name = "Target Bound - Input Coordinate"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Sixteen uint16 points indexed by the greater of words fffe977e/fffe9780 in 10ecf8. Physical coordinate and conversion remain unresolved."
 
 [[target.1ND3B.axis]]
 id = "vvel_idle_model_margin_axis"
@@ -4204,6 +4948,36 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00016090 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005751E. Read by FUN_0005751E through the literal-pool word 0x000576EC, loaded at 0x0005758A. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_duty_axis_x"
+address = 0x00017732
+length = 8
+storagetype = "uint16"
+values_sha256 = "97963255f9c8dd9a78340b6d39b2614869e4efe5865725934a269fcc5e16f20d"
+pointer_bindings = [{ site = 0x00111708, accessor = 0x001115C8 }, { site = 0x00111A04, accessor = 0x0011188E }]
+name = "Duty Controller - Input 1"
+kind = "rpm"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 first-coordinate points shared by the three duty-controller readers. Stored counts retain the source engine-speed interpretation without an engineering conversion."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_duty_axis_y"
+address = 0x00017742
+length = 8
+storagetype = "uint16"
+values_sha256 = "d89c8cfda05a099e53bc5ce6093ceac6bbdb98ab1819afaa50dce76e177def77"
+pointer_bindings = [{ site = 0x00111704, accessor = 0x001115C8 }, { site = 0x00111A00, accessor = 0x0011188E }]
+name = "Duty Controller - Input 2"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 second-coordinate points of the duty surfaces. The target has a direct axis pointer; the JK78C base+16 encoding is not copied."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_startup_axis"
@@ -4692,6 +5466,166 @@ semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x00064200, loaded at 0x000640AC. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898."
 
 [[target.1ME3B.table]]
+id = "intake_cvtc_duty_hold"
+address = 0x00011EFC
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "d5c8ab89ac7c3d3530858046e392d4566a2d81ecefa6eb2f59c4e03bea074b8e"
+pointer_bindings = [{ site = 0x0011D11C, accessor = 0x0011CF90 }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Hold-duty surface 11efc in 11cf90, added to each selected bank term after multiplication by float literal 377fffff. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The hold-duty role follows the reviewed reader and its float transformation; no physical duty conversion is asserted."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_offset"
+address = 0x00011F7C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "690d3a691d655929c0fb970f0fe813df88c6799a8b8a628a0fbff3095d45e8c8"
+pointer_bindings = [{ site = 0x0011D128, accessor = 0x0011CF90 }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Signed-offset magnitude surface 11f7c in 11cf90. The bank-error sign selects its positive or negative float contribution; the alternate controller path uses feedback outputs. Engineering conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The reader selects the sign of this offset magnitude independently for each bank; no physical duty conversion is asserted."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_error_divisor_positive"
+address = 0x00011FFC
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "3f362829becef06fe996926595e82f89cdc6149c7f2211df7b1b93811ba90e7d"
+pointer_bindings = [{ site = 0x0011D3F8, accessor = 0x0011D1BA }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error divisor surface 11ffc in 11d1ba, distinct from the separately read negative-error divisor. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_error_divisor_negative"
+address = 0x0001207C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "40bbafb68e62d81a6ef7e41b68046cc9a706080c631731137675cdcfd0805cab"
+pointer_bindings = [{ site = 0x0011D408, accessor = 0x0011D1BA }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error divisor surface 1207c in 11d1ba, selected independently for each bank from its error sign. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_filter_positive"
+address = 0x0001287C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "acfe19ef5f90b1a14fada287ce3aa2382e19df46f036db7e39560d880ed51c52"
+pointer_bindings = [{ site = 0x0011D0C4, accessor = 0x0011CD9C }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Positive-error first-order filter coefficient surface 1287c in 11cd9c, one of four separately read duty-controller surfaces. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_filter_negative"
+address = 0x0001297C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "e453ff89c7affff7cc3d2fdf146dcf25b5eb25cafaf09e4d7896f3a0c7fdd324"
+pointer_bindings = [{ site = 0x0011D0D4, accessor = 0x0011CD9C }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Negative Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Negative-error first-order filter coefficient surface 1297c in 11cd9c, distinct from coefficient 1287c and both feedback bounds. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_feedback_upper"
+address = 0x0001307C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "fbd86cd5a3860d429f89e7fb5898de55c1e9866c790227df1571b1a4ef9d48d3"
+pointer_bindings = [{ site = 0x0011D0DC, accessor = 0x0011CD9C }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Feedback Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper feedback bound surface 1307c in 11cd9c, retained separately from lower bound 1317c and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The upper feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_duty_feedback_lower"
+address = 0x0001317C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "0a53b1b9961b4b34d422754849e49be9ae39855a94409fd1ea55c0373b143163"
+pointer_bindings = [{ site = 0x0011D0E4, accessor = 0x0011CD9C }]
+axis_x = 0x000177F6
+axis_y = 0x00017806
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Lower feedback bound surface 1317c in 11cd9c, retained separately from upper bound 1307c and both filter coefficients. Physical conversion remains unestablished."
+note = "Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The lower feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted."
+
+[[target.1ME3B.table]]
 id = "timing_state_addend_alternate"
 address = 0x00013A2E
 width = 8
@@ -4752,6 +5686,25 @@ coarse = 5
 confidence = "code"
 semantics = "Threshold of the hot-intake idle latch in FUN_000673EC while the knock state bit is set, looked up by the coolant temperature over the axis 0x0001453A; the threshold without knock is 0x00014292."
 note = "Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_000673EC through the literal-pool word 0x00067580, loaded at 0x00067484. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90."
+
+[[target.1ME3B.table]]
+id = "intake_cvtc_settle_count"
+address = 0x0001456A
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "48c17af06b4a12aceb9f2a844630e0a8e4538f59a23b4e5fd81bdbeddc9df661"
+pointer_bindings = [{ site = 0x00119AD0, accessor = 0x001198B0 }, { site = 0x0011CAF8, accessor = 0x0011C9A6 }]
+axis_x = 0x00013480
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Oil-indexed settle-count reload 1456a over axis 13480, read by initializer 1198b0 and stage 11c9a6. Stock scheme 8576=0d selects this arm. The countdown time unit remains unresolved."
+note = "Scheme bit0 set selects this oil-indexed curve in initializer 1198b0 and control stage 11c9a6. Stock byte 8576=0d selects this arm. The result reloads a countdown; its time unit and the countdown routine remain unresolved."
 
 [[target.1ME3B.table]]
 id = "vvel_duration_throttled_ramp_delay"
@@ -5047,6 +6000,25 @@ semantics = "Mode 3 intake-cam target of the VVEL resolver, interpolated by the 
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6322A through the 8-point uint16 leaf 0x2AEAC with its own literal pool word and the cold axis 0x00017176. The uniform stock block repeats elsewhere in the image; the binding rests on the call that follows the cold duration curve and on pair 2 of the output. Stock bytes are identical to JK78C 0x00016A94."
 
 [[target.1ME3B.table]]
+id = "intake_cvtc_target_limit"
+address = 0x00017156
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "102c30a4101ea1ece1a7bd2907428b3c677aa7e1703ac19da0fcbcfd5a7a0a07"
+pointer_bindings = [{ site = 0x0011AC2C, accessor = 0x0011AAF2 }]
+axis_x = 0x00017256
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Upper bound 17156 over the sixteen-word axis 17256 in 11aaf2. The larger of the paired input words indexes the curve; every target-selection path applies the resulting bound. Engineering conversion remains unestablished."
+note = "Sixteen-point uint16 target-bound curve read by 11aaf2 over 17256 from the greater of the paired input words. Its engineering output and coordinate conversions remain unresolved."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_running"
 address = 0x00017276
 width = 16
@@ -5258,6 +6230,21 @@ coarse = 0.5
 confidence = "code"
 semantics = "Second copy of monitor floor B: FUN_00066C18 interpolates it by the word 0xFFFE81B0 into 0xFFFEABA6, one of the four floor words 0xFFFEA4DE, 0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors FUN_000EB19A compare with the measured control-shaft angle."
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_00066C18 at callsite 0x66C24 through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x2223C of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x0001669C."
+
+[[target.1ME3B.axis]]
+id = "intake_cvtc_settle_count_axis"
+address = 0x00013480
+length = 8
+storagetype = "uint8"
+values_sha256 = "4455db1be5060c5833f747d22d0909679fb50cfa4dd28cbc92001700c9cb2d58"
+pointer_bindings = [{ site = 0x00119ACC, accessor = 0x001198B0 }, { site = 0x0011CAF4, accessor = 0x0011C9A6 }]
+name = "Settle Countdown - Selected Temperature"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
 
 [[target.1ME3B.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -5542,6 +6529,21 @@ to_byte = "x+50"
 note = "8-point nominal encoded-temperature axis 100..170 = 50..120 degC under x-50, inverse x+50. The coordinate is current coolant. Current coolant is the snapshot of P; selected temperature uses P on refresh or a retained previous selected byte. Equality with the retained community PID05 decoder requires T>=10, x=T, and corresponding samples. The grid is not a sensor inverse; no hardware proof."
 
 [[target.1ME3B.axis]]
+id = "intake_cvtc_target_limit_axis"
+address = 0x00017256
+length = 16
+storagetype = "uint16"
+values_sha256 = "d8a380d30fc1ff753566c4f6200432307dc12aee2f4d827349bc165a93301b78"
+pointer_bindings = [{ site = 0x0011AC28, accessor = 0x0011AAF2 }]
+name = "Target Bound - Input Coordinate"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Sixteen uint16 points of the target limiter 11aaf2, with a direct pointer at 11ac28. Physical coordinate and conversion remain unresolved."
+
+[[target.1ME3B.axis]]
 id = "vvel_idle_model_margin_axis"
 address = 0x00017296
 length = 8
@@ -5818,6 +6820,36 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00017004, the float literals 512.0 at 0x56080 and 1/512 at 0x560B0. Recorded code interpretation: Duration axis of the VVEL duration characteristic 0x00015F54 at 1/512 per count, 12800..48640 = 25.0..95.0, indexed by the lookup duration x512 of FUN_0005B38E. Read by FUN_0005B38E through the literal-pool word 0x0005B55C, loaded at 0x0005B3FA. FUN_0005B38E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CA7C; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005B38E, the code graph records only 0x0005F814 as a reader of the axis 0x000176D6, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00017004."
+
+[[target.1ME3B.axis]]
+id = "intake_cvtc_duty_axis_x"
+address = 0x000177F6
+length = 8
+storagetype = "uint16"
+values_sha256 = "97963255f9c8dd9a78340b6d39b2614869e4efe5865725934a269fcc5e16f20d"
+pointer_bindings = [{ site = 0x0011D0C0, accessor = 0x0011CF90 }, { site = 0x0011D3F4, accessor = 0x0011D1BA }]
+name = "Duty Controller - Input 1"
+kind = "rpm"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 first-coordinate points shared by the three duty-controller readers through separate first/second-axis pointers. Engineering conversion remains unresolved."
+
+[[target.1ME3B.axis]]
+id = "intake_cvtc_duty_axis_y"
+address = 0x00017806
+length = 8
+storagetype = "uint16"
+values_sha256 = "d89c8cfda05a099e53bc5ce6093ceac6bbdb98ab1819afaa50dce76e177def77"
+pointer_bindings = [{ site = 0x0011D0BC, accessor = 0x0011CF90 }, { site = 0x0011D3F0, accessor = 0x0011D1BA }]
+name = "Duty Controller - Input 2"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Eight uint16 second-coordinate points of the duty surfaces, loaded through a direct pointer distinct from 177f6. Engineering conversion remains unresolved."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_startup_axis"

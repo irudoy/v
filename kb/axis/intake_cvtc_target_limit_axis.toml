@@ -4,6 +4,40 @@ quantity = "raw"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Target Bound - Input Coordinate"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00017256"
+level = "code"
+note = """
+Sixteen uint16 points of the target limiter 11aaf2, with a direct pointer at \
+11ac28. Physical coordinate and conversion remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011ab0c"
+to = "jk78c:00016b94"
+
+[[symbol]]
+layout = "1nd"
+address = "000171a2"
+level = "code"
+note = """
+Sixteen uint16 points indexed by the greater of words fffe977e/fffe9780 in \
+10ecf8. Physical coordinate and conversion remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ed0a"
+to = "jk78c:00016b94"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016b94"
@@ -29,3 +63,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e65cc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010eefc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011ac28"

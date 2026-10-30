@@ -1,4 +1,20 @@
 [[symbol]]
+layout = "1nd"
+address = "000147b2"
+name = "granite-puffin"
+level = "code"
+note = """
+Eight explicit byte points for S curve 13d2a in 10eba4, indexed by the \
+engine-speed-derived byte fffe81a8. Equal content is navigation; the \
+reviewed argument position establishes the axis role."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ebb4"
+to = "jk78c:0001431c"
+
+[[symbol]]
 layout = "7mfk"
 address = "00012f66"
 name = "jade-reindeer"
@@ -52,3 +68,37 @@ Axis of 0x000138F8 in FUN_000E63A8, read through the literal-pool word \
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e63b8"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:0001431c"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The S-curve and its reader are unqualified on 1ME3B; the reviewed \
+word-difference source mechanism supplies no accepted same-role axis \
+operand. The 1ND address 147b2 is not inherited and no whole-image absence \
+is asserted."""
+
+[[link]]
+type = "reader"
+to = "amphibian-sponge/fn"
+layouts = ["7mfk", "jk78c", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bdd28"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e658c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010ecb8"

@@ -10,6 +10,52 @@ cols = 8
 rows = 8
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00011efc"
+level = "code"
+summary = """
+Hold-duty surface 11efc in 11cf90, added to each selected bank term after \
+multiplication by float literal 377fffff. Engineering conversion remains \
+unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The hold-duty role follows the reviewed reader and its \
+float transformation; no physical duty conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cfea"
+to = "jk78c:0001204e"
+
+[[symbol]]
+layout = "1nd"
+address = "000123c8"
+level = "code"
+summary = """
+Hold-duty surface 123c8 in 1115c8, added to each selected bank term after \
+multiplication by float literal 377fffff. Engineering conversion remains \
+unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The hold-duty role follows the reviewed reader and its \
+float transformation; no physical duty conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011161e"
+to = "jk78c:0001204e"
+
 [[symbol]]
 layout = "jk78c"
 address = "0001204e"
@@ -33,6 +79,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e843c"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011161a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cfe6"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -44,6 +100,16 @@ at = "jk78c:000e843c"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011161c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cfe8"
+
 [[link]]
 type = "reader"
 to = "portable-wallaby/fn"
@@ -53,3 +119,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e8578"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111764"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d11c"

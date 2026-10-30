@@ -1,3 +1,38 @@
+home = "jk78c"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011d1ba"
+name = "polar-junglefowl"
+level = "code"
+note = """
+Duty-controller signed-error stage. The ordered surfaces 11ffc/1207c supply \
+the positive/negative error divisors over axes 177f6/17806. Bank sign, \
+divide and output-clamp paths establish the operational correspondence \
+without a physical conversion claim."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011d1ba"
+to = "jk78c:000e8630"
+
+[[symbol]]
+layout = "1nd"
+address = "0011188e"
+name = "hallowed-crab"
+level = "code"
+note = """
+Duty-controller signed-error stage. The ordered surfaces 124c8/12548 supply \
+the positive/negative error divisors over axes 17732/17742; bank sign, \
+divide and output-clamp paths retain their reviewed operational roles."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011188e"
+to = "jk78c:000e8630"
+
 [[symbol]]
 layout = "jk78c"
 address = "000e8630"

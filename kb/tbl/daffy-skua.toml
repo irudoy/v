@@ -77,6 +77,22 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0001477a"
+name = "flying-grasshopper"
+level = "code"
+note = """
+Eight-byte implicit reload curve selected by scheme 8561 bit0 clear in \
+10eba4. It uses the coolant-index byte and reloads the paired rise/countdown \
+state. Canonical hidden presentation is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ec56"
+to = "jk78c:000142e4"
+
+[[symbol]]
 layout = "7mfk"
 address = "00012f06"
 name = "daffy-skua"
@@ -212,6 +228,19 @@ at = "jk78c:000e645a"
 value = 8
 mode = "base"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000142e4"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The reviewed 119b00/11aa10 source stages do not qualify a coolant-selected \
+reload curve for the E63A8 paired rise/countdown mechanism. The separately \
+qualified settle-count curve 14572 has a different role. No absence is \
+asserted."""
+
 [[link]]
 type = "index"
 to = "hasty-eel/ram"
@@ -222,9 +251,26 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "amphibian-sponge/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c", "1nd"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "indirect"
+at = "7mfk:000bdd4c"
+value = 8
+mode = "base"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e65b4"
+value = 8
+mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010ece8"
 
 [[link]]
 type = "reader"

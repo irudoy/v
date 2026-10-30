@@ -20,6 +20,61 @@ cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "0001456a"
+level = "code"
+summary = """
+Oil-indexed settle-count reload 1456a over axis 13480, read by initializer \
+1198b0 and stage 11c9a6. Stock scheme 8576=0d selects this arm. The \
+countdown time unit remains unresolved."""
+note = """
+Scheme bit0 set selects this oil-indexed curve in initializer 1198b0 and \
+control stage 11c9a6. Stock byte 8576=0d selects this arm. The result \
+reloads a countdown; its time unit and the countdown routine remain \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00119928"
+to = "jk78c:00014230"
+
+[[symbol]]
+layout = "1nd"
+address = "000146d6"
+level = "code"
+summary = """
+Oil-indexed settle-count reload 146d6 over axis 1372c, read by initializer \
+10db04 and stage 1110da. Both stock images set scheme byte 8561 bit0 and \
+select this arm. The countdown time unit remains unresolved."""
+note = [
+    """
+1ND0A: Scheme bit0 set selects this oil-indexed curve in initializer 10db04 \
+and control stage 1110da. Stock byte 8561=05 selects this arm. The result \
+reloads a countdown; its time unit and the countdown routine remain \
+unresolved.""",
+    """
+1ND3B: Scheme bit0 set selects this oil-indexed curve in initializer 10db04 \
+and control stage 1110da. Stock byte 8561=0d selects this arm. The result \
+reloads a countdown; its time unit and the countdown routine remain \
+unresolved.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010db76"
+to = "jk78c:00014230"
+
 [[symbol]]
 layout = "jk78c"
 address = "00014230"
@@ -43,6 +98,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e80a4"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001111f2"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cab6"
+
 [[link]]
 type = "reader"
 to = "myrtle-crab/fn"
@@ -53,6 +118,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e5900"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dce4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119ad0"
+
 [[link]]
 type = "reader"
 to = "rugged-stallion/fn"
@@ -62,3 +137,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e81c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111234"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011caf8"

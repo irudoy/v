@@ -12,6 +12,52 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00017156"
+level = "code"
+summary = """
+Upper bound 17156 over the sixteen-word axis 17256 in 11aaf2. The larger of \
+the paired input words indexes the curve; every target-selection path \
+applies the resulting bound. Engineering conversion remains unestablished."""
+note = """
+Sixteen-point uint16 target-bound curve read by 11aaf2 over 17256 from the \
+greater of the paired input words. Its engineering output and coordinate \
+conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011ab0e"
+to = "jk78c:00016aa4"
+
+[[symbol]]
+layout = "1nd"
+address = "000170b2"
+level = "code"
+summary = """
+Upper bound 170b2 over the sixteen-word axis 171a2 in 10ecf8. The larger of \
+input words fffe977e/fffe9780 indexes the curve; every target-selection path \
+applies the resulting bound. Engineering conversion remains unestablished."""
+note = """
+Sixteen-point uint16 target-bound curve read by 10ecf8 over 171a2 from the \
+greater of words fffe977e/fffe9780. The bound is applied on every \
+target-selection path."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ed0c"
+to = "jk78c:00016aa4"
+
 [[symbol]]
 layout = "jk78c"
 address = "00016aa4"
@@ -35,6 +81,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e64b6"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010ed0a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011ab0c"
+
 [[link]]
 type = "reader"
 to = "finicky-booby/fn"
@@ -44,3 +100,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e65c8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010ef00"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011ac2c"

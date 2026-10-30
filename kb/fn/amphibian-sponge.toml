@@ -94,6 +94,24 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0010eba4"
+name = "viridian-viper"
+level = "code"
+note = """
+Idle-source producer: S from 13d2a over 147b2 and W from implicit curve \
+13d32 form clamp_u8(128+trunc0((S-128)*W/128)) at fffe8565. Negative \
+products receive a 127 bias before the shift. Scheme bit0 selects reload \
+14772 or 1477a for the paired rise/countdown state. The arithmetic is \
+established from the reader body."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010eba4"
+to = "jk78c:000e63a8"
+
+[[symbol]]
 layout = "7mfk"
 address = "000bdb66"
 name = "amphibian-sponge"
@@ -223,6 +241,19 @@ source is 128."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e63a8"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000e63a8"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+The reviewed coordinator 119b00 and helper 11aa10 form a centered byte from \
+paired word differences; limiter 11aaf2 is a separate stage. These bodies do \
+not qualify the S/W centered-product and paired reload mechanism of E63A8. \
+No same-role reader is accepted; this is not a whole-image absence claim."""
 
 [[link]]
 type = "selector"

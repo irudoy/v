@@ -4,6 +4,41 @@ quantity = "temp"
 points = 8
 storage = "uint16"
 
+[editor]
+name = "Duty Controller - Input 2"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00017806"
+level = "code"
+note = """
+Eight uint16 second-coordinate points of the duty surfaces, loaded through a \
+direct pointer distinct from 177f6. Engineering conversion remains \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cfe8"
+to = "jk78c:00017134"
+
+[[symbol]]
+layout = "1nd"
+address = "00017742"
+level = "code"
+note = """
+Eight uint16 second-coordinate points of the duty surfaces. The target has a \
+direct axis pointer; the JK78C base+16 encoding is not copied."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011161c"
+to = "jk78c:00017134"
+
 [[symbol]]
 layout = "jk78c"
 address = "00017134"
@@ -33,19 +68,19 @@ at = "jk78c:000e87f8"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111a00"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d3f0"
+
 [[link]]
 type = "reader"
 to = "portable-wallaby/fn"
-
-[[link.evidence]]
-kind = "indirect"
-at = "jk78c:000e843c"
-value = 16
-mode = "base"
-
-[[link]]
-type = "reader"
-to = "vermilion-beluga/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -53,3 +88,39 @@ kind = "indirect"
 at = "jk78c:000e8518"
 value = 16
 mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111704"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0bc"
+
+[[link]]
+type = "reader"
+to = "vermilion-beluga/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
+note = """
+The filter reader shares the second-axis pointer with portable-wallaby. \
+JK78C uses base+16 from E8518; 1ND and 1ME3B use direct pointer words. The \
+portable-wallaby accessor relation supplies the single native pointer \
+binding for each shared word."""
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e8518"
+value = 16
+mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111704"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0bc"

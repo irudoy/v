@@ -1,3 +1,39 @@
+home = "jk78c"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011cd9c"
+name = "meek-macaw"
+level = "code"
+note = """
+Duty-controller coefficient reader: exactly four uint16 surface calls over \
+axes 177f6/17806 load filter coefficients 1287c/1297c and feedback bounds \
+1307c/1317c. Wider table spacing does not establish additional surface \
+roles. Physical conversions remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cd9c"
+to = "jk78c:000e81f8"
+
+[[symbol]]
+layout = "1nd"
+address = "001113e0"
+name = "cinnamon-pelican"
+level = "code"
+note = """
+Duty-controller coefficient reader: four uint16 surface calls over axes \
+17732/17742 load positive/negative filter coefficients 12cc8/12d48 and \
+upper/lower feedback bounds 133c8/13448. The output float transformations \
+retain the source roles; physical conversions remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001113e0"
+to = "jk78c:000e81f8"
+
 [[symbol]]
 layout = "jk78c"
 address = "000e81f8"

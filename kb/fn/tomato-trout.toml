@@ -235,6 +235,39 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0011a240"
+name = "dandelion-mongoose"
+level = "code"
+note = """
+CVTC state producer with scheme-selected counter thresholds 1426a over 13440 \
+and 14272 over 13448. The additional target lookups and state conditions do \
+not inherit the JK08A RAM identities or threshold values."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011a240"
+to = "jk78c:000e59f8"
+
+[[symbol]]
+layout = "1nd"
+address = "0010e33a"
+name = "astute-wildcat"
+level = "code"
+note = """
+CVTC state producer. The scheme-selected threshold curves are 143fe over \
+136fc and 14406 over 13704; the selected raw byte participates in the \
+saturating-counter state transition. The target thresholds retain their own \
+stock values."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010e33a"
+to = "jk78c:000e59f8"
+
+[[symbol]]
 layout = "7mfk"
 address = "000bd20a"
 name = "tomato-trout"

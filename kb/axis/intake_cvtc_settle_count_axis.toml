@@ -4,6 +4,42 @@ quantity = "temp"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Settle Countdown - Selected Temperature"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00013480"
+level = "code"
+note = """
+Engineering conversion is unestablished. These explicit uint8 breakpoints \
+index the stock-selected settle-count reload. The editor exposes stored \
+counts; the temperature conversion remains unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00119924"
+to = "jk78c:00013392"
+
+[[symbol]]
+layout = "1nd"
+address = "0001372c"
+level = "code"
+note = """
+Engineering conversion is unestablished. These explicit uint8 breakpoints \
+index the stock-selected settle-count reload. The editor exposes stored \
+counts; the temperature conversion remains unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010db72"
+to = "jk78c:00013392"
+
 [[symbol]]
 layout = "jk78c"
 address = "00013392"
@@ -31,6 +67,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e5904"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dce0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119acc"
+
 [[link]]
 type = "reader"
 to = "rugged-stallion/fn"
@@ -40,3 +86,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e81c4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111230"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011caf4"

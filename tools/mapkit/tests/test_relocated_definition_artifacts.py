@@ -249,8 +249,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 218
-    assert len(tables) == 218
+    assert len(target.findall("table")) == 228
+    assert len(tables) == 228
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
     assert tables["Map 1 - Ignition Timing Surface - Hot Coolant [stored count]"].get(
@@ -298,7 +298,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 137
+    assert len(root.findall("XDFTABLE")) == 147
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -358,8 +358,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 236
-        assert len(tables) == 236
+        assert len(target.findall("table")) == 246
+        assert len(tables) == 246
         # The ignition families select the two executed 16x16 surfaces and the
         # four 8x8 state-code surfaces; the canonical trio reaches only the
         # gated coordinator half.
@@ -429,7 +429,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 154
+        assert len(root.findall("XDFTABLE")) == 164
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches
@@ -498,8 +498,8 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 238
-    assert len(tables) == 238
+    assert len(target.findall("table")) == 248
+    assert len(tables) == 248
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Map 1 - Fuel Compensation - Main - Default"].get(
@@ -572,7 +572,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 159
+    assert len(root.findall("XDFTABLE")) == 169
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
     patches_by_title = {

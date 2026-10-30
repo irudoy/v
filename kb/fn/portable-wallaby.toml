@@ -1,3 +1,39 @@
+home = "jk78c"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011cf90"
+name = "fragrant-pigeon"
+level = "code"
+note = """
+Duty hold/offset reader and bank-output assembler. Read surfaces 11efc/11f7c \
+over distinct axis pointers 177f6/17806, multiply the outputs by float \
+literal 377fffff and combine the corresponding bank terms. Physical duty and \
+coordinate conversions remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cf90"
+to = "jk78c:000e841a"
+
+[[symbol]]
+layout = "1nd"
+address = "001115c8"
+name = "literate-dachshund"
+level = "code"
+note = """
+Duty hold/offset reader and bank-output assembler. Read surfaces 123c8/12448 \
+over axes 17732/17742, multiply their outputs by float literal 377fffff, \
+select signed offset or feedback terms and add hold duty. Physical duty and \
+coordinate conversions remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001115c8"
+to = "jk78c:000e841a"
+
 [[symbol]]
 layout = "jk78c"
 address = "000e841a"

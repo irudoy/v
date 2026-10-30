@@ -1,3 +1,38 @@
+home = "jk78c"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011aaf2"
+name = "orange-puffin"
+level = "code"
+note = """
+CVTC target limiter. The uint16 curve 17156 over 17256 bounds the selected \
+target on every path. This limiter is separate from the word-difference \
+source calculation in 119b00 and 11aa10 and is not the idle-source helper \
+E63A8."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011aaf2"
+to = "jk78c:000e6492"
+
+[[symbol]]
+layout = "1nd"
+address = "0010ecf8"
+name = "masterful-bumblebee"
+level = "code"
+note = """
+CVTC target limiter. Read 170b2 over 171a2 by the greater of the two input \
+words, publish the bound at fffe8b56, and limit the selected target at \
+fffe9328. Target selection flags retain their target-specific operands."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ecf8"
+to = "jk78c:000e6492"
+
 [[symbol]]
 layout = "jk78c"
 address = "000e6492"

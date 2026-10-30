@@ -10,6 +10,59 @@ cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Intake CVTC - Coolant Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 109
+emit = false
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00014572"
+level = "code"
+summary = """
+Coolant-indexed settle-count reload 14572 over axis 13488 in 1198b0/11c9a6. \
+Stock scheme 8576=0d leaves bit0-clear selection inactive; the table remains \
+hidden."""
+note = """
+Coolant-indexed alternative selected only when scheme byte 8576 bit0 is \
+clear. Stock byte 0d leaves this arm inactive; the binding does not \
+authorize editor publication."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011991a"
+to = "jk78c:00014238"
+
+[[symbol]]
+layout = "1nd"
+address = "000146de"
+level = "code"
+summary = """
+Coolant-indexed settle-count reload 146de over axis 13734 in 10db04/1110da. \
+Both stock images set scheme byte 8561 bit0 and leave this clear-bit arm \
+inactive; the table remains hidden."""
+note = [
+    """
+1ND0A: Coolant-indexed alternative selected only when scheme byte 8561 bit0 \
+is clear. Stock byte 8561=05 leaves this arm inactive; the table remains \
+hidden.""",
+    """
+1ND3B: Coolant-indexed alternative selected only when scheme byte 8561 bit0 \
+is clear. Stock byte 8561=0d leaves this arm inactive; the table remains \
+hidden.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010db68"
+to = "jk78c:00014238"
+
 [[symbol]]
 layout = "jk78c"
 address = "00014238"
@@ -33,6 +86,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e80ba"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011123a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cafe"
+
 [[link]]
 type = "reader"
 to = "myrtle-crab/fn"
@@ -43,6 +106,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e5910"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dcd4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119ac0"
+
 [[link]]
 type = "reader"
 to = "rugged-stallion/fn"
@@ -52,3 +125,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e81d0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113b8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cd60"

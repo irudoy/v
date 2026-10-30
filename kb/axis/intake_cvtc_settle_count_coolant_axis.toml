@@ -5,6 +5,28 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013488"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00119918"
+to = "jk78c:0001339a"
+
+[[symbol]]
+layout = "1nd"
+address = "00013734"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010db66"
+to = "jk78c:0001339a"
+
+[[symbol]]
 layout = "jk78c"
 address = "0001339a"
 note = """
@@ -29,6 +51,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e5914"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dcd0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119abc"
+
 [[link]]
 type = "reader"
 to = "rugged-stallion/fn"
@@ -38,3 +70,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e81d4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113b4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cd5c"

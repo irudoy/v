@@ -9,6 +9,52 @@ cols = 8
 rows = 8
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "0001317c"
+level = "code"
+summary = """
+Lower feedback bound surface 1317c in 11cd9c, retained separately from upper \
+bound 1307c and both filter coefficients. Physical conversion remains \
+unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The lower feedback-bound role follows the reviewed \
+coefficient reader; no physical feedback conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011ce2a"
+to = "jk78c:000130ce"
+
+[[symbol]]
+layout = "1nd"
+address = "00013448"
+level = "code"
+summary = """
+Lower feedback bound surface 13448 in 1113e0, retained separately from upper \
+bound 133c8 and both filter coefficients. Physical conversion remains \
+unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The lower feedback-bound role follows the reviewed \
+coefficient reader; no physical feedback conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011146e"
+to = "jk78c:000130ce"
+
 [[symbol]]
 layout = "jk78c"
 address = "000130ce"
@@ -32,6 +78,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e8206"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113fe"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cdba"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -43,6 +99,16 @@ at = "jk78c:000e8206"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113fc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cdb8"
+
 [[link]]
 type = "reader"
 to = "vermilion-beluga/fn"
@@ -52,3 +118,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e853c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011172c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0e4"

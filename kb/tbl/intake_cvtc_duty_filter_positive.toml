@@ -11,6 +11,54 @@ cols = 8
 rows = 8
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "0001287c"
+level = "code"
+summary = """
+Positive-error first-order filter coefficient surface 1287c in 11cd9c, one \
+of four separately read duty-controller surfaces. Physical conversion \
+remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The positive-error filter role follows the reviewed \
+coefficient reader; encoded float arithmetic does not establish a physical \
+coefficient unit."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cdbc"
+to = "jk78c:0001294e"
+
+[[symbol]]
+layout = "1nd"
+address = "00012cc8"
+level = "code"
+summary = """
+Positive-error first-order filter coefficient surface 12cc8 in 1113e0, one \
+of four separately read duty-controller surfaces. Physical conversion \
+remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The positive-error filter role follows the reviewed \
+coefficient reader; encoded float arithmetic does not establish a physical \
+coefficient unit."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00111400"
+to = "jk78c:0001294e"
+
 [[symbol]]
 layout = "jk78c"
 address = "0001294e"
@@ -34,6 +82,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e8206"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113fe"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cdba"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -45,6 +103,16 @@ at = "jk78c:000e8206"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001113fc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cdb8"
+
 [[link]]
 type = "reader"
 to = "vermilion-beluga/fn"
@@ -54,3 +122,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e8524"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011170c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0c4"

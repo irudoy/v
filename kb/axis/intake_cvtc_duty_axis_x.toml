@@ -4,6 +4,42 @@ quantity = "rpm"
 points = 8
 storage = "uint16"
 
+[editor]
+name = "Duty Controller - Input 1"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "000177f6"
+level = "code"
+note = """
+Eight uint16 first-coordinate points shared by the three duty-controller \
+readers through separate first/second-axis pointers. Engineering conversion \
+remains unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011cfe6"
+to = "jk78c:00017124"
+
+[[symbol]]
+layout = "1nd"
+address = "00017732"
+level = "code"
+note = """
+Eight uint16 first-coordinate points shared by the three duty-controller \
+readers. Stored counts retain the source engine-speed interpretation without \
+an engineering conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011161a"
+to = "jk78c:00017124"
+
 [[symbol]]
 layout = "jk78c"
 address = "00017124"
@@ -30,21 +66,56 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e87f8"
 
-[[link]]
-type = "reader"
-to = "portable-wallaby/fn"
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111a04"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000e843c"
+at = "1me3b:0011d3f4"
 
 [[link]]
 type = "reader"
-to = "vermilion-beluga/fn"
+to = "portable-wallaby/fn"
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e8518"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111708"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0c0"
+
+[[link]]
+type = "reader"
+to = "vermilion-beluga/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
+note = """
+The filter reader uses the same first-axis literal-pool word as \
+portable-wallaby on each layout. The portable-wallaby accessor relation \
+supplies the single native pointer binding for that shared word."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8518"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111708"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d0c0"

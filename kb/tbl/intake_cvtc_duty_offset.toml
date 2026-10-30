@@ -11,6 +11,52 @@ cols = 8
 rows = 8
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "00011f7c"
+level = "code"
+summary = """
+Signed-offset magnitude surface 11f7c in 11cf90. The bank-error sign selects \
+its positive or negative float contribution; the alternate controller path \
+uses feedback outputs. Engineering conversion remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The reader selects the sign of this offset magnitude \
+independently for each bank; no physical duty conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011d006"
+to = "jk78c:000120ce"
+
+[[symbol]]
+layout = "1nd"
+address = "00012448"
+level = "code"
+summary = """
+Signed-offset magnitude surface 12448 in 1115c8. The bank-error sign selects \
+its positive or negative float contribution; the alternate controller path \
+uses feedback outputs. Engineering conversion remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The reader selects the sign of this offset magnitude \
+independently for each bank; no physical duty conversion is asserted."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0011163a"
+to = "jk78c:000120ce"
+
 [[symbol]]
 layout = "jk78c"
 address = "000120ce"
@@ -34,6 +80,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e843c"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0011161a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011cfe6"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -45,6 +101,16 @@ at = "jk78c:000e843c"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111638"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d004"
+
 [[link]]
 type = "reader"
 to = "portable-wallaby/fn"
@@ -54,3 +120,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e8580"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111770"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d128"

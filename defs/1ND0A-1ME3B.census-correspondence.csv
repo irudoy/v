@@ -207,7 +207,7 @@ axis,00013458,16:uint8,unpaired,,,,no-content-match
 axis,00013468,8:uint8,homolog,00013714,aligned-reference,yes,
 axis,00013470,8:uint8,homolog,0001371c,unique-exact-content,yes,
 axis,00013478,8:uint8,homolog,00013724,aligned-reference,yes,
-axis,00013480,8:uint8,unpaired,,,,duplicate-content
+axis,00013480,8:uint8,homolog,0001372c,published-registry,yes,
 axis,00013488,8:uint8,unpaired,,,,duplicate-content
 axis,00013490,8:uint8,homolog,0001373c,aligned-reference,yes,
 axis,00013498,8:uint8,unpaired,,,,duplicate-content
@@ -537,7 +537,7 @@ axis,0001453a,8:uint8,homolog,000146ae,published-registry,yes,
 axis,00014542,8:uint8,unpaired,,,,duplicate-content
 map,0001454a,16x1:uint8:step16,homolog,000146be,unique-exact-content,yes,
 map,00014562,8x1:uint8,homolog,000146ce,unique-exact-content,yes,
-map,0001456a,8x1:uint8,unpaired,,,,flat-content
+map,0001456a,8x1:uint8,homolog,000146d6,published-registry,yes,
 map,00014572,8x1:uint8,unpaired,,,,flat-content
 map,0001457a,8x1:uint8,unpaired,,,,no-content-match
 axis,00014582,8:uint8,unpaired,,,,duplicate-content

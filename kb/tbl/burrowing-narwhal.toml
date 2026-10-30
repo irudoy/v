@@ -50,6 +50,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001426a"
+name = "chirpy-wallaby"
+level = "code"
+note = """
+Oil-selected raw counter threshold over axis 13440 in 11a240, selected by \
+scheme 8576 bit0 set. The target stock curve holds 40. Canonical editor \
+visibility is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011a37e"
+to = "jk78c:00013f60"
+
+[[symbol]]
+layout = "1nd"
+address = "000143fe"
+name = "cheerful-baboon"
+level = "code"
+note = """
+Oil-selected raw counter threshold over axis 136fc in 10e33a, selected by \
+scheme 8561 bit0 set. On 1ND0A, the stock curve holds 40 rather than the \
+canonical JK08A value 30. Canonical editor visibility is retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010e47e"
+to = "jk78c:00013f60"
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a8a"
 name = "burrowing-narwhal"
@@ -185,11 +217,31 @@ at = "jk78c:000e5b24"
 [[link]]
 type = "reader"
 to = "tomato-trout/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd388"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5bc0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010e640"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011a484"
 
 [[link]]
 type = "threshold"

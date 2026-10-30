@@ -1,3 +1,39 @@
+home = "jk78c"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011c9a6"
+name = "military-lemur"
+level = "code"
+note = """
+CVTC control-stage settle latch. Oil curve 1456a over 13480 and coolant \
+curve 14572 over 13488 occupy the corresponding scheme bit0 arms; the paired \
+word-state calculation and downstream duty-controller path are reviewed in \
+this target body."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011c9a6"
+to = "jk78c:000e7fb4"
+
+[[symbol]]
+layout = "1nd"
+address = "001110da"
+name = "foamy-sawfly"
+level = "code"
+note = """
+CVTC control-stage settle latch with initializer-compatible \
+temperature/count alternatives: 146d6 over 1372c for scheme bit0 set, 146de \
+over 13734 for bit0 clear. The paired-state blending and downstream \
+controller calls retain their target operands."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001110da"
+to = "jk78c:000e7fb4"
+
 [[symbol]]
 layout = "jk78c"
 address = "000e7fb4"

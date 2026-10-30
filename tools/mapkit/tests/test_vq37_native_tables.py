@@ -119,6 +119,24 @@ IGNITION_STATE_AXIS_ROLES = {
 }
 IGNITION_STATE_ROLES = IGNITION_STATE_TABLE_ROLES | IGNITION_STATE_AXIS_ROLES
 IGNITION_TABLE_ROLES = IGNITION_PAIR_ROLES | IGNITION_STATE_TABLE_ROLES
+CVTC_TABLE_ROLES = {
+    "intake_cvtc_duty_hold",
+    "intake_cvtc_duty_offset",
+    "intake_cvtc_duty_error_divisor_positive",
+    "intake_cvtc_duty_error_divisor_negative",
+    "intake_cvtc_duty_filter_positive",
+    "intake_cvtc_duty_filter_negative",
+    "intake_cvtc_duty_feedback_upper",
+    "intake_cvtc_duty_feedback_lower",
+    "intake_cvtc_settle_count",
+    "intake_cvtc_target_limit",
+}
+CVTC_AXIS_ROLES = {
+    "intake_cvtc_duty_axis_x",
+    "intake_cvtc_duty_axis_y",
+    "intake_cvtc_settle_count_axis",
+    "intake_cvtc_target_limit_axis",
+}
 ROLES = (
     SELECTOR_ROLES
     | FUEL_TABLE_ROLES
@@ -127,6 +145,8 @@ ROLES = (
     | VVEL_AXIS_ROLES
     | IGNITION_TABLE_ROLES
     | IGNITION_STATE_AXIS_ROLES
+    | CVTC_TABLE_ROLES
+    | CVTC_AXIS_ROLES
 )
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
@@ -203,8 +223,14 @@ def test_registry_declares_every_role_on_every_target():
         tables = {table.identifier for table in target.tables}
         axes = {axis.identifier for axis in target.axes}
 
-        assert tables <= SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES | IGNITION_TABLE_ROLES
-        assert axes <= FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
+        assert tables <= (
+            SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
+            | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES
+        )
+        assert axes <= (
+            FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
+            | CVTC_AXIS_ROLES
+        )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
         for reason in target.absent.values():

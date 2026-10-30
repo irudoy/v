@@ -72,6 +72,23 @@ relies = "contract"
 supports = "scale"
 
 [[symbol]]
+layout = "1nd"
+address = "00013d32"
+name = "hospitable-ammonite"
+level = "code"
+note = """
+Sixteen-byte implicit W input in 10eba4, multiplying the signed deviation \
+S-128 before division by 128 with truncation toward zero. The separate \
+pointer at 10eccc replaces JK78C base+8 addressing. Canonical scale and \
+hidden presentation are retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010ebc6"
+to = "jk78c:00013900"
+
+[[symbol]]
 layout = "7mfk"
 address = "000122f2"
 name = "stoic-ladybug"
@@ -182,12 +199,42 @@ at = "jk78c:000e63b4"
 value = 8
 mode = "base"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00013900"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+No W-curve operand is qualified in the independently reviewed 119b00/11aa10 \
+word-difference source mechanism. It does not establish the S/W product of \
+E63A8. The canonical hidden role remains unresolved, without an absence \
+claim."""
+
 [[link]]
 type = "reader"
 to = "amphibian-sponge/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c", "1nd"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "indirect"
+at = "7mfk:000bdd24"
+value = 8
+mode = "base"
+
+[[link.evidence]]
+kind = "indirect"
+at = "jk78c:000e6588"
+value = 8
+mode = "base"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010eccc"
 
 [[link]]
 type = "reader"

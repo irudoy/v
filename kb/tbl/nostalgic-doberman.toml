@@ -24,6 +24,38 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014272"
+name = "whispering-poodle"
+level = "code"
+note = """
+Coolant alternative of the raw counter threshold, read over 13448 in 11a240 \
+only when scheme 8576 bit0 is clear. Canonical editor visibility is \
+retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011a390"
+to = "jk78c:00013f68"
+
+[[symbol]]
+layout = "1nd"
+address = "00014406"
+name = "screeching-lemur"
+level = "code"
+note = """
+Coolant alternative of the raw counter threshold, read over 13704 in 10e33a \
+only when scheme 8561 bit0 is clear. Canonical editor visibility is \
+retained."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010e490"
+to = "jk78c:00013f68"
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a92"
 name = "nostalgic-doberman"
@@ -119,6 +151,26 @@ at = "jk78c:000e5b3a"
 [[link]]
 type = "reader"
 to = "tomato-trout/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd394"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5bcc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010e650"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011a490"

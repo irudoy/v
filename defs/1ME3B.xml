@@ -2027,6 +2027,236 @@
       </table>
     </table>
 
+    <!-- 0x11EFC  8x8 uint16  map [code]
+         accessor 0x11CF90; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x11efc bound to accessor 0x11cf90 through literal
+         0x11d11c. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The hold-duty role follows the reviewed reader and its float
+         transformation; no physical duty conversion is asserted. Editor values are stored
+         counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Hold Duty [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x11EFC" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x11F7C  8x8 uint16  map [code]
+         accessor 0x11CF90; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x11f7c bound to accessor 0x11cf90 through literal
+         0x11d128. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The reader selects the sign of this offset magnitude independently for
+         each bank; no physical duty conversion is asserted. Editor values are stored counts; no
+         engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Signed Duty Offset [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x11F7C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x11FFC  8x8 uint16  map [code]
+         accessor 0x11D1BA; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x11ffc bound to accessor 0x11d1ba through literal
+         0x11d3f8. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The positive-error divisor role follows the ordered lookup and divide
+         path, without a physical error or coefficient unit. Editor values are stored counts; no
+         engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Positive Error Divisor [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x11FFC" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1207C  8x8 uint16  map [code]
+         accessor 0x11D1BA; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x1207c bound to accessor 0x11d1ba through literal
+         0x11d408. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The negative-error divisor role follows the ordered lookup and divide
+         path, without a physical error or coefficient unit. Editor values are stored counts; no
+         engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Negative Error Divisor [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x1207C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1287C  8x8 uint16  map [code]
+         accessor 0x11CD9C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x1287c bound to accessor 0x11cd9c through literal
+         0x11d0c4. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The positive-error filter role follows the reviewed coefficient reader;
+         encoded float arithmetic does not establish a physical coefficient unit. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Positive Filter Coefficient [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x1287C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1297C  8x8 uint16  map [code]
+         accessor 0x11CD9C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x1297c bound to accessor 0x11cd9c through literal
+         0x11d0d4. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The negative-error filter role follows the reviewed coefficient reader;
+         encoded float arithmetic does not establish a physical coefficient unit. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Negative Filter Coefficient [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x1297C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1307C  8x8 uint16  map [code]
+         accessor 0x11CD9C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x1307c bound to accessor 0x11cd9c through literal
+         0x11d0dc. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The upper feedback-bound role follows the reviewed coefficient reader;
+         no physical feedback conversion is asserted. Editor values are stored counts; no
+         engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Feedback Upper Bound [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x1307C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1317C  8x8 uint16  map [code]
+         accessor 0x11CD9C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x177F6 rpm; X Axis 0x17806 temp
+         Exact 1ME3B target-native table at 0x1317c bound to accessor 0x11cd9c through literal
+         0x11d0e4. Engineering conversion is unestablished. The native editor exposes raw uint16
+         stored counts. The lower feedback-bound role follows the reviewed coefficient reader;
+         no physical feedback conversion is asserted. Editor values are stored counts; no
+         engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC - Feedback Lower Bound [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x1317C" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Duty Controller - Input 2 [stored count]" storagetype="uint16"
+             storageaddress="0x17806" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Duty Controller - Input 1 [stored count]" storagetype="uint16"
+             storageaddress="0x177F6" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1456A  8 uint8  map [code]
+         accessor 0x1198B0, 0x11C9A6; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13480 temp
+         Exact 1ME3B target-native table at 0x1456a bound to accessor 0x1198b0 through literal
+         0x119ad0, accessor 0x11c9a6 through literal 0x11caf8. Scheme bit0 set selects this oil-
+         indexed curve in initializer 1198b0 and control stage 11c9a6. Stock byte 8576=0d
+         selects this arm. The result reloads a countdown; its time unit and the countdown
+         routine remain unresolved. Editor values are stored counts; no engineering conversion
+         is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Intake CVTC - Settle Countdown Reload [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint8"
+           storageaddress="0x1456A" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Settle Countdown - Selected Temperature [stored count]"
+             storagetype="uint8" storageaddress="0x13480" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x11DFC  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
          On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16
@@ -2063,6 +2293,27 @@
       <table type="Static Y Axis" name="Evaluator Channel" sizey="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x17156  16 uint16  map [code]
+         accessor 0x11AAF2; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17256 raw
+         Exact 1ME3B target-native table at 0x17156 bound to accessor 0x11aaf2 through literal
+         0x11ac2c. Sixteen-point uint16 target-bound curve read by 11aaf2 over 17256 from the
+         greater of the paired input words. Its engineering output and coordinate conversions
+         remain unresolved. Editor values are stored counts; no engineering conversion is
+         established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Intake CVTC - Target Upper Bound [stored count]"
+           category="Variable Valve Timing//Intake CVTC" storagetype="uint16"
+           storageaddress="0x17156" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Target Bound - Input Coordinate [stored count]"
+             storagetype="uint16" storageaddress="0x17256" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
     </table>
 

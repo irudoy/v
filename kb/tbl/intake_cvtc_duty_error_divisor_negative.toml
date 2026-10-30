@@ -10,6 +10,50 @@ cols = 8
 rows = 8
 storage = "uint16"
 
+[editor]
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol]]
+layout = "1me3b"
+address = "0001207c"
+level = "code"
+summary = """
+Negative-error divisor surface 1207c in 11d1ba, selected independently for \
+each bank from its error sign. Physical conversion remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The negative-error divisor role follows the ordered \
+lookup and divide path, without a physical error or coefficient unit."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0011d22c"
+to = "jk78c:000121ce"
+
+[[symbol]]
+layout = "1nd"
+address = "00012548"
+level = "code"
+summary = """
+Negative-error divisor surface 12548 in 11188e, selected independently for \
+each bank from its error sign. Physical conversion remains unestablished."""
+note = """
+Engineering conversion is unestablished. The native editor exposes raw \
+uint16 stored counts. The negative-error divisor role follows the ordered \
+lookup and divide path, without a physical error or coefficient unit."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:001118e2"
+to = "jk78c:000121ce"
+
 [[symbol]]
 layout = "jk78c"
 address = "000121ce"
@@ -33,6 +77,16 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:000e863c"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001118c4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d22a"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -44,6 +98,16 @@ at = "jk78c:000e863c"
 value = 16
 mode = "base"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:001118c2"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d228"
+
 [[link]]
 type = "reader"
 to = "clay-dachshund/fn"
@@ -53,3 +117,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000e8804"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00111a18"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011d408"
