@@ -1,0 +1,81 @@
+summary = """
+Explicit 8-point uint8 coordinate vector used by the reviewed JK78C readers. \
+Its address and storage identity are separate from any numerically equal \
+axis."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013598"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065c0a"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 0000a6ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066a9e"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 000098da. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066b0a"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 0000991a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065c0a"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 0000a6ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066a9e"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 000098da. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066b0a"
+note = """
+The reviewed reader passes axis 00013598 in the y slot for table 0000991a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

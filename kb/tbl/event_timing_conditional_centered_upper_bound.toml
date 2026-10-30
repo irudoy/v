@@ -1,0 +1,56 @@
+summary = """
+Implicit 8x8 byte upper-bound surface of FUN_000690AC. ROM8[00008968].bit7 \
+and ffff241f.bit1 gate the lookup by byte ffff11d7 and \
+min(255,2*uint8[ffff1042]); result-128 is cached at ffff1f78 and limits the \
+signed intermediate before ffff12be is written. Stock ROM8[00008968]=0x80 \
+enables the calibration gate."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "implicit-2d"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009ada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006937e"
+note = """
+The complete primary listing establishes the 8x8 uint8 table operand at \
+00009ada in reader 000690ac. Implicit 8x8 byte upper-bound surface of \
+FUN_000690AC. ROM8[00008968].bit7 and ffff241f.bit1 gate the lookup by byte \
+ffff11d7 and min(255,2*uint8[ffff1042]); result-128 is cached at ffff1f78 \
+and limits the signed intermediate before ffff12be is written. Stock \
+ROM8[00008968]=0x80 enables the calibration gate."""
+
+[[link]]
+type = "reader"
+to = "event_timing_correction_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006937e"
+note = """
+Reader 000690ac supplies this table to the reviewed interpolation path. \
+Implicit 8x8 byte upper-bound surface of FUN_000690AC. ROM8[00008968].bit7 \
+and ffff241f.bit1 gate the lookup by byte ffff11d7 and \
+min(255,2*uint8[ffff1042]); result-128 is cached at ffff1f78 and limits the \
+signed intermediate before ffff12be is written. Stock ROM8[00008968]=0x80 \
+enables the calibration gate."""

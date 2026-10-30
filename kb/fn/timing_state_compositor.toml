@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fabulous-marmoset/tbl"
+to = "timing_compositor_surface_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

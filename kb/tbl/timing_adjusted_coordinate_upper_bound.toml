@@ -1,0 +1,77 @@
+summary = """
+Explicit centered upper bound of FUN_000693B8, indexed by word ffff11e0 and \
+byte ffff1042. Result-128 is cached at ffff1f47 and limits the adjusted \
+ffff12be term before subsequent slew, clamp and mode paths publish ffff1f45. \
+It is not the sole final timing term."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000958a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000694b0"
+note = """
+The complete primary listing establishes the 8x8 uint8 table operand at \
+0000958a in reader 000693b8. Explicit centered upper bound of FUN_000693B8, \
+indexed by word ffff11e0 and byte ffff1042. Result-128 is cached at ffff1f47 \
+and limits the adjusted ffff12be term before subsequent slew, clamp and mode \
+paths publish ffff1f45. It is not the sole final timing term."""
+
+[[link]]
+type = "axis"
+to = "timing_adjusted_coordinate_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000694b0"
+note = "The reviewed lookup supplies axis 00013262 in slot x for table 0000958a."
+
+[[link]]
+type = "axis"
+to = "timing_adjusted_coordinate_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000694b0"
+note = "The reviewed lookup supplies axis 0001325a in slot y for table 0000958a."
+
+[[link]]
+type = "reader"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000694b0"
+note = """
+Reader 000693b8 supplies this table to the reviewed interpolation path. \
+Explicit centered upper bound of FUN_000693B8, indexed by word ffff11e0 and \
+byte ffff1042. Result-128 is cached at ffff1f47 and limits the adjusted \
+ffff12be term before subsequent slew, clamp and mode paths publish ffff1f45. \
+It is not the sole final timing term."""

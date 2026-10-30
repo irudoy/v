@@ -339,6 +339,12 @@ relies = "structure"
 [[symbol]]
 layout = "jk78c"
 address = "000693b8"
+summary = """
+JK78C adjusted timing-coordinate builder. It centers the explicit 8x8 \
+surface 0000958a by subtracting 128 and uses it to bound the adjusted \
+ffff12be term before subsequent slew, clamp and mode paths publish ffff1f45. \
+Its local limits and selectors are target-specific; the surface is not the \
+sole final timing term."""
 
 [[symbol.evidence]]
 kind = "masked-match"

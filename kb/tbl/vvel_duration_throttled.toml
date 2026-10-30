@@ -198,21 +198,6 @@ at = "1nd:0005f780"
 
 [[link]]
 type = "reader"
-to = "icy-platypus/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:0006645c"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066698"
-
-[[link]]
-type = "reader"
 to = "solemn-aardwark/fn"
 role = "accessor"
 
@@ -235,3 +220,18 @@ at = "1me3b:00074fdc"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007525c"
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006645c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066698"

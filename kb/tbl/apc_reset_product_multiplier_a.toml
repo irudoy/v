@@ -1,0 +1,215 @@
+summary = """
+Eight-point uint8 multiplier table: after the byte lookup result is written \
+to ffff144d, it is read again, multiplied by zero_extend16(r12), and then \
+multiplied by the lookup result of map 00012096; the 32-bit product is \
+divided as signed by 81920, the quotient is compared as unsigned with 255, \
+values above 255 are replaced with 255, and the final byte is written to \
+ffff1875."""
+note = [
+    """
+The physical name of the quantity and the unit of input ffff144c are \
+unknown. Divisor 81920 applies to the composite expression and does not \
+define an independent physical scale for this map. Index: implicit 1D-8 by \
+uint8 input from ffff144c; input >= 224 returns element 7, while for input < \
+224 kernel 00026a80 selects adjacent uint8 cells and 00026740 performs \
+linear interpolation with a Q0.16 fraction. Result disposition: consumer \
+(site 0004c346).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Composite Product Multiplier A - raw u8 (0x1208E)"
+category = "Internal Calculations"
+order = 146
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 357
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "apc_reset_product_multiplier_b/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "horned-turkey/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001208e"
+former = ["prophetic-jacamar/tbl/7mfk-0001208e"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "81920"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c312"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c31c"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c31e"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c322"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c328"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c340"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c342"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c346"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c34c"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c34e"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c350"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c356"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c35c"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c36c"
+value = {named = ["0001208e", "00012096", "00021bbc", "00026740", "ffff144d"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013710"
+former = ["satisfied-cobra/tbl/jk78c-00013710"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006795e"
+to = "7mfk:0001208e"
+note = """
+The JK78C reader FUN_00067830 is the masked-match homolog of the JK08A \
+reader FUN_0004C1E4; both load their table operands in the same order, and \
+this load takes the operand in the place of 0x0001208E."""
+
+[[link]]
+type = "depends"
+to = "apc_reset_product_multiplier_b/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

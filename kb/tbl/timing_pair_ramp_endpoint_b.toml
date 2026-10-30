@@ -1,0 +1,80 @@
+summary = """
+Endpoint B of FUN_00065010, cached at ffff30a4 and paired with endpoint A in \
+(W*A+(32768-W)*B)>>7. The resulting word is gated into ffff14ae and bounded \
+against the maintained state ffff14b2 with separate rise and decrement words \
+before high-byte publication at ffff2256. The engineering unit remains \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009a9a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = """
+The complete primary listing establishes the 8x8 uint8 table operand at \
+00009a9a in reader 00065010. Endpoint B of FUN_00065010, cached at ffff30a4 \
+and paired with endpoint A in (W*A+(32768-W)*B)>>7. The resulting word is \
+gated into ffff14ae and bounded against the maintained state ffff14b2 with \
+separate rise and decrement words before high-byte publication at ffff2256. \
+The engineering unit remains unresolved."""
+
+[[link]]
+type = "axis"
+to = "timing_pair_ramp_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = "The reviewed lookup supplies axis 000132ee in slot x for table 00009a9a."
+
+[[link]]
+type = "axis"
+to = "timing_pair_ramp_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = "The reviewed lookup supplies axis 000132f6 in slot y for table 00009a9a."
+
+[[link]]
+type = "reader"
+to = "timing_pair_ramp_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = """
+Reader 00065010 supplies this table to the reviewed interpolation path. \
+Endpoint B of FUN_00065010, cached at ffff30a4 and paired with endpoint A in \
+(W*A+(32768-W)*B)>>7. The resulting word is gated into ffff14ae and bounded \
+against the maintained state ffff14b2 with separate rise and decrement words \
+before high-byte publication at ffff2256. The engineering unit remains \
+unresolved."""

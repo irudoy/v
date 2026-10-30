@@ -16,7 +16,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "pearl-caiman/tbl"
+to = "timing_centered_mean_surface/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -72,7 +72,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "pearl-caiman/tbl"
+to = "timing_centered_mean_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

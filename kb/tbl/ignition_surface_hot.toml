@@ -179,7 +179,7 @@ at = "1me3b:00079a58"
 
 [[link]]
 type = "axis"
-to = "cryptic-bloodhound/axis"
+to = "ignition_normalized_bfs_axis/axis"
 slot = "y"
 
 [[link.evidence]]

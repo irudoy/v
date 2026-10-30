@@ -1,0 +1,22 @@
+summary = """
+Builds the JK78C float-model producer tree and publishes bounded words at \
+ffff3290, ffff3292 and ffff353a. Physical model interpretation and \
+engineering conversions remain unresolved."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00057782"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057782"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Builds the JK78C float-model producer \
+tree and publishes bounded words at ffff3290, ffff3292 and ffff353a. \
+Physical model interpretation and engineering conversions remain \
+unresolved."""

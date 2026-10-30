@@ -106,16 +106,6 @@ at = "1me3b:000750cc"
 
 [[link]]
 type = "reader"
-to = "icy-platypus/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066674"
-
-[[link]]
-type = "reader"
 to = "spotted-ibex/fn"
 role = "accessor"
 
@@ -123,3 +113,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007524c"
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066674"

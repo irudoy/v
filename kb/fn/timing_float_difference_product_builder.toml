@@ -1,0 +1,19 @@
+summary = """
+Combines independently indexed factors with a bounded word difference and a \
+separate calibrated subtraction."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005974a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005974a"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Combines independently indexed factors \
+with a bounded word difference and a separate calibrated subtraction."""

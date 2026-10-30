@@ -97,7 +97,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "accelerated-hyrax/tbl"
+to = "mode_selected_parameter_0_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -105,7 +105,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "carrot-frog/tbl"
+to = "mode_selected_parameter_0_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -113,7 +113,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "mauve-wolf/tbl"
+to = "mode_selected_parameter_1_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -121,7 +121,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "mindful-pogona/tbl"
+to = "mode_selected_parameter_1_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -129,7 +129,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "private-chamois/tbl"
+to = "mode_selected_parameter_2_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -137,7 +137,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "quick-basilisk/tbl"
+to = "mode_selected_parameter_2_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -569,6 +569,14 @@ relies = "structure"
 layout = "jk78c"
 address = "000826d2"
 name = "thundering-anteater"
+summary = """
+JK78C mode-selected byte-parameter builder. Its first arm selects six \
+explicit eight-point curves by ffff1077 and ffff23c6.bit6. Other active arms \
+select implicit update curves using a bounded coordinate derived from word \
+ffff43dc. The computed operand at 0001405c retains an unresolved normalized \
+reader relation. The selected byte reaches ffff3517; bypass, inhibit and \
+out-of-range branches retain their own store behavior. The parameter's \
+physical meaning remains unresolved."""
 
 [[symbol.evidence]]
 kind = "masked-match"

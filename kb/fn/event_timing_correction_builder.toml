@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -414,6 +414,12 @@ relies = "structure"
 [[symbol]]
 layout = "jk78c"
 address = "000690ac"
+summary = """
+JK78C engine-event timing-correction builder. It maintains bounded signed \
+contributions and the amplitude-based subtraction path, and conditionally \
+limits the result with the implicit centered byte surface 00009ada under \
+ROM8[00008968].bit7 and ffff241f.bit1 before writing ffff12be. The local \
+RAM, calibration gates and raw-coordinate contracts are target-specific."""
 
 [[symbol.evidence]]
 kind = "masked-match"

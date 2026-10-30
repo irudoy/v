@@ -1,0 +1,19 @@
+summary = """
+Combines an affine factor, a product factor, a bounded one-minus-product \
+attenuation and independent arguments."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00059204"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059204"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Combines an affine factor, a product \
+factor, a bounded one-minus-product attenuation and independent arguments."""

@@ -37,13 +37,39 @@ kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock event retard"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000860a"
+summary = """
+JK78C scalar configuration byte whose bit5 controls the bounded second-state \
+store in FUN_000690AC. This claim covers the reviewed bit5 use only; the \
+separate ROM8[00008965].bit5 mode gate and other bits remain distinct."""
+note = """
+The bit5 use in target reader 000690ac corresponds to the canonical bit5 \
+selector at 7mfk:00008710. MOV.L 000690c0 and MOV.B 000690c4 load this byte; \
+AND 000690c6 masks 0x20. The selected paths preserve or write the second \
+bounded state at ffff11c2, with an additional target mode gate \
+ROM8[00008965].bit5. Other bits and readers are not qualified by this \
+binding."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000690c0"
+to = "7mfk:00008710"
+note = """
+Paired complete readers 000690ac and 0004d99c preserve the bit5 mask and \
+conditional second-state store; the target has the separate \
+ROM8[00008965].bit5 mode branch."""
+
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
 via = ["event_timing_correction_builder/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
+role = "accessor"
 note = """
 ROM byte load 0004d9b0 and mask 0004d9b2 select G from bit5. This reader \
 alone is covered: G0 preserves SECOND without a store; G1 writes its signed \
@@ -70,3 +96,11 @@ key = "test_knock_event_retard_registered_stock_contract"
 kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock event retard"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000690c4"
+note = """
+The reviewed MOV.B and AND 0x20 supply the target bit5 selector; other byte \
+uses remain separate."""

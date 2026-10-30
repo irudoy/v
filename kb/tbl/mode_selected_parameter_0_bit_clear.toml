@@ -1,0 +1,118 @@
+summary = """
+Mode-selected 1D interpolation value indexed by RAM input ffff11ae; the \
+physical quantity is unknown"""
+note = [
+    """
+All 8 map cells and all 8 axis points are zero, so the shown branch gives \
+raw result 0. This does not prove a physical purpose, scale, or branch \
+unreachability; role dead does not apply.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 195
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fine-cockatoo/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rough-panther/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012b2a"
+former = ["private-chamois/tbl/7mfk-00012b2a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064328"
+value = {named = ["00012b2a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006433c"
+value = {named = ["00012b2a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006433e"
+value = {named = ["00012b2a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064344"
+value = {named = ["00012b2a", "00012b42", "00026474", "00026740", "00026944", "ffff3373"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "brilliant-ibis/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013fd8"
+former = ["jovial-teal/tbl/jk78c-00013fd8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008272a"
+to = "7mfk:000642ec"
+count = 1
+value = 39
+
+[[link]]
+type = "depends"
+to = "fine-cockatoo/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

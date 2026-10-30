@@ -1,0 +1,62 @@
+summary = """
+Conditional multiplier curve of FUN_00058286. Its unsigned word is converted \
+to a float coefficient with nominal multiplier 0.00002 before further gated \
+arithmetic."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015cd2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058312"
+note = """
+The complete primary listing establishes the 16x1 uint16 table operand at \
+00015cd2 in reader 00058286. Conditional multiplier curve of FUN_00058286. \
+Its unsigned word is converted to a float coefficient with nominal \
+multiplier 0.00002 before further gated arithmetic."""
+
+[[link]]
+type = "axis"
+to = "timing_float_conditional_multiplier_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058312"
+note = "The reviewed lookup supplies axis 0001550c in slot x for table 00015cd2."
+
+[[link]]
+type = "reader"
+to = "timing_float_conditional_multiplier_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058312"
+note = """
+Reader 00058286 supplies this table to the reviewed interpolation path. \
+Conditional multiplier curve of FUN_00058286. Its unsigned word is converted \
+to a float coefficient with nominal multiplier 0.00002 before further gated \
+arithmetic."""

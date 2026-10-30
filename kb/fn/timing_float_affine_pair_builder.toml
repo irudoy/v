@@ -1,0 +1,19 @@
+summary = """
+Combines the separately converted affine base and gain surfaces with a \
+byte-scaled term in the producer model."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00057d88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057d88"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Combines the separately converted affine \
+base and gain surfaces with a byte-scaled term in the producer model."""

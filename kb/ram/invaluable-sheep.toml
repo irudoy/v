@@ -10,7 +10,7 @@ at = "7mfk:0004be42"
 
 [[link]]
 type = "lookup"
-to = "charming-barracuda/tbl"
+to = "timing_compositor_byte_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

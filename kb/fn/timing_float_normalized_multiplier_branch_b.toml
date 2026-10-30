@@ -1,0 +1,19 @@
+summary = """
+Second normalized-coordinate multiplier branch using the shared response \
+curve after protected normalization."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000596d8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000596d8"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Second normalized-coordinate multiplier \
+branch using the shared response curve after protected normalization."""

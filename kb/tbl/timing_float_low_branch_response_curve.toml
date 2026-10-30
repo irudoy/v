@@ -1,0 +1,63 @@
+summary = """
+Alternative response curve of FUN_00058EBA. The reader selects between this \
+curve and the shared absolute-response curve according to its transformed \
+float input, then scales the selected unsigned word."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016b54"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058efc"
+note = """
+The complete primary listing establishes the 16x1 uint16 table operand at \
+00016b54 in reader 00058eba. Alternative response curve of FUN_00058EBA. The \
+reader selects between this curve and the shared absolute-response curve \
+according to its transformed float input, then scales the selected unsigned \
+word."""
+
+[[link]]
+type = "axis"
+to = "timing_float_low_branch_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058efc"
+note = "The reviewed lookup supplies axis 00014698 in slot x for table 00016b54."
+
+[[link]]
+type = "reader"
+to = "timing_float_branch_response_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058efc"
+note = """
+Reader 00058eba supplies this table to the reviewed interpolation path. \
+Alternative response curve of FUN_00058EBA. The reader selects between this \
+curve and the shared absolute-response curve according to its transformed \
+float input, then scales the selected unsigned word."""

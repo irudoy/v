@@ -137,7 +137,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "soft-pronghorn/tbl"
+to = "knock_circuit_monitor_surface_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -145,7 +145,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tuscan-porcupine/tbl"
+to = "knock_circuit_monitor_surface_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -1,0 +1,23 @@
+summary = """
+Consumes the producer words ffff3290, ffff3292 and ffff353a through distinct \
+float branches and publishes the final float-derived value at ffff2346 with \
+a -128..127 clamp. The downstream timing consumer remains separately \
+represented."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058d98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058d98"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Consumes the producer words ffff3290, \
+ffff3292 and ffff353a through distinct float branches and publishes the \
+final float-derived value at ffff2346 with a -128..127 clamp. The downstream \
+timing consumer remains separately represented."""

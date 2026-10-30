@@ -1,0 +1,21 @@
+summary = """
+First consumer branch using a shared protected response divisor and \
+ratio-output curve, then combining a word-scaled result with the independent \
+count term."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00059110"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059110"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. First consumer branch using a shared \
+protected response divisor and ratio-output curve, then combining a \
+word-scaled result with the independent count term."""

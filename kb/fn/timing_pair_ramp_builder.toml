@@ -1,0 +1,25 @@
+summary = """
+Reads two byte surfaces, maintains the gated Q15 ramp weight ffff14aa, forms \
+the word endpoint blend with a seven-bit shift and maintains bounded state \
+ffff14b2 before high-byte publication at ffff2256. This is a target-native \
+pair and state mechanism, not an accepted homolog of the canonical \
+single-table multiplier."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00065010"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065010"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Reads two byte surfaces, maintains the \
+gated Q15 ramp weight ffff14aa, forms the word endpoint blend with a \
+seven-bit shift and maintains bounded state ffff14b2 before high-byte \
+publication at ffff2256. This is a target-native pair and state mechanism, \
+not an accepted homolog of the canonical single-table multiplier."""

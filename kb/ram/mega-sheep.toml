@@ -46,14 +46,14 @@ at = "7mfk:000a528e"
 
 [[link]]
 type = "lookup"
-to = "soft-pronghorn/tbl"
+to = "knock_circuit_monitor_surface_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "tuscan-porcupine/tbl"
+to = "knock_circuit_monitor_surface_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

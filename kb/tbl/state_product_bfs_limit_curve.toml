@@ -1,0 +1,303 @@
+summary = """
+Unsigned 8-bit piecewise-linear normalized-BFS limit table: over nodes 0, \
+32, 64, 96, 128, 160, 192, 224, the lookup implements y=min(x,224) and \
+writes y to RAM ffff17b8; FUN 0004ae6c then multiplies y by uint16 from RAM \
+ffff14dc and tests the product for zero, with a zero result selecting \
+sentinel 0xffff instead of the main calculation branch."""
+note = [
+    """
+The map has no explicit ROM axis: the index is formed directly from Q7 \
+normalized-BFS byte ffff102c, and its identity output preserves that \
+representation until saturation at raw 224. The external consumer proves the \
+narrow operational role of the result in the zero test, but not the physical \
+subsystem or the full arithmetic of subsequent division calls. Index: \
+implicit 1D-8: 8 nodes at raw input 0, 32, 64, 96, 128, 160, 192, 224; \
+linear interpolation is applied between adjacent uint8 cells, while input \
+>=224 selects element 7. Result disposition: consumer (0004ae6c).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[editor]
+name = "Piecewise Clamp y=min(x,224) (0x12006)"
+category = "Internal Calculations"
+order = 145
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 354
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+scale = [21, 22]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "energetic-honeybee/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "carmine-ape/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012006"
+former = ["dramatic-foxhound/tbl/7mfk-00012006"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "128"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "160"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "192"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "32"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "64"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "96"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac64"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac66"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac6a"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac6e"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac78"
+value = {named = ["00009534", "00012006", "00026370", "00026740", "0004ae6c", "ffff102c", "ffff17b8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128*0.78125=100"
+
+[[symbol]]
+layout = "jk00c"
+address = "000142e3"
+former = ["exuberant-dodo/tbl/jk00c-000142e3"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004bcae"
+to = "7mfk:0004ac6a"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000142f3"
+former = ["offbeat-wallaby/tbl/jk00d-000142f3"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004bcb2"
+to = "7mfk:0004ac6a"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:00012006"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The canonical normalized-BFS limiter feeds a composite product with a \
+zero-product sentinel branch. No reviewed JK78C reader and operand establish \
+that complete role; the target native mode tables do not supply this \
+identity."""
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "energetic-honeybee/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "meticulous-mongoose/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

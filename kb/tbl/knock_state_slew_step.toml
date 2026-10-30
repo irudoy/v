@@ -39,6 +39,19 @@ kind = "spec"
 path = "defs/JK08A.ignition-state.md"
 key = "Bounded knock state selection"
 
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:00009078"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The JK78C knock coordinator has additional calibrated state and selector \
+curves, but an exact scalar operand for the canonical alternate signed-state \
+slew step is not qualified. The native curve bindings do not establish \
+scalar homology or target absence."""
+
 [[link]]
 type = "reader"
 to = "knock_function/fn"

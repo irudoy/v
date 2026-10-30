@@ -10,7 +10,7 @@ at = "7mfk:0004ac78"
 
 [[link]]
 type = "lookup"
-to = "dramatic-foxhound/tbl"
+to = "state_product_bfs_limit_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

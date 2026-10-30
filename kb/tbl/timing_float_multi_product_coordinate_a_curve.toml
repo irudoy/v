@@ -1,0 +1,60 @@
+summary = """
+First float-coordinate factor of FUN_0005995C. The independently bounded \
+coordinate selects a scaled raw word for the final multi-factor product."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014d0c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000599a6"
+note = """
+The complete primary listing establishes the 32x1 uint16 table operand at \
+00014d0c in reader 0005995c. First float-coordinate factor of FUN_0005995C. \
+The independently bounded coordinate selects a scaled raw word for the final \
+multi-factor product."""
+
+[[link]]
+type = "axis"
+to = "timing_float_multi_product_coordinate_a_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000599a6"
+note = "The reviewed lookup supplies axis 0001499c in slot x for table 00014d0c."
+
+[[link]]
+type = "reader"
+to = "timing_float_multi_product_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000599a6"
+note = """
+Reader 0005995c supplies this table to the reviewed interpolation path. \
+First float-coordinate factor of FUN_0005995C. The independently bounded \
+coordinate selects a scaled raw word for the final multi-factor product."""

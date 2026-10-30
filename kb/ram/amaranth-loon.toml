@@ -10,7 +10,7 @@ at = "7mfk:0002d070"
 
 [[link]]
 type = "lookup"
-to = "pearl-caiman/tbl"
+to = "timing_centered_mean_surface/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

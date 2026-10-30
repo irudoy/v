@@ -1,0 +1,18 @@
+summary = """
+Reads and converts the base coefficient curve for the float producer tree."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005803e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005803e"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Reads and converts the base coefficient \
+curve for the float producer tree."""

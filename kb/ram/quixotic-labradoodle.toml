@@ -10,7 +10,7 @@ at = "7mfk:0004b43a"
 
 [[link]]
 type = "lookup"
-to = "outrageous-bustard/tbl"
+to = "timing_addend_byte_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

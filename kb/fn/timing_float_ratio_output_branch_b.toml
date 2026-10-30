@@ -1,0 +1,20 @@
+summary = """
+Second consumer branch using the shared protected response divisor and \
+output curve with its own offset and count-derived term."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00059498"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059498"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Second consumer branch using the shared \
+protected response divisor and output curve with its own offset and \
+count-derived term."""

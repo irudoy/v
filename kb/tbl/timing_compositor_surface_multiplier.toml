@@ -1,0 +1,156 @@
+summary = """
+Table-derived unsigned multiplier m in the local calculation of RAM \
+ffff134a: m = min(255, interp2d(0000c50e)); m is multiplied by u16(ffff1900) \
+and u8(ffff134c), the low 32 bits of the product are divided unsigned by \
+500000, and the quotient is limited to 255."""
+note = [
+    """
+Code confidence applies only to the observed operational role of the \
+multiplier. Code does not establish the calibration's physical name or \
+units. The interpolation result is limited to uint8 before being written to \
+ffff1348; ffff1348 has no external readers, but the same register source is \
+consumed directly after the write by instruction 0004be7c. Constant value 20 \
+does not prove semantics by itself. Result disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 82
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "reader"
+end = "owner"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "orange-lemur/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000c50e"
+former = ["fabulous-marmoset/tbl/7mfk-0000c50e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be4e"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be56"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be5c"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be68"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be6c"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be76"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be7c"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be80"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be82"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004be92"
+value = {named = ["0000c50e", "00021ce0", "00026270", "00026848", "ffff1348"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nondescript-seagull/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "amiable-bloodhound/fn/7mfk"
+relies = "structure"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:0000c50e"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+No accepted JK78C operand and reader reproduce the canonical compositor \
+surface factor and its unsigned division by 500000. The separately \
+represented target state surfaces do not establish this homology."""
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"

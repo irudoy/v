@@ -43,14 +43,14 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "industrious-frigatebird/tbl"
+to = "timing_addend_byte_addition/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "observant-barnacle/tbl"
+to = "timing_addend_byte_subtraction/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

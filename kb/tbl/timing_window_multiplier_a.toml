@@ -1,0 +1,212 @@
+summary = """
+Interpolated unsigned multiplier of a composite value: the table byte \
+through ffff1295 is multiplied by bytes ffff1296, ffff1297, and ffff1294. \
+The high 8 bits of the 32-bit product are written to ffff22f8 and tested for \
+zero; the test result sets or clears bit 0 of ffff2473."""
+note = [
+    """
+The claim is limited to the computational role proven by code. The \
+multiplier's physical purpose is unknown; 0/255 contents and catalogs are \
+not used for identification. ffff1295 has no external readers, but the value \
+is read again and consumed inside 0004b9b4, so the branch is not dead. \
+Result disposition: inline_comparison.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Composite Product Multiplier A - raw u8 (0x11E46)"
+category = "Internal Calculations"
+order = 87
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 95
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[symbol]]
+layout = "7mfk"
+address = "00011e46"
+former = ["calculating-giraffe/tbl/7mfk-00011e46"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9f0"
+value = {named = ["00011e46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9f4"
+value = {named = ["00011e46"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004b9fc"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba12"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba18"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba1c"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba24"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2a"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2c"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba2e"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba32"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba34"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba36"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba38"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ba3a"
+value = {named = ["00011e46"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014123"
+former = ["massive-buffalo/tbl/jk00c-00014123"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004cafa"
+to = "7mfk:0004b9f4"
+count = 1
+value = 1
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014133"
+former = ["majestic-peccary/tbl/jk00d-00014133"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004cafe"
+to = "7mfk:0004b9f4"
+count = 1
+value = 1
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013550"
+former = ["imported-caiman/tbl/jk78c-00013550"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006538a"
+to = "7mfk:0004b9b4"
+count = 1
+value = 37
+
+[[link]]
+type = "reader"
+to = "mysterious-nightingale/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

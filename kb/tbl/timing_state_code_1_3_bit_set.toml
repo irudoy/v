@@ -1,0 +1,89 @@
+summary = """
+Primary timing-state surface for state codes 1 and 3 with ffff23c6.bit6 set. \
+FUN_000657E4 uses the ROM8[00008965].bit5-set compositor. On the stock \
+state-dispatch path ROM8[00008966].bit4 is set: both current code ffff43f2 \
+and saved code ffff4480 are evaluated, then selected or blended according to \
+ffff2814. The bit-clear path also evaluates its two endpoint samples. The \
+alternative bank selector is ffff23c6.bit6; input load may be forced to 255 \
+by the separate override gate. Stored-byte timing units are not established \
+here."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000a8ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = """
+The complete primary listing establishes the 16x16 uint8 table operand at \
+0000a8ca in reader 000657e4. Primary timing-state surface for state codes 1 \
+and 3 with ffff23c6.bit6 set. FUN_000657E4 uses the ROM8[00008965].bit5-set \
+compositor. On the stock state-dispatch path ROM8[00008966].bit4 is set: \
+both current code ffff43f2 and saved code ffff4480 are evaluated, then \
+selected or blended according to ffff2814. The bit-clear path also evaluates \
+its two endpoint samples. The alternative bank selector is ffff23c6.bit6; \
+input load may be forced to 255 by the separate override gate. Stored-byte \
+timing units are not established here."""
+
+[[link]]
+type = "axis"
+to = "able-butterfly/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = "The reviewed lookup supplies axis 000135c8 in slot x for table 0000a8ca."
+
+[[link]]
+type = "axis"
+to = "ignition_normalized_bfs_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = "The reviewed lookup supplies axis 000135b8 in slot y for table 0000a8ca."
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = """
+Reader 000657e4 supplies this table to the reviewed interpolation path. \
+Primary timing-state surface for state codes 1 and 3 with ffff23c6.bit6 set. \
+FUN_000657E4 uses the ROM8[00008965].bit5-set compositor. On the stock \
+state-dispatch path ROM8[00008966].bit4 is set: both current code ffff43f2 \
+and saved code ffff4480 are evaluated, then selected or blended according to \
+ffff2814. The bit-clear path also evaluates its two endpoint samples. The \
+alternative bank selector is ffff23c6.bit6; input load may be forced to 255 \
+by the separate override gate. Stored-byte timing units are not established \
+here."""

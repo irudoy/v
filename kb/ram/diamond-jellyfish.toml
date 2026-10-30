@@ -10,7 +10,7 @@ at = "7mfk:0004b482"
 
 [[link]]
 type = "lookup"
-to = "indigo-fossa/tbl"
+to = "timing_addend_word_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

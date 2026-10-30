@@ -10,7 +10,7 @@ at = "7mfk:0004be68"
 
 [[link]]
 type = "lookup"
-to = "fabulous-marmoset/tbl"
+to = "timing_compositor_surface_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

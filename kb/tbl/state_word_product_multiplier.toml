@@ -1,0 +1,357 @@
+summary = """
+Eight-point uint8 1D table of a multiplicative term in a composite \
+calculation. Interpolated result x is zero-extended, multiplied by result y \
+of map 00012dca and by 16-bit intermediate r14; the accessor calculates \
+min(65535,(r14*x*y)>>14) and writes the result to ffff14dc. A copy of x is \
+written to ffff179a. The physical subsystem is unknown."""
+note = [
+    """
+All 8 cells equal 128, so in this ROM the lookup always yields raw 128. This \
+alone does not prove a unit or physical meaning. Code proves only the \
+combined arithmetic min(65535,(r14*x*y)>>14), where x is the output of \
+000129ca and y is the output of 00012dca. Divisor 2^14 cannot be uniquely \
+allocated among the scales of x, y, and r14 without an independent unit for \
+one operand, so no separate nontrivial map scale is claimed. The map has no \
+addressable axis, and its index grid is implicit. Index: implicit 1D-8 \
+uint8. Selector extu.b(r12): r12=0 when uint16(ffff18e2)<0x2000, \
+r12=(uint16(ffff18e2)-0x2000)>>6 when 0x2000<=uint16(ffff18e2)<0x6000, \
+otherwise r12=0xff. For selector >=0xe0, wrapper 00026370 returns cell[7]; \
+for a lower selector, kernel 00026a80 reads adjacent uint8 cells and \
+finisher 00026740 performs unsigned linear interpolation. Output trace: \
+000129ca -> site 0004ae20 -> site 0004ae24 -> 00026370 -> 00026a80 -> site \
+00026aac + site 00026aae -> 00026740 -> site 0004ae28 -> [site 0004ae2c -> \
+ffff179a; site 0004ae2e -> site 0004ae36 -> site 0004ae3e -> site 0004ae42 \
+-> site 0004ae44 -> site 0004ae46 -> site 0004ae48 -> site 0004ae4a -> site \
+0004ae4e -> site 0004ae52 -> ffff14dc]. Result disposition: consumer; Result \
+target: site 0004ae36.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
+category = "Internal Calculations"
+order = 183
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 402
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-lyrebird/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "neat-finch/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vanilla-wapiti/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000129ca"
+former = ["bizarre-koel/tbl/7mfk-000129ca"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acac"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acb2"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acb8"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acbe"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acc6"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acca"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004acd0"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad24"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae14"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae20"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae22"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae24"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae28"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae2c"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae2e"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae32"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae34"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae36"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae3e"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae42"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae44"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae46"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae48"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae4a"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae4e"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ae52"
+value = {named = ["000129ca", "00012dca", "000224fa", "00026370", "00026740", "0004ac7a", "ffff179a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "illustrious-vulture/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:000129ca"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+The canonical word-product multiplier belongs to the three-factor accessor \
+family without an accepted JK78C reader and operand counterpart. The native \
+float models and state compositor are separately represented; proximity and \
+structural suggestions do not qualify this multiplier."""
+
+[[link]]
+type = "depends"
+to = "neat-finch/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "competent-lyrebird/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

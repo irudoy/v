@@ -1,0 +1,45 @@
+summary = """
+Explicit 8-point uint16 coordinate vector used by the reviewed JK78C \
+readers. Its address and storage identity are separate from any numerically \
+equal axis."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000147d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058048"
+note = """
+The reviewed reader passes axis 000147d0 in the x slot for table 0001571c. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_float_base_coefficient_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058048"
+note = """
+The reviewed reader passes axis 000147d0 in the x slot for table 0001571c. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

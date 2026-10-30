@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fat-crayfish/tbl"
+to = "state_difference_product_multiplier_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "witty-panther/tbl"
+to = "state_difference_product_multiplier_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

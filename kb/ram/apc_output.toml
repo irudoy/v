@@ -54,7 +54,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sincere-dragonfly/tbl/7mfk"
+to = "event_timing_subtraction_amplitude/tbl/7mfk"
 relies = "structure"
 note = "from_map"
 
@@ -129,7 +129,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sincere-dragonfly/tbl/7mfk"
+to = "event_timing_subtraction_amplitude/tbl/7mfk"
 relies = "structure"
 note = "from_map"
 
@@ -204,7 +204,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sincere-dragonfly/tbl/7mfk"
+to = "event_timing_subtraction_amplitude/tbl/7mfk"
 relies = "structure"
 note = "from_map"
 
@@ -280,7 +280,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sincere-dragonfly/tbl/7mfk"
+to = "event_timing_subtraction_amplitude/tbl/7mfk"
 relies = "structure"
 note = "from_map"
 
@@ -395,7 +395,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -588,7 +588,7 @@ role = "consumer"
 
 [[link]]
 type = "lookup"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

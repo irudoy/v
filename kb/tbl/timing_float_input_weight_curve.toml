@@ -1,0 +1,62 @@
+summary = """
+Word input-weight curve of FUN_00058F6A. The reader caps the unsigned input \
+coordinate, interpolates the curve and scales its result into a float \
+working value."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014c2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058f7c"
+note = """
+The complete primary listing establishes the 16x1 uint16 table operand at \
+00014c2c in reader 00058f6a. Word input-weight curve of FUN_00058F6A. The \
+reader caps the unsigned input coordinate, interpolates the curve and scales \
+its result into a float working value."""
+
+[[link]]
+type = "axis"
+to = "timing_float_input_weight_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058f7c"
+note = "The reviewed lookup supplies axis 000148bc in slot x for table 00014c2c."
+
+[[link]]
+type = "reader"
+to = "timing_float_input_weight_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058f7c"
+note = """
+Reader 00058f6a supplies this table to the reviewed interpolation path. Word \
+input-weight curve of FUN_00058F6A. The reader caps the unsigned input \
+coordinate, interpolates the curve and scales its result into a float \
+working value."""

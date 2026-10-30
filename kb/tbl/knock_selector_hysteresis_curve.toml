@@ -1,0 +1,65 @@
+summary = """
+Selector hysteresis-width curve in FUN_00062780. Byte ffff119d selects the \
+output cached at ffff17c4; lookup*256 sets the hysteresis span of the \
+ffff23fc.bit3 comparison around the separately calibrated threshold. Stock \
+output is 45."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013ea0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00063204"
+note = """
+The complete primary listing establishes the 16x1 uint8 table operand at \
+00013ea0 in reader 00062780. Selector hysteresis-width curve in \
+FUN_00062780. Byte ffff119d selects the output cached at ffff17c4; \
+lookup*256 sets the hysteresis span of the ffff23fc.bit3 comparison around \
+the separately calibrated threshold. Stock output is 45."""
+
+[[link]]
+type = "axis"
+to = "knock_selector_state_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00063204"
+note = "The reviewed lookup supplies axis 00013ec0 in slot x for table 00013ea0."
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00063204"
+note = """
+Reader 00062780 supplies this table to the reviewed interpolation path. \
+Selector hysteresis-width curve in FUN_00062780. Byte ffff119d selects the \
+output cached at ffff17c4; lookup*256 sets the hysteresis span of the \
+ffff23fc.bit3 comparison around the separately calibrated threshold. Stock \
+output is 45."""

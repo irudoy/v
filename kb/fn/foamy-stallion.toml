@@ -76,7 +76,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "diligent-ammonite/tbl"
+to = "knock_monitor_accumulator_limit/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

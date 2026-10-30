@@ -1,0 +1,19 @@
+summary = """
+Reads the conditional word multiplier and applies its float conversion in \
+the producer branch."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058286"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058286"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Reads the conditional word multiplier and \
+applies its float conversion in the producer branch."""

@@ -1,0 +1,290 @@
+summary = """
+Dimensionless 1D attenuation coefficient T selected by byte ffff106f. The \
+interpolated result is read from ffff14db and serves as a multiplier in \
+ffff14d9 = min(255, (T*A*B) >> 14), where A is in ffff14d8 and B is in \
+ffff14da."""
+note = [
+    """
+The physical subsystem and the physical unit of input ffff106f are unknown. \
+Quantity T is traced separately through ffff14db. In the current ROM, \
+adjacent multiplier A from 0001211e is always 128, so the overall \
+calculation reduces to floor(B*T/128), where B comes from 00009d2a. \
+Saturation to 255 applies to the overall product. Numeric scale round trip: \
+102/128=0.796875, 0.796875*128=102; 128/128=1, 1*128=128. The implicit map \
+has no explicit ROM axis, so axes is empty. Index: implicit 1D-8: \
+u=uint8(ffff106f); for u<224, index i=floor(u/32), fraction f=(u mod 32)/32, \
+and cells i and i+1 are linearly interpolated; for u>=224, cell 7 is \
+returned. Result disposition: consumer (0004ad60).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "ratio"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "code"
+
+[editor]
+name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
+category = "Internal Calculations"
+order = 151
+emit = false
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[[ledger]]
+registry = "findings"
+order = 362
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+scale = [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "state_byte_product_multiplier_a/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001212e"
+former = ["lemon-badger/tbl/7mfk-0001212e"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac96"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac98"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ac9e"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004aca0"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004aca2"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004aca8"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad56"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad60"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad64"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad6c"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad6e"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad70"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad72"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad74"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad78"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004ad7c"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad56"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad5c"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad60"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad64"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad6c"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad6e"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad70"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004ad72"
+value = {named = ["0001211e", "0001212e", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "0.796875*128=102"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "102/128=0.796875"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "7mfk:0001212e"
+count = 0
+l0 = "6bd18b774cb344a9"
+note = """
+No accepted JK78C operand qualifies the second curve factor of the canonical \
+three-byte product. The target-native branches retain their own factor and \
+state contracts."""
+
+[[link]]
+type = "depends"
+to = "state_byte_product_multiplier_a/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "competent-lyrebird/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

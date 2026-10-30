@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "amorphous-bird/tbl"
+to = "knock_slice_threshold/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

@@ -1,0 +1,77 @@
+summary = """
+Parameter surface in FUN_00057E46. The reader applies nominal \
+v=1.2+raw*0.000004 and derives the ratio coordinate (v-1)/v for a separate \
+response surface. This arithmetic does not establish a thermodynamic \
+interpretation."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b9fa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057f56"
+note = """
+The complete primary listing establishes the 8x8 uint16 table operand at \
+0000b9fa in reader 00057e46. Parameter surface in FUN_00057E46. The reader \
+applies nominal v=1.2+raw*0.000004 and derives the ratio coordinate (v-1)/v \
+for a separate response surface. This arithmetic does not establish a \
+thermodynamic interpretation."""
+
+[[link]]
+type = "axis"
+to = "timing_float_ratio_parameter_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057f56"
+note = "The reviewed lookup supplies axis 000147c0 in slot x for table 0000b9fa."
+
+[[link]]
+type = "axis"
+to = "timing_float_ratio_parameter_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057f56"
+note = "The reviewed lookup supplies axis 00015d02 in slot y for table 0000b9fa."
+
+[[link]]
+type = "reader"
+to = "timing_float_ratio_response_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057f56"
+note = """
+Reader 00057e46 supplies this table to the reviewed interpolation path. \
+Parameter surface in FUN_00057E46. The reader applies nominal \
+v=1.2+raw*0.000004 and derives the ratio coordinate (v-1)/v for a separate \
+response surface. This arithmetic does not establish a thermodynamic \
+interpretation."""

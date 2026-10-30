@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "dramatic-warthog/tbl"
+to = "reduction_state_decrement_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sturdy-baboon/tbl"
+to = "reduction_state_decrement_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

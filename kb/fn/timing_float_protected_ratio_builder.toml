@@ -1,0 +1,20 @@
+summary = """
+Builds a float ratio from independent numerator and denominator-gain curves \
+and an affine term, with a zero-denominator alternative and ratio bounds."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058f94"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058f94"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Builds a float ratio from independent \
+numerator and denominator-gain curves and an affine term, with a \
+zero-denominator alternative and ratio bounds."""

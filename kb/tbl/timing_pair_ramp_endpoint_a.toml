@@ -1,0 +1,81 @@
+summary = """
+Endpoint A of FUN_00065010, looked up by bytes ffff11a2 and ffff1067 unless \
+ffff23c4.bit7 bypasses lookup. The byte is cached at ffff30a5. The reader \
+computes (W*A+(32768-W)*B)>>7 into a word, with W at ffff14aa ramping toward \
+32768 under ffff23e8.bit5. This paired and bounded state mechanism is \
+distinct from the canonical single-table multiplier."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009a5a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = """
+The complete primary listing establishes the 8x8 uint8 table operand at \
+00009a5a in reader 00065010. Endpoint A of FUN_00065010, looked up by bytes \
+ffff11a2 and ffff1067 unless ffff23c4.bit7 bypasses lookup. The byte is \
+cached at ffff30a5. The reader computes (W*A+(32768-W)*B)>>7 into a word, \
+with W at ffff14aa ramping toward 32768 under ffff23e8.bit5. This paired and \
+bounded state mechanism is distinct from the canonical single-table \
+multiplier."""
+
+[[link]]
+type = "axis"
+to = "timing_pair_ramp_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = "The reviewed lookup supplies axis 000132ee in slot x for table 00009a5a."
+
+[[link]]
+type = "axis"
+to = "timing_pair_ramp_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = "The reviewed lookup supplies axis 000132f6 in slot y for table 00009a5a."
+
+[[link]]
+type = "reader"
+to = "timing_pair_ramp_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = """
+Reader 00065010 supplies this table to the reviewed interpolation path. \
+Endpoint A of FUN_00065010, looked up by bytes ffff11a2 and ffff1067 unless \
+ffff23c4.bit7 bypasses lookup. The byte is cached at ffff30a5. The reader \
+computes (W*A+(32768-W)*B)>>7 into a word, with W at ffff14aa ramping toward \
+32768 under ffff23e8.bit5. This paired and bounded state mechanism is \
+distinct from the canonical single-table multiplier."""

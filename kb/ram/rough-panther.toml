@@ -38,42 +38,42 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "accelerated-hyrax/tbl"
+to = "mode_selected_parameter_0_bit_clear/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "carrot-frog/tbl"
+to = "mode_selected_parameter_0_bit_set/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "mauve-wolf/tbl"
+to = "mode_selected_parameter_1_bit_clear/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "mindful-pogona/tbl"
+to = "mode_selected_parameter_1_bit_set/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "private-chamois/tbl"
+to = "mode_selected_parameter_2_bit_clear/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "quick-basilisk/tbl"
+to = "mode_selected_parameter_2_bit_set/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

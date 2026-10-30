@@ -42,7 +42,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "industrious-saluki/tbl"
+to = "state_byte_product_multiplier_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "lemon-badger/tbl"
+to = "state_byte_product_multiplier_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -58,7 +58,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "merry-viper/tbl"
+to = "state_byte_product_multiplier_surface/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

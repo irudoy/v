@@ -1,0 +1,19 @@
+summary = """
+Reads a word coefficient with a bounded float-derived coordinate and applies \
+the fixed float multiplier."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005860c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005860c"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Reads a word coefficient with a bounded \
+float-derived coordinate and applies the fixed float multiplier."""

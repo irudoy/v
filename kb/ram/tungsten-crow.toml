@@ -10,7 +10,7 @@ at = "7mfk:0004bd0a"
 
 [[link]]
 type = "lookup"
-to = "gentle-macaque/tbl"
+to = "timing_bfs_ramp_upper_bit_clear/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -1,0 +1,19 @@
+summary = """
+Transforms the calibrated float parameter v into (v-1)/v and uses that \
+coordinate in the paired response surface."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00057e46"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057e46"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Transforms the calibrated float parameter \
+v into (v-1)/v and uses that coordinate in the paired response surface."""

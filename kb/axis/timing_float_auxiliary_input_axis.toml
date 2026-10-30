@@ -1,0 +1,75 @@
+summary = """
+Explicit 16-point uint16 coordinate vector used by the reviewed JK78C \
+readers. Its address and storage identity are separate from any numerically \
+equal axis."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000171c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058af2"
+note = """
+The reviewed reader passes axis 000171c4 in the x slot for table 00014598. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_float_difference_product_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000597bc"
+note = """
+The reviewed reader passes axis 000171c4 in the x slot for table 00014dec. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_float_multi_product_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059a04"
+note = """
+The reviewed reader passes axis 000171c4 in the x slot for table 00014d4c. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_float_scale_coefficient_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058af2"
+note = """
+The reviewed reader passes axis 000171c4 in the x slot for table 00014598. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

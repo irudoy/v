@@ -1,0 +1,19 @@
+summary = """
+Caps the unsigned coordinate, looks up the word input weight and stores its \
+scaled float value."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058f6a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058f6a"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Caps the unsigned coordinate, looks up \
+the word input weight and stores its scaled float value."""

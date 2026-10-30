@@ -1,0 +1,19 @@
+summary = """
+Second producer branch using the shared ratio-response curve, with its own \
+bounded float inputs."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000589e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000589e8"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Second producer branch using the shared \
+ratio-response curve, with its own bounded float inputs."""

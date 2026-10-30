@@ -1,0 +1,62 @@
+summary = """
+Coefficient curve of FUN_000580F2. Its raw word scales a float product by \
+nominal 0.00002 on the table branch; a separately gated fixed coefficient \
+supplies the alternative."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000146b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005811a"
+note = """
+The complete primary listing establishes the 8x1 uint16 table operand at \
+000146b8 in reader 000580f2. Coefficient curve of FUN_000580F2. Its raw word \
+scales a float product by nominal 0.00002 on the table branch; a separately \
+gated fixed coefficient supplies the alternative."""
+
+[[link]]
+type = "axis"
+to = "timing_float_product_coefficient_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005811a"
+note = "The reviewed lookup supplies axis 000147b0 in slot x for table 000146b8."
+
+[[link]]
+type = "reader"
+to = "timing_float_product_coefficient_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005811a"
+note = """
+Reader 000580f2 supplies this table to the reviewed interpolation path. \
+Coefficient curve of FUN_000580F2. Its raw word scales a float product by \
+nominal 0.00002 on the table branch; a separately gated fixed coefficient \
+supplies the alternative."""

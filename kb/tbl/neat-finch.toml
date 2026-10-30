@@ -82,7 +82,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "bizarre-koel/tbl"
+to = "state_word_product_multiplier/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -284,7 +284,7 @@ value = "128/128=1"
 
 [[link]]
 type = "depends"
-to = "bizarre-koel/tbl"
+to = "state_word_product_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "scale"

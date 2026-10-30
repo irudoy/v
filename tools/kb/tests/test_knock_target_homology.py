@@ -18,7 +18,7 @@ from kb.model import SymbolKey
 THIS_TEST = 'tools/kb/tests/test_knock_target_homology.py'
 OWNER_TEST = 'test_knock_target_homology_owner_contract'
 ROM_TEST = 'test_knock_target_homology_exact_registered_rom_contract'
-TABLE = 'amorphous-bird/tbl'
+TABLE = 'knock_slice_threshold/tbl'
 HOME = SymbolKey('7mfk', 'tbl', 0x1108e)
 TARGET_AXIS = (32, 64, 96, 128, 160, 192, 224, 256,
                288, 320, 352, 384, 416, 464, 504, 544)

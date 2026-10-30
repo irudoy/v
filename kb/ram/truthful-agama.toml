@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-millipede/tbl"
+to = "timing_stock_inert_feature_addend/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -151,7 +151,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "sincere-millipede/tbl"
+to = "timing_stock_inert_feature_addend/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

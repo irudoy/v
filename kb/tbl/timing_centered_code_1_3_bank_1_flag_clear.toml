@@ -1,0 +1,80 @@
+summary = """
+Centered byte surface of FUN_000657E4: bank 1 means ffff23c6.bit6 set, and \
+flag means ffff23cb.bit7 clear. On the state-dispatch path it supplies codes \
+1 and 3; the parallel path caches this sample at ffff1386. Samples enter the \
+secondary state blend around raw center 128. Physical output conversion \
+remains unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b0ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = """
+The complete primary listing establishes the 16x16 uint8 table operand at \
+0000b0ca in reader 000657e4. Centered byte surface of FUN_000657E4: bank 1 \
+means ffff23c6.bit6 set, and flag means ffff23cb.bit7 clear. On the \
+state-dispatch path it supplies codes 1 and 3; the parallel path caches this \
+sample at ffff1386. Samples enter the secondary state blend around raw \
+center 128. Physical output conversion remains unresolved."""
+
+[[link]]
+type = "axis"
+to = "able-butterfly/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = "The reviewed lookup supplies axis 000135c8 in slot x for table 0000b0ca."
+
+[[link]]
+type = "axis"
+to = "ignition_normalized_bfs_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = "The reviewed lookup supplies axis 000135b8 in slot y for table 0000b0ca."
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = """
+Reader 000657e4 supplies this table to the reviewed interpolation path. \
+Centered byte surface of FUN_000657E4: bank 1 means ffff23c6.bit6 set, and \
+flag means ffff23cb.bit7 clear. On the state-dispatch path it supplies codes \
+1 and 3; the parallel path caches this sample at ffff1386. Samples enter the \
+secondary state blend around raw center 128. Physical output conversion \
+remains unresolved."""

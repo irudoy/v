@@ -1,0 +1,27 @@
+summary = """
+JK78C state-code compositor coupling the timing-state byte and word channels \
+with the separately represented VVEL duration and CVTC target channels. The \
+ROM8[00008965].bit5-set path evaluates current and saved state codes, \
+selects calibration banks through ffff23c6.bit6, and selects or blends the \
+samples. Raw timing channels use their own centered and bounded arithmetic. \
+The bit5-clear indirect branch and physical conversions of the raw timing \
+terms remain unresolved."""
+level = "code"
+block = "ignition_timing/block"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_000657E4"
+
+[[symbol]]
+layout = "jk78c"
+address = "000657e4"
+former = ["icy-platypus/fn/jk78c-000657e4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000662f0"

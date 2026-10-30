@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-millipede/tbl"
+to = "timing_stock_inert_feature_addend/tbl"
 type = "index"
 end = "to"
 relies = "structure"

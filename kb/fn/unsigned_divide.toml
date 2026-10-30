@@ -52,22 +52,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "indigo-fossa/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "outrageous-bustard/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
 to = "placid-mastiff/tbl"
 type = "reader"
 end = "to"
@@ -77,6 +61,22 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "tested-dragon/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_addend_byte_multiplier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_addend_word_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

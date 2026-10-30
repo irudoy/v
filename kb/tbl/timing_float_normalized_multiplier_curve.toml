@@ -1,0 +1,82 @@
+summary = """
+Normalized-coordinate multiplier shared by FUN_000593E8 and FUN_000596D8. \
+Both readers divide a float input by a scaled word with explicit zero \
+alternatives, bound the coordinate and multiply another float input by this \
+curve's scaled result."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001546c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005943c"
+note = """
+The complete primary listing establishes the 32x1 uint16 table operand at \
+0001546c in reader 000593e8. Normalized-coordinate multiplier shared by \
+FUN_000593E8 and FUN_000596D8. Both readers divide a float input by a scaled \
+word with explicit zero alternatives, bound the coordinate and multiply \
+another float input by this curve's scaled result."""
+
+[[link]]
+type = "axis"
+to = "timing_float_normalized_multiplier_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005943c"
+note = "The reviewed lookup supplies axis 0001485c in slot x for table 0001546c."
+
+[[link]]
+type = "reader"
+to = "timing_float_normalized_multiplier_branch_a/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005943c"
+note = """
+Reader 000593e8 supplies this table to the reviewed interpolation path. \
+Normalized-coordinate multiplier shared by FUN_000593E8 and FUN_000596D8. \
+Both readers divide a float input by a scaled word with explicit zero \
+alternatives, bound the coordinate and multiply another float input by this \
+curve's scaled result."""
+
+[[link]]
+type = "reader"
+to = "timing_float_normalized_multiplier_branch_b/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005972c"
+note = """
+Reader 000596d8 supplies this table to the reviewed interpolation path. \
+Normalized-coordinate multiplier shared by FUN_000593E8 and FUN_000596D8. \
+Both readers divide a float input by a scaled word with explicit zero \
+alternatives, bound the coordinate and multiply another float input by this \
+curve's scaled result."""

@@ -1,0 +1,20 @@
+summary = """
+Selects between the shared absolute-response curve and the alternative \
+response curve from its transformed float input."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058eba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058eba"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Selects between the shared \
+absolute-response curve and the alternative response curve from its \
+transformed float input."""

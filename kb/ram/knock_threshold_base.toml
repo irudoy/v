@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "amorphous-bird/tbl"
+to = "knock_slice_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -162,40 +162,6 @@ Target threshold lookup stores the threshold of channel n at base plus 2 * \
 
 [[link]]
 type = "input"
-to = "amorphous-bird/tbl"
-via = ["knock_slice_threshold_lookup/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-For the selected legal row, the wrapper zero-extends two uint16 cells a and \
-b. The result is a + floor(max(0,b-a)*f/65536) - floor(max(0,a-b)*f/65536). \
-A raw threshold 65535 is a cell value; evaluator comparison is outside this \
-lookup slice."""
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:00026510"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
-key = "test_knock_threshold_chain_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
-key = "test_knock_threshold_registered_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/JK08A.knock-detection.md"
-key = "Executable lookup contract"
-
-[[link]]
-type = "input"
 to = "authentic-wasp/ram"
 via = ["knock_slice_threshold_lookup/fn"]
 layouts = ["7mfk"]
@@ -277,6 +243,40 @@ reachability are not established by the lookup slice."""
 [[link.evidence]]
 kind = "l0"
 at = "7mfk:0004a044"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
+key = "test_knock_threshold_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_knock_threshold_chain.py"""
+key = "test_knock_threshold_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/JK08A.knock-detection.md"
+key = "Executable lookup contract"
+
+[[link]]
+type = "input"
+to = "knock_slice_threshold/tbl"
+via = ["knock_slice_threshold_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+For the selected legal row, the wrapper zero-extends two uint16 cells a and \
+b. The result is a + floor(max(0,b-a)*f/65536) - floor(max(0,a-b)*f/65536). \
+A raw threshold 65535 is a cell value; evaluator comparison is outside this \
+lookup slice."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026510"
 
 [[link.evidence]]
 kind = "test"

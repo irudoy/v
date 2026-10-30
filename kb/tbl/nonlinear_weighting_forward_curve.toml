@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "azure-deer/tbl"
+to = "nonlinear_weighting_inverse_curve/tbl"
 type = "depends"
 end = "owner"
 link_role = "from_map"
@@ -218,7 +218,7 @@ value = 90
 
 [[link]]
 type = "depends"
-to = "azure-deer/tbl"
+to = "nonlinear_weighting_inverse_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

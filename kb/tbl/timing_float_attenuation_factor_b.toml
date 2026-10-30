@@ -1,0 +1,62 @@
+summary = """
+Second attenuation factor in FUN_00059204. Its independently indexed scaled \
+word contributes to the bounded one-minus-product term with the first \
+factor."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014c9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005936e"
+note = """
+The complete primary listing establishes the 8x1 uint16 table operand at \
+00014c9c in reader 00059204. Second attenuation factor in FUN_00059204. Its \
+independently indexed scaled word contributes to the bounded \
+one-minus-product term with the first factor."""
+
+[[link]]
+type = "axis"
+to = "timing_float_attenuation_axis_b/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005936e"
+note = "The reviewed lookup supplies axis 0001492c in slot x for table 00014c9c."
+
+[[link]]
+type = "reader"
+to = "timing_float_attenuated_product_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005936e"
+note = """
+Reader 00059204 supplies this table to the reviewed interpolation path. \
+Second attenuation factor in FUN_00059204. Its independently indexed scaled \
+word contributes to the bounded one-minus-product term with the first \
+factor."""

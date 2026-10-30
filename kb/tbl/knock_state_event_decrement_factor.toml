@@ -1,0 +1,68 @@
+summary = """
+Event-decrement factor of JK78C state ffff17bc in FUN_00062780. Coordinate \
+min(255,uint16[ffff11ac]>>2) selects the byte cached at ffff1792; the \
+decrement is lookup*200*uint8[ffff2096], with lower saturation and \
+subsequent bounds. Stock seven gives 1400 times the event count, without a \
+physical degree conversion."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013e90"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062fd0"
+note = """
+The complete primary listing establishes the 16x1 uint8 table operand at \
+00013e90 in reader 00062780. Event-decrement factor of JK78C state ffff17bc \
+in FUN_00062780. Coordinate min(255,uint16[ffff11ac]>>2) selects the byte \
+cached at ffff1792; the decrement is lookup*200*uint8[ffff2096], with lower \
+saturation and subsequent bounds. Stock seven gives 1400 times the event \
+count, without a physical degree conversion."""
+
+[[link]]
+type = "axis"
+to = "able-butterfly/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062fd0"
+note = "The reviewed lookup supplies axis 000135c8 in slot x for table 00013e90."
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062fd0"
+note = """
+Reader 00062780 supplies this table to the reviewed interpolation path. \
+Event-decrement factor of JK78C state ffff17bc in FUN_00062780. Coordinate \
+min(255,uint16[ffff11ac]>>2) selects the byte cached at ffff1792; the \
+decrement is lookup*200*uint8[ffff2096], with lower saturation and \
+subsequent bounds. Stock seven gives 1400 times the event count, without a \
+physical degree conversion."""

@@ -168,3 +168,132 @@ at = "7mfk:000495ee"
 kind = "test"
 path = "tools/kb/tests/test_engine_speed_axes.py"
 key = "test_rpm_axis_arguments_widths_and_fraction_scaling_match_stock"
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062faa"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 00013d66. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062fd0"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 00013e90. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065898"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000a4ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000658e2"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000a5ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006594c"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000a7ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000a8ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066962"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000a9ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000668a6"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000aaca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669b6"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000abca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066992"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000acca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066a02"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000afca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 0000b0ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065830"
+note = """
+The reviewed reader passes axis 000135c8 in the x slot for table 00014120. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

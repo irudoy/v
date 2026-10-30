@@ -1,0 +1,198 @@
+summary = """
+The interpolated raw 1D-table value forms a minimum with the result of map \
+00014bea; the selected minimum becomes a multiplier in calculating \
+upper-limited byte ffff1831, which FUN 0004c136 conditionally copies to \
+ffff2404."""
+note = [
+    """
+The physical quantity is unknown. The link to the target map is proven by \
+calculating r14=00014bea+0x10 at 0004c0e6 and passing r14 into r4 in delay \
+slot 0004c0ec of call 0004c0ea. The map result participates in a minimum \
+with the result of 00014bea, then in a product, saturation to 0x7f, and \
+write ffff1831. Function 0004c136 reads ffff1831 and conditionally transfers \
+the byte to ffff2404. Code confidence applies only to these operational \
+semantics; physical units and a nontrivial scale are unproven. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
+category = "Internal Calculations"
+order = 123
+emit = false
+format = "0"
+fine = 1
+coarse = 256
+
+[[ledger]]
+registry = "findings"
+order = 267
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_latch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rare-sawfly/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beautiful-wrasse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014bfa"
+former = ["hopping-bumblebee/tbl/7mfk-00014bfa"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aa2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0e6"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0ea"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0ec"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0ee"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f4"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c0f8"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c10e"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c128"
+value = {named = ["00014bfa", "000263f4", "0004c136", "ffff10ca", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dramatic-okapi/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00016fec"
+former = ["complex-bobcat/tbl/jk00c-00016fec"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004d1e8"
+to = "7mfk:0004c0ea"
+count = 1
+value = 2
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001700c"
+former = ["burgundy-smilodon/tbl/jk00d-0001700c"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004d1ec"
+to = "7mfk:0004c0ea"
+count = 1
+value = 2
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015df2"
+former = ["dandelion-labrador/tbl/jk78c-00015df2"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000676ee"
+to = "7mfk:0004c0c2"
+count = 1
+value = 61
+
+[[link]]
+type = "index"
+to = "rare-sawfly/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_latch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -1,0 +1,62 @@
+summary = """
+Edge branch selected when ffff23b4.bit1 is clear and ffff23b0.bit1 is set. \
+Mode 2, ffff23c6.bit6 clear. FUN_000826D2 derives the implicit-curve input \
+as clamp(((0x2d0e*uint16[ffff43dc])>>15)-32,0,255). The registered primitive \
+00028198 reads eight uint8 points on implicit coordinates 0,32,...,224. The \
+result is written as byte ffff3517. The branch selector is uint8[ffff1077]; \
+the bank selector is ffff23c6.bit6. Physical parameter and conversion remain \
+unresolved."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001403c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008287a"
+note = """
+The complete primary listing establishes the 8x1 uint8 table operand at \
+0001403c in reader 000826d2. Edge branch selected when ffff23b4.bit1 is \
+clear and ffff23b0.bit1 is set. Mode 2, ffff23c6.bit6 clear. FUN_000826D2 \
+derives the implicit-curve input as \
+clamp(((0x2d0e*uint16[ffff43dc])>>15)-32,0,255). The registered primitive \
+00028198 reads eight uint8 points on implicit coordinates 0,32,...,224. The \
+result is written as byte ffff3517. The branch selector is uint8[ffff1077]; \
+the bank selector is ffff23c6.bit6. Physical parameter and conversion remain \
+unresolved."""
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008287a"
+note = """
+Reader 000826d2 supplies this table to the reviewed interpolation path. Edge \
+branch selected when ffff23b4.bit1 is clear and ffff23b0.bit1 is set. Mode \
+2, ffff23c6.bit6 clear. FUN_000826D2 derives the implicit-curve input as \
+clamp(((0x2d0e*uint16[ffff43dc])>>15)-32,0,255). The registered primitive \
+00028198 reads eight uint8 points on implicit coordinates 0,32,...,224. The \
+result is written as byte ffff3517. The branch selector is uint8[ffff1077]; \
+the bank selector is ffff23c6.bit6. Physical parameter and conversion remain \
+unresolved."""

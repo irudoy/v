@@ -10,7 +10,7 @@ at = "7mfk:0004ba08"
 
 [[link]]
 type = "lookup"
-to = "airborne-malamute/tbl"
+to = "timing_window_multiplier_c/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

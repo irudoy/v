@@ -1,0 +1,19 @@
+summary = """
+Selects the calibrated curve or gated fixed coefficient and applies it in \
+the producer product."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000580f2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000580f2"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Selects the calibrated curve or gated \
+fixed coefficient and applies it in the producer product."""

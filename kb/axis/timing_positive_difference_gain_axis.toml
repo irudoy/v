@@ -1,0 +1,45 @@
+summary = """
+Explicit 16-point uint8 coordinate vector used by the reviewed JK78C \
+readers. Its address and storage identity are separate from any numerically \
+equal axis."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000132de"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065856"
+note = """
+The reviewed reader passes axis 000132de in the x slot for table 00013b48. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065856"
+note = """
+The reviewed reader passes axis 000132de in the x slot for table 00013b48. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

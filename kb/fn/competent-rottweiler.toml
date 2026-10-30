@@ -26,7 +26,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "arrogant-catfish/tbl"
+to = "timing_bfs_ramp_lower_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cerise-sturgeon/tbl"
+to = "timing_bfs_ramp_lower_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "gentle-macaque/tbl"
+to = "timing_bfs_ramp_upper_bit_clear/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "red-okapi/tbl"
+to = "timing_bfs_ramp_upper_bit_set/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "cryptic-bloodhound/axis"
+to = "ignition_normalized_bfs_axis/axis"
 type = "depends"
 end = "owner"
 link_role = "indexed_by"
@@ -166,7 +166,7 @@ value = 67
 
 [[link]]
 type = "depends"
-to = "cryptic-bloodhound/axis"
+to = "ignition_normalized_bfs_axis/axis"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

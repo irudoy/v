@@ -1,0 +1,74 @@
+summary = """
+Response surface of FUN_00057E46, indexed after the separately computed \
+(v-1)/v transformation. Its output contributes to the float producer tree of \
+FUN_00057782."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00011ace"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057fae"
+note = """
+The complete primary listing establishes the 16x16 uint16 table operand at \
+00011ace in reader 00057e46. Response surface of FUN_00057E46, indexed after \
+the separately computed (v-1)/v transformation. Its output contributes to \
+the float producer tree of FUN_00057782."""
+
+[[link]]
+type = "axis"
+to = "timing_float_ratio_response_axis_x/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057fae"
+note = "The reviewed lookup supplies axis 000147e0 in slot x for table 00011ace."
+
+[[link]]
+type = "axis"
+to = "timing_float_ratio_response_axis_y/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057fae"
+note = "The reviewed lookup supplies axis 000154ac in slot y for table 00011ace."
+
+[[link]]
+type = "reader"
+to = "timing_float_ratio_response_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057fae"
+note = """
+Reader 00057e46 supplies this table to the reviewed interpolation path. \
+Response surface of FUN_00057E46, indexed after the separately computed \
+(v-1)/v transformation. Its output contributes to the float producer tree of \
+FUN_00057782."""

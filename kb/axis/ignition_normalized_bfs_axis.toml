@@ -1,0 +1,324 @@
+note = [
+    """
+Shared column axis for ignition maps 0x991A/0x9A1A/0x9B1A. FUN 0003b75c \
+forms live byte ffff1048 as min(255,floor(BFS*128/ROM16[00009534])), and FUN \
+00020dfe snapshots it to runtime coordinate ffff102c. Therefore one raw axis \
+count is exactly 100/128=0.78125 percent of the fixed BFS reference. The \
+terminal cell at 00011ecd is raw 128, or exactly 100 percent, and FUN \
+0004bbee reuses that cell as a bounded-ramp upper coordinate without \
+interpolating the axis. The HR catalog calls this ratio Cylinder Filling; \
+that physical name remains a candidate.""",
+]
+level = "code"
+quantity = "load"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "axes"
+order = 7
+fields = ["kind", "units", "scale_expr", "to_byte", "scale_conf"]
+notes = [0]
+scale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "competent-rottweiler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "base_fuel_schedule_producer/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "writes"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013716"
+former = ["nostalgic-agouti/axis/1me3b-00013716"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00074524"
+to = "7mfk:00011ebe"
+note = """
+exact 16-byte ignition load axis is the second-axis operand of the 16x16 \
+uint8 leaves in the target ignition coordinator 000797cc and in 0007448c \
+whose site structure reproduces the 1ND0A readers 00074d98 and 00070514"""
+
+[[symbol]]
+layout = "1nd"
+address = "0001398a"
+former = ["ruby-stallion/axis/1nd-0001398a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006dcda"
+to = "7mfk:00011ebe"
+note = """
+exact 16-byte ignition load axis is used by the homologous 16x16 accessors"""
+
+[[symbol]]
+layout = "7mfk"
+address = "00011ebe"
+former = ["cryptic-bloodhound/axis/7mfk-00011ebe"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000495fa"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Axis Percentage (x*0.78125)"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cold Ignition Timing Map (16x16)"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00020f18"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bd1c"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0003bd5a"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:0004bce0"
+value = {named = ["00009534", "00011ebe", "00011ecd", "00020dfe", "00026230", "0003b75c", "0004bbee", "ffff102c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "scale"
+to = "ignition_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001419b"
+former = ["abstract-firefly/axis/jk00c-0001419b"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004a63e"
+to = "7mfk:000495fa"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000141ab"
+former = ["dazzling-crow/axis/jk00d-000141ab"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004a642"
+to = "7mfk:000495fa"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000135b8"
+former = ["blond-guillemot/axis/jk78c-000135b8"]
+
+[[symbol.evidence]]
+kind = "literal-pool"
+supports = "homology"
+at = "jk78c:000657d8"
+to = "7mfk:0004bf14"
+value = "000135b8"
+note = """
+target ignition accessor preserves the load-axis operand and 16-point \
+geometry"""
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+role = "writes"
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "competent-rottweiler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065898"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000a4ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000658e2"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000a5ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006594c"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000a7ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000659a0"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000a8ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066962"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000a9ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000668a6"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000aaca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669b6"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000abca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066992"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000acca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066a02"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000afca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000669de"
+note = """
+The reviewed reader passes axis 000135b8 in the y slot for table 0000b0ca. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

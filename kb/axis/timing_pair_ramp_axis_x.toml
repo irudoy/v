@@ -1,0 +1,63 @@
+summary = """
+Explicit 8-point uint8 coordinate vector used by the reviewed JK78C readers. \
+Its address and storage identity are separate from any numerically equal \
+axis."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000132ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = """
+The reviewed reader passes axis 000132ee in the x slot for table 00009a5a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = """
+The reviewed reader passes axis 000132ee in the x slot for table 00009a9a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "timing_pair_ramp_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065040"
+note = """
+The reviewed reader passes axis 000132ee in the x slot for table 00009a5a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065060"
+note = """
+The reviewed reader passes axis 000132ee in the x slot for table 00009a9a. \
+The stored-axis geometry is independently recorded by the explicit \
+interpolation contract; no engineering conversion is inferred."""

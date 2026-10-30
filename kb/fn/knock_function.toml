@@ -306,6 +306,14 @@ value = 13
 [[symbol]]
 layout = "jk78c"
 address = "00062780"
+summary = """
+JK78C knock and timing-state coordinator. Its native branch updates state \
+ffff17bc with calibrated upper/lower bounds, a quiet increment curve and an \
+event decrement factor times 200 and the count at ffff2096. It has separate \
+selector threshold and hysteresis curves and independent \
+high-octane/high-detonation surface reads. Stock quiet increment seven and \
+event factor seven retain their target arithmetic; physical state units and \
+the remaining alternate scalar role are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

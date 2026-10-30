@@ -10,7 +10,7 @@ at = "7mfk:0004b7c0"
 
 [[link]]
 type = "lookup"
-to = "lemon-mink/tbl"
+to = "timing_component_byte_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = ["identity", "scale"]

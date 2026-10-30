@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fabulous-marmoset/tbl"
+to = "timing_compositor_surface_multiplier/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -66,14 +66,14 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "fabulous-marmoset/tbl"
+to = "timing_compositor_surface_multiplier/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "charming-barracuda/tbl"
+to = "timing_compositor_byte_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

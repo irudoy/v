@@ -1,0 +1,65 @@
+summary = """
+Gain curve of FUN_000657E4 indexed by min(255,uint16[ffff11ac]>>2), cached \
+at ffff1377. It multiplies the positive part of \
+uint16[ffff2242]-uint16[ffff2264]-16384; the product is shifted by 14 and \
+capped to a byte at ffff177a. The nonpositive branch publishes zero."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013b48"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065856"
+note = """
+The complete primary listing establishes the 16x1 uint8 table operand at \
+00013b48 in reader 000657e4. Gain curve of FUN_000657E4 indexed by \
+min(255,uint16[ffff11ac]>>2), cached at ffff1377. It multiplies the positive \
+part of uint16[ffff2242]-uint16[ffff2264]-16384; the product is shifted by \
+14 and capped to a byte at ffff177a. The nonpositive branch publishes zero."""
+
+[[link]]
+type = "axis"
+to = "timing_positive_difference_gain_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065856"
+note = "The reviewed lookup supplies axis 000132de in slot x for table 00013b48."
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065856"
+note = """
+Reader 000657e4 supplies this table to the reviewed interpolation path. Gain \
+curve of FUN_000657E4 indexed by min(255,uint16[ffff11ac]>>2), cached at \
+ffff1377. It multiplies the positive part of \
+uint16[ffff2242]-uint16[ffff2264]-16384; the product is shifted by 14 and \
+capped to a byte at ffff177a. The nonpositive branch publishes zero."""

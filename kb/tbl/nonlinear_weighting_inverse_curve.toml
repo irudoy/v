@@ -1,0 +1,173 @@
+summary = """
+Inverse half of a reciprocal nonlinear coordinate pair. With \
+F(z)=interp_u8(00011d24 over axis 0001199e,z) and G(q)=interp_u8(0001199e \
+over axis 00011d24,q), FUN 00063f30 and FUN 0006469c use G to return a \
+blended F-domain value to the original raw coordinate."""
+note = [
+    """
+In FUN 0006469c, x=clamp_u8(s8[ffff23f1]-s8[ffff2404]), a=F(x), and \
+y=floor((0xff00-u8[ffff1862]*(256-a))/256). The function writes \
+clamp_s8(s8[ffff23f1]-G(y)) to ffff1346. FUN 00063f30 performs the parallel \
+forward-blend-inverse operation with weight ffff186a before updating Q8 \
+state ffff23c2. The 16 stored values 0..40 are also the breakpoint axis of \
+F. Code proves the operational inverse transform; the physical quantity and \
+engineering scale are unresolved. Result disposition: consumer and inverse \
+coordinate source.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 439
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nonlinear_transition_controller/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "private-raven/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "nonlinear_weighting_forward_curve/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "demonic-wrasse/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0001199e"
+former = ["azure-deer/tbl/7mfk-0001199e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00063ffe"
+value = {named = ["0001199e", "00011d24", "000264a0", "00026944", "00063f30", "0006469c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00064714"
+value = {named = ["0001199e", "00011d24", "000264a0", "00026944", "00063f30", "0006469c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fortunate-adder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "uptight-tiger/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00013c22"
+former = ["diamond-waxbill/tbl/jk00c-00013c22"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00066268"
+to = "7mfk:00063fd8"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00013c32"
+former = ["scrupulous-kudu/tbl/jk00d-00013c32"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00066268"
+to = "7mfk:00063fd8"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001315e"
+former = ["striped-wrasse/tbl/jk78c-0001315e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083d86"
+to = "7mfk:00065bc2"
+count = 1
+value = 90
+
+[[link]]
+type = "depends"
+to = "demonic-wrasse/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "nonlinear_weighting_forward_curve/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "nonlinear_transition_controller/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "private-raven/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

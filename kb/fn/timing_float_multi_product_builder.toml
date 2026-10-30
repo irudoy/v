@@ -1,0 +1,20 @@
+summary = """
+Combines two independently bounded float-coordinate factors, two \
+word-indexed factors and a calibrated difference-response curve."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005995c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005995c"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Combines two independently bounded \
+float-coordinate factors, two word-indexed factors and a calibrated \
+difference-response curve."""

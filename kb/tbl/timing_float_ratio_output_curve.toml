@@ -1,0 +1,83 @@
+summary = """
+Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
+follows division by the shared absolute-response curve, including explicit \
+zero-divisor alternatives. The scaled result is multiplied by a word \
+argument and combined with a separate count-derived term."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017224"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000591d6"
+note = """
+The complete primary listing establishes the 32x1 uint16 table operand at \
+00017224 in reader 00059110. Output curve shared by FUN_00059110 and \
+FUN_00059498. Its bounded coordinate follows division by the shared \
+absolute-response curve, including explicit zero-divisor alternatives. The \
+scaled result is multiplied by a word argument and combined with a separate \
+count-derived term."""
+
+[[link]]
+type = "axis"
+to = "timing_float_ratio_output_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000591d6"
+note = "The reviewed lookup supplies axis 00014a5c in slot x for table 00017224."
+
+[[link]]
+type = "reader"
+to = "timing_float_ratio_output_branch_a/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000591d6"
+note = """
+Reader 00059110 supplies this table to the reviewed interpolation path. \
+Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
+follows division by the shared absolute-response curve, including explicit \
+zero-divisor alternatives. The scaled result is multiplied by a word \
+argument and combined with a separate count-derived term."""
+
+[[link]]
+type = "reader"
+to = "timing_float_ratio_output_branch_b/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059534"
+note = """
+Reader 00059498 supplies this table to the reviewed interpolation path. \
+Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
+follows division by the shared absolute-response curve, including explicit \
+zero-divisor alternatives. The scaled result is multiplied by a word \
+argument and combined with a separate count-derived term."""

@@ -1,0 +1,20 @@
+summary = """
+First normalized-coordinate multiplier branch, with explicit zero-divisor \
+alternatives before the shared response curve."""
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000593e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000593e8"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. First normalized-coordinate multiplier \
+branch, with explicit zero-divisor alternatives before the shared response \
+curve."""

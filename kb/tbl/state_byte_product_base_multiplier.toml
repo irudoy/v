@@ -1,0 +1,222 @@
+summary = """
+Eight-point uint8 table of a base quantity or multiplier in a composite \
+7-bit result. The lookup interpolated by byte ffff106f at 0004c02e \
+participates in conditional scaling and multiplication with other inputs, \
+after which the result is capped at 127 and written to ffff1831; 0004c136 \
+conditionally copies it to ffff2404."""
+note = [
+    """
+The physical name of the quantity and engineering scale are unknown. \
+ffff1831 receives not the original lookup result but the saturated result of \
+branching arithmetic with other inputs; function 0004c136 only conditionally \
+copies this byte to ffff2404. Index: x=uint8[ffff106f]; for x<224: i=x>>5, \
+f=(x&31)/32, y=unsigned linear interpolation of t[i] and t[i+1] with a Q0.16 \
+fraction; for x>=224: y=t[7]. Result disposition: writes (ffff1831).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Composite 7-bit Base / Multiplier (0x11FBE)"
+category = "Internal Calculations"
+order = 143
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 352
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_latch/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "beautiful-wrasse/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011fbe"
+former = ["chestnut-wapiti/tbl/7mfk-00011fbe"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "127"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c042"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c052"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c100"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c108"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c10e"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004c128"
+value = {named = ["00011fbe", "00026370", "00026740", "0004c02e", "0004c136", "ffff106f", "ffff1831"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "giga-leech/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001429b"
+former = ["kind-rattlesnake/tbl/jk00c-0001429b"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0004d142"
+to = "7mfk:0004c042"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000142ab"
+former = ["olive-axolotl/tbl/jk00d-000142ab"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0004d146"
+to = "7mfk:0004c042"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001365c"
+former = ["graceful-tody/tbl/jk78c-0001365c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00067656"
+to = "7mfk:0004c028"
+count = 1
+value = 60
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "giga-leech/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "timing_state_latch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

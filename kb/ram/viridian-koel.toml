@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -412,7 +412,7 @@ key = "Bounded knock event publication"
 
 [[link]]
 type = "lookup"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

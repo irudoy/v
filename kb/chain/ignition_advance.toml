@@ -478,7 +478,7 @@ int8(ffff11fa); H = uint16(ffff23c2)>>8; ffff11d6 = \
 (1-G)*uint16(ffff11d8)+G*((1-Q)*(-B)+Q*min(K,-B))"""
 
 [[step]]
-from = "sincere-dragonfly/tbl"
+from = "event_timing_subtraction_amplitude/tbl"
 to = "viridian-koel/ram"
 effect = "subtracts"
 sign = "negative"

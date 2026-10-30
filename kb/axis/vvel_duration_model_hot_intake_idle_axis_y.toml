@@ -74,16 +74,6 @@ at = "1nd:00070514"
 
 [[link]]
 type = "reader"
-to = "icy-platypus/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:0006667c"
-
-[[link]]
-type = "reader"
 to = "spotted-ibex/fn"
 role = "accessor"
 
@@ -91,3 +81,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007523c"
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006667c"

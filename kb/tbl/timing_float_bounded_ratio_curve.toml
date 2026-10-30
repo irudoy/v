@@ -1,0 +1,78 @@
+summary = """
+Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
+protected ratio, bound the float coordinate, and apply this curve in \
+separate producer-model branches."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015736"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058548"
+note = """
+The complete primary listing establishes the 16x1 uint16 table operand at \
+00015736 in reader 000584bc. Shared response curve in FUN_000584BC and \
+FUN_000589E8. Both readers form a protected ratio, bound the float \
+coordinate, and apply this curve in separate producer-model branches."""
+
+[[link]]
+type = "axis"
+to = "timing_float_bounded_ratio_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058548"
+note = "The reviewed lookup supplies axis 0001544c in slot x for table 00015736."
+
+[[link]]
+type = "reader"
+to = "timing_float_bounded_ratio_branch_a/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058548"
+note = """
+Reader 000584bc supplies this table to the reviewed interpolation path. \
+Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
+protected ratio, bound the float coordinate, and apply this curve in \
+separate producer-model branches."""
+
+[[link]]
+type = "reader"
+to = "timing_float_bounded_ratio_branch_b/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058a76"
+note = """
+Reader 000589e8 supplies this table to the reviewed interpolation path. \
+Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
+protected ratio, bound the float coordinate, and apply this curve in \
+separate producer-model branches."""

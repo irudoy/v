@@ -10,7 +10,7 @@ at = "7mfk:0004c328"
 
 [[link]]
 type = "lookup"
-to = "prophetic-jacamar/tbl"
+to = "apc_reset_product_multiplier_a/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

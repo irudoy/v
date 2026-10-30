@@ -10,14 +10,14 @@ at = "7mfk:0004c128"
 
 [[link]]
 type = "lookup"
-to = "chestnut-wapiti/tbl"
+to = "state_byte_product_base_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "hopping-bumblebee/tbl"
+to = "state_byte_product_companion_limit/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

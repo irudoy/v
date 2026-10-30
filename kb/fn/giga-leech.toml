@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "chestnut-wapiti/tbl"
+to = "state_byte_product_base_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

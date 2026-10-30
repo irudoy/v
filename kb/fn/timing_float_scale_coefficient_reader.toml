@@ -1,0 +1,17 @@
+summary = "Reads and scales the auxiliary word coefficient in the producer tree."
+level = "code"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00058ae8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058ae8"
+note = """
+The reviewed primary function entry and complete listing establish this \
+independent reader or coordinator. Reads and scales the auxiliary word \
+coefficient in the producer tree."""

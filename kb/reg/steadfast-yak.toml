@@ -58,7 +58,7 @@ key = "sh7058-hw-apc11"
 
 [[link]]
 type = "lookup"
-to = "sincere-dragonfly/tbl"
+to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

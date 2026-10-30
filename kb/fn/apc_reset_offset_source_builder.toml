@@ -29,7 +29,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "huge-pelican/tbl"
+to = "apc_reset_product_multiplier_a/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "prophetic-jacamar/tbl"
+to = "apc_reset_product_multiplier_b/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

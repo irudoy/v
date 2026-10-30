@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "azure-deer/tbl"
+to = "nonlinear_weighting_forward_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "nonlinear_weighting_forward_curve/tbl"
+to = "nonlinear_weighting_inverse_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

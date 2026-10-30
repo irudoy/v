@@ -113,7 +113,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "indigo-fossa/tbl"
+to = "timing_addend_word_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -121,7 +121,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sincere-millipede/tbl"
+to = "timing_stock_inert_feature_addend/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

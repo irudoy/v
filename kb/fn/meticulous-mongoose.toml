@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "dramatic-foxhound/tbl"
+to = "state_product_bfs_limit_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

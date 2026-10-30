@@ -124,7 +124,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "cryptic-bloodhound/axis"
+to = "ignition_normalized_bfs_axis/axis"
 type = "depends"
 end = "owner"
 link_role = "indexed_by"
@@ -532,7 +532,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "cryptic-bloodhound/axis"
+to = "ignition_normalized_bfs_axis/axis"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

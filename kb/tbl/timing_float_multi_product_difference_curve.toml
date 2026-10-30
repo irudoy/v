@@ -1,0 +1,62 @@
+summary = """
+Difference-response curve of FUN_0005995C. A bounded difference between a \
+word argument and a fixed word supplies its coordinate; the scaled result \
+enters the final multi-factor float product."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014cac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059a84"
+note = """
+The complete primary listing establishes the 16x1 uint16 table operand at \
+00014cac in reader 0005995c. Difference-response curve of FUN_0005995C. A \
+bounded difference between a word argument and a fixed word supplies its \
+coordinate; the scaled result enters the final multi-factor float product."""
+
+[[link]]
+type = "axis"
+to = "timing_float_multi_product_difference_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059a84"
+note = "The reviewed lookup supplies axis 0001493c in slot x for table 00014cac."
+
+[[link]]
+type = "reader"
+to = "timing_float_multi_product_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059a84"
+note = """
+Reader 0005995c supplies this table to the reviewed interpolation path. \
+Difference-response curve of FUN_0005995C. A bounded difference between a \
+word argument and a fixed word supplies its coordinate; the scaled result \
+enters the final multi-factor float product."""

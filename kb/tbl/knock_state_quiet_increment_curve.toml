@@ -1,0 +1,63 @@
+summary = """
+Quiet-update increment of JK78C state ffff17bc in FUN_00062780. The lookup \
+by byte ffff119d is cached at ffff12c5 and supplies the gated positive step. \
+Stock seven differs from the canonical scalar quiet increment."""
+note = [
+    """
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+Native editor publication and independent later-layout counterparts remain \
+unresolved under issue #110.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013d66"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062faa"
+note = """
+The complete primary listing establishes the 16x1 uint8 table operand at \
+00013d66 in reader 00062780. Quiet-update increment of JK78C state ffff17bc \
+in FUN_00062780. The lookup by byte ffff119d is cached at ffff12c5 and \
+supplies the gated positive step. Stock seven differs from the canonical \
+scalar quiet increment."""
+
+[[link]]
+type = "axis"
+to = "able-butterfly/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062faa"
+note = "The reviewed lookup supplies axis 000135c8 in slot x for table 00013d66."
+
+[[link]]
+type = "reader"
+to = "knock_function/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00062faa"
+note = """
+Reader 00062780 supplies this table to the reviewed interpolation path. \
+Quiet-update increment of JK78C state ffff17bc in FUN_00062780. The lookup \
+by byte ffff119d is cached at ffff12c5 and supplies the gated positive step. \
+Stock seven differs from the canonical scalar quiet increment."""

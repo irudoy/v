@@ -10,7 +10,7 @@ at = "7mfk:0004ae2c"
 
 [[link]]
 type = "lookup"
-to = "bizarre-koel/tbl"
+to = "state_word_product_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

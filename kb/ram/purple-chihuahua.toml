@@ -99,7 +99,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "witty-panther/tbl"
+to = "state_difference_product_multiplier_b/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
