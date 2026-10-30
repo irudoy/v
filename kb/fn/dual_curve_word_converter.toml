@@ -1,12 +1,18 @@
 summary = """
 Converts word ffff274a through the explicit 16-point word curves 0x15DA2 and \
 0x15DC2 over axis 0x14E3C into ffff2782 and ffff2784; 0x15DC2 is read only \
-while ROM8[000087d5].bit1 is set. The active branch uses zero as the input \
-while a monitored status byte has bit 6 or bit 5 set, and the reset branch \
-converts zero. Physical quantities remain unresolved."""
+while ROM8[000087d5].bit1 is set. The input chain starts at receive word \
+ffff40d4, which FUN_000EBFEE packs from byte ffff3df4 and bits 7..6 of \
+ffff3df5 on a dispatch branch of berserk-wolverine (FUN_000EB58C, call at \
+000EB714). This function multiplies ffff40d4 by ROM word 0x8F16, applies \
+helper 00022570, saturates the result into ffff274c and derives ffff274a \
+from it on its held and filtered path. The active branch uses zero as the \
+input while a monitored status byte has bit 6 or bit 5 set, and the reset \
+branch converts zero. The physical quantities and the stock reachability of \
+the receive branch remain unresolved."""
 level = "code"
 role = "accessor"
-block = "analog_inputs/block"
+block = "unattributed/block"
 
 [[symbol]]
 layout = "jk78c"
