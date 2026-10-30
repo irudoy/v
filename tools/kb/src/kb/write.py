@@ -1370,11 +1370,11 @@ class Change:
         if former:
             document["former"] = former
 
-    def _rename(self, others, kind, target, own):
+    def _rename(self, others, kind, target, own, *, keep_self_links=False):
         """Rewrite the references of the entity files to a name of `others` of
         `kind` as references to `target`, join the links that the rewrite
-        makes equal, and drop non-base links of `own` to its own meaning;
-        returns the count of rewritten references."""
+        makes equal, and return the count of rewritten references. A semantic
+        rename keeps self-links; joining meanings drops non-base self-links."""
         paths = {path for _, _, path in store.files(self.root, self.model.overlay)}
         total = 0
         for path in sorted((paths | set(self.documents)) - self.removed,
@@ -1383,7 +1383,7 @@ class Change:
             if document is None:
                 document = store.load(self.root, path, self.model.overlay)
             document, count = renamed(document, others, kind, target)
-            if path == own:
+            if path == own and not keep_self_links:
                 document["link"] = [
                     link for link in document.get("link", ())
                     if link.get("type") == "base" or not (
@@ -1551,7 +1551,7 @@ class Change:
             self._remove(path)
             self.documents[target] = document
         self.renamed[old] = f"{name}/{kind}"
-        count = self._rename(others - {None, name}, kind, name, target)
+        count = self._rename(others - {None, name}, kind, name, target, keep_self_links=True)
         self.lines.append(f"rename {old} to {name}/{kind}{self._renames(count)}")
 
     def _move_address(self, meaning, named, op):

@@ -1325,6 +1325,57 @@ class RenameMeaningTest(unittest.TestCase):
                          "probe")
 
 
+@pytest.mark.parametrize('supports', [('identity',), ('scale',), ('identity', 'scale')])
+def test_rename_preserves_ledger_self_claims_in_dry_run_and_apply(tmp_path, monkeypatch, supports):
+    monkeypatch.setattr(adapters, 'ADAPTERS', (file_adapter,))
+    hashes = writer_sources.write_sources(tmp_path)
+    source = store.path_of('tbl', 'astute-toad')
+    target = store.path_of('tbl', 'probe_table')
+    document = store.load(tmp_path, source)
+    document['link'] = [
+        {'type': 'depends', 'to': TABLE, 'role': 'from_map', 'layouts': ['7mfk'],
+         'relies': 'structure', 'supports': claim} for claim in supports]
+    document['ledger'] = [
+        {'registry': 'findings', 'order': 43210, 'fields': ['semantics'], 'dependency': [
+            {'role': 'from_map', 'to': TABLE, 'type': 'depends', 'end': 'owner',
+             'link_role': 'from_map', 'relies': 'structure', 'supports': claim}
+            for claim in supports]}]
+    text = store.render('tbl', document)
+    store.write(tmp_path, {source: text})
+    hashes[str(source)] = writer_sources.sha(text.encode())
+    base = compile.build(tmp_path)
+    assert write._issues(base) == {}
+    before = ledger_projection.render(base)
+    operations = [rename(TABLE, 'probe_table')]
+    with mock.patch.object(write.graph, 'fresh', return_value=contextlib.nullcontext()), \
+            mock.patch.object(write, 'graph_resolver', side_effect=lambda _, model, *args:
+                              write.model_resolver(model)), \
+            mock.patch.object(write.graph, 'sync_held') as synced:
+        _, planned = write.apply(operations, root=tmp_path, dry_run=True)
+        synced.assert_not_called()
+        assert writer_sources.unchanged(tmp_path, hashes)
+        _, applied = write.apply(operations, root=tmp_path)
+        assert applied == planned
+        synced.assert_called_once()
+    result = compile.build(tmp_path)
+    assert write._issues(result) == {}
+    assert ledger_projection.render(result) == before
+    meaning = result.meaning_of(SymbolKey('7mfk', 'tbl', TABLE_HOME))
+    assert meaning.key == 'probe_table/tbl'
+    assert 'astute-toad' in meaning.symbols['7mfk'].former
+    renamed = store.load(tmp_path, target)
+    for entry in renamed['symbol']:
+        old = next(item for item in document['symbol'] if item['layout'] == entry['layout'])
+        assert f"{old['name']}/tbl/{old['layout']}-{old['address']}" in entry['former']
+    assert {link['supports'] for link in renamed['link']} == set(supports)
+    assert all(link['to'] == meaning.key for link in renamed['link'])
+    assert all(item['to'] == meaning.key for item in renamed['ledger'][0]['dependency'])
+    renamed['link'] = []
+    missing = compile.build(tmp_path, {target: store.render('tbl', renamed)})
+    with pytest.raises(KbError, match='no matching link and claim'):
+        ledger_projection.render(missing)
+
+
 class MoveMeaningTest(unittest.TestCase):
     """`move` of a symbol into another meaning over a base whose file of
     INHIBIT states the JK78C counterpart of THROTTLE, which the search from
