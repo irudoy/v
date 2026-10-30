@@ -12,6 +12,7 @@ Identity x is not a physical-scale claim.""",
 ]
 level = "code"
 role = "table"
+former = ["timing_auxiliary_coolant_curve"]
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -198,31 +199,58 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "level"
 
-[[status]]
+[[symbol]]
 layout = "jk78c"
-state = "unresolved"
-method = "l0"
-target = "7mfk:00011f02"
-count = 0
-l0 = "6bd18b774cb344a9"
+address = "00013608"
+level = "code"
+former = ["timing_auxiliary_coolant_curve/tbl/jk78c-00013608"]
+summary = """
+Compositor byte multiplier 13608 is read over 135e0 by ffff1067 into \
+ffff1343 before the product division by 500000."""
 note = """
-No reviewed JK78C byte operand qualifies the canonical compositor product \
-that divides the surface, word and byte factors by 500000. The native state \
-compositor has separately represented arithmetic; this status does not \
-assert absence."""
+The stock curve is zero. ROM16[8d56]=0xffff requires both gate words \
+ffff43d4/ffff43d6 to be 65535, with ffff4508.bit6 set. The vector 135e0 has \
+the existing mutant-sparrow owner and also indexes sibling multiplier \
+13600."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006733e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0006733e"
+to = "7mfk:00011f02"
+note = """
+The matched compositor product reads this byte multiplier over vector 135e0 \
+by ffff1067, stores ffff1343 and divides the word/byte/surface product by \
+500000."""
 
 [[link]]
 type = "depends"
 to = "mutant-sparrow/tbl"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004be38"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067342"
+note = "The same 135e0 vector also indexes sibling multiplier 13600 in 644d0."
+
 [[link]]
 type = "depends"
 to = "timing_compositor_surface_multiplier/tbl"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "from_map"
@@ -230,9 +258,20 @@ role = "from_map"
 [[link]]
 type = "reader"
 to = "timing_state_compositor/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006733e"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004be34"
 
 [[link]]
 type = "reader"

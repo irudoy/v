@@ -259,6 +259,28 @@ arithmetic role correspond to 0000e08e of canonical reader 0007604c. \
 Canonical physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "request_conditional_forward_context_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009596c"
+
+[[link]]
+type = "axis"
+to = "request_conditional_forward_input_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095968"
+
+[[link]]
 type = "index"
 to = "jasper-taipan/ram"
 layouts = ["7mfk"]
@@ -291,11 +313,22 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "urban-sidewinder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000760a0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095978"
 
 [[link]]
 type = "selector"

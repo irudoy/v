@@ -11,6 +11,7 @@ not the map scale; the implicit RAM axis is not emitted separately.""",
 ]
 level = "code"
 role = "threshold"
+former = ["local_correction_floor_curve"]
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -51,7 +52,7 @@ identity = [
 [[symbol]]
 layout = "7mfk"
 address = "00012332"
-name = "statuesque-binturong"
+former = ["statuesque-binturong/tbl/7mfk-00012332"]
 
 [[symbol.evidence]]
 kind = "unverified-site"
@@ -216,7 +217,7 @@ key = "linked"
 [[symbol]]
 layout = "jk00c"
 address = "00014627"
-name = "rugged-manatee"
+former = ["rugged-manatee/tbl/jk00c-00014627"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -232,7 +233,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00014647"
-name = "dangerous-whale"
+former = ["dangerous-whale/tbl/jk00d-00014647"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -245,16 +246,78 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
-[[link]]
-type = "reader"
-to = "fabulous-leech/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
+[[symbol]]
+layout = "jk78c"
+address = "00013940"
+level = "code"
+former = ["local_correction_floor_curve/tbl/jk78c-00013940"]
+summary = """
+Coolant-indexed byte floor read by 411b0 and initializer 2f4e8. The result \
+goes to ffff1e82 and lookup<<8 bounds ffff1dc8; the physical correction \
+quantity remains unresolved."""
+note = """
+The complete matched readers bind 13940 to JK08A 12332. The left shift \
+represents the state and does not change the map scale."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000411f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000411f0"
+to = "7mfk:00012332"
+note = """
+Matched floor builder and initializer read this coolant-indexed operand and \
+use lookup<<8 as the word floor; JK08A uses 12332."""
 
 [[link]]
 type = "reader"
-to = "radical-chimpanzee/fn"
-layouts = ["7mfk"]
+to = "local_correction_state_seed/fn"
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+role = "accessor"
+note = """
+The initializer reads the floor before publishing its byte and lookup<<8 \
+word representation."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f4f2"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0002c5a6"
+
+[[link]]
+type = "reader"
+to = "local_correction_state_updater/fn"
+layouts = ["7mfk", "jk78c"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000411f0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041236"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003c4e0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003c526"

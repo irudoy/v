@@ -55,15 +55,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pretty-rhino/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "selected_timing_state_terms/fn"
 type = "depends"
 end = "owner"
@@ -74,6 +65,15 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "signed_timing_state_accumulator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_retard_difference_producer/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -184,14 +184,6 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "pretty-rhino/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "selected_timing_state_terms/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -201,6 +193,14 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "signed_timing_state_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "timing_retard_difference_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

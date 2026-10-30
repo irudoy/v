@@ -22,6 +22,17 @@ at = "jk78c:00092246"
 
 [[link]]
 type = "axis"
+to = "request_difference_cap_engine_speed_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00092242"
+
+[[link]]
+type = "axis"
 to = "request_difference_cap_input_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
@@ -30,17 +41,6 @@ layouts = ["jk78c"]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00092238"
-
-[[link]]
-type = "axis"
-to = "request_difference_cap_speed_axis/axis"
-slot = "y"
-layouts = ["jk78c"]
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00092242"
 
 [[link]]
 type = "reader"

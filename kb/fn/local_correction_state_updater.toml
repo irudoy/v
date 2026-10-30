@@ -11,6 +11,7 @@ lookup 00012332 by 8 bits is an internal representation.""",
 level = "code"
 role = "accessor"
 block = "unattributed/block"
+former = ["local_correction_floor_builder"]
 
 [[ledger]]
 registry = "funcs"
@@ -30,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "statuesque-binturong/tbl"
+to = "local_correction_lookup_floor/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -38,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "woodoo-loon/tbl"
+to = "local_correction_update_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -72,7 +73,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0003c4a0"
-name = "fabulous-leech"
+former = ["fabulous-leech/fn/7mfk-0003c4a0"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -192,6 +193,37 @@ supports = "identity"
 at = "7mfk:0003c566"
 value = {named = ["00012126", "00012332", "0002251c", "0003c4a0", "ffff1077", "ffff1f24", "ffff84c0"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "000411b0"
+level = "code"
+former = ["local_correction_floor_builder/fn/jk78c-000411b0"]
+summary = """
+Update local correction word ffff1dc8 using coolant-indexed floor 13940 and \
+flow-indexed gain 13748, then derive byte ffff112b. The physical correction \
+quantity remains unresolved."""
+note = """
+JK78C 411b0 repeats the complete 3c4a0 body with relocated operands and gate \
+bits. Both bodies contain the mode==0x3f floor-only branch: ffff223c on \
+JK78C and ffff22e0 on JK08A. The floor lookup is shifted by eight as an \
+internal word representation; the coefficient branch retains division by \
+2048."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000411b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000411b0"
+to = "7mfk:0003c4a0"
+note = """
+Both complete 185-instruction bodies follow dual_bank_maf_diagnostic, \
+outstanding-penguin and active-snail and retain three lookups, both signed \
+helpers, clamps and byte output."""
 
 [[link]]
 type = "depends"

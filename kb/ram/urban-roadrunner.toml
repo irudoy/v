@@ -11,7 +11,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fabulous-leech/fn"
+to = "local_correction_state_seed/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -19,7 +19,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "radical-chimpanzee/fn"
+to = "local_correction_state_updater/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -37,14 +37,14 @@ at = "7mfk:000206fe"
 
 [[link]]
 type = "reader"
-to = "fabulous-leech/fn"
+to = "local_correction_state_seed/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "radical-chimpanzee/fn"
+to = "local_correction_state_updater/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

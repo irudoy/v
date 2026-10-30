@@ -7,3 +7,28 @@ name = "military-wolverine"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004be56"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015a12"
+name = "true-oxpecker"
+note = """
+Second uint16 coordinate vector of compositor surface CACE: 6735c loads \
+pointer 673e0 for ffff102c, in the position of JK08A 1464a in 4bdc2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000673e0"
+to = "7mfk:0001464a"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000673e0"

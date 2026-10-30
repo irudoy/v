@@ -1,8 +1,7 @@
 summary = """
-Explicit word curve in 00090790 over the native speed word and axis \
-00016554. After a separate cap, the function selects the greater of this \
-result and the retained signed history state. Physical request conversion \
-remains unresolved."""
+Explicit word curve in 90790 over engine-speed word ffff11a6 and axis 16554. \
+After a separate cap, the function selects the greater of this result and \
+retained signed history. Physical request conversion remains unresolved."""
 level = "code"
 role = "table"
 access = "explicit"
@@ -22,7 +21,7 @@ at = "jk78c:00090818"
 
 [[link]]
 type = "axis"
-to = "request_history_floor_speed_axis/axis"
+to = "request_history_floor_engine_speed_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 

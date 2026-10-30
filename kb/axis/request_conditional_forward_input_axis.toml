@@ -9,6 +9,7 @@ proves the scale relationship inside the unresolved first-channel raw \
 domain; it does not assign a physical quantity.""",
 ]
 level = "code"
+former = ["request_conditional_reference_axis"]
 quantity = "raw"
 unit = "first-channel raw coordinate"
 scale = "x*800/727"
@@ -72,7 +73,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "00013d14"
-name = "proud-beetle"
+former = ["proud-beetle/axis/7mfk-00013d14"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -171,6 +172,49 @@ kind = "arithmetic"
 supports = "scale"
 value = "800*727/800=727"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001507c"
+level = "code"
+former = ["request_conditional_reference_axis/axis/jk78c-0001507c"]
+quantity = "raw"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+scale_level = "code"
+summary = """
+First coordinate vector of the F14E/F34E forward endpoint surfaces. Reader \
+9621c uses these words as inverse outputs over a stack-built surface slice."""
+note = """
+The complete forward-reader pair binds 1507c to JK08A 13d14. The JK78C \
+reader passes ffff11fa directly; its engineering conversion is unresolved. \
+The runtime inverse slice has no fixed ROM axis. The JK08A first-channel \
+conversion is not asserted for JK78C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009586c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009586c"
+to = "7mfk:00013d14"
+note = """
+The complete 7604c/9582c pair passes 13d14/1507c as the first coordinate \
+vector of the same two signed endpoint surfaces. The inverse readers also \
+use this vector as output values over a runtime surface slice."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk78c:00095864"
+note = """
+The evaluator loads uint16[ffff11fa], zero-extends it and passes that \
+unchanged raw coordinate to the lookup over 1507c. Identity conversion \
+records the raw coordinate; it assigns no engineering unit."""
+
 [[link]]
 type = "depends"
 to = "strong-hawk/fn"
@@ -202,7 +246,37 @@ supports = "scale"
 
 [[link]]
 type = "reader"
+to = "request_conditional_surface_inverse_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096230"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00096416"
+note = """
+The ROM coordinate vector supplies the inverse outputs; the lookup \
+coordinate vector is built on the stack."""
+
+[[link]]
+type = "reader"
 to = "urban-sidewinder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "scale"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007608a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095968"

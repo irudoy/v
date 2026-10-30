@@ -18,6 +18,7 @@ in crank degrees: the coefficient-1 chain ffff2404 -> ffff2378 -> ffff12d6 \
 level = "code"
 role = "accessor"
 block = "ignition_timing/block"
+former = ["timing_auxiliary_correction_builder"]
 
 [[ledger]]
 registry = "curated"
@@ -330,10 +331,46 @@ supports = "identity"
 to = "amiable-bloodhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00067122"
+level = "code"
+former = ["timing_auxiliary_correction_builder/fn/jk78c-00067122"]
+summary = """
+Compose selected timing states into bounded signed bytes. The normal path \
+includes the shared gated byte/surface/word product; the alternate path \
+bypasses it. ROM8[8965].bit5 enables a second output and additional \
+centered-curve and timed-cap branches."""
+note = """
+JK78C 67122 retains both branches of compositor 4bdc2. It writes \
+min(255,floor(u16[ffff1900]*u8[ffff1343]*u8[ffff133f]/500000)) to ffff1341 \
+and ffff12bc and adds it to the normal sums. ROM8[8965].bit5 adds ffff1832 \
+beside ffff1830; curves 135f0/135f8 over 13c6a and timers ffff24ec/ffff24ee \
+supply extra caps. ROM16[8d56]=0xffff requires ffff43d4 and ffff43d6 to \
+equal 65535 with ffff4508.bit6 set. The sibling addend gate in 644d0 uses \
+ROM16[8d54]=0xffff. The JK78C engineering timing conversion remains \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067122"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00067122"
+to = "7mfk:0004bdc2"
+note = """
+The normal and alternate timing sums, signed-byte saturation, \
+retard-difference input, gated byte/surface multiplier, unsigned division by \
+500000 and output ffff1830 retain the compositor role. JK78C extends these \
+branches with paired states and timed caps."""
+
 [[link]]
 type = "depends"
 to = "military-wolverine/tbl"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
@@ -341,7 +378,7 @@ role = "indexed_by"
 [[link]]
 type = "depends"
 to = "steadfast-frigatebird/tbl"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"

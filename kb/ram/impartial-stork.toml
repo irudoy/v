@@ -10,7 +10,7 @@ at = "7mfk:0002c5b6"
 
 [[link]]
 type = "writer"
-to = "radical-chimpanzee/fn"
+to = "local_correction_state_seed/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

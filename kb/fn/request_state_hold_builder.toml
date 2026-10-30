@@ -1,8 +1,7 @@
 summary = """
-Load the two request hold states from state-indexed bytes, optionally scaled \
-by speed-indexed curve 00013196 with a seven-bit shift and byte cap. The \
-resulting gates retain their independent conditions and unresolved time \
-unit."""
+Load two request hold states from state-indexed bytes, optionally scaled by \
+engine-speed-indexed curve 13196 with a seven-bit shift and byte cap. The \
+gates retain their independent conditions and unresolved time unit."""
 level = "code"
 block = "torque_request/block"
 

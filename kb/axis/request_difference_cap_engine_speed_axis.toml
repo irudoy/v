@@ -1,7 +1,9 @@
 summary = """
-Word speed-coordinate vector of request_difference_intermediate_cap_surface, \
-read with ffff11a6. Engineering conversion remains unresolved."""
+Engine-speed word ffff11a6 coordinate vector of \
+request_difference_intermediate_cap_surface. Engineering conversion remains \
+unresolved."""
 level = "code"
+former = ["request_difference_cap_speed_axis"]
 quantity = "raw"
 points = 8
 storage = "uint16"
@@ -10,6 +12,7 @@ storage = "uint16"
 layout = "jk78c"
 address = "0001569c"
 level = "code"
+former = ["request_difference_cap_speed_axis/axis/jk78c-0001569c"]
 
 [[symbol.evidence]]
 kind = "l0"

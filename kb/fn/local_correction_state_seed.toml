@@ -1,7 +1,7 @@
 summary = """
-Component whose map-read path is selected by ffff2451 and ffff4185. On the \
-00012332 path, lookup by uint8 ffff1077 writes the raw byte to ffff1f24 and \
-its x<<8 representation to ffff1e54."""
+Initialize the local-correction byte and its left-shifted word \
+representation from the coolant-indexed floor curve. On 7mfk, lookup \
+00012332 by u8[ffff1077] writes ffff1f24 and lookup<<8 to ffff1e54."""
 note = [
     """
 The physical roles of states ffff1f24 and ffff1e54 are unresolved; x<<8 is \
@@ -10,6 +10,7 @@ an internal representation rather than a map scale.""",
 level = "code"
 role = "accessor"
 block = "unattributed/block"
+former = ["local_correction_state_initializer"]
 
 [[ledger]]
 registry = "funcs"
@@ -20,7 +21,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "statuesque-binturong/tbl"
+to = "local_correction_lookup_floor/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -70,7 +71,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0002c59c"
-name = "radical-chimpanzee"
+former = ["radical-chimpanzee/fn/7mfk-0002c59c"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -106,6 +107,33 @@ supports = "identity"
 at = "7mfk:0002c5b6"
 value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "ffff2451", "ffff4185"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002f4e8"
+level = "code"
+former = ["local_correction_state_initializer/fn/jk78c-0002f4e8"]
+summary = """
+Initialize ffff1e82 and word ffff1dc8 from the coolant-indexed 13940 lookup \
+and its lookup<<8 representation."""
+note = """
+JK78C 2f4e8 repeats JK08A 2c59c, which reads 12332 by ffff1077 and writes \
+ffff1f24/ffff1e54. JK78C indexes by ffff106d. The physical correction \
+quantity remains unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0002f4e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0002f4e8"
+to = "7mfk:0002c59c"
+note = """
+Both 18-instruction initializers read the coolant-indexed floor, store its \
+byte and lookup<<8 word state; the wrapper argument and delay slot agree."""
 
 [[link]]
 type = "selector"

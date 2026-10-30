@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pretty-rhino/fn"
+to = "timing_retard_difference_producer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -94,7 +94,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "pretty-rhino/fn"
+to = "timing_retard_difference_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

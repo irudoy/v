@@ -1,10 +1,11 @@
 summary = """
-Implicit byte gain in the gated alternate branch of 0008fd6c. It scales the \
-alternate centered state word before the signed-word clamp. Its branch is \
-distinct from the two-gain primary product; physical request conversion \
-remains unresolved."""
+Implicit byte gain in the gated alternate branch of 8fd6c, indexed by \
+min(u16[ffff11a6],0x8c0)/10 from the engine-speed word. It scales the \
+alternate centered state word with a seven-bit shift before signed-word \
+clamping, separately from the two-gain primary product."""
 level = "code"
 role = "table"
+former = ["request_state_offset_alternate_speed_gain"]
 access = "explicit"
 cols = 8
 rows = 1
@@ -14,6 +15,7 @@ storage = "uint8"
 layout = "jk78c"
 address = "00013186"
 level = "code"
+former = ["request_state_offset_alternate_speed_gain/tbl/jk78c-00013186"]
 
 [[symbol.evidence]]
 kind = "l0"

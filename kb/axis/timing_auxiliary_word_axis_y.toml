@@ -1,3 +1,4 @@
+retired = true
 summary = """
 Second word coordinate vector of timing_auxiliary_word_surface, indexed by \
 ffff102c. Physical conversion remains unresolved."""
@@ -18,7 +19,7 @@ at = "jk78c:0006735c"
 
 [[link]]
 type = "reader"
-to = "timing_auxiliary_correction_builder/fn"
+to = "timing_state_compositor/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

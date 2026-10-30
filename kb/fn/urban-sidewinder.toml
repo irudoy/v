@@ -177,6 +177,22 @@ supports = "identity"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009582c"
+name = "hysterical-mouflon"
+note = """
+The complete 68-instruction body matches the 67-instruction 7604c body after \
+relocated operands and the expanded flag load. It selects ffff10be or \
+max(ffff10be,ffff10ce) through ffff4577.bit1, reads F14E/F34E over \
+1507c/1509c by ffff11fa, subtracts 0x8000 and stores ffff18ee/ffff18f0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009582c"
+to = "7mfk:0007604c"
+
 [[link]]
 type = "depends"
 to = "slick-chowchow/fn"

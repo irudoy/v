@@ -1,6 +1,7 @@
 summary = """
-Word ffff1710 coordinate of request_centered_transition_reference. Physical \
-state and conversion remain unresolved."""
+Word ffff1710 coordinate shared by native reference 15e82 in 95442 and \
+canonical blend reference 15ea2 in 9520e. Physical state and conversion \
+remain unresolved."""
 level = "code"
 quantity = "raw"
 points = 16
@@ -15,6 +16,17 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0009549c"
+
+[[link]]
+type = "reader"
+to = "peach-bullfrog/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095554"
 
 [[link]]
 type = "reader"

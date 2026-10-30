@@ -22,3 +22,14 @@ note = """
 The JK78C reader FUN_000644D0 is the masked-match homolog of the JK08A \
 reader FUN_0004AFDC; both load their table operands in the same order, and \
 this load takes the operand in the place of 0x00011EEA."""
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000673cc"

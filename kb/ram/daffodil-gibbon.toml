@@ -341,14 +341,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "pretty-rhino/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "sly-chowchow/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -368,6 +360,14 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "timing_retard_difference_producer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

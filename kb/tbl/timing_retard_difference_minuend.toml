@@ -9,6 +9,7 @@ inline_comparison.""",
 ]
 level = "code"
 role = "table"
+former = ["timing_retard_secondary_reference"]
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -63,7 +64,7 @@ identity = [
 [[symbol]]
 layout = "7mfk"
 address = "00011e9e"
-name = "hallowed-spider"
+former = ["hallowed-spider/tbl/7mfk-00011e9e"]
 
 [[symbol.evidence]]
 kind = "unverified-site"
@@ -259,7 +260,7 @@ relies = "contract"
 [[symbol]]
 layout = "jk00c"
 address = "0001417b"
-name = "thundering-tench"
+former = ["thundering-tench/tbl/jk00c-0001417b"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -275,7 +276,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001418b"
-name = "spry-gaur"
+former = ["spry-gaur/tbl/jk00d-0001418b"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -287,3 +288,40 @@ value = 1
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013588"
+level = "code"
+former = ["timing_retard_secondary_reference/tbl/jk78c-00013588"]
+summary = """
+Second implicit 16-byte reference in 655c8, indexed by ffff11a3 into \
+ffff12c2. Its excess over the 13578 result supplies ffff12c4."""
+note = """
+The operand at 655e4 corresponds to JK08A 11e9e. Identity raw storage does \
+not establish a physical timing conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000655e4"
+to = "7mfk:00011e9e"
+note = """
+Second operand of the complete matched 4bbac/655c8 byte-lookup pair; its \
+result is the saturated-difference minuend."""
+
+[[link]]
+type = "reader"
+to = "timing_retard_difference_producer/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655e4"

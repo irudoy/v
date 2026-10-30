@@ -1,7 +1,7 @@
 summary = """
-Update the retained signed history through the selected rise/decrease path \
-and combine it with capped explicit speed-indexed curve 00016a14 using the \
-greater signed value. Physical request units remain unresolved."""
+Update retained signed history through the selected rise/decrease path and \
+combine it with capped engine-speed-indexed curve 16a14 using the greater \
+signed value. Physical request units remain unresolved."""
 level = "code"
 block = "torque_request/block"
 

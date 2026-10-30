@@ -1,8 +1,10 @@
 summary = """
-Shared implicit byte gain used by 000811d4 and 000920ea. Each lookup uses \
-four times a bounded nonnegative difference, capped to 255. The support and \
-request paths retain separate consumers; their common physical quantity \
-remains unresolved."""
+Shared implicit byte gain used by 811d4 and 920ea. The parameter reader \
+indexes min(4*d,255) for a nonnegative signed-byte difference. The request \
+reader first indexes its bounded first difference, then the clamped sum of \
+that difference and a capped second difference at ffff17dc; each coordinate \
+is multiplied by four and capped to 255. The separate consumers retain \
+unresolved physical quantities."""
 level = "code"
 role = "table"
 access = "explicit"

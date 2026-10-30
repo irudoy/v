@@ -14,6 +14,7 @@ for r5>=224, cell 7 is returned. Result disposition: consumer (site \
 ]
 level = "code"
 role = "table"
+former = ["local_correction_flow_gain"]
 access = "explicit"
 unit = "dimensionless"
 scale = "x/2048"
@@ -72,7 +73,7 @@ supports = "scale"
 [[symbol]]
 layout = "7mfk"
 address = "00012126"
-name = "woodoo-loon"
+former = ["woodoo-loon/tbl/7mfk-00012126"]
 
 [[symbol.evidence]]
 kind = "unverified-site"
@@ -182,7 +183,7 @@ value = "12/2048=0.005859375"
 [[symbol]]
 layout = "jk00c"
 address = "000143fb"
-name = "arcane-ringtail"
+former = ["arcane-ringtail/tbl/jk00c-000143fb"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -198,7 +199,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001440b"
-name = "shaggy-hyena"
+former = ["shaggy-hyena/tbl/jk00d-0001440b"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -211,6 +212,34 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013748"
+level = "code"
+former = ["local_correction_flow_gain/tbl/jk78c-00013748"]
+summary = """
+Implicit eight-byte coefficient in 411b0 indexed by alpha_n_flow at \
+ffff115c. It supplies the signed local-correction update coefficient with \
+division by 2048, distinct from floor 13940."""
+note = """
+The complete matched branch binds 13748 to JK08A 12126. The physical \
+local-correction quantity remains unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004120e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0004120e"
+to = "7mfk:00012126"
+note = """
+Matched 3c4a0/411b0 branch reads this implicit eight-byte coefficient by \
+ffff1170/ffff115c and applies the same signed multiply and divide-by-2048 \
+update; JK08A uses 12126."""
+
 [[link]]
 type = "reader"
 to = "didactic-civet/fn"
@@ -220,14 +249,25 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fabulous-leech/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
 to = "festive-marmot/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "local_correction_state_updater/fn"
+layouts = ["7mfk", "jk78c"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004120e"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003c4fe"

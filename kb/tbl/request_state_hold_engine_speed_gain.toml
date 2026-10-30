@@ -1,9 +1,11 @@
 summary = """
-Implicit byte gain in 0008f9c4 over the bounded speed word divided by ten. \
-It multiplies a selected hold byte with a seven-bit shift and byte cap \
-before the two hold states are loaded. No time unit is established."""
+Implicit byte gain in 8f9c4 indexed by the bounded engine-speed word \
+ffff11a6 divided by ten. It multiplies a selected hold byte with a seven-bit \
+shift and byte cap before the two hold states are loaded. No time unit is \
+established."""
 level = "code"
 role = "table"
+former = ["request_state_hold_speed_gain"]
 access = "explicit"
 cols = 8
 rows = 1
@@ -13,6 +15,7 @@ storage = "uint8"
 layout = "jk78c"
 address = "00013196"
 level = "code"
+former = ["request_state_hold_speed_gain/tbl/jk78c-00013196"]
 
 [[symbol.evidence]]
 kind = "l0"

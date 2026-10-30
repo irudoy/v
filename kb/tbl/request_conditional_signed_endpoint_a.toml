@@ -261,7 +261,7 @@ Canonical physical-conversion confidence is retained."""
 
 [[link]]
 type = "axis"
-to = "request_conditional_context_axis/axis"
+to = "request_conditional_forward_context_axis/axis"
 slot = "y"
 layouts = ["jk78c"]
 
@@ -270,9 +270,14 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00095870"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009596c"
+
 [[link]]
 type = "axis"
-to = "request_conditional_reference_axis/axis"
+to = "request_conditional_forward_input_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 
@@ -280,6 +285,11 @@ layouts = ["jk78c"]
 kind = "l0"
 supports = "identity"
 at = "jk78c:0009586c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095968"
 
 [[link]]
 type = "index"
@@ -339,11 +349,22 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "urban-sidewinder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00076086"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095964"
 
 [[link]]
 type = "selector"

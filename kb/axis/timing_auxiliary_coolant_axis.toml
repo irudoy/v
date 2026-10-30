@@ -1,3 +1,4 @@
+retired = true
 summary = """
 Sampled-coolant coordinate vector of timing_auxiliary_coolant_curve. The \
 same bytes retain their independent table representation in \
@@ -19,7 +20,7 @@ at = "jk78c:00067342"
 
 [[link]]
 type = "reader"
-to = "timing_auxiliary_correction_builder/fn"
+to = "timing_state_compositor/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

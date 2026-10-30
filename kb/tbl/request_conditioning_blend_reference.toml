@@ -258,8 +258,30 @@ canonical reader 00075c48. Canonical physical-conversion confidence is \
 retained."""
 
 [[link]]
+type = "axis"
+to = "request_centered_transition_reference_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095554"
+
+[[link]]
 type = "reader"
 to = "peach-bullfrog/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00075d1a"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095550"

@@ -9,6 +9,7 @@ inline_comparison.""",
 ]
 level = "code"
 role = "threshold"
+former = ["timing_retard_coolant_reference"]
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -24,7 +25,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 [[symbol]]
 layout = "7mfk"
 address = "00011e8e"
-name = "copper-hawk"
+former = ["copper-hawk/tbl/7mfk-00011e8e"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -153,7 +154,7 @@ relies = "contract"
 [[symbol]]
 layout = "jk00c"
 address = "0001416b"
-name = "artichoke-myna"
+former = ["artichoke-myna/tbl/jk00c-0001416b"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -169,7 +170,7 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "0001417b"
-name = "powerful-mouse"
+former = ["powerful-mouse/tbl/jk00d-0001417b"]
 
 [[symbol.evidence]]
 kind = "call-ordinal"
@@ -181,3 +182,41 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013578"
+level = "code"
+former = ["timing_retard_coolant_reference/tbl/jk78c-00013578"]
+summary = """
+First implicit 16-byte reference in 655c8, indexed by ffff1067 into ffff12c1 \
+and subtracted from the separately indexed 13588 result before flooring at \
+zero."""
+note = """
+The operand at 655d2 corresponds to JK08A 11e8e. Identity raw storage does \
+not establish a physical timing conversion."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000655d2"
+to = "7mfk:00011e8e"
+note = """
+First operand of the complete matched 4bbac/655c8 byte-lookup pair; its \
+result is the saturated-difference subtrahend."""
+
+[[link]]
+type = "reader"
+to = "timing_retard_difference_producer/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655d2"

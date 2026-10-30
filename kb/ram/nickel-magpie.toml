@@ -168,7 +168,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fabulous-leech/fn"
+to = "local_correction_state_seed/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "local_correction_state_updater/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -180,14 +188,6 @@ to = "phenomenal-cricket/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "radical-chimpanzee/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -446,7 +446,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "fabulous-leech/fn"
+to = "local_correction_state_seed/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "local_correction_state_updater/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -456,13 +463,6 @@ type = "reader"
 to = "phenomenal-cricket/fn"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "radical-chimpanzee/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "identity"
 
 [[link]]

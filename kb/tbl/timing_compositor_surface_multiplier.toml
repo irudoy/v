@@ -14,6 +14,7 @@ does not prove semantics by itself. Result disposition: consumer.""",
 ]
 level = "code"
 role = "table"
+former = ["timing_auxiliary_word_surface"]
 access = "explicit"
 unit = "raw"
 scale = "x"
@@ -129,24 +130,52 @@ supports = "identity"
 to = "amiable-bloodhound/fn/7mfk"
 relies = "structure"
 
-[[status]]
+[[symbol]]
 layout = "jk78c"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000c50e"
-count = 0
-l0 = "6bd18b774cb344a9"
+address = "0000cace"
+level = "code"
+former = ["timing_auxiliary_word_surface/tbl/jk78c-0000cace"]
+summary = """
+Compositor surface factor CACE uses vectors 159e2/15a12 and words \
+ffff10b6/ffff102c. The result is limited to 255 at ffff133f before \
+multiplication and division by 500000."""
 note = """
-No accepted JK78C operand and reader reproduce the canonical compositor \
-surface factor and its unsigned division by 500000. The separately \
-represented target state surfaces do not establish this homology."""
+The stock surface is zero. ROM16[8d56]=0xffff and ffff4508.bit6 gate the \
+product; both ffff43d4 and ffff43d6 must equal 65535. The physical \
+coordinate and factor conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00067358"
+to = "7mfk:0000c50e"
+note = """
+The matched compositor product reads this surface through 28058 over vectors \
+159e2/15a12, limits the output to 255 and multiplies it by ffff1900 and \
+ffff1343 before unsigned division by 500000."""
 
 [[link]]
 type = "reader"
 to = "timing_state_compositor/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00067358"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004be4e"
 
 [[link]]
 type = "reader"

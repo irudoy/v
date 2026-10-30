@@ -1,7 +1,8 @@
 summary = """
-Speed-word coordinate vector of request_history_floor_curve. Engineering \
-conversion remains unresolved."""
+Engine-speed word ffff11a6 coordinate vector of request_history_floor_curve. \
+Engineering conversion remains unresolved."""
 level = "code"
+former = ["request_history_floor_speed_axis"]
 quantity = "raw"
 points = 8
 storage = "uint16"
@@ -10,6 +11,7 @@ storage = "uint16"
 layout = "jk78c"
 address = "00016554"
 level = "code"
+former = ["request_history_floor_speed_axis/axis/jk78c-00016554"]
 
 [[symbol.evidence]]
 kind = "l0"

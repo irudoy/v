@@ -1,7 +1,7 @@
 summary = """
-Read the context curve and speed/context ceiling surface, select the enabled \
-ceiling, and apply the two input-range conversion paths with their separate \
-caps. Physical request and context conversions remain unresolved."""
+Read the context curve and engine-speed/context ceiling surface, select the \
+enabled ceiling, and apply the two input-range conversion paths with \
+separate caps. Physical request and context conversions remain unresolved."""
 level = "code"
 block = "torque_request/block"
 

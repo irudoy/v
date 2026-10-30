@@ -188,7 +188,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "fabulous-leech/fn"
+to = "local_correction_state_seed/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -196,7 +196,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "radical-chimpanzee/fn"
+to = "local_correction_state_updater/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

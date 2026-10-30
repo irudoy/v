@@ -3,6 +3,15 @@ Evaluate the enabled centered reference curve and surface contribution, \
 select or blend the result, then maintain the signed transition state with \
 separately calibrated rates. Physical request conversion remains \
 unresolved."""
+note = [
+    """
+Candidate 7mfk:00075c48 shares the centered blend and final follower \
+pattern, but the complete coolant-follower counterpart is JK78C 9520e, which \
+reads 15ea2. This separate reader uses byte ffff10f1 directly, latch \
+ffff23cb.bit4, curve 15e82, candidate ffff151a/output ffff1518 and \
+additional ffff2400/ffff4bd4/ffff57b6 tracking. Both readers share axis \
+151ac and surface FACE; their curves and states remain distinct.""",
+]
 level = "code"
 block = "torque_request/block"
 

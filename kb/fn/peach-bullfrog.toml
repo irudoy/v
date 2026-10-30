@@ -438,6 +438,25 @@ supports = "identity"
 to = "dramatic-okapi/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009520e"
+name = "vivid-walrus"
+note = """
+The complete 9520e body retains the coolant hysteretic latch, ROM-word \
+rise/fall follower, 16-word blend reference, terminal surface column, signed \
+division, centered clamp and final rate-limited output of 75c48. JK78C uses \
+ffff1069, ffff23cb.bit3/ffff23ce.bit3, follower ffff1520, reference 15ea2 \
+over explicit axis 151ac and surface FACE, candidate ffff151e and output \
+ffff151c. The explicit axis replaces JK08A clamp(32*ffff1702-4096,0,65535). \
+Separate reader 95442 uses ffff10f1 and reference 15e82."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009520e"
+to = "7mfk:00075c48"
+
 [[link]]
 type = "depends"
 to = "rampant-poodle/axis"

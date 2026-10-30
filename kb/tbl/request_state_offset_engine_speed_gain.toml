@@ -1,9 +1,10 @@
 summary = """
-Second implicit byte gain in the primary product of 0008fd6c. The \
-speed-word-derived index is shared with the separately gated alternate gain \
-00013186. Engineering conversion remains unresolved."""
+Second implicit byte gain in the primary product of 8fd6c. It uses \
+min(u16[ffff11a6],0x8c0)/10 as an engine-speed-derived index, shared with \
+alternate gain 13186. Engineering conversion remains unresolved."""
 level = "code"
 role = "table"
+former = ["request_state_offset_speed_gain"]
 access = "explicit"
 cols = 8
 rows = 1
@@ -13,6 +14,7 @@ storage = "uint8"
 layout = "jk78c"
 address = "0001317e"
 level = "code"
+former = ["request_state_offset_speed_gain/tbl/jk78c-0001317e"]
 
 [[symbol.evidence]]
 kind = "l0"

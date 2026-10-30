@@ -3,6 +3,18 @@ Form separate bounded difference encodings, read the paired correction and \
 excess curves with independent fallbacks, and combine them in the timing \
 path. The sample-reference curve and selector state remain distinct \
 operations."""
+note = [
+    """
+Candidate 7mfk:0004d2a6 shares a related timing-correction position, coolant \
+hysteresis and fallback-combination pattern. Its body forms \
+target-minus-actual intake and combined intake/exhaust coordinates, reads \
+125ca three times plus 124b2 and two 2D coefficient surfaces, and uses \
+diagnostic predicates. JK78C instead samples 1430c, bounds two differences \
+from ffff227a against ffff239c/ffff239d, reads separate implicit 142d4 and \
+142c0 curves and tests diagnostic bytes directly. These operand and branch \
+mechanisms do not establish one function meaning; the JK78C function and \
+calibration owners remain native.""",
+]
 level = "code"
 block = "ignition_timing/block"
 

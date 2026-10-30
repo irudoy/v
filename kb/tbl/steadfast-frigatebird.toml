@@ -7,3 +7,28 @@ name = "steadfast-frigatebird"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0004be56"
+
+[[symbol]]
+layout = "jk78c"
+address = "000159e2"
+name = "masked-zebu"
+note = """
+First uint16 coordinate vector of compositor surface CACE: 6735a loads \
+pointer 673dc for ffff10b6, in the position of JK08A 1461a in 4bdc2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000673dc"
+to = "7mfk:0001461a"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000673dc"

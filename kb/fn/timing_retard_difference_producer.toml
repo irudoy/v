@@ -10,6 +10,7 @@ degrees.""",
 level = "code"
 role = "accessor"
 block = "ignition_timing/block"
+former = ["timing_retard_reference_delta_builder"]
 
 [[ledger]]
 registry = "funcs"
@@ -72,7 +73,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "0004bbac"
-name = "pretty-rhino"
+former = ["pretty-rhino/fn/7mfk-0004bbac"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -80,6 +81,34 @@ supports = "identity"
 at = "7mfk:0004bbe4"
 value = {named = ["0004bbac", "0004bdc2", "ffff106f", "ffff11b3", "ffff12d9", "ffff12da", "ffff12dc"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "000655c8"
+level = "code"
+former = ["timing_retard_reference_delta_builder/fn/jk78c-000655c8"]
+summary = """
+Read references 13578/13588 by ffff1067/ffff11a3 into ffff12c1/ffff12c2 and \
+publish max(second-first,0) at ffff12c4."""
+note = """
+The complete body repeats JK08A 4bbac. The binding establishes the common \
+operational role without extending the engineering timing interpretation to \
+JK78C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000655c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000655c8"
+to = "7mfk:0004bbac"
+note = """
+The complete 33-instruction bodies preserve two ordered implicit byte \
+lookups and max(second-first,0), between clever-woodlouse and \
+competent-rottweiler."""
 
 [[link]]
 type = "depends"
