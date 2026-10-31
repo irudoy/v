@@ -62,6 +62,43 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "000136ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000779ca"
+to = "jk78c:00013588"
+note = """
+Target function 00077680 performs the program of JK78C 000655c8 \
+(timing_retard_difference_producer) inline, at the position where JK78C \
+00068af8 calls it: the same two retard-difference lookups, the subtrahend \
+and then the minuend. It is the second lookup, the minuend. MOV.L 000779ca \
+loads this table, which reaches the call at 000779d0 (helper 0002aa48) in \
+r4, as MOV.L jk78c:000655e4 loads 00013588, which reaches the call at \
+jk78c:000655e8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013942"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00073a48"
+to = "jk78c:00013588"
+note = """
+Target function 000736f4 performs the program of JK78C 000655c8 \
+(timing_retard_difference_producer) inline, at the position where JK78C \
+00068af8 calls it: the same two retard-difference lookups, the subtrahend \
+and then the minuend. It is the second lookup, the minuend. MOV.L 00073a48 \
+loads this table, which reaches the call at 00073a4e (helper 000287cc) in \
+r4, as MOV.L jk78c:000655e4 loads 00013588, which reaches the call at \
+jk78c:000655e8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011e9e"
 former = ["hallowed-spider/tbl/7mfk-00011e9e"]

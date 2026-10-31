@@ -86,6 +86,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c6e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007439a"
+to = "jk78c:00013a60"
+note = """
+Target function 00074344 runs the program of JK78C 0006560a \
+(competent-rottweiler): the same four Base Fuel Schedule ramp lookups: lower \
+and upper for one value of the selecting bit, then lower and upper for the \
+other. It is the upper ramp curve of the second pair, which the bit-set \
+branch uses. MOV.L 0007439a loads this table, which reaches the call at \
+000743a0 (helper 0002aa48) in r4, as MOV.L jk78c:00065682 loads 00013a60, \
+which reaches the call at jk78c:00065684 (helper 000281b0) in r4. Its 16 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e92"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000703ae"
+to = "jk78c:00013a60"
+note = """
+Target function 00070358 runs the program of JK78C 0006560a \
+(competent-rottweiler): the same four Base Fuel Schedule ramp lookups: lower \
+and upper for one value of the selecting bit, then lower and upper for the \
+other. It is the upper ramp curve of the second pair, which the bit-set \
+branch uses. MOV.L 000703ae loads this table, which reaches the call at \
+000703b4 (helper 000287cc) in r4, as MOV.L jk78c:00065682 loads 00013a60, \
+which reaches the call at jk78c:00065684 (helper 000281b0) in r4. Its 16 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012472"
 former = ["red-okapi/tbl/7mfk-00012472"]

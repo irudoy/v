@@ -12,6 +12,53 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000865e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00078584"
+to = "jk78c:0000860a"
+note = """
+Target function 00078560 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the ROM byte whose \
+bit 5 selects whether the second limit word takes the negated second limit: \
+JK78C ffff11c2 = -ffff11e6, 1ND fffe81d0 = -fffe81f4, 1ME3B fffe81b8 = \
+-fffe81dc. MOV.L 00078580 loads the displacement 0001f213, and tst.b 0x20 at \
+00078584 tests bit 5 of this byte through GBR fffe944b, as MOV.L \
+jk78c:000690c0 loads 0000860a, and jk78c:000690c4 reads the byte and masks \
+bit 5. Its stock byte differs from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008656"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00074204"
+to = "jk78c:0000860a"
+note = """
+Target function 000741d8 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the ROM byte whose \
+bit 5 selects whether the second limit word takes the negated second limit: \
+JK78C ffff11c2 = -ffff11e6, 1ND fffe81d0 = -fffe81f4, 1ME3B fffe81b8 = \
+-fffe81dc. MOV.L 00074202 loads the displacement 0001f3c6, and tst.b 0x20 at \
+00074204 tests bit 5 of this byte through GBR fffe9290, as MOV.L \
+jk78c:000690c0 loads 0000860a, and jk78c:000690c4 reads the byte and masks \
+bit 5. Its stock byte differs from JK78C on 1ND0A and equals JK78C on \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008710"
 level = "code"

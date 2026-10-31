@@ -8,9 +8,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -19,6 +17,54 @@ access = "explicit"
 cols = 8
 rows = 8
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "00009c94"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073ccc"
+to = "jk78c:00009a9a"
+note = """
+Target function 00073c6a runs the program of JK78C 00065010 \
+(timing_pair_ramp_builder): the same 8x8 endpoint lookups over one axis pair \
+and the same ramp: the result is the endpoint weighted by the ramp w plus \
+the endpoint weighted by 0x8000 minus w. JK78C reads one endpoint of each \
+kind. 1ND reads three endpoints and selects the w-weighted endpoint by \
+fffe94e2 bit 4; 1ME3B reads five and selects it by fffeb9ca bit 2 and \
+fffe94b3 bit 5. It is the only endpoint that the ramp weights by 0x8000 \
+minus w on every layout: the second lookup on JK78C and 1ND, the third on \
+1ME3B, whose result the target stores in the slot that this term reads. \
+MOV.L 00073ccc loads this table, which reaches the call at 00073cd2 (helper \
+00028e10) in r4, as MOV.L jk78c:0006505c loads 00009a9a, which reaches the \
+call at jk78c:00065060 (helper 00027ee0) in r4. Its 64 stock bytes differ \
+from JK78C in 21 bytes."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009d60"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006fe0c"
+to = "jk78c:00009a9a"
+note = """
+Target function 0006fdc2 runs the program of JK78C 00065010 \
+(timing_pair_ramp_builder): the same 8x8 endpoint lookups over one axis pair \
+and the same ramp: the result is the endpoint weighted by the ramp w plus \
+the endpoint weighted by 0x8000 minus w. JK78C reads one endpoint of each \
+kind. 1ND reads three endpoints and selects the w-weighted endpoint by \
+fffe94e2 bit 4; 1ME3B reads five and selects it by fffeb9ca bit 2 and \
+fffe94b3 bit 5. It is the only endpoint that the ramp weights by 0x8000 \
+minus w on every layout: the second lookup on JK78C and 1ND, the third on \
+1ME3B, whose result the target stores in the slot that this term reads. \
+MOV.L 0006fe0c loads this table, which reaches the call at 0006fe14 (helper \
+000284fc) in r4, as MOV.L jk78c:0006505c loads 00009a9a, which reaches the \
+call at jk78c:00065060 (helper 00027ee0) in r4. Its 64 stock bytes differ \
+from JK78C in 21 bytes on 1ND0A and 1ND3B, which agree."""
 
 [[symbol]]
 layout = "jk78c"

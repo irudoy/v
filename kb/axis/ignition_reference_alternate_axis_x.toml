@@ -8,6 +8,47 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013706"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00079d7a"
+to = "jk78c:000135a8"
+note = """
+Target function 000797cc runs the program of JK78C 00069ab8 (vivid-weasel): \
+the same final selection: while the ROM gate bit 0 is set (JK78C 00008605, \
+1ND 00008651, 1ME3B 00008659) and the RAM flag is set (JK78C ffff4501 bit 5, \
+1ND fffeb819 bit 5, 1ME3B fffeb979 bit 4), it reads the alternate reference \
+surface over its own axis pair; otherwise it reads the primary reference \
+surface. It is the x axis of the alternate reference surface. MOV.L 00079d7a \
+loads this axis, which reaches the call at 00079d80 (helper 000293d8) in r5, \
+as MOV.L jk78c:0006a0fa loads 000135a8, which reaches the call at \
+jk78c:0006a106 (helper 00027f98) in r5. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001397a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000752d0"
+to = "jk78c:000135a8"
+note = """
+Target function 00074d98 runs the program of JK78C 00069ab8 (vivid-weasel): \
+the same final selection: while the ROM gate bit 0 is set (JK78C 00008605, \
+1ND 00008651, 1ME3B 00008659) and the RAM flag is set (JK78C ffff4501 bit 5, \
+1ND fffeb819 bit 5, 1ME3B fffeb979 bit 4), it reads the alternate reference \
+surface over its own axis pair; otherwise it reads the primary reference \
+surface. It is the x axis of the alternate reference surface. MOV.L 000752d0 \
+loads this axis, which reaches the call at 000752d6 (helper 000285b4) in r5, \
+as MOV.L jk78c:0006a0fa loads 000135a8, which reaches the call at \
+jk78c:0006a106 (helper 00027f98) in r5. Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000135a8"
 

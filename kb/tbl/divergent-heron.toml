@@ -1,4 +1,50 @@
 [[symbol]]
+layout = "1me3b"
+address = "00017446"
+name = "fiery-centipede"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000736d6"
+to = "jk78c:00016d74"
+note = """
+Target function 0007323e runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+y axis of the centered-mean surface. MOV.L 000736d6 loads this axis, which \
+reaches the call at 000736e0 (helper 00028ff0) in r6, as MOV.L \
+jk78c:00064a64 loads 00016d74, which reaches the call at jk78c:00064a68 \
+(helper 00027f18) in r6. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00017372"
+name = "amphibian-leech"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f822"
+to = "jk78c:00016d74"
+note = """
+Target function 0006f37a runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+y axis of the centered-mean surface. MOV.L 0006f822 loads this axis, which \
+reaches the call at 0006f82c (helper 00028534) in r6, as MOV.L \
+jk78c:00064a64 loads 00016d74, which reaches the call at jk78c:00064a68 \
+(helper 00027f18) in r6. Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012e92"
 name = "divergent-heron"

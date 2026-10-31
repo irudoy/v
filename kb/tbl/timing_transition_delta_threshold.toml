@@ -11,6 +11,41 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001398e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00078072"
+to = "jk78c:00013760"
+note = """
+Target function 00077f38 runs the program of JK78C 00068df8 \
+(timing_transition_delta_gate): the same single delta-threshold lookup. It \
+is the delta-threshold curve. MOV.L 00078072 loads this table, which reaches \
+the call at 00078076 (helper 0002aa48) in r4, as MOV.L jk78c:00068f8c loads \
+00013760, which reaches the call at jk78c:00068f90 (helper 000281b0) in r4. \
+Its 16 stock bytes differ from JK78C in 16 bytes."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b92"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000740e0"
+to = "jk78c:00013760"
+note = """
+Target function 00073f90 runs the program of JK78C 00068df8 \
+(timing_transition_delta_gate): the same single delta-threshold lookup. It \
+is the delta-threshold curve. MOV.L 000740e0 loads this table, which reaches \
+the call at 000740e4 (helper 000287cc) in r4, as MOV.L jk78c:00068f8c loads \
+00013760, which reaches the call at jk78c:00068f90 (helper 000281b0) in r4. \
+Its 16 stock bytes differ from JK78C in 16 bytes on 1ND0A and in 9 bytes on \
+1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013760"
 level = "code"

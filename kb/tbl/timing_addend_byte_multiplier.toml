@@ -65,6 +65,50 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013786"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073756"
+to = "jk78c:00013600"
+note = """
+Target function 0007323e runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+byte multiplier curve. MOV.L 00073756 loads this table, which reaches the \
+call at 0007375a (helper 0002ac9c) in r4, as MOV.L jk78c:00064b4e loads \
+00013600, which reaches the call at jk78c:00064b54 (helper 0002829c) in r4. \
+Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000139d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f8a2"
+to = "jk78c:00013600"
+note = """
+Target function 0006f37a runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+byte multiplier curve. MOV.L 0006f8a2 loads this table, which reaches the \
+call at 0006f8a6 (helper 000288b8) in r4, as MOV.L jk78c:00064b4e loads \
+00013600, which reaches the call at jk78c:00064b54 (helper 0002829c) in r4. \
+Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011efa"
 former = ["outrageous-bustard/tbl/7mfk-00011efa"]

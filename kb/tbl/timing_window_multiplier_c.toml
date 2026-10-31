@@ -91,6 +91,43 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000136a6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000778e6"
+to = "jk78c:00013568"
+note = """
+Target function 00077680 performs the program of JK78C 0006538a \
+(mysterious-nightingale) inline, at the position where JK78C 00068af8 calls \
+it: the same three window multiplier lookups in the JK78C order, b, a and c. \
+It is the third lookup, multiplier c. MOV.L 000778e6 loads this table, which \
+reaches the call at 000778e8 (helper 0002aa48) in r4, as MOV.L \
+jk78c:000653b2 loads 00013560, and 00013560 plus 0x8 reaches the call at \
+jk78c:000653d8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013922"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000739c4"
+to = "jk78c:00013568"
+note = """
+Target function 000736f4 performs the program of JK78C 0006538a \
+(mysterious-nightingale) inline, at the position where JK78C 00068af8 calls \
+it: the same three window multiplier lookups in the JK78C order, b, a and c. \
+It is the third lookup, multiplier c. MOV.L 000739c4 loads this table, which \
+reaches the call at 000739c6 (helper 000287cc) in r4, as MOV.L \
+jk78c:000653b2 loads 00013560, and 00013560 plus 0x8 reaches the call at \
+jk78c:000653d8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011e5e"
 former = ["airborne-malamute/tbl/7mfk-00011e5e"]

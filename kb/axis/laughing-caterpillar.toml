@@ -1,4 +1,42 @@
 [[symbol]]
+layout = "1me3b"
+address = "00016c46"
+name = "fiery-urchin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007278c"
+to = "jk78c:000165a4"
+note = """
+Target function 0007275c runs the program of JK78C 00063888 \
+(knock_slice_threshold_lookup): the same knock slice threshold lookup over \
+one engine-speed axis. It is the engine-speed axis of knock_slice_threshold. \
+MOV.L 0007278c loads this axis, which reaches the call at 00072794 (helper \
+0002af88) in r5, as MOV.L jk78c:000638ac loads 000165a4, which reaches the \
+call at jk78c:000638b8 (helper 00028320) in r5. Its 32 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016bc2"
+name = "congenial-squid"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e884"
+to = "jk78c:000165a4"
+note = """
+Target function 0006e854 runs the program of JK78C 00063888 \
+(knock_slice_threshold_lookup): the same knock slice threshold lookup over \
+one engine-speed axis. It is the engine-speed axis of knock_slice_threshold. \
+MOV.L 0006e884 loads this axis, which reaches the call at 0006e88c (helper \
+0002893c) in r5, as MOV.L jk78c:000638ac loads 000165a4, which reaches the \
+call at jk78c:000638b8 (helper 00028320) in r5. Its 32 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015340"
 name = "laughing-caterpillar"

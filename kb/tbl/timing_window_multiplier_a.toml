@@ -35,6 +35,42 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001368e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000778d8"
+to = "jk78c:00013550"
+note = """
+Target function 00077680 performs the program of JK78C 0006538a \
+(mysterious-nightingale) inline, at the position where JK78C 00068af8 calls \
+it: the same three window multiplier lookups in the JK78C order, b, a and c. \
+It is the second lookup, multiplier a. MOV.L 000778d8 loads this table, \
+which reaches the call at 000778de (helper 0002aa48) in r4, as MOV.L \
+jk78c:000653c6 loads 00013550, which reaches the call at jk78c:000653ca \
+(helper 000281b0) in r4. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001390a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000739b6"
+to = "jk78c:00013550"
+note = """
+Target function 000736f4 performs the program of JK78C 0006538a \
+(mysterious-nightingale) inline, at the position where JK78C 00068af8 calls \
+it: the same three window multiplier lookups in the JK78C order, b, a and c. \
+It is the second lookup, multiplier a. MOV.L 000739b6 loads this table, \
+which reaches the call at 000739bc (helper 000287cc) in r4, as MOV.L \
+jk78c:000653c6 loads 00013550, which reaches the call at jk78c:000653ca \
+(helper 000281b0) in r4. Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011e46"
 former = ["calculating-giraffe/tbl/7mfk-00011e46"]

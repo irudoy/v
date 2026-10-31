@@ -48,6 +48,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016384"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000761f6"
+to = "jk78c:00015de2"
+note = """
+Target function 00076112 runs the program of JK78C 0006765c (giga-leech): \
+the same byte-product lookup, then the upper-limit and companion-limit word \
+curves. It is the upper-limit word curve. MOV.L 000761f6 loads this table, \
+which reaches the call at 000761fe (helper 0002ab40) in r4, as MOV.L \
+jk78c:000676f0 loads 00015de2, which reaches the call at jk78c:000676fa \
+(helper 00028200) in r4. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000163e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007223a"
+to = "jk78c:00015de2"
+note = """
+Target function 00072150 runs the program of JK78C 0006765c (giga-leech): \
+the same byte-product lookup, then the upper-limit and companion-limit word \
+curves. It is the upper-limit word curve. MOV.L 0007223a loads this table, \
+which reaches the call at 00072242 (helper 0002881c) in r4, as MOV.L \
+jk78c:000676f0 loads 00015de2, which reaches the call at jk78c:000676fa \
+(helper 00028200) in r4. Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014bea"
 former = ["gainful-orangutan/tbl/7mfk-00014bea"]

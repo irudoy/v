@@ -66,6 +66,52 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001379e"
+name = "statuesque-cassowary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073518"
+to = "jk78c:00013618"
+note = """
+Target function 0007323e runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+base curve of the three-curve branch. MOV.L 00073518 loads this table, which \
+reaches the call at 00073520 (helper 0002a9f4) in r4, as MOV.L \
+jk78c:0006488c loads 00013618, which reaches the call at jk78c:0006488e \
+(helper 00028198) in r4. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000139ea"
+name = "hopping-ant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f666"
+to = "jk78c:00013618"
+note = """
+Target function 0006f37a runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+base curve of the three-curve branch. MOV.L 0006f666 loads this table, which \
+reaches the call at 0006f66e (helper 000287b4) in r4, as MOV.L \
+jk78c:0006488c loads 00013618, which reaches the call at jk78c:0006488e \
+(helper 00028198) in r4. Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011f12"
 name = "excellent-cuckoo"

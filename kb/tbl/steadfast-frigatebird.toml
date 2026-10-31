@@ -1,4 +1,46 @@
 [[symbol]]
+layout = "1me3b"
+address = "00015e94"
+name = "gleaming-woodlouse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00075e80"
+to = "jk78c:000159e2"
+note = """
+Target function 00075c4c runs the program of JK78C 00067122 \
+(timing_state_compositor): the same two limit-offset lookups over one axis, \
+the byte multiplier lookup over its axis and the 8x8 word surface multiplier \
+lookup. 1ME3B adds one 8x8 lookup of 00009ae4 between the two limit-offset \
+lookups. It is the x axis of the 8x8 word surface multiplier, eight word \
+knots. MOV.L 00075e80 loads this axis, which reaches the call at 00075e86 \
+(helper 00029ec0) in r5, as MOV.L jk78c:0006735a loads 000159e2, which \
+reaches the call at jk78c:00067360 (helper 00028058) in r5. Its 16 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015fd0"
+name = "speedy-caterpillar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00071e7e"
+to = "jk78c:000159e2"
+note = """
+Target function 00071bc4 runs the program of JK78C 00067122 \
+(timing_state_compositor): the same two limit-offset lookups over one axis, \
+the byte multiplier lookup over its axis and the 8x8 word surface multiplier \
+lookup. 1ME3B adds one 8x8 lookup of 00009ae4 between the two limit-offset \
+lookups. It is the x axis of the 8x8 word surface multiplier, eight word \
+knots. MOV.L 00071e7e loads this axis, which reaches the call at 00071e84 \
+(helper 00028674) in r5, as MOV.L jk78c:0006735a loads 000159e2, which \
+reaches the call at jk78c:00067360 (helper 00028058) in r5. Its 16 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001461a"
 name = "steadfast-frigatebird"

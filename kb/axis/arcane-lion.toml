@@ -21,6 +21,44 @@ notes = [0]
 scale = [1]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001438a"
+name = "dexterous-malkoha"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f8aa8"
+to = "jk78c:00014078"
+note = """
+Target function 000f8a7c runs the program of JK78C 000c9300 \
+(vague-ringtail): the same knock sensor circuit monitor lookups, surface A \
+and then surface B over one shared axis pair. It is the Base Fuel Schedule \
+axis of both monitor surfaces. MOV.L 000f8aa8 loads this axis, which reaches \
+the call at 000f8aba (helper 00028e10) in r6, as MOV.L jk78c:000c9340 loads \
+00014078, which reaches the call at jk78c:000c9344 (helper 00027ee0) in r6. \
+Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014516"
+name = "agate-cuttlefish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ec26a"
+to = "jk78c:00014078"
+note = """
+Target function 000ec23e runs the program of JK78C 000c9300 \
+(vague-ringtail): the same knock sensor circuit monitor lookups, surface A \
+and then surface B over one shared axis pair. It is the Base Fuel Schedule \
+axis of both monitor surfaces. MOV.L 000ec26a loads this axis, which reaches \
+the call at 000ec27c (helper 000284fc) in r6, as MOV.L jk78c:000c9340 loads \
+00014078, which reaches the call at jk78c:000c9344 (helper 00027ee0) in r6. \
+Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012bea"
 name = "arcane-lion"

@@ -69,6 +69,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c5e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007436a"
+to = "jk78c:00013a50"
+note = """
+Target function 00074344 runs the program of JK78C 0006560a \
+(competent-rottweiler): the same four Base Fuel Schedule ramp lookups: lower \
+and upper for one value of the selecting bit, then lower and upper for the \
+other. It is the upper ramp curve of the first pair, which the bit-clear \
+branch uses. MOV.L 0007436a loads this table, which reaches the call at \
+00074370 (helper 0002aa48) in r4, as MOV.L jk78c:00065640 loads 00013a50, \
+which reaches the call at jk78c:00065642 (helper 000281b0) in r4. Its 16 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e82"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007037e"
+to = "jk78c:00013a50"
+note = """
+Target function 00070358 runs the program of JK78C 0006560a \
+(competent-rottweiler): the same four Base Fuel Schedule ramp lookups: lower \
+and upper for one value of the selecting bit, then lower and upper for the \
+other. It is the upper ramp curve of the first pair, which the bit-clear \
+branch uses. MOV.L 0007037e loads this table, which reaches the call at \
+00070384 (helper 000287cc) in r4, as MOV.L jk78c:00065640 loads 00013a50, \
+which reaches the call at jk78c:00065642 (helper 000281b0) in r4. Its 16 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012462"
 former = ["gentle-macaque/tbl/7mfk-00012462"]

@@ -57,6 +57,53 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001431a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00096156"
+to = "jk78c:00014008"
+note = """
+Target function 00095f8c runs the program of JK78C 000826d2 (daring-koala): \
+the same branch tree behind the ROM gate that JK78C reads at 00008968 bit 4 \
+(1ND 00008a2e, 1ME3B 00008a7f): the mode-selected curves by the mode byte \
+(JK78C ffff1077, targets fffe8081) and the bank bit, read over one axis, and \
+the mode-update curves of the edge and normal branches by the mode byte and \
+the bank bit. The bank bit is knock_surface_state bit 6 on JK78C and 1ND and \
+bit 7 on 1ME3B. The targets read the update curves first and the selected \
+curves last; JK78C reads them in the other order. It is the selected curve \
+for mode 2 with the bank bit set. MOV.L 00096156 loads this table, which \
+reaches the call at 0009616c (helper 0002ac9c) in r4, as MOV.L \
+jk78c:00082758 loads 00014008, which reaches the call at jk78c:00082782 \
+(helper 0002829c) in r4. Its 8 stock bytes differ from JK78C in 8 bytes."""
+
+[[symbol]]
+layout = "1nd"
+address = "000144a6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000905b2"
+to = "jk78c:00014008"
+note = """
+Target function 000903f6 runs the program of JK78C 000826d2 (daring-koala): \
+the same branch tree behind the ROM gate that JK78C reads at 00008968 bit 4 \
+(1ND 00008a2e, 1ME3B 00008a7f): the mode-selected curves by the mode byte \
+(JK78C ffff1077, targets fffe8081) and the bank bit, read over one axis, and \
+the mode-update curves of the edge and normal branches by the mode byte and \
+the bank bit. The bank bit is knock_surface_state bit 6 on JK78C and 1ND and \
+bit 7 on 1ME3B. The targets read the update curves first and the selected \
+curves last; JK78C reads them in the other order. It is the selected curve \
+for mode 2 with the bank bit set. MOV.L 000905b2 loads this table, which \
+reaches the call at 000905c8 (helper 000288b8) in r4, as MOV.L \
+jk78c:00082758 loads 00014008, which reaches the call at jk78c:00082782 \
+(helper 0002829c) in r4. Its 8 stock bytes differ from JK78C in 8 bytes on \
+1ND0A and equal JK78C on 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012b5a"
 former = ["mindful-pogona/tbl/7mfk-00012b5a"]

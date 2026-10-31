@@ -44,6 +44,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013e84"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007421c"
+to = "jk78c:00013c1e"
+note = """
+Target function 00074176 runs the program of JK78C 0006541e \
+(charming-warthog): the same two difference-product lookups, multiplier b \
+and then multiplier a. It is the second lookup, multiplier a. MOV.L 0007421c \
+loads this table, which reaches the call at 00074220 (helper 0002a9f4) in \
+r4, as MOV.L jk78c:00065530 loads 00013c1e, which reaches the call at \
+jk78c:00065534 (helper 00028198) in r4. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014078"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007028e"
+to = "jk78c:00013c1e"
+note = """
+Target function 000701e8 runs the program of JK78C 0006541e \
+(charming-warthog): the same two difference-product lookups, multiplier b \
+and then multiplier a. It is the second lookup, multiplier a. MOV.L 0007028e \
+loads this table, which reaches the call at 00070292 (helper 000287b4) in \
+r4, as MOV.L jk78c:00065530 loads 00013c1e, which reaches the call at \
+jk78c:00065534 (helper 00028198) in r4. Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000126a0"
 former = ["fat-crayfish/tbl/7mfk-000126a0"]

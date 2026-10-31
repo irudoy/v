@@ -62,6 +62,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016394"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00076214"
+to = "jk78c:00015df2"
+note = """
+Target function 00076112 runs the program of JK78C 0006765c (giga-leech): \
+the same byte-product lookup, then the upper-limit and companion-limit word \
+curves. It is the companion-limit word curve. MOV.L 00076214 loads this \
+table, which reaches the call at 00076218 (helper 0002ab98) in r4, as MOV.L \
+jk78c:000676f0 loads 00015de2, and 00015de2 plus 0x10 reaches the call at \
+jk78c:00067716 (helper 0002821c) in r4. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000163f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00072258"
+to = "jk78c:00015df2"
+note = """
+Target function 00072150 runs the program of JK78C 0006765c (giga-leech): \
+the same byte-product lookup, then the upper-limit and companion-limit word \
+curves. It is the companion-limit word curve. MOV.L 00072258 loads this \
+table, which reaches the call at 0007225c (helper 00028838) in r4, as MOV.L \
+jk78c:000676f0 loads 00015de2, and 00015de2 plus 0x10 reaches the call at \
+jk78c:00067716 (helper 0002821c) in r4. Its 32 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014bfa"
 former = ["hopping-bumblebee/tbl/7mfk-00014bfa"]

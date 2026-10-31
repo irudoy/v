@@ -64,6 +64,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001392e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000763d6"
+to = "jk78c:00013710"
+note = """
+Target function 000762be runs the program of JK78C 00067830 \
+(apc_reset_offset_source_builder): the same divided term and then the two \
+product multiplier lookups, a and b. It is the first product multiplier \
+lookup, a. MOV.L 000763d6 loads this table, which reaches the call at \
+000763dc (helper 0002a9f4) in r4, as MOV.L jk78c:0006795e loads 00013710, \
+which reaches the call at jk78c:0006796a (helper 00028198) in r4. Its 8 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b42"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00072464"
+to = "jk78c:00013710"
+note = """
+Target function 00072308 runs the program of JK78C 00067830 \
+(apc_reset_offset_source_builder): the same divided term and then the two \
+product multiplier lookups, a and b. It is the first product multiplier \
+lookup, a. MOV.L 00072464 loads this table, which reaches the call at \
+0007246a (helper 000287b4) in r4, as MOV.L jk78c:0006795e loads 00013710, \
+which reaches the call at jk78c:0006796a (helper 00028198) in r4. Its 8 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001208e"
 former = ["prophetic-jacamar/tbl/7mfk-0001208e"]

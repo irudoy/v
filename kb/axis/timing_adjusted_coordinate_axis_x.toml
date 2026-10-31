@@ -6,14 +6,48 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 8
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013310"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000789c6"
+to = "jk78c:00013262"
+note = """
+Target function 000788d8 runs the program of JK78C 000693b8 \
+(final_timing_coordinate_builder): the same single 8x8 upper-bound lookup \
+over one axis pair. It is the x axis of the upper-bound surface. MOV.L \
+000789c6 loads this axis, which reaches the call at 000789cc (helper \
+000291dc) in r5, as MOV.L jk78c:000694aa loads 00013262, which reaches the \
+call at jk78c:000694b0 (helper 00027f58) in r5. Its 8 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000135e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00074586"
+to = "jk78c:00013262"
+note = """
+Target function 00074498 runs the program of JK78C 000693b8 \
+(final_timing_coordinate_builder): the same single 8x8 upper-bound lookup \
+over one axis pair. It is the x axis of the upper-bound surface. MOV.L \
+00074586 loads this axis, which reaches the call at 0007458c (helper \
+00028574) in r5, as MOV.L jk78c:000694aa loads 00013262, which reaches the \
+call at jk78c:000694b0 (helper 00027f58) in r5. Its 8 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

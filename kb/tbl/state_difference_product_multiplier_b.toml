@@ -69,6 +69,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013e8c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000741fa"
+to = "jk78c:00013c26"
+note = """
+Target function 00074176 runs the program of JK78C 0006541e \
+(charming-warthog): the same two difference-product lookups, multiplier b \
+and then multiplier a. It is the first lookup, multiplier b. MOV.L 000741fa \
+loads this table, which reaches the call at 000741fe (helper 0002a9f4) in \
+r4, as MOV.L jk78c:000654b0 loads 00013c1e, and 00013c1e plus 0x8 reaches \
+the call at jk78c:000654b6 (helper 00028198) in r4. Its 8 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014080"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007026c"
+to = "jk78c:00013c26"
+note = """
+Target function 000701e8 runs the program of JK78C 0006541e \
+(charming-warthog): the same two difference-product lookups, multiplier b \
+and then multiplier a. It is the first lookup, multiplier b. MOV.L 0007026c \
+loads this table, which reaches the call at 00070270 (helper 000287b4) in \
+r4, as MOV.L jk78c:000654b0 loads 00013c1e, and 00013c1e plus 0x8 reaches \
+the call at jk78c:000654b6 (helper 00028198) in r4. Its 8 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000126a8"
 former = ["witty-panther/tbl/7mfk-000126a8"]

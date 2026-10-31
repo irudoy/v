@@ -51,6 +51,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013bb6"
+name = "wise-lemur"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00077070"
+to = "jk78c:000139a0"
+note = """
+Target function 00076a54 runs the program of JK78C 00067f5e \
+(savvy-elephant): the same two trailing lookups, the negative-branch \
+multiplier and then its paired curve. It is the second of the two trailing \
+lookups. MOV.L 00077070 loads this table, which reaches the call at 00077078 \
+(helper 0002a9f4) in r4, as MOV.L jk78c:000684ac loads 000139a0, which \
+reaches the call at jk78c:000684b4 (helper 00028198) in r4. Its 8 stock \
+bytes differ from JK78C in 8 bytes."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013dd2"
+name = "sandy-pheasant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000730be"
+to = "jk78c:000139a0"
+note = """
+Target function 00072a72 runs the program of JK78C 00067f5e \
+(savvy-elephant): the same two trailing lookups, the negative-branch \
+multiplier and then its paired curve. It is the second of the two trailing \
+lookups. MOV.L 000730be loads this table, which reaches the call at 000730c6 \
+(helper 000287b4) in r4, as MOV.L jk78c:000684ac loads 000139a0, which \
+reaches the call at jk78c:000684b4 (helper 00028198) in r4. Its 8 stock \
+bytes differ from JK78C in 8 bytes on 1ND0A and equal JK78C on 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000123a2"
 name = "airborne-sawfly"

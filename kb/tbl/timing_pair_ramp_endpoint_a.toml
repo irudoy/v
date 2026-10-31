@@ -8,9 +8,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -37,6 +35,32 @@ cached at ffff30a5. The reader computes (W*A+(32768-W)*B)>>7 into a word, \
 with W at ffff14aa ramping toward 32768 under ffff23e8.bit5. This paired and \
 bounded state mechanism is distinct from the canonical single-table \
 multiplier."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00009a5a"
+count = 4
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B 00073c6a reads five endpoints. The ramp weights 00009c14, 00009c54, \
+00009cd4 or 00009d14 by w, selected by fffeb9ca bit 2 and fffe94b3 bit 5, \
+where JK78C 00065010 reads the one endpoint 00009a5a. JK78C has no \
+counterpart of the selection."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00009a5a"
+count = 2
+l0 = "cb701875f15725a4"
+note = """
+1ND 0006fdc2 reads three endpoints. The ramp weights 00009d20 or 00009da0 by \
+w, selected by fffe94e2 bit 4, where JK78C 00065010 reads the one endpoint \
+00009a5a. JK78C has no counterpart of the selection, and neither code \
+position nor arithmetic separates the two candidates."""
 
 [[link]]
 type = "axis"

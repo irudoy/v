@@ -6,14 +6,54 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 8
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015366"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000786c6"
+to = "jk78c:00014fbc"
+note = """
+Target function 00078560 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the axis of the \
+subtraction amplitude curve. MOV.L 000786c6 loads this axis, which reaches \
+the call at 000786ce (helper 0002aeac) in r5, as MOV.L jk78c:000691c2 loads \
+00014fbc, which reaches the call at jk78c:000691c6 (helper 000282f4) in r5. \
+Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000154f2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000742c6"
+to = "jk78c:00014fbc"
+note = """
+Target function 000741d8 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the axis of the \
+subtraction amplitude curve. MOV.L 000742c6 loads this axis, which reaches \
+the call at 000742cc (helper 00028910) in r5, as MOV.L jk78c:000691c2 loads \
+00014fbc, which reaches the call at jk78c:000691c6 (helper 000282f4) in r5. \
+Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

@@ -11,6 +11,44 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014626"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000773b8"
+to = "jk78c:000142d4"
+note = """
+Target function 000772c4 runs the program of JK78C 000686e0 \
+(timing_paired_difference_correction_builder): the same sample-reference \
+lookup over its axis, two difference-correction lookups and two \
+excess-correction lookups. It is the curve of both difference-correction \
+lookups. MOV.L 000773b8 loads this table, which reaches the call at 000773bc \
+(helper 0002a9f4) in r4, as MOV.L jk78c:000687f4 loads 000142d4, which \
+reaches the call at jk78c:000687fa (helper 00028198) in r4. Its 8 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001476a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000733d2"
+to = "jk78c:000142d4"
+note = """
+Target function 000732de runs the program of JK78C 000686e0 \
+(timing_paired_difference_correction_builder): the same sample-reference \
+lookup over its axis, two difference-correction lookups and two \
+excess-correction lookups. It is the curve of both difference-correction \
+lookups. MOV.L 000733d2 loads this table, which reaches the call at 000733d6 \
+(helper 000287b4) in r4, as MOV.L jk78c:000687f4 loads 000142d4, which \
+reaches the call at jk78c:000687fa (helper 00028198) in r4. Its 8 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000142d4"
 level = "code"

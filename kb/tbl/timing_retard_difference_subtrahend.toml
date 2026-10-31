@@ -23,6 +23,43 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1me3b"
+address = "000136be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000779c2"
+to = "jk78c:00013578"
+note = """
+Target function 00077680 performs the program of JK78C 000655c8 \
+(timing_retard_difference_producer) inline, at the position where JK78C \
+00068af8 calls it: the same two retard-difference lookups, the subtrahend \
+and then the minuend. It is the first lookup, the subtrahend. MOV.L 000779c2 \
+loads this table, which reaches the call at 000779c4 (helper 0002aa48) in \
+r4, as MOV.L jk78c:000655d2 loads 00013578, which reaches the call at \
+jk78c:000655d8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013932"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00073a40"
+to = "jk78c:00013578"
+note = """
+Target function 000736f4 performs the program of JK78C 000655c8 \
+(timing_retard_difference_producer) inline, at the position where JK78C \
+00068af8 calls it: the same two retard-difference lookups, the subtrahend \
+and then the minuend. It is the first lookup, the subtrahend. MOV.L 00073a40 \
+loads this table, which reaches the call at 00073a42 (helper 000287cc) in \
+r4, as MOV.L jk78c:000655d2 loads 00013578, which reaches the call at \
+jk78c:000655d8 (helper 000281b0) in r4. Its 16 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011e8e"
 former = ["copper-hawk/tbl/7mfk-00011e8e"]

@@ -163,6 +163,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015f94"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000786ca"
+to = "jk78c:00015ae2"
+note = """
+Target function 00078560 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the subtraction \
+amplitude curve. MOV.L 000786ca loads this table, which reaches the call at \
+000786ce (helper 0002aeac) in r4, as MOV.L jk78c:000691be loads 00015ae2, \
+which reaches the call at jk78c:000691c6 (helper 000282f4) in r4. Its 16 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000160d0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000742c8"
+to = "jk78c:00015ae2"
+note = """
+Target function 000741d8 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the subtraction \
+amplitude curve. MOV.L 000742c8 loads this table, which reaches the call at \
+000742cc (helper 00028910) in r4, as MOV.L jk78c:000691be loads 00015ae2, \
+which reaches the call at jk78c:000691c6 (helper 000282f4) in r4. Its 16 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000147da"
 former = ["sincere-dragonfly/tbl/7mfk-000147da"]

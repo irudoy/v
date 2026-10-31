@@ -1,4 +1,50 @@
 [[symbol]]
+layout = "1me3b"
+address = "00015e84"
+name = "quixotic-skink"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00073764"
+to = "jk78c:000159d2"
+note = """
+Target function 0007323e runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+axis of the word multiplier curve. MOV.L 00073764 loads this axis, which \
+reaches the call at 0007376c (helper 0002aeac) in r5, as MOV.L \
+jk78c:00064b62 loads 000159d2, which reaches the call at jk78c:00064b66 \
+(helper 000282f4) in r5. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015fc0"
+name = "festive-caracara"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006f8b0"
+to = "jk78c:000159d2"
+note = """
+Target function 0006f37a runs the program of JK78C 000644d0 \
+(signed_timing_state_accumulator): the same lookups of the gated addend \
+curves, the centered-mean surface and the two multiplier curves, and the \
+same two divided-term branches: one reads a base curve and then a subtracted \
+or an added curve, the other reads one curve. The targets omit the two \
+limit-offset lookups that JK78C reads when ROM byte 00008966 bit 0 is set, \
+and they place the one-curve branch before the three-curve branch. It is the \
+axis of the word multiplier curve. MOV.L 0006f8b0 loads this axis, which \
+reaches the call at 0006f8b8 (helper 00028910) in r5, as MOV.L \
+jk78c:00064b62 loads 000159d2, which reaches the call at jk78c:00064b66 \
+(helper 000282f4) in r5. Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001460a"
 name = "beige-bullmastiff"

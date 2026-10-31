@@ -8,9 +8,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -19,6 +17,50 @@ access = "implicit-2d"
 cols = 8
 rows = 8
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "00009d54"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00078874"
+to = "jk78c:00009ada"
+note = """
+Target function 00078560 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the implicit 8x8 \
+upper-bound surface behind the ROM gate (1ND 00008a2e bit 7, 1ME3B 00008a7f \
+bit 7). MOV.L 00078874 loads this table, which reaches the call at 0007887a \
+(helper 000288b4) in r4, as MOV.L jk78c:0006937e loads 00009ada, which \
+reaches the call at jk78c:00069386 (helper 00027d74) in r4. Its 64 stock \
+bytes differ from JK78C in 56 bytes."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009de0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00074456"
+to = "jk78c:00009ada"
+note = """
+Target function 000741d8 runs the program of JK78C 000690ac \
+(event_timing_correction_builder): the same bounded event-retard limit \
+words, the subtraction amplitude lookup and, behind the ROM gate that JK78C \
+reads at 00008968 bit 7, the implicit 8x8 upper-bound lookup. 1ME3B lacks \
+the clamped branch that JK78C runs while ROM byte 00008965 bit 5 is clear \
+and adds one lookup before the amplitude lookup. It is the implicit 8x8 \
+upper-bound surface behind the ROM gate (1ND 00008a2e bit 7, 1ME3B 00008a7f \
+bit 7). MOV.L 00074456 loads this table, which reaches the call at 0007445c \
+(helper 00028390) in r4, as MOV.L jk78c:0006937e loads 00009ada, which \
+reaches the call at jk78c:00069386 (helper 00027d74) in r4. Its 64 stock \
+bytes differ from JK78C in 56 bytes on 1ND0A and equal JK78C on 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

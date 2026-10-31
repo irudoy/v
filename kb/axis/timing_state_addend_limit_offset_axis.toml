@@ -10,6 +10,45 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013ee8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00075cd8"
+to = "jk78c:00013c6a"
+note = """
+Target function 00075c4c runs the program of JK78C 00067122 \
+(timing_state_compositor): the same two limit-offset lookups over one axis, \
+the byte multiplier lookup over its axis and the 8x8 word surface multiplier \
+lookup. 1ME3B adds one 8x8 lookup of 00009ae4 between the two limit-offset \
+lookups. It is the axis of both limit-offset lookups. MOV.L 00075cd8 loads \
+this axis, which reaches the call at 00075ce0 (helper 0002ac9c) in r5, as \
+MOV.L jk78c:000671bc loads 00013c6a, which reaches the call at \
+jk78c:000671c2 (helper 0002829c) in r5. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000140d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00071cce"
+to = "jk78c:00013c6a"
+note = """
+Target function 00071bc4 runs the program of JK78C 00067122 \
+(timing_state_compositor): the same two limit-offset lookups over one axis, \
+the byte multiplier lookup over its axis and the 8x8 word surface multiplier \
+lookup. 1ME3B adds one 8x8 lookup of 00009ae4 between the two limit-offset \
+lookups. It is the axis of both limit-offset lookups. MOV.L 00071cce loads \
+this axis, which reaches the call at 00071cd6 (helper 000288b8) in r5, as \
+MOV.L jk78c:000671bc loads 00013c6a, which reaches the call at \
+jk78c:000671c2 (helper 0002829c) in r5. Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013c6a"
 former = ["timing_state_addend_load_trim_axis/axis/jk78c-00013c6a"]
