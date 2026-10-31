@@ -1,0 +1,22 @@
+title = "Force the spark of APC dwell-timeout slot A"
+summary = """
+Compare-match handler of dwell-timeout slot A at interrupt-table entry \
+00020224, compare register fffff4e2. When the timeout expires and a pin of \
+ffff13cf still reads low, it forces the spark. With a pending set countdown \
+in ffff1558 it clears the countdown, writes GR11A = TCNT11 + 2, enables the \
+low-byte POPCR action of the slot pins and sets ffff8517.bit7. Otherwise it \
+moves GR11A to TCNT11 + 2 when the compare lies more than five counts ahead \
+or ffff13d2 is nonzero, and enables the low-byte action of the slot pins."""
+level = "code"
+role = "handler"
+block = "ignition_output/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002b396"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00020224"
+value = "0002b396"

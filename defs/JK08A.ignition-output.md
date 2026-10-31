@@ -17,7 +17,8 @@ of the normal contract.
 
 Static analysis proves command construction, ordering, byte ranges, both APC
 compare paths, diagnostic publication, the crank reference tooth of the command,
-and the output edge that carries the spark. It does not prove the external
+the output edge that carries the spark, and the dwell sequencing, recovery and
+timeout that protect the coil outputs. It does not prove the external
 driver stage or the mechanical offset between the crank sensor and the signal
 plate. Those properties require a timing light and a controlled bench or engine
 test.
@@ -271,6 +272,105 @@ from `PBDR` bit 15, skip the all-high idle state, and record the number of the
 first low pin in `0xFFFF13D2`. Bit `c - 1` of both masks addresses cylinder
 `c`. The external driver stage and the
 cylinder-to-pin continuity are hardware boundaries.
+
+## Output enables and dwell sequencing
+
+Both `POPCR` actions are one-shot. Handler `0x0002AB24`, at interrupt-table
+entry `0x000202E4`, services the `GR11A` match. While the set compare is armed
+(`0xFFFF8517.bit7`) it clears the low byte of `POPCR`, clears the armed bit
+and, with crank sync `0xFFFF8501.bit7`, advances dwell channel
+`0xFFFF13D3 = ROM8[0x22680 + 0xFFFF13C9]`, the successor of the event
+cylinder. It also sets `0xFFFF850E.bit7` while `0xFFFF84EA.bit7` is set,
+`0xFFFF13D2` is zero and `0xFFFF24C9.bit6` is clear.
+
+Handler `0x0002AF38`, at entry `0x000202EC`, services the `GR11B` match while
+`0xFFFF8518.bit7` is set. With interrupts masked it saves the high byte of
+`POPCR`, the pins that have just entered dwell, in `0xFFFF13CE` and clears
+that byte. It then recomputes the dwell mask
+`0xFFFF13D1 = ROM8[0x22687 + 0xFFFF13D3]`, the one-hot bit of the successor
+of `0xFFFF13D3`; `0xFFFF4198.bit1` forces the mask to zero instead. With the
+stock tables every `GR11A` match advances `0xFFFF13D3` by one cylinder and
+every `GR11B` match advances `0xFFFF13D1` by one cylinder.
+
+In normal mode `0x0002ACBA` only stores the decade and remainder of the
+secondary command. Two alternating countdown slots hold them:
+`0xFFFF1448` with remainder `0xFFFF144E` and `0xFFFF144A` with remainder
+`0xFFFF144F`. The crank-tooth handler `0x00028EA2` decrements each slot on
+every tooth. At zero it computes the compare offset through divider
+`0x00021CE0`, whose call target both slots load from literal `0x000296C0`
+(`0x000294A2`, `0x0002953A`), and writes `GR11B = 0xFFFF158A + offset`. It
+enables the high-byte action of `0xFFFF13D1` only when `0xFFFF84EA.bit7` and
+`0xFFFF4185.bit7` are set, `0xFFFF13D2` is zero and `0xFFFF8511.bit7` is
+clear (`0x000294DE..0x0002950C`, `0x00029574..0x000295A2`). It sets
+`0xFFFF8518.bit7` in either case, so the `GR11B` match is serviced even when
+no pin is enabled.
+
+## Dwell sequence guard and recovery
+
+After recomputing `0xFFFF13D1`, handler `0x0002AF38` compares it with the
+successor of its previous value (`0x20` becomes `0x01`, other values shift
+left by one). While `0xFFFF84EA.bit7` is set and `0xFFFF13D2` is zero, a
+mismatch or a zero mask sets bits 7 and 6 of `0xFFFF8511`. A consistent
+advance copies bit 7 into bit 6 and clears bit 7. Bit 7 withholds the next
+dwell-start enable; bit 7 or bit 6 blocks the recovery below.
+
+When the crank-tooth handler arms the set compare (`0x00029308..0x0002947E`)
+and the `PULS` pin of firing mask `0xFFFF13BD` still reads high, it restarts
+the dwell if `0xFFFF850E.bit7` is set, reset offset `0xFFFF2230` exceeds 20
+(a dwell angle below 100 degrees) and bits 7 and 6 of `0xFFFF8511` are clear.
+It clears the countdown slot selected by `0xFFFF84FB.bit7`, writes
+`GR11B = TCNT11 + 2` and clears the `GR11B` match flag. With `0xFFFF84EA.bit7`
+and `0xFFFF4185.bit7` set and `0xFFFF13D2` zero, it enables the high-byte
+action when `0xFFFF13D1` equals `0xFFFF13BD`, and otherwise clears both
+countdown slots. The cylinder then fires with only the angle that remains
+between the arming tooth and its set compare. Primary scheduler `0x0002A892`
+contains the same recovery for a set compare that its own call arms.
+
+## Dwell timeout
+
+For the pins saved in `0xFFFF13CE`, handler `0x0002AF38` arms a dwell timeout
+in one of two alternating slots selected by `0xFFFF851A.bit7`:
+
+| Slot | Pins | Compare | Handler | Table entry |
+| --- | --- | --- | --- | --- |
+| A | `0xFFFF13CF` | `0xFFFFF4E2` | `0x0002B396` | `0x00020224` |
+| B | `0xFFFF13D0` | `0xFFFFF4E4` | `0x0002B4EC` | `0x00020228` |
+
+The timeout angle is `0xFFFF237A + ROM8[0x8A4F] + ROM8[0x8986]`, the dwell
+angle plus `20 + 30` crank degrees, saturated at 255 and stored in
+`0xFFFF1326`. It is converted with event period `0xFFFF11FC` as
+`angle * 0xFFFF11FC / 1200`, capped at `ROM16[0x9222] = 3125`, stored in
+`0xFFFF1834` and multiplied by ten. Longer timeouts run through extension
+counts `0xFFFF1322` and `0xFFFF1324`. When the timeout expires and a pin of
+its slot still reads low, the handler forces the spark: with a pending set
+countdown in `0xFFFF1558` it clears the countdown, writes
+`GR11A = TCNT11 + 2`, enables the low-byte action of the slot pins and sets
+`0xFFFF8517.bit7`. Without a pending countdown it moves `GR11A` to
+`TCNT11 + 2` when the compare lies more than five counts ahead or
+`0xFFFF13D2` is nonzero, and enables the low-byte action of the slot pins.
+At constant speed the forced spark follows the scheduled spark by about 50
+crank degrees.
+The absolute time unit of the timeout is not established here.
+
+## Consequences of an omitted compare
+
+- A set compare that is never scheduled after its dwell started leaves the
+  pin low until the dwell timeout forces a late spark. The `GR11A` match of
+  that forced spark arrives without `0xFFFF8517.bit7`, so `0x0002AB24` does not
+  advance `0xFFFF13D3`, and the next `GR11B` match trips the sequence guard.
+- A reset compare that is never scheduled leaves the pin high. The recovery at
+  the set arming restarts the dwell, and the cylinder fires with a short
+  dwell.
+- Clearing `0xFFFF13D1` before an arming withholds that dwell, and the next
+  `GR11B` match then sees a zero previous mask. The guard sets bits 7 and 6,
+  which also withholds the dwell of the following cylinder and blocks its
+  recovery.
+- A dwell-start enable that is withheld through `0xFFFF8511.bit7` while its
+  `GR11B` match is still serviced keeps both sequences intact. The match leaves
+  `0xFFFF13CE` zero, so no timeout is armed; the guard sees a consistent
+  advance and moves bit 7 into bit 6, which blocks the recovery at the set
+  arming of that cylinder. Its `GR11A` match finds the pin high and produces
+  no edge, and the next arming enables normally.
 
 ## Acceptance boundary
 
