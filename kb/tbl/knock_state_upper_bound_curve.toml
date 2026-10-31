@@ -62,11 +62,11 @@ note = """
 JK78C 00062780 reads the upper bound curve 000164e4 over the bound axis \
 0001577a at 00062cb8 under knock_selector_config bit 5. At the same step \
 1ME3B 00071d64 reads no curve: when fffe945b bit 7 is clear it loads the \
-ROM16 word 00009378 (stock 0x0310, the first JK78C curve value), and when \
-the bit is set it adds 0x258 to the 8x8 byte surface 0000a774 over axes \
-00013599 and 000135a9, read through 000295f4. 1ME3B holds no byte copy of \
-the 32-byte JK78C curve. No target absence of the upper bound is asserted; \
-the scalar and the surface are 1ME3B-specific sources."""
+ROM16 word 00009378 (stock 0x0310, equal to every point of the flat JK78C \
+curve), and when the bit is set it adds 0x258 to the 8x8 byte surface \
+0000a774 over axes 00013599 and 000135a9, read through 000295f4. 1ME3B holds \
+no byte copy of the 32-byte JK78C curve. No target absence of the upper \
+bound is asserted; the scalar and the surface are 1ME3B-specific sources."""
 
 [[link]]
 type = "axis"

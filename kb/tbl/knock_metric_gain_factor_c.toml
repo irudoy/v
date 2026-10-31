@@ -24,9 +24,10 @@ capped at 0xffff scales the absolute selected sum by a 16x32 split multiply \
 with rounding and overflow to 0x80000000, the positive result is capped at \
 0x7fffffff, the sign is restored, and the signed and offset-binary metrics \
 are published. Its 149 mnemonics equal 1ND 0006e6fa. The product is \
-commutative; the pairing of the three bytes follows the literal-pool slot \
-order, which matches JK78C slot by slot, and the calibration-block order b < \
-c < a, which both layouts share. MOV.L 00072604 loads this table, as MOV.L \
+commutative; the pairing of the three bytes follows their positions, which \
+match JK78C: the literal-pool slot order c, b, a, the multiply order in \
+which c and b are the MULU.W operands and a is the MUL.L operand, and the \
+calibration-block order b < c < a. MOV.L 00072604 loads this table, as MOV.L \
 jk78c:00063726 loads 000085ae. Its 1 stock byte equals JK78C."""
 
 [[symbol]]
@@ -45,10 +46,11 @@ capped at 0xffff scales the absolute selected sum by a 16x32 split multiply \
 with rounding and overflow to 0x80000000, the positive result is capped at \
 0x7fffffff, the sign is restored, and the signed and offset-binary metrics \
 are published. The product is commutative; the pairing of the three bytes \
-follows the literal-pool slot order, which matches JK78C slot by slot, and \
-the calibration-block order b < c < a, which both layouts share. MOV.L \
-0006e6fc loads this table, as MOV.L jk78c:00063726 loads 000085ae. Its 1 \
-stock byte equals JK78C on 1ND0A and 1ND3B."""
+follows their positions, which match JK78C: the literal-pool slot order c, \
+b, a, the multiply order in which c and b are the MULU.W operands and a is \
+the MUL.L operand, and the calibration-block order b < c < a. MOV.L 0006e6fc \
+loads this table, as MOV.L jk78c:00063726 loads 000085ae. Its 1 stock byte \
+equals JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "7mfk"

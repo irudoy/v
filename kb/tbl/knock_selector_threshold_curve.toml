@@ -26,11 +26,13 @@ supports = "homology"
 at = "1me3b:00072140"
 to = "jk78c:00013eb0"
 note = """
-Target function 00071d64 runs the knock state program of JK78C 00062780: \
-under knock_selector_config bit 5 the upper bound from a target-specific \
-source and the lower bound curve over the bound axis, then the quiet \
-increment and event decrement curves over the able-butterfly axis, then the \
-selector threshold and hysteresis curves over the selector state axis. MOV.L \
+Target function 00071d64 runs the knock state program of JK78C 00062780 \
+without the knock_selector_config bit 5 gate that JK78C and 1ND apply: it \
+always takes the upper bound from a target-specific source selected by \
+fffe945b bit 7 and reads the lower bound curve over the bound axis, then the \
+quiet increment and event decrement curves over the able-butterfly axis, \
+then the selector threshold and hysteresis curves over the selector state \
+axis. Its only tests of knock_selector_config (00008a7c) check bit 7. MOV.L \
 00072140 loads this table for the call at 00072142 (groovy-lynx), as MOV.L \
 jk78c:000631de loads 00013eb0 for the call at 000631e4 (speedy-guan). Its 16 \
 stock bytes equal JK78C."""
