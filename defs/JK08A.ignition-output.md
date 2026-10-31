@@ -314,9 +314,11 @@ is timing dispatcher `0x0004E162`, which calls `0x0004DF82` and then
 event is the primary command plus `120 - 0xFFFF237A`, so the dwell scheduled
 at an event belongs to the successor cylinder.
 
-Each countdown slot raises the interrupt mask to 8 before its divider call
-(`0x00029480`) and to 15 from its `GR11B` write through the enable check
-(`0x000294C8..0x00029520`). The recovery at set arming runs its compare write
+Each countdown slot runs its divider call at interrupt mask 8, set at
+`0x00029480`, and raises the mask to 15 from its `GR11B` write through the
+enable check (`0x000294C8..0x00029520`). The set-arming section runs at mask
+15, so `0x00029480` lowers the mask from 15 to 8; the paths that skip that
+section already run at the mask 8 that `0x000291E0..0x000291E8` set. The recovery at set arming runs its compare write
 and enable under mask 15 from `0x0002932E`. Handler `0x0002AB24` has no caller
 besides its table entry; it saves its registers on entry and returns with
 `RTE`. Handler `0x0002AF38` is the only stock writer of `0xFFFF8511`; the

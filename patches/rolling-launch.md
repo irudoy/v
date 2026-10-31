@@ -411,9 +411,11 @@ The veto fails toward a fired event. A dwell armed before the bit is set
 consumes the bit at its `GR11B` service and fires, so a misplaced or late veto
 never leaves a coil energized. Handler `0x0002AF38` is the only stock writer
 of `0xFFFF8511`, so a cut point sets the bit with one `OR.B` on `GBR` or with
-interrupts masked. The cam fallback path reads `0xFFFF8511` through
-`0x0002B768`, so every cut point passes all events through while
-`0xFFFF24C9.bit6` is set.
+interrupts masked. The cam fallback reads `0xFFFF8511` in `0x0002B768` and in
+the fallback branch of `0x0002AF38`, which arms a dwell while
+`0xFFFF24C9.bit6` and bit 5 or 6 of `0xFFFF8518` are set and enables the high
+byte only while `0xFFFF8511.bit7` is clear (`0x0002B344..0x0002B358`). Every
+cut point therefore passes all events through while `0xFFFF24C9.bit6` is set.
 
 ### Cut point
 
@@ -425,6 +427,16 @@ two alternative points:
 | Spark handler (chosen): table entry `0x000202E4` redirected to a wrapper that branches to `0x0002AB24` | No `GR11B` match falls between a spark and the dwell start of its successor, so the veto reaches the dwell of the successor that the handler writes to `0xFFFF13D3`. Above about 110 degrees of dwell the successor can be armed before the spark, and that event fires. | Every event | The preceding spark, 120 crank degrees before the target spark | One table word and a wrapper in the `GR11A` interrupt |
 | Countdown divider: literal `0x000296C0` redirected to a wrapper that tail-calls `0x00021CE0` | A `GR11B` match with priority above 8 can preempt between the wrapper and the mask-15 section, and that event fires. | Every event | The arming tooth, within 10 degrees of the dwell start | One literal word and a wrapper in the crank-tooth interrupt, run at every countdown expiry |
 | Ignition hook `0x0004E198` | The veto reaches the next dwell that a countdown arms, of the current cylinder or its successor. A dwell already armed consumes it, and that event fires. | Depends on the spark and dwell angles | The event tooth | The existing ignition adapter; no new hook |
+
+The wrapper decides the veto before it branches to `0x0002AB24`, which clears
+`0xFFFF8517.bit7` at `0x0002ABAC..0x0002ABAE`. It sets the veto only while
+`0xFFFF8517.bit7` and the sync bit `0xFFFF8501.bit7` are set and
+`0xFFFF24C9.bit6` is clear. The stock handler treats a `GR11A` match as a
+spark event only with `0xFFFF8517.bit7`, and it advances `0xFFFF13D3` only
+with `0xFFFF8501.bit7`. The no-pending branch of the dwell timeout
+(`0x0002B498..0x0002B4C8`) produces a `GR11A` match without
+`0xFFFF8517.bit7`; a veto at that match would withhold an extra dwell and
+miscount the cut events.
 
 All three points use the same stock veto, so the open hardware questions are
 the same: the absence of a spark at the coil on a vetoed event, the behavior
@@ -442,7 +454,10 @@ match with priority above 8 can take its veto inside the crank-tooth
 interrupt. The ignition hook is not used because its authority depends on the
 spark and dwell angles. The edge case of the spark handler needs a dwell
 angle above about 110 degrees, and a log of `0xFFFF237A` over the hold range
-shows whether the hold reaches it.
+shows whether the hold reaches it. Above 120 degrees the `GR11B` match of the
+successor precedes the spark, so the veto passes to the following arming and
+the cut moves by one cylinder; the wrapper sets no veto above about 110
+degrees, which keeps the cut accounting per cylinder.
 
 ### Torque paths outside the ignition cut
 
@@ -498,12 +513,16 @@ cut port evaporates and must rebuild when the cylinder resumes.
 A withheld spark and a fuel cut both leave the misfire monitor running,
 because no readiness condition reads the inhibit mask or the DFCO state. On
 activation the runtime stores the marker `0x01` into latch `0xFFFF436F` when
-the latch is zero. The readiness gate then fails, which clears bits 6 and 7
-of `0xFFFF4251` and the P030 working state. The COOLDOWN -> IDLE transition
+the latch is zero. The readiness gate then fails, which clears bits 6 and 7 of
+`0xFFFF4251` and the P030 working state. The COOLDOWN -> IDLE transition
 clears the latch only while it holds `0x01`, so a stock value is never
-overwritten. The P030 metrics span thirteen event periods, so the latch stays
-held for at least thirteen events after the last cut. The rearm period must
-cover that span; one second covers it above 260 RPM.
+overwritten. The stock writer stores calibration byte `ROM8[0x00008C2E]`
+(`0x32` in stock), so the rule requires that byte to differ from `0x01`. The
+check-and-store of the marker runs in the task of `0x00082C8A` or with
+interrupts masked, so it cannot interleave with the stock writer. The P030
+metrics span thirteen event periods, so the latch stays held for at least
+thirteen events after the last cut. The rearm period must cover that span; one
+second covers it above 260 RPM.
 
 ## Configuration
 

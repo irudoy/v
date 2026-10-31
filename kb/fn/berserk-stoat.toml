@@ -8,7 +8,12 @@ one-hot successor of dwell channel ffff13d3; bit 1 of ffff4198 forces the \
 mask to zero. While ffff84ea.bit7 is set and ffff13d2 is zero, a mask that \
 is zero or not the successor of the previous one sets bits 7 and 6 of \
 ffff8511, and a consistent advance moves bit 7 into bit 6. It arms the dwell \
-timeout of the saved pins in the slot that ffff851a.bit7 selects."""
+timeout of the saved pins in the slot that ffff851a.bit7 selects. While \
+ffff24c9.bit6 is set and bit 5 or 6 of ffff8518 is set, a fallback branch \
+arms the next dwell itself: it writes GR11B for the dwell start and, while \
+ffff84ea.bit7 and ffff4185.bit7 are set, ffff13d2 is zero and ffff8511.bit7 \
+is clear, enables the POPCR high byte of the ffff13d1 pins; it then sets \
+ffff8518.bit7 and clears bits 5 and 6."""
 level = "code"
 role = "handler"
 block = "ignition_output/block"
@@ -126,6 +131,69 @@ kind = "l0-context"
 supports = "identity"
 at = "7mfk:0002b358"
 value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002af8c"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b0be"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b10c"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b12e"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b180"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b1ec"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b218"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b220"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b346"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
 key = "reference"
 
 [[link]]

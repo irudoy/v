@@ -509,8 +509,9 @@ No gate condition and no misfire function reads the fuel-inhibit mask
 leaves the monitor running while the gate passes.
 
 The latch `0xFFFF436F` has one reader and one writer, both in the
-coordinator. The writer stores `0x32` under a condition on `0xFFFF84C3` and
-`0xFFFF2B73`, and no instruction stores another value. A nonzero latch
+coordinator. The writer stores calibration byte `ROM8[0x00008C2E]` (`0x32` in
+stock) under a condition on `0xFFFF84C3` and `0xFFFF2B73`, and no instruction
+stores another value. A nonzero latch
 suspends the monitor and has no other reader. The producer of
 `0xFFFF41C8.bit7` is unresolved.
 
