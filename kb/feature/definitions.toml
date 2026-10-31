@@ -99,12 +99,9 @@ cover all six 1ME3B checksum fields. The Developer Immobilizer control \
 addresses the configuration byte that the eleven target consumers of the \
 1ND0A flag read. Exact target-native fuel-cut caps and activation/release \
 curves are added from the SHA-bound VQ37 registry. Map 2 through Map 5 \
-storage, Rolling Launch controls, and the CAN Telemetry at Startup control \
-use the validated 1ME3B runtime allocation in \
-patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests \
-all-cylinder fuel cut after the stock final-mask coordinator and does not \
-reuse the VQ35HR fuel-shadow maps."""
-rolling_launch = true
+storage and the CAN Telemetry at Startup control use the validated 1ME3B \
+runtime allocation in patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
@@ -209,12 +206,9 @@ all six 1ND fields. The native RomRaider alt2 handler maintains the four \
 fields a definition entity can invalidate: both primary SUM16 values and the \
 runtime XOR and SUM pair. The boot and vector SUM16 domains end at 0x8200, \
 below every published entity, so no editor session can leave them stale. Map \
-2 through Map 5 storage, Rolling Launch controls, and the CAN Telemetry at \
-Startup control use the validated 1ND runtime allocation in \
-patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests \
-all-cylinder fuel cut after the stock final-mask coordinator and does not \
-reuse the VQ35HR fuel-shadow maps."""
-rolling_launch = true
+2 through Map 5 storage and the CAN Telemetry at Startup control use the \
+validated 1ND runtime allocation in patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
@@ -243,12 +237,10 @@ evidence keeps code confidence. The project checksum implementation verifies \
 and recalculates all six 1ND fields, and the native RomRaider alt2 handler \
 maintains the four fields a definition entity can invalidate. Exact \
 target-native fuel-cut caps and activation/release curves are added from the \
-independently SHA-bound 1ND3B image. Map 2 through Map 5 storage, Rolling \
-Launch controls, and the CAN Telemetry at Startup control use the validated \
-1ND runtime allocation in patches/rom-address-profiles.toml. The VQ37 \
-Rolling Launch variant requests all-cylinder fuel cut after the stock \
-final-mask coordinator and does not reuse the VQ35HR fuel-shadow maps."""
-rolling_launch = true
+independently SHA-bound 1ND3B image. Map 2 through Map 5 storage and the CAN \
+Telemetry at Startup control use the validated 1ND runtime allocation in \
+patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
@@ -658,10 +650,9 @@ Every emitted stock map and axis is relocated through the SHA-bound reviewed \
 correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous \
 claims are downgraded to candidate confidence unless target-specific \
 evidence keeps code confidence. Maps without a unique target homolog are \
-omitted explicitly. Map 2 through Map 5 storage and Rolling Launch controls \
-use the validated JK00C runtime allocation in \
-patches/rom-address-profiles.toml."""
-rolling_launch = true
+omitted explicitly. Map 2 through Map 5 storage uses the validated JK00C \
+runtime allocation in patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
@@ -987,10 +978,9 @@ Every emitted stock map and axis is relocated through the SHA-bound reviewed \
 correspondence in defs/JK08A-JK00D.definition-addresses.csv. Homologous \
 claims are downgraded to candidate confidence unless target-specific \
 evidence keeps code confidence. Maps without a unique target homolog are \
-omitted explicitly. Map 2 through Map 5 storage and Rolling Launch controls \
-use the validated JK00D runtime allocation in \
-patches/rom-address-profiles.toml."""
-rolling_launch = true
+omitted explicitly. Map 2 through Map 5 storage uses the validated JK00D \
+runtime allocation in patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
@@ -1084,12 +1074,10 @@ evidence keeps code confidence. Source tables whose JK78C implementation \
 changes geometry or removes the corresponding lookup are omitted explicitly. \
 Exact target-native fuel-cut caps and activation/release curves are added \
 from the SHA-bound VQ37 registry. The project and native RomRaider checksum \
-contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage, \
-Rolling Launch controls, and the CAN Telemetry at Startup control use the \
-validated JK78C runtime allocation in patches/rom-address-profiles.toml. The \
-VQ37 Rolling Launch variant requests all-cylinder fuel cut after the stock \
-final-mask coordinator and does not reuse the VQ35HR fuel-shadow maps."""
-rolling_launch = true
+contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage \
+and the CAN Telemetry at Startup control use the validated JK78C runtime \
+allocation in patches/rom-address-profiles.toml."""
+rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"

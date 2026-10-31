@@ -583,13 +583,6 @@ class ProfileAdapterTest(unittest.TestCase):
 
     def test_a_key_that_another_meaning_fills_on_a_layout_binds_a_role(self):
         m = model()
-        rolling = m.targets[("rolling_launch", "1nd")].props
-        role = rolling["roles"]["fuel_inhibit"]
-        self.assertEqual(role["symbol"], SymbolKey("1nd", "ram", 0xFFFE94BA))
-        self.assertIn("the arm and the active cut", role["note"])
-        self.assertEqual(m.meaning_of(role["symbol"]).key, "rev_fuel_cut_state/ram")
-        self.assertEqual(rolling["symbols"]["fuel_inhibit_mask"],
-                         SymbolKey("1nd", "ram", 0xFFFE92E4))
         state = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF2497))
         self.assertEqual((state.key, sorted(state.symbols)),
                          ("fuel_inhibit/ram", ["7mfk", "jk00c", "jk00d"]))
@@ -719,11 +712,12 @@ class ProfileAdapterTest(unittest.TestCase):
 
     def test_feature_targets_carry_hooks_allocations_and_status(self):
         m = model()
-        rolling = m.targets[("rolling_launch", "jk00d")]
+        rolling = m.targets[("rolling_launch", "7mfk")]
         self.assertEqual(rolling.status, "supported")
         self.assertIn("displaced_periodic_task", rolling.props["hooks"])
         self.assertTrue(rolling.props["allocations"])
-        self.assertEqual(rolling.props["allocations"]["flags"]["address"], "ffff6042")
+        self.assertEqual(rolling.props["allocations"]["flags"]["address"], "ffff5d42")
+        self.assertEqual(m.targets[("rolling_launch", "jk00d")].status, "planned")
         runtime = m.targets[("runtime", "1nd")]
         self.assertEqual(runtime.props["rom_delta"], 0x60000)
         self.assertEqual(runtime.props["free_ram_start"], "ffff0c00")
@@ -781,12 +775,14 @@ class ProfileAdapterTest(unittest.TestCase):
 
     def test_a_later_feature_states_its_hook_text_in_its_target(self):
         m = model()
-        word = SymbolKey("1nd", "hook", 0x00115490)
+        word = SymbolKey("1nd", "hook", 0x0002B398)
         self.assertEqual(profiles.row_item(m.symbols[word], "the word")[1]["note"],
-                         "Dispatcher literal resolves the exact 0x551 serializer")
-        entry = m.targets[("rolling_launch", "1nd")].props["hooks"]["feedback_arbitration"]
+                         "Literal call target identifies the exact startup initializer")
+        self.assertNotIn("note", m.targets[("map_switching", "1nd")].props["hooks"]
+                         ["startup_initializer"])
+        entry = m.targets[("can_telemetry", "1nd")].props["hooks"]["startup_state_clear"]
         self.assertEqual((entry["hook"], entry["note"]),
-                         (word, "Rolling feedback chains from the Map Switching serializer wrapper"))
+                         (word, "Telemetry clear can chain from the startup literal"))
 
 
 class DefinitionAdapterTest(unittest.TestCase):

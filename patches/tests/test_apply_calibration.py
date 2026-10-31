@@ -82,10 +82,10 @@ def test_application_over_a_fresh_build_reproduces_the_source(rom):
     fresh = built(rom, profile)
     result = apply_calibration.apply(fresh, extraction.calibration)
     assert result.data == source
-    assert dict(result.settings) == {
-        "rolling_launch": "matched",
-        "can_telemetry": "matched",
-    }
+    expected = {"can_telemetry": "matched"}
+    if target(rom).rolling_layout is not None:
+        expected["rolling_launch"] = "matched"
+    assert dict(result.settings) == expected
 
 
 @pytest.mark.slow

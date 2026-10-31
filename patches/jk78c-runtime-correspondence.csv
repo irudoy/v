@@ -63,28 +63,6 @@ map_symbol,rev_fuel_cut_state,,ffff23f5,,,target-specific,Bits 0x08 and 0x10 ret
 map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,"The BSR at coordinator instruction ordinal 28 targets FUN_0006aeb8, the third Boolean predicate aggregated by the final fuel-mask coordinator. It interpolates the adjacent activation and release curves on the shared eight-point axis, caps both results with the adjacent scalar limits, and compares them with the current native RPM word."
 map_symbol,selector_function,000d09d8,000fd40c,,,mapped,Unique mapped-neighbor fingerprint preserves the complete selector body
 map_symbol,startup_initializer,0002c648,0002f596,,,mapped,Instruction alignment and the stock jump literal bind the target initializer
-rolling_hook,displaced_periodic_task,00021970,00021a4c,000b2294,,mapped,Entry 0 of the homologous 144-entry scheduler table at 00021a4c binds the periodic wrapper
-rolling_hook,feedback_arbitration,000c3fa4,000eba3c,000ed03c,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
-rolling_hook,fuel_cut_coordinator,,00021ac8,0006a9b0,,target-specific,Index 31 points to the sole writer of the final six-cylinder fuel inhibit mask
-rolling_hook,primary_ignition_command,0004e198,000699d4,0002d6f6,,mapped,Producer literal calls the final ignition command consumer
-rolling_hook,selector_arbitration,000ce8dc,000fb260,000fd40c,,mapped,Rolling arbitration chains from the selector literal
-rolling_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Runtime clear chains from the startup literal
-rolling_symbol,apc_mode,ffff24c9,ffff241e,,,mapped,APC control path binds the mode byte
-rolling_symbol,apc_output,ffff2022,ffff11cf,,,target-specific,"Function 0006981e publishes byte ffff11cf at 00069938 and on its override branch at 00069948, through offset 0x0f of literal base ffff11c0. It zero-extends the selected byte into R4 in the call delay slot at 0006994e before scheduler 0002d6f6. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
-rolling_symbol,ascd_state,ffff41ae,ffff450b,,,mapped,"The MAIN switch block of 000fb9c0 stores the byte after it copies bit 0 of [[button_state/ram]] into bit 4, as the block of 7mfk:000cf020 stores 7mfk:ffff41ae at 7mfk:000d0200 after it copies the button bit into bit 7"
-rolling_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
-rolling_symbol,coolant_index,ffff1077,ffff106d,,,mapped,Coolant activation index is recovered from target consumers
-rolling_symbol,fuel_cut_coordinator,,0006a9b0,,,target-specific,Complete coordinator aggregates stock conditions before its sole final-mask store
-rolling_symbol,fuel_inhibit,ffff2497,ffff23f5,,,target-specific,The rev-limit fuel-cut state machine 0006aeb8 keeps the arm and the active cut in this byte
-rolling_symbol,fuel_inhibit_mask,ffff22e0,ffff223c,,,mapped,Aligned diagnostic pointer table preserves the inhibit mask position
-rolling_symbol,pedal,ffff2672,ffff25d0,,,mapped,Pedal activation source is recovered from target consumers
-rolling_symbol,periodic_task_slot,00021970,00021a4c,,,mapped,Entry 0 of the homologous 144-entry scheduler table at 00021a4c binds the periodic wrapper
-rolling_symbol,periodic_task_table,0002196c,00021a4c,,,mapped,Homologous 144-entry periodic task table walked by the scheduler
-rolling_symbol,rpm,ffff11bc,ffff11ac,,,mapped,Direct target consumers use the native RPM word
-rolling_symbol,scheduler_task,000a9554,000b2294,,,mapped,The stock task of entry 0 is displaced by the periodic wrapper
-rolling_symbol,stock_ignition_consumer,0002a892,0002d6f6,,,mapped,Final ignition command builder calls this consumer
-rolling_symbol,unsigned_divide,00021ce0,00021e0c,,,mapped,Exact unsigned division helper is recovered from target callers
-rolling_symbol,vehicle_speed,ffff110e,ffff10fc,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
 can_hook,coherent_snapshot_call,00028090,0002aa7c,00020f1a,,mapped,Aligned caller instruction binds the coherent snapshot boundary
 can_hook,hcan1_primary_init,0002d7fc,000306a0,000ea582,,mapped,Aligned primary caller literal binds the D800 HCAN initializer
 can_hook,hcan1_recovery_init,000c3b10,000eb584,000ea582,,mapped,Recovery path literal binds the same D800 HCAN initializer
@@ -180,5 +158,5 @@ telemetry,secondary_tps_b1_raw,ffff275e,ffff26b4,,,mapped,Aligned diagnostic poi
 telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,target-specific,"Function 00043348 reads sample word ffff3860 at 0004337c, subtracts it from 0x0400 and publishes the low word at ffff27b4 at 00043384. R13 retains literal base ffff27b2 and the store uses offset 2. This independently binds the target complemented word; sensor transfer, bank assignment, diagnostic conversion and cadence require separate target qualification."
 telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
 capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
-capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage
+capability,rolling_launch,,,,,target-specific,Rolling Launch v2 is ported to this layout after its vehicle acceptance on 7mfk; the layout carries no Rolling Launch runtime until then.
 capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record requires explicit target bindings

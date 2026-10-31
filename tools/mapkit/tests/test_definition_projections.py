@@ -63,14 +63,14 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 13
         assert values["native_maps"] == 0
-        assert values["rolling_configuration"] == 0xE0660
+        assert values["rolling_configuration"] is None
     assert stats["JK78C"]["mapped"] == 45
     assert stats["JK78C"]["unsupported"] == len(JK78C_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14
     assert stats["JK78C"]["native_maps"] == 55
-    assert stats["JK78C"]["rolling_configuration"] == 0x1E960
+    assert stats["JK78C"]["rolling_configuration"] is None
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
         assert values["mapped"] == 45
@@ -79,14 +79,14 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 18
         assert values["native_maps"] == 56
-        assert values["rolling_configuration"] == 0x133F60
+        assert values["rolling_configuration"] is None
     assert stats["1ME3B"]["mapped"] == 45
     assert stats["1ME3B"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
     assert stats["1ME3B"]["map_families"] == 18
     assert stats["1ME3B"]["native_maps"] == 61
-    assert stats["1ME3B"]["rolling_configuration"] == 0x13CF60
+    assert stats["1ME3B"]["rolling_configuration"] is None
 
 
 CVTC_TARGET_CORRESPONDENCE = {
@@ -162,7 +162,6 @@ def test_runtime_definition_layouts_use_target_allocation():
     for rom in ("JK00C", "JK00D"):
         projection = definition_projections.projection_for_rom(rom)
         maps = definition_projections.map_switching_definition_layout(projection)
-        launch = definition_projections.rolling_launch_definition_layout(projection)
 
         assert maps.rom == rom
         assert maps.slot_count == 5
@@ -171,8 +170,6 @@ def test_runtime_definition_layouts_use_target_allocation():
             "intake_cvtc_target",
             "exhaust_cvtc_target",
         } <= set(maps.family_by_key)
-        assert launch.rom == rom
-        assert launch.configuration.start == 0xE0660
 
     for rom in ("JK78C", "1ND0A", "1ND3B"):
         projection = definition_projections.projection_for_rom(rom)
@@ -194,13 +191,15 @@ def test_runtime_definition_layouts_use_target_allocation():
             "rev_limit_throttle_cut",
         } <= set(maps.family_by_key)
         assert "rev_limit_fuel_cut" not in maps.family_by_key
-        launch = definition_projections.rolling_launch_definition_layout(
-            projection
-        )
-        assert launch.variant == "vq37-fuel-coordinator"
-        assert launch.configuration.start == (
-            0x1E960 if rom == "JK78C" else 0x133F60
-        )
+
+    for rom in TARGETS:
+        projection = definition_projections.projection_for_rom(rom)
+        assert projection.rolling_launch is False
+        with pytest.raises(
+            definition_projections.DefinitionProjectionError,
+            match="Rolling Launch runtime is unavailable",
+        ):
+            definition_projections.rolling_launch_definition_layout(projection)
 
 
 def _minimal_overrides():
@@ -399,7 +398,7 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     for entry in switches:
         assert entry["storageaddress"] == expected[entry["name"]]
     assert result.overrides["map_switching"] == {"enabled": map_switching}
-    assert result.overrides["rolling_launch"] == {"enabled": True}
+    assert result.overrides["rolling_launch"] == {"enabled": False}
 
 
 def test_visible_map_without_binding_stops_projection():

@@ -142,17 +142,8 @@ word-copy limiter and state-writing serializer fixture retain their exact
 declared transformations. Guard cases use the rendered target addresses and
 independent state, return and write-effect oracles.
 
-JK00C and JK00D Rolling Launch measure the projected wrappers, engine, threshold
-helper, feedback arbiter, ignition adapter and ignition controller. The
-feedback serializer stub keeps the canonical prefix and its RTS at offset 6;
-the status literal is that target's alias. Omitting the periodic call, the
-idle ignition phase, or the invalid map index on an already invalid
-configuration, the zero band start, or an idle feedback phase with no
-abort reason, fails at that entry or branch.
-The stock divider and limiter bodies stay outside this qualification.
-JK78C, 1ND0A, 1ND3B and 1ME3B measure the VQ37 fuel-cut wrapper with the projected
-engine. Its stock coordinator call is the declared stub, and both
-request outcomes execute.
+Relocated targets carry no Rolling Launch stage; their telemetry composes on
+the map stage.
 
 JK00C, JK00D, JK78C, 1ND0A, 1ND3B and 1ME3B telemetry measure the projected wrappers, control handler, capture
 regions, completion body and the mailbox-26 SLE1 tail. The tail jumps to the
@@ -203,13 +194,13 @@ continuation. Both outcomes of every helper branch and its delay slots must
 execute. The stock divider body receives no instruction-coverage
 qualification. The engine body is in the measured scope.
 
-The canonical-only `VERIFY_CANONICAL_ROLLING` build adds boundary
+The canonical Rolling Launch harness adds boundary
 inputs for the exact floor, rounding transition, wide ramp and saturated upper
 limit. Independent literal results specify the two output words. The complete
 state, configuration, selector, shadows, runtime words, named input/output
 buffers, stack pointer and GBR must otherwise remain intact. The observed R4
 retains the configuration-pointer role exposed by `invoke_r4`; it is not a C
-return-value contract. Relocated harness matrices and assertions are unchanged.
+return-value contract.
 
 The feedback arbiter accepts only a bound invoke origin. Its literal R0 call
 runs the existing Map Switching feedback wrapper before applying Rolling Launch
@@ -223,8 +214,7 @@ results, including an IDLE case with no failure reason and a held button.
 They check every payload byte, the complete Rolling Launch and selector state,
 configuration, pulse-count constants, concrete shadows and input/output
 buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
-pattern. The existing case counter reports both canonical boundary matrices;
-relocated feedback rows and assertions retain their original behavior.
+pattern. The existing case counter reports both canonical boundary matrices.
 
 The ignition adapter and controller share the original invoke frame of the
 adapter entry. Every typed adapter instruction and conditional outcome must

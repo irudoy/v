@@ -105,14 +105,7 @@ def test_1me3b_native_fuel_cut_evidence_matches_the_exact_registry():
         )]["target"],
         16,
     ) == native.delay_calibration_address
-    assert int(
-        rows[("rolling_symbol", "fuel_cut_coordinator")]["target"], 16
-    ) == native.coordinator_address
-    coordinator_hook = rows[("rolling_hook", "fuel_cut_coordinator")]
-    assert int(coordinator_hook["target"], 16) == (
-        native.coordinator_pointer_site
-    )
-    assert int(coordinator_hook["stock"], 16) == native.coordinator_address
+    assert not any(domain.startswith("rolling_") for domain, _key in rows)
     hook_keys = (
         "rev_fuel_cut_caps_base",
         "rev_fuel_cut_activation_curve_base",

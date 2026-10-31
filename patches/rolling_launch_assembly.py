@@ -58,7 +58,6 @@ SOURCE_LABELS = {
     "ignition_controller": "rolling_launch_ignition_controller",
     "threshold_helper": "rolling_launch_threshold_helper",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
-    "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -152,7 +151,7 @@ def _validate_16_bit_source_forms(parsed):
             )
 
 
-def _validate_wrapper_abi(parsed, *, vq37=False):
+def _validate_wrapper_abi(parsed):
     texts = _texts(parsed)
     if texts[:1] != ["sts.l pr,@-r15"]:
         raise ValueError("periodic wrapper does not save PR")
@@ -165,12 +164,11 @@ def _validate_wrapper_abi(parsed, *, vq37=False):
         raise ValueError("selector arbiter needs two tail jumps")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
         raise ValueError("startup state clear loop differs")
-    clear_count = "mov #0x6,r2" if vq37 else "mov #0x5,r2"
-    if texts.count(clear_count) != 1:
+    if texts.count("mov #0x5,r2") != 1:
         raise ValueError("startup state clear size differs")
 
 
-def _validate_engine_abi(parsed, *, vq37=False):
+def _validate_engine_abi(parsed):
     texts = _texts(parsed)
     if texts[0] != "sts.l pr,@-r15":
         raise ValueError("Rolling Launch engine does not save PR")
@@ -180,15 +178,9 @@ def _validate_engine_abi(parsed, *, vq37=False):
         raise ValueError(
             "engine must have two limiter commits and one threshold call"
         )
-    expected_overlay_ops = 0 if vq37 else 1
-    if (
-        texts.count("stc sr,r7") != expected_overlay_ops
-        or texts.count("ldc r7,sr") != expected_overlay_ops
-    ):
+    if texts.count("stc sr,r7") != 1 or texts.count("ldc r7,sr") != 1:
         raise ValueError("fuel actuator synchronization differs")
-    validator_end = parsed.labels[
-        "rl_publish_active_flags" if vq37 else "rl_apply_fuel_overlay"
-    ]
+    validator_end = parsed.labels["rl_apply_fuel_overlay"]
     validator = [
         item.text.lower()
         for item in _instructions(parsed)
@@ -213,66 +205,17 @@ def _validate_engine_abi(parsed, *, vq37=False):
         for index, text in enumerate(texts)
         if text == "mov.w r0,@r4"
     ]
-    if vq37:
-        request_sequence = [
-            "mov #0x3f,r0",
-            "mov.w r0,@(0x14,r5)",
-        ]
-        if word_stores or texts.count("mov.w r0,@(0x14,r5)") != 2:
-            raise ValueError("VQ37 fuel request store contract differs")
-        if not any(
-            texts[index:index + len(request_sequence)] == request_sequence
-            for index in range(len(texts) - len(request_sequence) + 1)
-        ):
-            raise ValueError("VQ37 active fuel request sequence differs")
-        # The latch is cleared at activation and abort, set at or above cut,
-        # released below restore, and the request follows the exact latch.
-        hold_sequences = (
-            [
-                "mov.w @(0xc,r5),r0",
-                "extu.w r0,r0",
-                "cmp/hs r0,r1",
-                "bf rl_hold_below_cut",
-                "mov #0x1,r0",
-                "mov.w r0,@(0x16,r5)",
-            ],
-            [
-                "mov.w @(0xe,r5),r0",
-                "extu.w r0,r0",
-                "cmp/hs r0,r1",
-                "bt rl_hold_publish",
-                "mov #0x0,r0",
-                "mov.w r0,@(0x16,r5)",
-            ],
-            [
-                "mov.w @(0x16,r5),r0",
-                "cmp/eq 0x1,r0",
-                "bf rl_hold_done",
-                *request_sequence,
-            ],
+    try:
+        mask = texts.index("ldc r0,sr")
+        restore = texts.index("ldc r7,sr")
+    except ValueError as error:
+        raise ValueError("fuel overlay lacks SR mask or restore") from error
+    if len(word_stores) != 4 or not all(
+        mask < index < restore for index in word_stores
+    ):
+        raise ValueError(
+            "fuel overlay must contain four protected word stores"
         )
-        if texts.count("mov.w r0,@(0x16,r5)") != 4 or not all(
-            any(
-                texts[index:index + len(sequence)] == sequence
-                for index in range(len(texts) - len(sequence) + 1)
-            )
-            for sequence in hold_sequences
-        ):
-            raise ValueError("VQ37 fuel request latch differs")
-        if "rl_apply_fuel_overlay" in parsed.labels:
-            raise ValueError("VQ37 engine retains the map-shadow overlay")
-    else:
-        try:
-            mask = texts.index("ldc r0,sr")
-            restore = texts.index("ldc r7,sr")
-        except ValueError as error:
-            raise ValueError("fuel overlay lacks SR mask or restore") from error
-        if len(word_stores) != 4 or not all(
-            mask < index < restore for index in word_stores
-        ):
-            raise ValueError(
-                "fuel overlay must contain four protected word stores"
-            )
     required = {
         "rl_idle",
         "rl_active",
@@ -281,9 +224,8 @@ def _validate_engine_abi(parsed, *, vq37=False):
         "rl_evaluate_gates",
         "rl_validate_config",
         "rl_publish_active_flags",
+        "rl_apply_fuel_overlay",
     }
-    if not vq37:
-        required.add("rl_apply_fuel_overlay")
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
     mask_pointer = common._long_literals(parsed).get(
@@ -438,60 +380,6 @@ def _validate_feedback_arbiter_abi(parsed):
         raise ValueError("feedback arbiter clobbers an undeclared register")
 
 
-def _validate_fuel_cut_wrapper_abi(parsed):
-    texts = _texts(parsed)
-    if texts[:1] != ["sts.l pr,@-r15"]:
-        raise ValueError("fuel coordinator wrapper does not save PR")
-    if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
-        raise ValueError("fuel coordinator wrapper does not restore PR")
-    if texts.count("jsr @r0") != 1:
-        raise ValueError("fuel coordinator wrapper call count differs")
-    stock_call = texts.index("jsr @r0")
-    if texts[stock_call + 1] != "nop":
-        raise ValueError("fuel coordinator wrapper delay slot differs")
-    if texts.count("mov.l r0,@-r15") != 1:
-        raise ValueError("fuel coordinator wrapper does not save stock return")
-    if texts.count("mov.l @r15+,r0") != 1:
-        raise ValueError("fuel coordinator wrapper does not restore stock return")
-    stock_return_save = texts.index("mov.l r0,@-r15")
-    stock_return_restore = texts.index("mov.l @r15+,r0")
-    if stock_return_save <= stock_call or stock_return_restore <= stock_return_save:
-        raise ValueError("fuel coordinator stock return lifetime differs")
-    request = [
-        "mov.w @(0x14,r1),r0",
-        "extu.w r0,r0",
-        "mov #0x3f,r1",
-        "cmp/eq r1,r0",
-        "bf rl_fuel_return",
-    ]
-    request_start = next((
-        index
-        for index in range(len(texts) - len(request) + 1)
-        if texts[index:index + len(request)] == request
-    ), None)
-    if request_start is None or request_start <= stock_call:
-        raise ValueError("fuel request validation does not follow stock call")
-    if request_start <= stock_return_save or request_start >= stock_return_restore:
-        raise ValueError("fuel request validation escapes saved-return scope")
-    output = [
-        "mov.b @r1,r0",
-        "or 0x3f,r0",
-        "mov.b r0,@r1",
-    ]
-    if not any(
-        texts[index:index + len(output)] == output
-        for index in range(len(texts) - len(output) + 1)
-    ):
-        raise ValueError("fuel coordinator mask merge differs")
-    if "rl_fuel_return" not in parsed.labels:
-        raise ValueError("fuel coordinator fail-open return is missing")
-    registers = set()
-    for statement in _instructions(parsed):
-        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    if not registers <= {"r0", "r1", "r15", "pr"}:
-        raise ValueError("fuel coordinator wrapper clobbers an undeclared register")
-
-
 def _expected_long_literals():
     return {
         "wrappers": {
@@ -565,7 +453,6 @@ def validate_assembly_sources(layout=None):
         layout.source_literal_by_unit or _expected_long_literals()
     )
     source_texts = layout.source_text_by_unit
-    vq37 = layout.variant == "vq37-fuel-coordinator"
     for unit in layout.assembly_units:
         source_path = source_dir / unit.source
         if unit.key in source_texts:
@@ -599,9 +486,9 @@ def validate_assembly_sources(layout=None):
         if actual_literals != expected_literals[unit.key]:
             raise ValueError(f"{unit.key}: long literal contract differs")
         if unit.key == "wrappers":
-            _validate_wrapper_abi(parsed, vq37=vq37)
+            _validate_wrapper_abi(parsed)
         elif unit.key == "engine":
-            _validate_engine_abi(parsed, vq37=vq37)
+            _validate_engine_abi(parsed)
         elif unit.key == "ignition_adapter":
             _validate_ignition_abi(parsed)
         elif unit.key == "ignition_controller":
@@ -610,8 +497,6 @@ def validate_assembly_sources(layout=None):
             _validate_threshold_helper_abi(parsed)
         elif unit.key == "feedback_arbiter":
             _validate_feedback_arbiter_abi(parsed)
-        elif unit.key == "fuel_cut_wrapper":
-            _validate_fuel_cut_wrapper_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

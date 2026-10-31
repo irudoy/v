@@ -14,6 +14,9 @@
 #define MAIN_WRAPPER 0x000d4280U
 #define KNOCK_WRAPPER 0x000d42b0U
 #define STARTUP_WRAPPER 0x000d42f0U
+/* The Map Switching selector state, which the Map Switching startup wrapper
+   at the base of the startup chain clears. */
+#define MAP_SELECTOR_STATE 0xffff5d00U
 #define CAPTURE 0x000d4340U
 #define BUILD_BANK 0x000d4500U
 #define KNOCK_MARGIN_WRAPPER 0x000d4600U
@@ -451,7 +454,12 @@ static int run_wrapper_cases(void)
     count_case();
     reset_case();
     fill_bytes(ram_pointer(0xffff5df0U), 0x120, 0xa5);
+    ram_pointer(MAP_SELECTOR_STATE)[0] = 0xa5;
     (void)invoke_r4(STARTUP_WRAPPER, 0);
+    if (ram_pointer(MAP_SELECTOR_STATE)[0] != 0)
+        return fail_value(
+            "startup", "map_selector_clear",
+            ram_pointer(MAP_SELECTOR_STATE)[0], 0);
     for (index = 0; index < TELEMETRY_ACTIVE_SIZE; ++index) {
         uint8_t expected = 0;
 

@@ -10,59 +10,22 @@
 #define THROTTLE_RUNTIME 0xffff1796U
 #define RL_STATE_GUARD 0xffff5d3cU
 #define RL_STATE 0xffff5d40U
-#ifdef TARGET_VQ37_ROLLING
-#define FUEL_SHADOW_SIZE 36U
-#define THROTTLE_SHADOW 0xffff5d38U
-#define THROTTLE_SHADOW_SIZE 2U
-#define RL_STATE_SIZE 24U
-#define FUEL_CUT_WRAPPER 0x000d5000U
-#define FUEL_REQUEST_OFFSET 20U
-#define FUEL_REQUEST_MASK 0x003fU
-/* The request latch: set at or above cut, released below restore. */
-#define FUEL_REQUEST_LATCH_OFFSET 22U
-/* The final six-cylinder inhibit mask that the stock coordinator publishes
-   and the wrapper extends. */
-#define FUEL_FINAL_MASK 0xffff22e0U
-/* The base mask that the coordinator stub publishes and returns, and the
-   mask after the wrapper adds the six cylinder bits of a request. */
-#define FUEL_STOCK_MASK 0x80U
-#define FUEL_REQUESTED_MASK 0xbfU
-#else
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
 #define THROTTLE_SHADOW_SIZE 28U
 #define RL_STATE_SIZE 20U
-#endif
 #define RL_CONFIG 0x000d3f60U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
-/* The ASCD task keeps the MAIN switch state in one bit of this flag byte, at
-   the position of the layout; the other bits hold flags of other ASCD
-   functions, which neither abort the selector nor fail the launch gate. */
-#ifdef TARGET_1ND
-#define ASCD_MAIN 0x20U
-#elif defined(TARGET_1ME3B)
-#define ASCD_MAIN 0x02U
-#elif defined(TARGET_JK78)
-#define ASCD_MAIN 0x10U
-#else
+/* The ASCD task keeps the MAIN switch state in bit 7 of this flag byte; the
+   other bits hold flags of other ASCD functions, which neither abort the
+   selector nor fail the launch gate. */
 #define ASCD_MAIN 0x80U
-#endif
 #define ASCD_FOREIGN_FLAGS ((uint8_t)~ASCD_MAIN)
-/* The stock RPM fuel-cut state keeps its active cut in one bit, at the
-   position of the layout; the engine reports that bit in the fuel-cut flag,
-   and the other bits of the byte leave the flag clear. */
-#ifdef TARGET_1ND
-#define FUEL_CUT_ACTIVE 0x20U
-#elif defined(TARGET_1ME3B)
-#define FUEL_CUT_ACTIVE 0x08U
-#elif defined(TARGET_JK78)
-#define FUEL_CUT_ACTIVE 0x10U
-#elif defined(TARGET_8MFK)
-#define FUEL_CUT_ACTIVE 0x40U
-#else
+/* The stock RPM fuel-cut state keeps its active cut in bit 2; the engine
+   reports that bit in the fuel-cut flag, and the other bits of the byte leave
+   the flag clear. */
 #define FUEL_CUT_ACTIVE 0x04U
-#endif
 #define SPEED 0xffff110eU
 #define RPM 0xffff11bcU
 #define PEDAL 0xffff2672U
@@ -83,9 +46,7 @@
 #define FEEDBACK_ARBITER 0x000d41e0U
 #define FEEDBACK_COUNTS 0x000d3848U
 
-#ifndef TARGET_VQ37_ROLLING
 #define FUEL_STOCK 0x0000934eU
-#endif
 
 #define PHASE_IDLE 0U
 #define PHASE_ACTIVE 1U
@@ -142,22 +103,10 @@ static const uint8_t payload_seed[8] = {
     0x11, 0x22, 0x33, 0x44, 0x55, 0xb5, 0x77, 0x88,
 };
 
-#ifdef TARGET_VQ37_ROLLING
-static const uint32_t fuel_cap_slots[5] = {
-    0x00009040U, 0x000d24f4U, 0x000d24f8U, 0x000d24fcU,
-    0x000d353cU,
-};
-
-static const uint32_t fuel_curve_slots[5] = {
-    0x00016bf4U, 0x000d36e0U, 0x000d3700U, 0x000d3720U,
-    0x000d3740U,
-};
-#else
 static const uint32_t fuel_slots[5] = {
     0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
     0x000d3518U,
 };
-#endif
 
 static volatile uint8_t *ram_pointer(uint32_t original)
 {
@@ -270,9 +219,6 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     ram_pointer(COOLANT)[0] = 100;
     ram_pointer(FORMER_BRAKE_STATUS)[0] = 0;
     ram_pointer(FUEL_CUT_STATUS)[0] = 0;
-#ifdef TARGET_VQ37_ROLLING
-    ram_pointer(FUEL_FINAL_MASK)[0] = 0;
-#endif
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
     write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
@@ -331,15 +277,6 @@ static int verify_corrupt_recovery(const char *name)
 
 static int verify_fuel_restored(const char *name, size_t slot)
 {
-#ifdef TARGET_VQ37_ROLLING
-    uint8_t expected[FUEL_SHADOW_SIZE];
-    size_t index;
-
-    for (index = 0; index < 4; ++index)
-        expected[index] = rom_pointer(fuel_cap_slots[slot])[index];
-    for (index = 0; index < 32; ++index)
-        expected[index + 4] = rom_pointer(fuel_curve_slots[slot])[index];
-#else
     uint8_t expected[12];
     size_t index;
 
@@ -347,7 +284,6 @@ static int verify_fuel_restored(const char *name, size_t slot)
         expected[index] = rom_pointer(fuel_slots[slot])[index];
     for (index = 8; index < 12; ++index)
         expected[index] = rom_pointer(FUEL_STOCK)[index];
-#endif
     return fail_bytes(
         name, "fuel_restore", ram_pointer(FUEL_SHADOW), expected,
         sizeof(expected));
@@ -409,9 +345,6 @@ static int run_structural_cases(void)
         state[5] = test->mode;
         write_u16(state + 6, test->run_ticks);
         write_u16(state + 8, test->rearm_ticks);
-#ifdef TARGET_VQ37_ROLLING
-        write_u16(state + FUEL_REQUEST_LATCH_OFFSET, 1);
-#endif
         run_engine();
         if (!verify_corrupt_recovery(test->name))
             return 0;
@@ -740,29 +673,6 @@ static int run_config_cases(void)
 static int verify_overlay(
     const char *name, uint16_t cut, uint16_t restore)
 {
-#ifdef TARGET_VQ37_ROLLING
-    uint8_t expected[FUEL_SHADOW_SIZE];
-
-    /* Activation leaves the selected map storage unchanged. Engine speed is
-       the captured value, below cut, so no request is published yet. */
-    (void)cut;
-    (void)restore;
-    for (size_t index = 0; index < sizeof(expected); ++index)
-        expected[index] = 0xa5;
-    if (!fail_bytes(
-            name, "fuel_map_storage", ram_pointer(FUEL_SHADOW), expected,
-            sizeof(expected)))
-        return 0;
-    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET) != 0)
-        return fail_value(
-            name, "fuel_request",
-            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET), 0);
-    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET) != 0)
-        return fail_value(
-            name, "fuel_request_latch",
-            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET), 0);
-    return 1;
-#else
     uint8_t expected[8];
 
     expected[0] = (uint8_t)(cut >> 8);
@@ -784,7 +694,6 @@ static int verify_overlay(
     )
         return fail_value(name, "fuel_tail", 0, 0xa5a5a5a5U);
     return 1;
-#endif
 }
 
 static int verify_active_state(
@@ -814,21 +723,9 @@ static int verify_active_state(
         return fail_value(
             name, "retard_band_start", read_u16(state + 18),
             retard_band_start);
-#ifdef TARGET_VQ37_ROLLING
-    /* The activation pass runs at the captured speed, below cut, in every
-       mode. */
-    if (read_u16(state + FUEL_REQUEST_OFFSET) != 0)
-        return fail_value(
-            name, "fuel_request", read_u16(state + FUEL_REQUEST_OFFSET), 0);
-    if (read_u16(state + FUEL_REQUEST_LATCH_OFFSET) != 0)
-        return fail_value(
-            name, "fuel_request_latch",
-            read_u16(state + FUEL_REQUEST_LATCH_OFFSET), 0);
-#endif
     return verify_state_guards(name);
 }
 
-#ifdef VERIFY_CANONICAL_ROLLING
 static int run_canonical_threshold_case(
     const char *name, uint16_t captured, uint16_t cut,
     uint16_t expected_restore, uint16_t expected_band_start,
@@ -905,34 +802,6 @@ static int run_threshold_helper_case(
         name, captured, cut, expected_restore, expected_band_start,
         4, 12, 8, 16, 20, 100);
 }
-#else
-static int run_threshold_helper_case(
-    const char *name,
-    uint16_t captured,
-    uint16_t cut,
-    uint16_t expected_restore,
-    uint16_t expected_band_start)
-{
-    volatile uint8_t *state;
-
-    count_case();
-    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
-    rom_pointer(RL_CONFIG)[9] = 8;
-    state = ram_pointer(RL_STATE);
-    write_u16(state + 10, captured);
-    write_u16(state + 12, cut);
-    (void)invoke_r4(THRESHOLD_HELPER, 0);
-    if (read_u16(state + 14) != expected_restore)
-        return fail_value(
-            name, "restore", read_u16(state + 14), expected_restore);
-    if (read_u16(state + 18) != expected_band_start)
-        return fail_value(
-            name, "retard_band_start", read_u16(state + 18),
-            expected_band_start);
-    return verify_state_guards(name);
-}
-
-#endif
 
 static int run_threshold_helper_cases(void)
 {
@@ -948,7 +817,6 @@ static int run_threshold_helper_cases(void)
     if (!run_threshold_helper_case(
             "threshold-saturated", 0xfff8, 0xffff, 0xfff3, 0xfff8))
         return 0;
-#ifdef VERIFY_CANONICAL_ROLLING
     if (!run_threshold_helper_case("threshold-exact-floor", 200, 216, 212, 208))
         return 0;
     if (!run_threshold_helper_case("threshold-rounding-low", 324, 340, 334, 328))
@@ -962,7 +830,6 @@ static int run_threshold_helper_cases(void)
             "threshold-upper", 0xffff, 0xffff, 0xff00, 0xffff,
             4, 255, 8, 256, 255, 100))
         return 0;
-#endif
     return 1;
 }
 
@@ -1019,15 +886,10 @@ static int run_activation_cases(void)
             "activate-fuel-cut", "flags", read_u16(state + 2),
             FLAGS_RPM_FUEL_CUT_ACTIVE);
 
-    /* Every other bit of the state byte leaves the flag clear, and on the
-       VQ37VHR layouts so does a final mask that inhibits all six cylinders,
-       as the wrapper leaves it after a Rolling Launch request. */
+    /* Every other bit of the state byte leaves the flag clear. */
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
     ram_pointer(FUEL_CUT_STATUS)[0] = (uint8_t)~FUEL_CUT_ACTIVE;
-#ifdef TARGET_VQ37_ROLLING
-    ram_pointer(FUEL_FINAL_MASK)[0] = 0x3fU;
-#endif
     run_engine();
     if (read_u16(state + 2) != FLAGS_RPM_ACTIVE)
         return fail_value(
@@ -1225,7 +1087,6 @@ static int invoke_ignition(
     volatile uint8_t *state = ram_pointer(RL_STATE);
     uint32_t returned;
 
-#ifdef VERIFY_CANONICAL_ROLLING
     uint8_t expected_state[RL_STATE_SIZE];
     struct ignition_preserved_buffer {
         uint32_t address;
@@ -1242,10 +1103,8 @@ static int invoke_ignition(
     uint8_t expected_configuration[32];
     uint32_t sp_before, sp_after, gbr_before, gbr_after;
     size_t index, byte;
-#endif
     write_u16(ram_pointer(RPM), rpm);
     ram_pointer(IGNITION_OUTPUT)[0] = stock;
-#ifdef VERIFY_CANONICAL_ROLLING
     for (byte = 0; byte < sizeof(expected_state); ++byte)
         expected_state[byte] = state[byte];
     expected_state[16] = stock;
@@ -1257,9 +1116,7 @@ static int invoke_ignition(
             buffers[index].bytes[byte] = ram_pointer(buffers[index].address)[byte];
     __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
     __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
-#endif
     returned = invoke_r4(IGNITION_ADAPTER, stock);
-#ifdef VERIFY_CANONICAL_ROLLING
     __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
     __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
     if (sp_after != sp_before)
@@ -1276,7 +1133,6 @@ static int invoke_ignition(
             return 0;
     if (!verify_state_guards(name))
         return 0;
-#endif
 
     if (returned != expected)
         return fail_value(name, "returned", returned, expected);
@@ -1424,15 +1280,12 @@ static int run_ignition_cases(void)
     if (!invoke_ignition("ign-saturated-band", 110, 0xfffc, 112))
         return 0;
 
-#if defined(VERIFY_CANONICAL_ROLLING) || defined(MEASURE_ROLLING_COVERAGE)
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
     write_u16(ram_pointer(RL_STATE) + 18, 0);
     if (!invoke_ignition("ign-zero-band-start", 110, 308, 110))
         return 0;
-#endif
-#ifdef VERIFY_CANONICAL_ROLLING
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
@@ -1441,7 +1294,6 @@ static int run_ignition_cases(void)
     write_u16(ram_pointer(RL_STATE) + 18, 1);
     if (!invoke_ignition("ign-minimum-interior-band", 110, 2, 112))
         return 0;
-#endif
 
     for (index = 0; index < ARRAY_SIZE(invalid); ++index) {
         count_case();
@@ -1469,12 +1321,10 @@ static const struct feedback_case feedback_cases[] = {
         "feedback-idle-released", PHASE_IDLE, REASON_RPM_LOW, 0,
         {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
     },
-#if defined(VERIFY_CANONICAL_ROLLING) || defined(MEASURE_ROLLING_COVERAGE)
     {
         "feedback-idle-clear-held", PHASE_IDLE, REASON_NONE,
         FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
     },
-#endif
     {
         "feedback-failed-held", PHASE_IDLE, REASON_RPM_LOW,
         FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xd5, {0, 0, 0, 0},
@@ -1514,7 +1364,6 @@ static int run_feedback_cases(void)
         volatile uint8_t *state;
         size_t index;
 
-#ifdef VERIFY_CANONICAL_ROLLING
         struct preserved_feedback_buffer {
             uint32_t address;
             size_t size;
@@ -1533,7 +1382,6 @@ static int run_feedback_cases(void)
         const uint8_t expected_counts[2] = {1, 1};
         uint32_t sp_before, sp_after, gbr_before, gbr_after;
         size_t byte;
-#endif
 
         count_case();
         reset_case(MODE_OBSERVE, 0x01);
@@ -1548,7 +1396,6 @@ static int run_feedback_cases(void)
         rom_pointer(FEEDBACK_COUNTS)[0] = 1;
         rom_pointer(FEEDBACK_COUNTS)[1] = 1;
 
-#ifdef VERIFY_CANONICAL_ROLLING
         /* The arbiter consumes only phase, reason and flags. Preserve the
            remaining state bytes without relying on their reset zeros. */
         fill_bytes(state + 4, RL_STATE_SIZE - 4U, 0x5a);
@@ -1564,9 +1411,7 @@ static int run_feedback_cases(void)
                 buffers[index].bytes[byte] = ram_pointer(buffers[index].address)[byte];
         __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
         __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
-#endif
         (void)invoke_r4(FEEDBACK_ARBITER, 0);
-#ifdef VERIFY_CANONICAL_ROLLING
         __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
         __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
         if (sp_after != sp_before)
@@ -1586,7 +1431,6 @@ static int run_feedback_cases(void)
             if (!fail_bytes(test->name, "preserved_buffer", ram_pointer(buffers[index].address),
                             buffers[index].bytes, buffers[index].size))
                 return 0;
-#endif
 
 
         for (index = 0; index < sizeof(payload_seed); ++index) {
@@ -1678,229 +1522,6 @@ static int run_wrapper_cases(void)
     return 1;
 }
 
-#ifdef TARGET_VQ37_ROLLING
-struct fuel_wrapper_case {
-    const char *name;
-    uint16_t request;
-    uint8_t expected_mask;
-};
-
-static const struct fuel_wrapper_case fuel_wrapper_cases[] = {
-    {"fuel-wrapper-inactive", 0x0000U, FUEL_STOCK_MASK},
-    {"fuel-wrapper-corrupt-request", 0x003eU, FUEL_STOCK_MASK},
-    {"fuel-wrapper-active", FUEL_REQUEST_MASK, FUEL_REQUESTED_MASK},
-};
-
-static int run_fuel_wrapper_cases(void)
-{
-    size_t index;
-
-    for (index = 0; index < ARRAY_SIZE(fuel_wrapper_cases); ++index) {
-        const struct fuel_wrapper_case *test = &fuel_wrapper_cases[index];
-        volatile uint8_t *state;
-        uint32_t returned;
-
-        count_case();
-        reset_case(MODE_RPM_HOLD, 0x01);
-        state = ram_pointer(RL_STATE);
-        write_u16(state + FUEL_REQUEST_OFFSET, test->request);
-        ram_pointer(FUEL_FINAL_MASK)[0] = 0x12U;
-        ram_pointer(FUEL_CUT_STATUS)[0] = FUEL_CUT_ACTIVE;
-        returned = invoke_r0(FUEL_CUT_WRAPPER);
-        if (returned != FUEL_STOCK_MASK)
-            return fail_value(
-                test->name, "stock_return", returned, FUEL_STOCK_MASK);
-        if (ram_pointer(FUEL_FINAL_MASK)[0] != test->expected_mask)
-            return fail_value(
-                test->name, "fuel_mask",
-                ram_pointer(FUEL_FINAL_MASK)[0], test->expected_mask);
-        if (ram_pointer(FUEL_CUT_STATUS)[0] != FUEL_CUT_ACTIVE)
-            return fail_value(
-                test->name, "fuel_cut_state",
-                ram_pointer(FUEL_CUT_STATUS)[0], FUEL_CUT_ACTIVE);
-        if (read_u16(state + FUEL_REQUEST_OFFSET) != test->request)
-            return fail_value(
-                test->name, "fuel_request",
-                read_u16(state + FUEL_REQUEST_OFFSET), test->request);
-        if (!verify_state_guards(test->name))
-            return 0;
-    }
-    return 1;
-}
-
-/* Check the phase, the request and its latch after an engine pass, then run
-   the coordinator wrapper and check the final mask it leaves. */
-static int expect_hold(
-    const char *name, uint8_t phase, uint16_t request, uint16_t latch)
-{
-    volatile uint8_t *state = ram_pointer(RL_STATE);
-    uint8_t expected_mask = request == FUEL_REQUEST_MASK
-        ? FUEL_REQUESTED_MASK
-        : FUEL_STOCK_MASK;
-    uint32_t returned;
-
-    if (state[0] != phase)
-        return fail_value(name, "phase", state[0], phase);
-    if (read_u16(state + FUEL_REQUEST_OFFSET) != request)
-        return fail_value(
-            name, "fuel_request", read_u16(state + FUEL_REQUEST_OFFSET),
-            request);
-    if (read_u16(state + FUEL_REQUEST_LATCH_OFFSET) != latch)
-        return fail_value(
-            name, "fuel_request_latch",
-            read_u16(state + FUEL_REQUEST_LATCH_OFFSET), latch);
-    ram_pointer(FUEL_FINAL_MASK)[0] = 0x12U;
-    returned = invoke_r0(FUEL_CUT_WRAPPER);
-    if (returned != FUEL_STOCK_MASK)
-        return fail_value(name, "stock_return", returned, FUEL_STOCK_MASK);
-    if (ram_pointer(FUEL_FINAL_MASK)[0] != expected_mask)
-        return fail_value(
-            name, "fuel_mask", ram_pointer(FUEL_FINAL_MASK)[0],
-            expected_mask);
-    return verify_state_guards(name);
-}
-
-/* One ACTIVE pass at an engine speed. The selected map storage stays
-   unchanged while the request holds or releases. */
-static int hold_step(
-    const char *name, uint16_t rpm, uint16_t request, uint16_t latch)
-{
-    write_u16(ram_pointer(RPM), rpm);
-    run_engine();
-    if (!expect_hold(name, PHASE_ACTIVE, request, latch))
-        return 0;
-    return verify_fuel_untouched(name);
-}
-
-/* Activation at the reset speed 300 captures cut 316 and restore 310. The
-   longer run timeout leaves room for every pass of a case. */
-static void reset_hold_case(uint8_t mode)
-{
-    reset_case(mode, 0x01);
-    write_u16(rom_pointer(RL_CONFIG) + 18, 0x0100);
-}
-
-static int activate_hold(uint8_t mode)
-{
-    reset_hold_case(mode);
-    run_engine();
-    return ram_pointer(RL_STATE)[0] == PHASE_ACTIVE;
-}
-
-static int run_hold_cases(void)
-{
-    volatile uint8_t *state;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-below-cut", "setup", 0, 1);
-    if (!hold_step("hold-below-cut", 315, 0, 0))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-at-cut", "setup", 0, 1);
-    if (!hold_step("hold-at-cut", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-above-cut", "setup", 0, 1);
-    if (!hold_step("hold-above-cut", 400, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-latched-between", "setup", 0, 1);
-    if (!hold_step("hold-latched-between", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-    if (!hold_step("hold-latched-between", 313, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-latched-at-restore", "setup", 0, 1);
-    if (!hold_step("hold-latched-at-restore", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-    if (!hold_step("hold-latched-at-restore", 310, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    /* Below restore the request releases, stays released between the
-       thresholds, and latches again at cut. */
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-release", "setup", 0, 1);
-    if (!hold_step("hold-release", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-    if (!hold_step("hold-release", 309, 0, 0))
-        return 0;
-    if (!hold_step("hold-release", 313, 0, 0))
-        return 0;
-    if (!hold_step("hold-release", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD_RETARD))
-        return fail_value("hold-retard", "setup", 0, 1);
-    if (!hold_step("hold-retard", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-    if (!hold_step("hold-retard", 309, 0, 0))
-        return 0;
-
-    count_case();
-    if (!activate_hold(MODE_OBSERVE))
-        return fail_value("hold-observe", "setup", 0, 1);
-    if (!hold_step("hold-observe", 400, 0, 0))
-        return 0;
-
-    /* A latch other than 1 publishes no request until a threshold sets or
-       releases it. */
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-foreign-latch", "setup", 0, 1);
-    write_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_LATCH_OFFSET, 2);
-    if (!hold_step("hold-foreign-latch", 313, 0, 2))
-        return 0;
-    if (!hold_step("hold-foreign-latch", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-
-    /* An abort clears the latch with the request and republishes the
-       captured map. */
-    count_case();
-    if (!activate_hold(MODE_RPM_HOLD))
-        return fail_value("hold-abort", "setup", 0, 1);
-    if (!hold_step("hold-abort", 316, FUEL_REQUEST_MASK, 1))
-        return 0;
-    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
-    run_engine();
-    if (!expect_phase_reason(
-            "hold-abort", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
-        return 0;
-    if (!expect_hold("hold-abort", PHASE_COOLDOWN, 0, 0))
-        return 0;
-    if (!verify_engine_fuel_release("hold-abort", 0))
-        return 0;
-
-    /* Activation clears a latch left in IDLE. The saturated capture puts
-       the captured speed between restore and cut, where a kept latch would
-       publish the request. */
-    count_case();
-    reset_hold_case(MODE_RPM_HOLD);
-    state = ram_pointer(RL_STATE);
-    write_u16(state + FUEL_REQUEST_LATCH_OFFSET, 1);
-    write_u16(ram_pointer(RPM), 0xfff8);
-    run_engine();
-    if (!expect_hold("hold-activation-latch", PHASE_ACTIVE, 0, 0))
-        return 0;
-    if (read_u16(state + 12) != 0xffff || read_u16(state + 14) != 0xfff3)
-        return fail_value(
-            "hold-activation-latch", "thresholds", read_u16(state + 14),
-            0xfff3);
-    if (!hold_step("hold-activation-latch", 0xffff, FUEL_REQUEST_MASK, 1))
-        return 0;
-    return 1;
-}
-#endif
 
 int main(void)
 {
@@ -1924,33 +1545,6 @@ int main(void)
         return 1;
     if (!run_feedback_cases())
         return 1;
-#ifdef TARGET_VQ37_ROLLING
-    if (!run_fuel_wrapper_cases())
-        return 1;
-    if (!run_hold_cases())
-        return 1;
-#ifdef MEASURE_ROLLING_COVERAGE
-    if (case_count != 144U)
-        return fail_value("summary", "case_count", case_count, 144);
-
-    printf(
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=32 config=24 threshold=4 activation=6 "
-        "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
-        "fuel_coordinator=3 hold=11 entries=9\n",
-        (unsigned long)case_count);
-#else
-    if (case_count != 142U)
-        return fail_value("summary", "case_count", case_count, 142);
-
-    printf(
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=32 config=24 threshold=4 activation=6 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-        "fuel_coordinator=3 hold=11 entries=9\n",
-        (unsigned long)case_count);
-#endif
-#elif defined(VERIFY_CANONICAL_ROLLING)
     if (case_count != 136U)
         return fail_value("summary", "case_count", case_count, 136);
 
@@ -1960,26 +1554,5 @@ int main(void)
         "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 "
         "entries=8\n",
         (unsigned long)case_count);
-#elif defined(MEASURE_ROLLING_COVERAGE)
-    if (case_count != 130U)
-        return fail_value("summary", "case_count", case_count, 130);
-
-    printf(
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=32 config=24 threshold=4 activation=6 "
-        "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
-        "entries=8\n",
-        (unsigned long)case_count);
-#else
-    if (case_count != 128U)
-        return fail_value("summary", "case_count", case_count, 128);
-
-    printf(
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=32 config=24 threshold=4 activation=6 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-        "entries=8\n",
-        (unsigned long)case_count);
-#endif
     return 0;
 }

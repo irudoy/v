@@ -137,20 +137,13 @@ def _replace_files(contents):
 
 
 def build_locks(rom):
+    # A relocated target carries no Rolling Launch stage; its lock repeats the
+    # map stage digest, on which telemetry composes.
     projected = runtime_targets.project_relocated_target(rom)
     map_switching_layout.validate_structure(projected.map_layout)
-    if projected.rolling_layout is not None:
-        rolling_launch_layout.validate_structure(projected.rolling_layout)
     can_telemetry_layout.validate_structure(projected.telemetry_layout)
     map_parsed = map_switching_assembly.validate_assembly_sources(
         projected.map_layout
-    )
-    rolling_parsed = (
-        rolling_launch_assembly.validate_assembly_sources(
-            projected.rolling_layout
-        )
-        if projected.rolling_layout is not None
-        else None
     )
     telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
         projected.telemetry_layout
@@ -162,11 +155,6 @@ def build_locks(rom):
         build_dir = Path(directory)
         map_payloads = _assemble(
             projected.map_layout, map_parsed, build_dir
-        )
-        rolling_payloads = (
-            _assemble(projected.rolling_layout, rolling_parsed, build_dir)
-            if projected.rolling_layout is not None
-            else {}
         )
         telemetry_payloads = _assemble(
             projected.telemetry_layout, telemetry_parsed, build_dir
@@ -181,23 +169,14 @@ def build_locks(rom):
         rolling_stage_sha256=runtime_targets.ZERO_SHA256,
         telemetry_stage_sha256=runtime_targets.ZERO_SHA256,
         map_payloads=map_payloads,
-        rolling_payloads=rolling_payloads,
+        rolling_payloads={},
         telemetry_payloads=telemetry_payloads,
     )
     target = runtime_targets.project_relocated_target(rom, provisional)
     map_switching_layout.validate_structure(target.map_layout)
-    if target.rolling_layout is not None:
-        rolling_launch_layout.validate_structure(target.rolling_layout)
     can_telemetry_layout.validate_structure(target.telemetry_layout)
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
-    )
-    rolling_parsed = (
-        rolling_launch_assembly.validate_assembly_sources(
-            target.rolling_layout
-        )
-        if target.rolling_layout is not None
-        else None
     )
     telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
         target.telemetry_layout
@@ -205,10 +184,6 @@ def build_locks(rom):
     map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, map_payloads
     )
-    if target.rolling_layout is not None:
-        rolling_launch_assembly.validate_instruction_semantics(
-            target.rolling_layout, rolling_parsed, rolling_payloads
-        )
     can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, telemetry_payloads
     )
@@ -218,38 +193,19 @@ def build_locks(rom):
         image=target.stock_image,
         blobs=map_payloads,
     )
-    rolling_result = None
-    if target.rolling_layout is not None:
-        launch_layout = replace(
-            target.rolling_layout,
-            base_composition_sha256=map_result.sha256,
-        )
-        rolling_result = rolling_launch_compose.compose(
-            layout=launch_layout,
-            base=map_result.data,
-            blobs=rolling_payloads,
-        )
-    telemetry_base = (
-        rolling_result.data if rolling_result is not None else map_result.data
-    )
-    telemetry_base_sha256 = (
-        rolling_result.sha256
-        if rolling_result is not None
-        else map_result.sha256
-    )
     telemetry_layout = replace(
         target.telemetry_layout,
-        base_composition_sha256=telemetry_base_sha256,
+        base_composition_sha256=map_result.sha256,
     )
     telemetry_result = can_telemetry_compose.compose(
         layout=telemetry_layout,
-        base=telemetry_base,
+        base=map_result.data,
         blobs=telemetry_payloads,
     )
     return replace(
         provisional,
         map_stage_sha256=map_result.sha256,
-        rolling_stage_sha256=telemetry_base_sha256,
+        rolling_stage_sha256=map_result.sha256,
         telemetry_stage_sha256=telemetry_result.sha256,
     )
 

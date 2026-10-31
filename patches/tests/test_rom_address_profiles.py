@@ -94,7 +94,7 @@ def test_mailbox_26_is_selected_and_occupied_mailbox_28_is_preserved(profiles):
         assert profile.telemetry_completion_variant == "mailbox26-tail-chain"
 
 
-def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profiles):
+def test_1nd_profiles_share_exact_code_and_relocated_runtime_capabilities(profiles):
     one = profiles["1ND0A"]
     three = profiles["1ND3B"]
 
@@ -109,17 +109,10 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
     assert one.injected_ram == rom_address_profiles.AddressRange(
         0xFFFF0C00, 0xFFFF0F00
     )
-    assert one.enabled_capabilities == {
-        "map_switching", "rolling_launch", "can_telemetry"
-    }
-    assert set(one.rolling_hook_by_key) == (
-        rom_address_profiles.VQ37_ROLLING_HOOK_KEYS
-    )
-    assert len(one.rolling_diagnostics) == 9
-    assert one.rolling_symbol_by_key["periodic_task_slot"] == 0x0002205C
-    assert one.rolling_symbol_by_key["periodic_task_table"] == 0x00022058
-    assert one.rolling_symbol_by_key["vehicle_speed"] == 0xFFFE8104
-    assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
+    assert one.enabled_capabilities == {"map_switching", "can_telemetry"}
+    assert one.rolling_hooks == ()
+    assert one.rolling_diagnostics == ()
+    assert one.rolling_symbols == ()
     manifest = can_telemetry_profile.load_manifest()
     fields = (*manifest.fields, *(field for context in manifest.contexts for field in context.fields))
     expected = {field.name for field in fields if field.kind == "ecu_ram"}
@@ -183,7 +176,7 @@ def test_mailbox_contract_rejects_another_mailbox(tmp_path):
         rom_address_profiles.load_registry(registry)
 
 
-def test_1nd_ignition_state_storage_follows_the_fuel_cut_wrapper(profiles):
+def test_1nd_ignition_state_storage_has_one_adapter_and_four_families(profiles):
     one = profiles["1ND0A"]
     storage = one.ignition_state_storage
 

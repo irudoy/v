@@ -41,11 +41,13 @@ def load(path=DEFAULT_BINDINGS):
     layouts = _table(found["layouts"], "layouts")
     if CANONICAL not in layouts:
         raise RuntimeBindingsError("layouts: canonical layout is absent")
-    required = {"ascd_main_bit", "fuel_cut_active_bit", "fuel_cut_address",
-                "knock_surface_bit", "knock_surface_address"}
+    required = {"ascd_main_bit", "knock_surface_bit", "knock_surface_address"}
+    fuel_cut = {"fuel_cut_active_bit", "fuel_cut_address"}
     for name, row in layouts.items():
         _table(row, f"layouts.{name}")
-        if not required <= set(row) or set(row) - required - {"fuel_inhibit_mask"}:
+        extra = set(row) - required
+        if (not required <= set(row) or extra - fuel_cut - {"fuel_inhibit_mask"}
+                or (extra and not fuel_cut <= extra)):
             raise RuntimeBindingsError(f"layouts.{name}: runtime fields differ")
         for key, value in row.items():
             _integer(value, f"layouts.{name}.{key}", 7 if key.endswith("_bit") else 0xFFFFFFFF)

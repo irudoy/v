@@ -26,17 +26,13 @@
     <CATEGORY index="0xF" name="Limiters / Engine Speed / Stationary" />
     <CATEGORY index="0x10" name="Logging / CAN Telemetry" />
     <CATEGORY index="0x11" name="NATS / Immobilizer" />
-    <CATEGORY index="0x12" name="Rolling Launch / Activation" />
-    <CATEGORY index="0x13" name="Rolling Launch / Ignition Retard" />
-    <CATEGORY index="0x14" name="Rolling Launch / Map Enable" />
-    <CATEGORY index="0x15" name="Rolling Launch / RPM Hold" />
-    <CATEGORY index="0x16" name="Torque Model / Engine Torque" />
-    <CATEGORY index="0x17" name="Variable Valve Timing / Intake CVTC" />
-    <CATEGORY index="0x18" name="Variable Valve Timing / Intake Cam" />
-    <CATEGORY index="0x19" name="Variable Valve Timing / VVEL Duration" />
-    <CATEGORY index="0x1A" name="Variable Valve Timing / VVEL Idle Model" />
-    <CATEGORY index="0x1B" name="Variable Valve Timing / VVEL Mode Selection" />
-    <CATEGORY index="0x1C" name="Variable Valve Timing / VVEL Shaft Angle" />
+    <CATEGORY index="0x12" name="Torque Model / Engine Torque" />
+    <CATEGORY index="0x13" name="Variable Valve Timing / Intake CVTC" />
+    <CATEGORY index="0x14" name="Variable Valve Timing / Intake Cam" />
+    <CATEGORY index="0x15" name="Variable Valve Timing / VVEL Duration" />
+    <CATEGORY index="0x16" name="Variable Valve Timing / VVEL Idle Model" />
+    <CATEGORY index="0x17" name="Variable Valve Timing / VVEL Mode Selection" />
+    <CATEGORY index="0x18" name="Variable Valve Timing / VVEL Shaft Angle" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0xBEFA" flags="0x0">
     <title>CAN Telemetry at Startup</title>
@@ -49,12 +45,6 @@
     <description>Exact 1ME3B only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
     <CATEGORYMEM index="0" category="18" />
     <XDFPATCHENTRY name="Developer Immobilizer" address="0x8671" datasize="0x1" patchdata="00" basedata="01" />
-  </XDFPATCH>
-  <XDFPATCH uniqueid="0x94BA" flags="0x0">
-    <title>Rolling Launch Require Accelerator Pedal</title>
-    <description>Exact 1ME3B. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage. Base state: Enabled. Patched state: Disabled.</description>
-    <CATEGORYMEM index="0" category="19" />
-    <XDFPATCHENTRY name="Rolling Launch Require Accelerator Pedal" address="0x13CF6C" datasize="0x2" patchdata="0000" basedata="0001" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0xA555" flags="0x0">
     <title>DTC P0306 [index 10] - Cylinder 6 misfire detected</title>
@@ -431,41 +421,6 @@
     <XDFPATCHENTRY name="P0057 [172] descriptor" address="0x1C768" datasize="0xC" patchdata="000000000000000000000000" basedata="330404000000005700000000" />
     <XDFPATCHENTRY name="P0057 [172] attribute" address="0x17BB2" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
-  <XDFFLAG uniqueid="0xAFAF" flags="0x0">
-    <title>Map 1 - Rolling Launch Enable</title>
-    <description>Exact 1ME3B. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 1 - Rolling Launch Enable at bit 0.</description>
-    <CATEGORYMEM index="0" category="21" />
-    <EMBEDDEDDATA mmedaddress="0x13CF64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-    <mask>0x01</mask>
-  </XDFFLAG>
-  <XDFFLAG uniqueid="0x9F39" flags="0x0">
-    <title>Map 2 - Rolling Launch Enable</title>
-    <description>Exact 1ME3B. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 2 - Rolling Launch Enable at bit 1.</description>
-    <CATEGORYMEM index="0" category="21" />
-    <EMBEDDEDDATA mmedaddress="0x13CF64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-    <mask>0x02</mask>
-  </XDFFLAG>
-  <XDFFLAG uniqueid="0xCE83" flags="0x0">
-    <title>Map 3 - Rolling Launch Enable</title>
-    <description>Exact 1ME3B. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 3 - Rolling Launch Enable at bit 2.</description>
-    <CATEGORYMEM index="0" category="21" />
-    <EMBEDDEDDATA mmedaddress="0x13CF64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-    <mask>0x04</mask>
-  </XDFFLAG>
-  <XDFFLAG uniqueid="0xFE15" flags="0x0">
-    <title>Map 4 - Rolling Launch Enable</title>
-    <description>Exact 1ME3B. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 4 - Rolling Launch Enable at bit 3.</description>
-    <CATEGORYMEM index="0" category="21" />
-    <EMBEDDEDDATA mmedaddress="0x13CF64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-    <mask>0x08</mask>
-  </XDFFLAG>
-  <XDFFLAG uniqueid="0x6BB6" flags="0x0">
-    <title>Map 5 - Rolling Launch Enable</title>
-    <description>Exact 1ME3B. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 5 - Rolling Launch Enable at bit 4.</description>
-    <CATEGORYMEM index="0" category="21" />
-    <EMBEDDEDDATA mmedaddress="0x13CF64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-    <mask>0x10</mask>
-  </XDFFLAG>
   <XDFTABLE uniqueid="0x6150" flags="0x0">
     <title>Accelerator Pedal High-State Hysteresis</title>
     <description>Exact 1ME3B. Address 0x8E9A; 1 rows x 2 columns; uint16; map confidence candidate. Two-word activation/release hysteresis for a normalized dual-channel accelerator-pedal analog quantity. FUN 00047a56 compares current sample ffff266e with cell 0 when previous-cycle state ffff246d bit 7 is clear and with cell 1 when that state is set, then writes current state ffff246a bit 7. Scheduler 00020dfe copies ffff246a to ffff246d once per cycle. The stock activation and release thresholds are 610 and 528 counts. The input is produced from on-chip A/D channels AN10 and AN17 through dual-channel adjustment and minimum selection. Exact JK08A diagnostic paths expose the paired accelerator-pedal sensors as DID 0x120D/0x120E and monitor them through P2122/P2123/P2127/P2128. The operational high-state role is proven; a narrower WOT or kickdown interpretation is not asserted. Definition address projected from JK08A 00008fdc through JK08A-1ME3B.definition-addresses.csv: normalized-shape pair 0006bcfe/0007010a reads the exact 610 and 528 threshold pair at the same call ordinal.</description>
@@ -512,7 +467,7 @@
   <XDFTABLE uniqueid="0x7DF1" flags="0x0">
     <title>VVEL Idle Model - Duration [stored count]</title>
     <description>Exact 1ME3B. Address 0xF4FC; 16 rows x 16 columns; uint16; map confidence code. Duration of the trimmed valve event pair of the VVEL idle-model stage FUN_00064042, zero at 0x8000 and 0.05 per count, looked up by engine speed over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events lie at the trimmed center +/- 2 * 0.05 * (raw - 0x8000). Exact 1ME3B target-native table at 0xf4fc bound to accessor 0x64042 through literal 0x641f8. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.05 deg; proposed editor-grid inverse x/0.05+32768. Origin: on JK78C 0x0000F54E, the float literals 0.05 at 0x57530 and -1638.4 at 0x57638. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x000641F8, loaded at 0x0006409A. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x0000F54E: 33428..34108. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x175C6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -554,7 +509,7 @@
   <XDFTABLE uniqueid="0xCF23" flags="0x0">
     <title>VVEL Hot-Intake Idle Threshold [stored count]</title>
     <description>Exact 1ME3B. Address 0x14292; 1 rows x 8 columns; uint8; map confidence code. Threshold of the hot-intake idle latch in FUN_000673EC, looked up by the coolant temperature over the axis 0x0001453A while the knock state bit is clear; the knock threshold is 0x0001429A. Exact 1ME3B target-native table at 0x14292 bound to accessor 0x673ec through literal 0x6757c. Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F88, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_000673EC through the literal-pool word 0x0006757C, loaded at 0x00067480. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F88. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="28" />
+    <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1453A" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -596,7 +551,7 @@
   <XDFTABLE uniqueid="0xD138" flags="0x0">
     <title>VVEL Command Word - Shaft Angle Conversion</title>
     <description>Exact 1ME3B. Address 0x15A76; 1 rows x 16 columns; uint16; map confidence code. Unsigned-word conversion between the paired shaft-coordinate array and the command-word domain, read in both directions by the task. The physical angular gain of the coordinate words is unestablished. Exact 1ME3B target-native table at 0x15a76 bound to accessor 0x58faa through literal 0x59184, accessor 0x61d46 through literal 0x62504, accessor 0x62fac through literal 0x630e4, accessor 0x66a18 through literal 0x66bd8. Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and 0x58FE8, and by FUN_00066A18 at 0x66A28 and 0x66A44 through the 16-point uint16 leaf 0x2AF88; the call at 0x623DA exchanges the roles of axis and values. JK78C reads the pair for the resolver in the separate function FUN_0005693A. Stock bytes are identical to JK78C 0x000156FC. FUN_0005C7D4 reads a byte-identical second pair 0x0001B738 over 0x0001B718.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15A56" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -638,7 +593,7 @@
   <XDFTABLE uniqueid="0x895A" flags="0x0">
     <title>VVEL Duration Target - Running [stored count]</title>
     <description>Exact 1ME3B. Address 0x17276; 1 rows x 16 columns; uint16; map confidence code. Mode 15 duration target of the VVEL resolver: the normal running pair. The resolver interpolates it by engine speed and scales the count by the float literal 0.005. Exact 1ME3B target-native table at 0x17276 bound to accessor 0x62fac through literal 0x63400, accessor 0x63cd4 through literal 0x63ee0. Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_running_axis/axis. The encoded arithmetic factor is not the physical duration unit. The float literal is a binary value described by its nominal decimal factor, not a measurement of degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63142 and by FUN_00063CD4 at 0x63D1C through the 16-point uint16 leaf 0x2AF88; the 0.005 factor is the float literal 0x3BA3D70A at 0x63404. The resolver stores the value in pair 14 of its thirty-float output, the slot that the JK78C resolver FUN_000564A4 and the 1ND0A resolver FUN_0005F468 fill with the mode 15 pair. Stock bytes are identical to 1ND0A 0x000171C2; the unit of the scaled duration is a vendor-catalog candidate. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17366" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM</units>
@@ -722,7 +677,7 @@
   <XDFTABLE uniqueid="0x8471" flags="0x0">
     <title>VVEL Idle Model - Intake Phase [stored count]</title>
     <description>Exact 1ME3B. Address 0x10A7C; 16 rows x 16 columns; uint16; map confidence code. Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00064042, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center. Exact 1ME3B target-native table at 0x10a7c bound to accessor 0x64042 through literal 0x64200. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x00064200, loaded at 0x000640AC. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x175C6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -764,7 +719,7 @@
   <XDFTABLE uniqueid="0xCF6D" flags="0x0">
     <title>VVEL Hot-Intake Idle Threshold - Knock [stored count]</title>
     <description>Exact 1ME3B. Address 0x1429A; 1 rows x 8 columns; uint8; map confidence code. Threshold of the hot-intake idle latch in FUN_000673EC while the knock state bit is set, looked up by the coolant temperature over the axis 0x0001453A; the threshold without knock is 0x00014292. Exact 1ME3B target-native table at 0x1429a bound to accessor 0x673ec through literal 0x67580. Engineering conversion is unestablished. Retained hypothesis: x counts of 0xFFFF268C; proposed editor-grid inverse x. Origin: on JK78C 0x00013F90, the byte comparison in FUN_00059C2C. Recorded code interpretation: Read by FUN_000673EC through the literal-pool word 0x00067580, loaded at 0x00067484. FUN_000673EC holds the float literals of JK78C FUN_00059C2C. Stock bytes are identical to JK78C 0x00013F90. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="28" />
+    <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1453A" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -806,7 +761,7 @@
   <XDFTABLE uniqueid="0x194A" flags="0x0">
     <title>VVEL Shaft Angle Limit - Engine Speed [stored count]</title>
     <description>Exact 1ME3B. Address 0x166AC; 1 rows x 8 columns; uint16; map confidence code. Engine-speed curve of the shaft-angle bound applied in the task before the command conversion: the bound word is the curve value minus abs(0xFFFED40A), clamped at zero. Values are in the shaft-angle domain of axis 0x00015A56. Exact 1ME3B target-native table at 0x166ac bound to accessor 0x61d46 through literal 0x61fa4. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00061D46 at callsite 0x61E2E through the 8-point uint16 leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA41E. Stock bytes are identical to JK78C 0x000160BA. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17426" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -848,7 +803,7 @@
   <XDFTABLE uniqueid="0xEDFA" flags="0x0">
     <title>VVEL Duration Target - Throttled [stored count]</title>
     <description>Exact 1ME3B. Address 0x173D6; 1 rows x 16 columns; uint16; map confidence code. Mode 4 duration target of the VVEL resolver: the throttled pair. Interpolated by engine speed and scaled by 0.05; FUN_00063534 publishes the curve value or a stepped approach to it from ROM16[0x94A6] * 0.05 = 50.0. Exact 1ME3B target-native table at 0x173d6 bound to accessor 0x63534 through literal 0x637c8, accessor 0x7448c through literal 0x74fdc, accessor 0x7448c through literal 0x7525c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The 0.05 multiplication, offset arithmetic and shared dispatcher word domain do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_00063534 at callsite 0x63570 through the 16-point uint16 leaf 0x2AF88 and by FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same axis; the resolver FUN_00062FAC calls FUN_00063534 after the hot-intake idle pair. The 0.05 factor is the float literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps the scaled curve value at 0xFFFEF458 and publishes the pair 3 duration slot 0xFFFEF460 as that value or as 50.0 plus an offset that steps by ROM16[0x9384] * 0.001 = 0.05 toward the curve value within +/-50.0; the delay helper FUN_0002861E gates the offset with a time from the byte curve 0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store the curve value directly. Stock bytes are identical to JK78C 0x00016D14. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17346" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -890,7 +845,7 @@
   <XDFTABLE uniqueid="0x7CE1" flags="0x0">
     <title>VVEL Duration Target - Hot Intake Idle [stored count]</title>
     <description>Exact 1ME3B. Address 0xE17C; 8 rows x 8 columns; uint16; map confidence code. Mode 12 duration surface of the VVEL resolver: the hot-intake idle pair. The pair value is the maximum of this surface and the eight-point floor 0x000165DC, scaled by 0.05. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0xe17c bound to accessor 0x62fac through literal 0x63420. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Coordinate semantics and maximum composition do not establish degrees for the ordinate. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63188 through the 8x8 uint16 leaf 0x29EC0 with the r7 word argument that also indexes the running CVTC curve on the first axis and a signed word argument clamped at zero in the stack slot on the second axis, the coordinate form of the JK78C surface 0x0000E1CE. The maximum goes to pair 11 of the output with the float literal 0x3D4CCCCC at 0x63428. FUN_0007448C reads the separate uniform surfaces 0x0001027C and 0x000102FC over its own axes 0x000173B6 and 0x000173A6. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x166CC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -989,7 +944,7 @@
   <XDFTABLE uniqueid="0x9085" flags="0x0">
     <title>VVEL Shaft Angle Limit - Intake CVTC Angle [stored count]</title>
     <description>Exact 1ME3B. Address 0x17116; 1 rows x 16 columns; uint16; map confidence code. Intake-cam-angle curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015A56. Exact 1ME3B target-native table at 0x17116 bound to accessor 0x61d46 through literal 0x62088. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00061D46 at callsite 0x61FD2 through the 16-point uint16 leaf 0x2AF88 indexed by the larger of the words 0xFFFE9432 and 0xFFFE9434, or by ROM16[0x8EF8] = 0x808C on the branch at 0x61F60. Stock bytes are identical to JK78C 0x00016A74. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17466" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1031,7 +986,7 @@
   <XDFTABLE uniqueid="0x8F78" flags="0x0">
     <title>VVEL Idle Model - High-Load Duration [stored count]</title>
     <description>Exact 1ME3B. Address 0x173F6; 1 rows x 16 columns; uint16; map confidence code. Duration of the high-load valve event pair of the VVEL idle-model stage FUN_000638C0, looked up by engine speed over the axis 0x00017386; the high-load events lie at the event center +/- 0.01 * raw. Exact 1ME3B target-native table at 0x173f6 bound to accessor 0x638c0 through literal 0x639f4. Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; proposed editor-grid inverse x/0.005. Origin: on JK78C 0x00016D34, the float literal 0.01 at 0x574BC and the factor 2 of the event half-span in FUN_00057322. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x000639F4, loaded at 0x0006392E. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016D34. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17386" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1073,7 +1028,7 @@
   <XDFTABLE uniqueid="0x10F4" flags="0x0">
     <title>VVEL Duration Target - Hot Intake Idle, Knock [stored count]</title>
     <description>Exact 1ME3B. Address 0xE1FC; 8 rows x 8 columns; uint16; map confidence code. Mode 13 duration surface of the VVEL resolver: the second hot-intake idle pair, which the JK78C selector takes in the high-detonation state. The pair value is the maximum of this surface and the eight-point floor 0x000165EC, scaled by 0.05. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0xe1fc bound to accessor 0x62fac through literal 0x6342c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. A knock-state selector and identical stock bytes do not establish physical duration degrees. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x631BE through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the mode 12 surface 0x0000E17C; the maximum goes to pair 12 of the output. Stock values are identical to that surface. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x166CC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1115,7 +1070,7 @@
   <XDFTABLE uniqueid="0xFF57" flags="0x0">
     <title>VVEL Shaft Angle Monitor Floor - A [stored count]</title>
     <description>Exact 1ME3B. Address 0x1668C; 1 rows x 8 columns; uint16; map confidence code. First engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors. Exact 1ME3B target-native table at 0x1668c bound to accessor 0x61d46 through literal 0x61f8c. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00061D46 at callsite 0x61E00 through the 8-point uint16 leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4DE. Stock bytes are identical to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain. FUN_00066C30 reads a byte-identical second pair 0x0001B9B8 over 0x0001B438. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15636" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1157,7 +1112,7 @@
   <XDFTABLE uniqueid="0xA009" flags="0x0">
     <title>VVEL Idle Model - High-Load Phase [stored count]</title>
     <description>Exact 1ME3B. Address 0x175E6; 1 rows x 16 columns; uint16; map confidence code. Phase of the high-load valve event pair of the VVEL idle-model stage FUN_000638C0, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017566. Exact 1ME3B target-native table at 0x175e6 bound to accessor 0x638c0 through literal 0x63a00. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00016F14, the float literals -0.5 at 0x574DC and 16834.0 at 0x574E4. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A00, loaded at 0x00063946. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x00016F14. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17566" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1199,7 +1154,7 @@
   <XDFTABLE uniqueid="0x5356" flags="0x0">
     <title>VVEL Duration Floor - Hot Intake Idle [stored count]</title>
     <description>Exact 1ME3B. Address 0x165DC; 1 rows x 8 columns; uint16; map confidence code. Eight-point lower bound of the mode 12 duration: the resolver takes the maximum of this curve and the surface 0x0000E17C. Stock values are 1000 = 50.0 at every point. Exact 1ME3B target-native table at 0x165dc bound to accessor 0x62fac through literal 0x633f4. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The physical degree unit is not supplied by 900, 45.0 or the maximum operation. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63120 through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool word. JK78C holds 900 = 45.0 at every point of its floor 0x0001600A; the 1ND resolver carries no floor. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x165CC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1241,7 +1196,7 @@
   <XDFTABLE uniqueid="0xCE16" flags="0x0">
     <title>VVEL Shaft Angle Monitor Floor - B [stored count]</title>
     <description>Exact 1ME3B. Address 0x1669C; 1 rows x 8 columns; uint16; map confidence code. Second engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors. Exact 1ME3B target-native table at 0x1669c bound to accessor 0x61d46 through literal 0x61f9c. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by the task FUN_00061D46 at callsite 0x61E12 through the 8-point uint16 leaf 0x2AEAC indexed by the word 0xFFFE8198 into 0xFFFEA4E0. Stock bytes are identical to JK78C 0x000160AA. FUN_00066C18 reads a byte-identical second pair 0x0001B9C8 over 0x0001BD98. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17416" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1283,7 +1238,7 @@
   <XDFTABLE uniqueid="0xA4A5" flags="0x0">
     <title>VVEL Idle Model - High-Load Blend Start [stored count]</title>
     <description>Exact 1ME3B. Address 0x1697C; 1 rows x 16 columns; uint16; map confidence code. Load at which the VVEL idle-model stage FUN_000638C0 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x0001699C; the end curve is 0x0001695C. Exact 1ME3B target-native table at 0x1697c bound to accessor 0x638c0 through literal 0x63a08. Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A08, loaded at 0x00063950. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x000162EA. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1699C" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1325,7 +1280,7 @@
   <XDFTABLE uniqueid="0x6217" flags="0x0">
     <title>VVEL Duration Floor - Hot Intake Idle, Knock [stored count]</title>
     <description>Exact 1ME3B. Address 0x165EC; 1 rows x 8 columns; uint16; map confidence code. Eight-point lower bound of the mode 13 duration: the resolver takes the maximum of this curve and the surface 0x0000E1FC. Stock values are 1000 = 50.0 at every point. Exact 1ME3B target-native table at 0x165ec bound to accessor 0x62fac through literal 0x633f8. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared coordinate and identical floor values do not establish the output engineering unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x63130 through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its own literal pool word. JK78C holds 900 = 45.0 at every point of its floor 0x0001601A. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x165CC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1367,7 +1322,7 @@
   <XDFTABLE uniqueid="0xC627" flags="0x0">
     <title>VVEL Idle Model - High-Load Blend End [stored count]</title>
     <description>Exact 1ME3B. Address 0x1695C; 1 rows x 16 columns; uint16; map confidence code. Load at which the VVEL idle-model stage FUN_000638C0 reaches the high-load event pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x0001699C; the start curve is 0x0001697C. Exact 1ME3B target-native table at 0x1695c bound to accessor 0x638c0 through literal 0x63a0c. Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162CA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A0C, loaded at 0x0006395A. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x000162CA. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1699C" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1409,7 +1364,7 @@
   <XDFTABLE uniqueid="0x5C22" flags="0x0">
     <title>VVEL Command Word - Shaft Angle Conversion, Second Copy</title>
     <description>Exact 1ME3B. Address 0x1B738; 1 rows x 16 columns; uint16; map confidence code. Second copy of the shaft-angle conversion, read only by FUN_0005C7D4: it converts the two measured control-shaft angle words 0xFFFE97A6 and 0xFFFE97A8 to the command-word domain and publishes the mean of the two results times 1/512 as the float 0xFFFEF1A8 for FUN_0005BB04. Exact 1ME3B target-native table at 0x1b738 bound to accessor 0x5c7d4 through literal 0x5c974. Read by FUN_0005C7D4 at callsites 0x5C7E6 and 0x5C7FA through the 16-point uint16 leaf 0x2BCD4; the primary conversion 0x00015A76 goes through the leaf 0x2AF88. FUN_0005BB04 is the only caller and the only reader of the float. The two argument words are the measured angles that the deficit monitors FUN_000EB19A subtract from the floor maximum. Stock bytes are identical to the primary table 0x00015A76.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1B718" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1451,7 +1406,7 @@
   <XDFTABLE uniqueid="0x1728" flags="0x0">
     <title>VVEL Idle Model - Duration Floor [stored count]</title>
     <description>Exact 1ME3B. Address 0x17326; 1 rows x 16 columns; uint16; map confidence code. Duration floor of the VVEL idle-model stage FUN_00063CD4 at 1/512 per count, looked up by engine speed over the axis 0x00017306. The stage engages the floor in VVEL mode 5 while the model duration does not exceed it and blends the idle-model duration toward max(duration, floor) by the floor weight. Exact 1ME3B target-native table at 0x17326 bound to accessor 0x63cd4 through literal 0x63ed4. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: on JK78C 0x00016C64, the float literal 1/512 at 0x56F4C. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063ED4, loaded at 0x00063CF8. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes differ from JK78C 0x00016C64: 21504..26368. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17306" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1493,7 +1448,7 @@
   <XDFTABLE uniqueid="0x1D3D" flags="0x0">
     <title>VVEL Shaft Angle Monitor Floor - A, Second Copy [stored count]</title>
     <description>Exact 1ME3B. Address 0x1B9B8; 1 rows x 8 columns; uint16; map confidence code. Second copy of monitor floor A: FUN_00066C30 interpolates it by the word 0xFFFE81B0 into 0xFFFEABA4, one of the four floor words 0xFFFEA4DE, 0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors FUN_000EB19A compare with the measured control-shaft angle. Exact 1ME3B target-native table at 0x1b9b8 bound to accessor 0x66c30 through literal 0x66c60. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_00066C30 at callsite 0x66C3C through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x22240 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x0001668C. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1B438" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1535,7 +1490,7 @@
   <XDFTABLE uniqueid="0x3121" flags="0x0">
     <title>VVEL Duration Target - Cold [stored count]</title>
     <description>Exact 1ME3B. Address 0x170F6; 1 rows x 8 columns; uint16; map confidence code. Mode 3 duration target of the VVEL resolver: the cold pair. Interpolated by a coolant-coded byte and scaled by 0.05. Exact 1ME3B target-native table at 0x170f6 bound to accessor 0x62fac through literal 0x63434. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The coolant-coordinate proof does not prove the duration output unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6320E through the 8-point uint16 leaf 0x2AEAC with its own literal pool words for the curve and the axis; the value goes to pair 2 of the output. JK78C reads its curve in the separate function FUN_00056A14. Stock bytes are identical to JK78C 0x00016A54. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17176" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>degC</units>
@@ -1577,7 +1532,7 @@
   <XDFTABLE uniqueid="0x7B3D" flags="0x0">
     <title>VVEL Idle Model - Floor Hold Passes [stored count]</title>
     <description>Exact 1ME3B. Address 0x173C6; 1 rows x 8 columns; uint16; map confidence code. Pass count of the full idle-model floor weight in FUN_00063CD4, looked up by the demand margin over the axis 0x00017296; afterwards the weight steps down by 0x000172A6 per pass. Exact 1ME3B target-native table at 0x173c6 bound to accessor 0x63cd4 through literal 0x63f08. Engineering conversion is unestablished. Retained hypothesis: x passes; proposed editor-grid inverse x. Origin: on JK78C 0x00016D04, the counter comparison in FUN_00056DCA. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063F08, loaded at 0x00063E4A. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016D04. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17296" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1619,7 +1574,7 @@
   <XDFTABLE uniqueid="0x2C7C" flags="0x0">
     <title>VVEL Shaft Angle Monitor Floor - B, Second Copy [stored count]</title>
     <description>Exact 1ME3B. Address 0x1B9C8; 1 rows x 8 columns; uint16; map confidence code. Second copy of monitor floor B: FUN_00066C18 interpolates it by the word 0xFFFE81B0 into 0xFFFEABA6, one of the four floor words 0xFFFEA4DE, 0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors FUN_000EB19A compare with the measured control-shaft angle. Exact 1ME3B target-native table at 0x1b9c8 bound to accessor 0x66c18 through literal 0x66c50. Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer domain, maximum, subtraction, absolute-value correction or word bound preserves count arithmetic. None independently fixes 512 counts per physical degree. An RPM or CVTC input grid cannot establish the returned shaft-coordinate unit. The upstream coordinate scale itself has no physical grounding in the finite sources. Recorded code and catalog interpretation: Read by FUN_00066C18 at callsite 0x66C24 through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x2223C of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x0001669C. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="29" />
+    <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1BD98" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1661,7 +1616,7 @@
   <XDFTABLE uniqueid="0xDAF2" flags="0x0">
     <title>VVEL Duration Target - Start-up [stored count]</title>
     <description>Exact 1ME3B. Address 0x163E4; 1 rows x 16 columns; uint16; map confidence code. Start-up duration of the mode 2 and mode 11 pairs: the curve by a temperature byte, scaled by 0.05. With the request argument set, a weighted mix of ROM16[0x94A8] and the eight-point curve 0x00017136 replaces the curve. Exact 1ME3B target-native table at 0x163e4 bound to accessor 0x6375e through literal 0x639e4. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup selector do not establish the ordinate unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf 0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to pairs 1 and 10 of its output. With the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled by 0.05, where the weight w moves by ROM16[0x9474] / 32768 per pass within 0..1; JK78C ramps between two ROM words instead. Stock bytes are identical to JK78C 0x00015E32. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x178D6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>degC</units>
@@ -1703,7 +1658,7 @@
   <XDFTABLE uniqueid="0x7388" flags="0x0">
     <title>VVEL Idle Model - Floor Release Step [stored count]</title>
     <description>Exact 1ME3B. Address 0x172A6; 1 rows x 8 columns; uint16; map confidence code. Per-pass decrement of the idle-model floor weight in FUN_00063CD4 after the hold of 0x000173C6, looked up by the demand margin over the axis 0x00017296; the full weight is 10000. Exact 1ME3B target-native table at 0x172a6 bound to accessor 0x63cd4 through literal 0x63f10. Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063F10, loaded at 0x00063E5A. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17296" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1745,7 +1700,7 @@
   <XDFTABLE uniqueid="0x1498" flags="0x0">
     <title>VVEL Duration State Word - Hot Intake Idle [stored count]</title>
     <description>Exact 1ME3B. Address 0x1027C; 8 rows x 8 columns; uint16; map confidence code. Duration word surface of the state-code dispatcher FUN_0007448C for state code 5; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14. The dispatcher evaluates the state bytes 0xFFFEB826 and 0xFFFEB8DC in turn and publishes the duration word 0xFFFE821E. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0x1027c bound to accessor 0x7448c through literal 0x75244. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. The common word-domain channel supports a numeric relationship to the throttled curve, not a physical degree unit or execution of a float multiply at this lookup. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0007448C at callsites 0x750AE and 0x75176 through the 8x8 uint16 leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E &lt;&lt; 2), the 12.5 RPM per count engine-speed word in the 3.125 RPM domain on the first axis and the stack coordinate the load byte 0xFFFE8034 &lt;&lt; 8, the byte that indexes the ignition mode surfaces in FUN_000797CC on the second axis. The same dispatcher takes the throttled curve 0x000173D6 for state codes 1 and 3, so the word shares the 0.05 domain of that curve. The resolver pair of modes 12 and 13 is a separate pair of surfaces with its own axes. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x173A6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1787,7 +1742,7 @@
   <XDFTABLE uniqueid="0x788D" flags="0x0">
     <title>VVEL Duration State Word - Hot Intake Idle, Knock [stored count]</title>
     <description>Exact 1ME3B. Address 0x102FC; 8 rows x 8 columns; uint16; map confidence code. Duration word surface of the state-code dispatcher FUN_0007448C for state codes 6 and 7; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0x102fc bound to accessor 0x7448c through literal 0x7524c. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. Shared dispatcher and axis inputs do not establish physical degrees for this returned word. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0007448C at callsites 0x750CC and 0x75198 through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the state code 5 surface 0x0001027C. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x173A6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -1829,7 +1784,7 @@
   <XDFTABLE uniqueid="0xF466" flags="0x0">
     <title>VVEL Duration Throttled - Ramp Delay</title>
     <description>Exact 1ME3B. Address 0x1457A; 1 rows x 8 columns; uint8; map confidence code. Delay curve of the stepped approach to the throttled duration: FUN_00063534 multiplies the value by 100 and passes it to the delay helper FUN_0002861E, which gates the offset that steps toward the curve 0x000173D6. Stock values fall from 30 at -30 degC to 0 at 40 degC. Exact 1ME3B target-native table at 0x1457a bound to accessor 0x63534 through literal 0x637bc. Read by FUN_00063534 at callsite 0x6355C through the 8-point uint8 leaf 0x2AC9C indexed by its first byte argument, the byte that the resolver FUN_00062FAC also passes to FUN_0006375E as the start-up curve coordinate. The time weight of one count of the helper argument is not bound to a published parameter.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14582" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>degC</units>
@@ -1918,7 +1873,7 @@
   <XDFTABLE uniqueid="0xF207" flags="0x0">
     <title>VVEL Duration Target - Start-up Blend [stored count]</title>
     <description>Exact 1ME3B. Address 0x17136; 1 rows x 8 columns; uint16; map confidence code. Blend target of the start-up duration: with the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * this curve, scaled by 0.05, in place of the start-up curve 0x000163E4. Stock values are 1300 = 65.0 at every point. Exact 1ME3B target-native table at 0x17136 bound to accessor 0x6375e through literal 0x639d0. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_blend_axis/axis. A normalized blend weight establishes interpolation arithmetic, not the degree unit of either endpoint or ordinate. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf 0x2AEAC indexed by the low byte of its stack argument, the byte that indexes the cold duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight w moves by ROM16[0x9474] / 32768 per pass within 0..1. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17186" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>degC</units>
@@ -1960,7 +1915,7 @@
   <XDFTABLE uniqueid="0xC0F6" flags="0x0">
     <title>VVEL Duration State Word - Idle Model and Running [stored count]</title>
     <description>Exact 1ME3B. Address 0x1007C; 16 rows x 16 columns; uint16; map confidence code. Duration state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_0007448C, looked up by engine speed over the axis 0x00017346 and by load over the axis 0x000172E6. Exact 1ME3B target-native table at 0x1007c bound to accessor 0x7448c through literal 0x74fd4. Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 duration scale of the state words in defs/JK78C.vvel.md. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00074FD4, loaded at 0x00074ED4. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x172E6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2002,7 +1957,7 @@
   <XDFTABLE uniqueid="0xC413" flags="0x0">
     <title>VVEL Duration Characteristic [stored count]</title>
     <description>Exact 1ME3B. Address 0x15F54; 1 rows x 16 columns; uint16; map confidence code. Monotonic duration characteristic of the VVEL duration correction FUN_0005B38E: looked up by its first duration argument x512, clamped to 0..100.0, over the axis 0x000176D6 and scaled by 2^-18. FUN_0005B38E subtracts from the result a 16x16 lookup of 0x0000CA7C over the axes 0x00015746 and 0x000176F6, indexed by the margin of its second over its third argument and by the same duration index. Exact 1ME3B target-native table at 0x15f54 bound to accessor 0x5b38e through literal 0x5b560. Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005B38E through the literal-pool word 0x0005B560, loaded at 0x0005B3FC. FUN_0005B38E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CA7C; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005B38E, the code graph records only 0x0005F814 as a reader of the axis 0x000176D6, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00015AA2. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x176D6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2086,7 +2041,7 @@
   <XDFTABLE uniqueid="0xD866" flags="0x0">
     <title>Intake CVTC Target - Running [stored count]</title>
     <description>Exact 1ME3B. Address 0x17496; 1 rows x 16 columns; uint16; map confidence code. Mode 15 intake-cam target of the VVEL resolver, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count. Exact 1ME3B target-native table at 0x17496 bound to accessor 0x62fac through literal 0x6340c. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6315E through the 16-point uint16 leaf 0x2AF88 and converted with the float literals 0xC6800000 at 0x63410 and 0x3F000000 at 0x63414. Stock bytes are identical to 1ND0A 0x000173C2: the curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. Degrees of cam advance are a vendor-catalog candidate for the scaled value. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17546" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM</units>
@@ -2128,7 +2083,7 @@
   <XDFTABLE uniqueid="0x914E" flags="0x0">
     <title>Intake CVTC Target - Throttled [stored count]</title>
     <description>Exact 1ME3B. Address 0x1087C; 16 rows x 16 columns; uint16; map confidence code. Mode 4 intake-cam target of the VVEL resolver, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count. Exact 1ME3B target-native table at 0x1087c bound to accessor 0x63534 through literal 0x637dc. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by FUN_00063534 at callsite 0x63590 through the 16x16 uint16 leaf 0x2A0B4 with r7 on the first axis and the stack coordinate on the second axis; the converted value goes to the pair 3 slot 0xFFFEF45C with the float literals 0xC6800000 at 0x637E4 and 0x3F000000 at 0x637E8. Stock bytes are identical to JK78C 0x000108CE. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x174D6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2212,7 +2167,7 @@
   <XDFTABLE uniqueid="0x64C0" flags="0x0">
     <title>Intake CVTC Target - Cold [stored count]</title>
     <description>Exact 1ME3B. Address 0x17146; 1 rows x 8 columns; uint16; map confidence code. Mode 3 intake-cam target of the VVEL resolver, interpolated by the coolant-coded byte of the cold axis and gated by the flag 0xFFFEF5A6 with hysteresis ROM8[0x8BD3] = 53 and ROM8[0x8BD4] = 0. Stock values are 0x8000 = 0 at every point. Exact 1ME3B target-native table at 0x17146 bound to accessor 0x62fac through literal 0x63438. Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered numeric output only where the recorded conversion path is given. It does not establish physical camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A proved RPM or temperature coordinate does not prove the table output unit. Recorded code and catalog interpretation: Read by the resolver FUN_00062FAC at callsite 0x6322A through the 8-point uint16 leaf 0x2AEAC with its own literal pool word and the cold axis 0x00017176. The uniform stock block repeats elsewhere in the image; the binding rests on the call that follows the cold duration curve and on pair 2 of the output. Stock bytes are identical to JK78C 0x00016A94. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17176" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>degC</units>
@@ -2254,7 +2209,7 @@
   <XDFTABLE uniqueid="0x682A" flags="0x0">
     <title>Intake CVTC State Word - Idle Model and Running [stored count]</title>
     <description>Exact 1ME3B. Address 0x1047C; 16 rows x 16 columns; uint16; map confidence code. Intake VTC state word of the VVEL idle-model and running state codes in the state-code dispatcher FUN_0007448C, read over the axes 0x00017346 and 0x000172E6 of the duration word 0x0001007C. Exact 1ME3B target-native table at 0x1047c bound to accessor 0x7448c through literal 0x75220. Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000104CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00075220, loaded at 0x00074FF4. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000104CE: 0..130. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x172E6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2296,7 +2251,7 @@
   <XDFTABLE uniqueid="0xBC44" flags="0x0">
     <title>Intake CVTC State Word - Default and Cold Modes [stored count]</title>
     <description>Exact 1ME3B. Address 0x1067C; 16 rows x 16 columns; uint16; map confidence code. Intake VTC state word of the default and cold state codes in the state-code dispatcher FUN_0007448C, read over the axes 0x00017346 and 0x000172E6 of the duration word 0x0001007C. Exact 1ME3B target-native table at 0x1067c bound to accessor 0x7448c through literal 0x75228. Engineering conversion is unestablished. Retained hypothesis: x*0.5 degCA; proposed editor-grid inverse x/0.5. Origin: on JK78C 0x000106CE, the zero-phase fallback of the VTC word in FUN_000657E4. Recorded code interpretation: Read by FUN_0007448C through the literal-pool word 0x00075228, loaded at 0x00075008. FUN_0007448C is the state-code dispatcher at the position of JK78C FUN_000657E4. Stock bytes are identical to JK78C 0x000106CE. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x172E6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2590,7 +2545,7 @@
   <XDFTABLE uniqueid="0x27DD" flags="0x0">
     <title>Intake CVTC - Hold Duty [stored count]</title>
     <description>Exact 1ME3B. Address 0x11EFC; 8 rows x 8 columns; uint16; map confidence code. Hold-duty surface 11efc in 11cf90, added to each selected bank term after multiplication by float literal 377fffff. Engineering conversion remains unestablished. Exact 1ME3B target-native table at 0x11efc bound to accessor 0x11cf90 through literal 0x11d11c. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The hold-duty role follows the reviewed reader and its float transformation; no physical duty conversion is asserted. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2632,7 +2587,7 @@
   <XDFTABLE uniqueid="0xF591" flags="0x0">
     <title>Intake CVTC - Signed Duty Offset [stored count]</title>
     <description>Exact 1ME3B. Address 0x11F7C; 8 rows x 8 columns; uint16; map confidence code. Signed-offset magnitude surface 11f7c in 11cf90. The bank-error sign selects its positive or negative float contribution; the alternate controller path uses feedback outputs. Engineering conversion remains unestablished. Exact 1ME3B target-native table at 0x11f7c bound to accessor 0x11cf90 through literal 0x11d128. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The reader selects the sign of this offset magnitude independently for each bank; no physical duty conversion is asserted. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2674,7 +2629,7 @@
   <XDFTABLE uniqueid="0x9984" flags="0x0">
     <title>Intake CVTC - Positive Error Divisor [stored count]</title>
     <description>Exact 1ME3B. Address 0x11FFC; 8 rows x 8 columns; uint16; map confidence code. Positive-error divisor surface 11ffc in 11d1ba, distinct from the separately read negative-error divisor. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x11ffc bound to accessor 0x11d1ba through literal 0x11d3f8. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2716,7 +2671,7 @@
   <XDFTABLE uniqueid="0x87D" flags="0x0">
     <title>Intake CVTC - Negative Error Divisor [stored count]</title>
     <description>Exact 1ME3B. Address 0x1207C; 8 rows x 8 columns; uint16; map confidence code. Negative-error divisor surface 1207c in 11d1ba, selected independently for each bank from its error sign. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x1207c bound to accessor 0x11d1ba through literal 0x11d408. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error divisor role follows the ordered lookup and divide path, without a physical error or coefficient unit. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2758,7 +2713,7 @@
   <XDFTABLE uniqueid="0x59C5" flags="0x0">
     <title>Intake CVTC - Positive Filter Coefficient [stored count]</title>
     <description>Exact 1ME3B. Address 0x1287C; 8 rows x 8 columns; uint16; map confidence code. Positive-error first-order filter coefficient surface 1287c in 11cd9c, one of four separately read duty-controller surfaces. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x1287c bound to accessor 0x11cd9c through literal 0x11d0c4. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The positive-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2800,7 +2755,7 @@
   <XDFTABLE uniqueid="0x33F2" flags="0x0">
     <title>Intake CVTC - Negative Filter Coefficient [stored count]</title>
     <description>Exact 1ME3B. Address 0x1297C; 8 rows x 8 columns; uint16; map confidence code. Negative-error first-order filter coefficient surface 1297c in 11cd9c, distinct from coefficient 1287c and both feedback bounds. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x1297c bound to accessor 0x11cd9c through literal 0x11d0d4. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The negative-error filter role follows the reviewed coefficient reader; encoded float arithmetic does not establish a physical coefficient unit. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2842,7 +2797,7 @@
   <XDFTABLE uniqueid="0x6F18" flags="0x0">
     <title>Intake CVTC - Feedback Upper Bound [stored count]</title>
     <description>Exact 1ME3B. Address 0x1307C; 8 rows x 8 columns; uint16; map confidence code. Upper feedback bound surface 1307c in 11cd9c, retained separately from lower bound 1317c and both filter coefficients. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x1307c bound to accessor 0x11cd9c through literal 0x11d0dc. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The upper feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2884,7 +2839,7 @@
   <XDFTABLE uniqueid="0x52F" flags="0x0">
     <title>Intake CVTC - Feedback Lower Bound [stored count]</title>
     <description>Exact 1ME3B. Address 0x1317C; 8 rows x 8 columns; uint16; map confidence code. Lower feedback bound surface 1317c in 11cd9c, retained separately from upper bound 1307c and both filter coefficients. Physical conversion remains unestablished. Exact 1ME3B target-native table at 0x1317c bound to accessor 0x11cd9c through literal 0x11d0e4. Engineering conversion is unestablished. The native editor exposes raw uint16 stored counts. The lower feedback-bound role follows the reviewed coefficient reader; no physical feedback conversion is asserted. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17806" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -2926,7 +2881,7 @@
   <XDFTABLE uniqueid="0xC527" flags="0x0">
     <title>Intake CVTC - Settle Countdown Reload [stored count]</title>
     <description>Exact 1ME3B. Address 0x1456A; 1 rows x 8 columns; uint8; map confidence code. Oil-indexed settle-count reload 1456a over axis 13480, read by initializer 1198b0 and stage 11c9a6. Stock scheme 8576=0d selects this arm. The countdown time unit remains unresolved. Exact 1ME3B target-native table at 0x1456a bound to accessor 0x1198b0 through literal 0x119ad0, accessor 0x11c9a6 through literal 0x11caf8. Scheme bit0 set selects this oil-indexed curve in initializer 1198b0 and control stage 11c9a6. Stock byte 8576=0d selects this arm. The result reloads a countdown; its time unit and the countdown routine remain unresolved. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13480" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -3030,7 +2985,7 @@
   <XDFTABLE uniqueid="0x5581" flags="0x0">
     <title>Intake CVTC - Target Upper Bound [stored count]</title>
     <description>Exact 1ME3B. Address 0x17156; 1 rows x 16 columns; uint16; map confidence code. Upper bound 17156 over the sixteen-word axis 17256 in 11aaf2. The larger of the paired input words indexes the curve; every target-selection path applies the resulting bound. Engineering conversion remains unestablished. Exact 1ME3B target-native table at 0x17156 bound to accessor 0x11aaf2 through literal 0x11ac2c. Sixteen-point uint16 target-bound curve read by 11aaf2 over 17256 from the greater of the paired input words. Its engineering output and coordinate conversions remain unresolved. Editor values are stored counts; no engineering conversion is established.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17256" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Stored count</units>
@@ -3493,7 +3448,7 @@
   <XDFTABLE uniqueid="0x3158" flags="0x0">
     <title>Engine Torque Surface</title>
     <description>Exact 1ME3B. Address 0x11BFC; 16 rows x 16 columns; uint16; map confidence candidate. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer. Definition address projected from JK08A 00010b8e through JK08A-1ME3B.definition-addresses.csv: the target torque coordinator 000980fe reads the exact engine-torque surface with the exact axis 000162b4 through the 16x16 uint16 leaf 0002a0b4 with the operand set of 1ND0A 00092456.</description>
-    <CATEGORYMEM index="0" category="23" />
+    <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Normalized BFS [%] [cand]</units>
@@ -3550,7 +3505,7 @@
   <XDFTABLE uniqueid="0x2AFA" flags="0x0">
     <title>Engine Torque Base Term vs RPM</title>
     <description>Exact 1ME3B. Address 0x16D06; 1 rows x 8 columns; uint16; map confidence candidate. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 000154a0 through JK08A-1ME3B.definition-addresses.csv: normalized-shape pair 000920fa/00097d8c reads the exact eight-word base table at the same call ordinal through 0002aeac.</description>
-    <CATEGORYMEM index="0" category="23" />
+    <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16264" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM [cand]</units>
@@ -3592,7 +3547,7 @@
   <XDFTABLE uniqueid="0x4C35" flags="0x0">
     <title>Engine Torque Correction Coefficient vs RPM</title>
     <description>Exact 1ME3B. Address 0x163B4; 1 rows x 8 columns; uint16; map confidence candidate. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 00014c1a through JK08A-1ME3B.definition-addresses.csv: exact-bytes pair 00091d2c/000979cc reads the exact eight-word coefficient table at the same call ordinal through 0002aeac.</description>
-    <CATEGORYMEM index="0" category="23" />
+    <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16264" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM [cand]</units>
@@ -23217,342 +23172,6 @@
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x2647" flags="0x0">
-    <title>Rolling Launch Minimum Coolant Temperature</title>
-    <description>Exact 1ME3B. Address 0x13CF66; 1 rows x 1 columns; uint8; map confidence code. Minimum normalized engine-coolant temperature required for Rolling Launch activation The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the saturated hot endpoint.</description>
-    <CATEGORYMEM index="0" category="19" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Minimum coolant temperature" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF66" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg C</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.625-40">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0xB40" flags="0x0">
-    <title>Rolling Launch Minimum Vehicle Speed</title>
-    <description>Exact 1ME3B. Address 0x13CF68; 1 rows x 1 columns; uint8; map confidence code. Minimum coarse vehicle speed required for Rolling Launch activation; zero disables the speed gate The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per count physical scale depends on homologous observed CAN 0x280 data; zero disables this activation gate.</description>
-    <CATEGORYMEM index="0" category="19" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Minimum vehicle speed" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF68" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>km/h [cand]</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*2">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0xE210" flags="0x0">
-    <title>Rolling Launch Minimum Engine Speed</title>
-    <description>Exact 1ME3B. Address 0x13CF6A; 1 rows x 1 columns; uint16; map confidence code. Minimum engine speed required for Rolling Launch activation The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive minimum.</description>
-    <CATEGORYMEM index="0" category="19" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Minimum engine speed" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF6A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x3BD6" flags="0x0">
-    <title>Rolling Launch Minimum Retard Ramp Width</title>
-    <description>Exact 1ME3B. Address 0x13CF69; 1 rows x 1 columns; uint8; map confidence code. Minimum Rolling Launch ignition-retard ramp width below the captured fuel-cut threshold At activation, the runtime computes effective_ramp = min(rpm_offset, max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command cap inside the band, and applies the cap at Cut.</description>
-    <CATEGORYMEM index="0" category="20" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Minimum retard ramp width" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF69" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x2609" flags="0x0">
-    <title>Rolling Launch RPM Offset</title>
-    <description>Exact 1ME3B. Address 0x13CF6E; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch fuel-cut threshold offset above captured activation RPM The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be nonzero.</description>
-    <CATEGORYMEM index="0" category="22" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="RPM offset" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF6E" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0xB233" flags="0x0">
-    <title>Rolling Launch Minimum RPM Hysteresis</title>
-    <description>Exact 1ME3B. Address 0x13CF70; 1 rows x 1 columns; uint8; map confidence code. Minimum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive lower endpoint. The runtime then computes Restore = Cut - effective_hysteresis.</description>
-    <CATEGORYMEM index="0" category="22" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Minimum hysteresis" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF70" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x82A5" flags="0x0">
-    <title>Rolling Launch Maximum RPM Hysteresis</title>
-    <description>Exact 1ME3B. Address 0x13CF71; 1 rows x 1 columns; uint8; map confidence code. Maximum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive upper endpoint. The endpoint must be below the configured RPM offset.</description>
-    <CATEGORYMEM index="0" category="22" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Maximum hysteresis" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF71" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x82EB" flags="0x0">
-    <title>Rolling Launch RPM Hysteresis Ratio (%)</title>
-    <description>Exact 1ME3B. Address 0x13CF7B; 1 rows x 1 columns; uint8; map confidence code. Captured-RPM ratio (%) used for adaptive Rolling Launch hysteresis The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation, then clamps the result between the configured minimum and maximum hysteresis.</description>
-    <CATEGORYMEM index="0" category="22" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Hysteresis ratio (%)" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x13CF7B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>%</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X/10">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

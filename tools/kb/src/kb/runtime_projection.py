@@ -37,16 +37,17 @@ def document(root=repo.ROOT):
             int(storage[key]["pointer_table"], 16) - delta,
         ]
     for layout in layouts:
-        fuel = targets.meaning("rolling_launch", layout, "fuel_inhibit", root)
         rolling = targets.target("rolling_launch", layout, root)
-        row = {
-            "ascd_main_bit": targets.bit("ascd_state/ram", layout, "main", root),
-            "fuel_cut_active_bit": targets.bit(fuel, layout, "active", root),
-            "fuel_cut_address": targets.address(fuel, layout, root),
-            "knock_surface_bit": targets.bit(
-                "knock_surface_state/ram", layout, "high_detonation", root),
-            "knock_surface_address": targets.address("knock_surface_state/ram", layout, root),
-        }
+        row = {"ascd_main_bit": targets.bit("ascd_state/ram", layout, "main", root)}
+        # Only a layout that carries the Rolling Launch runtime binds its
+        # fuel-cut flag.
+        if rolling.get("status", "supported") == "supported":
+            fuel = targets.meaning("rolling_launch", layout, "fuel_inhibit", root)
+            row["fuel_cut_active_bit"] = targets.bit(fuel, layout, "active", root)
+            row["fuel_cut_address"] = targets.address(fuel, layout, root)
+        row["knock_surface_bit"] = targets.bit(
+            "knock_surface_state/ram", layout, "high_detonation", root)
+        row["knock_surface_address"] = targets.address("knock_surface_state/ram", layout, root)
         if layout == targets.CANONICAL or "fuel_inhibit_mask" in rolling.get("symbols", {}):
             row["fuel_inhibit_mask"] = targets.address("fuel_inhibit_mask/ram", layout, root)
         found["layouts"][layout] = row

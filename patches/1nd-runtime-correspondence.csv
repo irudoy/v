@@ -68,28 +68,6 @@ map_symbol,rev_fuel_cut_state,,fffe94ba,,,target-specific,Bits 0x10 and 0x20 ret
 map_symbol,rev_fuel_cut_state_machine,,00076ad2,,,target-specific,"The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state."
 map_symbol,selector_function,000d09d8,00129cbc,,,mapped,Exact selector entry recovered from its caller
 map_symbol,startup_initializer,0002c648,00030810,,,mapped,Startup function is bound by two stock literals
-rolling_hook,displaced_periodic_task,00021970,0002205c,000f1880,,mapped,Entry 1 of the homologous 148-entry scheduler table at 00022058 binds the periodic wrapper
-rolling_hook,feedback_arbitration,000c3fa4,00115490,00116e4c,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
-rolling_hook,fuel_cut_coordinator,,000220d8,000760cc,,target-specific,Entry 32 points to the sole writer of the final six-cylinder fuel inhibit mask
-rolling_hook,primary_ignition_command,0004e198,00074d88,0002e464,,mapped,Target call path consumes the final ignition command
-rolling_hook,selector_arbitration,000ce8dc,00127158,00129cbc,,mapped,Rolling arbitration can chain from the selector literal
-rolling_hook,startup_state_clear,00027d28,0002b398,00030810,,mapped,Runtime clear can chain from the startup literal
-rolling_symbol,apc_mode,ffff24c9,fffe94e5,,,mapped,APC control path binds the mode byte
-rolling_symbol,apc_output,ffff2022,fffe81dd,,,target-specific,"The reviewed output slice of function 00074afa publishes byte fffe81dd at 00074d0c and on its override branch at 00074d1a, with GBR=fffe81cc. It zero-extends the selected byte into R4 in the call delay slot at 00074d20 before scheduler 0002e464. The same function reads fffe81dd at 00074d44 before forming the argument of 0002e956. This binds the target command byte and scheduler handoff; physical crank angle, target diagnostic conversion and cadence require separate qualification."
-rolling_symbol,ascd_state,ffff41ae,fffeb823,,,mapped,Selector reads this ASCD state byte
-rolling_symbol,button_state,ffff2a85,fffe9ad3,,,mapped,Selector reads this button byte
-rolling_symbol,coolant_index,ffff1077,fffe8077,,,mapped,Coolant activation index is recovered from target consumers
-rolling_symbol,fuel_cut_coordinator,,000760cc,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
-rolling_symbol,fuel_inhibit,ffff2497,fffe94ba,,,target-specific,The rev-limit fuel-cut state machine 00076ad2 keeps the arm and the active cut in this byte
-rolling_symbol,fuel_inhibit_mask,ffff22e0,fffe92e4,,,target-specific,"The terminal mask slice of coordinator 000760cc combines the selected request mask with the result of 00078080 at 000766e4, applies AND 0x3f at 000766e8, and publishes the byte to literal destination fffe92e4 at 000766f0. The store is the conditional branch delay slot and executes for both zero and nonzero results. This independently binds the final six-bit mask storage; target bit-to-cylinder correspondence and hardware behavior require separate qualification."
-rolling_symbol,pedal,ffff2672,fffe96c8,,,mapped,Pedal activation source is recovered from target consumers
-rolling_symbol,periodic_task_slot,00021970,0002205c,,,mapped,Entry 1 of the homologous 148-entry scheduler table at 00022058 binds the periodic wrapper
-rolling_symbol,periodic_task_table,0002196c,00022058,,,mapped,Homologous 148-entry periodic task table walked by the scheduler
-rolling_symbol,rpm,ffff11bc,fffe81b6,,,mapped,Direct target consumers use the native RPM word
-rolling_symbol,scheduler_task,000a9554,000f1880,,,mapped,The stock task of entry 1 is displaced by the periodic wrapper
-rolling_symbol,stock_ignition_consumer,0002a892,0002e464,,,mapped,Final ignition command builder calls this consumer
-rolling_symbol,unsigned_divide,00021ce0,00022318,,,mapped,Exact unsigned division helper is recovered from target callers
-rolling_symbol,vehicle_speed,ffff110e,fffe8104,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
 can_hook,coherent_snapshot_call,00028090,0002fe08,00020cf4,,mapped,Caller literal binds the coherent snapshot boundary
 can_hook,hcan1_primary_init,0002d7fc,00031ce4,0011363c,,mapped,Primary HCAN1 caller literal binds the initializer
 can_hook,hcan1_recovery_init,000c3b10,00114ad8,0011363c,,mapped,Recovery HCAN1 jump literal binds the initializer
@@ -184,5 +162,5 @@ telemetry,secondary_tps_b1_raw,ffff275e,fffe97be,,,target-specific,"The range-mo
 telemetry,secondary_tps_b2_raw,ffff2864,fffe98d4,,,target-specific,"Function 00048010 reads sample word fffeaacc at 00048048, subtracts it from 0x0400 and publishes the low word at fffe98d4 at 00048050. R7 retains literal base fffe98d2 and the store uses offset 2. This independently binds the target complemented word; sensor transfer, bank assignment, diagnostic conversion and cadence require separate target qualification."
 telemetry,af_adjustment_b2_raw,ffff45a2,fffebca4,,,target-specific,"The bank-2 slice of function 000e51b8 reads the signed word at fffebca4 at 000e595e through offset 2 of R5 base fffebca2. It adds/subtracts the bank-2 unsigned steps, applies signed16 saturation and calibrated signed lower/upper limits, then directly stores the word at 000e59be. This binds the sibling storage independently of the indexed reset path. Physical scale and upstream admission conditions require separate target review."
 capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
-capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage
+capability,rolling_launch,,,,,target-specific,Rolling Launch v2 is ported to this layout after its vehicle acceptance on 7mfk; the layout carries no Rolling Launch runtime until then.
 capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type A3 feedback record and unavailable fields require explicit variants

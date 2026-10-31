@@ -29,18 +29,18 @@ required meanings without a symbol there, each by the state of its status.
 
 | Layout | Images | Runtime allocation | Map Switching | Rolling Launch | CAN telemetry | Editor definitions |
 | --- | --- | --- | --- | --- | --- | --- |
-| `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | supported | supported; mailbox 26; 7 fields unavailable (1 absent, 3 unresolved, 3 unsupported) | supported; 16 meanings without a symbol (16 absent) |
-| `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | supported | supported; mailbox 26; 5 fields unavailable (2 unresolved, 3 unsupported) | supported; 13 meanings without a symbol (13 absent) |
+| `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 7 fields unavailable (1 absent, 3 unresolved, 3 unsupported) | supported; 16 meanings without a symbol (16 absent) |
+| `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 5 fields unavailable (2 unresolved, 3 unsupported) | supported; 13 meanings without a symbol (13 absent) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |
-| `jk00c` | JK00C | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | supported | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
-| `jk00d` | JK00D | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | supported | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
-| `jk78c` | JK78C | supported; ROM `0x1CB08..0x20000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 14 switched families, 4 unsupported | supported | supported; mailbox 26; 5 fields unavailable (1 unresolved, 4 unsupported) | supported; 13 meanings without a symbol (13 absent) |
+| `jk00c` | JK00C | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
+| `jk00d` | JK00D | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
+| `jk78c` | JK78C | supported; ROM `0x1CB08..0x20000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 14 switched families, 4 unsupported | planned | supported; mailbox 26; 5 fields unavailable (1 unresolved, 4 unsupported) | supported; 13 meanings without a symbol (13 absent) |
 
 | Feature | Summary | Specifications |
 | --- | --- | --- |
 | Runtime allocation (`runtime`) | The ROM and RAM that the patch runtimes occupy on each layout: the envelope of the canonical JK08A layout, its relocation into an audited free region of every other layout, and the build variants that a layout selects. | [`patches/rom-builder.md`](../patches/rom-builder.md), [`patches/runtime-reservations.md`](../patches/runtime-reservations.md) |
 | Map Switching (`map_switching`) | Five calibration slots that the steering-wheel switches select: Map 1 is the stock storage of each switched map family and Maps 2 through 5 occupy ROM that the layout owns, a map commit publishes the limiter clusters atomically, and pulses of the CRUISE and SET lamps confirm the selection. | [`patches/map-switching-selector.md`](../patches/map-switching-selector.md) |
-| Rolling Launch (`rolling_launch`) | An optional runtime on Map Switching that captures engine speed while CANCEL is held, applies an all-cylinder fuel-cut actuator of the layout, and can apply bounded retard-only ignition control; the actuator is a temporary map-specific fuel-cut window on the 7mfk, jk00c, and jk00d layouts and a request to the stock final-mask coordinator, without changes to the selected maps, on the VQ37 layouts. | [`patches/rolling-launch.md`](../patches/rolling-launch.md) |
+| Rolling Launch (`rolling_launch`) | An optional runtime on Map Switching of the 7mfk layout that captures engine speed while CANCEL is held, applies an all-cylinder fuel cut through a temporary map-specific fuel-cut window, and can apply bounded retard-only ignition control; the other layouts receive Rolling Launch v2 after its vehicle acceptance on 7mfk. | [`patches/rolling-launch.md`](../patches/rolling-launch.md) |
 | CAN telemetry (`can_telemetry`) | Custom CAN telemetry, disabled by default: a firmware producer transmits the fields of the telemetry profile in fixed and context pages under the ROM-neutral schema 2 wire contract on a CAN mailbox of each layout, and the host schema, decoder, dashboard, and recorder use the same profile identity. | [`patches/can-telemetry.md`](../patches/can-telemetry.md) |
 | Editor definitions (`definitions`) | The RomRaider and TunerPro definitions of each image: the tables and axes that the definition of a layout relocates from the canonical JK08A model, with the editor presentation, the switches, and the header metadata and checksums of each image. | [`defs/README.md`](../defs/README.md), [`defs/JK08A.definition-presentation.md`](../defs/JK08A.definition-presentation.md) |
 
@@ -132,7 +132,7 @@ with floor curves and a constant mode 14 pair, the second copies of the
 shaft-angle conversion and monitor floors, the hot-intake idle pair of the
 state-code dispatcher `0x07448C`, and the two curves that only this image
 holds, the throttled ramp delay `0x01457A` and the start-up blend target
-`0x017136`. Map Switching, Rolling Launch, and CAN telemetry use the 1ME3B
+`0x017136`. Map Switching and CAN telemetry use the 1ME3B
 address profile in `../patches/rom-address-profiles.toml`: every stock address
 is recovered in the target image, the runtime occupies `0x13B108..0x13F000` of
 the audited erased region `0x139DC4..0x13FF00`, and

@@ -255,7 +255,7 @@ trio path of 1ND0A `0x074D98`. The projection declares checksum support with
 native RomRaider metadata over the `sh7059_1me3b` layout. The definition
 exposes the 1ME3B runtime allocation of `rom-address-profiles.toml`: Map 2-5
 storage for the registered switched families, the target-native fuel-cut caps
-and curves of the VQ37 registry, Rolling Launch controls, and the CAN telemetry
+and curves of the VQ37 registry, and the CAN telemetry
 startup switch at their declared target addresses. The target-native table registry adds the
 alternate selector arms, the VVEL target set, and the six executed ignition
 surfaces to the 1ME3B definition, each

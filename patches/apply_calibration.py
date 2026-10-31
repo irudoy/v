@@ -71,12 +71,12 @@ def md5(data):
 
 
 def _records(target, data):
-    rolling = target.rolling_layout.configuration
     telemetry = target.telemetry_layout.configuration
-    return {
-        "rolling_launch": bytes(data[rolling.start : rolling.end]),
-        "can_telemetry": bytes(data[telemetry.start : telemetry.end]),
-    }
+    records = {"can_telemetry": bytes(data[telemetry.start : telemetry.end])}
+    if target.rolling_layout is not None:
+        rolling = target.rolling_layout.configuration
+        records["rolling_launch"] = bytes(data[rolling.start : rolling.end])
+    return records
 
 
 def _require_fresh_build(source, target, rom, source_name):
@@ -84,7 +84,11 @@ def _require_fresh_build(source, target, rom, source_name):
     the same bytes."""
     records = _records(target, source)
     try:
-        calibration = rolling_launch.Calibration.from_bytes(records["rolling_launch"])
+        calibration = (
+            rolling_launch.Calibration.from_bytes(records["rolling_launch"])
+            if "rolling_launch" in records
+            else rolling_launch.Calibration()
+        )
         telemetry = can_telemetry.Configuration.from_bytes(records["can_telemetry"])
     except (TypeError, ValueError) as error:
         raise ApplicationError(

@@ -265,10 +265,6 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     engine, engine_call = bind_threshold_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     entries.add(engine)
-    fuel_entry = (regions["fuel_cut_wrapper"].entry
-                  if "fuel_cut_wrapper" in coverage_regions else None)
-    if fuel_entry is not None:
-        entries.add(fuel_entry)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
     for unit in coverage_units:
         parsed = parsed_by_unit[unit]
@@ -438,10 +434,6 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     raise VerificationError("threshold helper lacks its bound engine or invoke origin")
             elif not frames and target == engine and pc in invoke_words:
                 origin = {"entry": engine, "stock_return": False}
-            elif fuel_entry is not None and target == fuel_entry:
-                if frames or pc not in invoke_words:
-                    raise VerificationError("fuel wrapper lacks its originating invoke call")
-                origin = {"entry": fuel_entry, "stock_return": False}
             elif frames:
                 origin = frames[-1]["origin"]
                 if target == engine and (pc not in transfers or owners[pc] != regions["periodic_wrapper"].entry):
@@ -491,8 +483,6 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     raise VerificationError("threshold helper return lacks its divider return and native RTS")
                 returned.add(entry)
             elif entry == engine:
-                returned.add(entry)
-            elif fuel_entry is not None and entry == fuel_entry:
                 returned.add(entry)
             elif entry in wrapper_entries:
                 if not origin["stock_return"]:
@@ -552,7 +542,6 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-m2e",
             "-mb",
             "-std=c11",
-            "-DVERIFY_CANONICAL_ROLLING=1",
             "-O2",
             "-Wall",
             "-Wextra",

@@ -63,15 +63,16 @@ class TargetsTest(unittest.TestCase):
                 with self.subTest(layout=layout, key=key):
                     self.assertEqual(targets.meaning("rolling_launch", layout, key),
                                      m.meaning_of(symbol).key)
-        # On the VQ37VHR layouts the state byte of the native rev-limit fuel
-        # cut fills the key of the fuel inhibit state, and the final inhibit
-        # mask is a key of its own.
         self.assertEqual(targets.meaning("rolling_launch", "7mfk", "fuel_inhibit"),
                          "fuel_inhibit/ram")
-        self.assertEqual(targets.meaning("rolling_launch", "1nd", "fuel_inhibit"),
-                         "rev_fuel_cut_state/ram")
-        self.assertEqual(targets.meaning("rolling_launch", "1nd", "fuel_inhibit_mask"),
-                         "fuel_inhibit_mask/ram")
+        # A planned target names no key until its runtime is ported.
+        for layout in ("1me3b", "1nd", "jk00c", "jk00d", "jk78c"):
+            with self.subTest(layout=layout):
+                planned = m.targets[("rolling_launch", layout)]
+                self.assertEqual(planned.status, "planned")
+                self.assertEqual(sorted(planned.props), ["note"])
+        with self.assertRaises(KbError):
+            targets.meaning("rolling_launch", "1nd", "fuel_inhibit")
         with self.assertRaises(KbError) as missing:
             targets.meaning("rolling_launch", "7mfk", "no_such_key")
         self.assertEqual(missing.exception.code, 3)

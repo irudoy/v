@@ -163,19 +163,13 @@
 
 ["layouts"."1me3b"]
 "ascd_main_bit" = 0x1
-"fuel_cut_active_bit" = 0x3
-"fuel_cut_address" = 0xFFFE948A
 "knock_surface_bit" = 0x7
 "knock_surface_address" = 0xFFFE945B
-"fuel_inhibit_mask" = 0xFFFE92B0
 
 ["layouts"."1nd"]
 "ascd_main_bit" = 0x5
-"fuel_cut_active_bit" = 0x5
-"fuel_cut_address" = 0xFFFE94BA
 "knock_surface_bit" = 0x6
 "knock_surface_address" = 0xFFFE9488
-"fuel_inhibit_mask" = 0xFFFE92E4
 
 ["layouts"."7mfk"]
 "ascd_main_bit" = 0x7
@@ -187,22 +181,15 @@
 
 ["layouts"."jk00c"]
 "ascd_main_bit" = 0x7
-"fuel_cut_active_bit" = 0x6
-"fuel_cut_address" = 0xFFFF251F
 "knock_surface_bit" = 0x6
 "knock_surface_address" = 0xFFFF24EA
 
 ["layouts"."jk00d"]
 "ascd_main_bit" = 0x7
-"fuel_cut_active_bit" = 0x6
-"fuel_cut_address" = 0xFFFF2527
 "knock_surface_bit" = 0x6
 "knock_surface_address" = 0xFFFF24F2
 
 ["layouts"."jk78c"]
 "ascd_main_bit" = 0x4
-"fuel_cut_active_bit" = 0x4
-"fuel_cut_address" = 0xFFFF23F5
 "knock_surface_bit" = 0x6
 "knock_surface_address" = 0xFFFF23C6
-"fuel_inhibit_mask" = 0xFFFF223C

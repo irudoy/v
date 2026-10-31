@@ -18,15 +18,12 @@ for item in (TOOL_DIR, ROOT):
 
 import verify_can_telemetry as can_verifier
 import verify_map_switching as base_verifier
-import verify_rolling_launch as rolling_verifier
 from elf_storage_layout import ELFStorageError, require_separate_storage
 
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import map_switching_assembly
 from patches import map_switching_compose
-from patches import rolling_launch_assembly
-from patches import rolling_launch_compose
 from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
 
@@ -60,8 +57,6 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_5": 0x0000F690,
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
-MEASURED_ROLLING_ROMS = ("JK00C", "JK00D")
-MEASURED_VQ37_ROLLING_ROMS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
 MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
@@ -96,23 +91,6 @@ def _feedback_serializer_stub(address, status_alias):
         FEEDBACK_SERIALIZER_PREFIX
         + bytes.fromhex("0009") * (padding_size // 2)
         + status_alias.to_bytes(4, "big")
-    )
-
-
-def _fuel_coordinator_stub(address, mask_alias):
-    """Return a stock-first stub that publishes a distinct base mask.
-
-    The stub writes the base mask to the aliased final-mask byte and
-    returns the same value zero-extended in r0, matching the unsigned
-    byte contract of the stock coordinator.
-    """
-    if address % 4:
-        raise VerificationError(
-            f"fuel coordinator stub is not aligned at {address:#x}"
-        )
-    return (
-        bytes.fromhex("d102e080600c2100000b0009")
-        + mask_alias.to_bytes(4, "big")
     )
 
 
@@ -162,40 +140,23 @@ def _assemble_stage(
     return assembled
 
 
-def _compose_and_lock(target, locks, map_blobs, rolling_blobs, can_blobs):
-    """Compose the exact target stages from independently assembled bytes."""
+def _compose_and_lock(target, locks, map_blobs, can_blobs):
+    """Compose the exact target stages from independently assembled bytes.
+
+    A relocated target carries no Rolling Launch stage, so its lock repeats
+    the map stage digest and telemetry composes on the map stage.
+    """
     map_result = map_switching_compose.compose(
         layout=target.map_layout,
         image=target.stock_image,
         blobs=map_blobs,
     )
-    rolling_result = (
-        rolling_launch_compose.compose(
-            layout=target.rolling_layout,
-            base=map_result.data,
-            blobs=rolling_blobs,
-        )
-        if target.rolling_layout is not None
-        else None
-    )
     can_result = can_telemetry_compose.compose(
         layout=target.telemetry_layout,
-        base=(
-            rolling_result.data
-            if rolling_result is not None
-            else map_result.data
-        ),
+        base=map_result.data,
         blobs=can_blobs,
     )
-    actual = (
-        map_result.sha256,
-        (
-            rolling_result.sha256
-            if rolling_result is not None
-            else map_result.sha256
-        ),
-        can_result.sha256,
-    )
+    actual = (map_result.sha256, map_result.sha256, can_result.sha256)
     expected = (
         locks.map_stage_sha256,
         locks.rolling_stage_sha256,
@@ -206,7 +167,7 @@ def _compose_and_lock(target, locks, map_blobs, rolling_blobs, can_blobs):
             f"{target.rom}: independently assembled composition differs; "
             f"actual={actual} expected={expected}"
         )
-    return map_result, rolling_result, can_result
+    return map_result, can_result
 
 
 def _install_stock_stubs(fixture, target):
@@ -258,23 +219,6 @@ def _install_stock_stubs(fixture, target):
         map_hooks[key].stock: RETURN_STUB
         for key in map_keys
     }
-    if target.rolling_layout is not None:
-        rolling_hooks = target.rolling_layout.hook_by_key
-        stubs.update({
-            rolling_hooks["displaced_periodic_task"].stock: RETURN_STUB,
-            rolling_hooks["primary_ignition_command"].stock: RETURN_STUB,
-        })
-        if target.rolling_layout.variant == "vq37-fuel-coordinator":
-            profile = runtime_targets.rom_address_profiles.profile_for_rom(
-                target.rom
-            )
-            mask_alias = base_verifier.alias_high_ram(
-                profile.rolling_symbol_by_key["fuel_inhibit_mask"]
-            )
-            coordinator = rolling_hooks["fuel_cut_coordinator"].stock
-            stubs[coordinator] = _fuel_coordinator_stub(
-                coordinator, mask_alias
-            )
     stubs.update({
         can_hooks["coherent_snapshot_call"].stock: RETURN_STUB,
         can_hooks["knock_interval_latch"].stock: RETURN_STUB,
@@ -306,7 +250,6 @@ def _build_dynamic_fixture(
     target,
     composition,
     map_parsed,
-    rolling_parsed,
     can_parsed,
 ):
     """Apply simulator-only transforms after exact target identity passes."""
@@ -332,13 +275,6 @@ def _build_dynamic_fixture(
                 base_verifier.alias_high_ram(actual).to_bytes(4, "big")
             )
             map_relocated += 1
-    rolling_relocated = (
-        base_verifier.relocate_assembly_ram_literals(
-            fixture, rolling_parsed
-        )
-        if rolling_parsed is not None
-        else 0
-    )
     can_relocated = can_verifier.relocate_telemetry_ram_literals(
         fixture, can_parsed
     )
@@ -355,7 +291,6 @@ def _build_dynamic_fixture(
     return (
         bytes(fixture),
         map_relocated,
-        rolling_relocated,
         can_relocated,
         differentiated,
         stubs,
@@ -391,10 +326,7 @@ def _render_harness(target, name, build_dir):
         ].canonical_address
         overrides = {0x0000B43A: odd, 0x0000B43B: odd + 1}
     elif (
-        name in {
-            "map_switching_harness.c",
-            "rolling_launch_harness.c",
-        }
+        name == "map_switching_harness.c"
         and target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS
     ):
         families = target.map_layout.family_by_key
@@ -453,272 +385,6 @@ def _build_invoke_objects(build_dir):
         TOOL_DIR / "invoke_exception.s",
     ])
     return invoke, exception
-
-
-def _rolling_serializer_stub(target):
-    """Return the installed feedback serializer address and its stub bytes."""
-    map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
-    serializer = map_hooks["cruise_feedback_serializer"].stock
-    status_alias = base_verifier.alias_high_ram(
-        target.map_layout.feedback.status_byte_address
-    )
-    return serializer, _feedback_serializer_stub(serializer, status_alias)
-
-
-def _rolling_measured(rom):
-    return rom in MEASURED_ROLLING_ROMS or rom in MEASURED_VQ37_ROLLING_ROMS
-
-
-def _rolling_coverage_names(layout):
-    """Regions and units measured for one layout, including a VQ37 fuel wrapper."""
-    regions = list(rolling_verifier.COVERAGE_REGIONS)
-    units = list(rolling_verifier.COVERAGE_UNITS)
-    if "fuel_cut_wrapper" in layout.code_region_by_key:
-        regions.append("fuel_cut_wrapper")
-        units.append("fuel_cut_wrapper")
-    return tuple(regions), tuple(units)
-
-
-def _require_rolling_fixture_bytes(rom, fixture, composed, parsed_by_unit, units):
-    """Bind measured Rolling Launch words to the composed image."""
-    for unit in units:
-        parsed = parsed_by_unit[unit]
-        for row in parsed.statements:
-            if row.kind != "instruction":
-                continue
-            if fixture[row.address:row.address + 2] != composed[row.address:row.address + 2]:
-                raise VerificationError(
-                    f"{rom} simulator changes rolling instruction at {row.address:#010x}"
-                )
-            if map_switching_assembly._mnemonic(row) not in {"jsr", "jmp"}:
-                continue
-            previous = parsed.statement_by_address[row.address - 2]
-            literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text)
-            if literal is None:
-                raise VerificationError(f"{rom} rolling transfer lacks its source literal")
-            pool = parsed.labels[literal.group("label")]
-            if fixture[pool:pool + 4] != composed[pool:pool + 4]:
-                raise VerificationError(f"{rom} simulator changes rolling control literal")
-
-
-def _rolling_boundaries(target, regions):
-    map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
-    rolling_hooks = target.rolling_layout.hook_by_key
-    return {
-        regions["periodic_wrapper"].entry: rolling_hooks["displaced_periodic_task"].stock,
-        regions["selector_arbiter"].entry: map_hooks["selector_host_call"].stock,
-        regions["startup_wrapper"].entry: map_hooks["startup_initializer"].stock,
-    }
-
-
-def _rolling_omissions(parsed, regions, fixture):
-    """Name the shared harness edits that each remove one measured outcome."""
-    periodic = regions["periodic_wrapper"].entry
-    adapter = parsed["ignition_adapter"]
-    phase = next(
-        row for row in adapter.statements
-        if row.kind == "instruction" and row.text == "bf rl_ign_tail"
-        and adapter.statement_by_address[row.address - 2].text == "cmp/eq 0x1,r0"
-    )
-    phase_word = int.from_bytes(fixture[phase.address:phase.address + 2], "big")
-    phase_target = map_switching_assembly._validate_direct_branch_encoding(
-        adapter, phase, phase_word
-    )
-    engine = parsed["engine"]
-    map_edge = next(
-        row for row in engine.statements
-        if row.kind == "instruction" and row.text == "bf rl_gate_selector"
-        and engine.statement_by_address[row.address + 2].text == "mov #0x2,r0"
-    )
-    map_word = int.from_bytes(fixture[map_edge.address:map_edge.address + 2], "big")
-    map_target = map_switching_assembly._validate_direct_branch_encoding(
-        engine, map_edge, map_word
-    )
-    controller = parsed["ignition_controller"]
-    zero_edges = [
-        row for row in controller.statements
-        if row.kind == "instruction" and row.text == "bt rl_ctrl_tail"
-    ]
-    if len(zero_edges) != 1:
-        raise VerificationError("rolling controller zero-band outcome is not unique")
-    zero_edge = zero_edges[0]
-    zero_word = int.from_bytes(fixture[zero_edge.address:zero_edge.address + 2], "big")
-    zero_target = map_switching_assembly._validate_direct_branch_encoding(
-        controller, zero_edge, zero_word
-    )
-    zero_call = '    if (!invoke_ignition("ign-zero-band-start", 110, 308, 110))'
-    idle_clear = (
-        "        \"feedback-idle-clear-held\", PHASE_IDLE, REASON_NONE,\n"
-        "        FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xB5, {0, 0, 0, 0},"
-    )
-    feedback = parsed["feedback_arbiter"]
-    idle_edge = next(
-        row for row in feedback.statements
-        if row.kind == "instruction" and row.text == "bt rl_feedback_return"
-        and feedback.statement_by_address[row.address - 2].text == "tst r0,r0"
-        and feedback.statement_by_address[row.address - 4].text == "mov.b @(0x1,r1),r0"
-    )
-    idle_word = int.from_bytes(fixture[idle_edge.address:idle_edge.address + 2], "big")
-    idle_target = map_switching_assembly._validate_direct_branch_encoding(
-        feedback, idle_edge, idle_word
-    )
-    idle = (
-        "    set_ignition_state(PHASE_IDLE, MODE_OBSERVE, 0);\n"
-        "    if (!invoke_ignition(\"ign-inactive\", 110, 316, 110))"
-    )
-    held = (
-        "    write_u16(rom_pointer(RL_CONFIG), 0);\n"
-        "    ram_pointer(SELECTOR_STATE)[0] = 5;\n"
-        "    run_engine();\n"
-        "    if (!expect_phase_reason(\n"
-        "            \"gate-config-and-map-index\", PHASE_IDLE, REASON_CONFIG_INVALID))"
-    )
-    return (
-        (
-            "periodic",
-            "(void)invoke_r4(PERIODIC_WRAPPER, 0);",
-            "(void)invoke_r4(RL_ENGINE, 0);",
-            f"uncovered wrapper entry {periodic:#010x}",
-        ),
-        (
-            "adapter-idle",
-            idle,
-            idle.replace("PHASE_IDLE", "PHASE_ACTIVE", 1),
-            f"uncovered wrapper branch {phase.address:#010x}->{phase_target:#010x}",
-        ),
-        (
-            "engine-map",
-            held,
-            held.replace("[0] = 5;", "[0] = 0;", 1),
-            f"uncovered wrapper branch {map_edge.address:#010x}->{map_target:#010x}",
-        ),
-        (
-            "controller-zero-band",
-            zero_call,
-            "    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x40;\n" + zero_call,
-            f"uncovered wrapper branch {zero_edge.address:#010x}->{zero_target:#010x}",
-        ),
-        (
-            "feedback-idle-clear",
-            idle_clear,
-            idle_clear.replace("REASON_NONE", "REASON_RPM_LOW", 1).replace(
-                "FLAG_BUTTON_HELD", "0", 1
-            ),
-            f"uncovered wrapper branch {idle_edge.address:#010x}->{idle_target:#010x}",
-        ),
-    )
-
-
-def _measure_rolling_launch(
-    target, source, command, invoke, elf, fixture, composed, parsed, build_dir, marker,
-):
-    """Trace one relocated Rolling Launch harness and require its measured regions."""
-    rom = target.rom
-    region_names, unit_names = _rolling_coverage_names(target.rolling_layout)
-    _require_rolling_fixture_bytes(rom, fixture, composed, parsed, unit_names)
-    regions = {
-        key: target.rolling_layout.code_region_by_key[key]
-        for key in region_names
-    }
-    boundaries = _rolling_boundaries(target, regions)
-    serializer, stub = _rolling_serializer_stub(target)
-    ignition = target.rolling_layout.hook_by_key["primary_ignition_command"].stock
-    snapshot = source.read_text(encoding="utf-8")
-
-    def execute(path):
-        try:
-            ranges, invokes = base_verifier._invoke_trace_bindings(
-                path, invoke, fixture, build_dir
-            )
-            trace = build_dir / f"{path.stem}.pc-trace"
-            environment = {
-                **os.environ,
-                "VQ_SH_PC_TRACE_FILE": str(trace),
-                "VQ_SH_PC_TRACE_FORMAT": "v1",
-                "VQ_SH_PC_TRACE_RANGES": ",".join(
-                    f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)
-                ),
-            }
-            before = path.read_bytes()
-            result = base_verifier.run_command(
-                [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", path],
-                timeout=180, env=environment,
-            )
-            if path.read_bytes() != before:
-                raise VerificationError(f"{rom} rolling ELF changes during execution")
-            records = base_verifier.read_pc_trace(trace)
-        except base_verifier.VerificationError as error:
-            raise VerificationError(f"{rom} rolling execution binding: {error}") from error
-        return result, records, invokes
-
-    def coverage(records, invokes):
-        try:
-            return rolling_verifier.require_wrapper_coverage(
-                records, fixture, parsed, regions, boundaries, invokes,
-                serializer, ignition, serializer_stub=stub,
-                coverage_regions=region_names, coverage_units=unit_names,
-            )
-        except rolling_verifier.VerificationError as error:
-            raise VerificationError(f"{rom} rolling coverage: {error}") from error
-
-    result, records, invokes = execute(elf)
-    covered = coverage(records, invokes)
-    if marker not in result.stdout:
-        detail = result.stdout.rstrip()
-        raise VerificationError(
-            f"{rom} rolling lacks its semantic PASS marker"
-            + (f"\n{detail}" if detail else "")
-        )
-    negatives = []
-    for name, old, new, reason in _rolling_omissions(parsed, regions, fixture):
-        if snapshot.count(old) != 1:
-            raise VerificationError(f"{rom} rolling negative lacks its unique {name} edit")
-        text = snapshot.replace(old, new, 1)
-        negative_source = build_dir / f"{rom.lower()}-rolling-no-{name}.c"
-        negative_source.write_text(text, encoding="utf-8")
-        negative_elf = build_dir / f"{rom.lower()}-rolling-no-{name}.elf"
-        negative_command = list(command)
-        negative_command[negative_command.index("-o") + 1] = negative_elf
-        negative_command[negative_command.index(source)] = negative_source
-        base_verifier.run_command(negative_command, timeout=120)
-        try:
-            require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
-        except (ELFStorageError, OSError) as error:
-            raise VerificationError(
-                f"{rom} rolling negative ELF storage separation: {error}"
-            ) from error
-        negative, records, invokes = execute(negative_elf)
-        if marker not in negative.stdout:
-            detail = negative.stdout.rstrip()
-            raise VerificationError(
-                f"{rom} rolling negative loses its semantic PASS marker"
-                + (f"\n{detail}" if detail else "")
-            )
-        try:
-            coverage(records, invokes)
-        except VerificationError as error:
-            if str(error) != f"{rom} rolling coverage: {reason}":
-                raise VerificationError(
-                    f"{rom} rolling negative fails outside its omitted outcome: {error}"
-                ) from error
-        else:
-            raise VerificationError(
-                f"{rom} rolling coverage accepts the omitted {name} case"
-            )
-        if negative_source.read_text(encoding="utf-8") != text:
-            raise VerificationError(f"{rom} rolling negative source changes during execution")
-        negatives.append(
-            f"VQ_SH_ELF_RUNTIME_ROLLING_NEGATIVE status=PASS rom={rom} "
-            f"omitted={name} {reason}"
-        )
-    if source.read_text(encoding="utf-8") != snapshot:
-        raise VerificationError(f"{rom} rendered rolling source changes during execution")
-    scope = ",".join(region_names)
-    report = (
-        f"VQ_SH_ELF_RUNTIME_ROLLING_COVERAGE status=PASS rom={rom} scope={scope} "
-        + " ".join(f"{key}={value}" for key, value in covered.items())
-    )
-    return "\n".join((result.stdout.strip(), report, *negatives))
 
 
 def _can_omissions(layout, parsed, fixture):
@@ -941,7 +607,6 @@ def _compile_and_run(
     defines=(),
     *,
     map_parsed=None,
-    rolling_parsed=None,
     can_parsed=None,
     fixture=None,
     composed_image=None,
@@ -984,15 +649,6 @@ def _compile_and_run(
         require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"{target.rom}.{name}: ELF storage separation: {error}") from error
-    if name == "rolling-launch" and _rolling_measured(target.rom):
-        if rolling_parsed is None or fixture is None or composed_image is None:
-            raise VerificationError(
-                f"{target.rom} rolling coverage requires typed/composed/fixture context"
-            )
-        return _measure_rolling_launch(
-            target, source, command, objects[0], output, fixture, composed_image,
-            rolling_parsed, build_dir, marker,
-        )
     if name == "can-telemetry" and target.rom in MEASURED_CAN_ROMS:
         if can_parsed is None or fixture is None or composed_image is None:
             raise VerificationError(
@@ -1099,7 +755,7 @@ def _compile_and_run(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
-def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, rolling_parsed=None, can_parsed=None):
+def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, can_parsed=None):
     rom_object = _build_rom_object(target.rom, fixture, build_dir)
     invoke, exception = _build_invoke_objects(build_dir)
     map_source = _render_harness(
@@ -1145,71 +801,6 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ro
     ]
     if target.rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B") and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]:
         raise VerificationError(f"{target.rom} map lacks its measured coverage terminal")
-    if target.rolling_layout is not None:
-        rolling_source = _render_harness(
-            target, "rolling_launch_harness.c", build_dir
-        )
-        vq37_rolling = (
-            target.rolling_layout.variant == "vq37-fuel-coordinator"
-        )
-        rolling_marker = (
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=144 "
-            "structural=11 gates=32 config=24 threshold=4 activation=6 "
-            "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
-            "fuel_coordinator=3 hold=11 entries=9"
-            if vq37_rolling and target.rom in MEASURED_VQ37_ROLLING_ROMS
-            else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=142 "
-            "structural=11 gates=32 config=24 threshold=4 activation=6 "
-            "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-            "fuel_coordinator=3 hold=11 entries=9"
-            if vq37_rolling
-            else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=130 "
-            "structural=11 gates=32 config=24 threshold=4 activation=6 "
-            "active=9 cooldown=5 ignition=25 wrappers=6 feedback=8 "
-            "entries=8"
-            if target.rom in MEASURED_ROLLING_ROMS
-            else
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=128 "
-            "structural=11 gates=32 config=24 threshold=4 activation=6 "
-            "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-            "entries=8"
-        )
-        rolling_output = _compile_and_run(
-            target,
-            "rolling-launch",
-            rolling_source,
-            rom_object,
-            (invoke,),
-            build_dir,
-            rolling_marker,
-            rolling_parsed=rolling_parsed,
-            fixture=fixture,
-            composed_image=composed_image,
-            defines=(
-                ("TARGET_VQ37_ROLLING",) if vq37_rolling else ()
-            ) + (
-                ("TARGET_8MFK",)
-                if target.rom in runtime_targets.RELOCATED_8MFK_ROMS
-                else ()
-            ) + (
-                ("MEASURE_ROLLING_COVERAGE",)
-                if _rolling_measured(target.rom)
-                else ()
-            ) + (
-                (VQ37_MAP_HARNESS_BY_VARIANT[target.map_layout.variant][0],)
-                if target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT
-                else ()
-            ),
-        )
-        markers.append(rolling_output)
-        if (
-            _rolling_measured(target.rom)
-            and f"VQ_SH_ELF_RUNTIME_ROLLING_COVERAGE status=PASS rom={target.rom} "
-            not in rolling_output
-        ):
-            raise VerificationError(f"{target.rom} rolling lacks its measured coverage terminal")
     can_defines = (
         ("TELEMETRY_TAIL_CHAIN",)
         if target.telemetry_layout.variant.endswith("-tail-chain")
@@ -1250,13 +841,6 @@ def verify_target(rom, locks, verbose=False):
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
     )
-    rolling_parsed = (
-        rolling_launch_assembly.validate_assembly_sources(
-            target.rolling_layout
-        )
-        if target.rolling_layout is not None
-        else None
-    )
     can_parsed = can_telemetry_assembly.validate_assembly_sources(
         target.telemetry_layout
     )
@@ -1268,14 +852,6 @@ def verify_target(rom, locks, verbose=False):
             "map", target.map_layout, map_parsed,
             target.map_payloads, build_dir, verbose,
         )
-        rolling_blobs = (
-            _assemble_stage(
-                "rolling", target.rolling_layout, rolling_parsed,
-                target.rolling_payloads, build_dir, verbose,
-            )
-            if target.rolling_layout is not None
-            else {}
-        )
         can_blobs = _assemble_stage(
             "telemetry", target.telemetry_layout, can_parsed,
             target.telemetry_payloads, build_dir, verbose,
@@ -1283,23 +859,15 @@ def verify_target(rom, locks, verbose=False):
         map_audit = map_switching_assembly.validate_instruction_semantics(
             target.map_layout, map_parsed, map_blobs
         )
-        rolling_audit = (
-            rolling_launch_assembly.validate_instruction_semantics(
-                target.rolling_layout, rolling_parsed, rolling_blobs
-            )
-            if target.rolling_layout is not None
-            else None
-        )
         can_audit = can_telemetry_assembly.validate_instruction_semantics(
             target.telemetry_layout, can_parsed, can_blobs
         )
-        _, _, composition = _compose_and_lock(
-            target, locks, map_blobs, rolling_blobs, can_blobs
+        _, composition = _compose_and_lock(
+            target, locks, map_blobs, can_blobs
         )
         (
             fixture,
             map_relocated,
-            rolling_relocated,
             can_relocated,
             differentiated,
             stubs,
@@ -1307,11 +875,10 @@ def verify_target(rom, locks, verbose=False):
             target,
             composition,
             map_parsed,
-            rolling_parsed,
             can_parsed,
         )
         markers = _run_harnesses(target, fixture, build_dir,
-                                 map_parsed=map_parsed, rolling_parsed=rolling_parsed,
+                                 map_parsed=map_parsed,
                                  can_parsed=can_parsed, composed_image=composition.data)
         if rom == "1ME3B":
             import verify_ignition_consumers
@@ -1320,11 +887,7 @@ def verify_target(rom, locks, verbose=False):
             ))
     for marker in markers:
         print(marker)
-    instructions = (
-        map_audit.instructions
-        + (0 if rolling_audit is None else rolling_audit.instructions)
-        + can_audit.instructions
-    )
+    instructions = map_audit.instructions + can_audit.instructions
     dynamic_cases = sum(
         can_verifier.marker_cases(marker) for marker in markers
     )
@@ -1333,7 +896,6 @@ def verify_target(rom, locks, verbose=False):
         f"family={target.family} instructions={instructions} "
         f"dynamic_cases={dynamic_cases} "
         f"map_ram_literals_relocated={map_relocated} "
-        f"rolling_ram_literals_relocated={rolling_relocated} "
         f"telemetry_ram_literals_relocated={can_relocated} "
         f"differentiated_bytes={differentiated} stock_stubs={stubs} "
         f"composition_sha256={composition.sha256}"

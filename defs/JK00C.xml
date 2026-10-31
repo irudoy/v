@@ -3,7 +3,7 @@
      (canonical facts), defs/JK08A-JK00C.definition-addresses.csv (reviewed target addresses),
      defs/JK00C.dtc.csv (DTC), defs/JK08A.overrides.toml (presentation), defs/rom-
      identities.toml (target identity), patches/rom-address-profiles.toml (target runtime map
-     slots), patches/rolling-launch-layout.toml (Rolling Launch controls).
+     slots).
      Edits to this file do not survive the next run.
      Edit the canonical sources under defs/JK08A.* and the target identity in defs/rom-
      identities.toml.
@@ -13,8 +13,8 @@
      correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous claims
      are downgraded to candidate confidence unless target-specific evidence keeps
      code confidence. Maps without a unique target homolog are omitted explicitly.
-     Map 2 through Map 5 storage and Rolling Launch controls use the validated JK00C
-     runtime allocation in patches/rom-address-profiles.toml. -->
+     Map 2 through Map 5 storage uses the validated JK00C runtime allocation in
+     patches/rom-address-profiles.toml. -->
 <roms>
   <rom>
     <romid>
@@ -62,14 +62,6 @@
       <description>Exact JK00C only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result.</description>
       <state name="Enabled (Stock)" data="01"/>
       <state name="Disabled (IMMO OFF)" data="00"/>
-    </table>
-
-    <table type="Switch" name="Rolling Launch Require Accelerator Pedal"
-           category="Rolling Launch//Activation" storageaddress="0xE066C" storagetype="uint8"
-           sizey="2" endian="big" userlevel="5">
-      <description>Exact JK00C. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage.</description>
-      <state name="Enabled" data="00 01"/>
-      <state name="Disabled" data="00 00"/>
     </table>
 
     <table type="Switch" name="DTC P0306 [index 10] - 1/2 Descriptor"
@@ -812,17 +804,6 @@
       <description>Exact JK00C only. Internal DTC record 290 (manufacturer_specific): Local physical monitor name unresolved. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
       <state name="Enabled (Stock)" data="00 A0"/>
       <state name="Disabled" data="00 00"/>
-    </table>
-
-    <table type="BitwiseSwitch" name="Rolling Launch Enable by Map"
-           category="Rolling Launch//Map Enable" storageaddress="0xE0664" storagetype="uint8"
-           endian="big" userlevel="5">
-      <description>Exact JK00C. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise.</description>
-      <bit name="Map 1 - Rolling Launch Enable" position="0"/>
-      <bit name="Map 2 - Rolling Launch Enable" position="1"/>
-      <bit name="Map 3 - Rolling Launch Enable" position="2"/>
-      <bit name="Map 4 - Rolling Launch Enable" position="3"/>
-      <bit name="Map 5 - Rolling Launch Enable" position="4"/>
     </table>
 
     <!-- 0x09030  2 uint16  map [code]
@@ -3947,129 +3928,6 @@
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>throttle cut</data>
-      </table>
-    </table>
-
-    <!-- 0xE0666  1 uint8  map [code]
-         scaling x*0.625-40 deg C [code]
-         The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive
-         minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the
-         saturated hot endpoint.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum Coolant Temperature"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xE0666"
-           sizex="1" endian="big">
-      <scaling units="deg C" expression="x*0.625-40" to_byte="(x+40)/0.625" format="0.0"
-               fineincrement="0.625" coarseincrement="10"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum coolant temperature</data>
-      </table>
-    </table>
-
-    <!-- 0xE0668  1 uint8  map [code]
-         scaling x*2 km/h [candidate]
-         The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per
-         count physical scale depends on homologous observed CAN 0x280 data; zero disables this
-         activation gate.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum Vehicle Speed"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xE0668"
-           sizex="1" endian="big">
-      <scaling units="km/h [cand]" expression="x*2" to_byte="x/2" format="0.0" fineincrement="2"
-               coarseincrement="10"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum vehicle speed</data>
-      </table>
-    </table>
-
-    <!-- 0xE066A  1 uint16  map [code]
-         scaling x*12.5 RPM [code]
-         The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive
-         minimum.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum Engine Speed"
-           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xE066A"
-           sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum engine speed</data>
-      </table>
-    </table>
-
-    <!-- 0xE0669  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the runtime computes effective_ramp = min(rpm_offset,
-         max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or
-         below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command
-         cap inside the band, and applies the cap at Cut.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum Retard Ramp Width"
-           category="Rolling Launch//Ignition Retard" storagetype="uint8"
-           storageaddress="0xE0669" sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum retard ramp width</data>
-      </table>
-    </table>
-
-    <!-- 0xE066E  1 uint16  map [code]
-         scaling x*12.5 RPM [code]
-         The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be
-         nonzero.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Offset" category="Rolling Launch//RPM Hold"
-           storagetype="uint16" storageaddress="0xE066E" sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>RPM offset</data>
-      </table>
-    </table>
-
-    <!-- 0xE0670  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the proportional hysteresis is clamped to this inclusive lower endpoint.
-         The runtime then computes Restore = Cut - effective_hysteresis.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum RPM Hysteresis"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xE0670"
-           sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum hysteresis</data>
-      </table>
-    </table>
-
-    <!-- 0xE0671  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the proportional hysteresis is clamped to this inclusive upper endpoint.
-         The endpoint must be below the configured RPM offset.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Maximum RPM Hysteresis"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xE0671"
-           sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum hysteresis</data>
-      </table>
-    </table>
-
-    <!-- 0xE067B  1 uint8  map [code]
-         scaling x/10 % [code]
-         The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation,
-         then clamps the result between the configured minimum and maximum hysteresis.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Hysteresis Ratio (%)"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xE067B"
-           sizex="1" endian="big">
-      <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
-               coarseincrement="0.5"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Hysteresis ratio (%)</data>
       </table>
     </table>
   </rom>

@@ -6,10 +6,11 @@ recovers both from the instruction bytes, so a document that names an entry is
 checked against the silicon rather than against another document.
 """
 
-import csv
 import struct
 import unittest
 from pathlib import Path
+
+from kb import store
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -72,11 +73,25 @@ TARGET_TABLES = {
     "23710-JK78C": (0x21A4C, 144, 0x21A4C),
 }
 
-CORRESPONDENCE = {
-    "23710-1ND0A": ROOT / "patches" / "1nd-runtime-correspondence.csv",
-    "23710-1ME3B": ROOT / "patches" / "1me3b-runtime-correspondence.csv",
-    "23710-JK78C": ROOT / "patches" / "jk78c-runtime-correspondence.csv",
+# Knowledge-base layout of each ROM directory.
+LAYOUTS = {
+    "23710-JK08A": "7mfk",
+    "23710-JK00C": "jk00c",
+    "23710-JK00D": "jk00d",
+    "23710-1ND0A": "1nd",
+    "23710-1ME3B": "1me3b",
+    "23710-JK78C": "jk78c",
 }
+
+
+def symbol_addresses(kind, name):
+    """Return the address of each layout symbol of one knowledge-base meaning."""
+
+    document = store.load(ROOT, store.path_of(kind, name))
+    return {
+        symbol["layout"]: int(symbol["address"], 16)
+        for symbol in document["symbol"]
+    }
 
 
 def image(name):
@@ -210,26 +225,14 @@ class PeriodicSchedulerTableTest(unittest.TestCase):
                 return address
         raise AssertionError("periodic dispatcher loop not found")
 
-    def test_the_address_profiles_state_the_homologous_table_bases(self):
-        profiles = (ROOT / "patches" / "rom-address-profiles.toml").read_text()
-        for base in (0x219EC, 0x22058, 0x220C4, 0x21A4C):
-            with self.subTest(base=f"{base:#x}"):
-                self.assertIn(f"periodic_task_table = 0x{base:08X}", profiles)
-
-    def test_the_correspondence_ledgers_state_their_table(self):
-        for name, path in CORRESPONDENCE.items():
-            base, entries, slot = TARGET_TABLES[name]
-            rows = {
-                (row["domain"], row["key"]): row
-                for row in csv.DictReader(path.read_text().splitlines())
-            }
+    def test_the_knowledge_base_states_each_table_and_hooked_entry(self):
+        tables = symbol_addresses("const", "periodic_task_table")
+        hooks = symbol_addresses("hook", "displaced_periodic_task")
+        for name, (base, _entries, slot) in TARGET_TABLES.items():
+            layout = LAYOUTS[name]
             with self.subTest(rom=name):
-                table = rows[("rolling_symbol", "periodic_task_table")]
-                self.assertEqual(int(table["target"], 16), base)
-                self.assertIn(f"{entries}-entry", table["evidence"])
-                hook = rows[("rolling_hook", "displaced_periodic_task")]
-                self.assertEqual(int(hook["target"], 16), slot)
-                self.assertIn(f"Entry {(slot - base) // 4} ", hook["evidence"])
+                self.assertEqual(tables[layout], base)
+                self.assertEqual(hooks[layout], slot)
 
 
 if __name__ == "__main__":

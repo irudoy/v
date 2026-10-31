@@ -255,10 +255,11 @@ def _require_integer(value, context):
 def builtin_profile(rom=ROM_SERIES):
     """Return the conservative profile permitted by the target family."""
     observe_only = str(rom).lower() in {
+        runtime_targets.RELOCATED_8MFK_FAMILY,
         runtime_targets.SH7059_1ND_FAMILY,
         runtime_targets.SH7059_1ME3B_FAMILY,
         runtime_targets.SH7058_JK78C_FAMILY,
-    }
+    } or str(rom).upper() in runtime_targets.RELOCATED_ROMS
     calibration = (
         rolling_launch.Calibration()
         if observe_only

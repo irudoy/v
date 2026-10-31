@@ -35,7 +35,7 @@ telemetry_zero_source = 0xFFFF0DE0
 
 [profile.1ME3B.capabilities]
 map_switching = true
-rolling_launch = true
+rolling_launch = false
 can_telemetry = true
 
 [profile.1ME3B.map_families]
@@ -94,43 +94,6 @@ ignition_lookup = 0x00029BA8
 selector_function = 0x001370DC
 startup_initializer = 0x0003357C
 
-[profile.1ME3B.rolling_hooks]
-displaced_periodic_task = [0x000220C8, 0x000FD68C, 0x000FD68C, 0x0013C860]
-feedback_arbitration = [0x001216E4, 0x00123264, 0x0013C5E0, 0x0013D1E0]
-fuel_cut_coordinator = [0x00022144, 0x0007A740, 0x0007A740, 0x0013E000]
-primary_ignition_command = [0x00079194, 0x000311B2, 0x000311B2, 0x0013CEA0]
-selector_arbitration = [0x001344C8, 0x001370DC, 0x0013B108, 0x0013C880]
-startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013B2A0, 0x0013C8A0]
-
-[profile.1ME3B.rolling_diagnostics]
-phase_abort_reason = [0x1211, 0x00022D28, 0xFFFF0C40, 2]
-flags = [0x1212, 0x00022D2C, 0xFFFF0C42, 2]
-map_mode_snapshot = [0x1213, 0x00022D30, 0xFFFF0C44, 2]
-run_ticks = [0x1216, 0x00022D3C, 0xFFFF0C46, 2]
-rearm_ticks = [0x1217, 0x00022D40, 0xFFFF0C48, 2]
-captured_rpm_native = [0x1224, 0x00022D74, 0xFFFF0C4A, 2]
-cut_rpm_native = [0x1227, 0x00022D80, 0xFFFF0C4C, 2]
-restore_rpm_native = [0x1228, 0x00022D84, 0xFFFF0C4E, 2]
-stock_effective_ignition_command = [0x1229, 0x00022D88, 0xFFFF0C50, 2]
-
-[profile.1ME3B.rolling_symbols]
-apc_mode = 0xFFFE94B6
-apc_output = 0xFFFE81C3
-ascd_state = 0xFFFEB985
-button_state = 0xFFFE9B8F
-coolant_index = 0xFFFE8077
-fuel_cut_coordinator = 0x0007A740
-fuel_inhibit = 0xFFFE948A
-fuel_inhibit_mask = 0xFFFE92B0
-pedal = 0xFFFE96A0
-periodic_task_slot = 0x000220C8
-periodic_task_table = 0x000220C4
-rpm = 0xFFFE819E
-scheduler_task = 0x000FD68C
-stock_ignition_consumer = 0x000311B2
-unsigned_divide = 0x00022394
-vehicle_speed = 0xFFFE80F8
-
 [profile.1ME3B.can_hooks]
 coherent_snapshot_call = [0x00032B50, 0x00020D04, 0x00020D04, 0x0013D280]
 hcan1_primary_init = [0x00034A7C, 0x0011F2EC, 0x0011F2EC, 0x0013DE10]
@@ -138,7 +101,7 @@ hcan1_recovery_init = [0x001207B8, 0x0011F2EC, 0x0011F2EC, 0x0013DE10]
 hcan1_sle1_vector = [0x000203A0, 0x00127910, 0x00127910, 0x0013D800]
 knock_interval_latch = [0x000221F0, 0x00071D64, 0x00071D64, 0x0013D2B0]
 knock_margin_latch = [0x0007308C, 0x00072920, 0x00072920, 0x0013D600]
-startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013C8A0, 0x0013D2F0]
+startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013B2A0, 0x0013D2F0]
 
 [profile.1ME3B.can_symbols]
 coherent_snapshot = 0x00020D04
@@ -251,7 +214,6 @@ end = 0x000797CC
 free_rom = "AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with no recovered stock ownership; scalar-alias references begin at 0x0013ffec, above the declared end. Runtime uses the bounded 0x0013b108..0x0013efff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B executable census: no stock access reaches the allocation."
 maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock."
-rolling = "The scheduler task behind periodic task-list word 0x000220C8, the sole final-mask coordinator 31 words above it, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points. The payload moves bit 7 of the knock surface state into bit 6 of the wire byte, the bit that the wire contract decodes, and clears the other bits of the byte."
 
@@ -282,7 +244,7 @@ telemetry_zero_source = 0xFFFF0DE0
 
 [profile.1ND0A.capabilities]
 map_switching = true
-rolling_launch = true
+rolling_launch = false
 can_telemetry = true
 
 [profile.1ND0A.map_families]
@@ -342,43 +304,6 @@ ignition_lookup = 0x00028634
 selector_function = 0x00129CBC
 startup_initializer = 0x00030810
 
-[profile.1ND0A.rolling_hooks]
-displaced_periodic_task = [0x0002205C, 0x000F1880, 0x000F1880, 0x00133860]
-feedback_arbitration = [0x00115490, 0x00116E4C, 0x001335E0, 0x001341E0]
-fuel_cut_coordinator = [0x000220D8, 0x000760CC, 0x000760CC, 0x00135000]
-primary_ignition_command = [0x00074D88, 0x0002E464, 0x0002E464, 0x00133EA0]
-selector_arbitration = [0x00127158, 0x00129CBC, 0x00132108, 0x00133880]
-startup_state_clear = [0x0002B398, 0x00030810, 0x001322A0, 0x001338A0]
-
-[profile.1ND0A.rolling_diagnostics]
-phase_abort_reason = [0x1211, 0x00022CB4, 0xFFFF0C40, 2]
-flags = [0x1212, 0x00022CB8, 0xFFFF0C42, 2]
-map_mode_snapshot = [0x1213, 0x00022CBC, 0xFFFF0C44, 2]
-run_ticks = [0x1216, 0x00022CC8, 0xFFFF0C46, 2]
-rearm_ticks = [0x1217, 0x00022CCC, 0xFFFF0C48, 2]
-captured_rpm_native = [0x1224, 0x00022D00, 0xFFFF0C4A, 2]
-cut_rpm_native = [0x1227, 0x00022D0C, 0xFFFF0C4C, 2]
-restore_rpm_native = [0x1228, 0x00022D10, 0xFFFF0C4E, 2]
-stock_effective_ignition_command = [0x1229, 0x00022D14, 0xFFFF0C50, 2]
-
-[profile.1ND0A.rolling_symbols]
-apc_mode = 0xFFFE94E5
-apc_output = 0xFFFE81DD
-ascd_state = 0xFFFEB823
-button_state = 0xFFFE9AD3
-coolant_index = 0xFFFE8077
-fuel_cut_coordinator = 0x000760CC
-fuel_inhibit = 0xFFFE94BA
-fuel_inhibit_mask = 0xFFFE92E4
-pedal = 0xFFFE96C8
-periodic_task_slot = 0x0002205C
-periodic_task_table = 0x00022058
-rpm = 0xFFFE81B6
-scheduler_task = 0x000F1880
-stock_ignition_consumer = 0x0002E464
-unsigned_divide = 0x00022318
-vehicle_speed = 0xFFFE8104
-
 [profile.1ND0A.can_hooks]
 coherent_snapshot_call = [0x0002FE08, 0x00020CF4, 0x00020CF4, 0x00134280]
 hcan1_primary_init = [0x00031CE4, 0x0011363C, 0x0011363C, 0x00134E10]
@@ -386,7 +311,7 @@ hcan1_recovery_init = [0x00114AD8, 0x0011363C, 0x0011363C, 0x00134E10]
 hcan1_sle1_vector = [0x000203A0, 0x0011B334, 0x0011B334, 0x00134800]
 knock_interval_latch = [0x00022184, 0x0006D948, 0x0006D948, 0x001342B0]
 knock_margin_latch = [0x0006F17C, 0x0006EA18, 0x0006EA18, 0x00134600]
-startup_state_clear = [0x0002B398, 0x00030810, 0x001338A0, 0x001342F0]
+startup_state_clear = [0x0002B398, 0x00030810, 0x001322A0, 0x001342F0]
 
 [profile.1ND0A.can_symbols]
 coherent_snapshot = 0x00020CF4
@@ -497,7 +422,6 @@ copies = [0x00135480, 0x001354C0, 0x00135500, 0x00135540]
 free_rom = "AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no recovered stock ownership; runtime uses the bounded 0x00132108..0x00135fff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A executable census: no stock access reaches the allocation."
 maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind eighteen supported families. The two 16x16 ignition families and the four 8x8 state-code ignition families are the surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter. The literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the 8x8 lookup 0x000285B4 for the four state-code surfaces; the second literal 0x00075570 serves only the reference surface 0x0000A650, which the stock configuration leaves unread."
-rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points."
 
@@ -525,7 +449,7 @@ telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00C.capabilities]
 map_switching = true
-rolling_launch = true
+rolling_launch = false
 can_telemetry = true
 
 [profile.JK00C.map_families]
@@ -577,40 +501,6 @@ startup_initializer = 0x0002D2B4
 throttle_container = 0x000094CE
 throttle_runtime = 0xFFFF17E8
 
-[profile.JK00C.rolling_hooks]
-displaced_periodic_task = [0x000219F0, 0x000AEB74, 0x000AEB74, 0x000DFF60]
-feedback_arbitration = [0x000C9FC4, 0x000CCB32, 0x000DFCE0, 0x000E08E0]
-primary_ignition_command = [0x0004FAEC, 0x0002B51A, 0x0002B51A, 0x000E05A0]
-selector_arbitration = [0x000DA548, 0x000DC868, 0x000DE808, 0x000DFF80]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000DFFA0]
-
-[profile.JK00C.rolling_diagnostics]
-phase_abort_reason = [0x1211, 0x0002297C, 0xFFFF6040, 2]
-flags = [0x1212, 0x00022980, 0xFFFF6042, 2]
-map_mode_snapshot = [0x1213, 0x00022984, 0xFFFF6044, 2]
-run_ticks = [0x1216, 0x00022990, 0xFFFF6046, 2]
-rearm_ticks = [0x1217, 0x00022994, 0xFFFF6048, 2]
-captured_rpm_native = [0x1224, 0x000229C8, 0xFFFF604A, 2]
-cut_rpm_native = [0x1227, 0x000229D4, 0xFFFF604C, 2]
-restore_rpm_native = [0x1228, 0x000229D8, 0xFFFF604E, 2]
-stock_effective_ignition_command = [0x1229, 0x000229DC, 0xFFFF6050, 2]
-
-[profile.JK00C.rolling_symbols]
-apc_mode = 0xFFFF2551
-apc_output = 0xFFFF11F5
-ascd_state = 0xFFFF434B
-button_state = 0xFFFF2B37
-coolant_index = 0xFFFF107D
-fuel_inhibit = 0xFFFF251F
-pedal = 0xFFFF2702
-periodic_task_slot = 0x000219F0
-periodic_task_table = 0x000219EC
-rpm = 0xFFFF11CA
-scheduler_task = 0x000AEB74
-stock_ignition_consumer = 0x0002B51A
-unsigned_divide = 0x00021D6C
-vehicle_speed = 0xFFFF111A
-
 [profile.JK00C.can_hooks]
 coherent_snapshot_call = [0x00028CF8, 0x00020E30, 0x00020E30, 0x000E0980]
 hcan1_primary_init = [0x0002E1C8, 0x000C9092, 0x000C9092, 0x000E1510]
@@ -618,7 +508,7 @@ hcan1_recovery_init = [0x000C9818, 0x000C9092, 0x000C9092, 0x000E1510]
 hcan1_sle1_vector = [0x000203A0, 0x000CF3E8, 0x000CF3E8, 0x000E0F00]
 knock_interval_latch = [0x00021AF8, 0x0004A42C, 0x0004A42C, 0x000E09B0]
 knock_margin_latch = [0x0004BA04, 0x0004B27C, 0x0004B27C, 0x000E0D00]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DFFA0, 0x000E09F0]
+startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000E09F0]
 
 [profile.JK00C.can_symbols]
 coherent_snapshot = 0x00020E30
@@ -720,7 +610,6 @@ copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both CVTC target families remain explicit."
-rolling = "Exact JK00D-to-JK00C functions, stock scheduler and UDS tables, and direct RAM references bind all Rolling Launch addresses."
 can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources; mailbox 26 is stock inactive while mailbox 28 is occupied."
 telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind the schema-2 ECU fields to JK00C source symbols, which hold the evidence of each binding."
 
@@ -745,7 +634,7 @@ telemetry_zero_source = 0xFFFF61E0
 
 [profile.JK00D.capabilities]
 map_switching = true
-rolling_launch = true
+rolling_launch = false
 can_telemetry = true
 
 [profile.JK00D.map_families]
@@ -797,40 +686,6 @@ startup_initializer = 0x0002D2B4
 throttle_container = 0x000094DC
 throttle_runtime = 0xFFFF17EC
 
-[profile.JK00D.rolling_hooks]
-displaced_periodic_task = [0x000219F0, 0x000AEB54, 0x000AEB54, 0x000DFF60]
-feedback_arbitration = [0x000CA700, 0x000CD26E, 0x000DFCE0, 0x000E08E0]
-primary_ignition_command = [0x0004FAE8, 0x0002B51A, 0x0002B51A, 0x000E05A0]
-selector_arbitration = [0x000DAC84, 0x000DCFA4, 0x000DE808, 0x000DFF80]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000DFFA0]
-
-[profile.JK00D.rolling_diagnostics]
-phase_abort_reason = [0x1211, 0x0002297C, 0xFFFF6040, 2]
-flags = [0x1212, 0x00022980, 0xFFFF6042, 2]
-map_mode_snapshot = [0x1213, 0x00022984, 0xFFFF6044, 2]
-run_ticks = [0x1216, 0x00022990, 0xFFFF6046, 2]
-rearm_ticks = [0x1217, 0x00022994, 0xFFFF6048, 2]
-captured_rpm_native = [0x1224, 0x000229C8, 0xFFFF604A, 2]
-cut_rpm_native = [0x1227, 0x000229D4, 0xFFFF604C, 2]
-restore_rpm_native = [0x1228, 0x000229D8, 0xFFFF604E, 2]
-stock_effective_ignition_command = [0x1229, 0x000229DC, 0xFFFF6050, 2]
-
-[profile.JK00D.rolling_symbols]
-apc_mode = 0xFFFF2559
-apc_output = 0xFFFF11F5
-ascd_state = 0xFFFF435F
-button_state = 0xFFFF2B4B
-coolant_index = 0xFFFF107D
-fuel_inhibit = 0xFFFF2527
-pedal = 0xFFFF2716
-periodic_task_slot = 0x000219F0
-periodic_task_table = 0x000219EC
-rpm = 0xFFFF11CA
-scheduler_task = 0x000AEB54
-stock_ignition_consumer = 0x0002B51A
-unsigned_divide = 0x00021D6C
-vehicle_speed = 0xFFFF111A
-
 [profile.JK00D.can_hooks]
 coherent_snapshot_call = [0x00028CF8, 0x00020E30, 0x00020E30, 0x000E0980]
 hcan1_primary_init = [0x0002E1C8, 0x000C97CE, 0x000C97CE, 0x000E1510]
@@ -838,7 +693,7 @@ hcan1_recovery_init = [0x000C9F54, 0x000C97CE, 0x000C97CE, 0x000E1510]
 hcan1_sle1_vector = [0x000203A0, 0x000CFB24, 0x000CFB24, 0x000E0F00]
 knock_interval_latch = [0x00021AF8, 0x0004A430, 0x0004A430, 0x000E09B0]
 knock_margin_latch = [0x0004BA08, 0x0004B280, 0x0004B280, 0x000E0D00]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DFFA0, 0x000E09F0]
+startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000E09F0]
 
 [profile.JK00D.can_symbols]
 coherent_snapshot = 0x00020E30
@@ -940,7 +795,6 @@ copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the intake-cam and exhaust-cam target families switch independently."
-rolling = "Scheduler, startup, ignition, selector, diagnostic pointer, and direct RAM bindings are recovered from exact or normalized homologs and target stock tables."
 can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 26 is stock inactive while mailbox 28 is occupied."
 telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind the schema-2 ECU fields to JK00D source symbols, which hold the evidence of each binding."
 
@@ -971,7 +825,7 @@ telemetry_zero_source = 0xFFFF0DE0
 
 [profile.JK78C.capabilities]
 map_switching = true
-rolling_launch = true
+rolling_launch = false
 can_telemetry = true
 
 [profile.JK78C.map_families]
@@ -1026,43 +880,6 @@ ignition_lookup = 0x00028018
 selector_function = 0x000FD40C
 startup_initializer = 0x0002F596
 
-[profile.JK78C.rolling_hooks]
-displaced_periodic_task = [0x00021A4C, 0x000B2294, 0x000B2294, 0x0001E260]
-feedback_arbitration = [0x000EBA3C, 0x000ED03C, 0x0001DFE0, 0x0001EBE0]
-fuel_cut_coordinator = [0x00021AC8, 0x0006A9B0, 0x0006A9B0, 0x0001FA00]
-primary_ignition_command = [0x000699D4, 0x0002D6F6, 0x0002D6F6, 0x0001E8A0]
-selector_arbitration = [0x000FB260, 0x000FD40C, 0x0001CB08, 0x0001E280]
-startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001CCA0, 0x0001E2A0]
-
-[profile.JK78C.rolling_diagnostics]
-phase_abort_reason = [0x1211, 0x0002295C, 0xFFFF0C40, 2]
-flags = [0x1212, 0x00022960, 0xFFFF0C42, 2]
-map_mode_snapshot = [0x1213, 0x00022964, 0xFFFF0C44, 2]
-run_ticks = [0x1216, 0x00022970, 0xFFFF0C46, 2]
-rearm_ticks = [0x1217, 0x00022974, 0xFFFF0C48, 2]
-captured_rpm_native = [0x1224, 0x000229A8, 0xFFFF0C4A, 2]
-cut_rpm_native = [0x1227, 0x000229B4, 0xFFFF0C4C, 2]
-restore_rpm_native = [0x1228, 0x000229B8, 0xFFFF0C4E, 2]
-stock_effective_ignition_command = [0x1229, 0x000229BC, 0xFFFF0C50, 2]
-
-[profile.JK78C.rolling_symbols]
-apc_mode = 0xFFFF241E
-apc_output = 0xFFFF11CF
-ascd_state = 0xFFFF450B
-button_state = 0xFFFF29A1
-coolant_index = 0xFFFF106D
-fuel_cut_coordinator = 0x0006A9B0
-fuel_inhibit = 0xFFFF23F5
-fuel_inhibit_mask = 0xFFFF223C
-pedal = 0xFFFF25D0
-periodic_task_slot = 0x00021A4C
-periodic_task_table = 0x00021A4C
-rpm = 0xFFFF11AC
-scheduler_task = 0x000B2294
-stock_ignition_consumer = 0x0002D6F6
-unsigned_divide = 0x00021E0C
-vehicle_speed = 0xFFFF10FC
-
 [profile.JK78C.can_hooks]
 coherent_snapshot_call = [0x0002AA7C, 0x00020F1A, 0x00020F1A, 0x0001EC80]
 hcan1_primary_init = [0x000306A0, 0x000EA582, 0x000EA582, 0x0001F810]
@@ -1070,7 +887,7 @@ hcan1_recovery_init = [0x000EB584, 0x000EA582, 0x000EA582, 0x0001F810]
 hcan1_sle1_vector = [0x000203A0, 0x000F0410, 0x000F0410, 0x0001F200]
 knock_interval_latch = [0x00021B70, 0x00062780, 0x00062780, 0x0001ECB0]
 knock_margin_latch = [0x0006429C, 0x00063AC8, 0x00063AC8, 0x0001F000]
-startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001E2A0, 0x0001ECF0]
+startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001CCA0, 0x0001ECF0]
 
 [profile.JK78C.can_symbols]
 coherent_snapshot = 0x00020F1A
@@ -1161,6 +978,5 @@ af_adjustment_b2_raw = 0xFFFF490C
 free_rom = "The 0x0001caac..0x0001ffff envelope is erased; recovered stock references at 0x0001e30c and in the final reserve remain outside every runtime write range."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
-rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points."

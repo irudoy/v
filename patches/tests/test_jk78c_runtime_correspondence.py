@@ -9,7 +9,6 @@ from patches import can_telemetry_compose
 from patches import can_telemetry_profile
 from patches import extract_calibration
 from patches import map_switching_compose
-from patches import rolling_launch_compose
 from patches import rom_checksums
 from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
@@ -111,14 +110,7 @@ def test_jk78c_native_fuel_cut_evidence_matches_the_exact_registry():
         )]["target"],
         16,
     ) == native.delay_calibration_address
-    assert int(
-        rows[("rolling_symbol", "fuel_cut_coordinator")]["target"], 16
-    ) == native.coordinator_address
-    coordinator_hook = rows[("rolling_hook", "fuel_cut_coordinator")]
-    assert int(coordinator_hook["target"], 16) == (
-        native.coordinator_pointer_site
-    )
-    assert int(coordinator_hook["stock"], 16) == native.coordinator_address
+    assert not any(domain.startswith("rolling_") for domain, _key in rows)
     hook_keys = (
         "rev_fuel_cut_caps_base",
         "rev_fuel_cut_release_cap_base",
@@ -139,7 +131,6 @@ def test_jk78c_native_fuel_cut_evidence_matches_the_exact_registry():
 def test_jk78c_erased_stock_references_remain_outside_runtime_writes():
     target = runtime_targets.project_relocated_target("JK78C")
     writes = map_switching_compose.composition_write_ranges(target.map_layout)
-    writes += rolling_launch_compose.composition_write_ranges(target.rolling_layout)
     writes += can_telemetry_compose.composition_write_ranges(
         target.telemetry_layout
     )
@@ -179,7 +170,6 @@ def test_jk78c_erased_envelope_extracts_stock_and_complete_runtime(jk78c_inputs,
 def test_jk78c_rejects_foreign_bytes_outside_runtime_writes(jk78c_inputs, state, address):
     target, images, _expected = jk78c_inputs
     writes = map_switching_compose.composition_write_ranges(target.map_layout)
-    writes += rolling_launch_compose.composition_write_ranges(target.rolling_layout)
     writes += can_telemetry_compose.composition_write_ranges(target.telemetry_layout)
     assert target.map_layout.free_rom.start <= address < target.map_layout.free_rom.end
     assert not any(span.start <= address < span.end for span in writes)

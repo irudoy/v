@@ -2,11 +2,10 @@
 
 Rolling Launch is an optional runtime layered on the complete five-slot
 Map Switching composition. It captures engine speed while CANCEL is held,
-applies a target-specific all-cylinder fuel-cut actuator, and can apply bounded
-retard-only ignition control. The JK00A/JK03A/JK03B/JK08A and JK00C/JK00D
-variants use a temporary map-specific fuel-cut window. JK78C, 1ND0A, 1ND3B, and
-1ME3B use a final-mask coordinator request without modifying the selected VQ37
-maps.
+applies an all-cylinder fuel-cut actuator, and can apply bounded retard-only
+ignition control. It runs on the exact `7mfk` images JK00A, JK03A, JK03B, and
+JK08A and uses a temporary map-specific fuel-cut window. The relocated targets
+JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch runtime.
 
 The authoritative implementation sources are:
 
@@ -20,8 +19,7 @@ target-vehicle evidence from an exact local combined image. The evidence
 qualifies button decoding, dashboard states, repeated rearm, the full software
 fuel-inhibit mask, captured-RPM-dependent hold behavior, and the bounded
 software ignition command on Maps 2 and 3. Physical spark timing and electrical
-injector output remain unmeasured. VQ37 projections have no bench or vehicle
-result and remain software-only. Earlier overlay results do not qualify the
+injector output remain unmeasured. Earlier overlay results do not qualify the
 current runtime. Concrete profiles, derived images, and active tune identities
 remain local and unversioned.
 
@@ -81,9 +79,9 @@ selector gestures.
 
 Gate 7 needs the CANCEL code of the steering switch decoder, which exists only
 while bit 0 of the cruise control configuration byte is set. JK00A, JK03A,
-JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold `0x00` there, so Rolling Launch
-never arms on them until the Cruise Control Switch of their definitions
-selects ICC Switch (5 Buttons) (`cruise-control-switch.md`).
+and JK03B hold `0x00` there, so Rolling Launch never arms on them until the
+Cruise Control Switch of their definitions selects ICC Switch (5 Buttons)
+(`cruise-control-switch.md`).
 
 While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents
@@ -333,28 +331,10 @@ hysteresis = clamp(
 restore = cut - hysteresis
 ```
 
-The native RPM unit is 12.5 RPM. The VQ25HR/VQ35HR variants write the first
-eight bytes of the shared fuel-cut shadow under an interrupt mask and leave the
-rest of the selected map limiter cluster intact. Abort restores the full
-selected map shadow through the Map Switching limiter commit.
-
-The VQ37 variant clears a dedicated uint16 request at the start of every
-periodic pass. In an active non-observe mode, a latch in the state sets when
-native RPM reaches `cut` and releases when native RPM falls below `restore`,
-and the engine publishes exactly `0x003F` while the latch equals 1. The
-latch uses the `cut` and `restore` thresholds that the VQ25HR/VQ35HR variants
-write into the stock fuel-cut window. The stock native fuel-cut state machine
-keeps the thresholds of the selected map, so Rolling Launch adds cut and
-cannot raise the stock limit. Activation, abort, a corrupt state, and startup
-clear the latch; the activation pass runs at the captured speed and publishes
-no request. The scheduler entry 31 positions after the displaced periodic
-task calls a wrapper that first executes the complete stock fuel-mask
-coordinator. An exact request then ORs the six cylinder bits
-into the coordinator result; zero and every malformed request leave the stock
-mask unchanged. The wrapper preserves the stock coordinator's return value.
-Activation does not modify the 36-byte native fuel-cut shadow. Abort
-republishes the captured map through the common limiter commit, and a corrupt
-state uses Map 1 as the fail-closed source.
+The native RPM unit is 12.5 RPM. The runtime writes the first eight bytes of
+the shared fuel-cut shadow under an interrupt mask and leaves the rest of the
+selected map limiter cluster intact. Abort restores the full selected map
+shadow through the Map Switching limiter commit.
 
 ## Bounded ignition control
 
@@ -547,9 +527,10 @@ The strict 32-byte record contains:
 | run timeout and rearm | positive bounded tick counts |
 | target commands | one validated byte for each map |
 
-The built-in VQ25HR/VQ35HR production profile is `rpm-hold-map1-test`: Map 1
-enabled, `rpm_hold` mode, and ignition retard disabled. VQ37 uses the complete
-runtime with the built-in `observe` profile and no enabled maps. A strict local
+The built-in production profile is `rpm-hold-map1-test`: Map 1 enabled,
+`rpm_hold` mode, and ignition retard disabled. The relocated targets take the
+built-in `observe` profile with no enabled maps, and their images receive no
+Rolling Launch bytes. A strict local
 TOML profile can select any supported mode and map mask. Every field is
 mandatory, unknown fields are rejected, and enabled maps use one-based numbers.
 See `rom-builder.md` for the profile schema and build invocation.
@@ -586,27 +567,17 @@ The dashboard hook redirects the existing map-feedback wrapper call to the
 Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
 own state. Every wrapper calls its displaced function where required.
 Allocation and hook bytes are authoritative only in
-`rolling-launch-layout.toml` and the applicable target section of
-`rom-address-profiles.toml`. VQ37 adds a projected 128-byte fuel-coordinator
-wrapper at canonical range `0x000D5000..0x000D5080` and a sixth scheduler hook
-for index 31.
+`rolling-launch-layout.toml`.
 
 ## State and diagnostics
 
 The canonical 20-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, cut RPM, restore RPM, the
 observed stock and effective ignition commands, and the captured retard-band
-start. VQ37 extends the record to 24 bytes with the exact fuel request and its
-latch. The nine diagnostic views retain the same offsets.
+start. The nine diagnostic views read fixed offsets of that record.
 
-The fuel-cut flag of an active state reports the active cut bit of the stock
-RPM fuel-cut state of the target: bit 2 of the main RPM fuel-cut state byte
-on JK00A, JK03A, JK03B, and JK08A, bit 6 on JK00C and JK00D, and the active
-bit of the native rev-limit state byte on VQ37: bit 4 on JK78C, bit 5 on 1ND0A
-and 1ND3B, and bit 3 on 1ME3B. The other bits of the byte leave the flag
-clear. On VQ37 the Rolling Launch request reaches the final six-cylinder mask
-through the coordinator wrapper and leaves the state byte unchanged, so the
-flag reports only the stock rev-limit cut.
+The fuel-cut flag of an active state reports bit 2, the active cut bit of the
+main RPM fuel-cut state byte. The other bits of the byte leave the flag clear.
 
 Raw engineering DIDs expose nine two-byte views:
 
@@ -637,8 +608,8 @@ closed write set.
 The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.
 
-The canonical runtime uses `0xFFFF5D40..0xFFFF5D54` for active state. VQ37
-uses the projected `0xFFFF0C40..0xFFFF0C58` range. The cross-runtime ledger
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D54` for active state. The
+cross-runtime ledger
 assigns `0x000D6000..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
@@ -682,9 +653,9 @@ A candidate is software-valid only when all applicable checks pass:
 
 Software verification and the recorded JK08A target-vehicle result do not
 authorize another flash. That image qualifies repeated activation, RPM hold,
-release, rearm, and bounded software-command behavior on Maps 2 and 3. VQ37
-runtime behavior, corrupt-state recovery, map changes while active,
-and the exact physical spark and injector outputs remain software-only or
+release, rearm, and bounded software-command behavior on Maps 2 and 3.
+Corrupt-state recovery, map changes while active, and the exact physical
+spark and injector outputs remain software-only or
 unmeasured boundaries. `rolling_launch.map_2_vehicle_2026_09_22` in
 `hardware-results.toml` records `run_timeout = "pass"` for the captured Map 2
 image, while `timeout_reason = "untested"` leaves the reported reason unread.

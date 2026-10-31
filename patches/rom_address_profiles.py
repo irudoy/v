@@ -23,7 +23,6 @@ if str(ROOT) not in sys.path:
 from patches import can_telemetry_layout
 from patches import can_telemetry_profile
 from patches import map_switching_layout
-from patches import rolling_launch_layout
 from tools import rom_homology
 
 
@@ -367,7 +366,8 @@ IGNITION_STATE_STORAGE_KEYS = frozenset(
 )
 IGNITION_STATE_FAMILY_STORAGE_KEYS = frozenset({"pointer_table", "copies"})
 IGNITION_STATE_ADAPTER_BYTES = 0x80
-# First byte after the VQ37 fuel-cut coordinator wrapper 0x000D5000..0x000D5080.
+# The SH7059 state-code ignition adapter follows the 0x80-byte canonical slot
+# 0x000D5000..0x000D5080, which the VQ37VHR layouts leave unused.
 IGNITION_STATE_ADAPTER_CANONICAL = 0x000D5080
 UNREFERENCED_ROUTINE_KEYS = frozenset({"start", "end"})
 
@@ -840,7 +840,12 @@ def _parse_profile(rom, row, context):
             raise AddressProfileError(f"{context}.{key}: expected nonempty text")
 
     evidence = row["evidence"]
-    _require_table(evidence, EVIDENCE_KEYS, f"{context}.evidence")
+    evidence_keys = (
+        EVIDENCE_KEYS
+        if capabilities.rolling_launch
+        else EVIDENCE_KEYS - {"rolling"}
+    )
+    _require_table(evidence, evidence_keys, f"{context}.evidence")
     for key, value in evidence.items():
         if not isinstance(value, str) or not value.strip():
             raise AddressProfileError(
@@ -1243,89 +1248,6 @@ def _validate_map_bindings(profile, map_layout):
             raise AddressProfileError(f"{profile.rom}.{key}: map hook chain differs")
 
 
-def _validate_rolling_bindings(profile, launch_layout):
-    if not profile.capabilities.rolling_launch:
-        return
-    rom_delta = profile.rom_delta
-    ram_delta = profile.ram_delta
-    launch_code = launch_layout.code_region_by_key
-    rolling = profile.rolling_hook_by_key
-    expected = {
-        "displaced_periodic_task": _rebased(
-            launch_code["periodic_wrapper"].entry, rom_delta
-        ),
-        "selector_arbitration": _rebased(
-            launch_code["selector_arbiter"].entry, rom_delta
-        ),
-        "startup_state_clear": _rebased(
-            launch_code["startup_wrapper"].entry, rom_delta
-        ),
-        "primary_ignition_command": _rebased(
-            launch_code["ignition_adapter"].entry, rom_delta
-        ),
-        "feedback_arbitration": _rebased(
-            launch_code["feedback_arbiter"].entry, rom_delta
-        ),
-    }
-    if profile.map_variant in VQ37_MAP_VARIANTS:
-        expected["fuel_cut_coordinator"] = _rebased(
-            0x000D5000, rom_delta
-        )
-    for key, replacement in expected.items():
-        if rolling[key].replacement != replacement:
-            raise AddressProfileError(
-                f"{profile.rom}.{key}: rolling replacement differs"
-            )
-    chains = {
-        "selector_arbitration": "selector_host_call",
-        "startup_state_clear": "startup_initializer",
-        "feedback_arbitration": "cruise_feedback_serializer",
-    }
-    for rolling_key, map_key in chains.items():
-        if rolling[rolling_key].base != profile.map_hook_by_key[map_key].replacement:
-            raise AddressProfileError(
-                f"{profile.rom}: {rolling_key} hook chain is open"
-            )
-
-    symbols = profile.rolling_symbol_by_key
-    periodic = rolling["displaced_periodic_task"]
-    if (
-        periodic.address != symbols["periodic_task_slot"]
-        or periodic.stock != symbols["scheduler_task"]
-        or periodic.base != symbols["scheduler_task"]
-    ):
-        raise AddressProfileError(
-            f"{profile.rom}: periodic scheduler binding differs"
-        )
-    if profile.map_variant in VQ37_MAP_VARIANTS:
-        coordinator = rolling["fuel_cut_coordinator"]
-        if (
-            coordinator.address != symbols["periodic_task_slot"] + 31 * 4
-            or coordinator.stock != symbols["fuel_cut_coordinator"]
-            or coordinator.base != symbols["fuel_cut_coordinator"]
-        ):
-            raise AddressProfileError(
-                f"{profile.rom}: fuel coordinator binding differs"
-            )
-
-    state_start = launch_layout.ram.state.start + ram_delta
-    diagnostics = profile.rolling_diagnostic_by_key
-    canonical = {item.name: item for item in launch_layout.diagnostics}
-    for key, binding in diagnostics.items():
-        source = canonical[key]
-        if (
-            binding.did != source.did
-            or binding.width != source.width
-            or binding.target != source.target + ram_delta
-            or not state_start
-            <= binding.target
-            < state_start + launch_layout.ram.state.size
-        ):
-            raise AddressProfileError(
-                f"{profile.rom}.{key}: rolling diagnostic differs"
-            )
-
-
 def _validate_can_bindings(profile, telemetry_layout):
     if not profile.capabilities.can_telemetry:
         return
@@ -1360,11 +1282,7 @@ def _validate_can_bindings(profile, telemetry_layout):
             raise AddressProfileError(
                 f"{profile.rom}.{key}: CAN replacement differs"
             )
-    startup_base = (
-        profile.rolling_hook_by_key["startup_state_clear"].replacement
-        if profile.capabilities.rolling_launch
-        else profile.map_hook_by_key["startup_initializer"].replacement
-    )
+    startup_base = profile.map_hook_by_key["startup_initializer"].replacement
     if hooks["startup_state_clear"].base != startup_base:
         raise AddressProfileError(f"{profile.rom}: CAN startup hook chain is open")
     for key in CAN_HOOK_KEYS - {"startup_state_clear"}:
@@ -1458,25 +1376,25 @@ def _validate_structure(profile):
             "sh7058_8mfk",
             0x100000,
             "mailbox26-tail-chain",
-            Capabilities(True, True, True),
+            Capabilities(True, False, True),
         ),
         "sh7059-1nd": (
             "sh7059_1nd",
             0x180000,
             "mailbox26-tail-chain",
-            Capabilities(True, True, True),
+            Capabilities(True, False, True),
         ),
         "sh7059-1me3b": (
             "sh7059_1me3b",
             0x180000,
             "mailbox26-tail-chain",
-            Capabilities(True, True, True),
+            Capabilities(True, False, True),
         ),
         "sh7058-jk78": (
             "sh7058_jk78c",
             0x100000,
             "mailbox26-tail-chain",
-            Capabilities(True, True, True),
+            Capabilities(True, False, True),
         ),
     }
     family, rom_size, can_variant, capabilities = contracts[profile.map_variant]
@@ -1496,7 +1414,6 @@ def _validate_structure(profile):
         )
 
     map_layout = map_switching_layout.load_layout()
-    launch_layout = rolling_launch_layout.load_layout()
     telemetry_layout = can_telemetry_layout.load_layout()
     expected_rom_start = map_layout.free_rom.start + profile.rom_delta
     active_rom_end = telemetry_layout.reserved_rom.start + profile.rom_delta
@@ -1525,7 +1442,6 @@ def _validate_structure(profile):
     _validate_extra_storage(profile, telemetry_layout)
     _validate_ignition_state_storage(profile)
     _validate_map_bindings(profile, map_layout)
-    _validate_rolling_bindings(profile, launch_layout)
     _validate_can_bindings(profile, telemetry_layout)
 
 

@@ -340,23 +340,10 @@ def validate_structure(layout):
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
-    vq37 = layout.variant == "vq37-fuel-coordinator"
     if (
         layout.byte_order != "big"
-        or (
-            layout.variant == "canonical" and layout.rom != "JK08A"
-        )
-        or (
-            layout.variant == "relocated-8mfk"
-            and layout.rom not in {"JK00C", "JK00D"}
-        )
-        or (
-            vq37
-            and layout.rom not in {"JK78C", "1ND0A", "1ND3B", "1ME3B"}
-        )
-        or layout.variant not in {
-            "canonical", "relocated-8mfk", "vq37-fuel-coordinator"
-        }
+        or layout.variant != "canonical"
+        or layout.rom != "JK08A"
     ):
         raise ValueError(
             f"unsupported Rolling Launch target {layout.rom!r} "
@@ -401,10 +388,7 @@ def validate_structure(layout):
         // scheduler.pphi_hz
     ):
         raise ValueError("periodic scheduler timing contract differs")
-    if (
-        layout.variant == "canonical"
-        and scheduler.table_address != 0x0002196C
-    ):
+    if scheduler.table_address != 0x0002196C:
         raise ValueError("canonical scheduler table address differs")
     periodic_hook = layout.hook_by_key.get("displaced_periodic_task")
     if (
@@ -422,12 +406,7 @@ def validate_structure(layout):
         raise ValueError("Rolling Launch state overlaps map-switching RAM")
     if not layout.ram.base_reservation.contains(layout.ram.fuel_shadow):
         raise ValueError("fuel shadow lies outside map-switching RAM")
-    expected_state_size = 24 if vq37 else 20
-    expected_fuel_shadow_size = 36 if vq37 else 12
-    if (
-        layout.ram.state.size != expected_state_size
-        or layout.ram.fuel_shadow.size != expected_fuel_shadow_size
-    ):
+    if layout.ram.state.size != 20 or layout.ram.fuel_shadow.size != 12:
         raise ValueError("runtime RAM sizes differ from the implementation")
 
     _unique(layout.code_regions, lambda item: item.key, "code region keys")
@@ -503,8 +482,6 @@ def validate_structure(layout):
         "primary_ignition_command",
         "feedback_arbitration",
     }
-    if vq37:
-        required_hooks.add("fuel_cut_coordinator")
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
     canonical_hooks = {
@@ -524,8 +501,7 @@ def validate_structure(layout):
         ):
             raise ValueError(f"{hook.key}: hook contract differs")
         if (
-            layout.variant == "canonical"
-            and (hook.address, hook.stock, hook.replacement)
+            (hook.address, hook.stock, hook.replacement)
             != canonical_hooks[hook.key]
         ):
             raise ValueError(f"{hook.key}: canonical hook binding differs")
@@ -547,13 +523,12 @@ def validate_structure(layout):
             or not item.name
         ):
             raise ValueError(f"DID {item.did:#06x}: diagnostic contract differs")
-        if layout.variant == "canonical":
-            low = item.did & 0xFF
-            expected_pointer = 0x0002289C + low * 4
-            if item.pointer_address != expected_pointer:
-                raise ValueError(
-                    f"DID {item.did:#06x}: canonical pointer differs"
-                )
+        low = item.did & 0xFF
+        expected_pointer = 0x0002289C + low * 4
+        if item.pointer_address != expected_pointer:
+            raise ValueError(
+                f"DID {item.did:#06x}: canonical pointer differs"
+            )
 
     writes = [
         common.AddressRange(unit.span.start, unit.span.end, f"unit.{unit.key}")

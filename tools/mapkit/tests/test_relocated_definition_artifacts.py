@@ -16,7 +16,6 @@ TARGETS = {
             "Developer Immobilizer": "0x873F",
             "Cruise Control Switch": "0x8B59",
             "CAN Telemetry at Startup": "0xE1503",
-            "Rolling Launch Require Accelerator Pedal": "0xE066C",
         },
     },
     "JK00D": {
@@ -30,7 +29,6 @@ TARGETS = {
             "Developer Immobilizer": "0x8740",
             "Cruise Control Switch": "0x8B5A",
             "CAN Telemetry at Startup": "0xE1503",
-            "Rolling Launch Require Accelerator Pedal": "0xE066C",
         },
     },
 }
@@ -42,7 +40,6 @@ JK78C_MAP_ADDRESSES = {
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x16BF4",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x137E8",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate": "0x137F0",
-    "Rolling Launch Minimum Engine Speed": "0x1E96A",
     "Target Mixture - Main": "0x0A3CA",
     "Target Mixture Multiplier - High-Detonation State": "0x13AD8",
 }
@@ -55,7 +52,6 @@ ONE_ND_MAP_ADDRESSES = {
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x17202",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x13C1A",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate": "0x13C22",
-    "Rolling Launch Minimum Engine Speed": "0x133F6A",
 }
 
 
@@ -174,6 +170,7 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
 
         for name, address in expected["switches"].items():
             assert tables[name].get("storageaddress") == address
+        assert not any("Rolling Launch" in name for name in tables)
         assert (
             tables["Map 1 - Intake CVTC Target - Main"].get(
                 "storageaddress"
@@ -217,8 +214,8 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
         assert f"defs/{rom}.dtc.csv" in description
-        assert len(root.findall("XDFTABLE")) == 113
-        assert len(root.findall("XDFFLAG")) == 5
+        assert len(root.findall("XDFTABLE")) == 105
+        assert root.findall("XDFFLAG") == []
         assert root.find("XDFCHECKSUM") is None
 
         assert _xdf_table_address(
@@ -227,9 +224,7 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert _xdf_table_address(
             tables["Map 1 - Exhaust CVTC Target - Main"]
         ) == expected["exhaust_cvtc_target"].replace("0x0", "0x")
-        assert _xdf_table_address(
-            tables["Rolling Launch Minimum Coolant Temperature"]
-        ) == "0xE0666"
+        assert not any("Rolling Launch" in title for title in tables)
 
 
 def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
@@ -249,8 +244,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 228
-    assert len(tables) == 228
+    assert len(target.findall("table")) == 218
+    assert len(tables) == 218
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
     assert tables["Map 1 - Ignition Timing Surface - Hot Coolant [stored count]"].get(
@@ -272,12 +267,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     )
     assert not any("Knock-State Path Enable" in name for name in tables)
     assert sum(1 for name in tables if name.startswith("DTC ")) == 77
-    assert tables["Rolling Launch Enable by Map"].get(
-        "storageaddress"
-    ) == "0x1E964"
-    assert tables["Rolling Launch Require Accelerator Pedal"].get(
-        "storageaddress"
-    ) == "0x1E96C"
+    assert not any("Rolling Launch" in name for name in tables)
     assert any(name.startswith("Map 2 -") for name in tables)
     assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
     assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
@@ -298,7 +288,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 147
+    assert len(root.findall("XDFTABLE")) == 139
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -309,7 +299,6 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert non_dtc_patches == {
         "Developer Immobilizer",
         "CAN Telemetry at Startup",
-        "Rolling Launch Require Accelerator Pedal",
     }
     assert sum(
         1 for title in patches_by_title if title.startswith("DTC ")
@@ -322,12 +311,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert patches_by_title["CAN Telemetry at Startup"].find(
         "XDFPATCHENTRY"
     ).get("address") == "0x1F803"
-    assert patches_by_title[
-        "Rolling Launch Require Accelerator Pedal"
-    ].find("XDFPATCHENTRY").get("address") == "0x1E96C"
-    assert {
-        flag.findtext("title") for flag in root.findall("XDFFLAG")
-    } == {f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)}
+    assert root.findall("XDFFLAG") == []
     assert root.find("XDFCHECKSUM") is None
     assert "No editor-side checksum is declared" in description
     assert "no verified" not in description.lower()
@@ -358,8 +342,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 246
-        assert len(tables) == 246
+        assert len(target.findall("table")) == 236
+        assert len(tables) == 236
         # The ignition families select the two executed 16x16 surfaces and the
         # four 8x8 state-code surfaces; the canonical trio reaches only the
         # gated coordinator half.
@@ -393,12 +377,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
         ].get("storageaddress") == "0x135540"
         assert sum(1 for name in tables if name.startswith("DTC ")) == 77
-        assert tables["Rolling Launch Enable by Map"].get(
-            "storageaddress"
-        ) == "0x133F64"
-        assert tables["Rolling Launch Require Accelerator Pedal"].get(
-            "storageaddress"
-        ) == "0x133F6C"
+        assert not any("Rolling Launch" in name for name in tables)
         assert any(name.startswith("Map 2 -") for name in tables)
         assert tables["CAN Telemetry at Startup"].get(
             "storageaddress"
@@ -429,7 +408,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 164
+        assert len(root.findall("XDFTABLE")) == 156
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches
@@ -443,7 +422,6 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             "Developer Immobilizer",
             "Cruise Control Switch",
             "CAN Telemetry at Startup",
-            "Rolling Launch Require Accelerator Pedal",
         }
         assert sum(
             1 for title in patches_by_title if title.startswith("DTC ")
@@ -457,15 +435,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             "XDFPATCHENTRY"
         )
         assert entry.get("address") == "0x134E03"
-        pedal = patches_by_title[
-            "Rolling Launch Require Accelerator Pedal"
-        ].find("XDFPATCHENTRY")
-        assert pedal.get("address") == "0x133F6C"
-        assert {
-            flag.findtext("title") for flag in root.findall("XDFFLAG")
-        } == {
-            f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)
-        }
+        assert root.findall("XDFFLAG") == []
         assert (
             "No editor-side checksum is declared; the flashing workflow "
             "handles checksum correction." in description
@@ -498,8 +468,8 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 248
-    assert len(tables) == 248
+    assert len(target.findall("table")) == 238
+    assert len(tables) == 238
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Map 1 - Fuel Compensation - Main - Default"].get(
@@ -545,12 +515,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert tables[
         "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
     ].get("storageaddress") == "0x13E540"
-    assert tables["Rolling Launch Enable by Map"].get(
-        "storageaddress"
-    ) == "0x13CF64"
-    assert tables["Rolling Launch Require Accelerator Pedal"].get(
-        "storageaddress"
-    ) == "0x13CF6C"
+    assert not any("Rolling Launch" in name for name in tables)
     assert tables["CAN Telemetry at Startup"].get(
         "storageaddress"
     ) == "0x13DE03"
@@ -572,7 +537,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 169
+    assert len(root.findall("XDFTABLE")) == 161
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
     patches_by_title = {
@@ -585,14 +550,8 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     } == {
         "Developer Immobilizer",
         "CAN Telemetry at Startup",
-        "Rolling Launch Require Accelerator Pedal",
     }
     assert patches_by_title["CAN Telemetry at Startup"].find(
         "XDFPATCHENTRY"
     ).get("address") == "0x13DE03"
-    assert patches_by_title["Rolling Launch Require Accelerator Pedal"].find(
-        "XDFPATCHENTRY"
-    ).get("address") == "0x13CF6C"
-    assert {
-        flag.findtext("title") for flag in root.findall("XDFFLAG")
-    } == {f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)}
+    assert root.findall("XDFFLAG") == []

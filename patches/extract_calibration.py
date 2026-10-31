@@ -176,6 +176,10 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
     settings = []
     rolling = None
     unexpressed = ()
+    if map_state != ABSENT and target.rolling_layout is None:
+        # A target without a Rolling Launch layer builds the observe
+        # calibration of its built-in profile.
+        rolling = rolling_launch.Calibration()
     if rolling_state != ABSENT:
         record, rolling, unexpressed = _rolling_settings(
             source, target.rolling_layout, rolling_state

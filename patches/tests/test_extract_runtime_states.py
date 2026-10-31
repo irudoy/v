@@ -31,45 +31,7 @@ GUARDED_CONTROLLER = bytes.fromhex(
     "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
     "ffffffffffff5d40ffff11bc00021ce0ffff20220002a892ffffffffffffffff"
 )
-EIGHT_MFK_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff6040ffff11ca00021d6cffff11f50002b51affffffffffffffff"
-)
-ND_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40fffe81b600022318fffe81dd0002e464ffffffffffffffff"
-)
-ME3B_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40fffe819e00022394fffe81c3000311b2ffffffffffffffff"
-)
-JK78C_GUARDED_CONTROLLER = bytes.fromhex(
-    "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
-    "3102890b313830382008890e212e011ad30e430b0009340ca0010009342cd10c"
-    "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
-    "ffffffffffff0c40ffff11ac00021e0cffff11cf0002d6f6ffffffffffffffff"
-)
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
-
-
-def guarded_controller_for(rom):
-    if rom in runtime_targets.EXACT_ROMS:
-        return GUARDED_CONTROLLER
-    if rom in runtime_targets.RELOCATED_8MFK_ROMS:
-        return EIGHT_MFK_GUARDED_CONTROLLER
-    if rom in runtime_targets.SH7059_1ND_ROMS:
-        return ND_GUARDED_CONTROLLER
-    if rom in runtime_targets.SH7059_1ME3B_ROMS:
-        return ME3B_GUARDED_CONTROLLER
-    if rom == "JK78C":
-        return JK78C_GUARDED_CONTROLLER
-    raise AssertionError(rom)
 
 
 @lru_cache(maxsize=None)
@@ -276,26 +238,14 @@ def test_previous_guarded_controller_is_recognized_with_or_without_telemetry(tel
     assert state(extraction)["can_telemetry"] == ("current" if telemetry else "absent")
 
 
-@pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
-def test_previous_guarded_controller_is_recognized_on_every_rom(rom):
+@pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
+def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
     unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
     source = bytearray(built(rom))
-    source[unit.span.start : unit.span.end] = guarded_controller_for(rom)
+    source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
     extraction = extract(source, rom)
-    assert state(extraction)["rolling_launch"].startswith("schema-3-guarded-controller")
+    assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
     assert extraction.calibration.elements == ()
-
-
-@pytest.mark.parametrize("rom", ("JK00C", "1ND0A", "JK78C"))
-def test_relocated_guarded_controller_hybrid_is_refused(rom):
-    unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
-    source = bytearray(built(rom))
-    source[unit.span.start : unit.span.end] = guarded_controller_for(rom)
-    source[unit.span.start] ^= 1
-    with pytest.raises(
-        extract_calibration.ExtractionError, match="partial or unknown Rolling Launch"
-    ):
-        extract(source, rom)
 
 
 @pytest.mark.parametrize("part", ("ignition_controller", "engine", "configuration"))
@@ -321,8 +271,10 @@ def test_previous_endpoint_carries_its_editor_settings_into_the_profile():
     assert extraction.telemetry == can_telemetry.Configuration(True, 0x6E0, "tuning", 7)
 
 
-@pytest.mark.parametrize("rom", EDITED_ROMS)
-@pytest.mark.parametrize("component", ("rolling_launch", "can_telemetry"))
+@pytest.mark.parametrize(
+    ("component", "rom"),
+    (("rolling_launch", "JK08A"), *(("can_telemetry", rom) for rom in EDITED_ROMS)),
+)
 def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, component):
     source = edited_runtime(
         rom,
@@ -348,7 +300,7 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
         apply_calibration.apply(built(rom), extraction.calibration)
 
 
-@pytest.mark.parametrize("rom", ("JK08A", "JK00C"))
+@pytest.mark.parametrize("rom", ("JK08A", "JK00A"))
 def test_editor_disabling_only_map_1_rpm_hold_travels_in_the_profile(rom):
     start = target(rom).rolling_layout.configuration.start
     edited = bytearray(built(rom))
@@ -452,12 +404,12 @@ def test_occupied_telemetry_reserve_is_rejected_by_address():
         extract(source)
 
 
-@pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
+@pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
 def test_historical_endpoint_calibration_transfers_to_a_fresh_build(rom):
     families = target(rom).map_layout.families
     unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
     source = bytearray(edited_runtime(rom, rolling=True, telemetry=True))
-    source[unit.span.start : unit.span.end] = guarded_controller_for(rom)
+    source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
     for index, family in enumerate(families):
         source[family.canonical_address] ^= 1 + index
         source[family.copies[-1] + family.byte_length - 1] ^= 1 + index

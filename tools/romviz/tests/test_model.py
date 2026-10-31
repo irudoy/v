@@ -183,10 +183,10 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert (
         "patch:runtime-address-profile:patch-hook:map-ignition_state_lookup"
     ) in by_id
-    assert (
-        "patch:runtime-address-profile:patch-hook:"
-        "rolling-fuel_cut_coordinator"
-    ) in by_id
+    assert not any(
+        key.startswith("patch:runtime-address-profile:patch-hook:rolling-")
+        for key in by_id
+    )
     assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
     for address, stock in (
         (0x79404, 0x293D8),
@@ -201,10 +201,8 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
         metadata = {item["label"]: item["value"] for item in hook["meta"]}
         assert int(metadata["Stock"], 16) == stock
         assert runtime["start"] <= int(metadata["Replacement"], 16) < runtime["end"]
-    assert any(
-        item["label"] == "Rolling Launch Minimum Engine Speed"
-        and item["start"] == 0x13CF6A
-        for item in rom["objects"]
+    assert not any(
+        "Rolling Launch" in (item.get("label") or "") for item in rom["objects"]
     )
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
@@ -252,10 +250,8 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_
         and item["start"] == 0x16BF4
         for item in rom["objects"]
     )
-    assert any(
-        item["label"] == "Rolling Launch Minimum Engine Speed"
-        and item["start"] == 0x1E96A
-        for item in rom["objects"]
+    assert not any(
+        "Rolling Launch" in (item.get("label") or "") for item in rom["objects"]
     )
     runtime = by_id[
         "patch:runtime-address-profile:patch-claim:injected-rom"
@@ -264,10 +260,10 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_
     assert runtime["start"] == 0x0001CB08
     assert runtime["end"] == 0x00020000
     assert "patch:runtime-address-profile:patch-hook:map-selector_host_call" in by_id
-    assert (
-        "patch:runtime-address-profile:patch-hook:"
-        "rolling-fuel_cut_coordinator"
-    ) in by_id
+    assert not any(
+        key.startswith("patch:runtime-address-profile:patch-hook:rolling-")
+        for key in by_id
+    )
     assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
     assert "checksum-field:runtime_b_xor" in by_id
     assert "checksum-domain:runtime_b" in by_id
@@ -348,10 +344,8 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
         and item["start"] == 0x17202
         for item in rom["objects"]
     )
-    assert any(
-        item["label"] == "Rolling Launch Minimum Engine Speed"
-        and item["start"] == 0x133F6A
-        for item in rom["objects"]
+    assert not any(
+        "Rolling Launch" in (item.get("label") or "") for item in rom["objects"]
     )
     by_id = {item["id"]: item for item in rom["objects"]}
     profile = by_id[
@@ -373,10 +367,10 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
         )
         for item in rom["objects"]
     )
-    assert (
-        "patch:runtime-address-profile:patch-hook:"
-        "rolling-fuel_cut_coordinator"
-    ) in by_id
+    assert not any(
+        key.startswith("patch:runtime-address-profile:patch-hook:rolling-")
+        for key in by_id
+    )
     assert checksum_fields == {
         "checksum-field:sum16_a",
         "checksum-field:sum16_b",

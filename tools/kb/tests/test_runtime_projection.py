@@ -10,9 +10,14 @@ def test_runtime_projection_matches_its_owners():
     for image, layout in document["images"].items():
         assert layout == targets.layout_of(image)
     for layout, row in document["layouts"].items():
-        fuel = targets.meaning("rolling_launch", layout, "fuel_inhibit")
-        assert row["fuel_cut_address"] == targets.address(fuel, layout)
-        assert row["fuel_cut_active_bit"] == targets.bit(fuel, layout, "active")
+        rolling = targets.target("rolling_launch", layout)
+        if rolling.get("status", "supported") == "supported":
+            fuel = targets.meaning("rolling_launch", layout, "fuel_inhibit")
+            assert row["fuel_cut_address"] == targets.address(fuel, layout)
+            assert row["fuel_cut_active_bit"] == targets.bit(fuel, layout, "active")
+        else:
+            assert "fuel_cut_address" not in row
+            assert "fuel_cut_active_bit" not in row
         assert row["ascd_main_bit"] == targets.bit("ascd_state/ram", layout, "main")
         assert row["knock_surface_bit"] == targets.bit(
             "knock_surface_state/ram", layout, "high_detonation")

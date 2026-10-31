@@ -176,19 +176,26 @@ def test_builder_output_yields_its_profile_and_no_calibration(rom):
     data = built(rom)
     extraction = extract_calibration.extract(data, source_name="built")
     calibration = extraction.calibration
+    rolling_layout = target(rom).rolling_layout
     assert dict(calibration.source)["map_switching"] == "current"
-    assert dict(calibration.source)["rolling_launch"] == "current"
+    assert dict(calibration.source)["rolling_launch"] == (
+        "absent" if rolling_layout is None else "current"
+    )
     assert dict(calibration.source)["can_telemetry"] == "current"
     assert calibration.elements == ()
     profile = build_rom.builtin_profile(build_rom._series_context(rom).key)
     assert extraction.rolling == profile.calibration
     assert extraction.telemetry == profile.telemetry
-    rolling = target(rom).rolling_layout.configuration
     telemetry = target(rom).telemetry_layout.configuration
-    assert dict(calibration.settings) == {
-        "rolling_launch": extract_calibration.sha256(data[rolling.start : rolling.end]),
+    settings = {
         "can_telemetry": extract_calibration.sha256(data[telemetry.start : telemetry.end]),
     }
+    if rolling_layout is not None:
+        rolling = rolling_layout.configuration
+        settings["rolling_launch"] = extract_calibration.sha256(
+            data[rolling.start : rolling.end]
+        )
+    assert dict(calibration.settings) == settings
 
 
 @pytest.mark.slow
@@ -213,8 +220,8 @@ def test_calibration_and_profile_rebuild_the_source(rom):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
-def test_corrupt_rolling_record_is_a_partial_state_on_every_rom(rom):
+@pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
+def test_corrupt_rolling_record_is_a_partial_state_on_every_exact_rom(rom):
     configuration = target(rom).rolling_layout.configuration
     source = bytearray(built(rom))
     for offset in range(configuration.start, configuration.end):

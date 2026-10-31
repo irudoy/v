@@ -95,21 +95,11 @@ IGNITION_STATE_FAMILY_NAMES = {
     ),
 }
 
-# The selector host and the Rolling Launch engine abort while the MAIN switch
-# bit of the ASCD flag byte is set. Their canonical sources test the bit of the
-# canonical layout, and each target tests the bit of its own layout.
+# The selector host aborts while the MAIN switch bit of the ASCD flag byte is
+# set. Its canonical source tests the bit of the canonical layout, and each
+# target tests the bit of its own layout.
 ASCD_STATE = "ascd_state/ram"
 CANONICAL_ASCD_MAIN_MASK = 0x80
-# The Rolling Launch engine reports the fuel-cut flag while the active cut bit
-# of the stock RPM fuel-cut state is set, in the meaning that fills the key
-# fuel_inhibit of the rolling_launch target of each layout. The canonical
-# engine tests the bit of the canonical layout, and each target tests the bit
-# of its own layout.
-FUEL_CUT_KEY = "fuel_inhibit"
-CANONICAL_FUEL_CUT_ACTIVE_MASK = 0x04
-# The VQ37VHR fuel coordinator wrapper extends the final six-cylinder inhibit
-# mask, which its source names by the canonical address.
-CANONICAL_FUEL_FINAL_MASK = 0xFFFF22E0
 # The telemetry field of the knock surface state carries the high-detonation
 # bit of the canonical layout, which the hosts decode. The capture of a layout
 # that keeps the state in another bit moves it into the wire bit of the bank
@@ -300,7 +290,6 @@ def _canonical_telemetry_fields():
 def _address_mapping(profile):
     mapping = {}
     canonical_map = map_switching_layout.load_layout()
-    canonical_rolling = rolling_launch_layout.load_layout()
     canonical_can = can_telemetry_layout.load_layout()
 
     family_targets = profile.map_family_by_key
@@ -394,27 +383,6 @@ def _address_mapping(profile):
         profile.rom,
     )
 
-    if profile.capabilities.rolling_launch:
-        rolling_hooks = profile.rolling_hook_by_key
-        for hook in canonical_rolling.hooks:
-            target = rolling_hooks[hook.key]
-            _add_mapping(mapping, hook.address, target.address, profile.rom)
-            _add_mapping(mapping, hook.stock, target.base, profile.rom)
-        canonical_diagnostics = {
-            item.name: item for item in canonical_rolling.diagnostics
-        }
-        for key, target in profile.rolling_diagnostic_by_key.items():
-            source = canonical_diagnostics[key]
-            _add_mapping(
-                mapping,
-                source.pointer_address,
-                target.pointer_address,
-                profile.rom,
-            )
-            _add_mapping(mapping, source.target, target.target, profile.rom)
-        rolling_symbols = profile.rolling_symbol_by_key
-        for key, source in canonical_symbols("rolling_launch").items():
-            _add_mapping(mapping, source, rolling_symbols[key], profile.rom)
     if profile.capabilities.can_telemetry:
         can_hooks = profile.can_hook_by_key
         for hook in canonical_can.hooks:
@@ -522,13 +490,6 @@ def ascd_main_mask(layout):
 
 
 @lru_cache(maxsize=None)
-def fuel_cut_active_mask(layout):
-    """The mask of the active cut bit of the stock RPM fuel-cut state on a
-    layout."""
-    return 1 << _binding(runtime_bindings.layout, layout)["fuel_cut_active_bit"]
-
-
-@lru_cache(maxsize=None)
 def knock_surface_bits(layout):
     """(source bit, wire bit) of the high-detonation state in the knock
     surface field of a layout: the bit of the layout and the bit of the
@@ -628,183 +589,6 @@ def _render_selector_host(profile, mapping):
         "selector host ASCD MAIN bit",
     )
     return _render_source(source, profile, mapping)
-
-
-def _render_vq37_rolling_wrappers(profile, mapping):
-    source = _read_source("rolling-launch-wrappers.s")
-    source = _replace_source_once(
-        source,
-        "dedicated 20-byte Rolling Launch state",
-        "dedicated 24-byte Rolling Launch state",
-        "VQ37 startup wrapper description",
-    )
-    source = _replace_source_once(
-        source,
-        "mov #0x5,r2\nrolling_launch_startup_clear_loop:",
-        "mov #0x6,r2\nrolling_launch_startup_clear_loop:",
-        "VQ37 startup clear count",
-    )
-    return _render_source(source, profile, mapping)
-
-
-def _render_rolling_engine(profile, mapping, source_name, vq37):
-    source = _read_source(source_name)
-    if vq37:
-        source = _vq37_rolling_engine_source(source)
-    source = _mask_source(
-        source,
-        profile,
-        ascd_main_mask,
-        CANONICAL_ASCD_MAIN_MASK,
-        "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n",
-        "mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n",
-        "Rolling Launch ASCD MAIN bit",
-    )
-    source = _mask_source(
-        source,
-        profile,
-        fuel_cut_active_mask,
-        CANONICAL_FUEL_CUT_ACTIVE_MASK,
-        "mov.b @r4,r0\nand 0x04,r0\ntst r0,r0\nbt rl_active_flags_store\n",
-        "mov.b @r4,r0\nand 0x{mask:02X},r0\ntst r0,r0\n"
-        "bt rl_active_flags_store\n",
-        "Rolling Launch fuel-cut active bit",
-    )
-    return _render_source(source, profile, mapping)
-
-
-def _vq37_rolling_engine_source(source):
-    source = _replace_source_once(
-        source,
-        "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 "
-        "and 2 write the\n"
-        "// fuel shadow.\n",
-        "// hold, and 2 RPM hold plus band-limited retard. Modes 1 and 2 publish the\n"
-        "// exact all-cylinder request from cut until the speed falls below\n"
-        "// restore; selected VQ37 maps remain unchanged.\n",
-        "VQ37 actuator description",
-    )
-    source = _replace_source_once(
-        source,
-        "//   +0x12 u16 captured ignition-retard band start\n",
-        "//   +0x12 u16 captured ignition-retard band start\n"
-        "//   +0x14 u16 exact all-cylinder fuel-cut request\n"
-        "//   +0x16 u16 request latch: 1 from cut until the speed falls below\n"
-        "//             restore, 0 otherwise\n",
-        "VQ37 state description",
-    )
-    source = _replace_source_once(
-        source,
-        "mov.l @(rl_state_address,pc),r5\nmov.b @r5,r0\n",
-        "mov.l @(rl_state_address,pc),r5\n"
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x14,r5)\n"
-        "mov.b @r5,r0\n",
-        "VQ37 per-tick fuel request clear",
-    )
-    source = _replace_source_once(
-        source,
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x6,r5)\n"
-        "mov.w r0,@(0x8,r5)\n"
-        "mov.l @(rl_rpm_address,pc),r4\n",
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x6,r5)\n"
-        "mov.w r0,@(0x8,r5)\n"
-        "mov.w r0,@(0x16,r5)\n"
-        "mov.l @(rl_rpm_address,pc),r4\n",
-        "VQ37 activation latch clear",
-    )
-    source = _replace_source_once(
-        source,
-        "rl_abort_publish_cooldown:\n"
-        "mov.l @(rl_state_address,pc),r5\n"
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x8,r5)\n",
-        "rl_abort_publish_cooldown:\n"
-        "mov.l @(rl_state_address,pc),r5\n"
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x8,r5)\n"
-        "mov.w r0,@(0x16,r5)\n",
-        "VQ37 abort latch clear",
-    )
-    source = _replace_source_once(
-        source,
-        "mov.b @(0x5,r5),r0\n"
-        "cmp/eq 0x0,r0\n"
-        "bt rl_activate_publish\n"
-        "bsr rl_apply_fuel_overlay\n"
-        "nop\n"
-        "rl_activate_publish:\n",
-        "rl_activate_publish:\n",
-        "VQ37 activation actuator",
-    )
-    source = _replace_source_once(
-        source,
-        "mov #0x5,r2\nrl_corrupt_clear_loop:",
-        "mov #0x6,r2\nrl_corrupt_clear_loop:",
-        "VQ37 corrupt-state clear count",
-    )
-    source = _replace_source_once(
-        source,
-        "tst r2,r2\n"
-        "bt rl_active_flags_fuel\n"
-        "mov r3,r0\n",
-        "tst r2,r2\n"
-        "bt rl_active_flags_fuel\n"
-        "// Latch the request at or above cut, release it below restore, and\n"
-        "// publish it while the latch holds.\n"
-        "mov.l @(rl_helper_rpm_address,pc),r4\n"
-        "mov.w @r4,r1\n"
-        "extu.w r1,r1\n"
-        "mov.w @(0xC,r5),r0\n"
-        "extu.w r0,r0\n"
-        "cmp/hs r0,r1\n"
-        "bf rl_hold_below_cut\n"
-        "mov #0x1,r0\n"
-        "mov.w r0,@(0x16,r5)\n"
-        "bra rl_hold_publish\n"
-        "nop\n"
-        "rl_hold_below_cut:\n"
-        "mov.w @(0xE,r5),r0\n"
-        "extu.w r0,r0\n"
-        "cmp/hs r0,r1\n"
-        "bt rl_hold_publish\n"
-        "mov #0x0,r0\n"
-        "mov.w r0,@(0x16,r5)\n"
-        "rl_hold_publish:\n"
-        "mov.w @(0x16,r5),r0\n"
-        "cmp/eq 0x1,r0\n"
-        "bf rl_hold_done\n"
-        "mov #0x3F,r0\n"
-        "mov.w r0,@(0x14,r5)\n"
-        "rl_hold_done:\n"
-        "mov r3,r0\n",
-        "VQ37 held fuel request publication",
-    )
-    overlay_start = source.index(
-        "// Atomically replace only the first eight bytes"
-    )
-    overlay_end = source.index(
-        "// Publish active/output flags", overlay_start
-    )
-    source = source[:overlay_start] + source[overlay_end:]
-    source = _replace_source_once(
-        source,
-        "// Publish active/output flags and the current stock fuel-cut state.\n"
-        ".org 0x000D3E34\n",
-        "// Publish active/output flags, the held fuel-cut request, and the\n"
-        "// current stock fuel-cut state.\n"
-        ".org 0x000D3E04\n",
-        "VQ37 flag publisher origin",
-    )
-    source = _replace_source_once(
-        source,
-        "rl_helper_fuel_shadow_address:\n.long 0xFFFF5D10\n",
-        "rl_helper_rpm_address:\n.long 0xFFFF11BC\n",
-        "VQ37 fuel-shadow literal replacement",
-    )
-    return source
 
 
 def _source_literals(source_texts, units):
@@ -1363,182 +1147,6 @@ def _shift_range(item, delta):
     )
 
 
-def _project_rolling(
-    profile, source_sha256, mapping, payloads=None,
-    map_stage_sha256=ZERO_SHA256,
-    rolling_stage_sha256=ZERO_SHA256,
-):
-    base = rolling_launch_layout.load_layout()
-    delta = profile.rom_delta
-    ram_delta = profile.ram_delta
-    vq37 = profile.map_variant in VQ37_MAP_VARIANTS
-    source_texts = {}
-    for unit in base.assembly_units:
-        if vq37 and unit.key == "wrappers":
-            source_texts[unit.key] = _render_vq37_rolling_wrappers(
-                profile, mapping
-            )
-        elif unit.key == "engine":
-            source_texts[unit.key] = _render_rolling_engine(
-                profile, mapping, unit.source, vq37
-            )
-        else:
-            source_texts[unit.key] = _render_source(
-                _read_source(unit.source), profile, mapping
-            )
-    if vq37:
-        source_texts["fuel_cut_wrapper"] = _render_source(
-            _read_source("rolling-launch-fuel-cut-wrapper.s"),
-            profile,
-            mapping,
-            {
-                0x000A0000: profile.rolling_symbol_by_key[
-                    "fuel_cut_coordinator"
-                ],
-                CANONICAL_FUEL_FINAL_MASK: profile.rolling_symbol_by_key[
-                    "fuel_inhibit_mask"
-                ],
-            },
-        )
-    code_regions = [
-        replace(
-            item,
-            span=_shift_range(item.span, delta),
-            entry=item.entry + delta,
-        )
-        for item in base.code_regions
-    ]
-    if vq37:
-        code_regions.append(map_switching_layout.CodeRegion(
-            "fuel_cut_wrapper",
-            map_switching_layout.AddressRange(
-                0x000D5000 + delta,
-                0x000D5080 + delta,
-                "fuel_cut_wrapper",
-            ),
-            0x000D5000 + delta,
-        ))
-    code_regions = tuple(code_regions)
-    units = [
-        _projected_unit(
-            unit, source_texts[unit.key],
-            unit.span.start + delta, unit.span.end + delta,
-            unit.code_regions, payloads,
-        )
-        for unit in base.assembly_units
-    ]
-    if vq37:
-        fuel_wrapper = map_switching_layout.AssemblyUnit(
-            key="fuel_cut_wrapper",
-            source="rolling-launch-fuel-cut-wrapper.s",
-            span=map_switching_layout.AddressRange(
-                0x000D5000,
-                0x000D5080,
-                "assembly.fuel_cut_wrapper",
-            ),
-            fill=0xFF,
-            language="SuperH:BE:32:SH-2A",
-            expected_sha256=ZERO_SHA256,
-            instruction_count=1,
-            data_bytes=0,
-            code_regions=("fuel_cut_wrapper",),
-        )
-        units.append(_projected_unit(
-            fuel_wrapper,
-            source_texts[fuel_wrapper.key],
-            fuel_wrapper.span.start + delta,
-            fuel_wrapper.span.end + delta,
-            fuel_wrapper.code_regions,
-            payloads,
-        ))
-    units = tuple(units)
-    rolling_symbols = profile.rolling_symbol_by_key
-    hooks = tuple(
-        map_switching_layout.Hook(
-            key=item.key,
-            address=item.address,
-            width=4,
-            stock=item.base,
-            replacement=item.replacement,
-            purpose=f"Projected {item.key} binding for {profile.rom}.",
-        )
-        for item in profile.rolling_hooks
-    )
-    diagnostic_by_key = profile.rolling_diagnostic_by_key
-    diagnostics = tuple(
-        rolling_launch_layout.Diagnostic(
-            did=diagnostic_by_key[item.name].did,
-            pointer_address=diagnostic_by_key[item.name].pointer_address,
-            stock=0xFFFFFFFF,
-            target=diagnostic_by_key[item.name].target,
-            width=diagnostic_by_key[item.name].width,
-            name=item.name,
-        )
-        for item in base.diagnostics
-    )
-    state = _shift_range(base.ram.state, ram_delta)
-    if vq37:
-        state = map_switching_layout.AddressRange(
-            state.start, state.end + 4, state.key
-        )
-    fuel_shadow = _shift_range(base.ram.fuel_shadow, ram_delta)
-    if vq37:
-        fuel_shadow = map_switching_layout.AddressRange(
-            fuel_shadow.start, fuel_shadow.start + 36, fuel_shadow.key
-        )
-    ram = replace(
-        base.ram,
-        proven_free=map_switching_layout.AddressRange(
-            profile.free_ram.start, profile.free_ram.end, "ram.proven_free"
-        ),
-        base_reservation=_shift_range(base.ram.base_reservation, ram_delta),
-        state=state,
-        fuel_shadow=fuel_shadow,
-    )
-    layout = replace(
-        base,
-        rom=profile.rom,
-        source_sha256=source_sha256,
-        base_composition_sha256=map_stage_sha256,
-        expected_composition_sha256=rolling_stage_sha256,
-        free_rom=map_switching_layout.AddressRange(
-            profile.free_rom.start, profile.free_rom.end, "free_rom"
-        ),
-        claimed_rom=_shift_range(base.claimed_rom, delta),
-        claimed_rom_extensions=tuple(
-            _shift_range(item, delta)
-            for item in base.claimed_rom_extensions
-        ) + ((map_switching_layout.AddressRange(
-            0x000D5000 + delta,
-            0x000D5080 + delta,
-            "claimed_rom_extension.vq37_fuel_cut_wrapper",
-        ),) if vq37 else ()),
-        configuration=_shift_range(base.configuration, delta),
-        scheduler=replace(
-            base.scheduler,
-            table_address=rolling_symbols["periodic_task_table"],
-            table_index=(
-                rolling_symbols["periodic_task_slot"]
-                - rolling_symbols["periodic_task_table"]
-            )
-            // 4,
-        ),
-        ram=ram,
-        code_regions=code_regions,
-        assembly_units=units,
-        hooks=hooks,
-        diagnostics=diagnostics,
-        variant=(
-            "vq37-fuel-coordinator" if vq37 else "relocated-8mfk"
-        ),
-        source_texts=tuple(sorted(source_texts.items())),
-    )
-    return replace(
-        layout,
-        source_literals=_source_literals(source_texts, layout.assembly_units),
-    )
-
-
 def _project_can(
     profile, source_sha256, mapping, payloads=None,
     rolling_stage_sha256=ZERO_SHA256,
@@ -1689,38 +1297,18 @@ def project_relocated_target(rom, locks=None):
         )
     mapping = _address_mapping(profile)
     map_payloads = None if locks is None else locks.map_payloads
-    rolling_payloads = None if locks is None else locks.rolling_payloads
     telemetry_payloads = None if locks is None else locks.telemetry_payloads
     map_layout = _project_map(
         profile, stock_sha256, mapping, map_payloads
     )
-    rolling_layout = (
-        _project_rolling(
-            profile,
-            stock_sha256,
-            mapping,
-            rolling_payloads,
-            ZERO_SHA256 if locks is None else locks.map_stage_sha256,
-            ZERO_SHA256 if locks is None else locks.rolling_stage_sha256,
-        )
-        if profile.capabilities.rolling_launch
-        else None
-    )
-    telemetry_base_sha256 = (
-        ZERO_SHA256
-        if locks is None
-        else (
-            locks.rolling_stage_sha256
-            if profile.capabilities.rolling_launch
-            else locks.map_stage_sha256
-        )
-    )
+    # A relocated target carries no Rolling Launch stage, and telemetry
+    # composes on the map stage.
     telemetry_layout = _project_can(
         profile,
         stock_sha256,
         mapping,
         telemetry_payloads,
-        telemetry_base_sha256,
+        ZERO_SHA256 if locks is None else locks.map_stage_sha256,
         ZERO_SHA256 if locks is None else locks.telemetry_stage_sha256,
     )
     return RuntimeTarget(
@@ -1729,12 +1317,10 @@ def project_relocated_target(rom, locks=None):
         stock_image=romkit.Image(rom, str(stock.path), stock.data),
         checksum_layout=rom_checksums.layout_for_rom(rom),
         map_layout=map_layout,
-        rolling_layout=rolling_layout,
+        rolling_layout=None,
         telemetry_layout=telemetry_layout,
         map_payloads={} if map_payloads is None else map_payloads,
-        rolling_payloads=(
-            {} if rolling_payloads is None else rolling_payloads
-        ),
+        rolling_payloads={},
         telemetry_payloads=(
             {} if telemetry_payloads is None else telemetry_payloads
         ),
@@ -1800,37 +1386,7 @@ def _validate_projected_bindings(target):
             f"{target.rom}: projected map hooks differ"
         )
 
-    if profile.capabilities.rolling_launch:
-        actual_rolling_hooks = {
-            item.key: (item.address, item.stock, item.replacement)
-            for item in target.rolling_layout.hooks
-        }
-        expected_rolling_hooks = {
-            item.key: (item.address, item.base, item.replacement)
-            for item in profile.rolling_hooks
-        }
-        if actual_rolling_hooks != expected_rolling_hooks:
-            raise RuntimeTargetError(
-                f"{target.rom}: projected Rolling Launch hooks differ"
-            )
-
-        actual_diagnostics = {
-            item.name: (
-                item.did, item.pointer_address, item.target, item.width
-            )
-            for item in target.rolling_layout.diagnostics
-        }
-        expected_diagnostics = {
-            item.key: (
-                item.did, item.pointer_address, item.target, item.width
-            )
-            for item in profile.rolling_diagnostics
-        }
-        if actual_diagnostics != expected_diagnostics:
-            raise RuntimeTargetError(
-                f"{target.rom}: projected diagnostic bindings differ"
-            )
-    elif target.rolling_layout is not None or target.rolling_payloads:
+    if target.rolling_layout is not None or target.rolling_payloads:
         raise RuntimeTargetError(
             f"{target.rom}: disabled Rolling Launch has runtime artifacts"
         )

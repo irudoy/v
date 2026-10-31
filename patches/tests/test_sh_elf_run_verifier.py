@@ -508,7 +508,7 @@ mov #0x5,r1
         self.assertIn("verify_rolling_launch.verify", source)
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
-        self.assertIn("feedback=7", harness)
+        self.assertIn("feedback=8", harness)
         self.assertIn("entries=8", harness)
 
     def test_can_telemetry_composition_lock_matches_verifier(self):

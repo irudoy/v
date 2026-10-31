@@ -125,7 +125,7 @@ class ClaimRowsTest(unittest.TestCase):
         self.assertEqual(requires[("map_switching/feature", "rev_fuel_cut_state/ram")],
                          ["1me3b", "1nd", "jk78c"])
         self.assertIn("7mfk", requires[("map_switching/feature", "over_run_fuel_cut/tbl")])
-        self.assertIn("1nd", requires[("rolling_launch/feature", "fuel_inhibit_mask/ram")])
+        self.assertIn("7mfk", requires[("rolling_launch/feature", "fuel_inhibit/ram")])
         for (feature, layout), target in m.targets.items():
             for key in target.needs():
                 meaning = m.meaning_of(key)

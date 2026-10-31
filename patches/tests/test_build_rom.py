@@ -184,12 +184,7 @@ class BuildRomTest(unittest.TestCase):
                 self.assertEqual(result.detection, build_rom.AUTO_ROM)
                 self.assertEqual(result.profile.rom, target.family)
                 self.assertEqual(
-                    result.profile.name,
-                    (
-                        build_rom.OBSERVE_PROFILE_NAME
-                        if rom in runtime_targets.VQ37_RUNTIME_ROMS
-                        else build_rom.apply_rolling_launch.PROFILE_NAME
-                    ),
+                    result.profile.name, build_rom.OBSERVE_PROFILE_NAME
                 )
                 self.assertEqual(build_rom.select_rom(source), (rom, "auto"))
                 explicit = build_rom.build_image(
@@ -213,10 +208,8 @@ class BuildRomTest(unittest.TestCase):
                     if rom in runtime_targets.VQ37_RUNTIME_ROMS
                     else 453,
                 )
-                self.assertEqual(
-                    result.rolling_instruction_count,
-                    892 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 876,
-                )
+                self.assertIsNone(target.rolling_layout)
+                self.assertEqual(result.rolling_instruction_count, 0)
                 # The 1ME3B capture adds the six instructions that move the
                 # high-detonation bit of the knock surface byte into the wire bit.
                 self.assertEqual(
@@ -272,8 +265,9 @@ class BuildRomTest(unittest.TestCase):
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
 
-    def test_vq37_accepts_a_profile_that_enables_rolling_launch(self):
+    def test_a_relocated_target_refuses_a_profile_that_enables_rolling_launch(self):
         pairs = (
+            (runtime_targets.RELOCATED_8MFK_FAMILY, "JK00C"),
             (runtime_targets.SH7059_1ND_FAMILY, "1ND0A"),
             (runtime_targets.SH7058_JK78C_FAMILY, "JK78C"),
         )
@@ -286,13 +280,10 @@ class BuildRomTest(unittest.TestCase):
                     ),
                 )
                 source = self.family_images[rom].data
-                result = build_rom.build_image(source, profile=profile)
-
-                self.assertEqual(
-                    result.configuration,
-                    profile.calibration.to_bytes(),
-                )
-                self.assertEqual(result.rolling_instruction_count, 892)
+                with self.assertRaisesRegex(
+                    build_rom.BuildError, "Rolling Launch is unsupported"
+                ):
+                    build_rom.build_image(source, profile=profile)
 
     def test_unknown_identity_and_unsupported_rom_are_rejected(self):
         wrong_identity = bytearray(self.stock)
@@ -345,13 +336,14 @@ class BuildRomTest(unittest.TestCase):
             calibrated = bytearray(target.stock_image.data)
             calibrated[target.map_layout.families[0].canonical_address] ^= 1
             corrupt = bytearray(result.data)
-            corrupt[target.rolling_layout.configuration.start] ^= 0xA5
+            record = (target.rolling_layout or target.telemetry_layout).configuration
+            corrupt[record.start] ^= 0xA5
             cases = {
                 "built image": result.data,
                 "calibrated stock": rom_checksums.recalculate(
                     bytearray(calibrated), target.checksum_layout
                 ),
-                "corrupt Rolling Launch": rom_checksums.recalculate(
+                "corrupt runtime record": rom_checksums.recalculate(
                     corrupt, target.checksum_layout
                 ),
                 "invalid checksum": calibrated,

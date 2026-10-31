@@ -233,9 +233,7 @@ sources. Separate adapters cover both fuel-compensation banks and both warm-idle
 banks. Its limiter atomically publishes two native fuel-cut caps, independent
 eight-point activation and release curves, and the selected throttle scalar.
 Exact pointer redirects feed those RAM shadows to the stock 190-byte hysteresis
-state machine. Rolling Launch runs the stock final-mask coordinator first and
-adds an exact all-cylinder request in an active non-observe state from the
-captured cut until engine speed falls below restore.
+state machine.
 Telemetry uses mailbox 26 and a register-preserving completion wrapper that
 tail-chains to the complete stock ISR.
 
@@ -245,13 +243,12 @@ application-RAM sources. The audited erased ROM envelope is
 `0x00139DC4..0x0013FF00`, of which the runtime claims
 `0x0013B108..0x0013F000`; the audited RAM allocation is
 `0xFFFF0C00..0xFFFF1000`, of which the runtime claims
-`0xFFFF0C00..0xFFFF0F00`. The adapter, limiter, Rolling Launch, and telemetry
-contract equals the 1ND contract. The compiler lays out the bitfield status
+`0xFFFF0C00..0xFFFF0F00`. The adapter, limiter, and telemetry contract equals
+the 1ND contract. The compiler lays out the bitfield status
 bytes of this image independently: the active and armed flags of the native
 fuel-cut state byte are bits 3 and 2, and the MAIN switch bit of the ASCD flag
 byte `0xFFFEB985` is bit 1. Bytes tested through explicit masks keep the 1ND
-layout. Rolling Launch wraps the final-mask coordinator `0x07A740`. Telemetry
-uses mailbox 26 and the same register-preserving completion wrapper.
+layout. Telemetry uses mailbox 26 and the same register-preserving completion wrapper.
 
 The JK78C runtime uses a uniform ROM relocation of `-0xB5600` from the VQ37
 assembly layout and a RAM relocation of `-0x5100`, with explicit nonuniform
@@ -262,8 +259,7 @@ a `0x580`-byte reserve. The audited RAM allocation is
 `0xFFFF0C00..0xFFFF0F00`. Separate adapters cover both fuel-compensation banks
 and both warm-idle banks. The limiter publishes the same native cap, curve, and
 throttle contract as 1ND through JK78C-specific pointers and state bits.
-Rolling Launch wraps the JK78C final-mask coordinator without replacing stock
-inhibit contributions. Telemetry uses mailbox 26 and a register-preserving
+Telemetry uses mailbox 26 and a register-preserving
 completion wrapper that tail-chains to the complete stock ISR.
 
 Every telemetry target binds the knock margin wrapper to its own slice
@@ -457,9 +453,10 @@ range. These static results establish software ownership only; JK78C remains
 
 Without `--profile`, a Rolling Launch-capable target
 uses the conservative built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
-ignition retard disabled. A VQ37 target installs its complete Rolling Launch
-stage with the built-in `observe` profile and no enabled maps. A separate local
-TOML file can enable RPM Hold or bounded-retard mode on any registered family:
+ignition retard disabled. The relocated targets JK00C, JK00D, JK78C, 1ND0A,
+1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in `observe`
+profile with no enabled maps. A separate local TOML file can enable RPM Hold or
+bounded-retard mode on a Rolling Launch-capable family:
 
 ```toml
 schema_version = 2
