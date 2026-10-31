@@ -305,6 +305,25 @@ clear (`0x000294DE..0x0002950C`, `0x00029574..0x000295A2`). It sets
 `0xFFFF8518.bit7` in either case, so the `GR11B` match is serviced even when
 no pin is enabled.
 
+## Interrupt context of dwell arming
+
+The engine-event task table runs inside the crank-tooth interrupt:
+`0x00028EA2` calls task feeder `0x000208F8` at `0x0002983A`, and table index 4
+is timing dispatcher `0x0004E162`, which calls `0x0004DF82` and then
+`0x0004E080`. With stock `ROM8[0x8649] = 0` the secondary command of an
+event is the primary command plus `120 - 0xFFFF237A`, so the dwell scheduled
+at an event belongs to the successor cylinder.
+
+Each countdown slot raises the interrupt mask to 8 before its divider call
+(`0x00029480`) and to 15 from its `GR11B` write through the enable check
+(`0x000294C8..0x00029520`). The recovery at set arming runs its compare write
+and enable under mask 15 from `0x0002932E`. Handler `0x0002AB24` has no caller
+besides its table entry; it saves its registers on entry and returns with
+`RTE`. Handler `0x0002AF38` is the only stock writer of `0xFFFF8511`; the
+crank-tooth handler, `0x0002A892`, `0x0002ACBA` and `0x0002B768` read it. The
+interrupt priorities of the `GR11A` and `GR11B` matches are not established
+here.
+
 ## Dwell sequence guard and recovery
 
 After recomputing `0xFFFF13D1`, handler `0x0002AF38` compares it with the

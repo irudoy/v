@@ -389,39 +389,100 @@ capture and a speed-hold controller take the place of RPM capture, the
 temporary fuel-cut window, and the modes and configuration above. It is a
 design for the `7mfk` layout, and no payload implements it. The other layouts
 receive v2 after its vehicle acceptance on `7mfk`. The speed hold cuts torque
-on the ignition side, and the cut point is not chosen. The fuel-inhibit mask
-through the coordinator wrapper remains the hard limit and the abort path.
-The stock mechanisms are described in `../defs/JK08A.ignition-output.md`, the
-misfire readiness gate in `../defs/JK08A.diagnostics.md`, and the inhibit
-history in `../defs/JK08A.fuel-cut-consumer.md`.
+by withholding the dwell of selected ignition events, and the `GR11A` spark
+handler sets the veto. The fuel-inhibit mask through the coordinator wrapper
+remains the hard limit and the abort path. The stock mechanisms are described
+in `../defs/JK08A.ignition-output.md`, the misfire readiness gate in
+`../defs/JK08A.diagnostics.md`, the inhibit history in
+`../defs/JK08A.fuel-cut-consumer.md`, and the throttle request path in
+`../defs/JK08A.throttle-control.md`.
 
-### Candidate: dwell-start veto
+### Dwell-start veto
 
-A cut event is withheld before its dwell starts. The divider pointer at
-literal `0x000296C0`, which only the two countdown slots of the crank-tooth
-handler `0x00028EA2` load (`0x000294A2`, `0x0002953A`), is redirected to a
-hook. For a cut event the hook sets `0xFFFF8511.bit7` and then tail-calls the
-stock divider `0x00021CE0`. The enable check that follows the call withholds
-the high-byte action, so the coil receives no dwell. The `GR11B` match is
-still serviced: it leaves no pin to time out, and the sequence guard moves
-bit 7 into bit 6, which blocks the recovery at the set arming of that
-cylinder. The `GR11A` match finds the pin high and produces no spark, and both
-output sequences advance as on a fired event.
+A cut event is withheld before its dwell starts. With `0xFFFF8511.bit7` set
+when a countdown slot arms a dwell, the enable check withholds the high-byte
+action, so the coil receives no dwell. The `GR11B` match is still serviced:
+it leaves no pin to time out, and the sequence guard moves bit 7 into bit 6,
+which blocks the recovery at the set arming of that cylinder. The `GR11A`
+match finds the pin high and produces no spark, and both output sequences
+advance as on a fired event.
 
-The veto fails toward a fired event. A `GR11B` match serviced between the hook
-and the enable check consumes bit 7, and the event fires normally, so a lost
-veto never leaves a coil energized. The cam fallback path reads
-`0xFFFF8511` through `0x0002B768`, so the hook passes every event through
-while `0xFFFF24C9.bit6` is set. The hook adds code to every event of the
-crank-tooth interrupt, so it only reads a per-event cut decision and sets the
-bit.
+The veto fails toward a fired event. A dwell armed before the bit is set
+consumes the bit at its `GR11B` service and fires, so a misplaced or late veto
+never leaves a coil energized. Handler `0x0002AF38` is the only stock writer
+of `0xFFFF8511`, so a cut point sets the bit with one `OR.B` on `GBR` or with
+interrupts masked. The cam fallback path reads `0xFFFF8511` through
+`0x0002B768`, so every cut point passes all events through while
+`0xFFFF24C9.bit6` is set.
+
+### Cut point
+
+The veto is set from the `GR11A` spark handler. The table lists it with the
+two alternative points:
+
+| Cut point | Veto delivery | Authority | Decision latency | Patch footprint |
+| --- | --- | --- | --- | --- |
+| Spark handler (chosen): table entry `0x000202E4` redirected to a wrapper that branches to `0x0002AB24` | No `GR11B` match falls between a spark and the dwell start of its successor, so the veto reaches the dwell of the successor that the handler writes to `0xFFFF13D3`. Above about 110 degrees of dwell the successor can be armed before the spark, and that event fires. | Every event | The preceding spark, 120 crank degrees before the target spark | One table word and a wrapper in the `GR11A` interrupt |
+| Countdown divider: literal `0x000296C0` redirected to a wrapper that tail-calls `0x00021CE0` | A `GR11B` match with priority above 8 can preempt between the wrapper and the mask-15 section, and that event fires. | Every event | The arming tooth, within 10 degrees of the dwell start | One literal word and a wrapper in the crank-tooth interrupt, run at every countdown expiry |
+| Ignition hook `0x0004E198` | The veto reaches the next dwell that a countdown arms, of the current cylinder or its successor. A dwell already armed consumes it, and that event fires. | Depends on the spark and dwell angles | The event tooth | The existing ignition adapter; no new hook |
+
+All three points use the same stock veto, so the open hardware questions are
+the same: the absence of a spark at the coil on a vetoed event, the behavior
+of the igniter driver stage with a withheld dwell, the A/F sensors and closed
+loop with unburned charge in the exhaust, and the misfire monitor gating on
+the vehicle. The interrupt priorities of the `GR11A` and
+`GR11B` matches are not established; a spark handler delayed past the arming
+of the next dwell meets the same edge case as a large dwell angle.
+
+The spark handler uses the same stock veto and failure direction as the
+countdown divider, adds no code to the crank-tooth interrupt, has no `GR11B`
+service in its veto window, and redirects the table entry of a handler that
+has no other caller. The countdown divider is not used because a `GR11B`
+match with priority above 8 can take its veto inside the crank-tooth
+interrupt. The ignition hook is not used because its authority depends on the
+spark and dwell angles. The edge case of the spark handler needs a dwell
+angle above about 110 degrees, and a log of `0xFFFF237A` over the hold range
+shows whether the hold reaches it.
+
+### Torque paths outside the ignition cut
+
+The stock rotational-speed request limiter reaches the throttle plates of
+both banks through the signed-request arbitration at the 10.24 ms cadence, and
+the vehicle has held engine speed with it. As a hold actuator it has full
+authority and keeps every cylinder firing at its normal mixture, so the
+misfire monitor and the exhaust see no cut. The actual-torque word follows the
+reduced airflow, and the release waits for the plates to open and the manifold
+to fill; plate response time is unmeasured. The v2 design excludes throttle
+control.
+
+The transmission reduction request of frame `0x177` reaches the timing path
+only: `0xFFFF3373` -> `0xFFFF1866` -> `0xFFFF1870` -> `0x00065270` ->
+`0xFFFF186A` -> `0x00063F30` -> `0xFFFF23C2` -> `0x0004D99C`. Its authority is
+the retard authority of the spark-efficiency pair `0x00011D24`/`0x0001199E`,
+which is below the reduction that a hold needs, so it serves the retard trim
+rather than the cut.
+
+Handler `0x000C4D08` decodes frame `0x1A5` into a 12-bit value with a rolling
+counter, and `0x00079824` stores `raw * 5 - 4000` in `0xFFFF27F4` with status
+bits in `0xFFFF4197` and `0xFFFF4198`. No reader of `0xFFFF27F4` is present
+in the exported code, and no consumer of the decoded value is identified, so
+no stock torque request from the chassis controller is established.
 
 ### Rejected mechanisms
 
 Omitting a compare is not a safe cut. A skipped set compare ends in a late
 spark forced by the dwell timeout, a skipped reset compare ends in a
 short-dwell spark from the recovery, and a cleared `0xFFFF13D1` trips the
-sequence guard, which also withholds the following cylinder.
+sequence guard, which also withholds the following cylinder. The immobilizer
+inhibit `0xFFFF4198.bit1` forces `0xFFFF13D1` to zero, so it fails the same
+way on a single event.
+
+The other stock enable conditions of the arming are not cut points.
+`0xFFFF84EA.bit7` and `0xFFFF13D2` are state of the crank-tooth and capture
+handlers. `0xFFFF4185.bit7` is the debounced port input that the stock
+debouncer `0x00038618` rewrites and that the fuel schedule also reads. The
+dwell angle `0xFFFF237A` is a periodic snapshot with a stock range of 0..114
+degrees and cannot express a per-event cut.
 
 The fuel-inhibit mask is not the speed-hold actuator. With single-channel
 injection events, a change of a partial mask acts on each channel at its next
@@ -431,13 +492,6 @@ post-cut enrichment keys off the DFCO state; the publisher `0x000556EC` reacts
 only to the full mask `0x3F`. Closed-loop trims do not read the mask and keep
 correcting while cylinders are cut. At high cut fractions the wall film of a
 cut port evaporates and must rebuild when the cylinder resumes.
-
-### Open cut points
-
-The choice between the veto and cut points outside the crank-tooth interrupt
-is open. The candidates are a veto state that background code sets for the
-next event, a stock condition under which the arming path withholds dwell,
-and the stock transmission torque-reduction path through `0x00065270`.
 
 ### Misfire monitor gating
 
