@@ -85,8 +85,8 @@ loads this byte curve in r4 with axis 000144ea (r5) and byte fffe8195 for \
 call 4 of 4 at 000a9fc6 (jolly-guan); the result is multiplied by 13 and \
 limited by four times a ROM word, as MOV.L jk78c:000919ac loads 000141c8 \
 with axis 000141b8 and byte ffff11a3 for call 3 of 3 at 000919b4 \
-(brilliant-ibis). Stock bytes differ from JK78C and are equal on 1ND and \
-1ME3B."""
+(brilliant-ibis). Stock bytes differ from JK78C and equal 1ND0A; 1ND3B stock \
+bytes equal JK78C."""
 
 [[symbol]]
 layout = "1nd"
@@ -105,8 +105,8 @@ loads this byte curve in r4 with axis 0001465e (r5) and byte fffe81ad for \
 call 4 of 4 at 000a3b36 (brilliant-ibis); the result is multiplied by 13 and \
 limited by four times a ROM word, as MOV.L jk78c:000919ac loads 000141c8 \
 with axis 000141b8 and byte ffff11a3 for call 3 of 3 at 000919b4 \
-(brilliant-ibis). Stock bytes differ from JK78C and are equal on 1ND and \
-1ME3B."""
+(brilliant-ibis). 1ND0A stock bytes differ from JK78C and equal 1ME3B; 1ND3B \
+stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "7mfk"

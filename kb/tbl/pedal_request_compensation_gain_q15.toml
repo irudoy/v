@@ -108,8 +108,8 @@ calls in the same order and end with the gain lookup before the cap at \
 (r6) and 00016294 (r5) for call 6 of 6 at 000ade02 (glorious-elk), as MOV.L \
 jk78c:000949e6 loads 00011cce with axes 00015d12 (r6) and 00015d22 (r5, \
 formed as 00015d12 + 0x10) for call 6 of 6 at 000949f4 \
-(nondescript-seagull). Stock words differ from JK78C and are equal on 1ND \
-and 1ME3B."""
+(nondescript-seagull). Stock words differ from JK78C and equal 1ND0A; 1ND3B \
+stock words equal JK78C."""
 
 [[symbol]]
 layout = "1nd"
@@ -127,8 +127,8 @@ calls in the same order and end with the gain lookup before the cap at \
 (r6) and 000162f0 (r5) for call 6 of 6 at 000a77ee (nondescript-seagull), as \
 MOV.L jk78c:000949e6 loads 00011cce with axes 00015d12 (r6) and 00015d22 \
 (r5, formed as 00015d12 + 0x10) for call 6 of 6 at 000949f4 \
-(nondescript-seagull). Stock words differ from JK78C and are equal on 1ND \
-and 1ME3B."""
+(nondescript-seagull). 1ND0A stock words differ from JK78C and equal 1ME3B; \
+1ND3B stock words equal JK78C."""
 
 [[symbol]]
 layout = "7mfk"
