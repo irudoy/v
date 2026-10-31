@@ -106,6 +106,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b1e"
+name = "purple-pogona"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006fcb2"
+to = "jk78c:000138e0"
+note = """
+Target reader 0006fc68 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006fcb2 loads this table for call 1 of 2 at \
+0006fcb6 (rigorous-kiwi), as MOV.L jk78c:00060b80 loads 000138e0 for call 1 \
+of 2 at 00060b88 (sly-tuna). Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d12"
+name = "adamant-pudu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b8aa"
+to = "jk78c:000138e0"
+note = """
+Target reader 0006b860 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006b8aa loads this table for call 1 of 2 at \
+0006b8ae (sly-tuna), as MOV.L jk78c:00060b80 loads 000138e0 for call 1 of 2 \
+at 00060b88 (sly-tuna). Its 16 stock bytes equal JK78C on 1ND3B and differ \
+on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000122d2"
 name = "notorious-lyrebird"

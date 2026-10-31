@@ -1,4 +1,40 @@
 [[symbol]]
+layout = "1me3b"
+address = "000146c2"
+name = "saffron-kangaroo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c304"
+to = "jk78c:00014378"
+note = """
+Target reader 0006c2c8 corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006c304 loads this table for call 2 of 2 at \
+0006c30a (jolly-guan), as MOV.L jk78c:0005daae loads 00014378 for call 2 of \
+3 at 0005dab4 (brilliant-ibis). The JK78C extent is not recorded, so stock \
+bytes are not compared."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001480e"
+name = "pumpkin-alpaca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068028"
+to = "jk78c:00014378"
+note = """
+Target reader 00067fec corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 00068028 loads this table for call 2 of 2 at \
+0006802e (brilliant-ibis), as MOV.L jk78c:0005daae loads 00014378 for call 2 \
+of 3 at 0005dab4 (brilliant-ibis). The JK78C extent is not recorded, so \
+stock bytes are not compared."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013006"
 name = "strict-pronghorn"

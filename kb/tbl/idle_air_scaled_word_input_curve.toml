@@ -20,6 +20,40 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014018"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00069bd8"
+to = "jk78c:00013d56"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00069bd8 loads this table for call \
+16 of 21 at 00069bdc (dfco_lookup), as MOV.L jk78c:0005c052 loads 00013d56 \
+for call 17 of 20 at 0005c056 (dfco_lookup). Its 16 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000141e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000655ec"
+to = "jk78c:00013d56"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 000655ec loads this table for call \
+15 of 20 at 000655f0 (dfco_lookup), as MOV.L jk78c:0005c052 loads 00013d56 \
+for call 17 of 20 at 0005c056 (dfco_lookup). Its 16 stock bytes equal JK78C \
+on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013d56"
 level = "code"

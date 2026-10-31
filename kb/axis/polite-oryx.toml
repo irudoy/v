@@ -18,6 +18,40 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "000164c4"
+name = "silver-elephant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006fcae"
+to = "jk78c:00015f02"
+note = """
+Target reader 0006fc68 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006fcae loads this axis for call 1 of 2 at \
+0006fcb6 (rigorous-kiwi), as MOV.L jk78c:00060b84 loads 00015f02 for call 1 \
+of 2 at 00060b88 (sly-tuna). Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016520"
+name = "icy-marmot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b8a6"
+to = "jk78c:00015f02"
+note = """
+Target reader 0006b860 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006b8a6 loads this axis for call 1 of 2 at \
+0006b8ae (sly-tuna), as MOV.L jk78c:00060b84 loads 00015f02 for call 1 of 2 \
+at 00060b88 (sly-tuna). Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014d2a"
 name = "polite-oryx"

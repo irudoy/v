@@ -69,6 +69,42 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014502"
+name = "bronze-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f93a"
+to = "jk78c:000141d0"
+note = """
+Target reader 0006f7b6 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006f93a loads this table for call 3 of 5 at 0006f940 (dfco_lookup), as \
+MOV.L jk78c:00060846 loads 000141d0 for call 3 of 3 at 0006084c \
+(dfco_lookup). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014676"
+name = "nostalgic-iguana"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b532"
+to = "jk78c:000141d0"
+note = """
+Target reader 0006b3b4 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006b532 loads this table for call 3 of 5 at 0006b538 (dfco_lookup), as \
+MOV.L jk78c:00060846 loads 000141d0 for call 3 of 3 at 0006084c \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012dd2"
 name = "solid-peccary"

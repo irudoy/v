@@ -47,6 +47,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000138f6"
+name = "tiny-mayfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006eb94"
+to = "jk78c:000136d8"
+note = """
+Target reader 0006ea7c corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006eb94 loads this table for call 2 of 8 at 0006eb98 (dfco_lookup), as \
+MOV.L jk78c:0005fc32 loads 000136d8 for call 1 of 6 at 0005fc36 \
+(dfco_lookup). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b0a"
+name = "gabby-raccoon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006a7dc"
+to = "jk78c:000136d8"
+note = """
+Target reader 0006a738 corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006a7dc loads this table for call 1 of 6 at 0006a7e0 (dfco_lookup), as \
+MOV.L jk78c:0005fc32 loads 000136d8 for call 1 of 6 at 0005fc36 \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012042"
 name = "burrowing-dormouse"

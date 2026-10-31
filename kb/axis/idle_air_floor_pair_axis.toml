@@ -16,6 +16,40 @@ points = 16
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015866"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006ee14"
+to = "jk78c:000154ec"
+note = """
+Target reader 0006ea7c corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006ee14 loads this axis for call 5 of 8 at 0006ee20 (rigorous-kiwi), as \
+MOV.L jk78c:0005febe loads 000154ec for call 3 of 6 at 0005fec4 (sly-tuna). \
+Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015a12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006aa1a"
+to = "jk78c:000154ec"
+note = """
+Target reader 0006a738 corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006aa1a loads this axis for call 3 of 6 at 0006aa28 (sly-tuna), as MOV.L \
+jk78c:0005febe loads 000154ec for call 3 of 6 at 0005fec4 (sly-tuna). Its 32 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000154ec"
 level = "code"

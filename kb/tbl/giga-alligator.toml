@@ -24,6 +24,42 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013db6"
+name = "hidden-rat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006813a"
+to = "jk78c:00013b90"
+note = """
+Target reader 00067f5c corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 0006813a loads \
+this table for call 3 of 11 at 00068140 (jolly-guan), as MOV.L \
+jk78c:0005ac54 loads 00013b90 for call 5 of 12 at 0005acb2 (brilliant-ibis). \
+Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013fd2"
+name = "natural-lionfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00063b66"
+to = "jk78c:00013b90"
+note = """
+Target reader 00063964 corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 00063b66 loads \
+this table for call 3 of 11 at 00063b6c (brilliant-ibis), as MOV.L \
+jk78c:0005ac54 loads 00013b90 for call 5 of 12 at 0005acb2 (brilliant-ibis). \
+Its 8 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000125b2"
 name = "giga-alligator"

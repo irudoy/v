@@ -36,6 +36,43 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014108"
+name = "fuzzy-owl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c76c"
+to = "jk78c:00013e1e"
+note = """
+Target reader 0006c3e0 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 0006c76c loads this table for call 7 of 9 at 0006c774 (magic-grouse), \
+as MOV.L jk78c:0005df36 loads 00013e1e for call 7 of 9 at 0005df40 \
+(hypnotic-dugong). Its 4 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142ac"
+name = "tacky-partridge"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068492"
+to = "jk78c:00013e1e"
+note = """
+Target reader 00068104 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 00068492 loads this table for call 7 of 9 at 0006849a \
+(hypnotic-dugong), as MOV.L jk78c:0005df36 loads 00013e1e for call 7 of 9 at \
+0005df40 (hypnotic-dugong). Its 4 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001292c"
 name = "curious-cuttlefish"

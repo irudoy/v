@@ -88,6 +88,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015ed4"
+name = "elegant-porpoise"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006fbc8"
+to = "jk78c:00015a22"
+note = """
+Target reader 0006fbb4 corresponds to JK78C reader 00060aa8 \
+(idle_opening_area_builder): both read one word curve and then a word curve \
+with its axis. MOV.L 0006fbc8 loads this table for call 1 of 2 at 0006fbca \
+(fresh-seal), as MOV.L jk78c:00060ab4 loads 00015a22 for call 1 of 2 at \
+00060ac0 (dramatic-okapi). Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016010"
+name = "colossal-nuthatch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b7c0"
+to = "jk78c:00015a22"
+note = """
+Target reader 0006b7ac corresponds to JK78C reader 00060aa8 \
+(idle_opening_area_builder): both read one word curve and then a word curve \
+with its axis. MOV.L 0006b7c0 loads this table for call 1 of 2 at 0006b7c2 \
+(dramatic-okapi), as MOV.L jk78c:00060ab4 loads 00015a22 for call 1 of 2 at \
+00060ac0 (dramatic-okapi). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001465a"
 name = "neat-dalmatian"

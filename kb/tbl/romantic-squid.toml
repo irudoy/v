@@ -1,4 +1,40 @@
 [[symbol]]
+layout = "1me3b"
+address = "00017686"
+name = "glossy-butterfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c2e4"
+to = "jk78c:00016fc4"
+note = """
+Target reader 0006c2c8 corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006c2e4 loads this table for call 1 of 2 at \
+0006c2ea (glorious-elk), as MOV.L jk78c:0005da96 loads 00016fc4 for call 1 \
+of 3 at 0005da9c (nondescript-seagull). The JK78C extent is not recorded, so \
+stock bytes are not compared."""
+
+[[symbol]]
+layout = "1nd"
+address = "000175c2"
+name = "red-nyala"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068008"
+to = "jk78c:00016fc4"
+note = """
+Target reader 00067fec corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 00068008 loads this table for call 1 of 2 at \
+0006800e (nondescript-seagull), as MOV.L jk78c:0005da96 loads 00016fc4 for \
+call 1 of 3 at 0005da9c (nondescript-seagull). The JK78C extent is not \
+recorded, so stock bytes are not compared."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015d40"
 name = "romantic-squid"

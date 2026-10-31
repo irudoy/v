@@ -115,6 +115,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b7e"
+name = "wisteria-crab"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006e86e"
+to = "jk78c:00013958"
+note = """
+Target reader 0006e7a4 corresponds to JK78C reader 0005f95c \
+(sceptical-dingo): both read two adjacent curves, the second eight bytes \
+above the first, through the byte-axis lookup. MOV.L 0006e86e loads this \
+table for call 1 of 2 at 0006e874 (idle_ignition_lookup), as JK78C forms \
+00013958 as 00013950 + 0x8 at jk78c:0005fa40 for call 1 of 2 at 0005fa42 \
+(idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d8a"
+name = "icy-hare"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006a61e"
+to = "jk78c:00013958"
+note = """
+Target reader 0006a554 corresponds to JK78C reader 0005f95c \
+(sceptical-dingo): both read two adjacent curves, the second eight bytes \
+above the first, through the byte-axis lookup. MOV.L 0006a61e loads this \
+table for call 1 of 2 at 0006a624 (idle_ignition_lookup), as JK78C forms \
+00013958 as 00013950 + 0x8 at jk78c:0005fa40 for call 1 of 2 at 0005fa42 \
+(idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001234a"
 name = "quaint-lion"

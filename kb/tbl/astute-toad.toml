@@ -62,6 +62,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013872"
+name = "fine-panda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f4ac"
+to = "jk78c:00013684"
+note = """
+Target reader 0006f308 corresponds to JK78C reader 00060474 \
+(honest-pheasant): both read one curve twice through the byte lookup. MOV.L \
+0006f4ac loads this table for call 2 of 3 at 0006f4b4 (dfco_lookup), as \
+MOV.L jk78c:000605ea loads 00013684 for call 2 of 3 at 000605f0 \
+(dfco_lookup). Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013a96"
+name = "military-tapir"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b0ac"
+to = "jk78c:00013684"
+note = """
+Target reader 0006af08 corresponds to JK78C reader 00060474 \
+(honest-pheasant): both read one curve twice through the byte lookup. MOV.L \
+0006b0ac loads this table for call 2 of 3 at 0006b0b4 (dfco_lookup), as \
+MOV.L jk78c:000605ea loads 00013684 for call 2 of 3 at 000605f0 \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011ff6"
 name = "astute-toad"

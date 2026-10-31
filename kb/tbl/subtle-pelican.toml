@@ -1,4 +1,40 @@
 [[symbol]]
+layout = "1me3b"
+address = "00013559"
+name = "slim-jaybird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f270"
+to = "jk78c:0001345b"
+note = """
+Target reader 0006ef14 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006f270 \
+loads this table for call 5 of 6 at 0006f278 (jolly-guan), as MOV.L \
+jk78c:0006035a loads 0001345b for call 8 of 9 at 0006035e (brilliant-ibis). \
+The JK78C extent is not recorded, so stock bytes are not compared."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013805"
+name = "berserk-auk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006ae6a"
+to = "jk78c:0001345b"
+note = """
+Target reader 0006ab04 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006ae6a \
+loads this table for call 5 of 6 at 0006ae72 (brilliant-ibis), as MOV.L \
+jk78c:0006035a loads 0001345b for call 8 of 9 at 0006035e (brilliant-ibis). \
+The JK78C extent is not recorded, so stock bytes are not compared."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011d04"
 name = "subtle-pelican"

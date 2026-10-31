@@ -89,6 +89,43 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b76"
+name = "feathered-oarfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006e882"
+to = "jk78c:00013950"
+note = """
+Target reader 0006e7a4 corresponds to JK78C reader 0005f95c \
+(sceptical-dingo): both read two adjacent curves, the second eight bytes \
+above the first, through the byte-axis lookup. MOV.L 0006e882 loads this \
+table for call 2 of 2 at 0006e888 (idle_ignition_lookup), as MOV.L \
+jk78c:0005fa3a loads 00013950 for call 1 of 2 at 0005fa42 \
+(idle_ignition_lookup). Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d82"
+name = "taupe-grebe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006a632"
+to = "jk78c:00013950"
+note = """
+Target reader 0006a554 corresponds to JK78C reader 0005f95c \
+(sceptical-dingo): both read two adjacent curves, the second eight bytes \
+above the first, through the byte-axis lookup. MOV.L 0006a632 loads this \
+table for call 2 of 2 at 0006a638 (idle_ignition_lookup), as MOV.L \
+jk78c:0005fa3a loads 00013950 for call 1 of 2 at 0005fa42 \
+(idle_ignition_lookup). Its 8 stock bytes differ from JK78C on 1ND0A and \
+1ND3B and agree between them."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012342"
 name = "maize-cuttlefish"

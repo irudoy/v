@@ -76,6 +76,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013fa8"
+name = "bold-gecko"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00067e28"
+to = "jk78c:00013cf6"
+note = """
+Target reader 00067bf8 corresponds to JK78C reader 0005a71a \
+(cyan-pronghorn): both run five byte lookups in the same table order. MOV.L \
+00067e28 loads this table for call 4 of 8 at 00067e2e (dfco_lookup), as \
+MOV.L jk78c:0005a938 loads 00013cf6 for call 4 of 8 at 0005a940 \
+(dfco_lookup). Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014174"
+name = "qualified-dodo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00063886"
+to = "jk78c:00013cf6"
+note = """
+Target reader 00063680 corresponds to JK78C reader 0005a71a \
+(cyan-pronghorn): both run five byte lookups in the same table order. MOV.L \
+00063886 loads this table for call 3 of 7 at 0006388e (dfco_lookup), as \
+MOV.L jk78c:0005a938 loads 00013cf6 for call 4 of 8 at 0005a940 \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012798"
 name = "loud-squid"

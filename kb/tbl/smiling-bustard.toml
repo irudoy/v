@@ -149,6 +149,32 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0005f774"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00013db6"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C reader 0005f710 reads this curve through the byte-axis lookup and is \
+called by the dispatcher 0005ea58. The target dispatcher (1nd 00069210, \
+1me3b 0006d348) calls a different set of functions, and none of them reads a \
+curve through the byte-axis lookup; no target absence is asserted."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00013db6"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+JK78C reader 0005f710 reads this curve through the byte-axis lookup and is \
+called by the dispatcher 0005ea58. The target dispatcher (1nd 00069210, \
+1me3b 0006d348) calls a different set of functions, and none of them reads a \
+curve through the byte-axis lookup; no target absence is asserted."""
+
 [[link]]
 type = "index"
 to = "saffron-manul/ram"

@@ -19,6 +19,44 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013f98"
+name = "defiant-junglefowl"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006d140"
+to = "jk78c:00013ce6"
+note = """
+Target reader 0006d03c corresponds to JK78C reader 0005e88c (vivid-peacock): \
+both select one of four tables, which lie 0x10, 0x20, 0x30 and 0x40 above \
+the byte axis, by a state condition and bit 3 of a ROM option byte: the 1D \
+lookup without the option and the axis lookup with it. MOV.L 0006d140 loads \
+this axis for call 5 of 9 at 0006d146 (groovy-lynx), as JK78C loads 00013ce6 \
+into GBR at jk78c:0005e890 and passes it as the axis of both axis lookups. \
+Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014164"
+name = "robust-guan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00069008"
+to = "jk78c:00013ce6"
+note = """
+Target reader 00068f04 corresponds to JK78C reader 0005e88c (vivid-peacock): \
+both select one of four tables, which lie 0x10, 0x20, 0x30 and 0x40 above \
+the byte axis, by a state condition and bit 3 of a ROM option byte: the 1D \
+lookup without the option and the axis lookup with it. MOV.L 00069008 loads \
+this axis for call 5 of 9 at 0006900e (fortunate-adder), as JK78C loads \
+00013ce6 into GBR at jk78c:0005e890 and passes it as the axis of both axis \
+lookups. Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012778"
 name = "hopeful-turtle"

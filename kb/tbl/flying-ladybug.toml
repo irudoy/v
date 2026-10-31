@@ -108,6 +108,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000142d2"
+name = "thick-dugong"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006b762"
+to = "jk78c:00013fc8"
+note = """
+Target reader 0006b750 corresponds to JK78C reader 0005d068 \
+(opalescent-mushroom): both read one curve through the byte-axis lookup and \
+then call the counterpart of JK78C 0005b418. MOV.L 0006b762 loads this table \
+for call 1 of 2 at 0006b768 (idle_ignition_lookup), as MOV.L jk78c:0005d074 \
+loads 00013fc8 for call 1 of 2 at 0005d07a (idle_ignition_lookup). Its 8 \
+stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014466"
+name = "pumpkin-cat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006748c"
+to = "jk78c:00013fc8"
+note = """
+Target reader 0006747a corresponds to JK78C reader 0005d068 \
+(opalescent-mushroom): both read one curve through the byte-axis lookup and \
+then call the counterpart of JK78C 0005b418. MOV.L 0006748c loads this table \
+for call 1 of 2 at 00067492 (idle_ignition_lookup), as MOV.L jk78c:0005d074 \
+loads 00013fc8 for call 1 of 2 at 0005d07a (idle_ignition_lookup). Its 8 \
+stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012afa"
 name = "flying-ladybug"

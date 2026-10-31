@@ -68,6 +68,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014462"
+name = "singing-angelfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f28c"
+to = "jk78c:00014130"
+note = """
+Target reader 0006ef14 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006f28c \
+loads this table for call 6 of 6 at 0006f290 (jolly-guan), as MOV.L \
+jk78c:00060376 loads 00014130 for call 9 of 9 at 0006037e (brilliant-ibis). \
+Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000145d6"
+name = "invisible-foxhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006ae88"
+to = "jk78c:00014130"
+note = """
+Target reader 0006ab04 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006ae88 \
+loads this table for call 6 of 6 at 0006ae8c (brilliant-ibis), as MOV.L \
+jk78c:00060376 loads 00014130 for call 9 of 9 at 0006037e (brilliant-ibis). \
+Its 8 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d0a"
 name = "nimble-hornet"

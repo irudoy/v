@@ -98,6 +98,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014154"
+name = "quick-gaur"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006d242"
+to = "jk78c:00013e52"
+note = """
+Target reader 0006d23c corresponds to JK78C reader 0005e944 \
+(burrowing-peccary): both read one curve through the byte-axis lookup. MOV.L \
+0006d242 loads this table for call 1 of 2 at 0006d248 \
+(idle_ignition_lookup), as MOV.L jk78c:0005e94a loads 00013e52 for call 1 of \
+2 at 0005e950 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142e8"
+name = "spiritual-bittern"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006910a"
+to = "jk78c:00013e52"
+note = """
+Target reader 00069104 corresponds to JK78C reader 0005e944 \
+(burrowing-peccary): both read one curve through the byte-axis lookup. MOV.L \
+0006910a loads this table for call 1 of 2 at 00069110 \
+(idle_ignition_lookup), as MOV.L jk78c:0005e94a loads 00013e52 for call 1 of \
+2 at 0005e950 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001296c"
 name = "scrupulous-yak"

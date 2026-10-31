@@ -88,6 +88,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013f58"
+name = "provocative-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00069466"
+to = "jk78c:00013ca6"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00069466 loads this table for call \
+9 of 21 at 00069468 (dfco_lookup), as MOV.L jk78c:0005ba94 loads 00013ca6 \
+for call 9 of 20 at 0005ba96 (0005b3d4). Its 16 stock bytes differ from \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014124"
+name = "quantum-barnacle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00064e7a"
+to = "jk78c:00013ca6"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00064e7a loads this table for call \
+8 of 20 at 00064e7c (dfco_lookup), as MOV.L jk78c:0005ba94 loads 00013ca6 \
+for call 9 of 20 at 0005ba96 (0005b3d4). Its 16 stock bytes equal JK78C on \
+1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012738"
 name = "unique-spider"

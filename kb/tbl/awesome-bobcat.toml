@@ -38,6 +38,23 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000140dc"
+name = "hilarious-buffalo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006386a"
+to = "jk78c:00013c72"
+note = """
+Target reader 00063680 corresponds to JK78C reader 0005a71a \
+(cyan-pronghorn): both run five byte lookups in the same table order. MOV.L \
+0006386a loads this table for call 2 of 7 at 00063870 (dfco_lookup), as \
+MOV.L jk78c:0005a90a loads 00013c72 for call 3 of 8 at 0005a916 \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012704"
 name = "awesome-bobcat"
@@ -94,6 +111,19 @@ loaded at 0x5A90A. Stock values differ from JK08A 0x12704."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005a90a"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00013c72"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+1me3b reader 00067bf8 reads 00013f00 at the position of this curve through \
+another lookup, 0002aa98, and the 1ME3B census records 00013f00 as a \
+32-point byte curve against 16 points on JK78C and 1ND; the correspondence \
+needs the lookup semantics. No target absence is asserted."""
 
 [[link]]
 type = "reader"

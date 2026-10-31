@@ -72,6 +72,43 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001411c"
+name = "lush-coucal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006cec8"
+to = "jk78c:00013e32"
+note = """
+Target reader 0006c3e0 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 0006cec8 loads this table for call 8 of 9 at 0006cece \
+(idle_ignition_lookup), as MOV.L jk78c:0005e76e loads 00013e32 for call 8 of \
+9 at 0005e776 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142c0"
+name = "psychedelic-oarfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068cce"
+to = "jk78c:00013e32"
+note = """
+Target reader 00068104 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 00068cce loads this table for call 8 of 9 at 00068cd2 \
+(idle_ignition_lookup), as MOV.L jk78c:0005e76e loads 00013e32 for call 8 of \
+9 at 0005e776 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012944"
 name = "watchful-pegasus"

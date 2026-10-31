@@ -102,6 +102,24 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1nd"
+address = "00014562"
+name = "cuddly-pogona"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000648dc"
+to = "jk78c:000140bc"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 000648dc loads this table for call \
+1 of 20 at 000648e0 (idle_ignition_lookup), as MOV.L jk78c:0005b43e loads \
+000140bc for call 1 of 20 at 0005b44c (idle_ignition_lookup). Its 8 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012c66"
 name = "colorful-dormouse"
@@ -228,6 +246,19 @@ Stock values differ from JK08A 0x12C66."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005b43e"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000140bc"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C reader 0005b418 and 1nd reader 000648a4 start with one byte lookup of \
+this curve. 1me3b reader 00068e74 starts with two 2D lookups of 00013b96 and \
+000139fe over axis 00013458 instead, so no single 1me3b table takes the \
+role; no target absence is asserted."""
 
 [[link]]
 type = "index"

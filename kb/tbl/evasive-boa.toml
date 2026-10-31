@@ -20,3 +20,31 @@ loaded at 0x5AEF6, 0x5AF06."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005aef6"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00016ff4"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C reader 0005aa84 reads 0001605a and 00015e72 over the single axis table \
+00016ff4. Target reader 00067f5c reads 0001663c and 00016434 over axis \
+000176c6 and 0001662c and 00016424 over axis 00017696. Assigning the JK78C \
+pair needs the correspondence of the output words; no target absence is \
+asserted."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00016ff4"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+JK78C reader 0005aa84 reads 0001605a and 00015e72 over the single axis table \
+00016ff4. Target reader 00063964 reads 00016658 and 00016490 over axis \
+00017602 and 00016648 and 00016480 over axis 000175d2. Assigning the JK78C \
+pair needs the correspondence of the output words; no target absence is \
+asserted."""

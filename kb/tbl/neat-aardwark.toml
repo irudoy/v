@@ -1,4 +1,41 @@
 [[symbol]]
+layout = "1me3b"
+address = "00013ab6"
+name = "jovial-bulldog"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f8ec"
+to = "jk78c:00013878"
+note = """
+Target reader 0006f7b6 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006f8ec loads this table for call 1 of 5 at 0006f8f4 (jolly-guan), as MOV.L \
+jk78c:000607c6 loads 00013878 for call 1 of 3 at 000607ca (brilliant-ibis). \
+The JK78C extent is not recorded, so stock bytes are not compared."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013caa"
+name = "micro-earthworm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b4e4"
+to = "jk78c:00013878"
+note = """
+Target reader 0006b3b4 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006b4e4 loads this table for call 1 of 5 at 0006b4ec (brilliant-ibis), as \
+MOV.L jk78c:000607c6 loads 00013878 for call 1 of 3 at 000607ca \
+(brilliant-ibis). The JK78C extent is not recorded, so stock bytes are not \
+compared."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001223a"
 name = "neat-aardwark"

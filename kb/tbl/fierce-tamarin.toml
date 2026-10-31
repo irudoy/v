@@ -38,6 +38,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015ef4"
+name = "gray-cheetah"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006fbd6"
+to = "jk78c:00015a42"
+note = """
+Target reader 0006fbb4 corresponds to JK78C reader 00060aa8 \
+(idle_opening_area_builder): both read one word curve and then a word curve \
+with its axis. MOV.L 0006fbd6 loads this table for call 2 of 2 at 0006fbda \
+(debonair-grouse), as MOV.L jk78c:00060acc loads 00015a42 for call 2 of 2 at \
+00060ad2 (eminent-lynx). Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016030"
+name = "practical-vicugna"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b7ce"
+to = "jk78c:00015a42"
+note = """
+Target reader 0006b7ac corresponds to JK78C reader 00060aa8 \
+(idle_opening_area_builder): both read one word curve and then a word curve \
+with its axis. MOV.L 0006b7ce loads this table for call 2 of 2 at 0006b7d2 \
+(eminent-lynx), as MOV.L jk78c:00060acc loads 00015a42 for call 2 of 2 at \
+00060ad2 (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001469a"
 name = "fierce-tamarin"

@@ -16,6 +16,40 @@ points = 8
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015326"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00068226"
+to = "jk78c:00014f7c"
+note = """
+Target reader 00067f5c corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 00068226 loads \
+this axis for call 5 of 11 at 0006822c (astonishing-teal), as MOV.L \
+jk78c:0005ad72 loads 00014f7c for call 7 of 12 at 0005ad7e (jasmine-lizard). \
+Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000154b2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00063ca8"
+to = "jk78c:00014f7c"
+note = """
+Target reader 00063964 corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 00063ca8 loads \
+this axis for call 5 of 11 at 00063cae (jasmine-lizard), as MOV.L \
+jk78c:0005ad72 loads 00014f7c for call 7 of 12 at 0005ad7e (jasmine-lizard). \
+Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00014f7c"
 level = "code"

@@ -15,6 +15,39 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014164"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006fec0"
+to = "jk78c:00013e62"
+note = """
+Target reader 0006fc68 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006fec0 loads this axis for call 2 of 2 at \
+0006fec6 (jolly-guan), as MOV.L jk78c:00060d86 loads 00013e62 for call 2 of \
+2 at 00060d8a (brilliant-ibis). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006bab4"
+to = "jk78c:00013e62"
+note = """
+Target reader 0006b860 corresponds to JK78C reader 00060b44 \
+(solid-jaguarundi): both run the word-axis lookup and then the 2D lookup \
+with its byte axis. MOV.L 0006bab4 loads this axis for call 2 of 2 at \
+0006baba (brilliant-ibis), as MOV.L jk78c:00060d86 loads 00013e62 for call 2 \
+of 2 at 00060d8a (brilliant-ibis). Its 8 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013e62"
 level = "code"

@@ -96,6 +96,43 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b6e"
+name = "raspberry-coot"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f8ee"
+to = "jk78c:00013948"
+note = """
+Target reader 0006f7b6 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006f8ee loads this table for call 1 of 5 at 0006f8f4 (jolly-guan), as MOV.L \
+jk78c:000607c4 loads 00013948 for call 1 of 3 at 000607ca (brilliant-ibis). \
+Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d7a"
+name = "fine-worm"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b4e6"
+to = "jk78c:00013948"
+note = """
+Target reader 0006b3b4 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006b4e6 loads this table for call 1 of 5 at 0006b4ec (brilliant-ibis), as \
+MOV.L jk78c:000607c4 loads 00013948 for call 1 of 3 at 000607ca \
+(brilliant-ibis). Its 8 stock bytes differ from JK78C on 1ND0A and 1ND3B and \
+agree between them."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001233a"
 name = "archetypal-herring"

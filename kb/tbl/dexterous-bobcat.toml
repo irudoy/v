@@ -96,6 +96,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013f68"
+name = "aspiring-elk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000694f2"
+to = "jk78c:00013cb6"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 000694f2 loads this table for call \
+10 of 21 at 000694f4 (dfco_lookup), as MOV.L jk78c:0005bb14 loads 00013cb6 \
+for call 12 of 20 at 0005bb16 (dfco_lookup). Its 16 stock bytes differ from \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014134"
+name = "wakeful-cobra"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00064f04"
+to = "jk78c:00013cb6"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00064f04 loads this table for call \
+9 of 20 at 00064f06 (dfco_lookup), as MOV.L jk78c:0005bb14 loads 00013cb6 \
+for call 12 of 20 at 0005bb16 (dfco_lookup). Its 16 stock bytes equal JK78C \
+on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012748"
 name = "dexterous-bobcat"

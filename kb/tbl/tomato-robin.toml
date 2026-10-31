@@ -46,6 +46,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000163d4"
+name = "esoteric-labrador"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00068216"
+to = "jk78c:00015e22"
+note = """
+Target reader 00067f5c corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 00068216 loads \
+this table for call 4 of 11 at 0006821a (astonishing-teal), as MOV.L \
+jk78c:0005ad5c loads 00015e22 for call 6 of 12 at 0005ad68 (jasmine-lizard). \
+Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016430"
+name = "notorious-eagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00063c98"
+to = "jk78c:00015e22"
+note = """
+Target reader 00063964 corresponds to JK78C reader 0005aa84 \
+(piquant-gazelle): both start with the word-axis lookup and then run the 2D \
+lookups of the signed offset curves in the same order. MOV.L 00063c98 loads \
+this table for call 4 of 11 at 00063c9c (jasmine-lizard), as MOV.L \
+jk78c:0005ad5c loads 00015e22 for call 6 of 12 at 0005ad68 (jasmine-lizard). \
+Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014c2a"
 name = "tomato-robin"

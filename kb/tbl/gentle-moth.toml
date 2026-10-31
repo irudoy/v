@@ -63,6 +63,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013ff8"
+name = "super-bear"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f0ca"
+to = "jk78c:00013d36"
+note = """
+Target reader 0006ef14 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006f0ca \
+loads this table for call 2 of 6 at 0006f0ce (dfco_lookup), as MOV.L \
+jk78c:0006021c loads 00013d36 for call 2 of 9 at 00060222 (dfco_lookup). Its \
+16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000141c4"
+name = "melodic-bird"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006acc0"
+to = "jk78c:00013d36"
+note = """
+Target reader 0006ab04 corresponds to JK78C reader 0005ffc4 \
+(unyielding-duck): both read one curve through the byte lookup and then \
+three curves over shared axis tables through the 2D lookup. MOV.L 0006acc0 \
+loads this table for call 2 of 6 at 0006acc4 (dfco_lookup), as MOV.L \
+jk78c:0006021c loads 00013d36 for call 2 of 9 at 00060222 (dfco_lookup). Its \
+16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012808"
 name = "gentle-moth"

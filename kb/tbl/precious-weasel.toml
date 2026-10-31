@@ -57,6 +57,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013882"
+name = "diligent-goshawk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00068f7c"
+to = "jk78c:00013694"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00068f7c loads this table for call \
+4 of 21 at 00068f80 (jolly-guan), as MOV.L jk78c:0005b55c loads 00013694 for \
+call 3 of 20 at 0005b564 (brilliant-ibis). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013aa6"
+name = "wakeful-gecko"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00064996"
+to = "jk78c:00013694"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00064996 loads this table for call \
+3 of 20 at 0006499a (brilliant-ibis), as MOV.L jk78c:0005b55c loads 00013694 \
+for call 3 of 20 at 0005b564 (brilliant-ibis). Its 8 stock bytes equal JK78C \
+on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001200e"
 name = "precious-weasel"

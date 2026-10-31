@@ -103,6 +103,41 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014134"
+name = "happy-shellfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c306"
+to = "jk78c:00013e4a"
+note = """
+Target reader 0006c2c8 corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006c306 loads this table for call 2 of 2 at \
+0006c30a (jolly-guan), as MOV.L jk78c:0005daac loads 00013e4a for call 2 of \
+3 at 0005dab4 (brilliant-ibis). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142d8"
+name = "puzzling-puma"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006802a"
+to = "jk78c:00013e4a"
+note = """
+Target reader 00067fec corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006802a loads this table for call 2 of 2 at \
+0006802e (brilliant-ibis), as MOV.L jk78c:0005daac loads 00013e4a for call 2 \
+of 3 at 0005dab4 (brilliant-ibis). Its 8 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012964"
 name = "dazzling-pelican"

@@ -100,6 +100,43 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b86"
+name = "discerning-gerbil"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006f92c"
+to = "jk78c:00013960"
+note = """
+Target reader 0006f7b6 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006f92c loads this table for call 2 of 5 at 0006f932 \
+(idle_ignition_lookup), as MOV.L jk78c:0006081e loads 00013960 for call 2 of \
+3 at 00060824 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d92"
+name = "cinnamon-gibbon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006b524"
+to = "jk78c:00013960"
+note = """
+Target reader 0006b3b4 corresponds to JK78C reader 000606f8 (evasive-ibis): \
+both run a 2D lookup, a byte-axis lookup and a byte lookup in this order; \
+the targets then call the counterparts of JK78C 00060474 and 0005ffc4. MOV.L \
+0006b524 loads this table for call 2 of 5 at 0006b52a \
+(idle_ignition_lookup), as MOV.L jk78c:0006081e loads 00013960 for call 2 of \
+3 at 00060824 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012352"
 name = "rugged-turkey"

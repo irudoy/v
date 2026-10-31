@@ -81,6 +81,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000e5fc"
+name = "godlike-agama"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c2e6"
+to = "jk78c:0000e64e"
+note = """
+Target reader 0006c2c8 corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006c2e6 loads this table for call 1 of 2 at \
+0006c2ea (glorious-elk), as MOV.L jk78c:0005da94 loads 0000e64e for call 1 \
+of 3 at 0005da9c (nondescript-seagull). Its 128 stock bytes differ from \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000ebc8"
+name = "tentacled-grasshopper"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006800a"
+to = "jk78c:0000e64e"
+note = """
+Target reader 00067fec corresponds to JK78C reader 0005da78 (chirpy-emu): \
+both pass three tables to the 3D lookup and then a curve with its axis table \
+to the 2D lookup. MOV.L 0006800a loads this table for call 1 of 2 at \
+0006800e (nondescript-seagull), as MOV.L jk78c:0005da94 loads 0000e64e for \
+call 1 of 3 at 0005da9c (nondescript-seagull). Its 128 stock bytes differ \
+from JK78C on 1ND0A and 1ND3B and agree between them."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000d80e"
 name = "huge-flounder"

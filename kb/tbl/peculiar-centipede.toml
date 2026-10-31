@@ -21,6 +21,42 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013f78"
+name = "flawless-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006a452"
+to = "jk78c:00013cc6"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 0006a452 loads this table for call \
+18 of 21 at 0006a45c (idle_ignition_lookup), as MOV.L jk78c:0005c7c2 loads \
+00013cc6 for call 19 of 20 at 0005c7d2 (idle_ignition_lookup). Its 8 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014144"
+name = "clay-armadillo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00065dda"
+to = "jk78c:00013cc6"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00065dda loads this table for call \
+17 of 20 at 00065de6 (idle_ignition_lookup), as MOV.L jk78c:0005c7c2 loads \
+00013cc6 for call 19 of 20 at 0005c7d2 (idle_ignition_lookup). Its 8 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012758"
 name = "peculiar-centipede"

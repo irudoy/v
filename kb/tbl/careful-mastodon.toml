@@ -1,4 +1,40 @@
 [[symbol]]
+layout = "1me3b"
+address = "00013a0e"
+name = "victorious-manatee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00068f78"
+to = "jk78c:000137d0"
+note = """
+Target reader 00068e74 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00068f78 loads this table for call \
+4 of 21 at 00068f80 (jolly-guan), as MOV.L jk78c:0005b560 loads 000137d0 for \
+call 3 of 20 at 0005b564 (brilliant-ibis). The JK78C extent is not recorded, \
+so stock bytes are not compared."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c02"
+name = "space-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00064992"
+to = "jk78c:000137d0"
+note = """
+Target reader 000648a4 corresponds to JK78C reader 0005b418 \
+(quirky-silkworm): both run the same sequence of idle air lookups; the \
+tables keep their relative offsets. MOV.L 00064992 loads this table for call \
+3 of 20 at 0006499a (brilliant-ibis), as MOV.L jk78c:0005b560 loads 000137d0 \
+for call 3 of 20 at 0005b564 (brilliant-ibis). The JK78C extent is not \
+recorded, so stock bytes are not compared."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012186"
 name = "careful-mastodon"

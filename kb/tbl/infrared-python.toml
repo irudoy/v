@@ -81,6 +81,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001410c"
+name = "lush-carp"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006c508"
+to = "jk78c:00013e22"
+note = """
+Target reader 0006c3e0 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 0006c508 loads this table for call 5 of 9 at 0006c50c (dfco_lookup), \
+as MOV.L jk78c:0005dcd4 loads 00013e22 for call 5 of 9 at 0005dcd6 \
+(dfco_lookup). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000142b0"
+name = "sepia-stork"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068248"
+to = "jk78c:00013e22"
+note = """
+Target reader 00068104 corresponds to JK78C reader 0005db74 \
+(peach-basilisk): both run nine calls in the same order and end with the \
+counterpart of JK78C 0002f572; the five tables keep their relative offsets. \
+MOV.L 00068248 loads this table for call 5 of 9 at 0006824c (dfco_lookup), \
+as MOV.L jk78c:0005dcd4 loads 00013e22 for call 5 of 9 at 0005dcd6 \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012930"
 name = "infrared-python"

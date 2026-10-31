@@ -21,6 +21,40 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "000138e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006ebc6"
+to = "jk78c:000136c8"
+note = """
+Target reader 0006ea7c corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006ebc6 loads this table for call 3 of 8 at 0006ebca (dfco_lookup), as \
+MOV.L jk78c:0005fc7a loads 000136c8 for call 2 of 6 at 0005fc7e \
+(dfco_lookup). Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013afa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006a80e"
+to = "jk78c:000136c8"
+note = """
+Target reader 0006a738 corresponds to JK78C reader 0005fb58 \
+(dramatic-roadrunner): both select a base or an alternate byte curve by two \
+state flags, then blend two floor curve pairs over one word axis. MOV.L \
+0006a80e loads this table for call 2 of 6 at 0006a812 (dfco_lookup), as \
+MOV.L jk78c:0005fc7a loads 000136c8 for call 2 of 6 at 0005fc7e \
+(dfco_lookup). Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000136c8"
 level = "code"
