@@ -120,6 +120,26 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1nd"
+address = "0001b72e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1182"
+to = "jk78c:0001b0da"
+note = """
+Target function 000b10ac corresponds to JK78C 0009a530: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The endpoint pairs, the crossfade surface and the trim \
+curve follow in the JK78C order; the bit-set pair lies 0x20 apart in the \
+upper block, and the bit-clear pair and the trim curve follow one another at \
+0x20 in the lower block, as in JK78C. MOV.L 000b1182 loads this table for \
+the call at 000b1188 (crimson-dalmatian), as MOV.L jk78c:0009a5f2 loads \
+0001b0da for the call at jk78c:0009a5f8 (crimson-dalmatian). Its 32 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018d36"
 former = ["gifted-mantis/tbl/7mfk-00018d36"]
@@ -460,6 +480,21 @@ Reader 0009a530 reads 16x1 uint16 at 0001b0da. The reviewed operational role \
 is request_channel_1_trim_q15. The reviewed operand and arithmetic role \
 correspond to 00018d36 of canonical reader 0007a804. Canonical \
 physical-conversion confidence is retained."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:0001b0da"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B 000b8990 runs an extended channel program: it reads the pairs \
+0001b9f8/0001ba18, 0001ba38/0001ba58 and 0001bc18/0001bc38 and the block \
+0001b7c8/0001b7e8/0001b808 over axis 0001b9d8 twice around the crossfade \
+surface, where JK78C 0009a530 reads one endpoint pair per bit state and one \
+trim curve. By block position the candidate is 0001b808; its order of use \
+differs from JK78C."""
 
 [[link]]
 type = "depends"

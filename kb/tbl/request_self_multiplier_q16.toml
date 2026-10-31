@@ -34,6 +34,42 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 scale = [7, 8, 9]
 
 [[symbol]]
+layout = "1me3b"
+address = "00016cb6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b1424"
+to = "jk78c:00016614"
+note = """
+Target function 000b160c corresponds to JK78C 00095eb4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 00095eb4 \
+and 00095c90. MOV.L 000b1424 loads this table for the call at 000b1428 \
+(astonishing-teal), as MOV.L jk78c:00095efa loads 00016614 for the call at \
+jk78c:00095f02 (jasmine-lizard). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c32"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000aa436"
+to = "jk78c:00016614"
+note = """
+Target function 000aa624 corresponds to JK78C 00095eb4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 00095eb4 \
+and 00095c90. MOV.L 000aa436 loads this table for the call at 000aa43a \
+(jasmine-lizard), as MOV.L jk78c:00095efa loads 00016614 for the call at \
+jk78c:00095f02 (jasmine-lizard). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000153e0"
 former = ["nickel-owl/tbl/7mfk-000153e0"]

@@ -12,6 +12,47 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001323c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7b54"
+to = "jk78c:00013186"
+note = """
+Target function 000a79e8 corresponds to JK78C 0008fd6c \
+(request_state_offset_builder): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. On the \
+alternate path the target reads two curves where JK78C reads one: first this \
+curve over the word capped at 0x8c0 and divided by 10, as JK78C reads \
+00013186, then a second curve over the primary-gain input that JK78C does \
+not read. MOV.L 000a7b54 loads this table for the call at 000a7b56 \
+(idle_ignition_lookup), as MOV.L jk78c:0008fe50 loads 00013186 for the call \
+at jk78c:0008fe52 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013508"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1b64"
+to = "jk78c:00013186"
+note = """
+Target function 000a19f8 corresponds to JK78C 0008fd6c \
+(request_state_offset_builder): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. On the \
+alternate path the target reads two curves where JK78C reads one: first this \
+curve over the word capped at 0x8c0 and divided by 10, as JK78C reads \
+00013186, then a second curve over the primary-gain input that JK78C does \
+not read. MOV.L 000a1b64 loads this table for the call at 000a1b66 \
+(idle_ignition_lookup), as MOV.L jk78c:0008fe50 loads 00013186 for the call \
+at jk78c:0008fe52 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013186"
 level = "code"

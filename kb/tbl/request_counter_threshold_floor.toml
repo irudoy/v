@@ -53,6 +53,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a744"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b66fe"
+to = "jk78c:0000a40a"
+note = """
+Target function 000b685a corresponds to JK78C 000991d6: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 0009906e \
+and 000991d6. MOV.L 000b66fe loads this table for the call at 000b6702 \
+(00028c30), as MOV.L jk78c:0009936e loads 0000a40a for the call at \
+jk78c:00099376 (illustrious-wasp). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a810"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000af30a"
+to = "jk78c:0000a40a"
+note = """
+Target function 000af462 corresponds to JK78C 000991d6: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 0009906e \
+and 000991d6. MOV.L 000af30a loads this table for the call at 000af30e \
+(illustrious-wasp), as MOV.L jk78c:0009936e loads 0000a40a for the call at \
+jk78c:00099376 (illustrious-wasp). Its 16 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000aaea"
 former = ["roaring-newt/tbl/7mfk-0000aaea"]

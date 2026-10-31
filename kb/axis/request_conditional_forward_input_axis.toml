@@ -71,6 +71,41 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015466"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0de8"
+to = "jk78c:0001507c"
+note = """
+Target function 000b0da2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. MOV.L 000b0de8 loads this axis for the \
+call at 000b0dee (expert-herring), as MOV.L jk78c:0009586c loads 0001507c \
+for the call at jk78c:00095878 (elegant-dragon). The two helpers carry \
+separate meanings and pair by call position. Its 32 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000155e2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9df8"
+to = "jk78c:0001507c"
+note = """
+Target function 000a9db2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. MOV.L 000a9df8 loads this axis for the \
+call at 000a9dfe (elegant-dragon), as MOV.L jk78c:0009586c loads 0001507c \
+for the call at jk78c:00095878 (elegant-dragon). Its 32 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013d14"
 former = ["proud-beetle/axis/7mfk-00013d14"]

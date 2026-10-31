@@ -101,6 +101,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000f2fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0e08"
+to = "jk78c:0000f34e"
+note = """
+Target function 000b0da2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 000b0e08 loads this table for the \
+call at 000b0e0c (expert-herring), as MOV.L jk78c:00095882 loads 0000f34e \
+for the call at jk78c:00095892 (elegant-dragon). The two helpers carry \
+separate meanings and pair by call position. Its 512 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000f8c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9e18"
+to = "jk78c:0000f34e"
+note = """
+Target function 000a9db2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 000a9e18 loads this table for the \
+call at 000a9e1c (elegant-dragon), as MOV.L jk78c:00095882 loads 0000f34e \
+for the call at jk78c:00095892 (elegant-dragon). Its 512 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000e08e"
 former = ["flat-cat/tbl/7mfk-0000e08e"]

@@ -83,6 +83,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016d26"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b9280"
+to = "jk78c:00016684"
+note = """
+Target function 000b9230 corresponds to JK78C 0009aca8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b9280 loads this table for the call at 000b9286 \
+(debonair-grouse), as MOV.L jk78c:0009acd4 loads 00016684 for the call at \
+jk78c:0009acda (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016ca2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1880"
+to = "jk78c:00016684"
+note = """
+Target function 000b1830 corresponds to JK78C 0009aca8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1880 loads this table for the call at 000b1886 \
+(eminent-lynx), as MOV.L jk78c:0009acd4 loads 00016684 for the call at \
+jk78c:0009acda (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000154c0"
 former = ["glaring-chachalaca/tbl/7mfk-000154c0"]

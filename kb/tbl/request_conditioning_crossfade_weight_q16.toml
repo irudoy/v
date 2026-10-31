@@ -102,6 +102,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016004"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7de0"
+to = "jk78c:00015b52"
+note = """
+Target function 000a7d84 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a7de0 loads this table for the call at 000a7de4 \
+(debonair-grouse), as MOV.L jk78c:000900ce loads 00015b52 for the call at \
+jk78c:000900d8 (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016140"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1df0"
+to = "jk78c:00015b52"
+note = """
+Target function 000a1d94 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a1df0 loads this table for the call at 000a1df4 \
+(eminent-lynx), as MOV.L jk78c:000900ce loads 00015b52 for the call at \
+jk78c:000900d8 (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001488a"
 former = ["cute-shark/tbl/7mfk-0001488a"]

@@ -59,6 +59,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001bd38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000accc0"
+to = "jk78c:0001b58a"
+note = """
+Target function 000acc50 corresponds to JK78C 000938d8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000accc0 loads this table for the call at 000accc6 \
+(nocturnal-mosquito), as MOV.L jk78c:00093952 loads 0001b58a for the call at \
+jk78c:00093958 (careful-chital). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001bbde"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a6708"
+to = "jk78c:0001b58a"
+note = """
+Target function 000a6698 corresponds to JK78C 000938d8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a6708 loads this table for the call at 000a670e \
+(careful-chital), as MOV.L jk78c:00093952 loads 0001b58a for the call at \
+jk78c:00093958 (careful-chital). Its 32 stock bytes equal JK78C on 1ND3B and \
+differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00019190"
 former = ["towering-newt/tbl/7mfk-00019190"]

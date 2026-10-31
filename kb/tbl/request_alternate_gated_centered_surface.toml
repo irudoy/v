@@ -49,6 +49,40 @@ identity = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
 scale = [1]
 
 [[symbol]]
+layout = "1me3b"
+address = "0000ccfc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b980e"
+to = "jk78c:0000cd4e"
+note = """
+Target function 000b97e0 corresponds to JK78C 0009aff4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b980e loads this table for the call at 000b9812 \
+(expert-herring), as MOV.L jk78c:0009b006 loads 0000cd4e for the call at \
+jk78c:0009b018 (elegant-dragon). The two helpers carry separate meanings and \
+pair by call position. Its 512 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000d248"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1e02"
+to = "jk78c:0000cd4e"
+note = """
+Target function 000b1dd4 corresponds to JK78C 0009aff4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1e02 loads this table for the call at 000b1e06 \
+(elegant-dragon), as MOV.L jk78c:0009b006 loads 0000cd4e for the call at \
+jk78c:0009b018 (elegant-dragon). Its 512 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000c98e"
 former = ["accomplished-alpaca/tbl/7mfk-0000c98e"]

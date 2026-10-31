@@ -73,6 +73,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016ca6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ad590"
+to = "jk78c:00016604"
+note = """
+Target function 000ad4b0 corresponds to JK78C 00094196: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000ad590 loads this table for the call at 000ad594 \
+(quixotic-seahorse), as MOV.L jk78c:000941ee loads 00016604 for the call at \
+jk78c:000941f8 (placid-shrew). The two helpers carry separate meanings and \
+pair by call position. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c22"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a6f94"
+to = "jk78c:00016604"
+note = """
+Target function 000a6eb4 corresponds to JK78C 00094196: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a6f94 loads this table for the call at 000a6f98 \
+(placid-shrew), as MOV.L jk78c:000941ee loads 00016604 for the call at \
+jk78c:000941f8 (placid-shrew). Its 8 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000153b0"
 former = ["origami-kangaroo/tbl/7mfk-000153b0"]

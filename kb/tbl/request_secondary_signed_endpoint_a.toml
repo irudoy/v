@@ -102,6 +102,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000197b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac972"
+to = "jk78c:0001908c"
+note = """
+Target function 000ac936 corresponds to JK78C 00093534: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000ac972 loads this table for the call at 000ac97a \
+(inescapable-narwhal), as MOV.L jk78c:00093570 loads 0001908c for the call \
+at jk78c:00093580 (striped-stallion). The two helpers carry separate \
+meanings and pair by call position. Its 512 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000196dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a63ba"
+to = "jk78c:0001908c"
+note = """
+Target function 000a637e corresponds to JK78C 00093534: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a63ba loads this table for the call at 000a63c2 \
+(striped-stallion), as MOV.L jk78c:00093570 loads 0001908c for the call at \
+jk78c:00093580 (striped-stallion). Its 512 stock bytes differ from JK78C on \
+1ND0A and 1ND3B, and the two images differ from each other."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000171c8"
 former = ["rare-baboon/tbl/7mfk-000171c8"]

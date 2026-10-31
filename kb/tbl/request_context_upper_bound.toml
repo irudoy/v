@@ -47,6 +47,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016024"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a8e6a"
+to = "jk78c:00015b72"
+note = """
+Target function 000a8cf8 corresponds to JK78C 00090af8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a8e6a loads this table for the call at 000a8e6e \
+(aspiring-kittiwake), as MOV.L jk78c:00090bf2 loads 00015b72 for the call at \
+jk78c:00090bf6 (urban-potoo). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016160"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a298c"
+to = "jk78c:00015b72"
+note = """
+Target function 000a28a4 corresponds to JK78C 00090af8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a298c loads this table for the call at 000a2990 \
+(urban-potoo), as MOV.L jk78c:00090bf2 loads 00015b72 for the call at \
+jk78c:00090bf6 (urban-potoo). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000148ea"
 former = ["curvy-leopard/tbl/7mfk-000148ea"]

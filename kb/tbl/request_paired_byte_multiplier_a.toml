@@ -92,6 +92,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001421a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a8cc6"
+to = "jk78c:00013f10"
+note = """
+Target function 000a8c04 corresponds to JK78C 000909ec: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads multiplier b at its literal 00013f10 plus 8 \
+for the first call and multiplier a at 00013f10 for the second; the target \
+loads b for the first call and a for the second. MOV.L 000a8cc6 loads this \
+table for the call at 000a8cca (idle_ignition_lookup), as MOV.L \
+jk78c:00090a74 loads 00013f10 for the call at jk78c:00090a7a \
+(idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000143ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a2872"
+to = "jk78c:00013f10"
+note = """
+Target function 000a27b0 corresponds to JK78C 000909ec: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads multiplier b at its literal 00013f10 plus 8 \
+for the first call and multiplier a at 00013f10 for the second; the target \
+loads b for the first call and a for the second. MOV.L 000a2872 loads this \
+table for the call at 000a2876 (idle_ignition_lookup), as MOV.L \
+jk78c:00090a74 loads 00013f10 for the call at jk78c:00090a7a \
+(idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a22"
 former = ["tunneling-fennec/tbl/7mfk-00012a22"]

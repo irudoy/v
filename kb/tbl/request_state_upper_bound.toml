@@ -24,6 +24,23 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[symbol]]
+layout = "1nd"
+address = "00016798"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b0bca"
+to = "jk78c:0001619a"
+note = """
+Target function 000b0b56 corresponds to JK78C 0009a20a: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b0bca loads this table for the call at 000b0bce \
+(eminent-lynx), as MOV.L jk78c:0009a28c loads 0001619a for the call at \
+jk78c:0009a294 (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014fa2"
 former = ["petite-cobra/tbl/7mfk-00014fa2"]
@@ -137,6 +154,18 @@ Reader 0009a20a reads 16x1 uint16 at 0001619a. RPM-indexed upper bound of \
 the state increased or decreased under request flags. The reviewed operand \
 and arithmetic role correspond to 00014fa2 of canonical reader 0007a4de. \
 Canonical physical-conversion confidence is retained."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:0001619a"
+count = 2
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 0009a20a reads one curve over axis 0001616a. The 1ME3B counterpart \
+000b81dc reads two curves over axis 0001675c, 000167bc and 000167dc, in two \
+calls; which of them continues the JK78C curve is not established."""
 
 [[link]]
 type = "reader"

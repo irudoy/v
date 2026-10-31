@@ -10,6 +10,41 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016f06"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ab310"
+to = "jk78c:00016864"
+note = """
+Target function 000ab2fc corresponds to JK78C 0009248a \
+(request_two_stage_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 000ab310 loads this table for the call at 000ab314 (astonishing-teal), \
+as MOV.L jk78c:0009249c loads 00016864 for the call at jk78c:000924a8 \
+(jasmine-lizard). The two helpers carry separate meanings and pair by call \
+position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016e82"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a4e70"
+to = "jk78c:00016864"
+note = """
+Target function 000a4e5c corresponds to JK78C 0009248a \
+(request_two_stage_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 000a4e70 loads this table for the call at 000a4e74 (jasmine-lizard), \
+as MOV.L jk78c:0009249c loads 00016864 for the call at jk78c:000924a8 \
+(jasmine-lizard). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00016864"
 level = "code"

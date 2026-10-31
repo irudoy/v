@@ -102,6 +102,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000f0fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0dea"
+to = "jk78c:0000f14e"
+note = """
+Target function 000b0da2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 000b0dea loads this table for the \
+call at 000b0dee (expert-herring), as MOV.L jk78c:00095868 loads 0000f14e \
+for the call at jk78c:00095878 (elegant-dragon). The two helpers carry \
+separate meanings and pair by call position. Its 512 stock bytes differ from \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000f6c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9dfa"
+to = "jk78c:0000f14e"
+note = """
+Target function 000a9db2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 000a9dfa loads this table for the \
+call at 000a9dfe (elegant-dragon), as MOV.L jk78c:00095868 loads 0000f14e \
+for the call at jk78c:00095878 (elegant-dragon). Its 512 stock bytes differ \
+from JK78C on 1ND0A and 1ND3B, and the two images differ from each other."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000de8e"
 former = ["tangerine-rook/tbl/7mfk-0000de8e"]

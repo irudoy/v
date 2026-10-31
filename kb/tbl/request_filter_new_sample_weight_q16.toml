@@ -81,6 +81,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "000165fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00096702"
+to = "jk78c:0001602a"
+note = """
+Target function 000966da corresponds to JK78C 00082ec4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00096702 loads this table for the call at 00096704 \
+(fresh-seal), as MOV.L jk78c:00082eda loads 0001602a for the call at \
+jk78c:00082ee8 (dramatic-okapi). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016618"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090b50"
+to = "jk78c:0001602a"
+note = """
+Target function 00090b28 corresponds to JK78C 00082ec4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00090b50 loads this table for the call at 00090b54 \
+(dramatic-okapi), as MOV.L jk78c:00082eda loads 0001602a for the call at \
+jk78c:00082ee8 (dramatic-okapi). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014e52"
 former = ["armored-cricket/tbl/7mfk-00014e52"]

@@ -82,6 +82,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015aa6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b02aa"
+to = "jk78c:0001572c"
+note = """
+Target function 000afe8c corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 000b02aa loads this table, as MOV.L jk78c:000951d0 loads 0001572c. Its \
+10 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015c52"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9332"
+to = "jk78c:0001572c"
+note = """
+Target function 000a8f02 corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 000a9332 loads this table, as MOV.L jk78c:000951d0 loads 0001572c. Its \
+10 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014384"
 former = ["premium-malkoha/tbl/7mfk-00014384"]

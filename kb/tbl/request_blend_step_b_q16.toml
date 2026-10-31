@@ -118,6 +118,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016cae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ad58a"
+to = "jk78c:0001660c"
+note = """
+Target function 000ad4b0 corresponds to JK78C 00094196: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000ad58a loads this table for the call at 000ad594 \
+(quixotic-seahorse), as the call at jk78c:00094208 (placid-shrew) receives \
+0001660c as a register-offset argument. The two helpers carry separate \
+meanings and pair by call position. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c2a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a6f8e"
+to = "jk78c:0001660c"
+note = """
+Target function 000a6eb4 corresponds to JK78C 00094196: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a6f8e loads this table for the call at 000a6f98 \
+(placid-shrew), as the call at jk78c:00094208 (placid-shrew) receives \
+0001660c as a register-offset argument. Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000153b8"
 former = ["opal-camel/tbl/7mfk-000153b8"]

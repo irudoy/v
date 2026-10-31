@@ -43,6 +43,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016cc6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b8fc2"
+to = "jk78c:00016624"
+note = """
+Target function 000b8f34 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b8fc2 loads this table for the call at 000b8fc6 \
+(debonair-grouse), as MOV.L jk78c:0009a8e4 loads 00016624 for the call at \
+jk78c:0009a8ea (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c42"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b15d6"
+to = "jk78c:00016624"
+note = """
+Target function 000b14b8 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b15d6 loads this table for the call at 000b15da \
+(eminent-lynx), as MOV.L jk78c:0009a8e4 loads 00016624 for the call at \
+jk78c:0009a8ea (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000153f0"
 former = ["rational-inchworm/tbl/7mfk-000153f0"]

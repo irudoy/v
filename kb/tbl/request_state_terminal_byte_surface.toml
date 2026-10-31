@@ -55,6 +55,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009b94"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b7f7c"
+to = "jk78c:000099da"
+note = """
+Target function 000b7cb2 corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b7f7c loads this table for the call at 000b7f80 \
+(vague-peacock), as MOV.L jk78c:0009a070 loads 000099da for the call at \
+jk78c:0009a080 (private-aardwolf). The two helpers carry separate meanings \
+and pair by call position. Its 64 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009ca0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b09f4"
+to = "jk78c:000099da"
+note = """
+Target function 000b072c corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b09f4 loads this table for the call at 000b09f8 \
+(private-aardwolf), as MOV.L jk78c:0009a070 loads 000099da for the call at \
+jk78c:0009a080 (private-aardwolf). Its 64 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009caa"
 former = ["infrared-uakari/tbl/7mfk-00009caa"]

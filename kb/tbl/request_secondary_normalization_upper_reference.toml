@@ -51,6 +51,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b838"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b95d8"
+to = "jk78c:0001b10a"
+note = """
+Target function 000b9584 corresponds to JK78C 0009add0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b95d8 loads this table for the call at 000b95de \
+(xanthic-bullfrog), as MOV.L jk78c:0009ae12 loads 0001b10a for the call at \
+jk78c:0009ae1c (crimson-dalmatian). The two helpers carry separate meanings \
+and pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b75e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1bd4"
+to = "jk78c:0001b10a"
+note = """
+Target function 000b1b80 corresponds to JK78C 0009add0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1bd4 loads this table for the call at 000b1bda \
+(crimson-dalmatian), as MOV.L jk78c:0009ae12 loads 0001b10a for the call at \
+jk78c:0009ae1c (crimson-dalmatian). Its 32 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018de6"
 former = ["vagabond-seagull/tbl/7mfk-00018de6"]

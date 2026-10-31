@@ -56,6 +56,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001454a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b6956"
+to = "jk78c:00014218"
+note = """
+Target function 000b685a corresponds to JK78C 0009906e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 0009906e \
+and 000991d6. MOV.L 000b6956 loads this table for the call at 000b695c \
+(dfco_lookup), as MOV.L jk78c:0009907a loads 00014218 for the call at \
+jk78c:00099082 (dfco_lookup). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000146be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000af55a"
+to = "jk78c:00014218"
+note = """
+Target function 000af462 corresponds to JK78C 0009906e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 0009906e \
+and 000991d6. MOV.L 000af55a loads this table for the call at 000af560 \
+(dfco_lookup), as MOV.L jk78c:0009907a loads 00014218 for the call at \
+jk78c:00099082 (dfco_lookup). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012e1a"
 former = ["grinning-peacock/tbl/7mfk-00012e1a"]

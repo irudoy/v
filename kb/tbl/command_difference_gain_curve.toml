@@ -13,6 +13,44 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "000144ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000aac3e"
+to = "jk78c:00014188"
+note = """
+Target function 000aab88 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+The difference and alternate builders read stock-identical copies; the \
+reader and its load order select the copy. MOV.L 000aac3e loads this table \
+for the call at 000aac42 (dfco_lookup), as MOV.L jk78c:000921aa loads \
+00014188 for the call at jk78c:000921b0 (dfco_lookup). Its 16 stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001462e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a479e"
+to = "jk78c:00014188"
+note = """
+Target function 000a46e8 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+The difference and alternate builders read stock-identical copies; the \
+reader and its load order select the copy. MOV.L 000a479e loads this table \
+for the call at 000a47a2 (dfco_lookup), as MOV.L jk78c:000921aa loads \
+00014188 for the call at jk78c:000921b0 (dfco_lookup). Its 16 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00014188"
 level = "code"

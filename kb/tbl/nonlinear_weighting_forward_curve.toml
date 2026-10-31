@@ -79,6 +79,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013571"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00097c18"
+to = "jk78c:00013473"
+note = """
+Target function 00097bd2 corresponds to JK78C 00083c3a: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00097c18 loads this table for the call at 00097c1c \
+(groovy-lynx), as MOV.L jk78c:00083d18 loads 00013473 for the call at \
+jk78c:00083d20 (fortunate-adder). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001381d"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00091f76"
+to = "jk78c:00013473"
+note = """
+Target function 00091f30 corresponds to JK78C 00083c3a: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00091f76 loads this table for the call at 00091f7a \
+(fortunate-adder), as MOV.L jk78c:00083d18 loads 00013473 for the call at \
+jk78c:00083d20 (fortunate-adder). Its 16 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011d24"
 former = ["carmine-potoo/tbl/7mfk-00011d24"]

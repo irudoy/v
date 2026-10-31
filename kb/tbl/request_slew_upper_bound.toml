@@ -35,6 +35,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014b6a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0ed4"
+to = "jk78c:00014810"
+note = """
+Target function 000b0ea8 corresponds to JK78C 0009598c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b0ed4 loads this table for the call at 000b0ed8 \
+(astonishing-teal), as the call at jk78c:000959c6 (jasmine-lizard) receives \
+00014810 as a register-offset argument. The two helpers carry separate \
+meanings and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014d06"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9ee4"
+to = "jk78c:00014810"
+note = """
+Target function 000a9eb8 corresponds to JK78C 0009598c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a9ee4 loads this table for the call at 000a9ee8 \
+(jasmine-lizard), as the call at jk78c:000959c6 (jasmine-lizard) receives \
+00014810 as a register-offset argument. Its 16 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013528"
 former = ["vivacious-sawfish/tbl/7mfk-00013528"]

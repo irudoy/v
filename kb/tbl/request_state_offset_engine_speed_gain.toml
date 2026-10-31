@@ -11,6 +11,45 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001322c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7a56"
+to = "jk78c:0001317e"
+note = """
+Target function 000a79e8 corresponds to JK78C 0008fd6c \
+(request_state_offset_builder): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. The \
+second lookup takes a word capped at 0x8c0 and divided by 10 on both \
+layouts, and its result multiplies the first. MOV.L 000a7a56 loads this \
+table for the call at 000a7a58 (idle_ignition_lookup), as MOV.L \
+jk78c:0008fdba loads 0001317e for the call at jk78c:0008fdbc \
+(idle_ignition_lookup). Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000134f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1a66"
+to = "jk78c:0001317e"
+note = """
+Target function 000a19f8 corresponds to JK78C 0008fd6c \
+(request_state_offset_builder): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. The \
+second lookup takes a word capped at 0x8c0 and divided by 10 on both \
+layouts, and its result multiplies the first. MOV.L 000a1a66 loads this \
+table for the call at 000a1a68 (idle_ignition_lookup), as MOV.L \
+jk78c:0008fdba loads 0001317e for the call at jk78c:0008fdbc \
+(idle_ignition_lookup). Its 8 stock bytes equal JK78C on 1ND3B and differ on \
+1ND0A."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0001317e"
 level = "code"

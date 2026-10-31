@@ -100,6 +100,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000195b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac98e"
+to = "jk78c:00018e8c"
+note = """
+Target function 000ac936 corresponds to JK78C 00093534: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000ac98e loads this table for the call at 000ac996 \
+(inescapable-narwhal), as MOV.L jk78c:0009358a loads 00018e8c for the call \
+at jk78c:0009359a (striped-stallion). The two helpers carry separate \
+meanings and pair by call position. Its 512 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000194dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a63d6"
+to = "jk78c:00018e8c"
+note = """
+Target function 000a637e corresponds to JK78C 00093534: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a63d6 loads this table for the call at 000a63de \
+(striped-stallion), as MOV.L jk78c:0009358a loads 00018e8c for the call at \
+jk78c:0009359a (striped-stallion). Its 512 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00016fc8"
 former = ["rigorous-shrimp/tbl/7mfk-00016fc8"]

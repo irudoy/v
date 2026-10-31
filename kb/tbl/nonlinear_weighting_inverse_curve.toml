@@ -63,6 +63,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001320c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00095dfc"
+to = "jk78c:0001315e"
+note = """
+Target function 00095c30 corresponds to JK78C 00082346 \
+(nonlinear_transition_controller): both read the forward curve over the \
+inverse curve three times and the inverse curve over the forward curve once \
+through the same 1D byte helper; JK78C performs the inverse lookup second \
+and the target last. MOV.L 00095dfc loads this table in r4 for the call at \
+00095e00 (groovy-lynx), with the forward curve in r5, as MOV jk78c:00082442 \
+passes 0001315e in r4 for the call at jk78c:00082452 (fortunate-adder), with \
+00013473 in r5. The two helpers carry separate meanings and pair by call \
+position. Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000134d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009025e"
+to = "jk78c:0001315e"
+note = """
+Target function 0009007c corresponds to JK78C 00082346 \
+(nonlinear_transition_controller): both read the forward curve over the \
+inverse curve three times and the inverse curve over the forward curve once \
+through the same 1D byte helper; JK78C performs the inverse lookup second \
+and the target last. MOV.L 0009025e loads this table in r4 for the call at \
+00090262 (fortunate-adder), with the forward curve in r5, as MOV \
+jk78c:00082442 passes 0001315e in r4 for the call at jk78c:00082452 \
+(fortunate-adder), with 00013473 in r5. Its 16 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001199e"
 former = ["azure-deer/tbl/7mfk-0001199e"]

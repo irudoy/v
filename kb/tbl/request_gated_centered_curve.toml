@@ -43,6 +43,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001664c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b8f8c"
+to = "jk78c:0001606a"
+note = """
+Target function 000b8f34 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b8f8c loads this table for the call at 000b8f90 \
+(debonair-grouse), as MOV.L jk78c:0009a862 loads 0001606a for the call at \
+jk78c:0009a86a (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016668"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b15a0"
+to = "jk78c:0001606a"
+note = """
+Target function 000b14b8 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b15a0 loads this table for the call at 000b15a4 \
+(eminent-lynx), as MOV.L jk78c:0009a862 loads 0001606a for the call at \
+jk78c:0009a86a (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014ea2"
 former = ["mellow-deer/tbl/7mfk-00014ea2"]

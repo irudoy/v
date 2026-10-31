@@ -7,6 +7,45 @@ points = 8
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b468"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ab754"
+to = "jk78c:0001ad3a"
+note = """
+Target function 000ab61c corresponds to JK78C 00092734 \
+(request_alternate_difference_limit_builder): the same sequence of \
+calibration loads and lookup calls, with this axis in the same call and \
+argument register. The difference and alternate builders read \
+stock-identical copies; the reader and its load order select the copy. MOV.L \
+000ab754 loads this axis for the call at 000ab75a (glorious-elk), as MOV.L \
+jk78c:00092898 loads 0001ad3a for the call at jk78c:0009289e \
+(nondescript-seagull). The two helpers carry separate meanings and pair by \
+call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b38e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a52b4"
+to = "jk78c:0001ad3a"
+note = """
+Target function 000a517c corresponds to JK78C 00092734 \
+(request_alternate_difference_limit_builder): the same sequence of \
+calibration loads and lookup calls, with this axis in the same call and \
+argument register. The difference and alternate builders read \
+stock-identical copies; the reader and its load order select the copy. MOV.L \
+000a52b4 loads this axis for the call at 000a52ba (nondescript-seagull), as \
+MOV.L jk78c:00092898 loads 0001ad3a for the call at jk78c:0009289e \
+(nondescript-seagull). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0001ad3a"
 level = "code"

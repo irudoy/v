@@ -54,6 +54,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016b66"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b1674"
+to = "jk78c:000164c4"
+note = """
+Target function 000b160c corresponds to JK78C 00095c90: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 00095eb4 \
+and 00095c90. MOV.L 000b1674 loads this table for the call at 000b167a \
+(astonishing-teal), as MOV.L jk78c:00095cfc loads 000164c4 for the call at \
+jk78c:00095d06 (jasmine-lizard). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016ad2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000aa68c"
+to = "jk78c:000164c4"
+note = """
+Target function 000aa624 corresponds to JK78C 00095c90: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The target function merges the readers of JK78C 00095eb4 \
+and 00095c90. MOV.L 000aa68c loads this table for the call at 000aa692 \
+(jasmine-lizard), as MOV.L jk78c:00095cfc loads 000164c4 for the call at \
+jk78c:00095d06 (jasmine-lizard). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015276"
 former = ["apricot-angelfish/tbl/7mfk-00015276"]

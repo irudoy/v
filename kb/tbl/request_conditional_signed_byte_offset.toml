@@ -101,6 +101,39 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000146d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b1038"
+to = "jk78c:00014388"
+note = """
+Target function 000b1068 corresponds to JK78C 00095b1e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1038 loads this table for the call at 000b103c \
+(idle_ignition_lookup), as MOV.L jk78c:00095b3e loads 00014388 for the call \
+at jk78c:00095b42 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001481e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000aa048"
+to = "jk78c:00014388"
+note = """
+Target function 000aa078 corresponds to JK78C 00095b1e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000aa048 loads this table for the call at 000aa04c \
+(idle_ignition_lookup), as MOV.L jk78c:00095b3e loads 00014388 for the call \
+at jk78c:00095b42 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013016"
 former = ["upbeat-barracuda/tbl/7mfk-00013016"]

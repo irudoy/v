@@ -84,6 +84,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016d46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b926e"
+to = "jk78c:000166a4"
+note = """
+Target function 000b9230 corresponds to JK78C 0009aca8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b926e loads this table for the call at 000b9274 \
+(debonair-grouse), as MOV.L jk78c:0009acbc loads 000166a4 for the call at \
+jk78c:0009acc8 (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016cc2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b186c"
+to = "jk78c:000166a4"
+note = """
+Target function 000b1830 corresponds to JK78C 0009aca8: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b186c loads this table for the call at 000b1874 \
+(eminent-lynx), as MOV.L jk78c:0009acbc loads 000166a4 for the call at \
+jk78c:0009acc8 (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000154e0"
 former = ["cooperative-elk/tbl/7mfk-000154e0"]

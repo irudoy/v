@@ -122,6 +122,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00017096"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000adb3c"
+to = "jk78c:000169f4"
+note = """
+Target function 000adac0 corresponds to JK78C 00094690: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000adb3c loads this table for the call at 000adb42 \
+(fresh-seal), as MOV.L jk78c:00094712 loads 000169f4 for the call at \
+jk78c:00094718 (dramatic-okapi). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00017002"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a7532"
+to = "jk78c:000169f4"
+note = """
+Target function 000a74b8 corresponds to JK78C 00094690: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a7532 loads this table for the call at 000a7538 \
+(dramatic-okapi), as MOV.L jk78c:00094712 loads 000169f4 for the call at \
+jk78c:00094718 (dramatic-okapi). Its 32 stock bytes equal JK78C on 1ND3B and \
+differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015770"
 former = ["vigilant-rat/tbl/7mfk-00015770"]

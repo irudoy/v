@@ -49,6 +49,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00016100"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b0da6"
+to = "jk78c:00015b12"
+note = """
+Target function 000b0d38 corresponds to JK78C 0009a2be: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The endpoint pairs, the crossfade surface and the trim \
+curve follow in the JK78C order; the bit-set pair lies 0x20 apart in the \
+upper block, and the bit-clear pair and the trim curve follow one another at \
+0x20 in the lower block, as in JK78C. MOV.L 000b0da6 loads this table for \
+the call at 000b0db6 (eminent-lynx), as MOV.L jk78c:0009a3b0 loads 00015b12 \
+for the call at jk78c:0009a3b8 (eminent-lynx). Its 32 stock bytes equal \
+JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001482a"
 former = ["debonair-kestrel/tbl/7mfk-0001482a"]
@@ -134,6 +154,21 @@ Reader 0009a2be reads 16x1 uint16 at 00015b12. The reviewed operational role \
 is request_channel_0_endpoint_b_bit_clear. The reviewed operand and \
 arithmetic role correspond to 0001482a of canonical reader 0007a592. \
 Canonical physical-conversion confidence is retained."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00015b12"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B 000b85ac runs an extended channel program: after the crossfade surface \
+it reads ten curves over axis 0001675c, the block 00015fa4/00015fc4/00015fe4 \
+and the pairs 0001677c/0001679c, 000167fc/0001681c and 00016c66/00016c86, \
+where JK78C 0009a2be reads one endpoint pair per bit state and one trim \
+curve. By block position the candidate is 00015fc4; its order of use differs \
+from JK78C."""
 
 [[link]]
 type = "index"

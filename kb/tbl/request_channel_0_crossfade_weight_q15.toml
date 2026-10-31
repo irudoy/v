@@ -103,6 +103,45 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000e57c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b85e8"
+to = "jk78c:0000e5ce"
+note = """
+Target function 000b85ac corresponds to JK78C 0009a2be: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. 1ME3B extends the channel program with further curves; \
+the crossfade surface stays its only 2D lookup, as in JK78C. MOV.L 000b85e8 \
+loads this table for the call at 000b85ec (glorious-elk), as MOV.L \
+jk78c:0009a2f0 loads 0000e5ce for the call at jk78c:0009a300 \
+(nondescript-seagull). The two helpers carry separate meanings and pair by \
+call position. Its 128 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000eb48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b0d72"
+to = "jk78c:0000e5ce"
+note = """
+Target function 000b0d38 corresponds to JK78C 0009a2be: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The endpoint pairs, the crossfade surface and the trim \
+curve follow in the JK78C order; the bit-set pair lies 0x20 apart in the \
+upper block, and the bit-clear pair and the trim curve follow one another at \
+0x20 in the lower block, as in JK78C. MOV.L 000b0d72 loads this table for \
+the call at 000b0d76 (nondescript-seagull), as MOV.L jk78c:0009a2f0 loads \
+0000e5ce for the call at jk78c:0009a300 (nondescript-seagull). Its 128 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000d78e"
 former = ["secret-spider/tbl/7mfk-0000d78e"]

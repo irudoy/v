@@ -93,6 +93,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001a534"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a99d8"
+to = "jk78c:00019e0c"
+note = """
+Target function 000a99a0 corresponds to JK78C 00091414: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a99d8 loads this table for the call at 000a99e0 \
+(inescapable-narwhal), as MOV.L jk78c:00091446 loads 00019e0c for the call \
+at jk78c:00091458 (striped-stallion). The two helpers carry separate \
+meanings and pair by call position. Its 512 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001a45c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a354c"
+to = "jk78c:00019e0c"
+note = """
+Target function 000a3514 corresponds to JK78C 00091414: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a354c loads this table for the call at 000a3554 \
+(striped-stallion), as MOV.L jk78c:00091446 loads 00019e0c for the call at \
+jk78c:00091458 (striped-stallion). Its 512 stock bytes equal JK78C on 1ND3B \
+and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00017ec8"
 former = ["crazy-spider/tbl/7mfk-00017ec8"]

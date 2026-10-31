@@ -50,6 +50,40 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00024e18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a56f6"
+to = "jk78c:00024704"
+note = """
+Target function 000a56dc corresponds to JK78C 0008e19e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a56f6 loads this table for the call at 000a56fa \
+(aspiring-kittiwake), as MOV.L jk78c:0008e1b8 loads 00024704 for the call at \
+jk78c:0008e1bc (urban-potoo). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00024ce8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009f72e"
+to = "jk78c:00024704"
+note = """
+Target function 0009f714 corresponds to JK78C 0008e19e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 0009f72e loads this table for the call at 0009f732 \
+(urban-potoo), as MOV.L jk78c:0008e1b8 loads 00024704 for the call at \
+jk78c:0008e1bc (urban-potoo). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00023824"
 former = ["prompt-mosquito/tbl/7mfk-00023824"]

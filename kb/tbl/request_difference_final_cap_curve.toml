@@ -10,6 +10,45 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015f74"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000aad8c"
+to = "jk78c:00015ac2"
+note = """
+Target function 000aab88 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+The difference and alternate builders read stock-identical copies; the \
+reader and its load order select the copy. MOV.L 000aad8c loads this table \
+for the call at 000aad90 (astonishing-teal), as MOV.L jk78c:0009234a loads \
+00015ac2 for the call at jk78c:00092356 (jasmine-lizard). The two helpers \
+carry separate meanings and pair by call position. Its 16 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000160b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a48ec"
+to = "jk78c:00015ac2"
+note = """
+Target function 000a46e8 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+The difference and alternate builders read stock-identical copies; the \
+reader and its load order select the copy. MOV.L 000a48ec loads this table \
+for the call at 000a48f0 (jasmine-lizard), as MOV.L jk78c:0009234a loads \
+00015ac2 for the call at jk78c:00092356 (jasmine-lizard). Its 16 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00015ac2"
 level = "code"

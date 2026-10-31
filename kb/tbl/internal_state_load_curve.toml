@@ -53,6 +53,43 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016c26"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000987be"
+to = "jk78c:00016584"
+note = """
+Target function 0009878c corresponds to JK78C 0008433e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads the curve at its literal 00016574 plus 0x10 \
+in the delay slot of the call; the target loads the curve directly. MOV.L \
+000987be loads this table for the call at 000987c2 (aspiring-kittiwake), as \
+the call at jk78c:00084376 (urban-potoo) receives 00016584 as a \
+register-offset argument. The two helpers carry separate meanings and pair \
+by call position. Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016ba2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000929e6"
+to = "jk78c:00016584"
+note = """
+Target function 000929b4 corresponds to JK78C 0008433e: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads the curve at its literal 00016574 plus 0x10 \
+in the delay slot of the call; the target loads the curve directly. MOV.L \
+000929e6 loads this table for the call at 000929ea (urban-potoo), as the \
+call at jk78c:00084376 (urban-potoo) receives 00016584 as a register-offset \
+argument. Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015330"
 former = ["honored-duck/tbl/7mfk-00015330"]

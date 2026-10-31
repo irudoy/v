@@ -52,6 +52,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013c56"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00097b82"
+to = "jk78c:00013a48"
+note = """
+Target function 00097ae8 corresponds to JK78C 00083b54: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00097b82 loads this table for the call at 00097b86 \
+(jolly-guan), as MOV.L jk78c:00083be8 loads 00013a48 for the call at \
+jk78c:00083bee (brilliant-ibis). The two helpers carry separate meanings and \
+pair by call position. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013e7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00091ee0"
+to = "jk78c:00013a48"
+note = """
+Target function 00091e48 corresponds to JK78C 00083b54: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00091ee0 loads this table for the call at 00091ee4 \
+(brilliant-ibis), as MOV.L jk78c:00083be8 loads 00013a48 for the call at \
+jk78c:00083bee (brilliant-ibis). Its 8 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001245a"
 former = ["encouraging-buzzard/tbl/7mfk-0001245a"]

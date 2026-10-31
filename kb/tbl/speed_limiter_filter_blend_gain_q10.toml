@@ -83,6 +83,39 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009356"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0090"
+to = "jk78c:00009116"
+note = """
+Target function 000afe8c corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter). The target reads the limiter scalar \
+block at the JK78C displacements through GBR 00009264 from 00009356, as \
+JK78C does from register base 00009116. The access at 000b0090 reads this \
+table, as MOV.L jk78c:00094d80 loads 00009116. Its 2 stock bytes differ from \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000092ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a8f1a"
+to = "jk78c:00009116"
+note = """
+Target function 000a8f02 corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter). The target reads the limiter scalar \
+block at the JK78C displacements from register base 000092ba, as JK78C does \
+from 00009116. MOV.L 000a8f1a loads this table, as MOV.L jk78c:00094d80 \
+loads 00009116. Its 2 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009424"
 former = [

@@ -40,6 +40,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b828"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b9954"
+to = "jk78c:0001b0fa"
+note = """
+Target function 000b9908 corresponds to JK78C 0009b120: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b9954 loads this table for the call at 000b995a \
+(smooth-kagu), as MOV.L jk78c:0009b17e loads 0001b0fa for the call at \
+jk78c:0009b18e (cerise-tapir). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b74e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1f42"
+to = "jk78c:0001b0fa"
+note = """
+Target function 000b1efc corresponds to JK78C 0009b120: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1f42 loads this table for the call at 000b1f48 \
+(cerise-tapir), as MOV.L jk78c:0009b17e loads 0001b0fa for the call at \
+jk78c:0009b18e (cerise-tapir). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018dd6"
 former = ["micro-penguin/tbl/7mfk-00018dd6"]

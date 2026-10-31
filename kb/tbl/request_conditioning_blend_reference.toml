@@ -81,6 +81,41 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00016464"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b03ce"
+to = "jk78c:00015ea2"
+note = """
+Target function 000b0330 corresponds to JK78C 0009520e (peach-bullfrog): the \
+same sequence of calibration loads and lookup calls, with this table in the \
+same call and argument register. MOV.L 000b03ce loads this table for the \
+call at 000b03d2 (debonair-grouse), as MOV.L jk78c:000952fe loads 00015ea2 \
+for the call at jk78c:00095306 (eminent-lynx). The two helpers carry \
+separate meanings and pair by call position. Its 32 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000164c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9446"
+to = "jk78c:00015ea2"
+note = """
+Target function 000a936e corresponds to JK78C 0009520e (peach-bullfrog): the \
+same sequence of calibration loads and lookup calls, with this table in the \
+same call and argument register. MOV.L 000a9446 loads this table for the \
+call at 000a944a (eminent-lynx), as MOV.L jk78c:000952fe loads 00015ea2 for \
+the call at jk78c:00095306 (eminent-lynx). Its 32 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014cea"
 former = ["yellow-caracal/tbl/7mfk-00014cea"]

@@ -69,6 +69,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009362"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000affc8"
+to = "jk78c:00009122"
+note = """
+Target function 000afe8c corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter). The target reads the limiter scalar \
+block at the JK78C displacements through GBR 00009264 from 00009356, as \
+JK78C does from register base 00009116. The access at 000affc8 reads this \
+table, as the access at jk78c:00094eec reads 00009122. Its 2 stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000092c6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9076"
+to = "jk78c:00009122"
+note = """
+Target function 000a8f02 corresponds to JK78C 00094d6c \
+(rotational_speed_request_limiter). The target reads the limiter scalar \
+block at the JK78C displacements from register base 000092ba, as JK78C does \
+from 00009116. The access at 000a9076 reads this table, as the access at \
+jk78c:00094eec reads 00009122. Its 2 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009430"
 former = ["tasteful-porpoise/tbl/7mfk-00009430"]

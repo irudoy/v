@@ -92,6 +92,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001157c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7da2"
+to = "jk78c:000116ce"
+note = """
+Target function 000a7d84 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a7da2 loads this table for the call at 000a7daa \
+(expert-herring), as MOV.L jk78c:00090084 loads 000116ce for the call at \
+jk78c:00090096 (elegant-dragon). The two helpers carry separate meanings and \
+pair by call position. Its 512 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00011a48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1db2"
+to = "jk78c:000116ce"
+note = """
+Target function 000a1d94 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a1db2 loads this table for the call at 000a1dba \
+(elegant-dragon), as MOV.L jk78c:00090084 loads 000116ce for the call at \
+jk78c:00090096 (elegant-dragon). Its 512 stock bytes equal JK78C on 1ND3B \
+and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001050e"
 former = ["intrepid-raptor/tbl/7mfk-0001050e"]

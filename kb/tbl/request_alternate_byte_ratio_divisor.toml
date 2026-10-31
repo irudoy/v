@@ -74,6 +74,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000162a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b9824"
+to = "jk78c:00015d32"
+note = """
+Target function 000b97e0 corresponds to JK78C 0009aff4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b9824 loads this table for the call at 000b982a \
+(astonishing-teal), as MOV.L jk78c:0009b022 loads 00015d32 for the call at \
+jk78c:0009b036 (jasmine-lizard). The two helpers carry separate meanings and \
+pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016300"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1e18"
+to = "jk78c:00015d32"
+note = """
+Target function 000b1dd4 corresponds to JK78C 0009aff4: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1e18 loads this table for the call at 000b1e1e \
+(jasmine-lizard), as MOV.L jk78c:0009b022 loads 00015d32 for the call at \
+jk78c:0009b036 (jasmine-lizard). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014afa"
 former = ["unnatural-petrel/tbl/7mfk-00014afa"]

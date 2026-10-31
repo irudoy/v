@@ -75,6 +75,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000e4fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b8fae"
+to = "jk78c:0000e54e"
+note = """
+Target function 000b8f34 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b8fae loads this table for the call at 000b8fb2 \
+(glorious-elk), as MOV.L jk78c:0009a8c8 loads 0000e54e for the call at \
+jk78c:0009a8d4 (nondescript-seagull). The two helpers carry separate \
+meanings and pair by call position. Its 128 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000eac8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b15c2"
+to = "jk78c:0000e54e"
+note = """
+Target function 000b14b8 corresponds to JK78C 0009a848: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b15c2 loads this table for the call at 000b15c6 \
+(nondescript-seagull), as MOV.L jk78c:0009a8c8 loads 0000e54e for the call \
+at jk78c:0009a8d4 (nondescript-seagull). Its 128 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000d68e"
 former = ["independent-boar/tbl/7mfk-0000d68e"]

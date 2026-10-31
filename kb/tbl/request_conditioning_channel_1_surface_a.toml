@@ -93,6 +93,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001a334"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a99be"
+to = "jk78c:00019c0c"
+note = """
+Target function 000a99a0 corresponds to JK78C 00091414: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a99be loads this table for the call at 000a99c6 \
+(inescapable-narwhal), as MOV.L jk78c:0009142c loads 00019c0c for the call \
+at jk78c:0009143e (striped-stallion). The two helpers carry separate \
+meanings and pair by call position. Its 512 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001a25c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a3532"
+to = "jk78c:00019c0c"
+note = """
+Target function 000a3514 corresponds to JK78C 00091414: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a3532 loads this table for the call at 000a353a \
+(striped-stallion), as MOV.L jk78c:0009142c loads 00019c0c for the call at \
+jk78c:0009143e (striped-stallion). Its 512 stock bytes equal JK78C on 1ND3B \
+and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00017cc8"
 former = ["granite-seagull/tbl/7mfk-00017cc8"]

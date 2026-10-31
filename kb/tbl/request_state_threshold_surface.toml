@@ -52,6 +52,23 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00009b80"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1032"
+to = "jk78c:000098ca"
+note = """
+Target function 000b0f0a corresponds to JK78C 0009a16a: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b1032 loads this table for the call at 000b1036 \
+(gleaming-walrus), as MOV.L jk78c:0009a1ba loads 000098ca for the call at \
+jk78c:0009a1c4 (gleaming-walrus). Its 16 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009c5a"
 former = ["crimson-chinchilla/tbl/7mfk-00009c5a"]
@@ -243,6 +260,21 @@ Reader 0009a16a reads 4x4 uint8 at 000098ca. Byte threshold multiplied by 4 \
 and compared with the request-state word to set the state bit. The reviewed \
 operand and arithmetic role correspond to 00009c5a of canonical reader \
 0007a43e. Canonical physical-conversion confidence is retained."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000098ca"
+count = 2
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 0009a16a reads this surface through the 4x4 helper 00027e24 \
+(gleaming-walrus) in the state block between 00099db0 and 0009a848. On 1ME3B \
+no function of the matching block 000b7cb2..000b8f34 calls the corresponding \
+helper 00028ac0; its other callers in the area, 000bd598 and 000bd7b0, read \
+the surfaces 00009b44 and 00009b24 over the axes 000134e4/000134e0, and \
+neither repeats the JK78C call context."""
 
 [[link]]
 type = "reader"

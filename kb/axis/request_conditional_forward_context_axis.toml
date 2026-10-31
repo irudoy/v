@@ -19,6 +19,43 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "00015486"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b0de4"
+to = "jk78c:0001509c"
+note = """
+Target function 000b0da2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. It is the second axis of the same 2D \
+lookup whose first axis is the forward input axis. MOV.L 000b0de4 loads this \
+axis for the call at 000b0dee (expert-herring), as MOV.L jk78c:00095870 \
+loads 0001509c for the call at jk78c:00095878 (elegant-dragon). The two \
+helpers carry separate meanings and pair by call position. Its 32 stock \
+bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015602"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a9df4"
+to = "jk78c:0001509c"
+note = """
+Target function 000a9db2 corresponds to JK78C 0009582c (urban-sidewinder): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. It is the second axis of the same 2D \
+lookup whose first axis is the forward input axis. MOV.L 000a9df4 loads this \
+axis for the call at 000a9dfe (elegant-dragon), as MOV.L jk78c:00095870 \
+loads 0001509c for the call at jk78c:00095878 (elegant-dragon). Its 32 stock \
+bytes differ from JK78C on 1ND0A and 1ND3B, and the two images agree."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013d34"
 former = ["gifted-pudu/axis/7mfk-00013d34"]

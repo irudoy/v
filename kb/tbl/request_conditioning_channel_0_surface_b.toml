@@ -93,6 +93,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001177c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7dbe"
+to = "jk78c:000118ce"
+note = """
+Target function 000a7d84 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a7dbe loads this table for the call at 000a7dc4 \
+(expert-herring), as MOV.L jk78c:000900a0 loads 000118ce for the call at \
+jk78c:000900b0 (elegant-dragon). The two helpers carry separate meanings and \
+pair by call position. Its 512 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00011c48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1dce"
+to = "jk78c:000118ce"
+note = """
+Target function 000a1d94 corresponds to JK78C 0009006c: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a1dce loads this table for the call at 000a1dd4 \
+(elegant-dragon), as MOV.L jk78c:000900a0 loads 000118ce for the call at \
+jk78c:000900b0 (elegant-dragon). Its 512 stock bytes equal JK78C on 1ND3B \
+and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001070e"
 former = ["gray-chimpanzee/tbl/7mfk-0001070e"]

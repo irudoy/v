@@ -71,6 +71,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013842"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b7e14"
+to = "jk78c:00013664"
+note = """
+Target function 000b7cb2 corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b7e14 loads this table for the call at 000b7e1a \
+(jolly-guan), as MOV.L jk78c:00099f30 loads 00013664 for the call at \
+jk78c:00099f38 (brilliant-ibis). The two helpers carry separate meanings and \
+pair by call position. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013a66"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b0890"
+to = "jk78c:00013664"
+note = """
+Target function 000b072c corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b0890 loads this table for the call at 000b0896 \
+(brilliant-ibis), as MOV.L jk78c:00099f30 loads 00013664 for the call at \
+jk78c:00099f38 (brilliant-ibis). Its 8 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011fd6"
 former = ["spirited-hamster/tbl/7mfk-00011fd6"]

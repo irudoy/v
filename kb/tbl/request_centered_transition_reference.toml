@@ -11,6 +11,42 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016444"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b057e"
+to = "jk78c:00015e82"
+note = """
+Target function 000b04de corresponds to JK78C 00095442 \
+(request_centered_transition_limit_builder): the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b057e loads this table for the call at 000b0582 \
+(debonair-grouse), as MOV.L jk78c:00095498 loads 00015e82 for the call at \
+jk78c:000954a0 (eminent-lynx). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000164a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a959e"
+to = "jk78c:00015e82"
+note = """
+Target function 000a9554 corresponds to JK78C 00095442 \
+(request_centered_transition_limit_builder): the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000a959e loads this table for the call at 000a95a2 \
+(eminent-lynx), as MOV.L jk78c:00095498 loads 00015e82 for the call at \
+jk78c:000954a0 (eminent-lynx). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00015e82"
 level = "code"

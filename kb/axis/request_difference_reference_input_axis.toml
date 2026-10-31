@@ -7,6 +7,46 @@ points = 8
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013551"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000aabc6"
+to = "jk78c:00013453"
+note = """
+Target function 000aab88 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this axis in the same call and argument register. The \
+difference and alternate builders read stock-identical copies; the reader \
+and its load order select the copy. MOV.L 000aabc6 loads this axis for the \
+call at 000aabcc (imperial-wolverine), as MOV.L jk78c:00092126 loads \
+00013453 for the call at jk78c:00092130 (wandering-turaco). The two helpers \
+carry separate meanings and pair by call position. Its 8 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000137fd"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a4726"
+to = "jk78c:00013453"
+note = """
+Target function 000a46e8 corresponds to JK78C 000920ea \
+(request_difference_limit_builder): the same sequence of calibration loads \
+and lookup calls, with this axis in the same call and argument register. The \
+difference and alternate builders read stock-identical copies; the reader \
+and its load order select the copy. MOV.L 000a4726 loads this axis for the \
+call at 000a472c (cherry-ara), as MOV.L jk78c:00092126 loads 00013453 for \
+the call at jk78c:00092130 (wandering-turaco). The 1ND helper lies at the \
+JK78C helper address plus 0x61C under a separate name. Its 8 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013453"
 level = "code"

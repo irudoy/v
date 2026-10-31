@@ -82,6 +82,45 @@ scale = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00019534"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b8a4e"
+to = "jk78c:00018e0c"
+note = """
+Target function 000b8990 corresponds to JK78C 0009a530: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. 1ME3B extends the channel program with further curves; \
+the crossfade surface stays its only 2D lookup, as in JK78C. MOV.L 000b8a4e \
+loads this table for the call at 000b8a52 (swinging-taipan), as MOV.L \
+jk78c:0009a59e loads 00018e0c for the call at jk78c:0009a5ae \
+(resourceful-flounder). The two helpers carry separate meanings and pair by \
+call position. Its 128 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001945c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b1132"
+to = "jk78c:00018e0c"
+note = """
+Target function 000b10ac corresponds to JK78C 0009a530: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. The endpoint pairs, the crossfade surface and the trim \
+curve follow in the JK78C order; the bit-set pair lies 0x20 apart in the \
+upper block, and the bit-clear pair and the trim curve follow one another at \
+0x20 in the lower block, as in JK78C. MOV.L 000b1132 loads this table for \
+the call at 000b1136 (resourceful-flounder), as MOV.L jk78c:0009a59e loads \
+00018e0c for the call at jk78c:0009a5ae (resourceful-flounder). Its 128 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00016f48"
 former = ["truthful-pronghorn/tbl/7mfk-00016f48"]

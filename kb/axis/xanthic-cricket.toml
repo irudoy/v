@@ -18,6 +18,47 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001320c"
+name = "romantic-barracuda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00097c16"
+to = "jk78c:0001315e"
+note = """
+Target function 00097bd2 corresponds to JK78C 00083c3a: the same sequence of \
+calibration loads and lookup calls; each forward lookup reads the inverse \
+curve as its axis. MOV.L 00097c16 loads this axis in r5 for the call at \
+00097c1c (groovy-lynx), with the forward curve in r4, as MOV.L \
+jk78c:00083d1c loads 0001315e in r5 for the call at jk78c:00083d20 \
+(fortunate-adder), with 00013473 in r4. The two helpers carry separate \
+meanings and pair by call position. The axis shares its bytes with \
+nonlinear_weighting_inverse_curve, as on JK78C. Its 16 stock bytes differ \
+from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000134d8"
+name = "wise-tarsier"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00091f74"
+to = "jk78c:0001315e"
+note = """
+Target function 00091f30 corresponds to JK78C 00083c3a: the same sequence of \
+calibration loads and lookup calls; each forward lookup reads the inverse \
+curve as its axis. MOV.L 00091f74 loads this axis in r5 for the call at \
+00091f7a (fortunate-adder), with the forward curve in r4, as MOV.L \
+jk78c:00083d1c loads 0001315e in r5 for the call at jk78c:00083d20 \
+(fortunate-adder), with 00013473 in r4. The axis shares its bytes with \
+nonlinear_weighting_inverse_curve, as on JK78C. Its 16 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001199e"
 name = "xanthic-cricket"

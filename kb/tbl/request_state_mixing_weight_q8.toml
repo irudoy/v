@@ -50,6 +50,40 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00009ee4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b7ee2"
+to = "jk78c:00009c6a"
+note = """
+Target function 000b7cb2 corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b7ee2 loads this table for the call at 000b7ee6 \
+(furry-puffin), as MOV.L jk78c:00099fd4 loads 00009c6a for the call at \
+jk78c:00099fe0 (gleaming-walrus). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009f70"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000b095a"
+to = "jk78c:00009c6a"
+note = """
+Target function 000b072c corresponds to JK78C 00099db0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000b095a loads this table for the call at 000b095e \
+(gleaming-walrus), as MOV.L jk78c:00099fd4 loads 00009c6a for the call at \
+jk78c:00099fe0 (gleaming-walrus). Its 16 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009eca"
 former = ["intelligent-capybara/tbl/7mfk-00009eca"]

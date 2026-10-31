@@ -98,6 +98,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014222"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a8c84"
+to = "jk78c:00013f18"
+note = """
+Target function 000a8c04 corresponds to JK78C 000909ec: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads multiplier b at its literal 00013f10 plus 8 \
+for the first call and multiplier a at 00013f10 for the second; the target \
+loads b for the first call and a for the second. MOV.L 000a8c84 loads this \
+table for the call at 000a8c88 (idle_ignition_lookup), as the call at \
+jk78c:00090a7a (idle_ignition_lookup) receives 00013f18 as a register-offset \
+argument. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000143b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a2830"
+to = "jk78c:00013f18"
+note = """
+Target function 000a27b0 corresponds to JK78C 000909ec: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. JK78C reads multiplier b at its literal 00013f10 plus 8 \
+for the first call and multiplier a at 00013f10 for the second; the target \
+loads b for the first call and a for the second. MOV.L 000a2830 loads this \
+table for the call at 000a2834 (idle_ignition_lookup), as the call at \
+jk78c:00090a7a (idle_ignition_lookup) receives 00013f18 as a register-offset \
+argument. Its 8 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a2a"
 former = ["terrestrial-sparrow/tbl/7mfk-00012a2a"]
