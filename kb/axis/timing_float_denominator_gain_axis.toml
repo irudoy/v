@@ -6,14 +6,59 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00014bb6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065d5a"
+to = "jk78c:0001483c"
+note = """
+The float consumer 00065918 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00065c96 for 00058eba, 00066180 \
+for 0005974a, 000660a0 for 00059498, 00066366 for 0005995c, 00065e10 for \
+00059110, 00065f84 for 00059204 and 00065d2a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions; its 363 mnemonics equal 1ND 00061b28. Target \
+function 00065d2a runs the program of JK78C 00058f94 \
+(timing_float_protected_ratio_builder): the denominator-gain curve lookup, \
+then the numerator curve lookup over the absolute-response axis. MOV.L \
+00065d5a loads this axis, which reaches the call at 00065d60 \
+(debonair-grouse) in r5, as ADD jk78c:00059046 forms 0001483c from the GBR \
+base, which reaches the call at 0005904a (blue-mouflon) in r5. Its 32 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014d52"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061f6a"
+to = "jk78c:0001483c"
+note = """
+The float consumer 00061b28 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00061ea6 for 00058eba, 00062390 \
+for 0005974a, 000622b0 for 00059498, 00062576 for 0005995c, 00062020 for \
+00059110, 00062194 for 00059204 and 00061f3a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions. Target function 00061f3a runs the program of \
+JK78C 00058f94 (timing_float_protected_ratio_builder): the denominator-gain \
+curve lookup, then the numerator curve lookup over the absolute-response \
+axis. MOV.L 00061f6a loads this axis, which reaches the call at 00061f70 \
+(merciful-harrier) in r5, as ADD jk78c:00059046 forms 0001483c from the GBR \
+base, which reaches the call at 0005904a (blue-mouflon) in r5. Its 32 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

@@ -6,9 +6,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -17,6 +15,52 @@ access = "explicit"
 cols = 16
 rows = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001197c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065062"
+to = "jk78c:00011ace"
+note = """
+The float-model root 0006452e corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00064e62 for 00057d88, 000650ea for \
+000580f2, 000651d8 for 00058286, 00064f0c for 00057e46, 0006533c for \
+000584bc and 0006560a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions, as \
+1ND 00060756 does. Target function 00064f0c runs the program of JK78C \
+00057e46 (timing_float_ratio_response_builder): a lookup of the parameter \
+surface through the explicit-axis 8x8 wrapper, then a lookup of the response \
+surface through the 16x16 wrapper. MOV.L 00065062 loads this table, which \
+reaches the call at 00065066 (expert-herring) in r4, as MOV.L jk78c:00057fa2 \
+loads 00011ace, which reaches the call at 00057fae (airborne-fox) in r4. Its \
+512 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00011e48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061276"
+to = "jk78c:00011ace"
+note = """
+The float-model root 00060756 corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00061076 for 00057d88, 000612fe for \
+000580f2, 000613ec for 00058286, 00061120 for 00057e46, 00061550 for \
+000584bc and 0006181a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions. \
+Target function 00061120 runs the program of JK78C 00057e46 \
+(timing_float_ratio_response_builder): a lookup of the parameter surface \
+through the explicit-axis 8x8 wrapper, then a lookup of the response surface \
+through the 16x16 wrapper. MOV.L 00061276 loads this table, which reaches \
+the call at 0006127a (abstract-poodle) in r4, as MOV.L jk78c:00057fa2 loads \
+00011ace, which reaches the call at 00057fae (airborne-fox) in r4. Its 512 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

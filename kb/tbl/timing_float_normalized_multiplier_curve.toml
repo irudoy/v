@@ -7,9 +7,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -18,6 +16,52 @@ access = "explicit"
 cols = 32
 rows = 1
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015806"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065c1a"
+to = "jk78c:0001546c"
+note = """
+The float consumer 00065918 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00065c96 for 00058eba, 00066180 \
+for 0005974a, 000660a0 for 00059498, 00066366 for 0005995c, 00065e10 for \
+00059110, 00065f84 for 00059204 and 00065d2a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions; its 363 mnemonics equal 1ND 00061b28. The \
+lookup of JK78C 000593e8 (timing_float_normalized_multiplier_branch_a) is \
+inline there: one lookup of the normalized multiplier curve; the consumer \
+also reads it at the position of the second branch 000596d8. MOV.L 00065c1a \
+loads this table, which reaches the call at 00065c1e (hairy-kagu) in r4, as \
+MOV.L jk78c:00059436 loads 0001546c, which reaches the call at 0005943c \
+(loose-lion) in r4. Its 64 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015992"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061e2a"
+to = "jk78c:0001546c"
+note = """
+The float consumer 00061b28 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00061ea6 for 00058eba, 00062390 \
+for 0005974a, 000622b0 for 00059498, 00062576 for 0005995c, 00062020 for \
+00059110, 00062194 for 00059204 and 00061f3a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions. The lookup of JK78C 000593e8 \
+(timing_float_normalized_multiplier_branch_a) is inline there: one lookup of \
+the normalized multiplier curve; the consumer also reads it at the position \
+of the second branch 000596d8. MOV.L 00061e2a loads this table, which \
+reaches the call at 00061e2e (adept-limpet) in r4, as MOV.L jk78c:00059436 \
+loads 0001546c, which reaches the call at 0005943c (loose-lion) in r4. Its \
+64 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

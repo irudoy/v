@@ -6,14 +6,61 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00014992"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065cd0"
+to = "jk78c:00014698"
+note = """
+The float consumer 00065918 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00065c96 for 00058eba, 00066180 \
+for 0005974a, 000660a0 for 00059498, 00066366 for 0005995c, 00065e10 for \
+00059110, 00065f84 for 00059204 and 00065d2a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions; its 363 mnemonics equal 1ND 00061b28. Target \
+function 00065c96 runs the program of JK78C 00058eba \
+(timing_float_branch_response_builder): the low-branch curve lookup, then \
+the absolute-response lookup through the explicit-axis 1D-32 wrapper; the \
+target repeats the absolute-response call in both arms of the bound test. \
+MOV.L 00065cd0 loads this axis, which reaches the call at 00065cd6 \
+(debonair-grouse) in r5, as MOV.L jk78c:00058ef8 loads 00014698, which \
+reaches the call at 00058efc (blue-mouflon) in r5. Its 32 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014b4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061ee0"
+to = "jk78c:00014698"
+note = """
+The float consumer 00061b28 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00061ea6 for 00058eba, 00062390 \
+for 0005974a, 000622b0 for 00059498, 00062576 for 0005995c, 00062020 for \
+00059110, 00062194 for 00059204 and 00061f3a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions. Target function 00061ea6 runs the program of \
+JK78C 00058eba (timing_float_branch_response_builder): the low-branch curve \
+lookup, then the absolute-response lookup through the explicit-axis 1D-32 \
+wrapper; the target repeats the absolute-response call in both arms of the \
+bound test. MOV.L 00061ee0 loads this axis, which reaches the call at \
+00061ee6 (merciful-harrier) in r5, as MOV.L jk78c:00058ef8 loads 00014698, \
+which reaches the call at 00058efc (blue-mouflon) in r5. Its 32 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

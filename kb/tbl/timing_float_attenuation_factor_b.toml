@@ -6,9 +6,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -17,6 +15,55 @@ access = "explicit"
 cols = 8
 rows = 1
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015016"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00066024"
+to = "jk78c:00014c9c"
+note = """
+The float consumer 00065918 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00065c96 for 00058eba, 00066180 \
+for 0005974a, 000660a0 for 00059498, 00066366 for 0005995c, 00065e10 for \
+00059110, 00065f84 for 00059204 and 00065d2a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions; its 363 mnemonics equal 1ND 00061b28. Target \
+function 00065f84 runs the program of JK78C 00059204 \
+(timing_float_attenuated_product_builder): the affine-factor and \
+product-factor lookups, then the attenuation curves b and a through the \
+explicit-axis 1D-8 wrapper; 00059620 reads the affine and product factors as \
+well. MOV.L 00066024 loads this table, which reaches the call at 0006602a \
+(astonishing-teal) in r4, as ADD jk78c:00059360 forms 00014c9c from the GBR \
+base, which reaches the call at 0005936e (pristine-slug) in r4. Its 16 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000151b2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00062234"
+to = "jk78c:00014c9c"
+note = """
+The float consumer 00061b28 corresponds to JK78C 00058d98 \
+(timing_float_correction_builder): it calls 00061ea6 for 00058eba, 00062390 \
+for 0005974a, 000622b0 for 00059498, 00062576 for 0005995c, 00062020 for \
+00059110, 00062194 for 00059204 and 00061f3a for 00058f94 in the JK78C \
+order, and performs the lookups of 00058f6a, 000596d8, 00059620 and 000593e8 \
+inline at the same positions. Target function 00062194 runs the program of \
+JK78C 00059204 (timing_float_attenuated_product_builder): the affine-factor \
+and product-factor lookups, then the attenuation curves b and a through the \
+explicit-axis 1D-8 wrapper; 00059620 reads the affine and product factors as \
+well. MOV.L 00062234 loads this table, which reaches the call at 0006223a \
+(delectable-mastodon) in r4, as ADD jk78c:00059360 forms 00014c9c from the \
+GBR base, which reaches the call at 0005936e (pristine-slug) in r4. Its 16 \
+stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

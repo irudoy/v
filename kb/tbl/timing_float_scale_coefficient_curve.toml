@@ -5,9 +5,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -16,6 +14,51 @@ access = "explicit"
 cols = 16
 rows = 1
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00014892"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00064844"
+to = "jk78c:00014598"
+note = """
+The float-model root 0006452e corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00064e62 for 00057d88, 000650ea for \
+000580f2, 000651d8 for 00058286, 00064f0c for 00057e46, 0006533c for \
+000584bc and 0006560a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions, as \
+1ND 00060756 does. The lookup of JK78C 00058ae8 \
+(timing_float_scale_coefficient_reader) is inline there: one lookup of the \
+scale coefficient curve over the auxiliary input axis, which 0005974a and \
+0005995c also read. MOV.L 00064844 loads this table, which reaches the call \
+at 0006484c (debonair-grouse) in r4, as MOV.L jk78c:00058aec loads 00014598, \
+which reaches the call at 00058af2 (blue-mouflon) in r4. Its 32 stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014a4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00060a6c"
+to = "jk78c:00014598"
+note = """
+The float-model root 00060756 corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00061076 for 00057d88, 000612fe for \
+000580f2, 000613ec for 00058286, 00061120 for 00057e46, 00061550 for \
+000584bc and 0006181a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions. The \
+lookup of JK78C 00058ae8 (timing_float_scale_coefficient_reader) is inline \
+there: one lookup of the scale coefficient curve over the auxiliary input \
+axis, which 0005974a and 0005995c also read. MOV.L 00060a6c loads this \
+table, which reaches the call at 00060a74 (merciful-harrier) in r4, as MOV.L \
+jk78c:00058aec loads 00014598, which reaches the call at 00058af2 \
+(blue-mouflon) in r4. Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

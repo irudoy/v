@@ -6,14 +6,56 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015886"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065256"
+to = "jk78c:0001550c"
+note = """
+The float-model root 0006452e corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00064e62 for 00057d88, 000650ea for \
+000580f2, 000651d8 for 00058286, 00064f0c for 00057e46, 0006533c for \
+000584bc and 0006560a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions, as \
+1ND 00060756 does. Target function 000651d8 runs the program of JK78C \
+00058286 (timing_float_conditional_multiplier_reader): one lookup of the \
+conditional multiplier curve. MOV.L 00065256 loads this axis, which reaches \
+the call at 0006525c (debonair-grouse) in r5, as MOV.L jk78c:0005830e loads \
+0001550c, which reaches the call at 00058312 (blue-mouflon) in r5. Its 32 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015a32"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006146a"
+to = "jk78c:0001550c"
+note = """
+The float-model root 00060756 corresponds to JK78C 00057782 \
+(timing_float_model_builder): it calls 00061076 for 00057d88, 000612fe for \
+000580f2, 000613ec for 00058286, 00061120 for 00057e46, 00061550 for \
+000584bc and 0006181a for 000589e8 in the JK78C order, and performs the \
+lookups of 0005803e, 0005860c and 00058ae8 inline at the same positions. \
+Target function 000613ec runs the program of JK78C 00058286 \
+(timing_float_conditional_multiplier_reader): one lookup of the conditional \
+multiplier curve. MOV.L 0006146a loads this axis, which reaches the call at \
+00061470 (merciful-harrier) in r5, as MOV.L jk78c:0005830e loads 0001550c, \
+which reaches the call at 00058312 (blue-mouflon) in r5. Its 32 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"
