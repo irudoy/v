@@ -176,8 +176,9 @@ retain their existing execution checks and receive no measured qualification
 from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, `startup_wrapper`, `engine`, `threshold_helper`,
-`feedback_arbiter`, `ignition_adapter`, and `ignition_controller`
+`selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
+`threshold_helper`, `feedback_arbiter`, `ignition_adapter`, and
+`ignition_controller`
 with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
@@ -185,6 +186,18 @@ and invoke code. Each wrapper invocation retains its originating invoke frame
 through calls and selector tail transfers, and qualifies its return only after
 its declared stock RTS/NOP boundary. These boundaries do not qualify the stock
 bodies.
+
+The fuel-cut wrapper calls a declared simulator-only coordinator stub at
+`0x0004ED88`. The stub copies the stock result byte of the harness cell
+`0xFFFF6FF0` into the final cylinder mask `0xFFFF22E0` and returns a sentinel
+in R0 through its RTS/NOP boundary; it does not qualify the coordinator body.
+Each case presets the mask to a value that no stub result has, so a merge
+before the stock call would be lost. Cases combine inactive, active and
+partial stock results with zero, partial, full and malformed requests and
+check the final mask, the returned R0, the complete state, the fuel-cut
+shadow, SP and GBR. A scheduler case reads entries 1 and 28 of the composed
+periodic table and runs them in that order through an activation, a held
+request and a release, so the mask follows the request of the same pass.
 
 The threshold helper accepts an originating invoke call or the exact bound
 engine call window on an active engine frame. Its R3 divider load binds the

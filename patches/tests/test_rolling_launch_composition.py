@@ -44,7 +44,7 @@ class RollingLaunchCompositionTest(unittest.TestCase):
                 self.layout.ram.base_reservation
             )
         )
-        self.assertEqual(self.layout.ram.state.size, 20)
+        self.assertEqual(self.layout.ram.state.size, 24)
         self.assertEqual(
             tuple(item.target for item in self.layout.diagnostics),
             tuple(range(
@@ -61,6 +61,11 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         self.assertEqual(
             self.layout.hook_by_key["displaced_periodic_task"].address,
             scheduler.table_address + 4 * scheduler.table_index,
+        )
+        self.assertEqual(scheduler.fuel_cut_index, 28)
+        self.assertEqual(
+            self.layout.hook_by_key["fuel_cut_coordinator"].address,
+            scheduler.table_address + 4 * scheduler.fuel_cut_index,
         )
         self.assertEqual(scheduler.tick_numerator, 204800)
         self.assertEqual(scheduler.pphi_hz, 20_000_000)
@@ -86,10 +91,10 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         audit = rolling_launch_assembly.validate_instruction_semantics(
             self.layout, self.parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 876)
+        self.assertEqual(audit.instructions, 888)
         self.assertEqual(audit.delayed_transfers, 65)
         self.assertEqual(audit.pc_relative_references, 78)
-        self.assertEqual(audit.direct_branches, 151)
+        self.assertEqual(audit.direct_branches, 154)
         self.assertEqual(audit.indirect_transfers, 24)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):
@@ -114,9 +119,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 2328)
-        self.assertEqual(self.result.permitted_write_bytes, 2328)
-        self.assertEqual(self.result.changed_bytes, 1972)
+        self.assertEqual(sum(item.size for item in ranges), 2396)
+        self.assertEqual(self.result.permitted_write_bytes, 2396)
+        self.assertEqual(self.result.changed_bytes, 2007)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -193,15 +198,15 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_source_counts_equal_manifest_totals(self):
         self.assertEqual(
             sum(item.instruction_count for item in self.layout.assembly_units),
-            876,
+            888,
         )
         self.assertEqual(
             sum(item.data_bytes for item in self.layout.assembly_units),
-            214,
+            226,
         )
         self.assertEqual(
             sum(item.instruction_count for item in self.parsed.values()),
-            876,
+            888,
         )
 
 

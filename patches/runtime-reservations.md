@@ -19,11 +19,11 @@ individual layout cannot provide:
 | Runtime | Active RAM | Future RAM | Future ROM |
 | --- | ---: | ---: | ---: |
 | Map Switching | `0xFFFF5D00..0xFFFF5D3C` | `0xFFFF6000..0xFFFF6100` | `0x000D6800..0x000D7000` |
-| Rolling Launch | `0xFFFF5D40..0xFFFF5D54` | `0xFFFF6100..0xFFFF6200` | `0x000D6000..0x000D6800` |
+| Rolling Launch | `0xFFFF5D40..0xFFFF5D58` | `0xFFFF6100..0xFFFF6200` | `0x000D6040..0x000D6800` |
 | CAN telemetry | `0xFFFF5E00..0xFFFF5F00` | `0xFFFF5F00..0xFFFF6000` | `0x000D5000..0x000D6000` |
 
-The active RAM total is 336 bytes. The explicit future budgets provide 768
-RAM bytes and 8,192 ROM bytes. Unassigned gaps remain unowned and are not
+The active RAM total is 340 bytes. The explicit future budgets provide 768
+RAM bytes and 8,128 ROM bytes. Unassigned gaps remain unowned and are not
 silently available to a patch. `patches/jk08a_runtime_reservations.py` prints
 all three totals.
 

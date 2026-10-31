@@ -175,6 +175,7 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
                 hook_by_key={
                     'displaced_periodic_task': SimpleNamespace(stock=12),
                     'primary_ignition_command': SimpleNamespace(stock=20),
+                    'fuel_cut_coordinator': SimpleNamespace(stock=24),
                 })
             return module.build_and_run_dynamic_harness(
                 b'controlled fixture', tmp_path,

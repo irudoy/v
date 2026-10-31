@@ -14,17 +14,23 @@
 //   +0x10 u8  stock ignition command
 //   +0x11 u8  effective ignition command
 //   +0x12 u16 captured ignition-retard band start
+//   +0x14 u16 fuel-cut request: the cylinder mask that the fuel-cut wrapper
+//             ORs into the stock coordinator result; cleared on every entry
+//   +0x16 u16 request latch: 1 from Cut until RPM falls below Restore
 //
 // One tick is one exact periodic scheduler pass: 204800/Pphi seconds. Passive
 // target-CAN timing establishes Pphi=20 MHz and a 10.24 ms target period.
 // The default calibration enables no map slot. Modes are 0 observe, 1 RPM
-// hold, and 2 RPM hold plus band-limited retard. Only modes 1 and 2 write the
-// fuel shadow.
+// hold, and 2 RPM hold plus band-limited retard. Modes 1 and 2 publish the
+// all-cylinder request 0x003F from Cut until RPM falls below Restore. No mode
+// writes the fuel-cut shadow of the selected map.
 
 .org 0x000D38E4
 rolling_launch_engine:
 sts.l pr,@-r15
 mov.l @(rl_state_address,pc),r5
+mov #0x0,r0
+mov.w r0,@(0x14,r5)
 mov.b @r5,r0
 cmp/eq 0x0,r0
 bt rl_dispatch_idle
@@ -73,7 +79,7 @@ bra rl_corrupt_state
 nop
 rl_idle_activate:
 
-// Capture the map, mode, and native RPM thresholds before any output write.
+// Capture the map, mode, and native RPM thresholds before the first request.
 mov.l @(rl_state_address,pc),r5
 mov.l @(rl_selector_address,pc),r4
 mov.b @r4,r0
@@ -84,6 +90,7 @@ mov.b r0,@(0x5,r5)
 mov #0x0,r0
 mov.w r0,@(0x6,r5)
 mov.w r0,@(0x8,r5)
+mov.w r0,@(0x16,r5)
 mov.l @(rl_rpm_address,pc),r4
 mov.w @r4,r2
 extu.w r2,r2
@@ -105,12 +112,6 @@ mov.w r0,@(0xC,r5)
 mov.l @(rl_threshold_helper_entry,pc),r0
 jsr @r0
 nop
-mov.b @(0x5,r5),r0
-cmp/eq 0x0,r0
-bt rl_activate_publish
-bsr rl_apply_fuel_overlay
-nop
-rl_activate_publish:
 mov.l @(rl_state_address,pc),r5
 mov #0x1,r0
 mov.b r0,@r5
@@ -211,22 +212,14 @@ nop
 bra rl_engine_return
 nop
 
-// Restore the captured map through the existing SR-protected limiter commit.
-// Observe mode performs no limiter write.
+// Leave ACTIVE through COOLDOWN. This tick has already cleared the request,
+// and releasing the latch keeps the next activation from inheriting it. The
+// fuel-cut shadow keeps the selected map, so no limiter write is needed.
 rl_abort_active:
-mov.l @(rl_state_address,pc),r5
-mov.b @(0x5,r5),r0
-cmp/eq 0x0,r0
-bt rl_abort_publish_cooldown
-mov.b @(0x4,r5),r0
-mov r0,r4
-mov.l @(rl_limiter_commit,pc),r0
-jsr @r0
-nop
-rl_abort_publish_cooldown:
 mov.l @(rl_state_address,pc),r5
 mov #0x0,r0
 mov.w r0,@(0x8,r5)
+mov.w r0,@(0x16,r5)
 mov.b @(0x2,r5),r0
 and 0x0F,r0
 mov.b r0,@(0x2,r5)
@@ -313,7 +306,7 @@ nop
 mov.l @(rl_state_address,pc),r5
 mov r5,r1
 mov #0x0,r0
-mov #0x5,r2
+mov #0x6,r2
 rl_corrupt_clear_loop:
 mov.l r0,@r1
 add 0x4,r1
@@ -731,37 +724,10 @@ mov #0x0,r0
 rts
 nop
 
-// Atomically replace only the first eight bytes of the existing 12-byte fuel
-// shadow. Both columns receive the same captured Cut and Restore thresholds.
+// Publish active/output flags and the held fuel-cut request. The fuel-cut
+// flag reports the published request or the active cut bit of the stock
+// RPM fuel-cut state.
 .org 0x000D3E04
-rl_apply_fuel_overlay:
-stc sr,r7
-mov r7,r0
-or 0xF0,r0
-ldc r0,sr
-mov.l @(rl_helper_state_address,pc),r5
-mov.w @(0xC,r5),r0
-mov r0,r2
-extu.w r2,r2
-mov.w @(0xE,r5),r0
-mov r0,r3
-extu.w r3,r3
-mov.l @(rl_helper_fuel_shadow_address,pc),r4
-mov r2,r0
-mov.w r0,@r4
-add 0x2,r4
-mov.w r0,@r4
-add 0x2,r4
-mov r3,r0
-mov.w r0,@r4
-add 0x2,r4
-mov.w r0,@r4
-ldc r7,sr
-rts
-nop
-
-// Publish active/output flags and the current stock fuel-cut state.
-.org 0x000D3E34
 rl_publish_active_flags:
 mov.l @(rl_helper_state_address,pc),r5
 mov.b @(0x2,r5),r0
@@ -771,6 +737,36 @@ mov.b @(0x5,r5),r0
 mov r0,r2
 tst r2,r2
 bt rl_active_flags_fuel
+// Latch the request at or above Cut, release it below Restore, and publish
+// it while the latch holds.
+mov.l @(rl_helper_rpm_address,pc),r4
+mov.w @r4,r1
+extu.w r1,r1
+mov.w @(0xC,r5),r0
+extu.w r0,r0
+cmp/hs r0,r1
+bf rl_hold_below_cut
+mov #0x1,r0
+mov.w r0,@(0x16,r5)
+bra rl_hold_publish
+nop
+rl_hold_below_cut:
+mov.w @(0xE,r5),r0
+extu.w r0,r0
+cmp/hs r0,r1
+bt rl_hold_publish
+mov #0x0,r0
+mov.w r0,@(0x16,r5)
+rl_hold_publish:
+mov.w @(0x16,r5),r0
+cmp/eq 0x1,r0
+bf rl_hold_done
+mov #0x3F,r0
+mov.w r0,@(0x14,r5)
+mov r3,r0
+or 0x20,r0
+mov r0,r3
+rl_hold_done:
 mov r3,r0
 or 0x40,r0
 mov r0,r3
@@ -800,8 +796,8 @@ rl_helper_config_address:
 .long 0x000D3F60
 rl_helper_state_address:
 .long 0xFFFF5D40
-rl_helper_fuel_shadow_address:
-.long 0xFFFF5D10
+rl_helper_rpm_address:
+.long 0xFFFF11BC
 rl_helper_fuel_cut_status:
 .long 0xFFFF2497
 rl_helper_config_magic:

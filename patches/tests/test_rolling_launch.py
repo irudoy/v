@@ -131,14 +131,20 @@ class RollingLaunchTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "serialized ASCD status"):
             rl.apply_dashboard_feedback(active, 0x100)
 
-    def test_observe_mode_transitions_without_limiter_writes(self):
+    def test_observe_mode_transitions_without_a_fuel_cut_request(self):
         calibration = dataclasses.replace(
             self.calibration, mode=rl.Mode.OBSERVE
         )
         result = rl.step(rl.RuntimeState(), self.inputs, calibration)
         self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
         self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
-        self.assertFalse(result.state.flags & rl.Flag.FUEL_OVERLAY)
+        self.assertFalse(result.state.flags & rl.Flag.FUEL_HOLD)
+        high = dataclasses.replace(self.inputs, rpm_native=400)
+        held = rl.step(result.state, high, calibration).state
+        self.assertEqual(held.phase, rl.Phase.ACTIVE)
+        self.assertEqual(
+            (held.fuel_cut_request, held.request_latch), (0, 0)
+        )
 
         released = dataclasses.replace(
             self.inputs, button=rl.BUTTON_RELEASED
@@ -147,17 +153,16 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(result.state.phase, rl.Phase.COOLDOWN)
         self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
 
-    def test_rpm_hold_captures_saturated_overlay_and_restores_snapshot(self):
+    def test_rpm_hold_captures_saturated_thresholds_without_limiter_writes(self):
         result = rl.step(rl.RuntimeState(), self.inputs, self.calibration)
         self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
         self.assertEqual(result.state.captured_rpm_native, 300)
         self.assertEqual(result.state.cut_rpm_native, 316)
         self.assertEqual(result.state.restore_rpm_native, 310)
         self.assertEqual(result.state.retard_band_start_native, 300)
-        self.assertEqual(
-            result.limiter_action, rl.LimiterAction.APPLY_OVERLAY
-        )
-        self.assertEqual(result.limiter_index, 0)
+        self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
+        self.assertTrue(result.state.flags & rl.Flag.FUEL_HOLD)
+        self.assertEqual(result.state.fuel_cut_request, 0)
 
         released = dataclasses.replace(
             self.inputs, button=rl.BUTTON_RELEASED
@@ -167,9 +172,7 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(
             result.state.abort_reason, rl.AbortReason.BUTTON_RELEASED
         )
-        self.assertEqual(
-            result.limiter_action, rl.LimiterAction.RESTORE_SNAPSHOT
-        )
+        self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
 
         saturated_inputs = dataclasses.replace(
             self.inputs, rpm_native=0xFFF8
@@ -185,6 +188,61 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(
             saturated.state.retard_band_start_native, 0xFFF8
         )
+
+    def test_the_request_holds_from_cut_until_below_restore(self):
+        state = rl.step(rl.RuntimeState(), self.inputs, self.calibration).state
+        self.assertEqual((state.cut_rpm_native, state.restore_rpm_native), (316, 310))
+        for rpm, latch in (
+            (315, 0), (316, 1), (320, 1), (311, 1), (310, 1), (309, 0),
+            (312, 0), (316, 1),
+        ):
+            with self.subTest(rpm=rpm):
+                inputs = dataclasses.replace(self.inputs, rpm_native=rpm)
+                state = rl.step(state, inputs, self.calibration).state
+                self.assertEqual(state.phase, rl.Phase.ACTIVE)
+                self.assertEqual(state.request_latch, latch)
+                self.assertEqual(state.fuel_cut_request, 0x3F if latch else 0)
+                self.assertEqual(bool(state.flags & rl.Flag.FUEL_CUT), bool(latch))
+            state = dataclasses.replace(state, run_ticks=0)
+
+        released = dataclasses.replace(self.inputs, button=rl.BUTTON_RELEASED)
+        state = rl.step(state, released, self.calibration).state
+        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
+        self.assertEqual((state.fuel_cut_request, state.request_latch), (0, 0))
+        self.assertFalse(state.flags & rl.Flag.FUEL_CUT)
+
+    def test_every_tick_clears_a_stale_request(self):
+        cooldown = rl.RuntimeState(
+            phase=rl.Phase.COOLDOWN,
+            abort_reason=rl.AbortReason.BUTTON_RELEASED,
+            active_mode_snapshot=rl.Mode.RPM_HOLD,
+            fuel_cut_request=0x3F,
+        )
+        state = rl.step(cooldown, self.inputs, self.calibration).state
+        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
+        self.assertEqual(state.fuel_cut_request, 0)
+
+    def test_the_wrapper_ors_only_a_well_formed_request(self):
+        for stock, request, expected in (
+            (0x00, 0x0000, 0x00),
+            (0x05, 0x0000, 0x05),
+            (0x00, 0x003F, 0x3F),
+            (0x00, 0x0015, 0x15),
+            (0x0A, 0x0015, 0x1F),
+            (0x3F, 0x0001, 0x3F),
+            (0x00, 0x0040, 0x00),
+            (0x05, 0x007F, 0x05),
+            (0x05, 0x0100, 0x05),
+            (0x05, 0xFFFF, 0x05),
+        ):
+            with self.subTest(stock=stock, request=request):
+                self.assertEqual(
+                    rl.apply_fuel_cut_request(stock, request), expected
+                )
+        with self.assertRaisesRegex(ValueError, "stock cylinder mask"):
+            rl.apply_fuel_cut_request(0x100, 0)
+        with self.assertRaisesRegex(ValueError, "fuel-cut request"):
+            rl.apply_fuel_cut_request(0, 0x10000)
 
     def test_the_fuel_cut_flag_follows_the_active_cut_bit_alone(self):
         for status, expected in (

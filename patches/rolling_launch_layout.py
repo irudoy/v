@@ -31,6 +31,7 @@ DEFAULT_MANIFEST = Path(__file__).with_name("rolling-launch-layout.toml")
 class SchedulerLayout:
     table_address: int
     table_index: int
+    fuel_cut_index: int
     tick_numerator: int
     pphi_hz: int
     tick_microseconds: int
@@ -41,7 +42,6 @@ class RamLayout:
     proven_free: common.AddressRange
     base_reservation: common.AddressRange
     state: common.AddressRange
-    fuel_shadow: common.AddressRange
 
 
 @dataclass(frozen=True)
@@ -180,6 +180,7 @@ def load_layout(path=DEFAULT_MANIFEST):
         (
             "table_address",
             "table_index",
+            "fuel_cut_index",
             "tick_numerator",
             "pphi_hz",
             "tick_microseconds",
@@ -198,8 +199,6 @@ def load_layout(path=DEFAULT_MANIFEST):
             "base_reservation_end",
             "state_start",
             "state_size",
-            "fuel_shadow_start",
-            "fuel_shadow_size",
         ),
         f"{path.name} [ram]",
     )
@@ -218,11 +217,6 @@ def load_layout(path=DEFAULT_MANIFEST):
             ram_raw["state_start"],
             ram_raw["state_start"] + ram_raw["state_size"],
             "ram.state",
-        ),
-        fuel_shadow=common.AddressRange(
-            ram_raw["fuel_shadow_start"],
-            ram_raw["fuel_shadow_start"] + ram_raw["fuel_shadow_size"],
-            "ram.fuel_shadow",
         ),
     )
 
@@ -336,7 +330,7 @@ def load_layout(path=DEFAULT_MANIFEST):
 
 def validate_structure(layout):
     """Validate every manifest invariant that does not need ROM bytes."""
-    if layout.schema_version != 2:
+    if layout.schema_version != 3:
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
@@ -381,6 +375,7 @@ def validate_structure(layout):
     if (
         scheduler.table_address % 4
         or scheduler.table_index < 0
+        or scheduler.fuel_cut_index <= scheduler.table_index
         or scheduler.tick_numerator != 204800
         or scheduler.pphi_hz != 20_000_000
         or scheduler.tick_microseconds
@@ -397,6 +392,13 @@ def validate_structure(layout):
         != scheduler.table_address + 4 * scheduler.table_index
     ):
         raise ValueError("displaced periodic task lies outside its table entry")
+    fuel_cut_hook = layout.hook_by_key.get("fuel_cut_coordinator")
+    if (
+        fuel_cut_hook is not None
+        and fuel_cut_hook.address
+        != scheduler.table_address + 4 * scheduler.fuel_cut_index
+    ):
+        raise ValueError("fuel-cut coordinator lies outside its table entry")
 
     if not layout.ram.proven_free.contains(layout.ram.base_reservation):
         raise ValueError("map-switching RAM lies outside the proven free range")
@@ -404,9 +406,7 @@ def validate_structure(layout):
         raise ValueError("Rolling Launch state lies outside the proven free range")
     if layout.ram.base_reservation.overlaps(layout.ram.state):
         raise ValueError("Rolling Launch state overlaps map-switching RAM")
-    if not layout.ram.base_reservation.contains(layout.ram.fuel_shadow):
-        raise ValueError("fuel shadow lies outside map-switching RAM")
-    if layout.ram.state.size != 20 or layout.ram.fuel_shadow.size != 12:
+    if layout.ram.state.size != 24:
         raise ValueError("runtime RAM sizes differ from the implementation")
 
     _unique(layout.code_regions, lambda item: item.key, "code region keys")
@@ -481,6 +481,7 @@ def validate_structure(layout):
         "startup_state_clear",
         "primary_ignition_command",
         "feedback_arbitration",
+        "fuel_cut_coordinator",
     }
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
@@ -490,6 +491,7 @@ def validate_structure(layout):
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
         "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
+        "fuel_cut_coordinator": (0x219DC, 0x4ED88, 0xD6000),
     }
     entries = {region.entry for region in layout.code_regions}
     for hook in layout.hooks:

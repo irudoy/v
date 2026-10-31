@@ -58,6 +58,7 @@ SOURCE_LABELS = {
     "ignition_controller": "rolling_launch_ignition_controller",
     "threshold_helper": "rolling_launch_threshold_helper",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
+    "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -164,23 +165,35 @@ def _validate_wrapper_abi(parsed):
         raise ValueError("selector arbiter needs two tail jumps")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
         raise ValueError("startup state clear loop differs")
-    if texts.count("mov #0x5,r2") != 1:
+    if texts.count("mov #0x6,r2") != 1:
         raise ValueError("startup state clear size differs")
 
 
 def _validate_engine_abi(parsed):
     texts = _texts(parsed)
-    if texts[0] != "sts.l pr,@-r15":
-        raise ValueError("Rolling Launch engine does not save PR")
+    if texts[:4] != [
+        "sts.l pr,@-r15",
+        "mov.l @(rl_state_address,pc),r5",
+        "mov #0x0,r0",
+        "mov.w r0,@(0x14,r5)",
+    ]:
+        raise ValueError("engine does not clear the fuel-cut request on entry")
     if texts.count("lds.l @r15+,pr") != 2:
         raise ValueError("engine and gate helper must each restore PR")
-    if texts.count("jsr @r0") != 3:
+    if texts.count("jsr @r0") != 2:
         raise ValueError(
-            "engine must have two limiter commits and one threshold call"
+            "engine must have one corrupt-state limiter commit and one "
+            "threshold call"
         )
-    if texts.count("stc sr,r7") != 1 or texts.count("ldc r7,sr") != 1:
-        raise ValueError("fuel actuator synchronization differs")
-    validator_end = parsed.labels["rl_apply_fuel_overlay"]
+    if texts.count("stc sr,r7") or texts.count("ldc r7,sr"):
+        raise ValueError("engine writes the fuel-cut shadow")
+    if texts.count("mov #0x6,r2") != 1:
+        raise ValueError("corrupt-state clear size differs")
+    if texts.count("mov.w r0,@(0x14,r5)") != 2 or texts.count("mov #0x3f,r0") != 1:
+        raise ValueError("fuel-cut request publication differs")
+    if texts.count("mov.w r0,@(0x16,r5)") != 4:
+        raise ValueError("fuel-cut request latch stores differ")
+    validator_end = parsed.labels["rl_publish_active_flags"]
     validator = [
         item.text.lower()
         for item in _instructions(parsed)
@@ -200,22 +213,6 @@ def _validate_engine_abi(parsed):
         for index in range(len(texts) - len(threshold_call) + 1)
     ):
         raise ValueError("engine threshold-helper call differs")
-    word_stores = [
-        index
-        for index, text in enumerate(texts)
-        if text == "mov.w r0,@r4"
-    ]
-    try:
-        mask = texts.index("ldc r0,sr")
-        restore = texts.index("ldc r7,sr")
-    except ValueError as error:
-        raise ValueError("fuel overlay lacks SR mask or restore") from error
-    if len(word_stores) != 4 or not all(
-        mask < index < restore for index in word_stores
-    ):
-        raise ValueError(
-            "fuel overlay must contain four protected word stores"
-        )
     required = {
         "rl_idle",
         "rl_active",
@@ -224,7 +221,7 @@ def _validate_engine_abi(parsed):
         "rl_evaluate_gates",
         "rl_validate_config",
         "rl_publish_active_flags",
-        "rl_apply_fuel_overlay",
+        "rl_hold_publish",
     }
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
@@ -380,6 +377,37 @@ def _validate_feedback_arbiter_abi(parsed):
         raise ValueError("feedback arbiter clobbers an undeclared register")
 
 
+def _validate_fuel_cut_wrapper_abi(parsed):
+    texts = _texts(parsed)
+    expected = [
+        "sts.l pr,@-r15",
+        "mov.l @(rl_fuel_stock_coordinator,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov.l r0,@-r15",
+        "mov.l @(rl_fuel_state_address,pc),r1",
+        "mov.w @(0x14,r1),r0",
+        "extu.w r0,r0",
+        "tst r0,r0",
+        "bt rl_fuel_return",
+        "mov #-0x40,r1",
+        "tst r1,r0",
+        "bf rl_fuel_return",
+        "mov.l @(rl_fuel_final_mask_address,pc),r1",
+        "mov.b @r1,r2",
+        "or r2,r0",
+        "mov.b r0,@r1",
+        "mov.l @r15+,r0",
+        "lds.l @r15+,pr",
+        "rts",
+        "nop",
+    ]
+    if texts != expected:
+        raise ValueError("fuel-cut wrapper instruction contract differs")
+    if parsed.labels.get("rl_fuel_return") != _instructions(parsed)[17].address:
+        raise ValueError("fuel-cut wrapper return label differs")
+
+
 def _expected_long_literals():
     return {
         "wrappers": {
@@ -411,7 +439,7 @@ def _expected_long_literals():
             "rl_gate_coolant_address": 0xFFFF1077,
             "rl_helper_config_address": 0x000D3F60,
             "rl_helper_state_address": 0xFFFF5D40,
-            "rl_helper_fuel_shadow_address": 0xFFFF5D10,
+            "rl_helper_rpm_address": 0xFFFF11BC,
             "rl_helper_fuel_cut_status": 0xFFFF2497,
         },
         "ignition_adapter": {
@@ -440,6 +468,11 @@ def _expected_long_literals():
             "rl_feedback_selector_state": 0xFFFF5D00,
             "rl_feedback_state": 0xFFFF5D40,
             "rl_feedback_status_byte": 0xFFFF3ADA,
+        },
+        "fuel_cut_wrapper": {
+            "rl_fuel_stock_coordinator": 0x0004ED88,
+            "rl_fuel_state_address": 0xFFFF5D40,
+            "rl_fuel_final_mask_address": 0xFFFF22E0,
         },
     }
 
@@ -497,6 +530,8 @@ def validate_assembly_sources(layout=None):
             _validate_threshold_helper_abi(parsed)
         elif unit.key == "feedback_arbiter":
             _validate_feedback_arbiter_abi(parsed)
+        elif unit.key == "fuel_cut_wrapper":
+            _validate_fuel_cut_wrapper_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

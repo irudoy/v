@@ -1,10 +1,11 @@
 title = "Rolling Launch"
 summary = """
 An optional runtime on Map Switching of the 7mfk layout that captures engine \
-speed while CANCEL is held, applies an all-cylinder fuel cut through a \
-temporary map-specific fuel-cut window, and can apply bounded retard-only \
-ignition control; the other layouts receive Rolling Launch v2 after its \
-vehicle acceptance on 7mfk."""
+speed while CANCEL is held, holds RPM with an all-cylinder fuel-cut request \
+that a wrapper of the stock fuel-output inhibit coordinator merges into the \
+final cylinder mask, and can apply bounded retard-only ignition control; the \
+other layouts receive Rolling Launch v2 after its vehicle acceptance on \
+7mfk."""
 specs = ["patches/rolling-launch.md"]
 
 [[target]]

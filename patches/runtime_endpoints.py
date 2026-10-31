@@ -46,16 +46,28 @@ PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
     ("startup_state_clear", 0x000D38A0),
     ("primary_ignition_command", 0x000D3EA0),
     ("feedback_arbitration", 0x000D35E0),
+    ("fuel_cut_coordinator", 0x0004ED88),
 )
-CURRENT_ROLLING_HOOK_VALUES = (
+# The hooks of the endpoints that hold RPM through the fuel-cut shadow: the
+# arbiter dashboard hook is installed and the fuel-cut coordinator is stock.
+FUEL_SHADOW_ROLLING_HOOK_VALUES = (
     ("displaced_periodic_task", 0x000D3860),
     ("selector_arbitration", 0x000D3880),
     ("startup_state_clear", 0x000D38A0),
     ("primary_ignition_command", 0x000D3EA0),
     ("feedback_arbitration", 0x000D41E0),
+    ("fuel_cut_coordinator", 0x0004ED88),
 )
 ERASED_FEEDBACK_ARBITER_SHA256 = (
     "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539"
+)
+ERASED_FUEL_CUT_WRAPPER_SHA256 = (
+    "8667e718294e9e0df1d30600ba3eeb201f764aad2dad72748643e4a285e1d1f7"
+)
+# Wrapper and engine bytes of every endpoint that holds RPM through the
+# fuel-cut shadow and clears a 20-byte state.
+FUEL_SHADOW_WRAPPERS_SHA256 = (
+    "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45"
 )
 
 
@@ -68,10 +80,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=1,
         unit_sha256=(
-            (
-                "wrappers",
-                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
-            ),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             (
                 "engine",
                 "599c859dffe2f2b88eefa0c2add63ceecf3232a08625b1acc2481bd9c4658673",
@@ -89,6 +98,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -97,10 +107,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=2,
         unit_sha256=(
-            (
-                "wrappers",
-                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
-            ),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             (
                 "engine",
                 "6fbe61494983b09c45565b02409f1d768c1633cbe3c088d6e378d10c0ed9d3c6",
@@ -118,6 +125,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -126,10 +134,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=2,
         unit_sha256=(
-            (
-                "wrappers",
-                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
-            ),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             (
                 "engine",
                 "e7e940b866526ea9feeab044f072fdee1ce157de600dd61482fbbe2905203661",
@@ -147,6 +152,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -155,10 +161,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=3,
         unit_sha256=(
-            (
-                "wrappers",
-                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
-            ),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             (
                 "engine",
                 "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729",
@@ -176,6 +179,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7",
             ),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -188,10 +192,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=3,
         unit_sha256=(
-            (
-                "wrappers",
-                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
-            ),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             (
                 "engine",
                 "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729",
@@ -212,8 +213,9 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "feedback_arbiter",
                 "0ec18b26a0ef6556bcb5f6056a2a9b988f8c895f65ec6b2b3665352ce73fb4dc",
             ),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
-        hook_values=CURRENT_ROLLING_HOOK_VALUES,
+        hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
     ),
     RollingEndpointSignature(
@@ -221,14 +223,33 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         roms=runtime_targets.EXACT_ROMS,
         configuration_schema_version=3,
         unit_sha256=(
-            ("wrappers", "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45"),
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             ("engine", "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"),
             ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
             ("ignition_controller", "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7"),
             ("threshold_helper", "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
-        hook_values=CURRENT_ROLLING_HOOK_VALUES,
+        hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    # The last endpoint that holds RPM through the fuel-cut shadow, before the
+    # fuel-cut coordinator wrapper and the 24-byte state.
+    RollingEndpointSignature(
+        key="schema-3-fuel-shadow-hold",
+        roms=runtime_targets.EXACT_ROMS,
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
+            ("engine", "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"),
+            ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
+            ("ignition_controller", "0d8c3c17c50b936f48586febd0c46daf1cdbe4b46a25a8019bbdd9c7df2329b3"),
+            ("threshold_helper", "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"),
+            ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+            ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+        ),
+        hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
     ),
 )

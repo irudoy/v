@@ -30,20 +30,27 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "78788d1cdbc012114d16a3febcd57524383967b2b61742ea8e9b74f0ac8bfff2"
+    "46d9da1cc167e6bfc10b028b6d4f198e07b628504daaaf874336fdd3ed91ee8a"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1972
-EXPECTED_COMPOSITION_WRITE_BYTES = 2328
-EXPECTED_INSTRUCTION_COUNT = 876
-EXPECTED_CODE_ENTRY_COUNT = 8
+EXPECTED_COMPOSITION_CHANGED_BYTES = 2007
+EXPECTED_COMPOSITION_WRITE_BYTES = 2396
+EXPECTED_INSTRUCTION_COUNT = 888
+EXPECTED_CODE_ENTRY_COUNT = 9
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 136
+EXPECTED_DYNAMIC_CASES = 162
 RETURN_STUB = bytes.fromhex("000b0009")
+# Simulator-only stock fuel-output inhibit coordinator: it copies the stock
+# result byte of a harness cell into the final cylinder mask and returns a
+# sentinel in R0. Its RTS/NOP boundary is at COORDINATOR_RTS_OFFSET.
+COORDINATOR_RESULT_CELL = 0xFFFF6FF0
+COORDINATOR_FINAL_MASK = 0xFFFF22E0
+COORDINATOR_RETURN = 0xC0DE22E0
+COORDINATOR_RTS_OFFSET = 10
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
-WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper")
-COVERAGE_UNITS = ("wrappers", "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
+WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper", "fuel_cut_wrapper")
+COVERAGE_UNITS = ("wrappers", "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller", "fuel_cut_wrapper")
 COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
 
 
@@ -138,7 +145,29 @@ def install_stock_return_stubs(fixture, base_layout, rolling_layout):
     fixture[
         serializer : serializer + len(FEEDBACK_SERIALIZER_STUB)
     ] = FEEDBACK_SERIALIZER_STUB
-    return len(targets) + 1
+    coordinator = rolling_hooks["fuel_cut_coordinator"].stock
+    if coordinator != 0x0004ED88:
+        raise VerificationError(
+            f"fuel-cut coordinator target differs: {coordinator:#x}"
+        )
+    stub = coordinator_stub()
+    fixture[coordinator : coordinator + len(stub)] = stub
+    return len(targets) + 2
+
+
+def coordinator_stub():
+    """Return the declared simulator-only fuel coordinator body."""
+    stub = bytes.fromhex("d1036010d1032100d003000b00090009") + b"".join(
+        value.to_bytes(4, "big")
+        for value in (
+            base_verifier.alias_high_ram(COORDINATOR_RESULT_CELL),
+            base_verifier.alias_high_ram(COORDINATOR_FINAL_MASK),
+            COORDINATOR_RETURN,
+        )
+    )
+    if stub[COORDINATOR_RTS_OFFSET : COORDINATOR_RTS_OFFSET + 4] != RETURN_STUB:
+        raise VerificationError("fuel coordinator stub lacks its RTS/NOP boundary")
+    return stub
 
 
 def build_dynamic_fixture(
@@ -586,15 +615,19 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         regions["periodic_wrapper"].entry: rolling_layout.hook_by_key["displaced_periodic_task"].stock,
         regions["selector_arbiter"].entry: base_hooks["selector_host_call"].stock,
         regions["startup_wrapper"].entry: base_hooks["startup_initializer"].stock,
+        regions["fuel_cut_wrapper"].entry: (
+            rolling_layout.hook_by_key["fuel_cut_coordinator"].stock + COORDINATOR_RTS_OFFSET
+        ),
     }
     result, records, invoke_words = execute(harness_elf)
     covered = require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
                                        base_hooks["cruise_feedback_serializer"].stock,
                                        rolling_layout.hook_by_key["primary_ignition_command"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=136 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=162 "
         "structural=11 gates=32 config=24 threshold=9 activation=6 "
-        "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 entries=8"
+        "hold=12 active=9 cooldown=6 ignition=26 wrappers=6 fuel_cut=13 "
+        "feedback=8 entries=9"
     )
     if marker not in result.stdout:
         raise VerificationError(

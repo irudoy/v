@@ -440,7 +440,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 876)
+        self.assertEqual(result.instruction_count, 888)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -452,7 +452,7 @@ mov #0x5,r1
             fixture, base_layout, rolling_layout
         )
 
-        self.assertEqual(count, 5)
+        self.assertEqual(count, 6)
         for address in (0xD09D8, 0x2C648, 0xA9554, 0x2A892):
             with self.subTest(address=address):
                 self.assertEqual(
@@ -465,6 +465,10 @@ mov #0x5,r1
             )],
             ROLLING_VERIFIER.FEEDBACK_SERIALIZER_STUB,
         )
+        coordinator = ROLLING_VERIFIER.coordinator_stub()
+        self.assertEqual(fixture[0x4ED88 : 0x4ED88 + len(coordinator)], coordinator)
+        boundary = 0x4ED88 + ROLLING_VERIFIER.COORDINATOR_RTS_OFFSET
+        self.assertEqual(fixture[boundary : boundary + 4], ROLLING_VERIFIER.RETURN_STUB)
 
     def test_rolling_dynamic_transform_preserves_new_instructions(self):
         base_layout = layout_model.load_layout()
@@ -487,7 +491,7 @@ mov #0x5,r1
 
         self.assertGreater(relocated, 0)
         self.assertGreater(differentiated, 0)
-        self.assertEqual(stubs, 5)
+        self.assertEqual(stubs, 6)
         for unit in rolling_layout.assembly_units:
             for statement in parsed[unit.key].statements:
                 if statement.kind != "instruction":
@@ -509,7 +513,8 @@ mov #0x5,r1
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
         self.assertIn("feedback=8", harness)
-        self.assertIn("entries=8", harness)
+        self.assertIn("fuel_cut=13", harness)
+        self.assertIn("entries=9", harness)
 
     def test_can_telemetry_composition_lock_matches_verifier(self):
         layout = can_telemetry_layout.load_layout()
@@ -699,7 +704,7 @@ mov #0x5,r1
         self.assertGreater(base_count, 0)
         self.assertGreater(launch_count, 0)
         self.assertGreater(telemetry_count, 0)
-        self.assertEqual(stubs, 10)
+        self.assertEqual(stubs, 11)
         self.assertEqual(
             fixture[
                 TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS :
@@ -1588,7 +1593,7 @@ mov #0x5,r1
 class RollingWrapperCoverageTest(unittest.TestCase):
     @staticmethod
     def fixture():
-        image = bytearray(0x400)
+        image = bytearray(0x500)
         rows = [
             (0x100, "mov.l @(periodic_stock,pc),r0"), (0x102, "jsr @r0"),
             (0x104, "nop"), (0x106, "rts"), (0x108, "nop"),
@@ -1739,14 +1744,36 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                        + controller_suffix + suffix,
                        prefix + [event(0x3A0), event(0x3A8), event(0x3AA), event(0x3AC, 1),
                                  event(0x380), event(0x382, 1)] + suffix))
+        rows = ((0x400, "sts.l pr,@-r15", 0x4F22),
+                (0x402, "mov.l @(rl_fuel_stock_coordinator,pc),r0", 0xD00B),
+                (0x404, "jsr @r0", 0x400B), (0x406, "nop", 9),
+                (0x408, "tst r0,r0", 0x2008), (0x40A, "bt rl_fuel_return", 0x8901),
+                (0x40C, "mov #1,r1", 0xE101), (0x40E, "nop", 9),
+                (0x410, "lds.l @r15+,pr", 0x4F26), (0x412, "rts", 11), (0x414, "nop", 9))
+        statements = []
+        for pc, text, word in rows:
+            image[pc:pc + 2] = word.to_bytes(2, "big")
+            statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
+        units["fuel_cut_wrapper"] = assembly_model.ParsedSource(Path("fuel.s"),
+            {"rl_fuel_stock_coordinator": 0x430, "rl_fuel_return": 0x410}, tuple(statements))
+        image[0x430:0x434] = (0x480).to_bytes(4, "big")
+        image[0x480:0x484] = bytes.fromhex("000b0009")
+        regions["fuel_cut_wrapper"] = SimpleNamespace(
+            entry=0x400, span=SimpleNamespace(start=0x400, end=0x440))
+        boundaries[0x400] = 0x480
+        fuel_prefix = [event(0x400), event(0x402), event(0x404), event(0x406, 1),
+                       event(0x480), event(0x482, 1), event(0x408), event(0x40A)]
+        fuel_suffix = [event(0x410), event(0x412), event(0x414, 1)]
+        traces.extend((prefix + fuel_prefix + fuel_suffix + suffix,
+                       prefix + fuel_prefix + [event(0x40C), event(0x40E)] + fuel_suffix + suffix))
         return bytes(image), units, regions, boundaries, invokes, traces
 
     def test_each_entry_branch_delay_and_return_is_measured(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=8, instructions=60, outcomes=10,
-                                      delay_slots=19, call_return_paths=13, tail_paths=5))
+        self.assertEqual(result, dict(entries=9, instructions=71, outcomes=12,
+                                      delay_slots=21, call_return_paths=15, tail_paths=5))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
@@ -1755,6 +1782,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                   (traces[:6] + traces[8:], "uncovered wrapper entry 0x00000240"),
                                   (traces[:8], "uncovered wrapper entry 0x000003a0"),
                                   (traces[:8] + traces[10:], "uncovered wrapper entry 0x000003c0"),
+                                  (traces[:11], "uncovered wrapper entry 0x00000400"),
+                                  (traces[:12], "uncovered wrapper branch 0x0000040a"),
                                   (traces[:6] + traces[7:], "uncovered wrapper branch 0x00000246"),
                                   (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
@@ -1798,7 +1827,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                 (0x240, "wrapper instruction"), (0x278, "wrapper control literal"),
                                 (0x3A0, "wrapper instruction"), (0x3B0, "wrapper control literal"),
                                 (0x3C0, "wrapper instruction"), (0x3F0, "wrapper control literal"),
-                                (0x3F4, "wrapper control literal")):
+                                (0x3F4, "wrapper control literal"),
+                                (0x400, "wrapper instruction"), (0x430, "wrapper control literal")):
             changed = bytearray(image)
             changed[address] ^= 1
             with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
@@ -1917,6 +1947,29 @@ class RollingWrapperCoverageTest(unittest.TestCase):
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(
                     sum(traces[:8], []) + changed, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+
+    def test_fuel_cut_wrapper_requires_invoke_coordinator_and_stub_boundary(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        fuel = traces[11]
+        cases = [(fuel[2:], "originating invoke frame")]
+        wrong_target = list(fuel)
+        wrong_target[6:8] = [(0x30C, 11, 0), (0x30E, 9, 1)]
+        cases.append((wrong_target, "wrapper JSR differs"))
+        wrong_return = list(fuel)
+        wrong_return[8] = (0x40C, 0xE101, 0)
+        cases.append((wrong_return, "wrapper return differs"))
+        for records, reason in cases:
+            with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
+                ROLLING_VERIFIER.require_wrapper_coverage(
+                    sum(traces[:11], []) + records, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+        changed = bytearray(image)
+        changed[0x430:0x434] = (0x30C).to_bytes(4, "big")
+        records = sum(traces, [])
+        for index, record in enumerate(records):
+            if record[0] in (0x480, 0x482):
+                records[index] = (record[0] - 0x174, *record[1:])
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "stock return boundary"):
+            ROLLING_VERIFIER.require_wrapper_coverage(records, changed, parsed, regions, boundaries, invokes, 0x350, 0x380)
 
     def test_controller_adapter_binding_rejects_instruction_pool_and_target_changes(self):
         image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()

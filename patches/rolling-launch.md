@@ -2,9 +2,10 @@
 
 Rolling Launch is an optional runtime layered on the complete five-slot
 Map Switching composition. It captures engine speed while CANCEL is held,
-applies an all-cylinder fuel-cut actuator, and can apply bounded retard-only
-ignition control. It runs on the exact `7mfk` images JK00A, JK03A, JK03B, and
-JK08A and uses a temporary map-specific fuel-cut window. The relocated targets
+holds RPM with an all-cylinder fuel-cut request, and can apply bounded
+retard-only ignition control. A wrapper of the stock fuel-output inhibit
+coordinator merges the request into the final cylinder mask. It runs on the
+exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated targets
 JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch runtime.
 
 The authoritative implementation sources are:
@@ -14,14 +15,16 @@ The authoritative implementation sources are:
 - `rolling_launch.py` for the independent state and calibration model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The canonical JK08A candidate is software-verified and has active
-target-vehicle evidence from an exact local combined image. The evidence
-qualifies button decoding, dashboard states, repeated rearm, the full software
-fuel-inhibit mask, captured-RPM-dependent hold behavior, and the bounded
-software ignition command on Maps 2 and 3. Physical spark timing and electrical
-injector output remain unmeasured. Earlier overlay results do not qualify the
-current runtime. Concrete profiles, derived images, and active tune identities
-remain local and unversioned.
+The canonical JK08A runtime is software-verified. Its target-vehicle evidence
+comes from exact local combined images of the registered historical endpoint
+`schema-3-fuel-shadow-hold`, which held RPM through the fuel-cut shadow of the
+selected map. That evidence qualifies button decoding, dashboard states,
+repeated rearm, the full software fuel-inhibit mask, captured-RPM-dependent
+hold behavior, and the bounded software ignition command on Maps 2 and 3. The
+coordinator wrapper and the held request have no vehicle evidence. Physical
+spark timing and electrical injector output remain unmeasured. Earlier overlay
+results do not qualify the current runtime. Concrete profiles, derived images,
+and active tune identities remain local and unversioned.
 
 ## Functional model
 
@@ -32,8 +35,8 @@ IDLE -> ACTIVE -> COOLDOWN -> IDLE
 ```
 
 `IDLE` evaluates activation gates. `ACTIVE` owns the target-specific fuel-cut
-request and optional ignition command. Any abort restores or republishes the
-selected map limiter and enters `COOLDOWN`. `COOLDOWN` requires the released
+request and optional ignition command. Any abort releases the fuel-cut request
+and enters `COOLDOWN`. `COOLDOWN` requires the released
 button code `0x20` for the configured rearm period before returning to `IDLE`.
 
 Button codes follow the target vehicle's debounced ASCD representation:
@@ -312,11 +315,11 @@ crankshaft and electrical injector output remain outside the measurement.
 
 ## Modes
 
-| Mode | Fuel limiter | Ignition |
+| Mode | Fuel cut | Ignition |
 | --- | --- | --- |
 | `observe` | unchanged | unchanged |
-| `rpm_hold` | temporary captured-RPM window | unchanged |
-| `rpm_hold_retard` | temporary captured-RPM window | bounded retard-only command |
+| `rpm_hold` | held captured-RPM request | unchanged |
+| `rpm_hold_retard` | held captured-RPM request | bounded retard-only command |
 
 On activation, the runtime captures native RPM and derives:
 
@@ -331,10 +334,27 @@ hysteresis = clamp(
 restore = cut - hysteresis
 ```
 
-The native RPM unit is 12.5 RPM. The runtime writes the first eight bytes of
-the shared fuel-cut shadow under an interrupt mask and leaves the rest of the
-selected map limiter cluster intact. Abort restores the full selected map
-shadow through the Map Switching limiter commit.
+The native RPM unit is 12.5 RPM.
+
+## Fuel-cut request
+
+In `rpm_hold` and `rpm_hold_retard`, every `ACTIVE` tick evaluates a latch: it
+sets at or above `cut` and releases below `restore`. While the latch holds,
+the engine publishes the request `0x003F` in the state record. Every engine
+entry clears the request first, so only an `ACTIVE` tick with a held latch
+publishes it. Activation and abort release the latch, and `observe` never
+publishes a request. No mode writes the fuel-cut shadow of the selected map.
+
+Periodic scheduler entry 28 at `0x000219DC` calls the fuel-cut wrapper in
+place of the stock six-channel fuel-output inhibit coordinator `0x0004ED88`
+(`../defs/JK08A.fuel-inhibit.md`). The wrapper runs the coordinator first, so
+every stock contribution remains, then ORs a request of `0x0001..0x003F`
+into the final cylinder mask at `0xFFFF22E0` and returns the coordinator's
+`r0`. Zero and any request with a bit outside the six cylinder bits leave the
+stock mask unchanged. Entry 1 runs the engine before entry 28, so the mask
+carries the request of the same scheduler pass, and an abort releases the cut
+in the pass that detects it. An interrupt-context reader of the mask can
+observe the stock result between the coordinator store and the merge.
 
 ## Bounded ignition control
 
@@ -365,9 +385,9 @@ trace alone does not prove spark timing at the cylinder.
 ## Speed-hold cut actuator
 
 Rolling Launch v2 replaces this runtime as a whole on every layout: speed
-capture and a speed-hold controller take the place of RPM capture, the
-temporary fuel-cut window, and the modes and configuration above. It is a
-design for the `7mfk` layout, and no payload implements it. The other layouts
+capture and a speed-hold controller take the place of RPM capture, the held
+RPM request, and the modes and configuration above. The speed-hold controller
+is a design for the `7mfk` layout, and no payload implements it. The other layouts
 receive v2 after its vehicle acceptance on `7mfk`. The speed hold cuts torque
 by withholding the dwell of selected ignition events, and the `GR11A` spark
 handler sets the veto. The fuel-inhibit mask through the coordinator wrapper
@@ -547,21 +567,24 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | Region or address | Size | Purpose |
 | --- | ---: | --- |
 | `0x000D3860..0x000D38E4` | 132 | periodic, selector-arbiter, and startup wrappers |
-| `0x000D38E4..0x000D3EA0` | 1,468 | state engine and limiter helpers |
+| `0x000D38E4..0x000D3EA0` | 1,468 | state engine, gates, configuration check, and flag publisher |
 | `0x000D3EA0..0x000D3F60` | 192 | ignition adapter |
 | `0x000D3F60..0x000D3F80` | 32 | configuration record |
 | `0x000D40C0..0x000D4140` | 128 | bounded ignition controller |
 | `0x000D4140..0x000D41E0` | 160 | adaptive threshold helper |
 | `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
-| `0xFFFF5D40..0xFFFF5D54` | 20 | runtime state |
+| `0x000D6000..0x000D6040` | 64 | fuel-cut coordinator wrapper |
+| `0xFFFF5D40..0xFFFF5D58` | 24 | runtime state |
 
-The composition replaces five declared call targets:
+The composition replaces six declared call targets:
 
 - periodic scheduler entry 1 at `0x00021970`;
 - map-selector host at `0x000CE8DC`;
 - startup state initialization at `0x00027D28`;
 - primary ignition-command consumer at `0x0004E198`;
-- dashboard feedback call at `0x000C3FA4`.
+- dashboard feedback call at `0x000C3FA4`;
+- periodic scheduler entry 28 at `0x000219DC`, the fuel-output inhibit
+  coordinator.
 
 The dashboard hook redirects the existing map-feedback wrapper call to the
 Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
@@ -571,13 +594,14 @@ Allocation and hook bytes are authoritative only in
 
 ## State and diagnostics
 
-The canonical 20-byte state records phase, abort reason, flags, map/mode
+The canonical 24-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, cut RPM, restore RPM, the
-observed stock and effective ignition commands, and the captured retard-band
-start. The nine diagnostic views read fixed offsets of that record.
+observed stock and effective ignition commands, the captured retard-band
+start, the fuel-cut request, and its latch. The nine diagnostic views read fixed offsets of that record.
 
-The fuel-cut flag of an active state reports bit 2, the active cut bit of the
-main RPM fuel-cut state byte. The other bits of the byte leave the flag clear.
+The fuel-cut flag of an active state reports the published request or bit 2,
+the active cut bit of the main RPM fuel-cut state byte. The other bits of the
+byte leave the flag clear.
 
 Raw engineering DIDs expose nine two-byte views:
 
@@ -608,9 +632,9 @@ closed write set.
 The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.
 
-The canonical runtime uses `0xFFFF5D40..0xFFFF5D54` for active state. The
-cross-runtime ledger
-assigns `0x000D6000..0x000D6800` and
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D58` for active state and
+`0x000D6000..0x000D6040` for the fuel-cut wrapper. The cross-runtime ledger
+assigns `0x000D6040..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
 `runtime-reservations.md`.
@@ -622,6 +646,7 @@ The implementation inventory is:
 | `rolling-launch-layout.toml` | allocation, hooks, diagnostics, and defaults |
 | `rolling-launch-payloads.toml` | exact assembled payloads |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
+| `rolling-launch-fuel-cut-wrapper.s` | fuel-cut coordinator wrapper |
 | `rolling_launch.py` | independent fail-closed model |
 | `rolling_launch_layout.py` | structural validation |
 | `rolling_launch_assembly.py` | payload and source-byte validation |
@@ -641,7 +666,7 @@ A candidate is software-valid only when all applicable checks pass:
    digests match their manifests.
 3. Assembly sources reproduce the exact injected bytes.
 4. The independent model covers every gate, phase transition, abort reason,
-   corrupt-state recovery, map isolation, rearm boundary, limiter action, and
+   corrupt-state recovery, map isolation, rearm boundary, fuel-cut request, and
    ignition boundary.
 5. The GNU SH fixture independently executes the same current payload bytes
    across all changed entries, branches, delay slots, call/return paths, and

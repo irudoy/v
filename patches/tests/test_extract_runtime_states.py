@@ -31,6 +31,63 @@ GUARDED_CONTROLLER = bytes.fromhex(
     "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
     "ffffffffffff5d40ffff11bc00021ce0ffff20220002a892ffffffffffffffff"
 )
+# Exact wrapper and engine bytes of the schema-3 endpoints that hold RPM
+# through the fuel-cut shadow and clear a 20-byte state.
+FUEL_SHADOW_WRAPPERS = bytes.fromhex(
+    "4f22d019400b0009d018400b00094f26000b0009ffffffffffffffffffffffff"
+    "d113601088008902d012402b0009d012402b0009ffffffffffffffffffffffff"
+    "4f22d10ee000e2052102710442108bfbd00b400b00094f26000b0009ffffffff"
+    "ffffffffffffffff000a9554000d38e4ffff5d40000d09d8000d2108ffff5d40"
+    "000d22a0"
+)
+FUEL_SHADOW_ENGINE = bytes.fromhex(
+    "4f22d5866050880089058801890588028905a0e70009a0040009a0430009a0a4"
+    "00098454e10530128910845520088b0d8553600d20088b098554600d20088b05"
+    "b0fc000920088903a0dc0009a0ca0009d572d47360408054d47284438055e000"
+    "81538154d4706241622d60238155d46d85476303633d323ce3ff633d33228900"
+    "623360238156d06b400b0009845588008901b2450009d561e0012500b2580009"
+    "a0b0000984546203e105321289098455e103301289058554600d20088b01a002"
+    "0009a08f0009b0b90009d554d4546240845432008903e0118051a0330009d451"
+    "84436203845532008903e0128051a029000984512008890dd44d604088088b03"
+    "e00f8051a01e000988208b1be0078051a018000985536203622d7201622dd441"
+    "85496303633d32328b06e00e80518452c9f78052a006000960238153b2080009"
+    "a0600009d53584558800890484546403d036400b0009d531e00081548452c90f"
+    "8052e0022500a04d00098454e105301289388455e103301289348554600d915b"
+    "611d3012892eb161000920088921d428604088208b18d52185546203622d7201"
+    "622dd420854a6303633d32328b08e000250080528053805581538154a0220009"
+    "60238154a01e0009d514e0008154a0190009d512e0018051e000805280538154"
+    "a0100009e400d011400b0009d50b6153e000e2052102710442108bfbe0022500"
+    "e01080514f26000b0009ffffffffffffffffffffffffffffffffffffffff5d40"
+    "ffff5d00000d3f60ffff11bc000d3660ffff2a85000d41408000ffff4f22d573"
+    "e000805180528053b10000096703200889048453cb018053a0020009e0018051"
+    "d46b6240622ce10532128b06845120088b17e0028051a01400092778890c6023"
+    "d164021cd16484142029200889048453cb028053a0050009845120088b01e003"
+    "8051d45b844163038442230b8443203b20088b048453cb048053a00500098451"
+    "20088b01e004805161437104601220088b048453cb088053a005000984512008"
+    "8b01e0058051d44d6040c8808b048453cb108053a0050009845120088b01e006"
+    "8051d447604088028b048453cb208053a0050009845120088b01e00880512778"
+    "890cd4406240622cd43b8448600c32028b048453cb408053a005000984512008"
+    "8b01e00980512778890cd4376241622dd4318545600d32028b048453cb808053"
+    "a0050009845120088b01e00a80512778890cd42e6241622dd4278546600d3202"
+    "8b048452cb018052a0050009845120088b01e00b805127788910d4256240622c"
+    "d41d8446600c32028b088447600c30228b048452cb028052a005000984512008"
+    "8b01e00c8051277889028452cb0880528451600c4f26000b0009ffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffff5d40ffff5d00000d3d18000d3f60ffff41ae"
+    "ffff2a85ffff110effff11bcffff2672ffff10770102040810ffffffffffffff"
+    "ffffffffffffffffffffffffd3536031600d91ab611d30108b5f843288038b5c"
+    "8433e103301289588434c9e020088b54843520088b5184366203622c8437600c"
+    "30228b4a8439610c2118894685356203622d2228894185376403644d2448893c"
+    "34128b3a623372106024610c211889346020620c32128b303242892e8539600d"
+    "2008892a9175611d30128926853a600d200889223012892064337416e2056044"
+    "600ce16e30128b18e1763012891542108bf560402008891074016041600d9156"
+    "611d30108b0974026041600d9150611d30108b02e001000b0009e000000b0009"
+    "07026073cbf0400ed51d85566203622d85576303633dd41b6023240174022401"
+    "74026033240174022401470e000b0009d5138452cb1063038455620322288908"
+    "6033cb406303e10232128b026033cb806303d40d6040c904200889026033cb20"
+    "630360338052000b0009ffffffffffffffffffffffffffffffffffff000d3f60"
+    "ffff5d40ffff5d10ffff2497524cadb3a55a8000ffffffffffffffff"
+)
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
 
 
@@ -90,6 +147,35 @@ def edited_runtime(rom, *, rolling=False, telemetry=False):
     return closed(rom, edited)
 
 
+def fuel_shadow_lower(rom, data):
+    """Return ``data`` with the wrappers, engine, and stock fuel-cut hook of the
+    endpoints that hold RPM through the fuel-cut shadow."""
+    layout = target(rom).rolling_layout
+    source = bytearray(data)
+    for key, blob in (
+        ("wrappers", FUEL_SHADOW_WRAPPERS),
+        ("engine", FUEL_SHADOW_ENGINE),
+        ("fuel_cut_wrapper", bytes([0xFF]) * 64),
+    ):
+        unit = layout.assembly_unit_by_key[key]
+        source[unit.span.start : unit.span.end] = blob
+    hook = layout.hook_by_key["fuel_cut_coordinator"]
+    source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
+        hook.width, layout.byte_order
+    )
+    return source
+
+
+def fuel_shadow_hold_image(rom="JK08A", *, telemetry=True, custom=False):
+    source = (
+        edited_runtime(rom, rolling=True, telemetry=True)
+        if custom else built(rom)
+    )
+    if not telemetry:
+        source = without_telemetry(rom, source)
+    return closed(rom, fuel_shadow_lower(rom, source))
+
+
 def previous_current_image(*, telemetry=True, custom=False):
     source = (
         edited_runtime("JK08A", rolling=True, telemetry=True)
@@ -97,7 +183,7 @@ def previous_current_image(*, telemetry=True, custom=False):
     )
     if not telemetry:
         source = without_telemetry("JK08A", source)
-    historical = bytearray(source)
+    historical = fuel_shadow_lower("JK08A", source)
     unit = target("JK08A").rolling_layout.assembly_unit_by_key["ignition_controller"]
     historical[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
     return closed("JK08A", historical)
@@ -108,7 +194,7 @@ def state_6_7_arbiter_image():
     unit = layout.assembly_unit_by_key["feedback_arbiter"]
     active_immediate = unit.span.start + 0x2D
     failed_immediate = unit.span.start + 0x41
-    historical = bytearray(built("JK08A"))
+    historical = fuel_shadow_lower("JK08A", built("JK08A"))
     assert historical[active_immediate] == 0x40
     assert historical[failed_immediate] == 0x50
     historical[active_immediate] = 0x70
@@ -212,7 +298,7 @@ def test_telemetry_over_an_unflagged_historical_endpoint_is_rejected():
 
 def test_pre_feedback_indicator_endpoint_is_recognized():
     layout = target("JK08A").rolling_layout
-    historical = bytearray(without_telemetry("JK08A", built("JK08A")))
+    historical = fuel_shadow_lower("JK08A", without_telemetry("JK08A", built("JK08A")))
     unit = layout.assembly_unit_by_key["feedback_arbiter"]
     historical[unit.span.start : unit.span.end] = bytes([0xFF]) * unit.span.size
     hook = layout.hook_by_key["feedback_arbitration"]
@@ -232,6 +318,46 @@ def test_pre_feedback_indicator_endpoint_is_recognized():
 
 
 @pytest.mark.parametrize("telemetry", (False, True))
+@pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
+def test_fuel_shadow_hold_endpoint_is_recognized(rom, telemetry):
+    extraction = extract(fuel_shadow_hold_image(rom, telemetry=telemetry), rom)
+    assert state(extraction) == {
+        "map_switching": "current",
+        "rolling_launch": "schema-3-fuel-shadow-hold",
+        "can_telemetry": "current" if telemetry else "absent",
+    }
+    assert extraction.calibration.elements == ()
+    assert extraction.rolling == build_rom.builtin_profile().calibration
+
+
+def test_fuel_shadow_hold_endpoint_carries_its_editor_settings_into_the_profile():
+    extraction = extract(fuel_shadow_hold_image(custom=True))
+    assert state(extraction)["rolling_launch"] == "schema-3-fuel-shadow-hold"
+    assert extraction.rolling.mode == rolling_launch.Mode.RPM_HOLD
+    assert extraction.rolling.enable_mask == 0x02
+    assert extraction.rolling.target_commands[0] == 114
+
+
+@pytest.mark.parametrize("part", ("wrappers", "fuel_cut_wrapper", "hook"))
+def test_fuel_shadow_hold_hybrid_with_the_fuel_cut_wrapper_is_refused(part):
+    layout = target("JK08A").rolling_layout
+    current = built("JK08A")
+    source = bytearray(fuel_shadow_hold_image())
+    if part == "hook":
+        hook = layout.hook_by_key["fuel_cut_coordinator"]
+        span = (hook.address, hook.address + hook.width)
+    else:
+        unit = layout.assembly_unit_by_key[part]
+        span = (unit.span.start, unit.span.end)
+    source[span[0] : span[1]] = current[span[0] : span[1]]
+    with pytest.raises(
+        extract_calibration.ExtractionError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        extract(source)
+
+
+@pytest.mark.parametrize("telemetry", (False, True))
 def test_previous_guarded_controller_is_recognized_with_or_without_telemetry(telemetry):
     extraction = extract(previous_current_image(telemetry=telemetry))
     assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
@@ -241,7 +367,7 @@ def test_previous_guarded_controller_is_recognized_with_or_without_telemetry(tel
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
 def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
     unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
-    source = bytearray(built(rom))
+    source = fuel_shadow_lower(rom, built(rom))
     source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
     extraction = extract(source, rom)
     assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
@@ -408,7 +534,7 @@ def test_occupied_telemetry_reserve_is_rejected_by_address():
 def test_historical_endpoint_calibration_transfers_to_a_fresh_build(rom):
     families = target(rom).map_layout.families
     unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
-    source = bytearray(edited_runtime(rom, rolling=True, telemetry=True))
+    source = fuel_shadow_lower(rom, edited_runtime(rom, rolling=True, telemetry=True))
     source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
     for index, family in enumerate(families):
         source[family.canonical_address] ^= 1 + index

@@ -13,7 +13,7 @@
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
 #define THROTTLE_SHADOW_SIZE 28U
-#define RL_STATE_SIZE 20U
+#define RL_STATE_SIZE 24U
 #define RL_CONFIG 0x000d3f60U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
@@ -35,6 +35,11 @@
 #define IGNITION_OUTPUT 0xffff2022U
 #define APC_MODE_SNAPSHOT 0xffff24c9U
 #define PAYLOAD 0xffff3ad5U
+#define FUEL_INHIBIT_MASK 0xffff22e0U
+/* The simulator-only stock coordinator stub copies this cell into the final
+   cylinder mask and returns COORDINATOR_RETURN. */
+#define COORDINATOR_RESULT 0xffff6ff0U
+#define COORDINATOR_RETURN 0xc0de22e0U
 
 #define PERIODIC_WRAPPER 0x000d3860U
 #define SELECTOR_ARBITER 0x000d3880U
@@ -44,6 +49,8 @@
 #define IGNITION_CONTROLLER 0x000d40c0U
 #define THRESHOLD_HELPER 0x000d4140U
 #define FEEDBACK_ARBITER 0x000d41e0U
+#define FUEL_CUT_WRAPPER 0x000d6000U
+#define SCHEDULER_TABLE 0x0002196cU
 #define FEEDBACK_COUNTS 0x000d3848U
 
 #define FUEL_STOCK 0x0000934eU
@@ -82,10 +89,13 @@
 
 #define FLAG_TIMER_OK 0x0800U
 #define FLAG_BUTTON_HELD 0x0020U
+#define FLAG_FUEL_CUT_BIT 0x2000U
 #define FLAGS_OBSERVE_ACTIVE 0x1bffU
 #define FLAGS_RPM_ACTIVE 0x5bffU
 #define FLAGS_RPM_FUEL_CUT_ACTIVE 0x7bffU
 #define FLAGS_RETARD_ACTIVE 0xdbffU
+#define FLAGS_RETARD_FUEL_CUT_ACTIVE 0xfbffU
+#define FUEL_CUT_REQUEST_ALL 0x003fU
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
@@ -139,6 +149,11 @@ static void write_bytes(
 static uint16_t read_u16(const volatile uint8_t *source)
 {
     return (uint16_t)((uint16_t)source[0] << 8) | source[1];
+}
+
+static uint32_t read_u32(const volatile uint8_t *source)
+{
+    return ((uint32_t)read_u16(source) << 16) | read_u16(source + 2);
 }
 
 static void write_u16(volatile uint8_t *target, uint16_t value)
@@ -222,12 +237,20 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
     write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
+    ram_pointer(FUEL_INHIBIT_MASK)[0] = 0;
+    ram_pointer(COORDINATOR_RESULT)[0] = 0;
     set_configuration(mode, enable_mask);
 }
 
 static void run_engine(void)
 {
     (void)invoke_r4(RL_ENGINE, 0);
+}
+
+/* Scheduler entry 1: the displaced stock task, then the engine. */
+static void run_periodic_entry(void)
+{
+    (void)invoke_r4(PERIODIC_WRAPPER, 0);
 }
 
 static int expect_phase_reason(
@@ -304,6 +327,18 @@ static int verify_fuel_untouched(const char *name)
     return fail_bytes(
         name, "fuel_write", ram_pointer(FUEL_SHADOW), expected,
         sizeof(expected));
+}
+
+static int verify_request(const char *name, uint16_t request, uint16_t latch)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+
+    if (read_u16(state + 20) != request)
+        return fail_value(
+            name, "fuel_cut_request", read_u16(state + 20), request);
+    if (read_u16(state + 22) != latch)
+        return fail_value(name, "request_latch", read_u16(state + 22), latch);
+    return 1;
 }
 
 struct structural_case {
@@ -670,32 +705,6 @@ static int run_config_cases(void)
     return 1;
 }
 
-static int verify_overlay(
-    const char *name, uint16_t cut, uint16_t restore)
-{
-    uint8_t expected[8];
-
-    expected[0] = (uint8_t)(cut >> 8);
-    expected[1] = (uint8_t)cut;
-    expected[2] = expected[0];
-    expected[3] = expected[1];
-    expected[4] = (uint8_t)(restore >> 8);
-    expected[5] = (uint8_t)restore;
-    expected[6] = expected[4];
-    expected[7] = expected[5];
-    if (!fail_bytes(
-            name, "fuel_overlay", ram_pointer(FUEL_SHADOW), expected, 8))
-        return 0;
-    if (
-        ram_pointer(FUEL_SHADOW)[8] != 0xa5
-        || ram_pointer(FUEL_SHADOW)[9] != 0xa5
-        || ram_pointer(FUEL_SHADOW)[10] != 0xa5
-        || ram_pointer(FUEL_SHADOW)[11] != 0xa5
-    )
-        return fail_value(name, "fuel_tail", 0, 0xa5a5a5a5U);
-    return 1;
-}
-
 static int verify_active_state(
     const char *name,
     uint8_t mode,
@@ -854,7 +863,8 @@ static int run_activation_cases(void)
             "activate-rpm", MODE_RPM_HOLD, 300, 316, 310, 300,
             FLAGS_RPM_ACTIVE))
         return 0;
-    if (!verify_overlay("activate-rpm", 316, 310))
+    if (!verify_request("activate-rpm", 0, 0)
+            || !verify_fuel_untouched("activate-rpm"))
         return 0;
 
     count_case();
@@ -865,7 +875,8 @@ static int run_activation_cases(void)
             "activate-saturated", MODE_RPM_HOLD, 0xfff8, 0xffff,
             0xfff3, 0xfff8, FLAGS_RPM_ACTIVE))
         return 0;
-    if (!verify_overlay("activate-saturated", 0xffff, 0xfff3))
+    if (!verify_request("activate-saturated", 0, 0)
+            || !verify_fuel_untouched("activate-saturated"))
         return 0;
 
     count_case();
@@ -905,6 +916,89 @@ static int activate(uint8_t mode, uint8_t mask)
     return ram_pointer(RL_STATE)[0] == PHASE_ACTIVE;
 }
 
+/* One ACTIVE tick at the given RPM. The run timer restarts first so the
+   short test timeout leaves the hold active. */
+static int run_hold_step(
+    const char *name, uint16_t rpm, uint16_t request, uint16_t latch,
+    uint16_t flags)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+
+    count_case();
+    write_u16(ram_pointer(RPM), rpm);
+    write_u16(state + 6, 0);
+    run_engine();
+    if (!expect_phase_reason(name, PHASE_ACTIVE, REASON_NONE))
+        return 0;
+    if (read_u16(state + 2) != flags)
+        return fail_value(name, "flags", read_u16(state + 2), flags);
+    if (!verify_request(name, request, latch)
+            || !verify_fuel_untouched(name))
+        return 0;
+    return verify_state_guards(name);
+}
+
+static int run_hold_cases(void)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+
+    /* Activation at 300 captures Cut 316 and Restore 310. */
+    if (!activate(MODE_RPM_HOLD, 0x01))
+        return fail_value("hold", "setup", 0, 1);
+    if (!run_hold_step("hold-below-cut", 315, 0, 0, FLAGS_RPM_ACTIVE)
+            || !run_hold_step("hold-at-cut", 316, FUEL_CUT_REQUEST_ALL, 1,
+                              FLAGS_RPM_FUEL_CUT_ACTIVE)
+            || !run_hold_step("hold-above-cut", 400, FUEL_CUT_REQUEST_ALL, 1,
+                              FLAGS_RPM_FUEL_CUT_ACTIVE)
+            || !run_hold_step("hold-band", 311, FUEL_CUT_REQUEST_ALL, 1,
+                              FLAGS_RPM_FUEL_CUT_ACTIVE)
+            || !run_hold_step("hold-at-restore", 310, FUEL_CUT_REQUEST_ALL, 1,
+                              FLAGS_RPM_FUEL_CUT_ACTIVE)
+            || !run_hold_step("hold-below-restore", 309, 0, 0,
+                              FLAGS_RPM_ACTIVE)
+            || !run_hold_step("hold-band-released", 312, 0, 0,
+                              FLAGS_RPM_ACTIVE)
+            || !run_hold_step("hold-retrigger", 316, FUEL_CUT_REQUEST_ALL, 1,
+                              FLAGS_RPM_FUEL_CUT_ACTIVE))
+        return 0;
+
+    /* An abort releases a held request in the same tick. */
+    count_case();
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
+    run_engine();
+    if (!expect_phase_reason(
+            "hold-abort", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
+        return 0;
+    if (read_u16(state + 2) & FLAG_FUEL_CUT_BIT)
+        return fail_value("hold-abort", "fuel_cut_flag", 1, 0);
+    if (!verify_request("hold-abort", 0, 0)
+            || !verify_fuel_untouched("hold-abort"))
+        return 0;
+
+    if (!activate(MODE_RPM_HOLD_RETARD, 0x01))
+        return fail_value("hold-retard", "setup", 0, 1);
+    if (!run_hold_step("hold-retard", 320, FUEL_CUT_REQUEST_ALL, 1,
+                       FLAGS_RETARD_FUEL_CUT_ACTIVE))
+        return 0;
+
+    if (!activate(MODE_OBSERVE, 0x01))
+        return fail_value("hold-observe", "setup", 0, 1);
+    if (!run_hold_step("hold-observe", 400, 0, 0, FLAGS_OBSERVE_ACTIVE))
+        return 0;
+
+    /* Activation starts with a released latch whatever IDLE retained. A
+       saturated Cut leaves the captured RPM inside the hysteresis band. */
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    write_u16(ram_pointer(RPM), 0xfff8);
+    write_u16(state + 20, FUEL_CUT_REQUEST_ALL);
+    write_u16(state + 22, 1);
+    run_engine();
+    if (!expect_phase_reason("hold-stale-latch", PHASE_ACTIVE, REASON_NONE))
+        return 0;
+    return verify_request("hold-stale-latch", 0, 0);
+}
+
 static int run_active_cases(void)
 {
     volatile uint8_t *state;
@@ -930,7 +1024,8 @@ static int run_active_cases(void)
         return 0;
     if (read_u16(ram_pointer(RL_STATE) + 2) & FLAG_TIMER_OK)
         return fail_value("active-timeout", "timer_flag", 1, 0);
-    if (!verify_engine_fuel_release("active-timeout", 0))
+    if (!verify_request("active-timeout", 0, 0)
+            || !verify_fuel_untouched("active-timeout"))
         return 0;
 
     count_case();
@@ -941,7 +1036,8 @@ static int run_active_cases(void)
     if (!expect_phase_reason(
             "active-map-change", PHASE_COOLDOWN, REASON_MAP_CHANGED))
         return 0;
-    if (!verify_engine_fuel_release("active-map-change", 0))
+    if (!verify_request("active-map-change", 0, 0)
+            || !verify_fuel_untouched("active-map-change"))
         return 0;
 
     count_case();
@@ -970,7 +1066,8 @@ static int run_active_cases(void)
     if (!expect_phase_reason(
             "active-release", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
         return 0;
-    if (!verify_engine_fuel_release("active-release", 0))
+    if (!verify_request("active-release", 0, 0)
+            || !verify_fuel_untouched("active-release"))
         return 0;
 
     count_case();
@@ -1078,7 +1175,17 @@ static int run_cooldown_cases(void)
     if (read_u16(state + 8) != 0)
         return fail_value(
             "cooldown-zero", "rearm", read_u16(state + 8), 0);
-    return 1;
+
+    /* Every engine entry clears a stale request outside ACTIVE. */
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    set_cooldown(0);
+    write_u16(state + 20, FUEL_CUT_REQUEST_ALL);
+    run_engine();
+    if (!expect_phase_reason(
+            "cooldown-stale-request", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
+        return 0;
+    return verify_request("cooldown-stale-request", 0, 0);
 }
 
 static int invoke_ignition(
@@ -1515,13 +1622,107 @@ static int run_wrapper_cases(void)
 
     count_case();
     reset_case(MODE_OBSERVE, 0x01);
-    (void)invoke_r4(PERIODIC_WRAPPER, 0);
+    run_periodic_entry();
     if (!expect_phase_reason(
             "wrapper-periodic", PHASE_ACTIVE, REASON_NONE))
         return 0;
     return 1;
 }
 
+
+/* The wrapper runs the stock coordinator stub, then merges the request. The
+   preset mask differs from every stub result, so a merge before the stock
+   call would be overwritten. */
+static int invoke_fuel_cut(
+    const char *name, uint8_t stock, uint16_t request, uint8_t expected)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    uint8_t expected_state[RL_STATE_SIZE];
+    uint32_t sp_before, sp_after, gbr_before, gbr_after, returned;
+    size_t byte;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    fill_bytes(state, RL_STATE_SIZE, 0x5a);
+    write_u16(state + 20, request);
+    for (byte = 0; byte < sizeof(expected_state); ++byte)
+        expected_state[byte] = state[byte];
+    ram_pointer(COORDINATOR_RESULT)[0] = stock;
+    ram_pointer(FUEL_INHIBIT_MASK)[0] = 0xc0;
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
+    returned = invoke_r0(FUEL_CUT_WRAPPER);
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
+    __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
+    if (sp_after != sp_before)
+        return fail_value(name, "stack_pointer", sp_after, sp_before);
+    if (gbr_after != gbr_before)
+        return fail_value(name, "gbr", gbr_after, gbr_before);
+    if (returned != COORDINATOR_RETURN)
+        return fail_value(name, "returned", returned, COORDINATOR_RETURN);
+    if (ram_pointer(FUEL_INHIBIT_MASK)[0] != expected)
+        return fail_value(
+            name, "final_mask", ram_pointer(FUEL_INHIBIT_MASK)[0], expected);
+    if (!fail_bytes(name, "complete_state", state, expected_state,
+                    sizeof(expected_state))
+            || !verify_fuel_untouched(name))
+        return 0;
+    return verify_state_guards(name);
+}
+
+static int run_fuel_cut_cases(void)
+{
+    uint32_t periodic, coordinator;
+
+    if (!invoke_fuel_cut("fuel-cut-zero-inactive", 0x00, 0x0000, 0x00)
+            || !invoke_fuel_cut("fuel-cut-zero-active", 0x3f, 0x0000, 0x3f)
+            || !invoke_fuel_cut("fuel-cut-zero-partial", 0x05, 0x0000, 0x05)
+            || !invoke_fuel_cut("fuel-cut-full", 0x00, 0x003f, 0x3f)
+            || !invoke_fuel_cut("fuel-cut-full-active", 0x3f, 0x003f, 0x3f)
+            || !invoke_fuel_cut("fuel-cut-partial", 0x00, 0x0015, 0x15)
+            || !invoke_fuel_cut("fuel-cut-partial-active", 0x0a, 0x0015, 0x1f)
+            || !invoke_fuel_cut("fuel-cut-single", 0x00, 0x0001, 0x01)
+            || !invoke_fuel_cut("fuel-cut-malformed-bit6", 0x05, 0x0040, 0x05)
+            || !invoke_fuel_cut("fuel-cut-malformed-high", 0x05, 0x0100, 0x05)
+            || !invoke_fuel_cut("fuel-cut-malformed-mixed", 0x00, 0x803f, 0x00)
+            || !invoke_fuel_cut("fuel-cut-malformed-all", 0x0a, 0xffff, 0x0a))
+        return 0;
+
+    /* Index 1 runs the engine before index 28 merges its request, so the
+       mask follows the request of the same scheduler pass. */
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    periodic = read_u32(rom_pointer(SCHEDULER_TABLE + 4U * 1U));
+    coordinator = read_u32(rom_pointer(SCHEDULER_TABLE + 4U * 28U));
+    if (periodic != PERIODIC_WRAPPER)
+        return fail_value("fuel-cut-scheduler", "entry_1", periodic,
+                          PERIODIC_WRAPPER);
+    if (coordinator != FUEL_CUT_WRAPPER)
+        return fail_value("fuel-cut-scheduler", "entry_28", coordinator,
+                          FUEL_CUT_WRAPPER);
+    run_periodic_entry();
+    (void)invoke_r0(coordinator);
+    if (ram_pointer(RL_STATE)[0] != PHASE_ACTIVE
+            || ram_pointer(FUEL_INHIBIT_MASK)[0] != 0x00)
+        return fail_value("fuel-cut-scheduler", "activation_mask",
+                          ram_pointer(FUEL_INHIBIT_MASK)[0], 0x00);
+    write_u16(ram_pointer(RPM), 320);
+    run_periodic_entry();
+    (void)invoke_r0(coordinator);
+    if (ram_pointer(FUEL_INHIBIT_MASK)[0] != 0x3f)
+        return fail_value("fuel-cut-scheduler", "held_mask",
+                          ram_pointer(FUEL_INHIBIT_MASK)[0], 0x3f);
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
+    run_periodic_entry();
+    (void)invoke_r0(coordinator);
+    if (!expect_phase_reason(
+            "fuel-cut-scheduler", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
+        return 0;
+    if (ram_pointer(FUEL_INHIBIT_MASK)[0] != 0x00)
+        return fail_value("fuel-cut-scheduler", "released_mask",
+                          ram_pointer(FUEL_INHIBIT_MASK)[0], 0x00);
+    return verify_fuel_untouched("fuel-cut-scheduler");
+}
 
 int main(void)
 {
@@ -1535,6 +1736,8 @@ int main(void)
         return 1;
     if (!run_activation_cases())
         return 1;
+    if (!run_hold_cases())
+        return 1;
     if (!run_active_cases())
         return 1;
     if (!run_cooldown_cases())
@@ -1543,16 +1746,18 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
+    if (!run_fuel_cut_cases())
+        return 1;
     if (!run_feedback_cases())
         return 1;
-    if (case_count != 136U)
-        return fail_value("summary", "case_count", case_count, 136);
+    if (case_count != 162U)
+        return fail_value("summary", "case_count", case_count, 162);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=32 config=24 threshold=9 activation=6 "
-        "active=9 cooldown=5 ignition=26 wrappers=6 feedback=8 "
-        "entries=8\n",
+        "hold=12 active=9 cooldown=6 ignition=26 wrappers=6 fuel_cut=13 "
+        "feedback=8 entries=9\n",
         (unsigned long)case_count);
     return 0;
 }

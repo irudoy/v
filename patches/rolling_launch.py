@@ -3,8 +3,9 @@
 
 The model is intentionally independent from the SH-2E implementation. It
 defines fail-closed calibration validation, gate ordering, state transitions,
-the temporary fuel-cut overlay, cooldown/rearm behavior, and the retard-only
-ignition command rule. It never reads or writes a ROM image.
+the held fuel-cut request and its merge into the stock cylinder mask,
+cooldown/rearm behavior, and the retard-only ignition command rule. It never
+reads or writes a ROM image.
 """
 
 from __future__ import annotations
@@ -26,6 +27,7 @@ BUTTON_CANCEL = 0x02
 BUTTON_SET = 0x08
 MAIN_PRESSED_MASK = 0x80
 FUEL_CUT_ACTIVE_MASK = 0x04
+FUEL_CUT_CYLINDER_MASK = 0x3F
 ASCD_FEEDBACK_MASK = 0x70
 ASCD_FEEDBACK_OFF = 0x00
 ASCD_FEEDBACK_CRUISE = 0x50
@@ -62,7 +64,7 @@ class Flag(IntFlag):
     TIMER_OK = 1 << 11
     ACTIVE = 1 << 12
     FUEL_CUT = 1 << 13
-    FUEL_OVERLAY = 1 << 14
+    FUEL_HOLD = 1 << 14
     IGNITION_RETARD = 1 << 15
 
 
@@ -90,9 +92,7 @@ class AbortReason(IntEnum):
 
 class LimiterAction(IntEnum):
     NONE = 0
-    APPLY_OVERLAY = 1
-    RESTORE_SNAPSHOT = 2
-    RESTORE_MAP_1 = 3
+    RESTORE_MAP_1 = 1
 
 
 @dataclass(frozen=True)
@@ -249,6 +249,8 @@ class RuntimeState:
     stock_ign_command: int = 0
     effective_ign_command: int = 0
     retard_band_start_native: int = 0
+    fuel_cut_request: int = 0
+    request_latch: int = 0
 
 
 @dataclass(frozen=True)
@@ -339,15 +341,50 @@ def evaluate_gates(inputs, calibration):
     return flags, reason
 
 
-def _active_flags(flags, state, inputs):
+def _publish_active(state, flags, inputs):
+    """Publish the ACTIVE flags and the held all-cylinder request.
+
+    The latch sets at or above Cut and releases below Restore. The request
+    stays published while the latch holds.
+    """
     result = flags | Flag.ACTIVE
+    latch = state.request_latch
+    request = 0
     if state.active_mode_snapshot >= Mode.RPM_HOLD:
-        result |= Flag.FUEL_OVERLAY
+        if inputs.rpm_native >= state.cut_rpm_native:
+            latch = 1
+        elif inputs.rpm_native < state.restore_rpm_native:
+            latch = 0
+        if latch == 1:
+            request = FUEL_CUT_CYLINDER_MASK
+            result |= Flag.FUEL_CUT
+        result |= Flag.FUEL_HOLD
     if state.active_mode_snapshot >= Mode.RPM_HOLD_RETARD:
         result |= Flag.IGNITION_RETARD
     if inputs.fuel_cut_status & FUEL_CUT_ACTIVE_MASK:
         result |= Flag.FUEL_CUT
-    return result
+    return replace(
+        state,
+        flags=result,
+        fuel_cut_request=request,
+        request_latch=latch,
+    )
+
+
+def apply_fuel_cut_request(stock_mask, request):
+    """Return the cylinder mask that the fuel-cut wrapper leaves published.
+
+    A request of 0x0001..0x003F is ORed into the stock coordinator result.
+    Zero and any request with a bit outside the six cylinder bits leave the
+    stock result unchanged.
+    """
+    if not 0 <= stock_mask <= 0xFF:
+        raise ValueError("stock cylinder mask must fit in uint8")
+    if not 0 <= request <= 0xFFFF:
+        raise ValueError("fuel-cut request must fit in uint16")
+    if request == 0 or request & ~FUEL_CUT_CYLINDER_MASK:
+        return stock_mask
+    return stock_mask | request
 
 
 def apply_dashboard_feedback(
@@ -400,6 +437,8 @@ def _state_is_structurally_valid(state):
         state.cut_rpm_native,
         state.restore_rpm_native,
         state.retard_band_start_native,
+        state.fuel_cut_request,
+        state.request_latch,
     )):
         return False
     if not all(0 <= value <= 0xFF for value in (
@@ -419,25 +458,18 @@ def _state_is_structurally_valid(state):
 
 
 def _abort_active(state, flags, reason):
-    mode = Mode(state.active_mode_snapshot)
-    action = (
-        LimiterAction.RESTORE_SNAPSHOT
-        if mode >= Mode.RPM_HOLD
-        else LimiterAction.NONE
-    )
-    return StepResult(
-        replace(
-            state,
-            phase=Phase.COOLDOWN,
-            abort_reason=reason,
-            flags=flags & ~(
-                Flag.ACTIVE | Flag.FUEL_OVERLAY | Flag.IGNITION_RETARD
-            ),
-            rearm_ticks=0,
+    return StepResult(replace(
+        state,
+        phase=Phase.COOLDOWN,
+        abort_reason=reason,
+        flags=flags & ~(
+            Flag.ACTIVE | Flag.FUEL_CUT | Flag.FUEL_HOLD
+            | Flag.IGNITION_RETARD
         ),
-        action,
-        state.active_index_snapshot,
-    )
+        rearm_ticks=0,
+        fuel_cut_request=0,
+        request_latch=0,
+    ))
 
 
 def step(state, inputs, calibration):
@@ -452,6 +484,7 @@ def step(state, inputs, calibration):
             recovered, LimiterAction.RESTORE_MAP_1, 0
         )
 
+    state = replace(state, fuel_cut_request=0)
     phase = Phase(state.phase)
     if phase == Phase.COOLDOWN:
         if not calibration.is_valid():
@@ -514,14 +547,9 @@ def step(state, inputs, calibration):
             cut_rpm_native=cut,
             restore_rpm_native=restore,
             retard_band_start_native=retard_band_start,
+            request_latch=0,
         )
-        active = replace(active, flags=_active_flags(flags, active, inputs))
-        action = (
-            LimiterAction.APPLY_OVERLAY
-            if active.active_mode_snapshot >= Mode.RPM_HOLD
-            else LimiterAction.NONE
-        )
-        return StepResult(active, action, inputs.active_index)
+        return StepResult(_publish_active(active, flags, inputs))
 
     if inputs.active_index != state.active_index_snapshot:
         return _abort_active(state, flags, AbortReason.MAP_CHANGED)
@@ -544,10 +572,9 @@ def step(state, inputs, calibration):
     active = replace(
         state,
         abort_reason=AbortReason.NONE,
-        flags=_active_flags(flags, state, inputs),
         run_ticks=run_ticks,
     )
-    return StepResult(active)
+    return StepResult(_publish_active(active, flags, inputs))
 
 
 def apply_ignition_command(
