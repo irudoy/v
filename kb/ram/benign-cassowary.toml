@@ -343,7 +343,7 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "base_fuel_schedule_producer/fn"
-layouts = ["7mfk", "1nd", "1me3b"]
+layouts = ["7mfk", "1nd", "1me3b", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -361,3 +361,8 @@ at = "1nd:00044eb2"
 kind = "l0"
 at = "7mfk:0003bd5a"
 note = "The 7mfk producer stores the normalized byte ffff1048 at 0003bd5a."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000408e0"
+note = "The JK78C producer stores the normalized byte ffff1042 at 000408e0."

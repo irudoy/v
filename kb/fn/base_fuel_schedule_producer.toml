@@ -333,9 +333,10 @@ address = "00044c70"
 level = "code"
 former = ["bfs_estimation_stage/fn/1nd-00044c70"]
 note = """
-1ND producer 00044c70 with helpers 000446c0 (capped schedule and direct \
-grid) and 00044984 (signed rate correction and alpha-N latch), the \
-counterparts of JK78C FUN_000401D4 and FUN_000403A2. The normalization tail \
+1ND producer 00044c70 corresponds to JK78C FUN_0004068C. The capped schedule \
+and the 3x4 grid run in 000446c0 and the signed rate correction with the \
+alpha-N latch in 00044984, both called from 000441ec, the counterparts of \
+JK78C FUN_000401D4 and FUN_000403A2. The normalization tail \
 00044e92..00044eb2 divides uint16[fffe802e]*128 by unsigned ROM16[0000940a] \
 through unsigned_divide/fn, caps the quotient at 255 and writes fffe8048; \
 the source word is the BFS sample loaded at 00044e22 and preserved in R7 at \

@@ -157,8 +157,8 @@ loads 00016894 for the call at 000407f8 by ffff106d before ffff1db8 and \
 ffff1db4. The startup initializer 0003357c also reads it. On 1ME3B, with bit \
 4 of ROM byte 0000865c clear and bit 2 of 0000865f set, which stock bytes \
 0x28 and 0x0C satisfy, the producer first multiplies the result by the \
-lookup of 000137c6 at the signed high byte of fffed096 and divides by 128; \
-that multiplier has no JK78C counterpart in this reader. Stock words equal \
+lookup of 000137c6 at the high byte of fffed096 and divides by 128; that \
+multiplier has no JK78C counterpart in this reader. Stock words equal \
 JK78C."""
 
 [[symbol]]
