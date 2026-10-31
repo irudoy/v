@@ -23,6 +23,44 @@ storage = "uint16"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "000170e6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000e9028"
+to = "jk78c:00016a44"
+note = """
+Target capture accumulator 000e8fda matches 1ND 000ddf52 instruction for \
+instruction and corresponds to JK78C 000bcc6c: it selects the flag-set or \
+flag-clear curve on the shared capture axis, tests bit 0 of the feature byte \
+at base+0x46, and scales by the byte increment gain. At 000e9028 the target \
+reads 000170e6 as the curve in r4 when the capture flag argument is zero, as \
+JK78C 000bcc6c reads 00016a44 at 000bccac. Stock bytes differ from JK78C and \
+equal 1ND0A and 1ND3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "00017052"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ddfa0"
+to = "jk78c:00016a44"
+note = """
+Target capture accumulator 000ddf52, called by the coordinator 000ddbe0, \
+corresponds to JK78C 000bcc6c: it selects the flag-set or flag-clear curve \
+on the shared capture axis, tests bit 0 of the feature byte at base+0x46, \
+and scales by the byte increment gain. At 000ddfa0 the target reads 00017052 \
+as the curve in r4 when the capture flag argument is zero, as JK78C 000bcc6c \
+reads 00016a44 at 000bccac. 1ND0A and 1ND3B stock bytes differ from JK78C \
+and equal 1ME3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00016a44"
 level = "code"

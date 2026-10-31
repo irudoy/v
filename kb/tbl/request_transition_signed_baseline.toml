@@ -22,6 +22,31 @@ storage = "int16"
 emit = false
 
 [[symbol]]
+layout = "1nd"
+address = "00008d52"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ac134"
+to = "jk78c:00008c3c"
+note = """
+Target conditioner 000abc6e corresponds to the JK78C request transition \
+conditioner 00096ce0: byte and word gates with +5 and +0x32 hysteresis, 8x8 \
+duration and offset surfaces at gear coordinates shifted left by 5 and 13, \
+three 4x4 rate tables on shared state and coordinate axes chosen by the \
+special-branch threshold and the gear relation, the gear-indexed reference \
+multiplier and recovery decrement, and the error correction below its limit. \
+Its constant block starts at 00009398 where JK78C reads 00009184. Dispatcher \
+000ab184 calls it when bit 0 of ROM8[0000839f] and bit 7 of 00008a2e are \
+clear and calls 000ac294 otherwise, as JK78C 0009679a selects 00096ce0 by \
+bit 0 of 00008383 and bit 7 of 00008968. At 000ac134 the target reads \
+00008d52 as the signed word baseline of the rate-scaled step, as JK78C \
+00096ce0 reads 00008c3c at 00097154. 1ND0A and 1ND3B stock bytes equal \
+JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00008c3c"
 level = "code"
@@ -30,6 +55,21 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00097154"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00008c3c"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B conditioner 000b2f2c replaces the scalar baseline of the rate-scaled \
+step with a lookup of 00014ba6 at coordinate (min(x,0x840)-0x140)*0x20, zero \
+below 0x141, minus 0x8000, and adds a ceiling from curve 00014b96 on axis \
+00014b86 gated by the gear limits 00008a4a and 00008a4b. JK78C 00096ce0 \
+reads the scalar 00008c3c and 1ND 000abc6e reads 00008d52. No scalar target \
+exists on 1ME3B."""
 
 [[link]]
 type = "reader"

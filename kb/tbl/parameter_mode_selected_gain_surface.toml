@@ -10,6 +10,45 @@ rows = 4
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000b8b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000965c2"
+to = "jk78c:0000b3ba"
+note = """
+Target reader 000964b8 matches 1ND 00090988 instruction for instruction and \
+corresponds to JK78C 00082cb0 with the same three state branches: the 4x4 \
+mode-selected surface on the sample and mode axes, the state gain curve at \
+coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, and the direct constants \
+at curve+8 and curve+0xc. At 000965c2 the target reads 0000b8b4 as the 4x4 \
+surface in r4 of the 2D lookup, as JK78C 00082cb0 reads 0000b3ba at \
+00082d2a. Stock bytes differ from JK78C and equal 1ND0A; 1ND3B stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000b800"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090a92"
+to = "jk78c:0000b3ba"
+note = """
+Target reader 00090988 corresponds to JK78C 00082cb0 with the same three \
+state branches: the 4x4 mode-selected surface on the sample and mode axes, \
+the state gain curve at coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, \
+and the direct constants at curve+8 and curve+0xc. At 00090a92 the target \
+reads 0000b800 as the 4x4 surface in r4 of the 2D lookup, as JK78C 00082cb0 \
+reads 0000b3ba at 00082d2a. 1ND0A stock bytes differ from JK78C and equal \
+1ME3B; 1ND3B stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0000b3ba"
 level = "code"

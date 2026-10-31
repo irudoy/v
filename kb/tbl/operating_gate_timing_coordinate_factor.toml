@@ -27,6 +27,46 @@ storage = "uint16"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "00015d94"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000e944c"
+to = "jk78c:00015902"
+note = """
+Target weighted accumulator 000e941a matches 1ND 000de392 instruction for \
+instruction and repeats JK78C 000bd25a: the word factor curve on the word \
+axis, the timing factor curve on the timing axis at coordinate x+0x8000, the \
+accumulation threshold with floor 1, and the override curve on the override \
+axis. The conservative accumulator 000e927e reads the same tables as JK78C \
+000bd0d0. At 000e944c the target reads 00015d94 as the curve in r4 of the \
+timing factor lookup, as JK78C 000bd25a reads 00015902 at 000bd28e. Stock \
+bytes differ from JK78C and equal 1ND0A and 1ND3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015ef0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000de3c4"
+to = "jk78c:00015902"
+note = """
+Target weighted accumulator 000de392 repeats JK78C 000bd25a: the word factor \
+curve on the word axis, the timing factor curve on the timing axis at \
+coordinate x+0x8000, the accumulation threshold with floor 1, and the \
+override curve on the override axis. The conservative accumulator 000de1f6 \
+reads the same factor, override and threshold tables as JK78C 000bd0d0. At \
+000de3c4 the target reads 00015ef0 as the curve in r4 of the timing factor \
+lookup, as JK78C 000bd25a reads 00015902 at 000bd28e. 1ND0A and 1ND3B stock \
+bytes differ from JK78C and equal 1ME3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00015902"
 level = "code"

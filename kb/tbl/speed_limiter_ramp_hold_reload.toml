@@ -22,6 +22,47 @@ storage = "uint8"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "000089cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b01e0"
+to = "jk78c:000088ed"
+note = """
+Target reader 000afe8c corresponds to the JK78C rotational-speed request \
+limiter 00094d6c. It gates the byte context lookup on its eight-point axis \
+and looks up the threshold curve on the bound athletic-gharial axis as JK78C \
+does; it reads its word constants through GBR 00009264 and adds a \
+threshold-selected pair of filter rates and signed floors. At 000b01e0 the \
+target reads 000089cc as the byte reloaded into the hold counter when the \
+ramp releases, as JK78C 00094d6c reads 000088ed at 000950d4. Stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000899a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a926c"
+to = "jk78c:000088ed"
+note = """
+Target reader 000a8f02, called from 000a9968 with the pedal compensator \
+000a76d6, corresponds to the JK78C rotational-speed request limiter \
+00094d6c, called from 00095668 with 000948f0. Both take the neutral-output \
+return, gate the byte context lookup on its eight-point axis, look up the \
+threshold curve on the bound athletic-gharial axis, and set the ramp flag \
+and floor the ramp with one signed word. At 000a926c the target reads \
+0000899a as the byte reloaded into the hold counter when the ramp releases, \
+as JK78C 00094d6c reads 000088ed at 000950d4. 1ND0A and 1ND3B stock bytes \
+equal JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000088ed"
 level = "code"

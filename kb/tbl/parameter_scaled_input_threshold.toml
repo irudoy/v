@@ -11,6 +11,41 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "000138a6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00095922"
+to = "jk78c:000136b8"
+note = """
+Target reader 00095654 contains the scaled-input step of JK78C 00081dde: the \
+byte input times 0xcccd, shifted right by 15 and capped by a second byte, \
+indexes the threshold through the byte helper. At 00095922 the target reads \
+000138a6 as the threshold curve of the scaled-input lookup, as JK78C \
+00081dde reads 000136b8 at 0008204c. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013aca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0008fd78"
+to = "jk78c:000136b8"
+note = """
+Target reader 0008faa8 contains the scaled-input step of JK78C 00081dde: the \
+byte input times 0xcccd, shifted right by 15 and capped by a second byte, \
+indexes the threshold through the byte helper. At 0008fd78 the target reads \
+00013aca as the threshold curve of the scaled-input lookup, as JK78C \
+00081dde reads 000136b8 at 0008204c. 1ND0A and 1ND3B stock bytes equal \
+JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "000136b8"
 level = "code"

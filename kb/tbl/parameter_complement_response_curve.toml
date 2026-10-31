@@ -11,6 +11,42 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001420a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00094a98"
+to = "jk78c:00013f00"
+note = """
+Target reader 000949e0 contains the complement lookup of JK78C 000811d4: \
+twice the nonnegative difference of two bytes, capped at 255, indexes the \
+curve through the byte helper. The target reader also holds the command \
+difference gain lookup. At 00094a98 the target reads 0001420a as the byte \
+curve of the complement lookup, as JK78C 000811d4 reads 00013f00 at \
+000812b0. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001439e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0008ee20"
+to = "jk78c:00013f00"
+note = """
+Target reader 0008ed74 contains the complement lookup of JK78C 000811d4: \
+twice the nonnegative difference of two bytes, capped at 255, indexes the \
+curve through the byte helper. The target reader also holds the command \
+difference gain lookup. At 0008ee20 the target reads 0001439e as the byte \
+curve of the complement lookup, as JK78C 000811d4 reads 00013f00 at \
+000812b0. 1ND0A and 1ND3B stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00013f00"
 level = "code"

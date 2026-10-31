@@ -23,6 +23,49 @@ storage = "uint16"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "0000bc74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7cee"
+to = "jk78c:0000b97a"
+note = """
+Target reader 000a7ca8 matches 1ND 000a1cb8 instruction for instruction and \
+corresponds to the JK78C request rise-step builder 0008ff76: an 8x8 word \
+surface at coordinates clamped to 0x2a0 and 0x8c0, times the state \
+multiplier indexed by a state byte limited to 7, times two optional byte \
+multipliers that default to 0x80, shifted right by 8 and 13 and capped at \
+0xffff. The target selects the multipliers with bits 0x80 and 0x10 of \
+fffe9467; JK78C uses bits 0x20 and 0x04 of ffff23d4. At 000a7cee the target \
+reads 0000bc74 as the 8x8 word surface of the 2D lookup, as JK78C 0008ff76 \
+reads 0000b97a at 0008ffb8. Stock bytes differ from JK78C and equal 1ND0A; \
+1ND3B stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000bdc0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1cfe"
+to = "jk78c:0000b97a"
+note = """
+Target reader 000a1cb8 corresponds to the JK78C request rise-step builder \
+0008ff76: an 8x8 word surface at coordinates clamped to 0x2a0 and 0x8c0, \
+times the state multiplier indexed by a state byte limited to 7, times two \
+optional byte multipliers that default to 0x80, shifted right by 8 and 13 \
+and capped at 0xffff. The target selects the multipliers with bits 0x80 and \
+0x10 of fffe9497; JK78C uses bits 0x20 and 0x04 of ffff23d4. At 000a1cfe the \
+target reads 0000bdc0 as the 8x8 word surface of the 2D lookup, as JK78C \
+0008ff76 reads 0000b97a at 0008ffb8. 1ND0A stock bytes differ from JK78C and \
+equal 1ME3B; 1ND3B stock bytes equal JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0000b97a"
 level = "code"

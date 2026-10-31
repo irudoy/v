@@ -22,6 +22,27 @@ storage = "int16"
 emit = false
 
 [[symbol]]
+layout = "1nd"
+address = "00008d78"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a911c"
+to = "jk78c:00008c64"
+note = """
+Target reader 000a8f02, called from 000a9968 with the pedal compensator \
+000a76d6, corresponds to the JK78C rotational-speed request limiter \
+00094d6c, called from 00095668 with 000948f0. Both take the neutral-output \
+return, gate the byte context lookup on its eight-point axis, look up the \
+threshold curve on the bound athletic-gharial axis, and set the ramp flag \
+and floor the ramp with one signed word. At 000a911c the target reads \
+00008d78 as the signed word that sets the ramp flag and floors the ramp, as \
+JK78C 00094d6c reads 00008c64 at 00094f92. 1ND0A and 1ND3B stock bytes equal \
+JK78C."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00008c64"
 level = "code"
@@ -30,6 +51,21 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00094f94"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00008c64"
+count = 2
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B reader 000afe8c selects one of two signed floors by the threshold \
+ROM16[00009356]: 00008dc2, with the rate ROM16[00009352], below it and \
+00008dc0, with the rate ROM16[00009354], at or above it. The selected floor \
+sets the ramp flag and floors the ramp. JK78C 00094d6c and 1ND 000a8f02 use \
+the single word 00008c64 and 00008d78 for both. No one-to-one target is \
+asserted for the single-floor role."""
 
 [[link]]
 type = "reader"

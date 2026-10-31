@@ -33,6 +33,34 @@ at = "jk78c:00096ee4"
 value = 10
 mode = "base"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:0000918e"
+count = 2
+l0 = "28a4e19998ef4d2c"
+note = """
+1ME3B conditioner 000b2f2c chooses the special rate branch with one of two \
+words, 00009464 when bit 4 of fffe9450 is clear and 00009468 when it is set; \
+the stock words are 0x00c8 and 0xffff. JK78C 00096ce0 compares the single \
+word 0000918e only while bit 7 of ffff23be is clear. No one-to-one target is \
+asserted for the single threshold."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:0000918e"
+count = 2
+l0 = "cb701875f15725a4"
+note = """
+1ND conditioner 000abc6e chooses the special rate branch with one of two \
+words, 000093ac when bit 6 of fffe9480 is clear and 000093b0 when it is set; \
+both stock words are 0x00c8. JK78C 00096ce0 compares the single word \
+0000918e only while bit 7 of ffff23be is clear. No one-to-one target is \
+asserted for the single threshold."""
+
 [[link]]
 type = "reader"
 to = "request_transition_conditioner/fn"

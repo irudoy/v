@@ -24,6 +24,51 @@ storage = "uint8"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "00008a7f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000aff0a"
+to = "jk78c:00008968"
+note = """
+Target reader 000afe8c corresponds to the JK78C rotational-speed request \
+limiter 00094d6c. It gates the byte context lookup on its eight-point axis \
+and looks up the threshold curve on the bound athletic-gharial axis as JK78C \
+does; it reads its word constants through GBR 00009264 and adds a \
+threshold-selected pair of filter rates and signed floors. At 000aff0a the \
+target reads 00008a7f as the mode flag byte whose bit 7 selects the gating \
+path, as JK78C 00094d6c reads 00008968 at 00094e26. Stock bytes 18 differ \
+from JK78C 80 and equal 1ND0A; 1ND3B stock bytes equal JK78C. Dispatcher \
+000b218e reads the same bit 7 and calls the transition conditioner 000b2f2c \
+while it is clear, as JK78C 0009679a calls 00096ce0."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008a2e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a8fbe"
+to = "jk78c:00008968"
+note = """
+Target reader 000a8f02, called from 000a9968 with the pedal compensator \
+000a76d6, corresponds to the JK78C rotational-speed request limiter \
+00094d6c, called from 00095668 with 000948f0. Both take the neutral-output \
+return, gate the byte context lookup on its eight-point axis, look up the \
+threshold curve on the bound athletic-gharial axis, and set the ramp flag \
+and floor the ramp with one signed word. At 000a8fbe the target reads \
+00008a2e as the mode flag byte whose bit 7 selects the gating path, as JK78C \
+00094d6c reads 00008968 at 00094e26. 1ND0A stock bytes 18 differ from JK78C \
+80 and equal 1ME3B; 1ND3B stock bytes equal JK78C. Dispatcher 000ab184 reads \
+the same bit 7 and calls the transition conditioner 000abc6e while it is \
+clear, as JK78C 0009679a calls 00096ce0."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00008968"
 level = "code"

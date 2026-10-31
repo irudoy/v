@@ -25,6 +25,42 @@ storage = "uint8"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "000083b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000e91f0"
+to = "jk78c:00008395"
+note = """
+Target context blocker 000e91a8 matches 1ND 000de120 instruction for \
+instruction and repeats JK78C 000bcfc2: a word latch threshold at base+0, a \
+counter threshold at base+2, a word window at base+4, and a byte window. At \
+000e91f0 the target reads 000083b8 as the byte window, as JK78C 000bcfc2 \
+reads 00008395 at 000bd010. Stock bytes 00ff differ from JK78C 5639 and \
+equal 1ND0A and 1ND3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "000083b1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000de168"
+to = "jk78c:00008395"
+note = """
+Target context blocker 000de120, called by the coordinator 000ddbe0, repeats \
+JK78C 000bcfc2 operation for operation: a word latch threshold at base+0, a \
+counter threshold at base+2, a word window at base+4, and a byte window. At \
+000de168 the target reads 000083b1 as the byte window, as JK78C 000bcfc2 \
+reads 00008395 at 000bd010. 1ND0A and 1ND3B stock bytes 00ff differ from \
+JK78C 5639 and equal 1ME3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00008395"
 level = "code"

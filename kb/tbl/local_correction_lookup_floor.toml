@@ -50,6 +50,46 @@ identity = [
 ]
 
 [[symbol]]
+layout = "1me3b"
+address = "00013b66"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00048e4c"
+to = "jk78c:00013940"
+note = """
+Target reader 00048dec repeats the JK78C local-correction updater 000411b0 \
+with the branch order exchanged, and matches 1ND 00045768 instruction for \
+instruction. The mode 0x3f branch looks up the floor by coolant_index; the \
+other branch looks up the gain at coordinate coolant_index*128+0x8000 with \
+input byte fffe8150, where JK78C uses alpha_n_flow ffff115c. The target \
+input byte has no meaning. At 00048e4c the target reads 00013b66 as the \
+coolant-indexed floor of the mode 0x3f branch, as JK78C 000411b0 reads \
+00013940 at 000411f0. Stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013d72"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000457c8"
+to = "jk78c:00013940"
+note = """
+Target reader 00045768 repeats the JK78C local-correction updater 000411b0 \
+with the branch order exchanged. The mode 0x3f branch looks up the floor by \
+coolant_index; the other branch looks up the gain at coordinate \
+coolant_index*128+0x8000 with input byte fffe8164, where JK78C uses \
+alpha_n_flow ffff115c. The target input byte has no meaning. At 000457c8 the \
+target reads 00013d72 as the coolant-indexed floor of the mode 0x3f branch, \
+as JK78C 000411b0 reads 00013940 at 000411f0. 1ND0A and 1ND3B stock bytes \
+equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012332"
 former = ["statuesque-binturong/tbl/7mfk-00012332"]

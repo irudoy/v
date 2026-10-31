@@ -19,6 +19,47 @@ storage = "uint16"
 emit = false
 
 [[symbol]]
+layout = "1me3b"
+address = "00015356"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000e8e68"
+to = "jk78c:00014fac"
+note = """
+Target coordinator 000e8c68 matches 1ND 000ddbe0 instruction for instruction \
+and corresponds to the JK78C operating-gate coordinator 000bca1c with its \
+coolant-window step 000bcda2 and fraction qualifier 000bce88 inlined. It \
+calls the capture, context-blocker, conservative and weighted accumulators \
+000e8fda, 000e91a8, 000e927e and 000e941a as JK78C calls 000bcc6c, 000bcfc2, \
+000bd0d0 and 000bd25a. At 000e8e68 the target reads 00015356 as the axis in \
+r5 of the fraction lookup, as JK78C 000bce88 reads 00014fac at 000bcea4. \
+Stock bytes differ from JK78C and equal 1ND0A and 1ND3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "000154e2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ddde0"
+to = "jk78c:00014fac"
+note = """
+Target coordinator 000ddbe0 corresponds to the JK78C operating-gate \
+coordinator 000bca1c with its coolant-window step 000bcda2 and fraction \
+qualifier 000bce88 inlined. It calls the capture, context-blocker, \
+conservative and weighted accumulators 000ddf52, 000de120, 000de1f6 and \
+000de392 as JK78C calls 000bcc6c, 000bcfc2, 000bd0d0 and 000bd25a, and reads \
+the BFS, coolant, battery-voltage and final-timing symbols of the same \
+meanings. At 000ddde0 the target reads 000154e2 as the axis in r5 of the \
+fraction lookup, as JK78C 000bce88 reads 00014fac at 000bcea4. 1ND0A and \
+1ND3B stock bytes differ from JK78C and equal 1ME3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00014fac"
 level = "code"
