@@ -39,6 +39,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014252"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f8612"
+to = "jk78c:00013f48"
+note = """
+Target function 000f8590 runs the program of JK78C 000c9452 (fair-stoat): \
+when either sample byte is below its minimum or the spread reaches its \
+limit, the limit curve is read at a byte input that is 0 below 11, 0xff from \
+150 and scaled in between, and otherwise the fixed byte applies; the result \
+is stored shifted left by 8. MOV.L 000f8612 loads this table for the call at \
+000f8616 (idle_ignition_lookup), as MOV.L jk78c:000c94c2 loads 00013f48 for \
+the call at 000c94c6 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000143e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ebddc"
+to = "jk78c:00013f48"
+note = """
+Target function 000ebd5c runs the program of JK78C 000c9452 (fair-stoat): \
+when either sample byte is below its minimum or the spread reaches its \
+limit, the limit curve is read at a byte input that is 0 below 11, 0xff from \
+150 and scaled in between, and otherwise the fixed byte applies; the result \
+is stored shifted left by 8. 1ND computes the scaled range inline where \
+JK78C calls 00021ce8. MOV.L 000ebddc loads this table for the call at \
+000ebde0 (idle_ignition_lookup), as MOV.L jk78c:000c94c2 loads 00013f48 for \
+the call at 000c94c6 (idle_ignition_lookup). Its 8 stock bytes equal JK78C \
+on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a62"
 former = ["diligent-ammonite/tbl/7mfk-00012a62"]

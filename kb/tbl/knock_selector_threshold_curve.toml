@@ -6,9 +6,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -17,6 +15,45 @@ access = "explicit"
 cols = 16
 rows = 1
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000141ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072140"
+to = "jk78c:00013eb0"
+note = """
+Target function 00071d64 runs the knock state program of JK78C 00062780: \
+under knock_selector_config bit 5 the upper bound from a target-specific \
+source and the lower bound curve over the bound axis, then the quiet \
+increment and event decrement curves over the able-butterfly axis, then the \
+selector threshold and hysteresis curves over the selector state axis. MOV.L \
+00072140 loads this table for the call at 00072142 (groovy-lynx), as MOV.L \
+jk78c:000631de loads 00013eb0 for the call at 000631e4 (speedy-guan). Its 16 \
+stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001434e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e0ae"
+to = "jk78c:00013eb0"
+note = """
+Target function 0006d948, whose body continues by fall-through into the L0 \
+entry 0006ddd0, runs the knock state program of JK78C 00062780: under \
+knock_selector_config bit 5 the upper and lower bound curves over the bound \
+axis, then the quiet increment and event decrement curves over the \
+able-butterfly axis, then the selector threshold and hysteresis curves over \
+the selector state axis. Each lookup uses the helper at the JK78C helper \
+address plus 0x61c. MOV.L 0006e0ae loads this table for the call at 0006e0b0 \
+(peach-beluga), as MOV.L jk78c:000631de loads 00013eb0 for the call at \
+000631e4 (speedy-guan). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

@@ -6,14 +6,51 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 quantity = "raw"
 points = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015af4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00071db4"
+to = "jk78c:0001577a"
+note = """
+Target function 00071d64 runs the knock state program of JK78C 00062780: \
+under knock_selector_config bit 5 the upper bound from a target-specific \
+source and the lower bound curve over the bound axis, then the quiet \
+increment and event decrement curves over the able-butterfly axis, then the \
+selector threshold and hysteresis curves over the selector state axis. MOV.L \
+00071db4 loads this axis for the call at 00071dbc (debonair-grouse), as \
+MOV.L jk78c:00062cd2 loads 0001577a for the call at 00062cdc (blue-mouflon). \
+Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015ca0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006d980"
+to = "jk78c:0001577a"
+note = """
+Target function 0006d948, whose body continues by fall-through into the L0 \
+entry 0006ddd0, runs the knock state program of JK78C 00062780: under \
+knock_selector_config bit 5 the upper and lower bound curves over the bound \
+axis, then the quiet increment and event decrement curves over the \
+able-butterfly axis, then the selector threshold and hysteresis curves over \
+the selector state axis. Each lookup uses the helper at the JK78C helper \
+address plus 0x61c. MOV.L 0006d980 loads this axis for the call at 0006d988 \
+(merciful-harrier), as MOV.L jk78c:00062cd2 loads 0001577a for the call at \
+00062cdc (blue-mouflon). Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

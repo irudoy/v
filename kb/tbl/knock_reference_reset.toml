@@ -13,6 +13,43 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000916e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000728f8"
+to = "jk78c:00008f7e"
+note = """
+Target function 0007285e runs the program of JK78C 000639a4 \
+(knock_reference_learning): when bit 7 is clear in both diagnostic bytes \
+fffed817 and fffed84a (JK78C ffff6231 and ffff6264), the eight reference \
+words of the selected bank move toward the current words with the byte \
+weight, rounded up and capped at 0xffff; otherwise the reset word fills all \
+three banks. Its 97 mnemonics equal 1ND 0006e956. MOV.L 000728f8 loads this \
+table, as MOV.L jk78c:000639d8 loads 00008f7e. Its 2 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009104"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e9f0"
+to = "jk78c:00008f7e"
+note = """
+Target function 0006e956 runs the program of JK78C 000639a4 \
+(knock_reference_learning): when bit 7 is clear in both diagnostic bytes \
+fffed686 and fffed6b9 (JK78C ffff6231 and ffff6264), the eight reference \
+words of the selected bank move toward the current words with the byte \
+weight, rounded up and capped at 0xffff; otherwise the reset word fills all \
+three banks. MOV.L 0006e9f0 loads this table, as MOV.L jk78c:000639d8 loads \
+00008f7e. Its 2 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009282"
 level = "code"

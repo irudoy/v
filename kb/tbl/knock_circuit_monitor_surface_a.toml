@@ -225,6 +225,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000a8c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f8ab6"
+to = "jk78c:0000a44a"
+note = """
+The opening section of target function 000f8a7c runs the program of JK78C \
+000c9300 (russet-snake): when the byte at fffe92b0 is clear, the 8x8 byte \
+lookup over axes 00014382 and 0001438a selects surface A while the state \
+byte fffeb91e does not exceed the threshold byte 000086f2 and surface B \
+otherwise; when it is set, the result is 0 while the byte fffe8073 is at \
+most 50 and that byte minus 50 divided by 4 above, as JK78C does with \
+ffff1069. The target function continues with further monitor steps. MOV.L \
+000f8ab6 loads this table for the call at 000f8aba (vague-peacock), as MOV.L \
+jk78c:000c9334 loads 0000a44a for the call at 000c9344 \
+(inquisitive-wallaby). Its 64 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000a850"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ec278"
+to = "jk78c:0000a44a"
+note = """
+The opening section of target function 000ec23e runs the program of JK78C \
+000c9300 (russet-snake): when the byte at fffe92e4 is clear, the 8x8 byte \
+lookup over axes 0001450e and 00014516 selects surface A while the state \
+byte fffeb7be does not exceed the threshold byte 000086df and surface B \
+otherwise; when it is set, the result is 0 while the byte fffe8073 is at \
+most 50 and that byte minus 50 divided by 4 above, as JK78C does with \
+ffff1069. The target function continues with further monitor steps. MOV.L \
+000ec278 loads this table for the call at 000ec27c (fierce-gharial), as \
+MOV.L jk78c:000c9334 loads 0000a44a for the call at 000c9344 \
+(inquisitive-wallaby). Its 64 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000abba"
 former = ["tuscan-porcupine/tbl/7mfk-0000abba"]

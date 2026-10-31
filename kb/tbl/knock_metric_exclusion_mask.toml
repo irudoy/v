@@ -9,6 +9,44 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "00008579"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000724a6"
+to = "jk78c:0000852c"
+note = """
+Target function 00072494 runs the program of JK78C 00063614 \
+(knock_selected_difference_sum): eight signed differences, each replaced by \
+0x80000000 when the per-index bit test against the exclusion mask byte is \
+set, sorted in descending order, the first count entries summed with the \
+excluded marker skipped, and the sum stored in the bank that \
+knock_selector_config bit 3 selects. Its 158 mnemonics equal 1ND 0006e58c. \
+MOV.L 000724a6 loads this table, as MOV.L jk78c:00063626 loads 0000852c. Its \
+1 stock byte equals JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00008564"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e59e"
+to = "jk78c:0000852c"
+note = """
+Target function 0006e58c runs the program of JK78C 00063614 \
+(knock_selected_difference_sum): eight signed differences, each replaced by \
+0x80000000 when the per-index bit test against the exclusion mask byte is \
+set, sorted in descending order, the first count entries summed with the \
+excluded marker skipped, and the sum stored in the bank that \
+knock_selector_config bit 3 selects. 1ND unrolls the sum loop by two. MOV.L \
+0006e59e loads this table, as MOV.L jk78c:00063626 loads 0000852c. Its 1 \
+stock byte equals JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008618"
 level = "code"

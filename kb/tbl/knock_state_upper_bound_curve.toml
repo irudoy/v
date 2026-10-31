@@ -6,9 +6,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -17,6 +15,26 @@ access = "explicit"
 cols = 16
 rows = 1
 storage = "uint16"
+
+[[symbol]]
+layout = "1nd"
+address = "00016af2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006d974"
+to = "jk78c:000164e4"
+note = """
+Target function 0006d948, whose body continues by fall-through into the L0 \
+entry 0006ddd0, runs the knock state program of JK78C 00062780: under \
+knock_selector_config bit 5 the upper and lower bound curves over the bound \
+axis, then the quiet increment and event decrement curves over the \
+able-butterfly axis, then the selector threshold and hysteresis curves over \
+the selector state axis. Each lookup uses the helper at the JK78C helper \
+address plus 0x61c. MOV.L 0006d974 loads this table for the call at 0006d978 \
+(merciful-harrier), as MOV.L jk78c:00062cb8 loads 000164e4 for the call at \
+00062cc4 (blue-mouflon). Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"
@@ -32,6 +50,23 @@ The complete primary listing establishes the 16x1 uint16 table operand at \
 000164e4 in reader 00062780. Upper-bound curve of JK78C knock state ffff17bc \
 in FUN_00062780. The unsigned lookup is shifted left eight before the state \
 clamp. The word axis receives byte ffff119d; the stock curve holds 784."""
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000164e4"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 00062780 reads the upper bound curve 000164e4 over the bound axis \
+0001577a at 00062cb8 under knock_selector_config bit 5. At the same step \
+1ME3B 00071d64 reads no curve: when fffe945b bit 7 is clear it loads the \
+ROM16 word 00009378 (stock 0x0310, the first JK78C curve value), and when \
+the bit is set it adds 0x258 to the 8x8 byte surface 0000a774 over axes \
+00013599 and 000135a9, read through 000295f4. 1ME3B holds no byte copy of \
+the 32-byte JK78C curve. No target absence of the upper bound is asserted; \
+the scalar and the surface are 1ME3B-specific sources."""
 
 [[link]]
 type = "axis"

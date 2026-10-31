@@ -9,6 +9,48 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1me3b"
+address = "000085f9"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00072604"
+to = "jk78c:000085ae"
+note = """
+Target function 00072602 runs the program of JK78C 00063722 \
+(knock_metric_scaler): the product of three raw bytes shifted right by 7 and \
+capped at 0xffff scales the absolute selected sum by a 16x32 split multiply \
+with rounding and overflow to 0x80000000, the positive result is capped at \
+0x7fffffff, the sign is restored, and the signed and offset-binary metrics \
+are published. Its 149 mnemonics equal 1ND 0006e6fa. The product is \
+commutative; the pairing of the three bytes follows the literal-pool slot \
+order, which matches JK78C slot by slot, and the calibration-block order b < \
+c < a, which both layouts share. MOV.L 00072604 loads this table, as MOV.L \
+jk78c:00063726 loads 000085ae. Its 1 stock byte equals JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000085f3"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006e6fc"
+to = "jk78c:000085ae"
+note = """
+Target function 0006e6fa runs the program of JK78C 00063722 \
+(knock_metric_scaler): the product of three raw bytes shifted right by 7 and \
+capped at 0xffff scales the absolute selected sum by a 16x32 split multiply \
+with rounding and overflow to 0x80000000, the positive result is capped at \
+0x7fffffff, the sign is restored, and the signed and offset-binary metrics \
+are published. The product is commutative; the pairing of the three bytes \
+follows the literal-pool slot order, which matches JK78C slot by slot, and \
+the calibration-block order b < c < a, which both layouts share. MOV.L \
+0006e6fc loads this table, as MOV.L jk78c:00063726 loads 000085ae. Its 1 \
+stock byte equals JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000086a7"
 level = "code"
