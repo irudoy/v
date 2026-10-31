@@ -37,6 +37,45 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00014a42"
+name = "daffy-lorikeet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a1e24"
+to = "jk78c:00014748"
+note = """
+Target function 000a1e1a, which dispatcher 0009c754 calls, looks up one word \
+curve over its axis and keeps the previous value while its flag argument is \
+clear, as the JK78C 00087bd0 section at 0008bbba..0008bbe4 looks up 00014748 \
+over 00014adc while ffff9128 is set and otherwise keeps ffff8e26. MOV.L \
+000a1e24 loads this table for call 1 of 1 at 000a1e28 (astonishing-teal), as \
+MOV.L jk78c:0008bbc0 loads 00014748 for the call at 0008bbc6 \
+(jasmine-lizard). Its 16 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014bfe"
+name = "benign-spaniel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009be90"
+to = "jk78c:00014748"
+note = """
+Target function 0009be86, which dispatcher 0009679c calls, looks up one word \
+curve over its axis and keeps the previous value while its flag argument is \
+clear, as the JK78C 00087bd0 section at 0008bbba..0008bbe4 looks up 00014748 \
+over 00014adc while ffff9128 is set and otherwise keeps ffff8e26. MOV.L \
+0009be90 loads this table for call 1 of 1 at 0009be94 (jasmine-lizard), as \
+MOV.L jk78c:0008bbc0 loads 00014748 for the call at 0008bbc6 \
+(jasmine-lizard). Its 16 stock bytes differ from JK78C on 1ND0A and 1ND3B \
+and agree between them."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013468"
 name = "finicky-albatross"

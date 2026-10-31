@@ -18,6 +18,46 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "00024e08"
+name = "conscious-basilisk"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a374e"
+to = "jk78c:000246f4"
+note = """
+Target function 000a373c, which dispatcher 0009c754 calls, evaluates the two \
+coefficient lookups that JK78C 00087bd0 evaluates in two sections: the \
+lookup of 00013ab0 over axis 000246f4 at 00088590 and the lookup of 00015fda \
+over axis 00014a9c at 00087de4. The target passes the corresponding tables \
+and axes to the same helpers in reverse order. MOV.L 000a374e loads this \
+axis for call 1 of 2 at 000a3754 (groovy-lynx), as MOV.L jk78c:0008858c \
+loads 000246f4 for the call at 00088590 (fortunate-adder). Its 16 stock \
+bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00024cd8"
+name = "tall-cockatoo"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009d7b6"
+to = "jk78c:000246f4"
+note = """
+Target function 0009d7a4, which dispatcher 0009679c calls, evaluates the two \
+coefficient lookups that JK78C 00087bd0 evaluates in two sections: the \
+lookup of 00013ab0 over axis 000246f4 at 00088590 and the lookup of 00015fda \
+over axis 00014a9c at 00087de4. The target passes the corresponding tables \
+and axes to the same helpers in reverse order. MOV.L 0009d7b6 loads this \
+axis for call 1 of 2 at 0009d7bc (fortunate-adder), as MOV.L jk78c:0008858c \
+loads 000246f4 for the call at 00088590 (fortunate-adder). Its 16 stock \
+bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00023814"
 name = "daft-caracal"

@@ -168,6 +168,39 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00087e6c"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000246a4"
+count = 3
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
+and 000246e4, with the count byte 0000866f; values derived from their \
+results are the filter weights applied to the bank-2 STFT word (ffff910d), \
+to the bank-1 STFT word (ffff910f) and to a third quantity (ffff9169). 1me3b \
+holds three such curves, 00024d98, 00024dd8 and 00024df8, read by 00090998, \
+0009f062 and 000a1fa2. Assigning the curves needs the dataflow of the \
+filtered quantities. No target absence is asserted."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000246a4"
+count = 2
+l0 = "cb701875f15725a4"
+note = """
+JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
+and 000246e4, with the count byte 0000866f; values derived from their \
+results are the filter weights applied to the bank-2 STFT word (ffff910d), \
+to the bank-1 STFT word (ffff910f) and to a third quantity (ffff9169). 1nd \
+holds two such curves: 00024ca8, read by 000990c6, which reads only the \
+bank-2 STFT word, and 00024cc8, read by 0009c00e, which reads both STFT \
+words. Assigning the curves needs the dataflow of the filtered quantities. \
+No target absence is asserted."""
+
 [[link]]
 type = "depends"
 to = "busy-barracuda/const"

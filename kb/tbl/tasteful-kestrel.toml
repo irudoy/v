@@ -1,4 +1,38 @@
 [[symbol]]
+layout = "1me3b"
+address = "0001338c"
+name = "rampant-galago"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a25e4"
+to = "jk78c:000132be"
+note = """
+Target function 000a25bc, which dispatcher 0009c754 calls, reads one byte \
+curve over a byte axis through the 2D lookup, as the JK78C 00087bd0 section \
+at 000896c6..000896ce reads 00013640 over 000132be. MOV.L 000a25e4 loads \
+this axis argument for call 1 of 1 at 000a25ec (jolly-guan), as MOV.L \
+jk78c:000896ca loads 000132be for the call at 000896ce (brilliant-ibis)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013648"
+name = "stoic-puffin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009c650"
+to = "jk78c:000132be"
+note = """
+Target function 0009c628, which dispatcher 0009679c calls, reads one byte \
+curve over a byte axis through the 2D lookup, as the JK78C 00087bd0 section \
+at 000896c6..000896ce reads 00013640 over 000132be. MOV.L 0009c650 loads \
+this axis argument for call 1 of 1 at 0009c658 (brilliant-ibis), as MOV.L \
+jk78c:000896ca loads 000132be for the call at 000896ce (brilliant-ibis)."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011aef"
 name = "tasteful-kestrel"

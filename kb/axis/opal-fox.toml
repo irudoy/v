@@ -18,6 +18,46 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014e56"
+name = "tactful-pony"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a3758"
+to = "jk78c:00014a9c"
+note = """
+Target function 000a373c, which dispatcher 0009c754 calls, evaluates the two \
+coefficient lookups that JK78C 00087bd0 evaluates in two sections: the \
+lookup of 00013ab0 over axis 000246f4 at 00088590 and the lookup of 00015fda \
+over axis 00014a9c at 00087de4. The target passes the corresponding tables \
+and axes to the same helpers in reverse order. MOV.L 000a3758 loads this \
+axis for call 2 of 2 at 000a3760 (debonair-grouse), as MOV.L jk78c:00087de0 \
+loads 00014a9c for the call at 00087de4 (eminent-lynx). Its 32 stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014ff2"
+name = "fanatic-platypus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009d7c0"
+to = "jk78c:00014a9c"
+note = """
+Target function 0009d7a4, which dispatcher 0009679c calls, evaluates the two \
+coefficient lookups that JK78C 00087bd0 evaluates in two sections: the \
+lookup of 00013ab0 over axis 000246f4 at 00088590 and the lookup of 00015fda \
+over axis 00014a9c at 00087de4. The target passes the corresponding tables \
+and axes to the same helpers in reverse order. MOV.L 0009d7c0 loads this \
+axis for call 2 of 2 at 0009d7c8 (eminent-lynx), as MOV.L jk78c:00087de0 \
+loads 00014a9c for the call at 00087de4 (eminent-lynx). Its 32 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013798"
 name = "opal-fox"

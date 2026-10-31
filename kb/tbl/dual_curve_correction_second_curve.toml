@@ -22,6 +22,42 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1me3b"
+address = "000162d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0009bed4"
+to = "jk78c:00015d62"
+note = """
+Target function 0009be84 corresponds to JK78C 00087288 (finicky-capybara): \
+both run only while bit 2 of a status byte is set (ffff2415 on JK78C, \
+fffe94ad on the target), look up the first curve by twice a word input \
+saturated at 0xFFFF, and look up the second curve by an input offset by \
+0x90. MOV.L 0009bed4 loads this curve for call 2 of 2 at 0009bed8 \
+(aspiring-kittiwake), as MOV.L jk78c:000872e4 loads 00015d62 for the call at \
+000872e6 (urban-potoo). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016330"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00095f24"
+to = "jk78c:00015d62"
+note = """
+Target function 00095ed4 corresponds to JK78C 00087288 (finicky-capybara): \
+both run only while bit 2 of a status byte is set (ffff2415 on JK78C, \
+fffe94dc on the target), look up the first curve by twice a word input \
+saturated at 0xFFFF, and look up the second curve by an input offset by \
+0x90. MOV.L 00095f24 loads this curve for call 2 of 2 at 00095f28 \
+(urban-potoo), as MOV.L jk78c:000872e4 loads 00015d62 for the call at \
+000872e6 (urban-potoo). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00015d62"
 level = "code"

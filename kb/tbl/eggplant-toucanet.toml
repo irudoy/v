@@ -20,3 +20,31 @@ loaded at 0x8AA08."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0008aa08"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00014afc"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 00087bd0 reads this table as the first axis of the 8x8 lookup of \
+00010dce at 0008aa0e. No function that the 1me3b dispatcher 0009c754 calls \
+calls the 8x8 wrapper 00029ec0, and no target map has the row-constant form \
+of JK78C 00010d4e and 00010dce with a zero first row. The correspondence of \
+this section needs separate reasoning. No target absence is asserted."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00014afc"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+JK78C 00087bd0 reads this table as the first axis of the 8x8 lookup of \
+00010dce at 0008aa0e. No function that the 1nd dispatcher 0009679c calls \
+calls the 8x8 wrapper 00028674, and no target map has the row-constant form \
+of JK78C 00010d4e and 00010dce with a zero first row. The correspondence of \
+this section needs separate reasoning. No target absence is asserted."""

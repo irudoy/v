@@ -24,6 +24,43 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1me3b"
+address = "00014058"
+name = "stimulating-mackerel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a2e98"
+to = "jk78c:00013d9e"
+note = """
+Target function 000a2e6c, which dispatcher 0009c754 calls, reads one byte \
+curve over a byte axis through the 2D lookup, as the JK78C 00087bd0 section \
+at 0008ac6c..0008ac7a reads 00013d9e over 000132c6; the target axis 0001339c \
+equals JK78C 000132c6 byte for byte. MOV.L 000a2e98 loads this table for \
+call 1 of 1 at 000a2e9c (jolly-guan), as MOV.L jk78c:0008ac6c loads 00013d9e \
+for the call at 0008ac7a (brilliant-ibis). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001422c"
+name = "thoughtful-ant"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009cf04"
+to = "jk78c:00013d9e"
+note = """
+Target function 0009ced8, which dispatcher 0009679c calls, reads one byte \
+curve over a byte axis through the 2D lookup, as the JK78C 00087bd0 section \
+at 0008ac6c..0008ac7a reads 00013d9e over 000132c6; the target axis 00013658 \
+equals JK78C 000132c6 byte for byte. MOV.L 0009cf04 loads this table for \
+call 1 of 1 at 0009cf08 (brilliant-ibis), as MOV.L jk78c:0008ac6c loads \
+00013d9e for the call at 0008ac7a (brilliant-ibis). Its 8 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000128b0"
 name = "steel-lyrebird"
