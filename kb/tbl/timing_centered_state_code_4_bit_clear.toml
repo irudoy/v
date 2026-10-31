@@ -12,9 +12,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    """
-Native editor publication and independent later-layout counterparts remain \
-unresolved under issue #110.""",
+    "Native editor publication remains unresolved under issue #110.",
 ]
 level = "code"
 role = "table"
@@ -23,6 +21,56 @@ access = "explicit"
 cols = 8
 rows = 8
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000099e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000755b0"
+to = "jk78c:000098da"
+note = """
+Target function 0007448c runs the program of JK78C 000657e4 \
+(timing_vvel_state_compositor): it dispatches the state code with the same \
+1/3, 2/8, 4, 5 and 6/7 compares, tests knock_surface_state fffe945b bit 7 as \
+the bank bit where JK78C tests ffff23c6 bit 6, tests fffe945d bit 6 as the \
+centered-code flag bit where JK78C tests ffff23cb bit 7, and calls its own \
+lookup helpers at the JK78C wrapper positions. Its call sites do not align \
+one to one with the JK78C call sites, so the binding rests on the helper, \
+the argument register and the selecting branch, as on 1ND 00070514. The \
+table reads are the 8x8 centered state-code lookups: code 4 by the bank bit, \
+code 5, and codes 6 and 7. It is the code-4 lookup on the bank-bit-clear \
+branch. MOV.L 000755b0 loads this table, which reaches the call at 000755b4 \
+(dashing-badger) in r4, as MOV.L jk78c:00066a8c loads 000098da, which \
+reaches the call at 00066a9e (determined-donkey) in r4. Its 64 stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00009b90"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007151a"
+to = "jk78c:000098da"
+note = """
+Target function 00070514 runs the program of JK78C 000657e4 \
+(timing_vvel_state_compositor): it dispatches the state code with the same \
+1/3, 2/8, 4, 5 and 6/7 compares, tests knock_surface_state fffe9488 bit 6 as \
+the bank bit where JK78C tests ffff23c6 bit 6, tests fffe948d bit 6 as the \
+centered-code flag bit where JK78C tests ffff23cb bit 7, and calls the 1ND \
+counterparts of the JK78C wrappers. Its call sites do not align one to one \
+with the JK78C call sites, so the binding rests on the wrapper, the argument \
+register and the selecting branch. The table reads are the 8x8 centered \
+state-code lookups: code 4 by the bank bit, code 5, and codes 6 and 7. It is \
+the code-4 lookup on the bank-bit-clear branch. MOV.L 0007151a loads this \
+table, which reaches the call at 0007151e (hopping-mamba) in r4, as MOV.L \
+jk78c:00066a8c loads 000098da, which reaches the call at 00066a9e \
+(determined-donkey) in r4. Its 64 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
 
 [[symbol]]
 layout = "jk78c"
