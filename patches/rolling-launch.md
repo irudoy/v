@@ -382,6 +382,75 @@ Physical ignition behavior must be correlated with an external timing
 reference before retard mode is enabled on an engine. A diagnostic command
 trace alone does not prove spark timing at the cylinder.
 
+## Speed-hold cut actuator
+
+Rolling Launch v2 replaces this runtime as a whole on every layout: speed
+capture and a speed-hold controller take the place of RPM capture, the
+temporary fuel-cut window, and the modes and configuration above. It is a
+design for the `7mfk` layout, and no payload implements it. The other layouts
+receive v2 after its vehicle acceptance on `7mfk`. The speed hold cuts torque
+on the ignition side, and the cut point is not chosen. The fuel-inhibit mask
+through the coordinator wrapper remains the hard limit and the abort path.
+The stock mechanisms are described in `../defs/JK08A.ignition-output.md`, the
+misfire readiness gate in `../defs/JK08A.diagnostics.md`, and the inhibit
+history in `../defs/JK08A.fuel-cut-consumer.md`.
+
+### Candidate: dwell-start veto
+
+A cut event is withheld before its dwell starts. The divider pointer at
+literal `0x000296C0`, which only the two countdown slots of the crank-tooth
+handler `0x00028EA2` load (`0x000294A2`, `0x0002953A`), is redirected to a
+hook. For a cut event the hook sets `0xFFFF8511.bit7` and then tail-calls the
+stock divider `0x00021CE0`. The enable check that follows the call withholds
+the high-byte action, so the coil receives no dwell. The `GR11B` match is
+still serviced: it leaves no pin to time out, and the sequence guard moves
+bit 7 into bit 6, which blocks the recovery at the set arming of that
+cylinder. The `GR11A` match finds the pin high and produces no spark, and both
+output sequences advance as on a fired event.
+
+The veto fails toward a fired event. A `GR11B` match serviced between the hook
+and the enable check consumes bit 7, and the event fires normally, so a lost
+veto never leaves a coil energized. The cam fallback path reads
+`0xFFFF8511` through `0x0002B768`, so the hook passes every event through
+while `0xFFFF24C9.bit6` is set. The hook adds code to every event of the
+crank-tooth interrupt, so it only reads a per-event cut decision and sets the
+bit.
+
+### Rejected mechanisms
+
+Omitting a compare is not a safe cut. A skipped set compare ends in a late
+spark forced by the dwell timeout, a skipped reset compare ends in a
+short-dwell spark from the recovery, and a cleared `0xFFFF13D1` trips the
+sequence guard, which also withholds the following cylinder.
+
+The fuel-inhibit mask is not the speed-hold actuator. With single-channel
+injection events, a change of a partial mask acts on each channel at its next
+event, with no carry-over through the history `0xFFFF1935`. Start pulses and
+catch-up events that address several channels are all-or-nothing. No stock
+post-cut enrichment keys off the DFCO state; the publisher `0x000556EC` reacts
+only to the full mask `0x3F`. Closed-loop trims do not read the mask and keep
+correcting while cylinders are cut. At high cut fractions the wall film of a
+cut port evaporates and must rebuild when the cylinder resumes.
+
+### Open cut points
+
+The choice between the veto and cut points outside the crank-tooth interrupt
+is open. The candidates are a veto state that background code sets for the
+next event, a stock condition under which the arming path withholds dwell,
+and the stock transmission torque-reduction path through `0x00065270`.
+
+### Misfire monitor gating
+
+A withheld spark and a fuel cut both leave the misfire monitor running,
+because no readiness condition reads the inhibit mask or the DFCO state. On
+activation the runtime stores the marker `0x01` into latch `0xFFFF436F` when
+the latch is zero. The readiness gate then fails, which clears bits 6 and 7
+of `0xFFFF4251` and the P030 working state. The COOLDOWN -> IDLE transition
+clears the latch only while it holds `0x01`, so a stock value is never
+overwritten. The P030 metrics span thirteen event periods, so the latch stays
+held for at least thirteen events after the last cut. The rearm period must
+cover that span; one second covers it above 260 RPM.
+
 ## Configuration
 
 The strict 32-byte record contains:
