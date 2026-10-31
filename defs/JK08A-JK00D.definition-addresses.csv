@@ -1,6 +1,6 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
 Axis,00008000,00008000,,homologous,92,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,0000e98e,000104a2,,homologous,25,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,0000e98e,000104a2,,homologous,25,l0,"Target function 00075bce corresponds to JK08A 00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 000104a2 into r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row offset in r14 to r5."
 Axis,0001199e,00013c32,,homologous,22,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000119ae,00013c42,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000119b2,00013c46,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -122,7 +122,7 @@ Map,0000b43a,0000b7ce,,reviewed-target,2,l0,warm intake-cam target in the stock 
 Map,0000b53a,0000b8ce,,reviewed-target,2,l0,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C3870
 Map,0000bb5a,0000bf6e,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0000d68e,0000eca2,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,0000e98e,000104a2,,homologous,25,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,0000e98e,000104a2,,homologous,25,l0,"Target function 00075bce corresponds to JK08A 00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 000104a2 into r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row offset in r14 to r5."
 Map,0000f38e,00010ea2,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0000f40e,00010f22,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00010b0e,000128a2,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -173,7 +173,7 @@ Map,000123ea,00014707,,homologous,2,literal-pool,unique call-ordinal operands th
 Map,000123f2,0001470f,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,000123fa,00014717,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012412,0001472f,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,0001242a,00014747,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,0001242a,00014747,,homologous,4,l0,"Target function 000540ec corresponds to JK08A 000526a0. MOV.L 00054134 loads 00014747, which reaches the call at 00054138 in r4, as MOV.L 7mfk:000526e8 loads 0001242a, which reaches the call at 7mfk:000526ec in r4. The preceding calls at 0005412a and 7mfk:000526de read the base plus 8."
 Map,00012432,0001474f,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0001243a,00014757,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0001244a,00014767,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -184,7 +184,7 @@ Map,000124d2,000147ef,,reviewed-target,2,l0,stationary rev-limiter step table li
 Map,0001252a,00014877,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012532,0001487f,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012552,0001489f,,reviewed-target,2,l0,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
-Map,000126a0,00014a2d,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,000126a0,00014a2d,,homologous,4,l0,"Target function 0004cb52 corresponds to JK08A 0004ba48. MOV.L 0004cc12 loads 00014a2d, which reaches the call at 0004cc16 in r4, as MOV.L 7mfk:0004bb08 loads 000126a0, which reaches the call at 7mfk:0004bb0c in r4. The preceding calls at 0004cbe8 and 7mfk:0004bade read the base plus 8."
 Map,000126a8,00014a35,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,000126e4,00014a71,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
 Map,00012718,00014aa5,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
@@ -199,7 +199,7 @@ Map,000129c0,00014d65,,reviewed-target,2,l0,target literals and reviewed homolog
 Map,000129d2,00014d77,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012a02,00014da7,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012a1a,00014dbf,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,00012a22,00014dc7,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,00012a22,00014dc7,,homologous,4,l0,"Target function 000738f4 corresponds to JK08A 00071650. MOV.L 0007399c loads 00014dc7, which reaches the call at 000739a0 in r4, as MOV.L 7mfk:000716f8 loads 00012a22, which reaches the call at 7mfk:000716fc in r4. The preceding calls at 00073964 and 7mfk:000716c0 read the base plus 8."
 Map,00012a2a,00014dcf,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012a32,00014dd7,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00012a62,00014e0f,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence

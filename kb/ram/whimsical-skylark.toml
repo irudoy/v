@@ -23,7 +23,11 @@ name = "whimsical-skylark"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "7mfk:000559d0"
+at = "7mfk:000559ba"
+note = """
+MOV.L 000559ba loads ffff2464 into r6, the base of the byte read at \
+000559c0. The delay slot of the call at 000559d0 replaces r6 before the \
+call."""
 
 [[link]]
 type = "reader"

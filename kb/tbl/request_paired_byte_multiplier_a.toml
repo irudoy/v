@@ -306,15 +306,15 @@ address = "00014da7"
 former = ["sepia-octopus/tbl/jk00c-00014da7"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00c:00073964"
-to = "7mfk:000716c0"
-count = 1
-value = 6
+at = "jk00c:0007399c"
+to = "7mfk:00012a22"
 note = """
-reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
-interpolation operands"""
+Target function 000738f4 corresponds to JK08A 00071650. MOV.L 0007399c loads \
+00014da7, which reaches the call at 000739a0 in r4, as MOV.L 7mfk:000716f8 \
+loads 00012a22, which reaches the call at 7mfk:000716fc in r4. The preceding \
+calls at 00073964 and 7mfk:000716c0 read the base plus 8."""
 
 [[symbol]]
 layout = "jk00d"
@@ -322,15 +322,15 @@ address = "00014dc7"
 former = ["silky-oxpecker/tbl/jk00d-00014dc7"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00d:00073964"
-to = "7mfk:000716c0"
-count = 1
-value = 6
+at = "jk00d:0007399c"
+to = "7mfk:00012a22"
 note = """
-unique call-ordinal operands through reviewed interpolation-wrapper \
-correspondence"""
+Target function 000738f4 corresponds to JK08A 00071650. MOV.L 0007399c loads \
+00014dc7, which reaches the call at 000739a0 in r4, as MOV.L 7mfk:000716f8 \
+loads 00012a22, which reaches the call at 7mfk:000716fc in r4. The preceding \
+calls at 00073964 and 7mfk:000716c0 read the base plus 8."""
 
 [[symbol]]
 layout = "jk78c"

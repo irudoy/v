@@ -258,24 +258,32 @@ layout = "jk00c"
 address = "ffff11e4"
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00c:0004b070"
-to = "7mfk:0004a02c"
-count = 1
-value = 0
+at = "jk00c:0004b05e"
+to = "7mfk:ffff11d4"
+note = """
+Target function 0004b040 corresponds to JK08A 00049ffc at the calls 0004b070 \
+and 7mfk:0004a02c. MOV.L 0004b05e loads ffff11e4 into r6, as MOV.L \
+7mfk:0004a01a loads ffff11d4. Each reads the word at offset 0x22 (JK08A \
+0x20) through r6 at 0004b068 (7mfk:0004a024), and the delay slot of the call \
+replaces r6 with that word."""
 
 [[symbol]]
 layout = "jk00d"
 address = "ffff11e4"
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00d:0004b074"
-to = "7mfk:0004a02c"
-count = 1
-value = 0
+at = "jk00d:0004b062"
+to = "7mfk:ffff11d4"
+note = """
+Target function 0004b044 corresponds to JK08A 00049ffc at the calls 0004b074 \
+and 7mfk:0004a02c. MOV.L 0004b062 loads ffff11e4 into r6, as MOV.L \
+7mfk:0004a01a loads ffff11d4. Each reads the word at offset 0x22 (JK08A \
+0x20) through r6 at 0004b06c (7mfk:0004a024), and the delay slot of the call \
+replaces r6 with that word."""
 
 [[symbol]]
 layout = "jk78c"

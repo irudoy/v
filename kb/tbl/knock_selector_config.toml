@@ -5,11 +5,13 @@ address = "00008a7c"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1me3b:0007484c"
+at = "1me3b:00072760"
 to = "7mfk:00008b3d"
 note = """
-Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
-alternate channel byte"""
+Target function 0007275c corresponds to JK08A 00049ffc \
+(knock_slice_threshold_lookup). MOV.L 00072760 loads this byte and 00072764 \
+tests bit 3, as MOV.L 7mfk:0004a000 loads 00008b3d and 7mfk:0004a004 tests \
+bit 3. Stock value 0xBA sets bit 3 and selects the alternate channel byte."""
 
 [[symbol]]
 layout = "1nd"
@@ -18,11 +20,13 @@ address = "00008a2b"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1nd:000710c6"
+at = "1nd:0006e858"
 to = "7mfk:00008b3d"
 note = """
-Target evaluator tests bit 3 of this byte and stock value 0xBA selects the \
-alternate channel byte"""
+Target function 0006e854 corresponds to JK08A 00049ffc \
+(knock_slice_threshold_lookup). MOV.L 0006e858 loads this byte and 0006e85c \
+tests bit 3, as MOV.L 7mfk:0004a000 loads 00008b3d and 7mfk:0004a004 tests \
+bit 3. Stock value 0xBA sets bit 3 and selects the alternate channel byte."""
 
 [[symbol]]
 layout = "7mfk"

@@ -6,4 +6,8 @@ name = "steady-groundhog"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "7mfk:000be72a"
+at = "7mfk:000be71c"
+note = """
+MOV.L 000be71c loads ffff267a into r6, the base of the byte read at \
+000be724. The delay slot of the call at 000be72a replaces r6 before the \
+call."""

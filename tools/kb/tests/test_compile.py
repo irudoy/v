@@ -800,7 +800,7 @@ class DefinitionAdapterTest(unittest.TestCase):
         symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x000104A2)]
         state, item = definitions.row_item(symbol)
         self.assertEqual((state, item["kind"], item["to"]),
-                         (definitions.HOMOLOGOUS, "call-ordinal", "7mfk:000734d4"))
+                         (definitions.HOMOLOGOUS, "l0", "7mfk:0000e98e"))
         self.assertIsNone(match.verify(m, symbol, item))
 
     @pytest.mark.slow

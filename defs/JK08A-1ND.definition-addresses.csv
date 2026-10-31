@@ -14,7 +14,7 @@ Axis,000155a0,00016e02,,homologous,36,l0,unique structural axis pair preserves i
 Axis,00018716,0001af3e,,homologous,11,l0,unique structural axis pair preserves interpolation-call order
 Axis,00018ac6,0001b4ae,,homologous,10,l0,unique structural axis pair preserves interpolation-call order
 Axis,000190d0,0001bafe,,homologous,20,l0,unique structural axis pair preserves interpolation-call order
-Axis,0002378c,00024c78,,homologous,3,l0,homologous engine-torque accessor copies the exact 16-word normalized-load axis
+Axis,0002378c,00024c78,,homologous,3,l0,"Target engine-torque function 00092456 loads the 16-word normalized-load axis at 000924cc and copies its words to a stack buffer, which the 16x16 uint16 lookup 000286ac receives in r6 at the call 000925ac."
 Map,000085d9,00008524,,homologous,4,byte-identical,homologous state machine preserves the 36 and 30 activation and release thresholds
 Map,00008a27,00008939,,homologous,9,l0,target Base Fuel Schedule consumer uses the independently recorded value 133
 Map,00008e36,,,unsupported,0,absent,standstill exhaust-VTC override target is read only by the removed exhaust-target conditioner; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no standstill override exists and the 8-byte constant block 28 14 00 00 50 24 02 02 does not recur in the target image

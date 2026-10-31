@@ -6,4 +6,8 @@ name = "amorphous-ape"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "7mfk:0004b3a2"
+at = "7mfk:0004b38a"
+note = """
+MOV.L 0004b38a loads ffff23bc into r7, the base of the byte read at \
+0004b392. The delay slot of the call at 0004b3a2 replaces r7 before the \
+call."""

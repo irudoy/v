@@ -362,7 +362,7 @@ name = "spectacular-prawn"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk00c:00050dda"
+at = "jk00c:00050df2"
 note = """
 stationary rev-limiter activation and release thresholds read at both \
 comparison sites of target function 00050c9a which is the reviewed homolog \
@@ -376,7 +376,7 @@ name = "poised-vicugna"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk00d:00050dd6"
+at = "jk00d:00050dee"
 note = """
 stationary rev-limiter activation and release thresholds read at both \
 comparison sites of target function 00050c96 which is the reviewed homolog \

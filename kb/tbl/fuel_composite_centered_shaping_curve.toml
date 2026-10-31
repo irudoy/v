@@ -184,15 +184,15 @@ address = "00014727"
 former = ["yellow-teal/tbl/jk00c-00014727"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00c:0005412e"
-to = "7mfk:000526de"
-count = 1
-value = 1
+at = "jk00c:00054138"
+to = "7mfk:0001242a"
 note = """
-reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
-interpolation operands"""
+Target function 000540f0 corresponds to JK08A 000526a0. MOV.L 00054138 loads \
+00014727, which reaches the call at 0005413c in r4, as MOV.L 7mfk:000526e8 \
+loads 0001242a, which reaches the call at 7mfk:000526ec in r4. The preceding \
+calls at 0005412e and 7mfk:000526de read the base plus 8."""
 
 [[symbol]]
 layout = "jk00d"
@@ -200,15 +200,15 @@ address = "00014747"
 former = ["pastel-hummingbird/tbl/jk00d-00014747"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00d:0005412a"
-to = "7mfk:000526de"
-count = 1
-value = 1
+at = "jk00d:00054134"
+to = "7mfk:0001242a"
 note = """
-unique call-ordinal operands through reviewed interpolation-wrapper \
-correspondence"""
+Target function 000540ec corresponds to JK08A 000526a0. MOV.L 00054134 loads \
+00014747, which reaches the call at 00054138 in r4, as MOV.L 7mfk:000526e8 \
+loads 0001242a, which reaches the call at 7mfk:000526ec in r4. The preceding \
+calls at 0005412a and 7mfk:000526de read the base plus 8."""
 
 [[symbol]]
 layout = "jk78c"

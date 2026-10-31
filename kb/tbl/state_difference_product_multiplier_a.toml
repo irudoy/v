@@ -191,15 +191,15 @@ address = "00014a0d"
 former = ["ginger-rook/tbl/jk00c-00014a0d"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00c:0004cbe4"
-to = "7mfk:0004bade"
-count = 1
-value = 0
+at = "jk00c:0004cc0e"
+to = "7mfk:000126a0"
 note = """
-reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
-interpolation operands"""
+Target function 0004cb4e corresponds to JK08A 0004ba48. MOV.L 0004cc0e loads \
+00014a0d, which reaches the call at 0004cc12 in r4, as MOV.L 7mfk:0004bb08 \
+loads 000126a0, which reaches the call at 7mfk:0004bb0c in r4. The preceding \
+calls at 0004cbe4 and 7mfk:0004bade read the base plus 8."""
 
 [[symbol]]
 layout = "jk00d"
@@ -207,15 +207,15 @@ address = "00014a2d"
 former = ["helpful-partridge/tbl/jk00d-00014a2d"]
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00d:0004cbe8"
-to = "7mfk:0004bade"
-count = 1
-value = 0
+at = "jk00d:0004cc12"
+to = "7mfk:000126a0"
 note = """
-unique call-ordinal operands through reviewed interpolation-wrapper \
-correspondence"""
+Target function 0004cb52 corresponds to JK08A 0004ba48. MOV.L 0004cc12 loads \
+00014a2d, which reaches the call at 0004cc16 in r4, as MOV.L 7mfk:0004bb08 \
+loads 000126a0, which reaches the call at 7mfk:0004bb0c in r4. The preceding \
+calls at 0004cbe8 and 7mfk:0004bade read the base plus 8."""
 
 [[symbol]]
 layout = "jk78c"

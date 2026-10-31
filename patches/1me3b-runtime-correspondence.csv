@@ -92,7 +92,7 @@ can_symbol,knock_count,ffff2142,fffe90fe,,,mapped,Target knock event function up
 can_symbol,knock_function,000493e8,00071d64,,,target-specific,Target coordinator clears the saturating event count at 0x720d8
 can_symbol,knock_mask,ffff2150,fffe910c,,,mapped,Target knock event function sets and clears this channel mask at the 1ND offset from the counter
 can_symbol,knock_metric_base,ffff21d8,fffe9194,,,mapped,Target evaluator stores the offset-binary metric of channel n at base plus 4 * (n - 1)
-can_symbol,knock_selector_config,00008b3d,00008a7c,,,mapped,Target evaluator tests bit 3 of this byte and stock value 0xBA selects the alternate channel byte
+can_symbol,knock_selector_config,00008b3d,00008a7c,,,mapped,"Target function 0007275c corresponds to JK08A 00049ffc (knock_slice_threshold_lookup). MOV.L 00072760 loads this byte and 00072764 tests bit 3, as MOV.L 7mfk:0004a000 loads 00008b3d and 7mfk:0004a004 tests bit 3. Stock value 0xBA sets bit 3 and selects the alternate channel byte."
 can_symbol,knock_threshold_base,ffff2144,fffe9100,,,mapped,Target threshold lookup stores the threshold of channel n at base plus 2 * (n - 1)
 can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
 can_symbol,mailbox_index,0000001a,0000001a,,,mapped,Target uses physical mailbox 26

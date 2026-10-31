@@ -6,4 +6,8 @@ name = "lurking-turaco"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "7mfk:00047486"
+at = "7mfk:0004747e"
+note = """
+MOV.L 0004747e loads ffff1068 into r5, the base of the byte read at \
+00047482. The delay slot of the call at 00047486 replaces r5 before the \
+call."""

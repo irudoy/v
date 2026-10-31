@@ -202,7 +202,7 @@ name = "sweet-galago"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk00c:00048bc8"
+at = "jk00c:00048bd4"
 note = """
 accelerator-pedal activation and release thresholds read at both comparison \
 sites of target function 00048adc which is the reviewed homolog of JK08A FUN \
@@ -216,7 +216,7 @@ name = "stalwart-cheetah"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk00d:00048bcc"
+at = "jk00d:00048bd8"
 note = """
 accelerator-pedal activation and release thresholds read at both comparison \
 sites of target function 00048ae0 which is the reviewed homolog of JK08A FUN \

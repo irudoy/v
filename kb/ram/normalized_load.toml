@@ -335,24 +335,30 @@ layout = "jk00c"
 address = "ffff1034"
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00c:0004bcae"
-to = "7mfk:0004ac6a"
-count = 1
-value = 0
+at = "jk00c:0004bca6"
+to = "7mfk:ffff102c"
+note = """
+Target function 0004bca4 has the instruction sequence of JK08A 0004ac60. \
+MOV.L 0004bca6 loads ffff1034 into r5, as MOV.L 7mfk:0004ac62 loads \
+ffff102c. Each function reads the byte through r5 and passes it in r5 to the \
+call (0004bcae, 7mfk:0004ac6a) from the delay slot."""
 
 [[symbol]]
 layout = "jk00d"
 address = "ffff1034"
 
 [[symbol.evidence]]
-kind = "call-ordinal"
+kind = "l0"
 supports = "homology"
-at = "jk00d:0004bcb2"
-to = "7mfk:0004ac6a"
-count = 1
-value = 0
+at = "jk00d:0004bcaa"
+to = "7mfk:ffff102c"
+note = """
+Target function 0004bca8 has the instruction sequence of JK08A 0004ac60. \
+MOV.L 0004bcaa loads ffff1034 into r5, as MOV.L 7mfk:0004ac62 loads \
+ffff102c. Each function reads the byte through r5 and passes it in r5 to the \
+call (0004bcb2, 7mfk:0004ac6a) from the delay slot."""
 
 [[symbol]]
 layout = "jk78c"

@@ -6,7 +6,11 @@ name = "mauve-cicada"
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "7mfk:00038a6e"
+at = "7mfk:00038a66"
+note = """
+MOV.L 00038a66 loads ffff107a into r5, the base of the byte read at \
+00038a6a. The delay slot of the call at 00038a6e replaces r5 before the \
+call."""
 
 [[link]]
 type = "writer"

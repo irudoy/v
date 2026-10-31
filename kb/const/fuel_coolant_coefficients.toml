@@ -32,7 +32,10 @@ retain lookup/coefficient bytes. Wrapped coordinates have sign none."""
 
 [[symbol.evidence]]
 kind = "l0"
-at = "7mfk:000553e6"
+at = "7mfk:000553de"
+note = """
+MOV.L 000553de loads 0000990a. The indexed read at 000553e6 uses the base \
+0000990a - 5."""
 
 [[symbol.evidence]]
 kind = "test"

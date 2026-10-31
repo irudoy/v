@@ -1,6 +1,6 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
 Axis,00008000,00008000,,homologous,92,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,0000e98e,00010492,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,0000e98e,00010492,,homologous,25,l0,"Target function 00075bce corresponds to JK08A 00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 00010492 into r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row offset in r14 to r5."
 Axis,0001199e,00013c22,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000119ae,00013c32,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000119b2,00013c36,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -122,7 +122,7 @@ Map,0000b43a,0000b7be,,reviewed-target,2,l0,warm intake-cam target in the stock 
 Map,0000b53a,0000b8be,,reviewed-target,2,l0,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C
 Map,0000bb5a,0000bf5e,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0000d68e,0000ec92,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0000e98e,00010492,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000e98e,00010492,,homologous,25,l0,"Target function 00075bce corresponds to JK08A 00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 00010492 into r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row offset in r14 to r5."
 Map,0000f38e,00010e92,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0000f40e,00010f12,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00010b0e,00012892,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -172,7 +172,7 @@ Map,000123ea,000146e7,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operand
 Map,000123f2,000146ef,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,000123fa,000146f7,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012412,0001470f,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,0001242a,00014727,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0001242a,00014727,,homologous,4,l0,"Target function 000540f0 corresponds to JK08A 000526a0. MOV.L 00054138 loads 00014727, which reaches the call at 0005413c in r4, as MOV.L 7mfk:000526e8 loads 0001242a, which reaches the call at 7mfk:000526ec in r4. The preceding calls at 0005412e and 7mfk:000526de read the base plus 8."
 Map,00012432,0001472f,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0001243a,00014737,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0001244a,00014747,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -183,7 +183,7 @@ Map,000124d2,000147cf,,reviewed-target,2,l0,stationary rev-limiter step table li
 Map,0001252a,00014857,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012532,0001485f,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012552,0001487f,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
-Map,000126a0,00014a0d,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000126a0,00014a0d,,homologous,4,l0,"Target function 0004cb4e corresponds to JK08A 0004ba48. MOV.L 0004cc0e loads 00014a0d, which reaches the call at 0004cc12 in r4, as MOV.L 7mfk:0004bb08 loads 000126a0, which reaches the call at 7mfk:0004bb0c in r4. The preceding calls at 0004cbe4 and 7mfk:0004bade read the base plus 8."
 Map,000126a8,00014a15,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,000126e4,00014a51,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
 Map,00012718,00014a85,,reviewed-target,2,l0,target literals and reviewed homologous consumer topology
@@ -198,7 +198,7 @@ Map,000129c0,00014d45,,reviewed-target,2,l0,target literals and reviewed homolog
 Map,000129d2,00014d57,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012a02,00014d87,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012a1a,00014d9f,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00012a22,00014da7,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,00012a22,00014da7,,homologous,4,l0,"Target function 000738f4 corresponds to JK08A 00071650. MOV.L 0007399c loads 00014da7, which reaches the call at 000739a0 in r4, as MOV.L 7mfk:000716f8 loads 00012a22, which reaches the call at 7mfk:000716fc in r4. The preceding calls at 00073964 and 7mfk:000716c0 read the base plus 8."
 Map,00012a2a,00014daf,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012a32,00014db7,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00012a62,00014def,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands

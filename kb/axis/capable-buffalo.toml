@@ -38,12 +38,12 @@ name = "lilac-muskrat"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1me3b:00098258"
+at = "1me3b:00098174"
 to = "7mfk:0002378c"
 note = """
-the target torque coordinator 000980fe passes the exact 16-word \
-normalized-load axis as the input operand of the 16x16 uint16 leaf 0002a0b4 \
-exactly as 1ND0A 00092456 passes 00024c78 to 000286ac"""
+Target engine-torque function 000980fe loads the 16-word normalized-load \
+axis at 00098174 and copies its words to a stack buffer, which the 16x16 \
+uint16 lookup 0002a0b4 receives in r6 at the call 00098258."""
 
 [[symbol]]
 layout = "1nd"
@@ -53,11 +53,12 @@ name = "prehistoric-cuckoo"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1nd:000925ac"
+at = "1nd:000924cc"
 to = "7mfk:0002378c"
 note = """
-homologous engine-torque accessor copies the exact 16-word normalized-load \
-axis"""
+Target engine-torque function 00092456 loads the 16-word normalized-load \
+axis at 000924cc and copies its words to a stack buffer, which the 16x16 \
+uint16 lookup 000286ac receives in r6 at the call 000925ac."""
 
 [[symbol]]
 layout = "7mfk"
