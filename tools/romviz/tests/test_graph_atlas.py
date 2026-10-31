@@ -186,7 +186,11 @@ def annotation_rows():
         {'key': 'curve_axis/axis', 'name': 'curve_axis', 'kind': 'axis', 'home': 'jk00d',
          'points': 8, 'storage': 'uint8'},
         {'key': 'published_axis/axis', 'name': 'published_axis', 'kind': 'axis',
-         'home': 'jk00d', 'points': 4, 'storage': 'uint16'}])
+         'home': 'jk00d', 'points': 4, 'storage': 'uint16'},
+        {'key': 'dual_table/tbl', 'name': 'dual_table', 'kind': 'tbl', 'home': 'jk00d',
+         'cols': 4, 'storage': 'uint16', 'editor': {'emit': False}},
+        {'key': 'dual_axis/axis', 'name': 'dual_axis', 'kind': 'axis', 'home': 'jk00d',
+         'points': 4, 'storage': 'uint16'}])
     rows['symbols'].extend([
         symbol('excluded/fn', 'fn', 0x4100, images=['JK00E']),
         symbol('curve/tbl', 'tbl', 0x5000, note='Target note.'),
@@ -196,7 +200,10 @@ def annotation_rows():
         symbol('bare/tbl', 'tbl', 0x5400),
         symbol('grouped/tbl', 'tbl', 0x5800),
         symbol('curve_axis/axis', 'axis', 0x5500),
-        symbol('published_axis/axis', 'axis', 0x5600)])
+        symbol('published_axis/axis', 'axis', 0x5600),
+        # One range in both roles: a table at a published axis, an axis at a published map.
+        symbol('dual_table/tbl', 'tbl', 0x5600),
+        symbol('dual_axis/axis', 'axis', 0x5200)])
     rows['links'].append({'from': 'jk00d-00005000/tbl', 'to': 'jk00d-00005500/axis',
                           'kind': 'AXIS', 'props': {}})
     rows['census_maps'] = [
@@ -206,7 +213,10 @@ def annotation_rows():
         {'image': 'JK00D', 'address': '00005810', 'width': 8, 'height': None, 'storage': 'uint16'}]
     rows['census_axes'] = [{'image': 'JK00D', 'address': '00005600', 'count': 4,
                             'storage': 'uint16'}]
-    rows['census_axis_uses'] = [{'image': 'JK00D', 'map': '00005100', 'address': '00005600'}]
+    rows['census_axis_uses'] = [
+        {'image': 'JK00D', 'map': '00005100', 'address': '00005600'},
+        {'image': 'JK00D', 'map': '00005800', 'address': '00005880'},
+        {'image': 'JK00D', 'map': '00005810', 'address': '00005880'}]
     return rows
 
 
@@ -230,7 +240,8 @@ def test_kb_tables_and_axes_fill_the_address_map_without_duplicating_definitions
 
     assert conflicts == []
     assert set(by_id) == {'kb-map:00005000', 'kb-map:00005100', 'kb-map:00005300',
-                          'kb-map:00005400', 'kb-map:00005800', 'kb-axis:00005500'}
+                          'kb-map:00005400', 'kb-map:00005800', 'kb-map:00005600',
+                          'kb-axis:00005500', 'kb-axis:00005200'}
     curve = by_id['kb-map:00005000']
     assert (curve['label'], curve['layer'], curve['kind']) == ('curve', 'maps', 'kb-map')
     assert (curve['end'] - curve['start'], curve['exactExtent']) == (8, True)
@@ -251,11 +262,20 @@ def test_kb_tables_and_axes_fill_the_address_map_without_duplicating_definitions
     bare = by_id['kb-map:00005400']
     assert (bare['end'] - bare['start'], bare['exactExtent']) == (1, False)
     assert meta(bare)['Geometry'] == 'unknown'
-    # Two adjacent census curves of one width tile the grouped 8x2 table.
+    # Two adjacent 8x1 census curves on one census axis form the grouped 8x2 table.
     assert by_id['kb-map:00005800']['end'] - 0x5800 == 32
     axis = by_id['kb-axis:00005500']
     assert (axis['layer'], axis['end'] - axis['start']) == ('axes', 8)
     assert axis['related'] == [{'label': 'Map 0x005000', 'address': 0x5000}]
+    # A dual role is published through the definition object of its other kind.
+    dual_table, dual_axis = by_id['kb-map:00005600'], by_id['kb-axis:00005200']
+    assert 'hidden' not in dual_table['tags'] and 'hidden' not in dual_axis['tags']
+    assert meta(dual_table)['Editor'] == (
+        'published as definition-axis:00005600 through published_axis')
+    assert meta(dual_axis)['Editor'] == (
+        'published as definition-map:0:00005200 through published')
+    assert (dual_table['end'] - dual_table['start'], dual_axis['end'] - dual_axis['start']) == (
+        8, 8)
 
 
 def test_published_objects_receive_the_kb_binding_and_keep_their_geometry():
@@ -278,6 +298,15 @@ def row(rows, group, field, value):
     (lambda rows: row(rows, 'census_maps', 'address', '00005000').update(width=4),
      'curve/tbl'),
     (lambda rows: row(rows, 'census_maps', 'address', '00005810').update(storage='uint8'),
+     'grouped/tbl'),
+    # Equal size, other shape.
+    (lambda rows: row(rows, 'census_maps', 'address', '00005000').update(width=4, height=2),
+     'curve/tbl'),
+    # One wide table cannot run over adjacent census curves.
+    (lambda rows: row(rows, 'meanings', 'key', 'grouped/tbl').update(cols=16, rows=1),
+     'grouped/tbl'),
+    # Grouped curves share one census axis set.
+    (lambda rows: row(rows, 'census_axis_uses', 'map', '00005810').update(address='00005890'),
      'grouped/tbl'),
 ])
 def test_geometry_conflicts_are_reported(change, reported):

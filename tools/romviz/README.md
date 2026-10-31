@@ -166,15 +166,18 @@ name. A definition object at the address of a bound table or axis keeps its XML
 name and geometry and carries the binding. A bound table or axis without such
 an object becomes a hidden `kb-map` or `kb-axis` object. Its details state the
 editor decision: `emit = false`, no editor declaration, or declared but not
-published for the image. Its extent comes from the symbol geometry, then the
+published for the image. When a definition object of the other kind starts at
+the same address, the range serves as both a table and an axis: the `kb` object
+is not hidden, and its details name the definition object and the meaning that
+publish the range. Its extent comes from the symbol geometry, then the
 meaning geometry, then the census `Map` or `Axis` of the image; without any of
 them it is one byte with an unknown extent. Related addresses come from the
 `kb` axis links, then from the census axis links. The build fails when `kb`
-geometry differs from the extent of the published definition object, or when
-the census entries of the image at that address do not cover it exactly with
-the same element width. A `kb` table can group several adjacent census
-lookups. The exact JK08A family keeps its ledger annotations and takes none
-from `kb`.
+geometry differs from the extent of the published definition object of its
+kind, or from the dimension or element width of the census entry of the image
+at that address. A `kb` table of R rows can instead group R adjacent census
+curves of its columns that share one census axis set. The exact JK08A family
+keeps its ledger annotations and takes none from `kb`.
 
 Every registered image declares its DTC registry, so the diagnostics layer is
 populated independently of how much structure a target carries. The reviewed

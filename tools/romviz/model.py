@@ -805,14 +805,15 @@ def _geometry(values, kind, origin):
         if not values.get("points"):
             return None
         dimension = f"1D-{values['points']}"
-        count = values["points"]
+        cols, rows = values["points"], 1
     else:
         # A table without columns is one scalar element.
         cols, rows = values.get("cols") or 1, values.get("rows") or 1
         dimension = f"{cols}x{rows}"
-        count = cols * rows
+    count = cols * rows
     return {"count": count, "bytes": element_bytes, "size": count * element_bytes,
-            "dimension": dimension, "storage": values["storage"], "origin": origin}
+            "cols": cols, "rows": rows, "dimension": dimension,
+            "storage": values["storage"], "origin": origin}
 
 
 def _kb_geometry(annotation, kind):
@@ -821,19 +822,36 @@ def _kb_geometry(annotation, kind):
     return _geometry(annotation["props"], kind, origin)
 
 
-def _census_tiles(knowledge, image, kind, start, geometry):
-    """Whether adjacent census entries of the same element width cover a KB extent exactly.
+def _census_confirms(knowledge, image, kind, start, geometry):
+    """Whether the census entries at a KB start have the KB shape.
 
-    A KB table can group several lookups that the census records one by one.
+    One census entry matches the KB dimension and element width exactly. A KB
+    table of R > 1 rows can group R adjacent census curves of its columns that
+    share one census axis set, because the census records each lookup of the
+    grouped table separately.
     """
-    covered = 0
-    while covered < geometry["size"]:
-        values = knowledge.census.get((image, kind, start + covered))
-        part = _geometry(values, kind, "census") if values else None
-        if part is None or part["bytes"] != geometry["bytes"]:
+    def entry(address):
+        values = knowledge.census.get((image, kind, address))
+        return _geometry(values, kind, "census") if values else None
+
+    first = entry(start)
+    if first and (first["dimension"], first["bytes"]) == (geometry["dimension"],
+                                                          geometry["bytes"]):
+        return True
+    if kind != "tbl" or geometry["rows"] < 2:
+        return False
+    row_bytes = geometry["cols"] * geometry["bytes"]
+    shared = None
+    for row in range(geometry["rows"]):
+        address = start + row * row_bytes
+        part = entry(address)
+        axes = knowledge.census_uses.get((image, kind, address), set())
+        if (part is None or (part["cols"], part["rows"], part["bytes"])
+                != (geometry["cols"], 1, geometry["bytes"])
+                or not axes or (shared is not None and axes != shared)):
             return False
-        covered += part["size"]
-    return covered == geometry["size"]
+        shared = axes
+    return True
 
 
 def _editor_status(props, image):
@@ -848,6 +866,8 @@ def _editor_status(props, image):
 def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_size):
     """Add the KB tables and axes that no definition object publishes at their start.
 
+    A definition object of the other kind at the same start publishes the
+    range in its other role, so the KB object of that dual role is not hidden.
     Return the objects and the geometry conflicts between KB, census and the
     published definition extents.
     """
@@ -856,6 +876,8 @@ def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_
         if item["kind"] in {"definition-map", "definition-axis"}:
             kind = "tbl" if item["kind"] == "definition-map" else "axis"
             published[(kind, item["start"])].append(item)
+    names = {(annotation["kind"], annotation["address"]): annotation["name"]
+             for annotation in annotations}
     found, conflicts = [], []
     for annotation in annotations:
         kind, start = annotation["kind"], annotation["address"]
@@ -865,7 +887,7 @@ def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_
         kb = _kb_geometry(annotation, kind)
         census_values = knowledge.census.get((image, kind, start))
         census = _geometry(census_values, kind, "census") if census_values else None
-        if kb and census and not _census_tiles(knowledge, image, kind, start, kb):
+        if kb and census and not _census_confirms(knowledge, image, kind, start, kb):
             conflicts.append(f"{reference}: kb {kb['dimension']} {kb['storage']}, "
                              f"census {census['dimension']} {census['storage']}")
         if published[(kind, start)]:
@@ -884,6 +906,13 @@ def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_
         else:
             related_addresses = sorted(knowledge.census_uses.get((image, kind, start), ()))
         related_label = "Map" if kind == "axis" else "Axis"
+        other = "axis" if kind == "tbl" else "tbl"
+        dual = published[(other, start)]
+        if dual:
+            editor = (f"published as {dual[0]['id']} through "
+                      f"{names.get((other, start)) or dual[0]['label']}")
+        else:
+            editor = _editor_status(props, image)
         found.append(_object(
             object_id=f"kb-{'map' if kind == 'tbl' else 'axis'}:{start:08x}",
             layer="maps" if kind == "tbl" else "axes",
@@ -897,10 +926,10 @@ def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_
             confidence=props.get("level", ""),
             role=props.get("role", ""),
             exact_extent=geometry is not None,
-            tags=("map" if kind == "tbl" else "axis", "kb", "hidden",
+            tags=("map" if kind == "tbl" else "axis", "kb", "" if dual else "hidden",
                   props.get("role", ""), props.get("level", "")),
             meta=_meta(
-                editor=_editor_status(props, image),
+                editor=editor,
                 dimension=geometry["dimension"] if geometry else "",
                 storage=geometry["storage"] if geometry else "",
                 geometry=geometry["origin"] if geometry else "unknown",
