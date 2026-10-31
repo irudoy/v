@@ -18,13 +18,15 @@ to = "jk78c:0001530c"
 note = """
 Target function 000aab88 corresponds to JK78C 000920ea \
 (request_difference_limit_builder): the same sequence of calibration loads \
-and lookup calls, with this axis in the same call and argument register. The \
-difference and alternate builders read stock-identical copies; the reader \
-and its load order select the copy. MOV.L 000aacde loads this axis for the \
-call at 000aace4 (glorious-elk), as MOV.L jk78c:00092238 loads 0001530c for \
-the call at jk78c:00092248 (nondescript-seagull). The two helpers carry \
-separate meanings and pair by call position. Its 16 stock bytes equal \
-JK78C."""
+and lookup calls up to the final cap, with this axis in the same call and \
+argument register. After the final cap the target adds a flag-selected \
+branch with two throttle_angle_to_area_primary lookups (00014832 over \
+00016e86 at 000aae6c and 000aae78), which JK78C lacks. The difference and \
+alternate builders read stock-identical copies; the reader and its load \
+order select the copy. MOV.L 000aacde loads this axis for the call at \
+000aace4 (glorious-elk), as MOV.L jk78c:00092238 loads 0001530c for the call \
+at jk78c:00092248 (nondescript-seagull). The two helpers carry separate \
+meanings and pair by call position. Its 16 stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "1nd"
@@ -38,12 +40,15 @@ to = "jk78c:0001530c"
 note = """
 Target function 000a46e8 corresponds to JK78C 000920ea \
 (request_difference_limit_builder): the same sequence of calibration loads \
-and lookup calls, with this axis in the same call and argument register. The \
-difference and alternate builders read stock-identical copies; the reader \
-and its load order select the copy. MOV.L 000a483e loads this axis for the \
-call at 000a4844 (nondescript-seagull), as MOV.L jk78c:00092238 loads \
-0001530c for the call at jk78c:00092248 (nondescript-seagull). Its 16 stock \
-bytes equal JK78C on 1ND0A and 1ND3B."""
+and lookup calls up to the final cap, with this axis in the same call and \
+argument register. After the final cap the target adds a flag-selected \
+branch with two throttle_angle_to_area_primary lookups (000149ee over \
+00016e02 at 000a49cc and 000a49d8), which JK78C lacks. The difference and \
+alternate builders read stock-identical copies; the reader and its load \
+order select the copy. MOV.L 000a483e loads this axis for the call at \
+000a4844 (nondescript-seagull), as MOV.L jk78c:00092238 loads 0001530c for \
+the call at jk78c:00092248 (nondescript-seagull). Its 16 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

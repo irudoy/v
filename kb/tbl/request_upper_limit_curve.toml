@@ -69,17 +69,21 @@ supports = "homology"
 at = "1nd:000a25e8"
 to = "jk78c:000169d4"
 note = """
-Target function 000a254a corresponds to JK78C 00090664 \
-(request_mode_selected_coefficient_builder): the same sequence of \
-calibration loads and lookup calls, with this table in the same call and \
-argument register. 1ND merges the readers of JK78C 00090664 and 00090790 and \
-reads one curve in each branch of the fffe9488 bit 6 selection: 00016ff2 \
-while the bit is clear, where JK78C reads 000169d4, and 00016fe2 while it is \
-set, where JK78C reads 000169c4. 1ND has no 2D gain lookup and no crossfade; \
-00016fe2 lies 0x10 below 00016ff2 as 000169c4 lies below 000169d4. MOV.L \
-000a25e8 loads this table for the call at 000a25ec (urban-potoo), as MOV.L \
-jk78c:000906b2 loads 000169d4 for the call at jk78c:000906ba (urban-potoo). \
-Its 16 stock bytes equal JK78C on 1ND3B and differ on 1ND0A."""
+Target function 000a254a merges the readers of JK78C 00090664 \
+(request_mode_selected_coefficient_builder) and 00090790 and reads one curve \
+in each branch of the fffe9488 bit 6 selection, with no 2D gain lookup and \
+no crossfade: 00016ff2 while the bit is clear and 00016fe2 while it is set. \
+JK78C reads two curves in each branch, 00016544 and 000169d4 while the bit \
+is clear and 000169e4 and 000169c4 while it is set, so the call position \
+leaves two candidates per branch. The table block order selects the \
+counterpart: JK78C keeps 000169c4, 000169d4 and 000169e4, then \
+request_primary_ratio_curve at 000169f4; 1ND keeps 00016fe2 and 00016ff2, \
+then request_primary_ratio_curve at 00017002, with no slot for 000169e4. The \
+clear-branch curve 00016ff2 takes the second slot, 000169d4; 00016544 lies \
+outside the block. MOV.L 000a25e8 loads this table for the call at 000a25ec \
+(urban-potoo), as MOV.L jk78c:000906b2 loads 000169d4 for the call at \
+jk78c:000906ba (urban-potoo). Its 16 stock bytes equal JK78C on 1ND3B and \
+differ on 1ND0A."""
 
 [[symbol]]
 layout = "7mfk"
