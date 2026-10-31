@@ -157,7 +157,7 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:0001605a"
-count = 0
+count = 4
 l0 = "28a4e19998ef4d2c"
 note = """
 JK78C reader 0005aa84 reads 0001605a and 00015e72 over the single axis table \
@@ -171,14 +171,17 @@ layout = "1nd"
 state = "unresolved"
 method = "l0"
 target = "jk78c:0001605a"
-count = 0
+count = 4
 l0 = "cb701875f15725a4"
 note = """
 JK78C reader 0005aa84 reads 0001605a and 00015e72 over the single axis table \
 00016ff4. Target reader 00063964 reads 00016658 and 00016490 over axis \
-00017602 and 00016648 and 00016480 over axis 000175d2. Assigning the JK78C \
-pair needs the correspondence of the output words; no target absence is \
-asserted."""
+00017602 and 00016648 and 00016480 over axis 000175d2. On 1ND3B the pair \
+over 00017602 is all zero, as both JK78C curves are, and the pair over \
+000175d2 equals 1ND0A; 1nd loads 00016658 before 00016490 as JK78C loads \
+0001605a before 00015e72. A zero curve can mean a disabled correction, so \
+this does not establish the assignment. Assigning the JK78C pair needs the \
+correspondence of the output words; no target absence is asserted."""
 
 [[link]]
 type = "depends"

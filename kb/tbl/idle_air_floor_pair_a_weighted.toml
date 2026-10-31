@@ -47,30 +47,37 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013dde"
-count = 0
+count = 2
 l0 = "28a4e19998ef4d2c"
 note = """
-Target reader 0006ea7c corresponds to JK78C reader 0005fb58 and blends two \
-curve pairs over the bound floor-pair axis, but it selects the pairs by the \
-same flag position: 000140e8 with 000140f8 and 000140b8 with 000140c8. JK78C \
-selects pair a by ffff45c7.bit2 or ffff23ff.bit3. No correspondence of these \
-flags is stated, and ROM order and branch order assign the pairs oppositely; \
-no target absence is asserted."""
+Target reader 0006ea7c corresponds to JK78C reader 0005fb58 and blends one \
+of two curve pairs over the bound floor-pair axis. It selects 000140b8 with \
+000140c8 while fffeba67.bit6 or fffe9495.bit6 is set and 000140e8 with \
+000140f8 while both are clear. JK78C selects 00013dce with 00013dde (pair a) \
+while ffff45c7.bit2 or ffff23ff.bit3 is set and 00013dfe with 00013e0e (pair \
+b) while both are clear. On all three layouts a set selector reads the pair \
+at the lower address, and 1me3b tests two flags as JK78C does, but no \
+correspondence of the flags is stated. The two base curves and the two \
+weighted curves have equal stock bytes on every image. No target absence is \
+asserted."""
 
 [[status]]
 layout = "1nd"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013dde"
-count = 0
+count = 2
 l0 = "cb701875f15725a4"
 note = """
-Target reader 0006a738 corresponds to JK78C reader 0005fb58 and blends two \
-curve pairs over the bound floor-pair axis, but it selects the pairs by \
-fffeb8f9.bit6: 0001428c with 0001429c while it is clear and 0001425c with \
-0001426c while it is set. JK78C selects pair a by ffff45c7.bit2 or \
-ffff23ff.bit3. No correspondence of these flags is stated, and ROM order and \
-branch order assign the pairs oppositely; no target absence is asserted."""
+Target reader 0006a738 corresponds to JK78C reader 0005fb58 and blends one \
+of two curve pairs over the bound floor-pair axis. It selects 0001425c with \
+0001426c while fffeb8f9.bit6 is set and 0001428c with 0001429c while it is \
+clear. JK78C selects 00013dce with 00013dde (pair a) while ffff45c7.bit2 or \
+ffff23ff.bit3 is set and 00013dfe with 00013e0e (pair b) while both are \
+clear. On all three layouts a set selector reads the pair at the lower \
+address, and 1nd tests one flag against two on JK78C, but no correspondence \
+of the flags is stated. The two base curves and the two weighted curves have \
+equal stock bytes on every image. No target absence is asserted."""
 
 [[link]]
 type = "axis"

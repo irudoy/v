@@ -252,7 +252,7 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:000140bc"
-count = 0
+count = 2
 l0 = "28a4e19998ef4d2c"
 note = """
 JK78C reader 0005b418 and 1nd reader 000648a4 start with one byte lookup of \
