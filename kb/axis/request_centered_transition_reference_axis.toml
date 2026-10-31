@@ -3,6 +3,7 @@ Word ffff1710 coordinate shared by native reference 15e82 in 95442 and \
 canonical blend reference 15ea2 in 9520e. Physical state and conversion \
 remain unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 16
 storage = "uint16"

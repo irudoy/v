@@ -1534,16 +1534,52 @@ class RenameTest(unittest.TestCase):
 
 
 class HomeTest(unittest.TestCase):
-    def test_a_symbol_that_would_move_the_home_of_an_unnamed_meaning_pins_it(self):
-        meaning = Meaning("fn", symbols={"jk00d": object()})
-        document = {}
-        write.Change._keep_home(meaning, ["jk78c"], document)
-        self.assertEqual(document, {})
-        write.Change._keep_home(meaning, ["jk00c"], document)
-        self.assertEqual(document, {"home": "jk00d"})
-        document = {}
-        write.Change._keep_home(meaning, ["jk78c", "7mfk"], document)
-        self.assertEqual(document, {"home": "jk00d"})
+    def test_a_second_symbol_states_the_current_home(self):
+        for meaning in (Meaning("fn", symbols={"jk00d": object()}),
+                        Meaning("fn", name="probe_routine", semantic=True,
+                                symbols={"jk00d": object()})):
+            for layouts in (["jk78c"], ["jk00c"], ["jk78c", "7mfk"]):
+                document = {}
+                write.Change._keep_home(meaning, layouts, document)
+                self.assertEqual(document, {"home": "jk00d"})
+
+    def test_the_7mfk_default_a_stated_home_and_a_single_symbol_state_nothing(self):
+        cases = ((Meaning("fn", symbols={"7mfk": object()}), {}),
+                 (Meaning("fn", props={"home": "jk00d"}, symbols={"jk00d": object()}), {}),
+                 (Meaning("fn", symbols={"jk00d": object()}), {"home": "jk00d"}),
+                 (Meaning("fn", symbols={}), {}))
+        for meaning, document in cases:
+            before = dict(document)
+            write.Change._keep_home(meaning, ["jk78c"], document)
+            self.assertEqual(document, before)
+
+    def test_a_batch_states_the_layout_of_the_first_symbol_of_a_new_meaning(self):
+        document = {"symbol": [{"layout": "jk78c", "address": "00020000"}]}
+        write.Change._keep_home(Meaning("fn", symbols={}), ["1nd"], document)
+        self.assertEqual(document["home"], "jk78c")
+
+
+@pytest.fixture
+def native_meaning_model(tmp_path, monkeypatch):
+    """The isolated sources with a named meaning that has one JK78C symbol."""
+    writer_sources.write_sources(tmp_path)
+    document = {"summary": "Controlled JK78C word at ffff2000.", "width": 16, "signed": False,
+                "symbol": [{"layout": "jk78c", "address": "ffff2000", "evidence": [SPEC]}]}
+    path = store.path_of("ram", "native_probe")
+    (tmp_path / path).write_text(store.render("ram", document), encoding="utf-8")
+    monkeypatch.setattr(adapters, "ADAPTERS", (file_adapter,))
+    return compile.build(tmp_path), path
+
+
+def test_binds_on_later_layouts_keep_the_home_of_a_named_meaning(native_meaning_model):
+    base, path = native_meaning_model
+    _, texts, result = write.plan(
+        [bind("native_probe/ram", "1nd:ffff3000", evidence=[SPEC]),
+         bind("native_probe/ram", "1me3b:ffff3000", evidence=[SPEC])],
+        base, write.model_resolver(base), root=base.root)
+    assert tomllib.loads(texts[path])["home"] == "jk78c"
+    meaning = result.meaning_of(SymbolKey("jk78c", "ram", 0xffff2000))
+    assert (meaning.home, sorted(meaning.symbols)) == ("jk78c", ["1me3b", "1nd", "jk78c"])
 
 
 class OverlayTest(unittest.TestCase):

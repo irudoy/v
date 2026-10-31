@@ -776,7 +776,7 @@ class Change:
         entry = {"layout": layout, "address": f"{address:08x}"}
         if not meaning.semantic:
             entry["name"] = name
-            self._keep_home(meaning, [layout], document)
+        self._keep_home(meaning, [layout], document)
         entry.update({"level": level, "note": op.get("note"), "evidence": evidence})
         document["symbol"] = [*document.get("symbol", ()), entry]
         document["status"] = [status for status in document.get("status", ())
@@ -1219,8 +1219,7 @@ class Change:
             entry["evidence"] = _union(entry.get("evidence", []), evidence)
             moved.append(entry)
             joins.append(f"{symbol.key.location} {'; '.join(summary(item) for item in evidence)}")
-        if not meaning.semantic:
-            self._keep_home(meaning, [entry["layout"] for entry in moved], document)
+        self._keep_home(meaning, [entry["layout"] for entry in moved], document)
         document["symbol"] = [*document.get("symbol", ()), *moved]
         layouts = set(meaning.symbols) | {entry.get("layout") for entry in document["symbol"]}
         formers = ([other.name] if other.semantic else []) + list(source.get("former", ()))
@@ -1451,7 +1450,7 @@ class Change:
         else:
             name = generated or self._draw(named.key)
             entry["name"] = name
-            self._keep_home(target, [layout], document)
+        self._keep_home(target, [layout], document)
         current = f"{name}/{kind}/{layout}-{address}"
         former = [item for item in _union([old], former) if item != current]
         if former:
@@ -1809,14 +1808,15 @@ class Change:
 
     @staticmethod
     def _keep_home(meaning, layouts, document):
-        """Pin the home of an unnamed meaning, whose name is the generated name
-        of its home symbol, when symbols on `layouts` would move it."""
+        """State the home of a meaning that symbols on `layouts` give more than
+        one symbol: its current home, or the layout of its first symbol, unless
+        that home is the 7mfk default."""
         if "home" in meaning.props or "home" in document:
             return
-        layouts = set(meaning.symbols) | set(layouts)
-        after = "7mfk" if "7mfk" in layouts else min(layouts)
-        if after != meaning.home:
-            document["home"] = meaning.home
+        held = [entry.get("layout") for entry in document.get("symbol", ())]
+        home = meaning.home or next(iter(held), None)
+        if home not in (None, "7mfk") and len(set(meaning.symbols) | set(held) | set(layouts)) > 1:
+            document["home"] = home
 
     # Arguments -------------------------------------------------------------
 

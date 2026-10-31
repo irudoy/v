@@ -14,6 +14,7 @@ Native editor publication and independent later-layout counterparts remain \
 unresolved under issue #110.""",
 ]
 level = "code"
+home = "jk78c"
 role = "table"
 block = "idle_air/block"
 access = "explicit"

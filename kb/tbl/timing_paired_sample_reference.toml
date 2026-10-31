@@ -3,6 +3,7 @@ Explicit byte curve in 000686e0 over byte ffff119d and axis 000142fc. Its \
 result contributes the reference used before paired difference correction. \
 Physical source and engineering conversion remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

@@ -3,6 +3,7 @@ Explicit word curve in 000920ea over word ffff11bc and axis 000150fc. The \
 terminal result is capped by the separately computed request limit before \
 publication. Physical request units remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

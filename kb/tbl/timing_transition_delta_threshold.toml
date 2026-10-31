@@ -4,6 +4,7 @@ to 255. Its result supplies the threshold for a current-versus-saved word \
 difference in the transition gate. Physical quantity and task period remain \
 unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

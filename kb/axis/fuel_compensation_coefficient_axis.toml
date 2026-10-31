@@ -2,6 +2,7 @@ summary = """
 Coordinate vector of fuel_compensation_coefficient_curve, indexed by the \
 bounded word-shift input. Physical input conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 16
 storage = "uint8"

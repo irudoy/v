@@ -4,6 +4,7 @@ Explicit byte curve in one configuration branch of 00090664 over axis \
 retains a separate role from alternate branch curve 00013dae; physical \
 coordinates remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

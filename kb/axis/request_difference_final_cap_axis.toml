@@ -2,6 +2,7 @@ summary = """
 Word ffff11bc coordinate of request_difference_final_cap_curve. Its \
 engineering conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint16"

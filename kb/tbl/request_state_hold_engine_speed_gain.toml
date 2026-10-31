@@ -4,6 +4,7 @@ ffff11a6 divided by ten. It multiplies a selected hold byte with a seven-bit \
 shift and byte cap before the two hold states are loaded. No time unit is \
 established."""
 level = "code"
+home = "jk78c"
 role = "table"
 former = ["request_state_hold_speed_gain"]
 access = "explicit"

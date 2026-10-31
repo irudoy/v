@@ -1,3 +1,5 @@
+home = "jk00c"
+
 [interp]
 access = "explicit"
 kernel = "versatile-junglefowl/fn"

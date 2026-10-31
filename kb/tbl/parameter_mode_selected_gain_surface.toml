@@ -3,6 +3,7 @@ Four-by-four byte gain surface in 00082cb0. A mode-selected byte and raw \
 sample supply its coordinates; its result multiplies the selected byte term. \
 The physical parameter remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 4

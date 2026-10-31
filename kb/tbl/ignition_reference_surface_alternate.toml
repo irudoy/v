@@ -9,6 +9,7 @@ note = """
 Stock bytes equal 1ND 0x0000A650. The surface carries no editor entry \
 because the stock configuration never reads it."""
 level = "code"
+home = "jk78c"
 role = "table"
 cols = 8
 rows = 8

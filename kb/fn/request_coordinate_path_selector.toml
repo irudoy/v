@@ -4,6 +4,7 @@ forward path it reads fffe89ee at 000a5cf2; otherwise it selects the \
 unsigned minimum of fffe8d30 and fffe8796. It stores the selected coordinate \
 at fffe8d2a and applies the inverse curve pair before the subsequent scaled \
 output."""
+home = "1nd"
 role = "accessor"
 block = "throttle_target/block"
 

@@ -13,6 +13,7 @@ unestablished, so the stock path does not qualify the curve for \
 publication.""",
 ]
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

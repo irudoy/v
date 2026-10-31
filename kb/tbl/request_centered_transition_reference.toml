@@ -4,6 +4,7 @@ centered result participates in the enabled reference/blending path before \
 signed transition and rate limits. Physical quantity and conversion remain \
 unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

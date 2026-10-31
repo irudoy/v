@@ -3,6 +3,7 @@ Four byte breakpoints for the sample coordinate of \
 parameter_mode_selected_gain_surface. Physical sample identity remains \
 unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 4
 storage = "uint8"

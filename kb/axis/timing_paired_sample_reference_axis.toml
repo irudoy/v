@@ -2,6 +2,7 @@ summary = """
 Byte ffff119d coordinate of timing_paired_sample_reference. Physical sample \
 identity and conversion remain unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 16
 storage = "uint8"

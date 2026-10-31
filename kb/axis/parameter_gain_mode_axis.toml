@@ -3,6 +3,7 @@ Four byte breakpoints for the selected state coordinate of \
 parameter_mode_selected_gain_surface. The state-to-physical-mode \
 correspondence remains unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 4
 storage = "uint8"

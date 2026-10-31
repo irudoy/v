@@ -7,6 +7,7 @@ Bank-indexed learned-trim adjustment updater. Maintains the unsigned \
 adjustment word through raw bank masks and limits with neutral 0x6400. \
 Physical gate identities and cadence remain unreviewed.""",
 ]
+home = "1nd"
 block = "fuel_closed_loop/block"
 former = ["engine_immo_status_reporter"]
 

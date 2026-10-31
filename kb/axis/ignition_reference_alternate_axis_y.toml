@@ -4,6 +4,7 @@ coordinator FUN_00069AB8 passes it as the second axis of the lookup at \
 0x0006A106 with the load byte 0xFFFF1032 as its coordinate, the byte that \
 indexes the hot-coolant surface 0x0000A10A over 0x000135B8."""
 level = "code"
+home = "jk78c"
 quantity = "load"
 points = 8
 storage = "uint8"

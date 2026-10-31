@@ -3,6 +3,7 @@ Explicit byte curve in the alternate configuration branch of 00090664 over \
 axis 00014248. The selector and input preparation differ from the adjacent \
 word-curve stages. Physical gain and input units remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

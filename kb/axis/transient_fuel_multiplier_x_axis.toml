@@ -5,6 +5,7 @@ coordinate source, storage and eight-point resolver contract. Physical \
 quantity and engineering conversion remain unresolved.""",
 ]
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint8"

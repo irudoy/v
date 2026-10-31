@@ -19,6 +19,7 @@ declared. Its interpretation as the bank-set edge-mode-3 curve remains a \
 candidate pending normalized-access reconciliation under issue #110.""",
 ]
 level = "candidate"
+home = "jk78c"
 role = "table"
 block = "ignition_timing/block"
 cols = 8

@@ -2,6 +2,7 @@ summary = """
 First coordinate of request_difference_reference_surface, read from byte \
 ffff11a2. Physical conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint8"

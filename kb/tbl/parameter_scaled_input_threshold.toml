@@ -4,6 +4,7 @@ scaled byte input, and the result participates in a hysteretic comparison \
 with another raw byte. Physical input and threshold units remain \
 unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

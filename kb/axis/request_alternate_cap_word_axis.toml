@@ -2,6 +2,7 @@ summary = """
 Word ffff11bc coordinate of request_alternate_intermediate_cap_surface. \
 Physical conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint16"

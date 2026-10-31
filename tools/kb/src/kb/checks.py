@@ -106,6 +106,17 @@ def _key_issues(props, kind, path, subject, quantities):
                     "quantity of tools/kb/config.toml")
 
 
+def _home_issues(meaning, path, subject):
+    """A stated home is the layout of a symbol of the meaning, and a meaning
+    with more than one symbol and none on 7mfk states its home."""
+    home = meaning.props.get("home")
+    if home is not None and home not in meaning.symbols:
+        yield Issue("schema", path, subject, f"home {home!r} holds no symbol of the meaning")
+    elif home is None and len(meaning.symbols) > 1 and "7mfk" not in meaning.symbols:
+        yield Issue("schema", path, subject,
+                    f"{len(meaning.symbols)} symbols, none on 7mfk, and no stated home")
+
+
 def _bit_issues(bits, width, path, subject):
     """Named bits of a bit field: a number below the access width in bits, a
     name, numbers and names that no other bit of the list repeats, a level
@@ -141,6 +152,7 @@ def schema(model):
     for meaning in model.meanings:
         path, subject, props = _sources(meaning), _subject(meaning), meaning.props
         issues.extend(_key_issues(props, meaning.kind, path, subject, quantities))
+        issues.extend(_home_issues(meaning, path, subject))
         role = props.get("role")
         roles = {"fn": vocab.FN_ROLES, "tbl": vocab.TBL_ROLES}.get(meaning.kind)
         if role is not None and (roles is None or role not in roles):

@@ -436,7 +436,7 @@ Keys of every meaning:
 | `summary` | string | no | The mechanism: what produces the datum, what reads it, and how |
 | `note` | array of strings | no | Caveats, open questions, and context the summary does not carry |
 | `level` | level | yes | Level of the identity claim |
-| `home` | layout id | when the meaning has more than one symbol | The layout that bare addresses in prose refer to; a meaning with one symbol takes its layout |
+| `home` | layout id | when the meaning has more than one symbol and none on 7mfk | The layout of a symbol of the meaning that bare addresses in prose refer to; without it, a meaning with a 7mfk symbol takes 7mfk and a meaning with one symbol takes its layout |
 | `role` | string | for `fn` and `tbl` | The role from the vocabulary of the kind |
 | `block` | block reference | for reviewed `fn` meanings | The architecture block; other kinds may pin one |
 | `former` | array of names | no | Former names, each a permanent redirect to this meaning |
@@ -1445,8 +1445,10 @@ references.
   the symbol that the reference names, or the home symbol; a `to` that names
   a symbol becomes its location. A location that is no candidate is refused
   with the candidates. A new symbol of an unnamed meaning draws a generated
-  name, and `home` keeps the home of the meaning when the symbol would move
-  it. The status of the layout leaves the file.
+  name. A meaning without a stated `home` that the new symbol gives more than
+  one symbol states its current home, unless that home is 7mfk; the target of
+  `kb move` and the survivor of `kb merge` keep their home in the same way.
+  The status of the layout leaves the file.
 - `kb set` writes the keys of a meaning, of the entry of its symbol that the
   reference or `--layout` names, of a designed entity, or of the target of a
   feature on `--layout`. A value is a TOML value or else a string, an empty
@@ -1657,7 +1659,7 @@ its last pass and the files that it read beyond those it states in advance.
 |---|---|
 | `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form; every join of `tools/ghidra/merges/<layout>.csv` holds: the entry is a function entry, the fragment is none, and the fragment lies in the body of the entry |
 | `sites` | Every `site:` token of a row of the function ledger `defs/<image>.funcs.csv` of the L0 image of a layout that is an instruction of an L0 function lies in the body of the row's function, of a function the row names outside its prose columns, or of a function that the row's function calls, is called by, or continues into in sequence, or its instruction references the row's function |
-| `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name |
+| `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name; a stated `home` of a meaning is the layout of one of its symbols, and a meaning with more than one symbol and none on 7mfk states its `home` |
 | `canonical` | Every entity file equals the canonical rendering of its parse |
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn |
 | `references` | Every stored reference and every `[[...]]` citation resolves, and none uses a former name |

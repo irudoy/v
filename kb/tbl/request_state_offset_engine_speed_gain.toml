@@ -3,6 +3,7 @@ Second implicit byte gain in the primary product of 8fd6c. It uses \
 min(u16[ffff11a6],0x8c0)/10 as an engine-speed-derived index, shared with \
 alternate gain 13186. Engineering conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 former = ["request_state_offset_speed_gain"]
 access = "explicit"

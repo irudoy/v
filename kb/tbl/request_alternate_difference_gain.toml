@@ -3,6 +3,7 @@ Implicit byte gain used twice in 00092734 for separately bounded \
 differences. The results scale one request path and gate another cap path. \
 The physical difference quantity remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

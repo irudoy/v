@@ -4,6 +4,7 @@ multiplies a selected byte term before the stored word contribution is \
 formed. The same ROM cluster also contains distinct directly indexed \
 constants. Physical parameter units remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

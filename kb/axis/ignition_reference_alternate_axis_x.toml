@@ -3,6 +3,7 @@ Engine-speed axis of the alternate ignition reference surface 0x0000A30A. \
 The coordinator FUN_00069AB8 passes it as the first axis of the lookup at \
 0x0006A106 with the engine-speed word 0xFFFF11AC as its coordinate."""
 level = "code"
+home = "jk78c"
 quantity = "rpm"
 points = 8
 storage = "uint8"

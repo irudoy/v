@@ -3,6 +3,7 @@ Implicit word curve in 00090664 over the bounded word coordinate shifted \
 left by seven. It contributes the configuration-selected word gain alongside \
 other existing word curves. Physical coefficient units remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

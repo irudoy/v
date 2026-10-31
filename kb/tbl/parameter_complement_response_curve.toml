@@ -4,6 +4,7 @@ complement of a value capped at 128, capped to 255. The response \
 participates in the signed parameter comparison path; physical \
 interpretation remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16

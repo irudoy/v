@@ -3,6 +3,7 @@ Explicit word curve in 0009248a over byte ffff10e5 and existing eight-word \
 axis 00016a64. Its result supplies the second coordinate of ceiling surface \
 0000fece. The coordinate's physical conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8

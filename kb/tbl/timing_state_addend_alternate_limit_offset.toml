@@ -13,6 +13,7 @@ note = """
 JK08A FUN_0004AFDC has no counterpart of this limit. The curve carries no \
 editor entry because the stock configuration never reads it."""
 level = "code"
+home = "jk78c"
 role = "table"
 former = ["timing_state_addend_alternate_load_trim"]
 cols = 8

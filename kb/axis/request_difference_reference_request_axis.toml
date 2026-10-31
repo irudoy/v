@@ -2,6 +2,7 @@ summary = """
 Second coordinate of request_difference_reference_surface, supplied by the \
 bounded request-word sum. Physical request units remain unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint16"

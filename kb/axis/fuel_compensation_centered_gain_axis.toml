@@ -3,6 +3,7 @@ Centered byte coordinate of fuel_compensation_centered_gain. The signed word \
 is saturated before byte encoding; physical coefficient units remain \
 unresolved."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint8"

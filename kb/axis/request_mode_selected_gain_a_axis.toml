@@ -2,6 +2,7 @@ summary = """
 Explicit byte grid of request_mode_selected_gain_curve_a. Its normalized \
 state input has no qualified physical conversion."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint8"

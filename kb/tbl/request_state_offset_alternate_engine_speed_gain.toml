@@ -4,6 +4,7 @@ min(u16[ffff11a6],0x8c0)/10 from the engine-speed word. It scales the \
 alternate centered state word with a seven-bit shift before signed-word \
 clamping, separately from the two-gain primary product."""
 level = "code"
+home = "jk78c"
 role = "table"
 former = ["request_state_offset_alternate_speed_gain"]
 access = "explicit"

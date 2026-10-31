@@ -4,6 +4,7 @@ addends in FUN_000644D0. Both lookups take the engine-speed byte 0xFFFF11A3 \
 as the coordinate; `JK78C.vvel.md` reads that byte at 25 RPM per count, so \
 the stock points 32..128 span 800..3200 RPM."""
 level = "code"
+home = "jk78c"
 former = ["timing_state_addend_load_trim_axis"]
 quantity = "raw"
 points = 8

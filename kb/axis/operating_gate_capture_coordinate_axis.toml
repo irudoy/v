@@ -11,6 +11,7 @@ conversions, editor publication and later-layout counterparts require \
 separate qualification.""",
 ]
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint16"

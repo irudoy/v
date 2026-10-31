@@ -3,6 +3,7 @@ First implicit byte gain in 0008fd6c. It multiplies the centered \
 state-indexed word jointly with 0001317e before the signed-word result is \
 selected. The first coordinate's physical meaning remains unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8
