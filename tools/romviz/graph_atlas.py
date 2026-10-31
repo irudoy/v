@@ -2,7 +2,9 @@
 
 An address belongs to an actual symbol of the selected layout and image.
 A missing binding remains unavailable; no other image supplies it.
-The address-map layers retain their stock-image and source-file gates.
+The address-map layers retain their stock-image and source-file gates; a
+layout without ledgers also takes its function, table and axis annotations
+from these bindings and the census geometry of its image.
 """
 
 from collections import defaultdict
@@ -60,8 +62,27 @@ class Knowledge:
                           (row.get('order') or 0, row['from'], row['kind'], row['to'])):
             self.step_refs[row['from']][row['kind']].append(row['to'])
         self.links = rows.get('links', [])
+        self.axis_links = defaultdict(list)
+        for row in self.links:
+            if row['kind'] == 'AXIS':
+                self.axis_links[row['from']].append(row['to'])
+                self.axis_links[row['to']].append(row['from'])
         self.calls = rows.get('calls', [])
         self.accesses = rows.get('accesses', [])
+        # Census geometry of each image, keyed by (image, kind, address).
+        self.census = {}
+        for row in rows.get('census_maps', []):
+            self.census[(row['image'], 'tbl', int(row['address'], 16))] = {
+                'cols': row['width'] or 1, 'rows': row.get('height') or 1,
+                'storage': row['storage']}
+        for row in rows.get('census_axes', []):
+            self.census[(row['image'], 'axis', int(row['address'], 16))] = {
+                'points': row['count'] or 1, 'storage': row['storage']}
+        self.census_uses = defaultdict(set)
+        for row in rows.get('census_axis_uses', []):
+            table, axis = int(row['map'], 16), int(row['address'], 16)
+            self.census_uses[(row['image'], 'tbl', table)].add(axis)
+            self.census_uses[(row['image'], 'axis', axis)].add(table)
         self.models = {}
 
     def binding(self, meaning, layout, image=None):
@@ -89,6 +110,35 @@ class Knowledge:
             'analogs': [{**item, 'name': self.meanings[item['to']]['name']}
                         for item in sorted(self.analogs[meaning], key=lambda item: item['to'])],
         }
+
+    def address_annotations(self, layout, image):
+        """Function, table and axis symbols applicable to one image, in address order."""
+        found = []
+        for meaning, symbols in self.symbols.items():
+            symbol = symbols.get(layout)
+            if symbol is None or symbol['kind'] not in ANNOTATION_KINDS:
+                continue
+            binding = self.binding(meaning, layout, image)
+            if binding['availability'] != 'bound':
+                continue
+            facts = self.meanings[meaning]
+            found.append({
+                'kind': symbol['kind'], 'address': symbol['address'], 'meaning': meaning,
+                'name': facts['name'], 'reference': binding['reference'],
+                'props': {**facts, **symbol}, 'own': frozenset(symbol),
+                'summaryLayout': layout if 'summary' in symbol else facts.get('home'),
+                'noteLayout': layout if 'note' in symbol else facts.get('home'),
+                # A table links to its axes and an axis to the tables it serves.
+                'related': sorted({self.symbol_keys[key][1]['address']
+                                   for key in self.axis_links.get(symbol['key'], [])
+                                   if self._applies(key, layout, image)}),
+            })
+        return sorted(found, key=lambda item: (item['address'], item['kind'], item['meaning']))
+
+    def _applies(self, key, layout, image):
+        meaning, symbol = self.symbol_keys[key]
+        return (symbol['layout'] == layout
+                and self.binding(meaning, layout, image)['symbol'] == key)
 
     def model(self, layout, image=None):
         if image is not None and self.images.get(image) != layout:
@@ -150,10 +200,20 @@ def snapshot(root=repo.ROOT):
                     'MATCH (g:Kb:Symbol {kind: "fn"})-[:AT]->(f) '
                     'RETURN g.key AS source, s.key AS target, '
                     'a.modes AS modes, a.producer AS producer'),
+                'census_maps': session.run(
+                    'MATCH (m:Map) RETURN m.rom AS image, m.addr AS address, '
+                    'm.width AS width, m.height AS height, m.storagetype AS storage'),
+                'census_axes': session.run(
+                    'MATCH (a:Axis) RETURN a.rom AS image, a.addr AS address, '
+                    'a.len AS count, a.storagetype AS storage'),
+                'census_axis_uses': session.run(
+                    'MATCH (m:Map)-[:AXIS_X|AXIS_Y]->(a:Axis) '
+                    'RETURN m.rom AS image, m.addr AS map, a.addr AS address'),
             }
     return Knowledge(rows)
 
 
+ANNOTATION_KINDS = frozenset({'fn', 'tbl', 'axis'})
 NODE_KINDS = {'fn': 'function', 'ram': 'signal', 'reg': 'register', 'tbl': 'map',
               'axis': 'axis', 'const': 'rom', 'hook': 'rom', 'did': 'rom', 'dtc': 'rom'}
 PREFIXES = {'fn': 'function', 'ram': 'signal', 'reg': 'register', 'tbl': 'map', 'axis': 'axis'}

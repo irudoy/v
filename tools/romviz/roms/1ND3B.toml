@@ -1,7 +1,7 @@
 schema_version = 2
 rom = "1ND3B"
 label = "23710-1ND3B"
-annotation_source = "1ND0A exact-code structural export and projected DTC registry"
+annotation_source = "1ND0A exact-code structural export, 1nd kb bindings, and projected DTC registry"
 image_registry = "rom-images/roms.csv"
 identity_registry = "defs/rom-identities.toml"
 dtc = "defs/1ND3B.dtc.csv"

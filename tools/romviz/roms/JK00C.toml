@@ -1,7 +1,7 @@
 schema_version = 2
 rom = "JK00C"
 label = "23710-JK00C"
-annotation_source = "JK08A reviewed relocation projection and projected DTC registry"
+annotation_source = "jk00c kb bindings, JK08A reviewed relocation projection, and projected DTC registry"
 image_registry = "rom-images/roms.csv"
 identity_registry = "defs/rom-identities.toml"
 dtc = "defs/JK00C.dtc.csv"

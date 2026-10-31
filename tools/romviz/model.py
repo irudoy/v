@@ -392,12 +392,32 @@ def _reviewed_functions(path):
     }
 
 
-def _function_objects(manifest, rom_size, warnings):
+def _kb_text(annotation, field, layout):
+    """Return one KB text field and the layout it describes when it is not this one."""
+    value = graph_atlas.text(annotation["props"].get(field))
+    described = annotation[f"{field}Layout"]
+    return value, described if value and described != layout else ""
+
+
+def _kb_meta(annotation, layout):
+    props = annotation["props"]
+    return _meta(
+        meaning=annotation["meaning"],
+        symbol=annotation["reference"],
+        block=props.get("block", ""),
+        summary_layout=_kb_text(annotation, "summary", layout)[1],
+        note_layout=_kb_text(annotation, "note", layout)[1],
+    )
+
+
+def _function_objects(manifest, rom_size, warnings, annotations=None, layout=""):
     review_path = None
     reviewed = {}
     if "reviewed_functions" in manifest:
         review_path = _repo_path(manifest["reviewed_functions"])
         reviewed = _reviewed_functions(review_path)
+    elif annotations is not None:
+        reviewed = {item["address"]: item for item in annotations if item["kind"] == "fn"}
     else:
         warnings.append(
             "Reviewed function annotations are not declared for this ROM."
@@ -428,7 +448,20 @@ def _function_objects(manifest, rom_size, warnings):
             continue
         function_name = rom_sources.function_name(names, f"{start:08x}")
         has_review = review is not None
-        if has_review:
+        extra_meta = []
+        if has_review and review_path is None:
+            props = review["props"]
+            label = review["name"]
+            description = _kb_text(review, "summary", layout)[0]
+            note = _kb_text(review, "note", layout)[0]
+            confidence = props.get("level", "")
+            role = props.get("role", "")
+            sources = (
+                *props.get("src", []),
+                f"{_display_path(graph_path)}:{graph['_line']}" if graph else "",
+            )
+            extra_meta = _kb_meta(review, layout)
+        elif has_review:
             fallback = function_name if not GENERIC_FUNCTION_RE.fullmatch(function_name) else f"Function {_hex(start)}"
             label = _first_sentence(review["semantics"], fallback)
             description = review["semantics"]
@@ -461,12 +494,13 @@ def _function_objects(manifest, rom_size, warnings):
             role=role,
             reviewed=has_review,
             exact_extent=bool(graph),
-            tags=("function", role, confidence, "reviewed" if has_review else "structure-only"),
+            tags=("function", role, confidence, "reviewed" if has_review else "structure-only",
+                  "kb" if extra_meta else ""),
             meta=_meta(
                 function_name=function_name,
                 body_bytes=body_size if graph else "unknown",
                 thunk=graph.get("is_thunk") if graph else "",
-            ),
+            ) + extra_meta,
         ))
     return objects
 
@@ -760,6 +794,123 @@ def _definition_xml_objects(manifest, rom_size):
             ],
         ))
     return map_objects, axis_objects, switch_objects
+
+
+def _geometry(values, kind, origin):
+    """Element count and width of a KB or census table or axis, if both are known."""
+    element_bytes = _storage_width(values.get("storage"))
+    if element_bytes is None:
+        return None
+    if kind == "axis":
+        if not values.get("points"):
+            return None
+        dimension = f"1D-{values['points']}"
+        count = values["points"]
+    else:
+        # A table without columns is one scalar element.
+        cols, rows = values.get("cols") or 1, values.get("rows") or 1
+        dimension = f"{cols}x{rows}"
+        count = cols * rows
+    return {"count": count, "bytes": element_bytes, "size": count * element_bytes,
+            "dimension": dimension, "storage": values["storage"], "origin": origin}
+
+
+def _kb_geometry(annotation, kind):
+    fields = ("storage", "points") if kind == "axis" else ("storage", "cols", "rows")
+    origin = "kb symbol" if annotation["own"] & set(fields) else "kb meaning"
+    return _geometry(annotation["props"], kind, origin)
+
+
+def _census_tiles(knowledge, image, kind, start, geometry):
+    """Whether adjacent census entries of the same element width cover a KB extent exactly.
+
+    A KB table can group several lookups that the census records one by one.
+    """
+    covered = 0
+    while covered < geometry["size"]:
+        values = knowledge.census.get((image, kind, start + covered))
+        part = _geometry(values, kind, "census") if values else None
+        if part is None or part["bytes"] != geometry["bytes"]:
+            return False
+        covered += part["size"]
+    return covered == geometry["size"]
+
+
+def _editor_status(props, image):
+    editor = props.get("editor") or {}
+    if editor.get("emit") is False:
+        return "emit = false"
+    if not editor:
+        return "no editor declaration"
+    return f"declared, not published for {image}"
+
+
+def _kb_calibration_objects(annotations, objects, knowledge, image, layout, rom_size):
+    """Add the KB tables and axes that no definition object publishes at their start.
+
+    Return the objects and the geometry conflicts between KB, census and the
+    published definition extents.
+    """
+    published = defaultdict(list)
+    for item in objects:
+        if item["kind"] in {"definition-map", "definition-axis"}:
+            kind = "tbl" if item["kind"] == "definition-map" else "axis"
+            published[(kind, item["start"])].append(item)
+    found, conflicts = [], []
+    for annotation in annotations:
+        kind, start = annotation["kind"], annotation["address"]
+        if kind not in {"tbl", "axis"}:
+            continue
+        reference = annotation["reference"]
+        kb = _kb_geometry(annotation, kind)
+        census_values = knowledge.census.get((image, kind, start))
+        census = _geometry(census_values, kind, "census") if census_values else None
+        if kb and census and not _census_tiles(knowledge, image, kind, start, kb):
+            conflicts.append(f"{reference}: kb {kb['dimension']} {kb['storage']}, "
+                             f"census {census['dimension']} {census['storage']}")
+        if published[(kind, start)]:
+            for item in published[(kind, start)]:
+                if kb and item["end"] - item["start"] != kb["size"]:
+                    conflicts.append(f"{reference}: kb {kb['size']} bytes, "
+                                     f"{item['id']} {item['end'] - item['start']} bytes")
+            continue
+        geometry = kb or census
+        size = geometry["size"] if geometry else 1
+        if start + size > rom_size:
+            raise ModelError(f"{reference}: extent exceeds ROM")
+        props = annotation["props"]
+        if annotation["related"]:
+            related_addresses = annotation["related"]
+        else:
+            related_addresses = sorted(knowledge.census_uses.get((image, kind, start), ()))
+        related_label = "Map" if kind == "axis" else "Axis"
+        found.append(_object(
+            object_id=f"kb-{'map' if kind == 'tbl' else 'axis'}:{start:08x}",
+            layer="maps" if kind == "tbl" else "axes",
+            kind="kb-map" if kind == "tbl" else "kb-axis",
+            start=start,
+            end=start + size,
+            label=annotation["name"],
+            source="; ".join(props.get("src", [])),
+            description=_kb_text(annotation, "summary", layout)[0],
+            note=_kb_text(annotation, "note", layout)[0],
+            confidence=props.get("level", ""),
+            role=props.get("role", ""),
+            exact_extent=geometry is not None,
+            tags=("map" if kind == "tbl" else "axis", "kb", "hidden",
+                  props.get("role", ""), props.get("level", "")),
+            meta=_meta(
+                editor=_editor_status(props, image),
+                dimension=geometry["dimension"] if geometry else "",
+                storage=geometry["storage"] if geometry else "",
+                geometry=geometry["origin"] if geometry else "unknown",
+            ) + _kb_meta(annotation, layout),
+            related=[
+                {"label": f"{related_label} {_hex(address)}", "address": address}
+                for address in related_addresses[:16]
+            ],
+        ))
+    return found, conflicts
 
 
 def _diagnostic_objects(manifest, rom_size):
@@ -1396,11 +1547,18 @@ def _architecture_binding(manifest, cache):
             'image': manifest['rom']}
 
 
+def _kb_annotations(manifest, knowledge, architecture):
+    """Take the annotations of a manifest without ledgers from its KB bindings."""
+    if {"reviewed_functions", "map_ledger"} & set(manifest):
+        return None
+    return knowledge.address_annotations(architecture["layout"], manifest["rom"])
+
+
 def _bind_objects(objects, architecture, knowledge):
     """Attach semantic search and placement facts without changing geometry."""
     kinds = {'reviewed-function': 'fn', 'function-structure': 'fn',
-             'map': 'tbl', 'definition-map': 'tbl', 'axis': 'axis',
-             'definition-axis': 'axis', 'diagnostic-binding': 'did',
+             'map': 'tbl', 'definition-map': 'tbl', 'kb-map': 'tbl', 'axis': 'axis',
+             'definition-axis': 'axis', 'kb-axis': 'axis', 'diagnostic-binding': 'did',
              'dtc-record': 'dtc'}
     layout = architecture['layout']
     for item in objects:
@@ -1425,8 +1583,16 @@ def build_rom_model(manifest_path, architecture_cache=None):
         overrides_path = _repo_path(manifest["overrides"])
         overrides, presentation = _presentation(overrides_path, manifest["rom"])
 
+    architecture = knowledge = annotations = None
+    if "architecture" in manifest:
+        cache = {} if architecture_cache is None else architecture_cache
+        architecture = _architecture_binding(manifest, cache)
+        knowledge = cache['_knowledge']
+        annotations = _kb_annotations(manifest, knowledge, architecture)
+    layout = architecture["layout"] if architecture else ""
+
     objects = []
-    objects.extend(_function_objects(manifest, rom_size, warnings))
+    objects.extend(_function_objects(manifest, rom_size, warnings, annotations, layout))
     if "map_ledger" in manifest:
         map_objects, axis_uses = _map_objects(manifest, presentation, rom_size)
         objects.extend(map_objects)
@@ -1440,6 +1606,16 @@ def build_rom_model(manifest_path, architecture_cache=None):
         objects.extend(definition_switches)
     else:
         warnings.append("Map and axis evidence is not declared for this ROM.")
+    if annotations is not None:
+        calibrations, conflicts = _kb_calibration_objects(
+            annotations, objects, knowledge, manifest["rom"], layout, rom_size
+        )
+        if conflicts:
+            raise ModelError(
+                f"{manifest['rom']}: KB table and axis geometry disagrees with the census "
+                f"or the published definition: " + "; ".join(conflicts)
+            )
+        objects.extend(calibrations)
 
     if "diagnostic_bindings" in manifest:
         objects.extend(_diagnostic_objects(manifest, rom_size))
@@ -1458,11 +1634,8 @@ def build_rom_model(manifest_path, architecture_cache=None):
     else:
         warnings.append("A checksum layout is not registered for this ROM.")
     objects.extend(_patch_objects(manifest, rom_size, warnings))
-    architecture = None
-    if "architecture" in manifest:
-        cache = {} if architecture_cache is None else architecture_cache
-        architecture = _architecture_binding(manifest, cache)
-        _bind_objects(objects, architecture, cache['_knowledge'])
+    if architecture:
+        _bind_objects(objects, architecture, knowledge)
     else:
         warnings.append("A firmware architecture model is not declared for this ROM.")
     _validate_objects(objects, rom_size)

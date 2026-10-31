@@ -61,21 +61,64 @@ def test_all_models_build_with_exact_registered_identities():
         for rom in set(REGISTERED_ROMS) - {"1ME3B", "1ND0A", "1ND3B"}
     )
     assert by_id["JK78C"]["warnings"]
-    # The structural layer comes from an untracked Ghidra export, so its exact
-    # size follows the analyst's project rather than any repository artifact.
-    # The durable claim is that JK78C carries structure and no review.
-    assert by_id["JK78C"]["reviewedFunctions"] == 0
-    assert by_id["JK78C"]["structuralFunctions"] > 0
-    # The projected and fuel-cut maps (88 on JK78C, 86 on the 1ND layout), the
-    # target-native VVEL tables (thirty-six on JK78C, thirty-three on the 1ND
-    # layout), the ten slot tables of the two executed 16x16 ignition surfaces,
-    # and the twenty slot tables of the four 8x8 state-code ignition surfaces of
-    # the 1ND layout, plus three native fuel multipliers on every VQ37 image
-    # and the main mixture surface with its high-detonation multiplier on 1ND.
-    # Intake CVTC includes the active duty controller, settle and target bounds.
-    assert by_id["JK78C"]["counts"]["maps"] == 147
-    for rom_id in ("1ND0A", "1ND3B"):
-        assert by_id[rom_id]["counts"]["maps"] == 164
+    assert by_id["JK78C"]["structuralFunctions"] > by_id["JK78C"]["reviewedFunctions"] > 0
+
+
+def kb_expected(knowledge, rom):
+    """Count the KB functions and the KB tables and axes that no definition publishes."""
+    layout = rom["architecture"]["layout"]
+    bound = {"fn": set(), "tbl": set(), "axis": set()}
+    for meaning, symbols in knowledge.symbols.items():
+        symbol = symbols.get(layout)
+        if (symbol and symbol["kind"] in bound
+                and knowledge.binding(meaning, layout, rom["id"])["symbol"]):
+            bound[symbol["kind"]].add(symbol["address"])
+    published = {
+        kind: {item["start"] for item in rom["objects"] if item["kind"] == source}
+        for kind, source in (("tbl", "definition-map"), ("axis", "definition-axis"))
+    }
+    return (len(bound["fn"]), len(bound["tbl"] - published["tbl"]),
+            len(bound["axis"] - published["axis"]))
+
+
+# One bound function and one hidden table of each layout without ledgers.
+KB_ANCHORS = (
+    ("JK78C", 0x42882, "dual_curve_word_converter", 0x13608, "timing_compositor_byte_multiplier"),
+    ("1ND0A", 0x44C70, "base_fuel_schedule_producer", 0x085B0, "bfs_correction_gain"),
+    ("1ND3B", 0x44C70, "base_fuel_schedule_producer", 0x085B0, "bfs_correction_gain"),
+    ("1ME3B", 0x48298, "base_fuel_schedule_producer", 0x085B0, "bfs_correction_gain"),
+    ("JK00C", 0x20E30, "coherent_snapshot", 0x094CE, "speed_limiter_filter_blend_gain_q10"),
+    ("JK00D", 0x20E30, "coherent_snapshot", 0x094DC, "speed_limiter_filter_blend_gain_q10"),
+)
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize(("rom_id", "function", "function_name", "table", "table_name"),
+                         KB_ANCHORS)
+def test_ledgerless_models_carry_kb_functions_and_hidden_tables(
+    rom_id, function, function_name, table, table_name, architecture_cache
+):
+    rom = model.build_rom_model(model.resolve_manifest(rom_id), architecture_cache)
+    by_id = {item["id"]: item for item in rom["objects"]}
+
+    reviewed = by_id[f"function:{function:08x}"]
+    assert (reviewed["kind"], reviewed["label"]) == ("reviewed-function", function_name)
+    assert reviewed["reviewed"] and "kb" in reviewed["tags"]
+    assert reviewed["binding"]["meaning"] == f"{function_name}/fn"
+    hidden = by_id[f"kb-map:{table:08x}"]
+    assert hidden["label"] == table_name and "hidden" in hidden["tags"]
+    assert hidden["binding"]["meaning"] == f"{table_name}/tbl"
+    assert not any("Reviewed function annotations" in item for item in rom["warnings"])
+
+    functions, tables, axes = kb_expected(architecture_cache["_knowledge"], rom)
+    kinds = [item["kind"] for item in rom["objects"]]
+    assert rom["reviewedFunctions"] == functions
+    assert kinds.count("kb-map") == tables
+    assert kinds.count("kb-axis") == axes
+    assert rom["counts"]["maps"] == tables + sum(
+        item["layer"] == "maps" and item["kind"] != "kb-map" for item in rom["objects"])
+    assert rom["counts"]["axes"] == axes + sum(
+        item["layer"] == "axes" and item["kind"] != "kb-axis" for item in rom["objects"])
 
 
 @pytest.mark.slow
@@ -88,13 +131,6 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
     assert rom["counts"]["diagnostics"] == 76
-    assert rom["counts"]["maps"] == 169
-    # The definition carries the Engine Load axis of the engine-torque map,
-    # which lies outside the builder writable ranges, as static labels without
-    # a ROM address, so it is no axis object of the model.
-    # Fuel adds six native axes and three axes of the canonical mixture roles.
-    # Intake CVTC carries the duty, selected settle and target-bound axes.
-    assert rom["counts"]["axes"] == 59
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
@@ -131,8 +167,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
         for item in rom["objects"]
         if item["kind"] in {"dtc-record", "dtc-attribute"}
     )
-    assert rom["reviewedFunctions"] == 0
-    assert rom["structuralFunctions"] > 0
+    assert rom["structuralFunctions"] > rom["reviewedFunctions"] > 0
     assert not any(
         "checksum layout is not registered" in warning
         for warning in rom["warnings"]
@@ -237,6 +272,9 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_
     assert "checksum-field:runtime_b_xor" in by_id
     assert "checksum-domain:runtime_b" in by_id
     assert "function:0006af76" in by_id
+    # The census supplies the extent of a KB table without KB geometry.
+    multiplier = by_id["kb-map:00013608"]
+    assert (multiplier["end"] - multiplier["start"], multiplier["exactExtent"]) == (8, True)
     assert not any("checksum layout" in warning for warning in rom["warnings"])
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
@@ -250,6 +288,8 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches(architecture_c
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
     assert rom["counts"]["maps"] == 516
     assert rom["counts"]["axes"] == 79
+    # Ledger annotations own the family; KB-only objects stay out of it.
+    assert not any(item["kind"].startswith("kb-") for item in rom["objects"])
 
     by_id = {item["id"]: item for item in rom["objects"]}
     assert by_id["definition-switch:0:00008725"]["label"] == "Developer Immobilizer"
@@ -296,7 +336,6 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
 
     assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"]["maps"] == 164
     assert maf_factor["start"] == 0x08939
     assert maf_factor["source"] == f"defs/{rom_id}.xml"
     assert any(

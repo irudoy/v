@@ -101,8 +101,9 @@ membership must agree with it. All ROM views use one graph snapshot, with
 separate architecture models for each image. A symbol's `images` list limits
 its applicability within a layout; an absent list admits every image of that
 layout. Excluded symbols and their incident relations do not enter the image's
-architecture or semantic object bindings. Address-map geometry remains tied
-to its declared sources. Binding details expose image restrictions and retain
+architecture or semantic object bindings. Address-map geometry follows its
+declared sources, and a layout without ledgers adds its `kb` bindings as the
+evidence model describes. Binding details expose image restrictions and retain
 cross-layout symbols, statuses, and analogs. A calculation chain is available
 only when its output and every source, destination, and intervening function
 have symbols applicable to the selected image.
@@ -153,10 +154,27 @@ remains absent and produces a visible warning in the atlas.
 | ROM family | Current atlas evidence |
 |---|---|
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
-| JK00C, JK00D | Target L0 structure, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
-| 1ND0A, 1ND3B | Exact-family 1ND0A L0 structure, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
-| JK78C | Target L0 structure, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
-| 1ME3B | Target L0 structure, reviewed target definitions, projected DTC records and attributes, composed production runtime profile, checksum layout, stock-image metrics, and architecture from its bound symbols |
+| JK00C, JK00D | Target L0 structure, `kb` function, table and axis bindings, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
+| 1ND0A, 1ND3B | Exact-family 1ND0A L0 structure, `kb` function, table and axis bindings, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
+| JK78C | Target L0 structure, `kb` function, table and axis bindings, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
+| 1ME3B | Target L0 structure, `kb` function, table and axis bindings, reviewed target definitions, projected DTC records and attributes, composed production runtime profile, checksum layout, stock-image metrics, and architecture from its bound symbols |
+
+A manifest without `reviewed_functions` and `map_ledger` takes its annotations
+from the `kb` symbols of its layout that apply to the image. A bound function
+symbol makes its L0 function a reviewed function labelled with the meaning
+name. A definition object at the address of a bound table or axis keeps its XML
+name and geometry and carries the binding. A bound table or axis without such
+an object becomes a hidden `kb-map` or `kb-axis` object. Its details state the
+editor decision: `emit = false`, no editor declaration, or declared but not
+published for the image. Its extent comes from the symbol geometry, then the
+meaning geometry, then the census `Map` or `Axis` of the image; without any of
+them it is one byte with an unknown extent. Related addresses come from the
+`kb` axis links, then from the census axis links. The build fails when `kb`
+geometry differs from the extent of the published definition object, or when
+the census entries of the image at that address do not cover it exactly with
+the same element width. A `kb` table can group several adjacent census
+lookups. The exact JK08A family keeps its ledger annotations and takes none
+from `kb`.
 
 Every registered image declares its DTC registry, so the diagnostics layer is
 populated independently of how much structure a target carries. The reviewed
