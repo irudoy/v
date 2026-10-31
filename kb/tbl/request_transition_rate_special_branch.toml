@@ -41,10 +41,11 @@ word gates with +5 and +0x32 hysteresis, 8x8 duration and offset surfaces at \
 gear coordinates shifted left by 5 and 13, three 4x4 rate tables on shared \
 state and coordinate axes, the gear-indexed reference multiplier and \
 recovery decrement, and the error correction below its limit. Its constant \
-block starts at 00009450 where JK78C reads 00009184. Dispatcher 000b218e \
-calls it when bit 0 of ROM8[000083a6] and bit 7 of 00008a7f are clear and \
-calls 000b35d8 otherwise, as JK78C 0009679a selects 00096ce0 by bit 0 of \
-00008383 and bit 7 of 00008968. At 000b330e the target reads 0000b894 as the \
+block starts at 00009450 where JK78C reads 00009184. While bit 0 of \
+ROM8[000083a6] is clear, dispatcher 000b218e calls it when bit 7 of 00008a7f \
+is clear and calls 000b35d8 when that bit is set; with bit 0 set it calls \
+neither path. JK78C 0009679a selects 00096ce0 by bit 0 of 00008383 and bit 7 \
+of 00008968 in the same way. At 000b330e the target reads 0000b894 as the \
 4x4 rate table of the special branch, as JK78C 00096ce0 reads 0000b39a at \
 0009705e. Stock bytes differ from JK78C and equal 1ND0A; 1ND3B stock bytes \
 equal JK78C."""
@@ -66,13 +67,14 @@ duration and offset surfaces at gear coordinates shifted left by 5 and 13, \
 three 4x4 rate tables on shared state and coordinate axes chosen by the \
 special-branch threshold and the gear relation, the gear-indexed reference \
 multiplier and recovery decrement, and the error correction below its limit. \
-Its constant block starts at 00009398 where JK78C reads 00009184. Dispatcher \
-000ab184 calls it when bit 0 of ROM8[0000839f] and bit 7 of 00008a2e are \
-clear and calls 000ac294 otherwise, as JK78C 0009679a selects 00096ce0 by \
-bit 0 of 00008383 and bit 7 of 00008968. At 000ac08a the target reads \
-0000b7e0 as the 4x4 rate table of the special branch, as JK78C 00096ce0 \
-reads 0000b39a at 0009705e. 1ND0A stock bytes differ from JK78C and equal \
-1ME3B; 1ND3B stock bytes equal JK78C."""
+Its constant block starts at 00009398 where JK78C reads 00009184. While bit \
+0 of ROM8[0000839f] is clear, dispatcher 000ab184 calls it when bit 7 of \
+00008a2e is clear and calls 000ac294 when that bit is set; with bit 0 set it \
+calls neither path. JK78C 0009679a selects 00096ce0 by bit 0 of 00008383 and \
+bit 7 of 00008968 in the same way. At 000ac08a the target reads 0000b7e0 as \
+the 4x4 rate table of the special branch, as JK78C 00096ce0 reads 0000b39a \
+at 0009705e. 1ND0A stock bytes differ from JK78C and equal 1ME3B; 1ND3B \
+stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "jk78c"

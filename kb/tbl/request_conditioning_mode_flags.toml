@@ -42,8 +42,10 @@ threshold-selected pair of filter rates and signed floors. At 000aff0a the \
 target reads 00008a7f as the mode flag byte whose bit 7 selects the gating \
 path, as JK78C 00094d6c reads 00008968 at 00094e26. Stock bytes 18 differ \
 from JK78C 80 and equal 1ND0A; 1ND3B stock bytes equal JK78C. Dispatcher \
-000b218e reads the same bit 7 and calls the transition conditioner 000b2f2c \
-while it is clear, as JK78C 0009679a calls 00096ce0."""
+000b218e reads the same bit 7: while bit 0 of ROM8[000083a6] is clear, it \
+calls the transition conditioner 000b2f2c when bit 7 is clear and 000b35d8 \
+when it is set, and with bit 0 set it calls neither path, as JK78C 0009679a \
+selects 00096ce0 by bit 0 of 00008383 and bit 7 of 00008968."""
 
 [[symbol]]
 layout = "1nd"
@@ -65,8 +67,10 @@ and floor the ramp with one signed word. At 000a8fbe the target reads \
 00008a2e as the mode flag byte whose bit 7 selects the gating path, as JK78C \
 00094d6c reads 00008968 at 00094e26. 1ND0A stock bytes 18 differ from JK78C \
 80 and equal 1ME3B; 1ND3B stock bytes equal JK78C. Dispatcher 000ab184 reads \
-the same bit 7 and calls the transition conditioner 000abc6e while it is \
-clear, as JK78C 0009679a calls 00096ce0."""
+the same bit 7: while bit 0 of ROM8[0000839f] is clear, it calls the \
+transition conditioner 000abc6e when bit 7 is clear and 000ac294 when it is \
+set, and with bit 0 set it calls neither path, as JK78C 0009679a selects \
+00096ce0 by bit 0 of 00008383 and bit 7 of 00008968."""
 
 [[symbol]]
 layout = "jk78c"

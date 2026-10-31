@@ -56,10 +56,10 @@ count = 2
 l0 = "cb701875f15725a4"
 note = """
 1ND conditioner 000abc6e chooses the special rate branch with one of two \
-words, 000093ac when bit 6 of fffe9480 is clear and 000093b0 when it is set; \
-both stock words are 0x00c8. JK78C 00096ce0 compares the single word \
-0000918e only while bit 7 of ffff23be is clear. No one-to-one target is \
-asserted for the single threshold."""
+words, 000093ac when bit 6 of fffe9480 is clear and 000093b0 when it is set. \
+Both words are 0x00c8 on 1ND0A and 0x0064 on 1ND3B; the single JK78C word is \
+0x005b. JK78C 00096ce0 compares 0000918e only while bit 7 of ffff23be is \
+clear. No one-to-one target is asserted for the single threshold."""
 
 [[link]]
 type = "reader"
