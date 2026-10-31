@@ -121,6 +121,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001690c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000474b4"
+to = "jk78c:0001627a"
+note = """
+Target reader 000473ec holds the alpha-N section of JK78C FUN_0003FCA4 \
+followed by the throttle section of JK78C 0003fd32. Below 0x3C00 the reader \
+passes the coordinate times 4 with this curve, loaded by MOV.L 000474b4, to \
+call 2 of 8 at 000474b6 (fresh-seal), as MOV.L jk78c:0003fcfc loads 0001627a \
+for call 1 of 1 at 0003fd0e (dramatic-okapi). The upper branch uses \
+000168ec, which precedes this curve in ROM, while JK78C places 0001625a \
+before 0001627a. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016878"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00043e8c"
+to = "jk78c:0001627a"
+note = """
+Target reader 00043dc8 holds the alpha-N section of JK78C FUN_0003FCA4 \
+followed by the throttle section of JK78C 0003fd32. Below 0x3C00 the reader \
+passes the coordinate times 4 with this curve, loaded by MOV.L 00043e8c, to \
+call 2 of 8 at 00043e8e (dramatic-okapi), as MOV.L jk78c:0003fcfc loads \
+0001627a for call 1 of 1 at 0003fd0e (dramatic-okapi). The upper branch uses \
+00016858, which precedes this curve in ROM, while JK78C places 0001625a \
+before 0001627a. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015042"
 former = ["mindful-ibex/tbl/7mfk-00015042"]

@@ -25,6 +25,40 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[symbol]]
+layout = "1me3b"
+address = "0001692c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000abad8"
+to = "jk78c:0001629a"
+note = """
+Target reader 000ab93c holds the request-conversion lookups followed by the \
+section of JK78C FUN_00092A80. MOV.L 000abad8 loads this curve in r4 for \
+call 7 of 12 at 000abadc (fresh-seal); the reader multiplies the result by \
+the 0001694c lookup, adds 0x8000 and keeps the high word, as MOV.L \
+jk78c:00092ad0 loads 0001629a for call 2 of 5 at 00092ad4 (dramatic-okapi) \
+before the 000162ba product. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016898"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a55fc"
+to = "jk78c:0001629a"
+note = """
+Target reader 000a5498 holds the request-conversion lookups followed by the \
+section of JK78C FUN_00092A80. MOV.L 000a55fc loads this curve in r4 for \
+call 4 of 7 at 000a5600 (dramatic-okapi); the reader multiplies the result \
+by the 000168b8 lookup, adds 0x8000 and keeps the high word, as MOV.L \
+jk78c:00092ad0 loads 0001629a for call 2 of 5 at 00092ad4 (dramatic-okapi) \
+before the 000162ba product. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015062"
 former = ["ivory-dormouse/tbl/7mfk-00015062"]

@@ -79,6 +79,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001694c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000abb2c"
+to = "jk78c:000162ba"
+note = """
+Target reader 000ab93c holds the request-conversion lookups followed by the \
+section of JK78C FUN_00092A80. MOV.L 000abb2c loads this curve in r4 for \
+call 8 of 12 at 000abb30 (aspiring-kittiwake); the reader multiplies the \
+0001692c lookup by the result, adds 0x8000 and keeps the high word, as MOV.L \
+jk78c:00092b28 loads 000162ba for call 3 of 5 at 00092b2e (urban-potoo) \
+before 00092b32..00092b3e. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000168b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5654"
+to = "jk78c:000162ba"
+note = """
+Target reader 000a5498 holds the request-conversion lookups followed by the \
+section of JK78C FUN_00092A80. MOV.L 000a5654 loads this curve in r4 for \
+call 5 of 7 at 000a5658 (urban-potoo); the reader multiplies the 00016898 \
+lookup by the result, adds 0x8000 and keeps the high word, as MOV.L \
+jk78c:00092b28 loads 000162ba for call 3 of 5 at 00092b2e (urban-potoo) \
+before 00092b32..00092b3e. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015082"
 former = ["ruddy-harrier/tbl/7mfk-00015082"]

@@ -70,6 +70,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000158a6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac438"
+to = "jk78c:0001552c"
+note = """
+Target reader 000ac3a0 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. MOV.L 000ac438 loads \
+this coordinate table with request surface 0000fa7c and RPM axis 00013561 \
+for call 5 of 5 at 000ac440 (giga-seahorse), as MOV.L jk78c:000931f8 loads \
+0001552c with 0000face and 00013463 for call 5 of 5 at 000931fc \
+(bald-dachshund). The address is also the bound rampant-poodle axis of the \
+request surface, as on JK78C. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015a52"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5e86"
+to = "jk78c:0001552c"
+note = """
+Target reader 000a5de8 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. MOV.L 000a5e86 loads \
+this coordinate table with request surface 00010048 and RPM axis 0001380d \
+for call 5 of 5 at 000a5e8e (bald-dachshund), as MOV.L jk78c:000931f8 loads \
+0001552c with 0000face and 00013463 for call 5 of 5 at 000931fc \
+(bald-dachshund). The address is also the bound rampant-poodle axis of the \
+request surface, as on JK78C. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014114"
 former = ["able-bison/tbl/7mfk-00014114"]

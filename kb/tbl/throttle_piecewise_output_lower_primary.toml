@@ -40,6 +40,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016de6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac3f2"
+to = "jk78c:00016744"
+note = """
+Target reader 000ac3a0 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. The lower branch is \
+taken when the computed coordinate does not exceed the last word (offset \
+0x3E) of the lower output curve; the upper branch shifts the coordinate \
+right by four and caps it. MOV.L 000ac3f2 loads this curve into r5 before \
+call 3 of 5 at 000ac3f4; after that call its last word bounds the lower \
+branch, which passes it with 00016fa6 to call 4 of 5 at 000ac426 \
+(hairy-kagu). MOV.L jk78c:000931be loads 00016744 after call 3 and passes it \
+with 00016904 to call 4 of 5 at 000931e2 (angelic-saluki). Stock words equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016d62"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5e46"
+to = "jk78c:00016744"
+note = """
+Target reader 000a5de8 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. The lower branch is \
+taken when the computed coordinate does not exceed the last word (offset \
+0x3E) of the lower output curve; the upper branch shifts the coordinate \
+right by four and caps it. MOV.L 000a5e46 loads this curve into r5; its last \
+word bounds the lower branch, which passes it with 00016f22 to call 4 of 5 \
+at 000a5e6e (angelic-saluki), as MOV.L jk78c:000931be loads 00016744 for \
+call 4 of 5 at 000931e2 (angelic-saluki). Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015500"
 former = ["snobbish-swan/tbl/7mfk-00015500"]

@@ -92,6 +92,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b778"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a9d54"
+to = "jk78c:0001b04a"
+note = """
+Target reader 000a9d46 corresponds to JK78C reader 0009175c; both add the \
+base and addend lookups, saturate the sum at 0xFFFF and limit it by a RAM \
+word. MOV.L 000a9d54 loads this curve in r4 for call 1 of 2 at 000a9d56 \
+(nocturnal-mosquito) with a RAM byte shifted left by eight, as MOV.L \
+jk78c:00091762 loads 0001b04a for call 1 of 2 at 0009176e (careful-chital). \
+Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b69e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a38c4"
+to = "jk78c:0001b04a"
+note = """
+Target reader 000a38b6 corresponds to JK78C reader 0009175c; both add the \
+base and addend lookups, saturate the sum at 0xFFFF and limit it by a RAM \
+word. MOV.L 000a38c4 loads this curve in r4 for call 1 of 2 at 000a38c6 \
+(careful-chital) with a RAM byte shifted left by eight, as MOV.L \
+jk78c:00091762 loads 0001b04a for call 1 of 2 at 0009176e (careful-chital). \
+Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018c96"
 former = ["zircon-copperhead/tbl/7mfk-00018c96"]

@@ -39,6 +39,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b758"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a9d6e"
+to = "jk78c:0001b02a"
+note = """
+Target reader 000a9d46 corresponds to JK78C reader 0009175c; both add the \
+base and addend lookups, saturate the sum at 0xFFFF and limit it by a RAM \
+word. MOV.L 000a9d6e loads this curve in r4 with axis 00015f34 for call 2 of \
+2 at 000a9d72 (xanthic-bullfrog), as MOV.L jk78c:0009177e loads 0001b02a \
+with axis 00015a82 for call 2 of 2 at 00091784 (crimson-dalmatian). Stock \
+words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b67e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a38de"
+to = "jk78c:0001b02a"
+note = """
+Target reader 000a38b6 corresponds to JK78C reader 0009175c; both add the \
+base and addend lookups, saturate the sum at 0xFFFF and limit it by a RAM \
+word. MOV.L 000a38de loads this curve in r4 with axis 00016070 for call 2 of \
+2 at 000a38e2 (crimson-dalmatian), as MOV.L jk78c:0009177e loads 0001b02a \
+with axis 00015a82 for call 2 of 2 at 00091784 (crimson-dalmatian). Stock \
+words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018c76"
 former = ["soft-rooster/tbl/7mfk-00018c76"]

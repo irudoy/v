@@ -38,6 +38,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b8d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac4fe"
+to = "jk78c:0001b1aa"
+note = """
+Target reader 000ac4a0 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. The lower branch is taken when the computed \
+coordinate does not exceed the last word (offset 0x3E) of the lower output \
+curve; the upper branch shifts the coordinate right by four and caps it. \
+MOV.L 000ac4fe loads this curve into r5; its last word bounds the lower \
+branch, which passes it with 0001bab8 to call 4 of 5 at 000ac526 \
+(charming-teal), as MOV.L jk78c:000932b6 loads 0001b1aa for call 4 of 5 at \
+000932da (inescapable-dachshund). Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b7fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5f46"
+to = "jk78c:0001b1aa"
+note = """
+Target reader 000a5ee8 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. The lower branch is taken when the computed \
+coordinate does not exceed the last word (offset 0x3E) of the lower output \
+curve; the upper branch shifts the coordinate right by four and caps it. \
+MOV.L 000a5f46 loads this curve into r5; its last word bounds the lower \
+branch, which passes it with 0001b95e to call 4 of 5 at 000a5f6e \
+(inescapable-dachshund), as MOV.L jk78c:000932b6 loads 0001b1aa for call 4 \
+of 5 at 000932da (inescapable-dachshund). Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018e86"
 former = ["passionate-junglefowl/tbl/7mfk-00018e86"]

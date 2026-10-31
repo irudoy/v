@@ -69,6 +69,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000144fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a9fc2"
+to = "jk78c:000141c8"
+note = """
+Target reader 000a9e82 corresponds to JK78C reader 00091878; both evaluate \
+the validation angle-to-area table with the neat-galago axis and end with \
+the upper-bound lookup. While bit 4 of fffeb94d is clear, MOV.L 000a9fc2 \
+loads this byte curve in r4 with axis 000144ea (r5) and byte fffe8195 for \
+call 4 of 4 at 000a9fc6 (jolly-guan); the result is multiplied by 13 and \
+limited by four times a ROM word, as MOV.L jk78c:000919ac loads 000141c8 \
+with axis 000141b8 and byte ffff11a3 for call 3 of 3 at 000919b4 \
+(brilliant-ibis). Stock bytes differ from JK78C and are equal on 1ND and \
+1ME3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001466e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a3b32"
+to = "jk78c:000141c8"
+note = """
+Target reader 000a39f2 corresponds to JK78C reader 00091878; both evaluate \
+the validation angle-to-area table with the neat-galago axis and end with \
+the upper-bound lookup. While bit 4 of fffeb7ed is clear, MOV.L 000a3b32 \
+loads this byte curve in r4 with axis 0001465e (r5) and byte fffe81ad for \
+call 4 of 4 at 000a3b36 (brilliant-ibis); the result is multiplied by 13 and \
+limited by four times a ROM word, as MOV.L jk78c:000919ac loads 000141c8 \
+with axis 000141b8 and byte ffff11a3 for call 3 of 3 at 000919b4 \
+(brilliant-ibis). Stock bytes differ from JK78C and are equal on 1ND and \
+1ME3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012db2"
 former = ["singing-goshawk/tbl/7mfk-00012db2"]

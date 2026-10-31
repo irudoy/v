@@ -53,6 +53,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000168ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000474a6"
+to = "jk78c:0001625a"
+note = """
+Target reader 000473ec holds the alpha-N section of JK78C FUN_0003FCA4 \
+followed by the throttle section of JK78C 0003fd32. At or above 0x3C00 the \
+reader passes the coordinate minus 0x3C00 with this curve, loaded by MOV.L \
+000474a6, to call 2 of 8 at 000474b6 (fresh-seal), as MOV.L jk78c:0003fd08 \
+loads 0001625a for call 1 of 1 at 0003fd0e (dramatic-okapi). The lower \
+branch uses 0001690c. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016858"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00043e7e"
+to = "jk78c:0001625a"
+note = """
+Target reader 00043dc8 holds the alpha-N section of JK78C FUN_0003FCA4 \
+followed by the throttle section of JK78C 0003fd32. At or above 0x3C00 the \
+reader passes the coordinate minus 0x3C00 with this curve, loaded by MOV.L \
+00043e7e, to call 2 of 8 at 00043e8e (dramatic-okapi), as MOV.L \
+jk78c:0003fd08 loads 0001625a for call 1 of 1 at 0003fd0e (dramatic-okapi). \
+The lower branch uses 00016878. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015022"
 former = ["rugged-gerbil/tbl/7mfk-00015022"]

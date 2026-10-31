@@ -62,6 +62,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b588"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac53a"
+to = "jk78c:0001ae5a"
+note = """
+Target reader 000ac4a0 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. MOV.L 000ac53a loads this coordinate table with \
+the validation request surface 00019c34 and RPM axis 0001b018 for call 5 of \
+5 at 000ac542 (tested-crab), as MOV.L jk78c:000932f0 loads 0001ae5a with \
+0001950c and 0001a8ea for call 5 of 5 at 000932f4 (interesting-horse). The \
+address is also the bound pretty-numbat axis of the validation request \
+surface, as on JK78C. Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001b4ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5f82"
+to = "jk78c:0001ae5a"
+note = """
+Target reader 000a5ee8 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. MOV.L 000a5f82 loads this coordinate table with \
+the validation request surface 00019b5c and RPM axis 0001af3e for call 5 of \
+5 at 000a5f8a (interesting-horse), as MOV.L jk78c:000932f0 loads 0001ae5a \
+with 0001950c and 0001a8ea for call 5 of 5 at 000932f4 (interesting-horse). \
+The address is also the bound pretty-numbat axis of the validation request \
+surface, as on JK78C. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00018ac6"
 former = ["groovy-clam/tbl/7mfk-00018ac6"]

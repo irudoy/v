@@ -65,6 +65,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015a36"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ad7b2"
+to = "jk78c:000156bc"
+note = """
+Target reader 000ad6fe corresponds to JK78C reader 00094362: a selector byte \
+between ROM8[000089f9 + 1] and ROM8[000089f9] selects the first curve and \
+any other value the second, both looked up by word fffe81f2 shifted left by \
+seven and capped at 0xFFFF, as JK78C uses ROM8[00008912], ROM8[00008911] and \
+word ffff11fa. MOV.L 000ad7b2 loads this curve for the in-range branch and \
+call 2 of 2 at 000ad7d6 (aspiring-kittiwake), as MOV.L jk78c:00094418 loads \
+000156bc for call 2 of 2 at 0009444a (urban-potoo). Stock words differ from \
+JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015be2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a71b6"
+to = "jk78c:000156bc"
+note = """
+Target reader 000a7102 corresponds to JK78C reader 00094362: a selector byte \
+between ROM8[000089bf + 1] and ROM8[000089bf] selects the first curve and \
+any other value the second, both looked up by word fffe820a shifted left by \
+seven and capped at 0xFFFF, as JK78C uses ROM8[00008912], ROM8[00008911] and \
+word ffff11fa. MOV.L 000a71b6 loads this curve for the in-range branch and \
+call 2 of 2 at 000a71da (urban-potoo), as MOV.L jk78c:00094418 loads \
+000156bc for call 2 of 2 at 0009444a (urban-potoo). Stock words differ from \
+JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014304"
 former = ["enchanted-tuatara/tbl/7mfk-00014304"]

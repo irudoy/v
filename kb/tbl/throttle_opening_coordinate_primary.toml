@@ -91,6 +91,44 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016e86"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac3be"
+to = "jk78c:000167e4"
+note = """
+Target reader 000ac3a0 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. MOV.L 000ac3be loads \
+this coordinate curve with the angle-to-area table 00014832 for call 1 of 5 \
+at 000ac3c4 (hairy-kagu), as MOV.L jk78c:00093184 loads 000167e4 with \
+00014538 for call 1 of 5 at 00093188 (angelic-saluki). The address is also \
+the bound orange-elephant axis of the angle-to-area table, as on JK78C. \
+Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016e02"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5e04"
+to = "jk78c:000167e4"
+note = """
+Target reader 000a5de8 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. MOV.L 000a5e04 loads \
+this coordinate curve with the angle-to-area table 000149ee for call 1 of 5 \
+at 000a5e0a (angelic-saluki), as MOV.L jk78c:00093184 loads 000167e4 with \
+00014538 for call 1 of 5 at 00093188 (angelic-saluki). The address is also \
+the bound orange-elephant axis of the angle-to-area table, as on JK78C. \
+Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000155a0"
 former = ["monumental-snake/tbl/7mfk-000155a0"]

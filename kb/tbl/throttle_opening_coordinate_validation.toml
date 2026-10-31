@@ -87,6 +87,46 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001bc58"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac4bc"
+to = "jk78c:0001b4aa"
+note = """
+Target reader 000ac4a0 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. MOV.L 000ac4bc loads this coordinate curve with \
+the validation angle-to-area table 0001b078 for call 1 of 5 at 000ac4c2 \
+(charming-teal), as MOV.L jk78c:0009327c loads 0001b4aa with 0001a94a for \
+call 1 of 5 at 00093280 (inescapable-dachshund). The address is also the \
+bound neat-galago axis of the validation angle-to-area table, as on JK78C. \
+Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001bafe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5f04"
+to = "jk78c:0001b4aa"
+note = """
+Target reader 000a5ee8 corresponds to JK78C reader 0009325c, the validation \
+copy of the primary piecewise reader; both run the same five calls: the \
+inverse angle-to-area lookup, two divisions, the piecewise lookup and the \
+request-conversion lookup. MOV.L 000a5f04 loads this coordinate curve with \
+the validation angle-to-area table 0001af9e for call 1 of 5 at 000a5f0a \
+(inescapable-dachshund), as MOV.L jk78c:0009327c loads 0001b4aa with \
+0001a94a for call 1 of 5 at 00093280 (inescapable-dachshund). The address is \
+also the bound neat-galago axis of the validation angle-to-area table, as on \
+JK78C. Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000190d0"
 former = ["organic-inchworm/tbl/7mfk-000190d0"]

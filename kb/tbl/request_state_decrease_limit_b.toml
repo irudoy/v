@@ -53,6 +53,44 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00015a46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ad7d2"
+to = "jk78c:000156cc"
+note = """
+Target reader 000ad6fe corresponds to JK78C reader 00094362: a selector byte \
+between ROM8[000089f9 + 1] and ROM8[000089f9] selects the first curve and \
+any other value the second, both looked up by word fffe81f2 shifted left by \
+seven and capped at 0xFFFF, as JK78C uses ROM8[00008912], ROM8[00008911] and \
+word ffff11fa. MOV.L 000ad7d2 loads this curve for the out-of-range branch \
+and call 2 of 2 at 000ad7d6 (aspiring-kittiwake), where JK78C forms 000156cc \
+as 000156bc + 0x10 at 00094442..00094444 for call 2 of 2 at 0009444a. Stock \
+words differ from JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015bf2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a71d6"
+to = "jk78c:000156cc"
+note = """
+Target reader 000a7102 corresponds to JK78C reader 00094362: a selector byte \
+between ROM8[000089bf + 1] and ROM8[000089bf] selects the first curve and \
+any other value the second, both looked up by word fffe820a shifted left by \
+seven and capped at 0xFFFF, as JK78C uses ROM8[00008912], ROM8[00008911] and \
+word ffff11fa. MOV.L 000a71d6 loads this curve for the out-of-range branch \
+and call 2 of 2 at 000a71da (urban-potoo), where JK78C forms 000156cc as \
+000156bc + 0x10 at 00094442..00094444 for call 2 of 2 at 0009444a. Stock \
+words differ from JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00014314"
 former = ["fractal-mussel/tbl/7mfk-00014314"]

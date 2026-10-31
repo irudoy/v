@@ -75,6 +75,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00016fe6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000ac422"
+to = "jk78c:00016944"
+note = """
+Target reader 000ac3a0 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. The lower branch is \
+taken when the computed coordinate does not exceed the last word (offset \
+0x3E) of the lower output curve; the upper branch shifts the coordinate \
+right by four and caps it. MOV.L 000ac422 loads this curve as the returned \
+coordinate of the upper branch for call 4 of 5 at 000ac426 (hairy-kagu), as \
+MOV.L jk78c:000931dc loads 00016944 for call 4 of 5 at 000931e2 \
+(angelic-saluki). Stock words equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016f62"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a5e6c"
+to = "jk78c:00016944"
+note = """
+Target reader 000a5de8 corresponds to JK78C reader 00093164; both run the \
+same five calls: the inverse angle-to-area lookup, two divisions, the \
+piecewise lookup and the request-conversion lookup. The lower branch is \
+taken when the computed coordinate does not exceed the last word (offset \
+0x3E) of the lower output curve; the upper branch shifts the coordinate \
+right by four and caps it. MOV.L 000a5e6c loads this curve as the returned \
+coordinate of the upper branch for call 4 of 5 at 000a5e6e (angelic-saluki), \
+as MOV.L jk78c:000931dc loads 00016944 for call 4 of 5 at 000931e2 \
+(angelic-saluki). Stock words equal JK78C."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000156d0"
 former = ["translucent-cormorant/tbl/7mfk-000156d0"]

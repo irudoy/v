@@ -105,6 +105,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000144f2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a527c"
+to = "jk78c:000141c0"
+note = """
+Target reader 000a50ac corresponds to JK78C reader 0008dcf2; both start with \
+the inverse angle-to-area lookup and end with the upper-bound lookup. While \
+bit 4 of fffeb94d is clear, MOV.L 000a527c loads this byte curve in r4 with \
+axis 000144e2 (r5) and byte fffe8195 for call 4 of 4 at 000a5280 \
+(jolly-guan), and the result is multiplied by 13, as MOV.L jk78c:0008dea6 \
+loads 000141c0 with axis 000141b0 and byte ffff11a3 for call 3 of 3 at \
+0008deb0 (brilliant-ibis) while bit 4 of ffff44d9 is clear. Stock bytes \
+differ from JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014666"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0009f2b4"
+to = "jk78c:000141c0"
+note = """
+Target reader 0009f0e4 corresponds to JK78C reader 0008dcf2; both start with \
+the inverse angle-to-area lookup and end with the upper-bound lookup. While \
+bit 4 of fffeb7ed is clear, MOV.L 0009f2b4 loads this byte curve in r4 with \
+axis 00014656 (r5) and byte fffe81ad for call 4 of 4 at 0009f2b8 \
+(brilliant-ibis), and the result is multiplied by 13, as MOV.L \
+jk78c:0008dea6 loads 000141c0 with axis 000141b0 and byte ffff11a3 for call \
+3 of 3 at 0008deb0 (brilliant-ibis) while bit 4 of ffff44d9 is clear. Stock \
+bytes differ from JK78C and are equal on 1ND and 1ME3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012daa"
 former = ["flat-fennec/tbl/7mfk-00012daa"]
