@@ -485,6 +485,35 @@ The canonical binding rows distinguish:
 Changing a configuration-disabled or sentinel calibration requires review of
 the re-enabled control path and cannot inherit the stock liveness conclusion.
 
+## Misfire monitor readiness gate
+
+The common misfire coordinator `0x00082C8A` evaluates a readiness gate on
+every pass. The gate passes only while all of these conditions hold:
+
+- the counter `0xFFFF4096` is at least 1;
+- the latch `0xFFFF436F` is zero;
+- `0xFFFF41C8.bit7` is set;
+- the composite record gate `0x00025A12` and the record predicate
+  `0x000259E4` for records `0x129`, `0x12A`, `0`, `0x130`, `0x14` and `-1`
+  report no fault;
+- `0xFFFF1108` is at least `0x89`;
+- `0xFFFF11AE` lies in `6..0x97`.
+
+A failed condition clears bits 6 and 7 of `0xFFFF4251`. While bit 7 is
+clear, the coordinator zeroes its P030 accumulators and per-cylinder working
+arrays on every pass. A passing gate sets bit 6, and further mode flags decide
+bit 7.
+
+No gate condition and no misfire function reads the fuel-inhibit mask
+`0xFFFF22E0` or the DFCO state. A fuel cut or a withheld spark therefore
+leaves the monitor running while the gate passes.
+
+The latch `0xFFFF436F` has one reader and one writer, both in the
+coordinator. The writer stores `0x32` under a condition on `0xFFFF84C3` and
+`0xFFFF2B73`, and no instruction stores another value. A nonzero latch
+suspends the monitor and has no other reader. The producer of
+`0xFFFF41C8.bit7` is unresolved.
+
 ## Static binding review
 
 Candidate extraction starts from a semantic-free Ghidra reference inventory.
