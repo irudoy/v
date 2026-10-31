@@ -5,11 +5,11 @@
 The Cruise Control Switch of the editor definitions sets the cruise control
 configuration byte of an image. The ECM decodes the steering switch buttons
 from one analog input only while bit 0 of that byte is set, and the Map
-Switching gestures and the Rolling Launch CANCEL hold read the decoded button
-code. Stock JK08A holds `0x2B`, the configuration of a vehicle with Intelligent
+Switching gestures and, on JK00A, JK03A, JK03B, and JK08A, the Rolling Launch
+CANCEL hold read the decoded button code. Stock JK08A holds `0x2B`, the configuration of a vehicle with Intelligent
 Cruise Control (ICC). JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold
 `0x00`: their decoder stores no button code, so the selector stays on Map 1
-and Rolling Launch never arms. On these images the switch selects the JK08A
+and, on JK00A, JK03A, and JK03B, Rolling Launch never arms. On these images the switch selects the JK08A
 configuration for a vehicle fitted with the five-button ICC steering switch.
 
 The switch is a definition-controlled data edit of one byte in the calibration
@@ -150,5 +150,5 @@ before it is driven:
    switch items of the CONSULT-III Plus ECM data monitor follow the MAIN,
    CANCEL, SET/COAST, and RESUME/ACCELERATE buttons, and a DTC read shows no
    new code.
-3. With the cruise MAIN state off, the Map Switching gestures select a map and
-   the Rolling Launch CANCEL hold arms as on JK08A.
+3. With the cruise MAIN state off, the Map Switching gestures select a map and,
+   on JK00A, JK03A, and JK03B, the Rolling Launch CANCEL hold arms as on JK08A.

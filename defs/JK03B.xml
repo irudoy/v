@@ -62,7 +62,7 @@
 
     <table type="Switch" name="Cruise Control Switch" category="Cruise Control//Steering Switch"
            storageaddress="0x08B28" storagetype="uint8" sizex="1" endian="big" userlevel="5">
-      <description>Exact JK03B only. Selects the cruise control steering switch that the ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so the Map Switching gestures and the Rolling Launch CANCEL hold have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch with DISTANCE, as stock JK08A does. The switch changes only this byte: cruise control itself also needs an ICC unit and the ICC CAN mailboxes of JK08A, which this byte does not configure. Hardware evidence covers stock JK08A only.</description>
+      <description>Exact JK03B only. Selects the cruise control steering switch that the ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so the runtime steering-switch gestures, such as the Map Switching selection, have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch with DISTANCE, as stock JK08A does. The switch changes only this byte: cruise control itself also needs an ICC unit and the ICC CAN mailboxes of JK08A, which this byte does not configure. Hardware evidence covers stock JK08A only.</description>
       <state name="Not Installed" data="00"/>
       <state name="ICC Switch (5 Buttons)" data="2B"/>
     </table>

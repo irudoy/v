@@ -50,7 +50,7 @@
   </XDFPATCH>
   <XDFPATCH uniqueid="0x17DF" flags="0x0">
     <title>Cruise Control Switch</title>
-    <description>Exact JK08A only. Selects the cruise control steering switch that the ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so the Map Switching gestures and the Rolling Launch CANCEL hold have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch with DISTANCE, as stock JK08A does. The switch changes only this byte: cruise control itself also needs an ICC unit and the ICC CAN mailboxes of JK08A, which this byte does not configure. Hardware evidence covers stock JK08A only. Base state: ICC Switch (5 Buttons). Patched state: Not Installed.</description>
+    <description>Exact JK08A only. Selects the cruise control steering switch that the ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so the runtime steering-switch gestures, such as the Map Switching selection, have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch with DISTANCE, as stock JK08A does. The switch changes only this byte: cruise control itself also needs an ICC unit and the ICC CAN mailboxes of JK08A, which this byte does not configure. Hardware evidence covers stock JK08A only. Base state: ICC Switch (5 Buttons). Patched state: Not Installed.</description>
     <CATEGORYMEM index="0" category="1" />
     <XDFPATCHENTRY name="Cruise Control Switch" address="0x8B28" datasize="0x1" patchdata="00" basedata="2B" />
   </XDFPATCH>

@@ -174,9 +174,8 @@ constants of the removed exhaust valve timing subsystem, target algorithms
 whose table geometry differs, and the three
 canonical ignition surfaces, whose homologs sit in the coordinator half that
 the stock configuration leaves unexecuted. The JK78C registry enables native
-RomRaider checksum handling, target-specific Map Switching,
-Rolling Launch, and the CAN telemetry startup switch from the validated runtime
-profile. The target-native fuel-cut projection adds the adjacent activation and
+RomRaider checksum handling, target-specific Map Switching, and the CAN
+telemetry startup switch from the validated runtime profile. The target-native fuel-cut projection adds the adjacent activation and
 release caps plus independent eight-point curves used by the registered
 native state machine. The target-native table registry adds the
 alternate selector arms and the VVEL target set modelled in `JK78C.vvel.md`:
@@ -210,9 +209,9 @@ its identity, stock calibration values, and image hash remain independent.
 Both 1ND definitions expose target-specific Map Switching storage and the CAN
 telemetry startup switch. The project checksum implementation covers the
 fields owned by the selected checksum layout, but native RomRaider checksum
-metadata cannot represent the complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
-and exact scheduler-to-coordinator bindings are shared at the same addresses,
-while each definition remains bound to its independent stock image hash. The
+metadata cannot represent the complete layout. Their target-native fuel-cut maps are shared at the same
+addresses, while each definition remains bound to its independent stock image
+hash. The
 1ND VVEL registry carries its target-native tables and axes at
 shared addresses: the 1ND resolver indexes the hot-intake idle surfaces by two
 temperature-coded bytes instead of engine speed and torque, reads a mode 14

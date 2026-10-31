@@ -13,13 +13,13 @@ The registered `sh7058_8mfk` near-code series contains JK00C and JK00D. It uses
 exact target address profiles and independently assembled target payloads.
 The registered `sh7059_1nd` exact-code series contains 1ND0A and 1ND3B. It uses
 a shared SH7059 address profile, independently assembled target payloads, Map
-Switching, Rolling Launch, and custom CAN telemetry.
+Switching, and custom CAN telemetry.
 The registered `sh7059_1me3b` series contains 1ME3B. It uses its own SH7059
-address profile, independently assembled target payloads, Map Switching,
-Rolling Launch, and custom CAN telemetry.
+address profile, independently assembled target payloads, Map Switching, and
+custom CAN telemetry.
 The registered `sh7058_jk78c` series contains JK78C. It uses an independent
 SH7058 address profile, independently assembled target payloads, Map Switching,
-Rolling Launch, and custom CAN telemetry.
+and custom CAN telemetry.
 Every member retains its own stock identity, calibration, and checksum layout.
 
 The `apply_*.py` scripts are isolated diagnostic stages for one runtime each.
@@ -86,8 +86,9 @@ The common handler performs these operations in one invocation:
    `runtime-target-payloads.toml`. Each Map 2 through Map 5 slot starts as a
    copy of the stock Map 1 values.
 4. Apply the current Rolling Launch composition from the applicable payload
-   registry and selected local profile when the target supports it. Every
-   currently registered family has a target-specific Rolling Launch stage.
+   registry and selected local profile when the target supports it. The
+   `sh7058_7mfkavn86` family has the Rolling Launch stage; the relocated
+   families have none.
 5. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
    disabled-at-startup mode. The control receiver is physical mailbox 22 on
@@ -281,8 +282,9 @@ of JK08A and the stock alternate selection of the other targets:
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. The JK08A values of the key tables of the feature targets and the
 hook keys of each map target come from the entity files through `kb.targets`.
-The selector host and the Rolling Launch engine test the named bit `main` of
-`ascd_state/ram` on each layout: bit 7 on JK08A, JK00C, and JK00D, bit 4 of
+The selector host tests the named bit `main` of `ascd_state/ram` on each
+layout, and the Rolling Launch engine tests it on JK08A: bit 7 on JK08A, JK00C,
+and JK00D, bit 4 of
 `0xFFFF450B` on JK78C, bit 5 on 1ND0A and 1ND3B, and bit 1 on 1ME3B.
 `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
 the capability-specific stage hashes for each exact relocated stock image.
@@ -439,7 +441,7 @@ address references. The reviewed literal loads have these uses:
 These sites compare the loaded values rather than dereferencing them or
 transferring control to them. A numeric operand equal to a flash address does
 not by itself establish a memory access. The reference exclusion check covers
-the combined Map Switching, Rolling Launch, and CAN telemetry write ranges.
+the combined Map Switching and CAN telemetry write ranges.
 It conservatively preserves the disjoint audit candidates `0x1FE00`,
 `0x1FFFE`, and `0x1FFFF`. The exported 32-bit load query has no exact match for
 `0x1FE00`; its use remains unclassified, and absence of a match does not

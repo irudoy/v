@@ -1134,12 +1134,12 @@ category = "Cruise Control / Steering Switch"
 description = """
 Exact {target_rom} only. Selects the cruise control steering switch that the \
 ECM decodes. Not Installed: the ECM ignores the steering switch buttons, so \
-the Map Switching gestures and the Rolling Launch CANCEL hold have no input. \
-ICC Switch (5 Buttons): the ECM decodes the five-button ICC steering switch \
-with DISTANCE, as stock JK08A does. The switch changes only this byte: \
-cruise control itself also needs an ICC unit and the ICC CAN mailboxes of \
-JK08A, which this byte does not configure. Hardware evidence covers stock \
-JK08A only."""
+the runtime steering-switch gestures, such as the Map Switching selection, \
+have no input. ICC Switch (5 Buttons): the ECM decodes the five-button ICC \
+steering switch with DISTANCE, as stock JK08A does. The switch changes only \
+this byte: cruise control itself also needs an ICC unit and the ICC CAN \
+mailboxes of JK08A, which this byte does not configure. Hardware evidence \
+covers stock JK08A only."""
 endian = "big"
 name = "Cruise Control Switch"
 order = 3
