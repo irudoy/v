@@ -197,7 +197,9 @@ to equal the canonical rendering of its own parse:
   the `home` layout, or of its only symbol.
 - A designed entity is stored at `kb/<kind>/<slug>.toml`.
 - A rename, or a change of `home` in an unnamed meaning, moves the file in
-  the same write.
+  the same write. A change of `home` moves the file to the generated name of
+  the new home symbol and rewrites no reference: the former file name stays
+  the generated name of a symbol of the meaning and keeps naming it.
 
 ## 5. Names and references
 
@@ -587,6 +589,11 @@ A link is stored at one end and read in both directions.
 
 - A link claims every layout where both ends have symbols, unless `layouts`
   restricts it.
+- The stated layouts of a link are the layouts of its evidence locations and
+  of `layouts`; a link with neither states the layout of its owning symbol or
+  the home of its meaning. `kb link` and the join of two links in `kb merge`
+  extend `layouts`, where the link has it, to the layouts of its evidence, so
+  that `layouts` lists every stated layout.
 - A `selector` whose `to` is a function states the result condition in its
   note and has no `slot`; bit slots describe a datum, not a return register.
 - On each claimed layout a link holds when its verifier reproduces it, when

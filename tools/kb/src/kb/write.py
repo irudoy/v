@@ -71,6 +71,8 @@ SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENT
 # The keys of a meaning file that a merge joins by their own rules; the other
 # keys move into a file that lacks them.
 JOINED = ("symbol", "status", "link", "analog", "former", "home")
+# The prose keys of a meaning, whose bare addresses refer to its home.
+PROSE = ("title", "summary", "note")
 # The keys of a symbol entry that a merge of two entries of one symbol joins.
 ENTRY = ("layout", "address", "name", "former", "evidence")
 # A reference in a string of an entity file: the whole string, or a `[[...]]`
@@ -345,10 +347,19 @@ def _link_key(link):
     return link.get("type"), link.get("to"), link.get("slot"), link.get("offset")
 
 
+def _widen(link):
+    """Extend the `layouts` of a link to the layouts of its evidence, so that
+    the stored layouts are the layouts that the link states."""
+    if "layouts" in link:
+        held = _listed(link["layouts"])
+        link["layouts"] = _union(held, sorted(store.evidence_layouts(link) - set(held)))
+
+
 def joined_links(links):
     """Links with one entry for each type, target, slot, and offset whose
     other keys agree: the evidence of the entries joins in the order of its
-    locations, and their lists join."""
+    locations, their lists join, and the `layouts` of a joined link extend to
+    its evidence layouts."""
     found = []
     for link in links:
         held = next((held for held in found if _link_key(held) == _link_key(link)
@@ -363,6 +374,7 @@ def joined_links(links):
             elif isinstance(value, list):
                 held[key] = _union(held[key], value)
         held["evidence"] = sorted(held.get("evidence", ()), key=lambda item: str(item.get("at")))
+        _widen(held)
     return found
 
 
@@ -429,6 +441,9 @@ class Change:
         # function of the result that returns a message when the result
         # contradicts it.
         self.renamed = {}
+        # {meaning key: new key} of the unnamed meanings whose file a change of
+        # `home` moves; their references stay.
+        self.rehomed = {}
         self.created, self.started = set(), set()
         # Private objects for meanings created in the change. The source
         # model stays intact until the complete rendered change is checked.
@@ -703,6 +718,12 @@ class Change:
         parts = [", ".join(sorted(written))] if written else []
         parts += [f"unset {', '.join(sorted(unset))}"] if unset else []
         self.lines.append(f"set {subject}: {'; '.join(parts)}")
+        found = MEANING_REF.fullmatch(str(op["ref"]).strip())
+        if ("home" in keys or "home" in unset) and op.get("layout") is None \
+                and not (found and found.group("kind") in store.DESIGNED):
+            meaning, named = self.resolve(op["ref"])
+            if named is None and not meaning.semantic:
+                self._follow_home(meaning)
 
     def _settable(self, text, layout):
         """(table, specs, subject, hint) of a reference of `set`: a designed
@@ -853,6 +874,7 @@ class Change:
         if held is None:
             if evidence:
                 entry["evidence"] = evidence
+            _widen(entry)
             links.append(entry)
         else:
             added = {}
@@ -872,6 +894,7 @@ class Change:
             held.update(added)
             if evidence:
                 held["evidence"] = [*held.get("evidence", ()), *evidence]
+            _widen(held)
         described = "; ".join(summary(item) for item in evidence) or "no evidence"
         self.lines.append(f"link {meaning.key} {type_} {to.key}: {described}")
 
@@ -1219,6 +1242,7 @@ class Change:
             entry["evidence"] = _union(entry.get("evidence", []), evidence)
             moved.append(entry)
             joins.append(f"{symbol.key.location} {'; '.join(summary(item) for item in evidence)}")
+        self._take_home(meaning, other, document, source)
         self._keep_home(meaning, [entry["layout"] for entry in moved], document)
         document["symbol"] = [*document.get("symbol", ()), *moved]
         layouts = set(meaning.symbols) | {entry.get("layout") for entry in document["symbol"]}
@@ -1280,6 +1304,11 @@ class Change:
                                     former + list(entry.get("former", ())))
             held["evidence"] = _union(held.get("evidence", []), entry.get("evidence", ()))
         layouts = {entry.get("layout") for entry in symbols}
+        if "home" in source:
+            if document.get("home", source["home"]) != source["home"]:
+                raise KbError(f"{path.as_posix()} and {other_path.as_posix()} disagree on home",
+                              code=3)
+            document["home"] = source["home"]
         if not semantic and home is not None and "home" not in document:
             if ("7mfk" if "7mfk" in layouts else min(layouts)) != home:
                 document["home"] = home
@@ -1429,8 +1458,11 @@ class Change:
             raise KbError(f"{old} is the home symbol of {meaning.key} and gives its name; `kb "
                           f"rename {meaning.key} <semantic-name>` names the meaning first", code=3)
         if meaning.props.get("home") == layout:
-            raise KbError(f"the home of {meaning.key} is {layout}; `kb set {meaning.key} home=` "
-                          "unsets it first", code=3)
+            others = sorted(set(meaning.symbols) - {layout})
+            hint = (f"`kb set {meaning.key} home=<layout>` states one of {', '.join(others)} "
+                    "first" if len(others) > 1 and "7mfk" not in others
+                    else f"`kb set {meaning.key} home=` unsets it first")
+            raise KbError(f"the home of {meaning.key} is {layout}; {hint}", code=3)
         self._free(target, layout)
         level = op.get("level")
         if level is not None and level not in vocab.LEVELS:
@@ -1692,7 +1724,7 @@ class Change:
 
     def _gate(self, meaning):
         """Refuse a meaning that an earlier operation of the change renames."""
-        new = self.renamed.get(meaning.key)
+        new = self.renamed.get(meaning.key) or self.rehomed.get(meaning.key)
         if new is not None:
             raise KbError(f"{meaning.key} takes the name {new} earlier in this change; a batch "
                           "renames a meaning after its other operations", code=3)
@@ -1817,6 +1849,47 @@ class Change:
         home = meaning.home or next(iter(held), None)
         if home not in (None, "7mfk") and len(set(meaning.symbols) | set(held) | set(layouts)) > 1:
             document["home"] = home
+
+    @staticmethod
+    def _take_home(meaning, other, document, source):
+        """Home follows the prose of a merge: a meaning that takes the prose of
+        the file of `other` takes its stated home, and two stated homes that
+        differ refuse the merge. An unnamed meaning keeps the home that its
+        file name follows."""
+        home = source.get("home")
+        taken = [key for key in PROSE
+                 if key in source and document.get(key, meaning.props.get(key)) is None]
+        if home is None or not taken:
+            return
+        held = document.get("home", meaning.props.get("home"))
+        if held is None and meaning.semantic:
+            document["home"] = home
+            return
+        held = held or meaning.home
+        if held != home:
+            raise KbError(f"{meaning.key} takes the {', '.join(taken)} of {other.key}, whose "
+                          f"home is {home}, and keeps the home {held}; `kb set` states one "
+                          "home on both first", code=3)
+
+    def _follow_home(self, meaning):
+        """Move the file of an unnamed meaning to the generated name of its
+        home symbol. The former file name stays the generated name of a symbol
+        of the meaning, so its references keep naming the meaning."""
+        path, document = self.document(meaning)
+        names = {layout: symbol.generated for layout, symbol in meaning.symbols.items()}
+        names.update({entry.get("layout"): entry["name"]
+                      for entry in document.get("symbol", ()) if entry.get("name")})
+        home = document.get("home") or ("7mfk" if "7mfk" in names else min(names, default=None))
+        name = names.get(home)
+        target = store.path_of(meaning.kind, name) if name else None
+        if target is None or target == path:
+            return
+        self._fresh(target)
+        self._remove(path)
+        self.documents[target] = document
+        self.rehomed[meaning.key] = f"{name}/{meaning.kind}"
+        self.lines.append(f"move {path.as_posix()} to {target.as_posix()}: the home of "
+                          f"{meaning.key} is {home}")
 
     # Arguments -------------------------------------------------------------
 
@@ -1982,9 +2055,7 @@ def _selection(model, key, registry, order, item):
     owned.props = {name: value for name, value in entry.items()
                    if name not in ("type", "to", "evidence", "role", "slot", "offset")}
     owned.roles = {entry["role"]} if "role" in entry else set()
-    stated = {evidence["at"].split(":", 1)[0] for evidence in entry.get("evidence", ())
-              if isinstance(evidence.get("at"), str) and ":" in evidence["at"]}
-    owned.stated = stated or set(entry.get("layouts") or (owner.home,))
+    owned.stated = store.link_layouts(entry) or {owner.home}
     if not matches(owned):
         raise KbError(f"{key}: native relation does not hold the selected claim", code=3)
     return path, marker

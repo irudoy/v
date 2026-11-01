@@ -200,6 +200,13 @@ at = "1nd:00080db2"
 kind = "l0"
 at = "1me3b:000856e6"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0007428e"
+note = """
+MOV.B @(r0,r5) at 0007428e reads ffff144b (r5 = ffff1274, r0 = 0x1d7), and \
+TST r6,r2 tests the bank bit, as 1ND 00080db2 and 1ME3B 000856e6 do."""
+
 [[link]]
 type = "writer"
 to = "juicy-panther/fn"

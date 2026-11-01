@@ -309,6 +309,21 @@ def owns(model, symbol):
         bool(symbol.sources) and all(source.startswith(tree) for source in symbol.sources))
 
 
+def evidence_layouts(link):
+    """The layouts of the evidence locations of a stored link."""
+    return {item["at"].split(":", 1)[0] for item in link.get("evidence", ())
+            if isinstance(item, dict) and isinstance(item.get("at"), str) and ":" in item["at"]}
+
+
+def link_layouts(link):
+    """The layouts that a stored link states: those of its evidence locations
+    and those of its `layouts`."""
+    layouts = link.get("layouts")
+    return evidence_layouts(link) | (
+        {layout for layout in layouts if isinstance(layout, str)}
+        if isinstance(layouts, list) else set())
+
+
 def files(root, overlay=None):
     """[(kind, name, repository path)] of every entity file, by kind and name.
     `overlay` maps repository paths to the text that replaces a file, or to

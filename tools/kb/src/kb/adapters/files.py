@@ -262,10 +262,8 @@ def _meaning(b, kind, name, document, src):
         if "via" in props:
             props["via"] = [_refs(item, src) for item in props["via"]]
         evidence = _evidence(entry.get("evidence", ()), src)
-        stated = {item["at"].split(":", 1)[0] for item in evidence
-                  if isinstance(item.get("at"), str) and ":" in item["at"]}
         b.link(group, entry["type"], Ref(entry["to"], src), src, props=props,
-               evidence=evidence, layouts=stated or props.get("layouts") or None)
+               evidence=evidence, layouts=store.link_layouts(entry) or None)
     return keys
 
 

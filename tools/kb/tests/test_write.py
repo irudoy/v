@@ -1485,9 +1485,10 @@ class MoveMeaningTest(unittest.TestCase):
             (move("7mfk:00026100", "fuel_cut_coordinator/fn"), 3,
              f"{self.WRAPPER}/7mfk-00026100 is the home symbol of {self.WRAPPER} and gives its "
              f"name; `kb rename {self.WRAPPER} <semantic-name>` names the meaning first"),
+            # Two symbols and none on 7mfk remain, so the meaning keeps a stated home.
             (move(alternate.symbols["jk78c"].key.location, inverse.key), 3,
-             f"the home of {alternate.key} is jk78c; `kb set {alternate.key} home=` unsets it "
-             "first"),
+             f"the home of {alternate.key} is jk78c; `kb set {alternate.key} home=<layout>` "
+             "states one of 1me3b, 1nd first"),
             (move(self.SYMBOL, THROTTLE, level="sure"), 2, "level 'sure'"),
             (move(wrapper, self.ACCESSOR), 3, f"on jk00c, not {wrapper}; state the evidence"),
         ]
@@ -1580,6 +1581,149 @@ def test_binds_on_later_layouts_keep_the_home_of_a_named_meaning(native_meaning_
     assert tomllib.loads(texts[path])["home"] == "jk78c"
     meaning = result.meaning_of(SymbolKey("jk78c", "ram", 0xffff2000))
     assert (meaning.home, sorted(meaning.symbols)) == ("jk78c", ["1me3b", "1nd", "jk78c"])
+
+
+@pytest.fixture
+def probe_store(tmp_path, monkeypatch):
+    """A builder of the isolated sources with added ram meanings, by name."""
+    writer_sources.write_sources(tmp_path)
+    monkeypatch.setattr(adapters, "ADAPTERS", (file_adapter,))
+
+    def build(**documents):
+        for name, document in documents.items():
+            path = tmp_path / store.path_of("ram", name)
+            path.write_text(store.render("ram", document), encoding="utf-8")
+        return compile.build(tmp_path)
+    return build
+
+
+def probe(*places, **keys):
+    """A ram meaning with a symbol at each `layout:address` of `places`."""
+    symbols = []
+    for place in places:
+        layout, address, *name = place.split(":")
+        symbols.append({"layout": layout, "address": address, **(
+            {"name": name[0]} if name else {}), "evidence": [SPEC]})
+    return {"width": 16, "signed": False, **keys, "symbol": symbols}
+
+
+def planned(base, *ops):
+    return write.plan(list(ops), base, write.model_resolver(base), root=base.root)
+
+
+def stored(texts, name):
+    return tomllib.loads(texts[store.path_of("ram", name)])
+
+
+SOURCE_ANCHOR = {"layout": "jk78c", "path": "defs/fixture.md", "anchor": "probe_word"}
+
+
+def test_a_merge_moves_the_meaning_keys_that_the_target_lacks(probe_store):
+    base = probe_store(probe_target=probe("1me3b:ffff4000"),
+                       probe_source=probe("jk78c:ffff4100", title="Probe word",
+                                          source=[SOURCE_ANCHOR]))
+    _, texts, _ = planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]))
+    merged = stored(texts, "probe_target")
+    assert (merged["title"], merged["source"]) == ("Probe word", [SOURCE_ANCHOR])
+    assert texts[store.path_of("ram", "probe_source")] is None
+
+
+def test_a_merge_of_two_values_of_one_key_is_refused_before_any_write(probe_store):
+    base = probe_store(probe_target=probe("1me3b:ffff4000", title="Target word"),
+                       probe_source=probe("jk78c:ffff4100", title="Source word"))
+    with pytest.raises(KbError, match="disagree on title"):
+        planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]))
+
+
+def test_a_merge_takes_the_home_of_the_prose_it_takes(probe_store):
+    base = probe_store(probe_target=probe("1me3b:ffff4000"),
+                       probe_source=probe("jk78c:ffff4100", summary="JK78C word at ffff4100.",
+                                          home="jk78c"))
+    _, texts, result = planned(base, merge("probe_target/ram", "probe_source/ram",
+                                           evidence=[SPEC]))
+    merged = stored(texts, "probe_target")
+    assert (merged["home"], merged["summary"]) == ("jk78c", "JK78C word at ffff4100.")
+    assert result.meaning_of(SymbolKey("1me3b", "ram", 0xffff4000)).home == "jk78c"
+
+
+def test_a_merge_keeps_the_home_of_a_target_with_its_own_prose(probe_store):
+    base = probe_store(probe_target=probe("1me3b:ffff4000", summary="1ME3B word at ffff4000."),
+                       probe_source=probe("jk78c:ffff4100", home="jk78c"))
+    _, texts, _ = planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]))
+    assert stored(texts, "probe_target")["home"] == "1me3b"
+
+
+def test_a_merge_refuses_prose_whose_home_differs_from_the_stated_home(probe_store):
+    base = probe_store(probe_target=probe("1nd:ffff4000", "1me3b:ffff4000", home="1nd"),
+                       probe_source=probe("jk78c:ffff4100", summary="JK78C word at ffff4100.",
+                                          home="jk78c"))
+    with pytest.raises(KbError, match="takes the summary of probe_source/ram, whose home is "
+                                      "jk78c, and keeps the home 1nd"):
+        planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]))
+
+
+def test_a_move_carries_the_keys_of_its_entry_and_keeps_the_home_of_the_target(probe_store):
+    source = probe("7mfk:ffff4100", "1nd:ffff4100", title="Source word")
+    source["symbol"][1].update(signed=True, note="Note of the source meaning.")
+    base = probe_store(probe_target=probe("jk78c:ffff4000", source=[SOURCE_ANCHOR]),
+                       probe_source=source)
+    _, texts, _ = planned(base, move("1nd:ffff4100", "probe_target/ram", evidence=[SPEC]))
+    target, left = stored(texts, "probe_target"), stored(texts, "probe_source")
+    assert target["home"] == "jk78c" and target["source"] == [SOURCE_ANCHOR]
+    # The entry keeps its keys besides the level and the note, which the move
+    # states anew.
+    [entry] = [entry for entry in target["symbol"] if entry["layout"] == "1nd"]
+    assert entry["signed"] is True and "note" not in entry
+    assert left["title"] == "Source word" and "home" not in left
+    assert [entry["layout"] for entry in left["symbol"]] == ["7mfk"]
+
+
+def test_a_merge_joins_layouts_and_evidence_layouts_of_one_link(probe_store):
+    # RPM states its writer link to the snapshot on 7mfk by `layouts`, and a
+    # ledger depends on that 7mfk claim.
+    at = {**SPEC, "at": "jk78c:ffff1300"}
+    base = probe_store(probe_source=probe("jk78c:ffff1300", link=[
+        {"type": "writer", "to": "coherent_snapshot/fn", "relies": "structure",
+         "supports": "identity", "reverse_relies": "structure", "reverse_supports": "identity",
+         "evidence": [at]}]))
+    _, texts, result = planned(base, merge("rpm/ram", "probe_source/ram", evidence=[SPEC]))
+    [joined] = [item for item in stored(texts, "rpm")["link"]
+                if item["to"] == "coherent_snapshot/fn"]
+    assert (joined["layouts"], joined["evidence"]) == (["7mfk", "jk78c"], [at])
+    [link_] = [item for item in result.meaning_of(SymbolKey("7mfk", "ram", 0xffff11bc)).links
+               if item.to.key == "coherent_snapshot/fn"]
+    assert link_.stated == {"7mfk", "jk78c"}
+
+
+def test_link_evidence_outside_layouts_extends_them(probe_store):
+    base = probe_store()
+    at = {**SPEC, "at": "1nd:ffff11bc"}
+    _, texts, result = planned(base, link("rpm/ram", "writer", "coherent_snapshot/fn",
+                                          evidence=[at]))
+    [held] = [item for item in stored(texts, "rpm")["link"]
+              if item["to"] == "coherent_snapshot/fn"]
+    assert (held["layouts"], held["evidence"]) == (["7mfk", "1nd"], [at])
+    [link_] = [item for item in result.meaning_of(SymbolKey("7mfk", "ram", 0xffff11bc)).links
+               if item.to.key == "coherent_snapshot/fn"]
+    assert link_.stated == {"7mfk", "1nd"}
+
+
+def test_a_home_change_moves_the_file_of_an_unnamed_meaning(probe_store):
+    unnamed = probe("1me3b:ffff4200:athletic-gharial", "jk78c:ffff4200:statuesque-puma",
+                    home="1me3b")
+    reader = probe("7mfk:ffff4300", link=[
+        {"type": "input", "to": "athletic-gharial/ram", "evidence": [SPEC]}])
+    base = probe_store(**{"athletic-gharial": unnamed, "probe_reader": reader})
+    change, texts, result = planned(base, assign("athletic-gharial/ram", {"home": "jk78c"}))
+    assert texts[store.path_of("ram", "athletic-gharial")] is None
+    moved = stored(texts, "statuesque-puma")
+    assert moved["home"] == "jk78c"
+    assert store.path_of("ram", "probe_reader") not in texts
+    meaning = result.meaning_of(SymbolKey("1me3b", "ram", 0xffff4200))
+    assert (meaning.key, meaning.home) == ("statuesque-puma/ram", "jk78c")
+    assert change.lines[-1] == ("move kb/ram/athletic-gharial.toml to "
+                                "kb/ram/statuesque-puma.toml: the home of "
+                                "athletic-gharial/ram is jk78c")
 
 
 class OverlayTest(unittest.TestCase):
