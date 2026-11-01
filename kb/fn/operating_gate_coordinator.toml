@@ -16,9 +16,8 @@ note = [
     """
 Known BFS, coolant, battery-voltage and final-timing inputs retain their \
 tracked conversions. The enclosing physical subsystem, invocation period and \
-other input quantities remain unresolved under issue #110. Curve-output \
-conversions, editor publication and later-layout counterparts require \
-separate qualification.""",
+other input quantities remain unresolved. Curve-output conversions, editor \
+publication and later-layout counterparts require separate qualification.""",
 ]
 level = "code"
 role = "dispatch"

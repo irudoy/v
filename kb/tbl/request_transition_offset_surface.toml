@@ -11,8 +11,8 @@ note = [
 Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
 and ffff1077 latch the zero-based current-gear and target-gear indices \
 ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling, engineering units, editor qualification and \
-later-layout correspondence remain unresolved under issue #110.""",
+frame 0x174. Scaling and engineering units remain unresolved. Editor \
+qualification remains unresolved under issue #129.""",
 ]
 level = "code"
 home = "jk78c"

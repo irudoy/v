@@ -5,10 +5,9 @@ augmented by five while the bit is set, against this byte; values at or \
 above the threshold set the bit."""
 note = [
     """
-Editor publication and later-layout correspondence remain unresolved under \
-issue #110. Only the reviewed JK78C reader qualifies this operational role; \
-physical input identities and engineering conversions require separate \
-evidence.""",
+Editor publication remains unresolved under issue #129. Only the reviewed \
+JK78C reader qualifies this operational role; physical input identities and \
+engineering conversions require separate evidence.""",
 ]
 level = "code"
 home = "jk78c"

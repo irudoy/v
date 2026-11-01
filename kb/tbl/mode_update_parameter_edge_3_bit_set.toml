@@ -4,19 +4,18 @@ of the mode-selected parameter builder. The computed operand 00014054+8 is \
 visible in the complete reader listing at 00082866..0008286a, but normalized \
 L0 has no corresponding access for 0001405c. The typed reader relation to \
 000826d2 is unresolved and is not declared. Its interpretation as the \
-bank-set edge-mode-3 curve remains a candidate pending normalized-access \
-reconciliation under issue #110."""
+bank-set edge-mode-3 curve therefore remains a candidate."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #110.",
+    "Native editor publication remains unresolved under issue #129.",
     """
 The computed operand 00014054+8 is visible in the complete reader listing at \
 00082866..0008286a, but normalized L0 has no corresponding access for \
 0001405c. The typed reader relation to 000826d2 is unresolved and is not \
-declared. Its interpretation as the bank-set edge-mode-3 curve remains a \
-candidate pending normalized-access reconciliation under issue #110.""",
+declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
+remains a candidate.""",
 ]
 level = "candidate"
 home = "jk78c"
@@ -78,12 +77,14 @@ in 7 bytes on 1ND0A and equal JK78C on 1ND3B."""
 layout = "jk78c"
 address = "0001405c"
 level = "candidate"
-note = """
+note = [
+    """
 The computed operand 00014054+8 is visible in the complete reader listing at \
 00082866..0008286a, but normalized L0 has no corresponding access for \
 0001405c. The typed reader relation to 000826d2 is unresolved and is not \
-declared. Its interpretation as the bank-set edge-mode-3 curve remains a \
-candidate pending normalized-access reconciliation under issue #110."""
+declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
+remains a candidate.""",
+]
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -96,5 +97,5 @@ The reviewed literal 00014054 is increased by eight in the branch. The \
 computed operand 00014054+8 is visible in the complete reader listing at \
 00082866..0008286a, but normalized L0 has no corresponding access for \
 0001405c. The typed reader relation to 000826d2 is unresolved and is not \
-declared. Its interpretation as the bank-set edge-mode-3 curve remains a \
-candidate pending normalized-access reconciliation under issue #110."""
+declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
+remains a candidate."""

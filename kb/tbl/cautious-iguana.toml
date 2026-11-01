@@ -225,13 +225,14 @@ supports = "homology"
 at = "1me3b:000c908e"
 to = "jk78c:000141e8"
 note = """
-Target function 000c8ff0 corresponds to JK78C 000a2700 (fanatic-hare): the \
-same sequence of calibration loads and lookup calls, with this table in the \
-same call and argument register. MOV.L 000c908e loads this table for the \
-call at 000c9092 (rigorous-guppy), as MOV.L jk78c:000a2706 loads 000141e8 \
-for the call at jk78c:000a270c (prudent-loon). The two helpers carry \
-separate meanings and pair by call position. Its 32 stock bytes equal \
-JK78C."""
+Target function 000c8ff0 corresponds to JK78C 000a2726: it calls 000c8f10 in \
+the place of 000a25fa and inlines 000a273c twice, 000a2700 (fanatic-hare) \
+and 000a27e8. The inlined 000a2700 body has the same calibration load and \
+lookup call, with this table in the same call and argument register. MOV.L \
+000c908e loads this table for the call at 000c9092 (rigorous-guppy), as \
+MOV.L jk78c:000a2706 loads 000141e8 for the call at jk78c:000a270c \
+(prudent-loon). The two helpers carry separate meanings and pair by call \
+position. Its 32 stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "1nd"
@@ -244,12 +245,13 @@ supports = "homology"
 at = "1nd:000bf634"
 to = "jk78c:000141e8"
 note = """
-Target function 000bf53a corresponds to JK78C 000a2700 (fanatic-hare): the \
-same sequence of calibration loads and lookup calls, with this table in the \
-same call and argument register. MOV.L 000bf634 loads this table for the \
-call at 000bf638 (prudent-loon), as MOV.L jk78c:000a2706 loads 000141e8 for \
-the call at jk78c:000a270c (prudent-loon). Its 32 stock bytes equal JK78C on \
-1ND0A and 1ND3B."""
+Target function 000bf53a corresponds to JK78C 000a2726: it calls 000bf45a in \
+the place of 000a25fa and inlines 000a273c twice, 000a2700 (fanatic-hare) \
+and 000a27e8. The inlined 000a2700 body has the same calibration load and \
+lookup call, with this table in the same call and argument register. MOV.L \
+000bf634 loads this table for the call at 000bf638 (prudent-loon), as MOV.L \
+jk78c:000a2706 loads 000141e8 for the call at jk78c:000a270c (prudent-loon). \
+Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "7mfk"

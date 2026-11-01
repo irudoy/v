@@ -12,7 +12,7 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #110.",
+    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"

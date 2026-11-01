@@ -7,10 +7,9 @@ bit7 clear, ffff23af.bit0 or raw mode ffff2608=4 admits the comparison; mode \
 bit7 set requires ffff23af.bit0."""
 note = [
     """
-Editor publication and later-layout correspondence remain unresolved under \
-issue #110. Only the reviewed JK78C reader qualifies this operational role; \
-physical input identities and engineering conversions require separate \
-evidence.""",
+Editor publication remains unresolved under issue #129. Only the reviewed \
+JK78C reader qualifies this operational role; physical input identities and \
+engineering conversions require separate evidence.""",
 ]
 level = "code"
 home = "jk78c"

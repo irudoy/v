@@ -6,10 +6,9 @@ right shift, then shifts the low 32-bit product right by thirteen and caps \
 the upward step at 65535."""
 note = [
     """
-Editor publication and later-layout correspondence remain unresolved under \
-issue #110. Only the reviewed JK78C reader qualifies this operational role; \
-physical input identities and engineering conversions require separate \
-evidence.""",
+Editor publication remains unresolved under issue #129. Only the reviewed \
+JK78C reader qualifies this operational role; physical input identities and \
+engineering conversions require separate evidence.""",
 ]
 level = "code"
 home = "jk78c"
