@@ -113,6 +113,7 @@ def test_build_ledger_classifies_every_target_entity():
     assert by_target["00008200"]["bytes_equal"] == "no"
     assert by_target["00008210"]["method"] == "unique-exact-content"
     assert by_target["00008210"]["source"] == "00008110"
+    assert by_target["00008210"]["source_geometry"] == "4x1:uint8"
     assert by_target["00008220"]["note"] == "flat-content"
     assert by_target["00008230"]["note"] == "duplicate-content"
     # A published pair may reuse the source of an aligned pair.
@@ -121,6 +122,39 @@ def test_build_ledger_classifies_every_target_entity():
     assert by_target["00008250"]["status"] == "ambiguous"
     assert by_target["00008260"]["note"] == "00008140"
     census_homology.validate_ledger(rows, "1ND0A", "1ME3B", images)
+
+
+def test_published_pair_across_a_storage_change_claims_no_equal_bytes():
+    # Eight uint8 points followed by bytes that match the rest of the target:
+    # a window of the target size would equal the sixteen-byte target axis.
+    stored = bytes(range(1, 17))
+    images = _images({0x8100: stored}, {0x8200: stored})
+    rows = census_homology.build_ledger(
+        {0x8100: ("axis", "8:uint8")},
+        {0x8200: ("axis", "8:uint16")},
+        {},
+        {0x8200: 0x8100},
+        images,
+    )
+    assert rows == [{
+        "kind": "axis",
+        "target": "00008200",
+        "geometry": "8:uint16",
+        "status": "homolog",
+        "source": "00008100",
+        "source_geometry": "8:uint8",
+        "method": "published-registry",
+        "bytes_equal": "no",
+        "note": "",
+    }]
+    census_homology.validate_ledger(rows, "1ND0A", "1ME3B", images)
+
+    claimed = [dict(rows[0], bytes_equal="yes")]
+    with pytest.raises(census_homology.CensusHomologyError, match="bytes_equal differs"):
+        census_homology.validate_ledger(claimed, "1ND0A", "1ME3B", images)
+    outside = [dict(rows[0], source="00008ffc")]
+    with pytest.raises(census_homology.CensusHomologyError, match="source entity lies outside"):
+        census_homology.validate_ledger(outside, "1ND0A", "1ME3B", images)
 
 
 def test_published_pair_contradicting_a_census_pair_is_rejected():
@@ -196,6 +230,7 @@ def test_1me3b_census_ledger_carries_every_published_census_pair(ledger):
         assert row["method"] == "published-registry"
         assert row["bytes_equal"] == "no"
     assert by_target[0x1667C]["geometry"] == "8:uint16"
+    assert by_target[0x1667C]["source_geometry"] == "8:uint8"
 
 
 def test_census_ledger_mutations_are_rejected(ledger):
@@ -217,6 +252,12 @@ def test_census_ledger_mutations_are_rejected(ledger):
         match="pair one source with two targets",
     ):
         census_homology.validate_ledger(repeated, "1ND0A", "1ME3B")
+
+    reshaped = copy.deepcopy(ledger)
+    row = next(item for item in reshaped if item["method"] == "aligned-reference")
+    row["source_geometry"] = "1x1:uint8"
+    with pytest.raises(census_homology.CensusHomologyError, match="differs in geometry"):
+        census_homology.validate_ledger(reshaped, "1ND0A", "1ME3B")
 
     # The published mode-selected ignition pair is 0xA344 <- 0xA410.
     contradicted = copy.deepcopy(ledger)

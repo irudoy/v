@@ -14,7 +14,11 @@ a source homolog through three independent methods, applied in this order:
    target-native table registry publish both entities under one role. A
    published pair may name a source that a census method pairs with another
    target: the target image stores separate copies of one source table for
-   separate readers.
+   separate readers. A published pair may also cross a storage change: the
+   two entities then differ in geometry.
+
+A pair records the geometry of both entities. Its bytes are equal when both
+entities have one geometry and store the same bytes over that extent.
 
 The inputs are the L0 exports of the layouts of the two ROMs. `--check`
 validates the tracked ledger against the registered stock images and the
@@ -45,6 +49,7 @@ LEDGER_FIELDS = (
     "geometry",
     "status",
     "source",
+    "source_geometry",
     "method",
     "bytes_equal",
     "note",
@@ -268,6 +273,14 @@ def _stored(image, address, geometry):
     return bytes(image[address : address + geometry_bytes(geometry)])
 
 
+def entities_equal(images, source, source_geometry, target, target_geometry):
+    """Whether two entities share one geometry and its stored bytes."""
+    source_image, target_image = images
+    return source_geometry == target_geometry and _stored(
+        source_image, source, source_geometry
+    ) == _stored(target_image, target, target_geometry)
+
+
 def build_ledger(source_entities, target_entities, votes, published, images):
     """Classify every target entity and return ledger rows."""
     source_image, target_image = images
@@ -331,12 +344,12 @@ def build_ledger(source_entities, target_entities, votes, published, images):
         row.update(kind=kind, target=f"{target:08x}", geometry=geometry)
         if target in paired:
             source, method = paired[target]
-            equal = _stored(source_image, source, geometry) == _stored(
-                target_image, target, geometry
-            )
+            source_geometry = source_entities[source][1]
+            equal = entities_equal(images, source, source_geometry, target, geometry)
             row.update(
                 status="homolog",
                 source=f"{source:08x}",
+                source_geometry=source_geometry,
                 method=method,
                 bytes_equal="yes" if equal else "no",
             )
@@ -408,16 +421,21 @@ def validate_ledger(rows, source_rom, target_rom, images=None):
             if row["method"] not in METHODS:
                 raise CensusHomologyError(f"{context}: invalid method")
             source = int(row["source"], 16)
-            equal = (
-                source_image[source : source + size]
-                == target_image[target : target + size]
+            if source + geometry_bytes(row["source_geometry"]) > len(source_image):
+                raise CensusHomologyError(f"{context}: source entity lies outside the image")
+            if row["method"] != "published-registry" and (
+                row["source_geometry"] != row["geometry"]
+            ):
+                raise CensusHomologyError(f"{context}: census pair differs in geometry")
+            equal = entities_equal(
+                images, source, row["source_geometry"], target, row["geometry"]
             )
             if row["bytes_equal"] != ("yes" if equal else "no"):
                 raise CensusHomologyError(f"{context}: bytes_equal differs from the images")
             if row["method"] == "unique-exact-content" and not equal:
                 raise CensusHomologyError(f"{context}: content pair is not exact")
             by_target[target] = source
-        elif row["source"] or row["method"] or row["bytes_equal"]:
+        elif row["source"] or row["source_geometry"] or row["method"] or row["bytes_equal"]:
             raise CensusHomologyError(f"{context}: unpaired row names a pair")
         elif row["status"] == "unpaired" and row["note"] not in UNPAIRED_NOTES:
             raise CensusHomologyError(f"{context}: invalid note")

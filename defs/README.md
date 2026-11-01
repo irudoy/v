@@ -150,8 +150,12 @@ a remaining target whose stored bytes and geometry occur once in each census.
 `published-registry` adds the pairs that the definition correspondences and the
 target-native table registry publish under one role. A published pair may
 share its source with a census pair when target readers use separate copies
-of one source surface. The ledger owns pair status, byte equality and the
-reason for each ambiguous or unpaired operand in `note`: `flat-content` for
+of one source surface, and it may cross a storage change. The ledger owns
+pair status, the geometry of the source operand, byte equality and the
+reason for each ambiguous or unpaired operand in `note`. Byte equality holds
+when both operands have one geometry and store the same bytes over that
+extent; a pair across a storage change keeps its role with `bytes_equal = no`.
+The reasons in `note` are: `flat-content` for
 uniform stock bytes, `duplicate-content` for bytes
 that recur in the census, and `no-content-match` for bytes absent from the
 1ND0A census. The ledger is a candidate-level address index and assigns no
