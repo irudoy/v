@@ -218,6 +218,59 @@ at = "7mfk:0004d5de"
 value = {named = ["00009f1a", "000124b2", "000261b8", "0004d2a6", "ffff102c", "ffff11bc", "ffff1a7d", "ffff2458"], span = 1}
 key = "body"
 
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+JK08A cam-deviation correction builder 0004d2a6 has no counterpart; its \
+coordinator slot runs a native builder"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000779f0"
+note = """
+Coordinator 00077680, the counterpart of JK78C 00068af8, calls 000772c4, the \
+counterpart of native JK78C builder 000686e0, at 000779f0. 000772c4 reads \
+00014626, 00014612 and 00014656, the counterparts of the native curves, and \
+no counterpart of a coefficient or response table of JK08A 0004d2a6."""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+JK08A cam-deviation correction builder 0004d2a6 has no counterpart; its \
+coordinator slot runs a native builder"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00073a6e"
+note = """
+Coordinator 000736f4, the counterpart of JK78C 00068af8, calls 000732de, the \
+counterpart of native JK78C builder 000686e0, at 00073a6e. 000732de reads \
+0001476a, 00014756 and 000147a2, the counterparts of the native curves, and \
+no counterpart of a coefficient or response table of JK08A 0004d2a6."""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+JK08A cam-deviation correction builder 0004d2a6 has no counterpart; its \
+coordinator slot runs a native builder"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068b48"
+note = """
+Ignition-timing coordinator 00068af8 calls native builder 000686e0 \
+(timing_paired_difference_correction_builder) at 00068b48, before 000644d0 \
+(signed_timing_state_accumulator). JK08A coordinator 0004d888 calls 0004d2a6 \
+in the same position, at 0004d8fc before 0004afdc. 000686e0 reads its own \
+curves 000142d4, 000142c0 and 0001430c and no coefficient or response table \
+of 0004d2a6."""
+
 [[link]]
 type = "depends"
 to = "pretty-gecko/tbl"

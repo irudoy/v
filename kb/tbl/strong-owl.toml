@@ -99,6 +99,37 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0003d0ec"
 
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00014090"
+count = 0
+l0 = "28a4e19998ef4d2c"
+note = """
+JK78C 0003d092 (charcoal-foxhound) loads 00014090 at 0003d0ec for a one-time \
+lookup. The target image holds the candidate 000143c2 between the \
+counterparts of the JK78C neighbors of 00014090, with 16 stock bytes equal \
+to JK78C, and the pool word 00043b40 holds its address. The code that loads \
+that pool lies between L0 functions 00043900 and 00043b80, outside every L0 \
+function, so no load of the candidate can be cited."""
+
+[[status]]
+layout = "1nd"
+state = "unresolved"
+method = "l0"
+target = "jk78c:00014090"
+count = 0
+l0 = "cb701875f15725a4"
+note = """
+JK78C 0003d092 (charcoal-foxhound) loads 00014090 at 0003d0ec for a one-time \
+lookup. The target image holds the candidate 00014536 between the \
+counterparts of the JK78C neighbors of 00014090, with 16 stock bytes equal \
+to JK78C on 1ND0A and 1ND3B, and the pool word 000409cc holds its address. \
+The code that loads that pool lies between L0 functions 0004080c and \
+00040a0c, outside every L0 function, so no load of the candidate can be \
+cited."""
+
 [[link]]
 type = "reader"
 to = "charcoal-foxhound/fn"

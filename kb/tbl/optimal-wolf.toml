@@ -63,6 +63,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0000c9fc"
+name = "radiant-cassowary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cbc6"
+to = "jk78c:0000c64e"
+note = """
+Target function 0004cb40 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this table in the same call and argument register. MOV.L \
+0004cbc6 loads this table for the call at 0004cbce (glorious-elk), as MOV.L \
+jk78c:0004411e loads 0000c64e for the call at jk78c:00044128 \
+(nondescript-seagull). The two helpers carry separate meanings and pair by \
+call position. Its 128 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000cb48"
+name = "tricky-parakeet"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004917c"
+to = "jk78c:0000c64e"
+note = """
+Target function 00049138 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this table in the same call and argument register. MOV.L \
+0004917c loads this table for the call at 00049184 (nondescript-seagull), as \
+MOV.L jk78c:0004411e loads 0000c64e for the call at jk78c:00044128 \
+(nondescript-seagull). Its 128 stock bytes differ from JK78C on 1ND0A and \
+1ND3B, and the two images agree."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0000c18e"
 name = "optimal-wolf"

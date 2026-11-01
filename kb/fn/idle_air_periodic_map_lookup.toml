@@ -3,8 +3,10 @@ Accessor for 1D-4 map 0x1292C: the interpolated uint8 is doubled, receives \
 addition ffff171d in the selected mode, and saturates above at 510."""
 note = ["The physical purpose of the local limiter is unresolved."]
 level = "code"
+home = "7mfk"
 role = "accessor"
 block = "idle_air/block"
+former = ["diag_periodic_task"]
 
 [[ledger]]
 registry = "funcs"
@@ -22,9 +24,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00068104"
+former = ["diag_periodic_task/fn/1nd-00068104"]
+note = """
+The 1ND survey observes that it reads Lock and that its callees write only \
+RAM fffe82xx and no ATU register."""
+
+[symbol.curated]
+order = 28
+notes = [0]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00068104"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00068104"
+to = "jk78c:0005db74"
+note = """
+1ND dispatcher 000645c8 calls 00068104 at 000645ea, its sixth call, as JK78C \
+dispatcher 0005b1f0 calls 0005db74 at 0005b212 and JK08A dispatcher 00041e84 \
+calls 00044910; each of the three functions has that call as its only \
+caller. The target runs the JK78C sequence of two 000287b4 and three \
+000287cc lookups (JK78C 00028198 and 000281b0) and the 00022310 call (JK78C \
+00021ce8), and adds one 000287b4 lookup of 000142c0 at 00068cce."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00044910"
-name = "peach-basilisk"
+former = [
+    "diag_periodic_task/fn/7mfk-00044910",
+    "peach-basilisk/fn/7mfk-00044910",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -75,10 +110,18 @@ at = "7mfk:00044d18"
 value = {named = ["0001292c", "00044910"], span = 1}
 key = "body"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00044910"
+
 [[symbol]]
 layout = "jk78c"
 address = "0005db74"
-name = "functional-stoat"
+former = [
+    "diag_periodic_task/fn/jk78c-0005db74",
+    "functional-stoat/fn/jk78c-0005db74",
+]
 note = """
 FUN_0005DB74 holds the position of JK08A FUN_00044910 in the calls of \
 FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (2898 bytes on \
@@ -88,18 +131,3 @@ JK78C, 3008 on JK08A)."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005db74"
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "l0"
-target = "jk78c:0005db74"
-count = 0
-l0 = "cb701875f15725a4"
-note = """
-1nd 00068104 runs the call sequence of JK78C 0005db74: two byte-axis \
-lookups, three byte lookups, the helper, the 3D accessor, a byte-axis lookup \
-and the counterpart of JK78C 0002f572, with the five tables at the same \
-relative offsets. The address holds the 1nd meaning diag_periodic_task/fn, \
-so binding this meaning needs a decision on merging the two meanings; the \
-tables it reads are bound."""

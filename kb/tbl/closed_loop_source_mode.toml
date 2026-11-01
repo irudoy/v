@@ -10,6 +10,38 @@ cadence.""",
 block = "fuel_closed_loop/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000088b3"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cbd4"
+to = "jk78c:000087fd"
+note = """
+Target function 0004cb40 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads, lookup \
+calls and scalar tests, with this table read at the same step. MOV.L \
+0004cbd4 loads this table, as MOV.L jk78c:0004412c loads 000087fd. Its stock \
+byte equals JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000888e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004918a"
+to = "jk78c:000087fd"
+note = """
+Target function 00049138 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads, lookup \
+calls and scalar tests, with this table read at the same step. MOV.L \
+0004918a loads this table, as MOV.L jk78c:0004412c loads 000087fd. Its stock \
+byte equals JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00008978"
 level = "code"

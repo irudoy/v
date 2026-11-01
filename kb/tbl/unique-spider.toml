@@ -64,7 +64,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "peach-basilisk/fn"
+to = "idle_air_periodic_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -402,7 +402,7 @@ role = "match"
 
 [[link]]
 type = "reader"
-to = "peach-basilisk/fn"
+to = "idle_air_periodic_map_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

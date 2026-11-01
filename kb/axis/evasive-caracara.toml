@@ -26,6 +26,46 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "000133e4"
+name = "dandelion-jacamar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cb5e"
+to = "jk78c:00013306"
+note = """
+Target function 0004cb40 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. 1ME3B \
+evaluates the inlined lookup first and holds 00008d1e in GBR through the \
+function. MOV.L 0004cb5e loads this axis for the call at 0004cb70 \
+(groovy-lynx), as MOV.L jk78c:000442ca loads 00013306 for the call at \
+jk78c:000442d2 (fortunate-adder). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000136a0"
+name = "shiny-dove"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000491f8"
+to = "jk78c:00013306"
+note = """
+Target function 00049138 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. MOV.L \
+000491f8 loads this axis for the call at 00049202 (fortunate-adder), as \
+MOV.L jk78c:000442ca loads 00013306 for the call at jk78c:000442d2 \
+(fortunate-adder). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00011b47"
 name = "evasive-caracara"

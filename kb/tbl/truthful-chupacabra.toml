@@ -10,6 +10,44 @@ cadence.""",
 block = "fuel_closed_loop/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000154b6"
+name = "eager-anaconda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cba8"
+to = "jk78c:000150cc"
+note = """
+Target function 0004cb40 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this table in the same call and argument register. MOV.L \
+0004cba8 loads this table for the call at 0004cbb6 (glorious-elk), as the \
+call at jk78c:00044112 (nondescript-seagull) receives 000150cc as a \
+register-offset argument. The two helpers carry separate meanings and pair \
+by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015632"
+name = "economic-macaque"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004915e"
+to = "jk78c:000150cc"
+note = """
+Target function 00049138 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this table in the same call and argument register. MOV.L \
+0004915e loads this table for the call at 0004916c (nondescript-seagull), as \
+the call at jk78c:00044112 (nondescript-seagull) receives 000150cc as a \
+register-offset argument. Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00013d94"
 name = "truthful-chupacabra"

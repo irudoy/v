@@ -47,6 +47,41 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000144d2"
+name = "wondrous-foxhound"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0003399e"
+to = "jk78c:000141a0"
+note = """
+Target function 0003357c corresponds to JK78C 0002f460: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 0003399e loads this table for the call at 000339a4 \
+(dfco_lookup), as MOV.L jk78c:0002f4c8 loads 000141a0 for the call at \
+jk78c:0002f4d0 (dfco_lookup). Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014646"
+name = "resourceful-swift"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00030c52"
+to = "jk78c:000141a0"
+note = """
+Target function 00030810 corresponds to JK78C 0002f460: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 00030c52 loads this table for the call at 00030c58 \
+(dfco_lookup), as MOV.L jk78c:0002f4c8 loads 000141a0 for the call at \
+jk78c:0002f4d0 (dfco_lookup). Its 16 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012d8a"
 name = "green-hog"

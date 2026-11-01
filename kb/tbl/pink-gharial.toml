@@ -1,4 +1,43 @@
 [[symbol]]
+layout = "1me3b"
+address = "000142da"
+name = "bulky-tamarin"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00042aaa"
+to = "jk78c:00013fd0"
+note = """
+Target function 000427d4 corresponds to JK78C 0003bd78 (expert-cockatoo): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. This table is the shared axis of the \
+state 2 and state 3 lookups on both layouts. MOV.L 00042aaa loads this table \
+for the call at 00042ab4 (jolly-guan), as MOV.L jk78c:0003c0f2 loads \
+00013fd0 for the call at jk78c:0003c0f6 (brilliant-ibis). The two helpers \
+carry separate meanings and pair by call position. Its 8 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001446e"
+name = "invisible-stallion"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0003f92a"
+to = "jk78c:00013fd0"
+note = """
+Target function 0003f654 corresponds to JK78C 0003bd78 (expert-cockatoo): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. This table is the shared axis of the \
+state 2 and state 3 lookups on both layouts. MOV.L 0003f92a loads this table \
+for the call at 0003f932 (brilliant-ibis), as MOV.L jk78c:0003c0f2 loads \
+00013fd0 for the call at jk78c:0003c0f6 (brilliant-ibis). Its 8 stock bytes \
+equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012b02"
 name = "pink-gharial"

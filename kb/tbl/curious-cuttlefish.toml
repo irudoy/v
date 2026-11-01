@@ -179,7 +179,7 @@ at = "jk78c:0005df36"
 
 [[link]]
 type = "reader"
-to = "peach-basilisk/fn"
+to = "idle_air_periodic_map_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

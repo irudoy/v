@@ -18,11 +18,48 @@ the deferred cylinder-fill model FUN_0004C2B2, and its output ffff1962 is an \
 addend of FUN_000401D4, so its architecture block is not established.""",
 ]
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 16
 rows = 1
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000139be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00047e9a"
+to = "jk78c:00013790"
+note = """
+Target function 00047e2a corresponds to JK78C 000402e0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. Both layouts select this curve for a zero or positive \
+difference. MOV.L 00047e9a loads this table for the call at 00047ea2 \
+(groovy-lynx), as MOV.L jk78c:00040342 loads 00013790 for the call at \
+jk78c:0004034e (fortunate-adder). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013bc2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044872"
+to = "jk78c:00013790"
+note = """
+Target function 00044802 corresponds to JK78C 000402e0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. Both layouts select this curve for a zero or positive \
+difference. MOV.L 00044872 loads this table for the call at 0004487a \
+(fortunate-adder), as MOV.L jk78c:00040342 loads 00013790 for the call at \
+jk78c:0004034e (fortunate-adder). Its 16 stock bytes equal JK78C on 1ND0A \
+and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

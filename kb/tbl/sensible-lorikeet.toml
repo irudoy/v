@@ -53,6 +53,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000142ba"
+name = "asparagus-angelfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00042aae"
+to = "jk78c:00013fb0"
+note = """
+Target function 000427d4 corresponds to JK78C 0003bd78 (expert-cockatoo): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 00042aae loads this table for the \
+call at 00042ab4 (jolly-guan), as MOV.L jk78c:0003c0ec loads 00013fb0 for \
+the call at jk78c:0003c0f6 (brilliant-ibis). The two helpers carry separate \
+meanings and pair by call position. Its 8 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001444e"
+name = "agile-bullfinch"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0003f92e"
+to = "jk78c:00013fb0"
+note = """
+Target function 0003f654 corresponds to JK78C 0003bd78 (expert-cockatoo): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 0003f92e loads this table for the \
+call at 0003f932 (brilliant-ibis), as MOV.L jk78c:0003c0ec loads 00013fb0 \
+for the call at jk78c:0003c0f6 (brilliant-ibis). Its 8 stock bytes equal \
+JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012ae2"
 name = "sensible-lorikeet"

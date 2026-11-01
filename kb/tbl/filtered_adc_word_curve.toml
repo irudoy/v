@@ -11,10 +11,46 @@ Native editor publication and independent later-layout counterparts remain \
 unresolved under issue #110.""",
 ]
 level = "code"
+home = "jk78c"
 role = "table"
 cols = 64
 rows = 1
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00016d66"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004381c"
+to = "jk78c:000166c4"
+note = """
+Target function 000437e8 corresponds to JK78C 0003ce9c \
+(filtered_adc_word_converter): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. MOV.L \
+0004381c loads this table for the call at 0004382a (carrot-cheetah), as \
+MOV.L jk78c:0003ced2 loads 000166c4 for the call at jk78c:0003ceea \
+(xanthic-kagu). The two helpers carry separate meanings and pair by call \
+position. Its 128 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016ce2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000406a8"
+to = "jk78c:000166c4"
+note = """
+Target function 00040674 corresponds to JK78C 0003ce9c \
+(filtered_adc_word_converter): the same sequence of calibration loads and \
+lookup calls, with this table in the same call and argument register. MOV.L \
+000406a8 loads this table for the call at 000406b6 (xanthic-kagu), as MOV.L \
+jk78c:0003ced2 loads 000166c4 for the call at jk78c:0003ceea (xanthic-kagu). \
+Its 128 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

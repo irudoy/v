@@ -4,11 +4,51 @@ selected path combines its result with the separately looked-up surface \
 component in the returned parameter pair. Physical component conversions \
 remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "table"
 access = "explicit"
 cols = 8
 rows = 1
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013966"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c066"
+to = "jk78c:00013738"
+note = """
+Target function 0007bf3c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+JK78C selects map 0000b3da or 0000b41a and then reads this curve once; the \
+target repeats this curve lookup after each branch of its map selection. \
+MOV.L 0007c066 loads this table for the call at 0007c06a \
+(idle_ignition_lookup), as MOV.L jk78c:0006bf66 loads 00013738 for the call \
+at jk78c:0006bf6a (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b6a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007774a"
+to = "jk78c:00013738"
+note = """
+Target function 0007765c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+JK78C selects map 0000b3da or 0000b41a and then reads this curve once; the \
+target repeats this curve lookup after each branch of its map selection. \
+MOV.L 0007774a loads this table for the call at 0007774e \
+(idle_ignition_lookup), as MOV.L jk78c:0006bf66 loads 00013738 for the call \
+at jk78c:0006bf6a (idle_ignition_lookup). Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

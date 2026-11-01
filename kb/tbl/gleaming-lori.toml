@@ -79,6 +79,43 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001427a"
+name = "persimmon-mongrel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00042dee"
+to = "jk78c:00013f70"
+note = """
+Target function 00042ce8 corresponds to JK78C 0003c394 \
+(computed_start_signal_state_update): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 00042dee loads this table for the call at 00042df4 \
+(idle_ignition_lookup), as MOV.L jk78c:0003c4be loads 00013f70 for the call \
+at jk78c:0003c4c4 (idle_ignition_lookup). Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001440e"
+name = "black-beluga"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0003fc72"
+to = "jk78c:00013f70"
+note = """
+Target function 0003fb6c corresponds to JK78C 0003c394 \
+(computed_start_signal_state_update): the same sequence of calibration loads \
+and lookup calls, with this table in the same call and argument register. \
+MOV.L 0003fc72 loads this table for the call at 0003fc78 \
+(idle_ignition_lookup), as MOV.L jk78c:0003c4be loads 00013f70 for the call \
+at jk78c:0003c4c4 (idle_ignition_lookup). Its 8 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012a9a"
 name = "gleaming-lori"

@@ -75,6 +75,42 @@ relies = "scale"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "000143ee"
+name = "cautious-koel"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004c3ac"
+to = "jk78c:000140c4"
+note = """
+Target function 0004c338 corresponds to JK78C 000439c0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 0004c3ac loads this table for the call at 0004c3b2 \
+(rigorous-guppy), as MOV.L jk78c:00043a42 loads 000140c4 for the call at \
+jk78c:00043a48 (prudent-loon). The two helpers carry separate meanings and \
+pair by call position. Its 32 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001456a"
+name = "steel-ammonite"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000489ac"
+to = "jk78c:000140c4"
+note = """
+Target function 00048938 corresponds to JK78C 000439c0: the same sequence of \
+calibration loads and lookup calls, with this table in the same call and \
+argument register. MOV.L 000489ac loads this table for the call at 000489b2 \
+(prudent-loon), as MOV.L jk78c:00043a42 loads 000140c4 for the call at \
+jk78c:00043a48 (prudent-loon). Its 32 stock bytes equal JK78C on 1ND0A and \
+1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012c6e"
 name = "subtle-turaco"

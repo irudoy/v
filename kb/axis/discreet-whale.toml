@@ -27,6 +27,44 @@ fields = ["kind", "units", "scale_expr", "to_byte"]
 notes = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "00017666"
+name = "unbiased-alligator"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004ccc2"
+to = "jk78c:00016fa4"
+note = """
+Target function 0004cb40 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this axis in the same call and argument register. MOV.L 0004ccc2 \
+loads this axis for the call at 0004ccd2 (debonair-grouse), as MOV.L \
+jk78c:000441a8 loads 00016fa4 for the call at jk78c:000441b6 (eminent-lynx). \
+The two helpers carry separate meanings and pair by call position. Its 32 \
+stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "000175a2"
+name = "peculiar-puma"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000493a8"
+to = "jk78c:00016fa4"
+note = """
+Target function 00049138 corresponds to JK78C 000440e4 \
+(enlightened-orangutan): the same sequence of calibration loads and lookup \
+calls, with this axis in the same call and argument register. MOV.L 000493a8 \
+loads this axis for the call at 000493b0 (eminent-lynx), as MOV.L \
+jk78c:000441a8 loads 00016fa4 for the call at jk78c:000441b6 (eminent-lynx). \
+Its 32 stock bytes differ from JK78C on 1ND0A and 1ND3B, and the two images \
+agree."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00015d20"
 name = "discreet-whale"

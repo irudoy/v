@@ -65,7 +65,7 @@ scale = [31]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "peach-basilisk/fn"
+to = "idle_air_periodic_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -373,7 +373,7 @@ at = "jk78c:0005dcca"
 
 [[link]]
 type = "reader"
-to = "peach-basilisk/fn"
+to = "idle_air_periodic_map_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

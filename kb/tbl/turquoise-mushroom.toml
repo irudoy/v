@@ -115,6 +115,42 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000138a2"
+name = "brilliant-bug"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004b22a"
+to = "jk78c:000136b4"
+note = """
+Target function 0004b16a corresponds to JK78C 0004306a (phenomenal-cricket): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 0004b22a loads this table for the \
+call at 0004b22e (magic-grouse), as MOV.L jk78c:00043160 loads 000136b4 for \
+the call at jk78c:00043164 (hypnotic-dugong). The two helpers carry separate \
+meanings and pair by call position. Its 4 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ac6"
+name = "glittering-bull"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00047d00"
+to = "jk78c:000136b4"
+note = """
+Target function 00047c40 corresponds to JK78C 0004306a (phenomenal-cricket): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. MOV.L 00047d00 loads this table for the \
+call at 00047d04 (hypnotic-dugong), as MOV.L jk78c:00043160 loads 000136b4 \
+for the call at jk78c:00043164 (hypnotic-dugong). Its 4 stock bytes equal \
+JK78C on 1ND3B and differ on 1ND0A."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0001202e"
 name = "turquoise-mushroom"

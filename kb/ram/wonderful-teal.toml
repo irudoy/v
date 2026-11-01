@@ -37,6 +37,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
+to = "idle_air_periodic_map_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "intake_valve_timing_fault_rpm_inhibit/fn"
 type = "reader"
 end = "owner"
@@ -54,14 +62,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "majestic-carp/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "peach-basilisk/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -124,6 +124,13 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "idle_air_periodic_map_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "intake_valve_timing_fault_rpm_inhibit/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -142,13 +149,6 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "majestic-carp/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "peach-basilisk/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

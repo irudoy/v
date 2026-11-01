@@ -94,6 +94,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00013aee"
+name = "big-magpie"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cb62"
+to = "jk78c:000138b0"
+note = """
+Target function 0004cb40 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. 1ME3B \
+evaluates the inlined lookup first and holds 00008d1e in GBR through the \
+function. MOV.L 0004cb62 loads this table for the call at 0004cb70 \
+(groovy-lynx), as MOV.L jk78c:000442c6 loads 000138b0 for the call at \
+jk78c:000442d2 (fortunate-adder). The two helpers carry separate meanings \
+and pair by call position. Its 16 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ce2"
+name = "colossal-beagle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000491fa"
+to = "jk78c:000138b0"
+note = """
+Target function 00049138 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads and lookup calls, with this table in \
+the same call and argument register. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. MOV.L \
+000491fa loads this table for the call at 00049202 (fortunate-adder), as \
+MOV.L jk78c:000442c6 loads 000138b0 for the call at jk78c:000442d2 \
+(fortunate-adder). Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012292"
 name = "elite-turaco"

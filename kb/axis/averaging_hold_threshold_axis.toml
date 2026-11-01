@@ -10,9 +10,44 @@ Native editor publication and independent later-layout counterparts remain \
 unresolved under issue #110.""",
 ]
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 8
 storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000133ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004c634"
+to = "jk78c:000132d6"
+note = """
+Target function 0004c620 corresponds to JK78C 00043cde (pumpkin-armadillo): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. MOV.L 0004c634 loads this axis for the \
+call at 0004c63a (jolly-guan), as MOV.L jk78c:00043cfe loads 000132d6 for \
+the call at jk78c:00043d04 (brilliant-ibis). The two helpers carry separate \
+meanings and pair by call position. Its 8 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013668"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00048c34"
+to = "jk78c:000132d6"
+note = """
+Target function 00048c20 corresponds to JK78C 00043cde (pumpkin-armadillo): \
+the same sequence of calibration loads and lookup calls, with this axis in \
+the same call and argument register. MOV.L 00048c34 loads this axis for the \
+call at 00048c3a (brilliant-ibis), as MOV.L jk78c:00043cfe loads 000132d6 \
+for the call at jk78c:00043d04 (brilliant-ibis). Its 8 stock bytes equal \
+JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"

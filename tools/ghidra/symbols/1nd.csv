@@ -32,7 +32,7 @@ addr,name,note
 000cd374,immo_channel_evaluator,immo channel evaluator (param 0/1): counts/levels versus calibrated thresholds -> source bits 0xFFFEA232&1 / 0xFFFEA233&2 (condition met) plus event codes 0xa8..0xab through indirect PTR_000cd830; input to immo_registration; NOT a bytewise cryptographic ID comparison
 0007cab0,fueltrim_correction,fuel-trim correction; sets 0xFFFEB852 bit 0x08 after a counter threshold; reads Lock as RMW rather than a gate
 00067cce,diag_status_eval,diagnostic status (misfire/rationality) -> 0xFFFE94xx bits; Lock is one input; does not touch actuators
-00068104,diag_periodic_task,periodic diagnostic task; reads Lock; callees write only RAM 0xFFFE82xx (no ATU)
+00068104,idle_air_periodic_map_lookup,The physical purpose of the local limiter is unresolved.
 0008719c,immo_present_deriver,large periodic CAN-RAM destager 0xFFFEE2xx plus limit arbiter (clamps to 0x6400 = 100%); among hundreds of outputs are immo-present 0xFFFE930E/0xFFFE92E5; callee cluster 0x00088xxx contains destage/scale substeps over slices of buffer fffee2xx and is NOT an ID comparator
 00078450,immo_signal_conditioner,immo channel conditioner (param ch 0/1): source is indirect getter PTR_FUN=00022310/00022318; scale/offset/clamp from ROM calibrations 0x92d2/d4/d6 and 0x89a6/a7; output is 16-bit 0xFFFE880C[ch] plus quality/saturation bits 0xFFFE8808-8816; input to immo_channel_evaluator; NOT bytewise CAN ID reception
 000812fa,fuel_trim_adjustment_updater,Bank-indexed learned-trim adjustment updater. Maintains the unsigned adjustment word through raw bank masks and limits with neutral 0x6400. Physical gate identities and cadence remain unreviewed.

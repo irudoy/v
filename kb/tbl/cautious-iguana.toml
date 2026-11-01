@@ -215,6 +215,43 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001451a"
+name = "deft-swan"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000c908e"
+to = "jk78c:000141e8"
+note = """
+Target function 000c8ff0 corresponds to JK78C 000a2700 (fanatic-hare): the \
+same sequence of calibration loads and lookup calls, with this table in the \
+same call and argument register. MOV.L 000c908e loads this table for the \
+call at 000c9092 (rigorous-guppy), as MOV.L jk78c:000a2706 loads 000141e8 \
+for the call at jk78c:000a270c (prudent-loon). The two helpers carry \
+separate meanings and pair by call position. Its 32 stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0001468e"
+name = "discreet-beetle"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000bf634"
+to = "jk78c:000141e8"
+note = """
+Target function 000bf53a corresponds to JK78C 000a2700 (fanatic-hare): the \
+same sequence of calibration loads and lookup calls, with this table in the \
+same call and argument register. MOV.L 000bf634 loads this table for the \
+call at 000bf638 (prudent-loon), as MOV.L jk78c:000a2706 loads 000141e8 for \
+the call at jk78c:000a270c (prudent-loon). Its 32 stock bytes equal JK78C on \
+1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00012dea"
 name = "cautious-iguana"

@@ -10,6 +10,41 @@ cadence.""",
 block = "fuel_closed_loop/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000092a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004cc34"
+to = "jk78c:00009078"
+note = """
+Target function 0004cb40 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads, lookup calls and scalar tests, with \
+this table read at the same step. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. 1ME3B \
+evaluates the inlined lookup first and holds 00008d1e in GBR through the \
+function. The access at 0004cc34 reads this table, as the access at \
+jk78c:00044460 reads 00009078. Its 2 stock bytes equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000920a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004931c"
+to = "jk78c:00009078"
+note = """
+Target function 00049138 corresponds to JK78C 000442a0 (screeching-panther): \
+the same sequence of calibration loads, lookup calls and scalar tests, with \
+this table read at the same step. The target inlines JK78C subroutine \
+000442a0 (screeching-panther), which JK78C calls from 000440e4. The access \
+at 0004931c reads this table, as the access at jk78c:00044460 reads \
+00009078. Its 2 stock bytes equal JK78C on 1ND0A and 1ND3B."""
+
+[[symbol]]
 layout = "7mfk"
 address = "00009386"
 level = "code"

@@ -11,9 +11,45 @@ Native editor publication and independent later-layout counterparts remain \
 unresolved under issue #110.""",
 ]
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 16
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "000151c6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0004aa84"
+to = "jk78c:00014e3c"
+note = """
+Target function 0004aa1a corresponds to JK78C 00042882 \
+(dual_curve_word_converter): the same sequence of calibration loads and \
+lookup calls, with this axis in the same call and argument register. MOV.L \
+0004aa84 loads this axis for the call at 0004aa90 (debonair-grouse), as \
+MOV.L jk78c:00042a12 loads 00014e3c for the call at jk78c:00042a18 \
+(eminent-lynx). The two helpers carry separate meanings and pair by call \
+position. Its 32 stock bytes differ from JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015362"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00047578"
+to = "jk78c:00014e3c"
+note = """
+Target function 0004750e corresponds to JK78C 00042882 \
+(dual_curve_word_converter): the same sequence of calibration loads and \
+lookup calls, with this axis in the same call and argument register. MOV.L \
+00047578 loads this axis for the call at 00047584 (eminent-lynx), as MOV.L \
+jk78c:00042a12 loads 00014e3c for the call at jk78c:00042a18 (eminent-lynx). \
+Its 32 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 
 [[symbol]]
 layout = "jk78c"
