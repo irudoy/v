@@ -1,5 +1,4 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
-Axis,00008000,00008000,,homologous,92,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,0000e98e,00010492,,homologous,25,l0,"Target function 00075bce corresponds to JK08A 00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 00010492 into r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row offset in r14 to r5."
 Axis,0001199e,00013c22,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000119ae,00013c32,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands

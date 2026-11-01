@@ -1,3 +1,14 @@
+retired = true
+note = [
+    """
+00008000 is no calibration object. At JK08A 000735ac, MOV.L 000735a0 loads \
+0x8000 into r5, and add r5,r6 at 000735a6 adds it to the input word as a \
+bias. The delay slot of the call replaces r5 with the stack buffer r15, \
+which the loop 0007353a..0007358e fills with 16 words interpolated between \
+two rows of 0000e98e. JK00C and JK00D run the same sequence before the call \
+at 00075d48.""",
+]
+
 [[symbol]]
 layout = "7mfk"
 address = "00008000"
