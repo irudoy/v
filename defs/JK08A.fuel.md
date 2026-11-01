@@ -1367,8 +1367,8 @@ Editor-visible canonical homologs retain the canonical presentation, with
 the target bindings and qualification of their axes. Hidden canonical
 homologs remain KB facts. The native surfaces use stored-count views in
 both editor formats. The EOI storage-and-axis projection remains under
-#111; request-component axis `000119B2` and the unqualified native
-candidates remain unresolved under #36 and #110.
+#111; the unqualified native candidates remain unresolved under #129, and
+request-component axis `000119B2` remains unresolved.
 
 ## Hardware validation priorities
 
