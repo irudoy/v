@@ -211,6 +211,67 @@ h2 {
   font-weight: 650;
 }
 
+.rom-info {
+  margin: 0 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.rom-info summary {
+  padding: 10px 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rom-info summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.rom-info[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.rom-info-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px 24px;
+  padding: 14px;
+}
+
+.rom-info-section h2 {
+  margin-bottom: 8px;
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.rom-info-list {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.42fr) minmax(0, 1fr);
+  gap: 5px 10px;
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.rom-info-list dt {
+  color: var(--muted);
+}
+
+.rom-info-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+}
+
+.rom-info-list .rom-info-prose {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
 .toolbar {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) minmax(150px, 220px) auto;

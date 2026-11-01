@@ -47,6 +47,31 @@ def test_all_selection_covers_every_registered_flash_rom():
         model.expand_manifest_values(["all", "JK08A"])
 
 
+def test_family_carries_its_fields_and_both_sides_of_its_relationships():
+    family = model._family("JK78C")
+
+    assert family["key"] == "sh7058_jk78c"
+    assert family["fields"]["members"] == ["JK78C"]
+    assert family["fields"]["flash_size"] == 0x100000
+    assert family["fields"]["same_address_inheritance"] is False
+    assert family["fields"]["layouts"] == {"jk78c": "JK78C"}
+    assert {
+        relationship["family"]: relationship["kind"]
+        for relationship in family["relationships"]
+    } == {
+        "sh7059_1nd": "cross-generation-engine-homolog",
+        "sh7059_1me3b": "cross-generation-engine-homolog",
+    }
+    assert all(
+        relationship["evidence"]
+        and "left_family" not in relationship
+        and "right_family" not in relationship
+        for relationship in family["relationships"]
+    )
+    assert model._family("JK00C")["key"] == model._family("JK00D")["key"] == "sh7058_8mfk"
+    assert model._family("XXXXX") is None
+
+
 @pytest.mark.slow
 def test_all_models_build_with_exact_registered_identities():
     atlas = model.build_atlas(["all"])
@@ -130,6 +155,20 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["metadata"]["ECU ID"] == "11ME3B"
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
+    assert rom["identity"]["ecuid"] == "11ME3B"
+    assert rom["identity"]["submodel"] == "VQ37VHR"
+    assert rom["registry"] == {
+        "path": "23710-1ME3B/11ME3B-20260825-stock.bin",
+        "rom": "1ME3B",
+        "sha256": rom["sha256"],
+        "note": rom["registry"]["note"],
+    }
+    assert rom["registry"]["note"].startswith("owned bench read")
+    assert rom["layout"] == "1me3b"
+    assert rom["family"]["key"] == "sh7059_1me3b"
+    assert rom["family"]["fields"]["canonical"] == "1ME3B"
+    assert {item["family"] for item in rom["family"]["relationships"]} == {
+        "sh7059_1nd", "sh7058_jk78c"}
     assert rom["counts"]["diagnostics"] == 76
     assert rom["counts"]["integrity"] == 11
     assert {

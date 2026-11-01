@@ -24,6 +24,7 @@
   const elements = {
     romIdentity: document.getElementById("rom-identity"),
     headerStats: document.getElementById("header-stats"),
+    romInfoContent: document.getElementById("rom-info-content"),
     romPickerLabel: document.getElementById("rom-picker-label"),
     romPicker: document.getElementById("rom-picker"),
     search: document.getElementById("search"),
@@ -91,6 +92,60 @@
   function formatAddress(value, size = state.rom.size) {
     const width = Math.max(6, Math.ceil(Math.log2(Math.max(2, size)) / 4));
     return `0x${Math.round(value).toString(16).toUpperCase().padStart(width, "0")}`;
+  }
+
+  const infoLabels = {
+    xmlid: "XML ID",
+    internalidaddress: "Internal ID address",
+    internalidstring: "Internal ID string",
+    ecuid: "ECU ID",
+    caseid: "Case ID",
+    make: "Make",
+    model: "Model",
+    submodel: "Engine (submodel)",
+    market: "Market",
+    transmission: "Transmission",
+    memmodel: "Memory model",
+    endian: "Byte order",
+    filesize: "File size",
+    author: "Author",
+    version: "Version",
+    path: "Registry path",
+    rom: "ROM",
+    sha256: "SHA-256",
+    note: "Note",
+    family: "Family",
+    kind: "Kind",
+    members: "Members",
+    canonical: "Canonical image",
+    mcu: "MCU",
+    flash_size: "Flash size",
+    software_ids: "Software IDs",
+    same_address_inheritance: "Same-address inheritance",
+    direct_address_inheritance: "Direct address inheritance",
+    layouts: "Layouts",
+    calibration_region: "Calibration region",
+    exact_ranges: "Exact ranges",
+    evidence: "Evidence",
+  };
+  const proseInfoFields = new Set(["evidence", "note"]);
+
+  function formatInfoValue(key, value) {
+    if (key === "flash_size" && Number.isInteger(value)) {
+      return `${formatAddress(value, value)} (${formatBytes(value)})`;
+    }
+    if (Array.isArray(value)) {
+      return value.map((item) => formatInfoValue("", item)).join(", ");
+    }
+    if (typeof value === "boolean") {
+      return value ? "yes" : "no";
+    }
+    if (value && typeof value === "object") {
+      return Object.entries(value)
+        .map(([name, item]) => `${name}: ${formatInfoValue("", item)}`)
+        .join(", ");
+    }
+    return String(value);
   }
 
   function formatBytes(value) {
@@ -228,8 +283,9 @@
 
   function renderRomMetadata() {
     document.title = `${state.rom.id} ROM atlas`;
-    const shortHash = `${state.rom.sha256.slice(0, 12)}...${state.rom.sha256.slice(-8)}`;
-    elements.romIdentity.textContent = `${state.rom.label} | ${formatBytes(state.rom.size)} | SHA-256 ${shortHash}`;
+    const {Engine: engine, Vehicle: vehicle} = state.rom.metadata;
+    elements.romIdentity.textContent = [state.rom.label, engine, vehicle].filter(Boolean).join(" | ");
+    renderRomInfo();
     const stats = [
       ["Objects", state.rom.objects.length.toLocaleString()],
       ["Functions", `${state.rom.reviewedFunctions.toLocaleString()}/${state.rom.structuralFunctions.toLocaleString()}`],
@@ -246,6 +302,53 @@
       wrapper.append(term, definition);
       elements.headerStats.append(wrapper);
     }
+  }
+
+  function infoSection(title, entries) {
+    const section = document.createElement("section");
+    section.className = "rom-info-section";
+    const heading = document.createElement("h2");
+    heading.textContent = title;
+    const list = document.createElement("dl");
+    list.className = "rom-info-list";
+    for (const [key, value] of entries) {
+      const term = document.createElement("dt");
+      const definition = document.createElement("dd");
+      term.textContent = infoLabels[key] || key;
+      definition.textContent = formatInfoValue(key, value);
+      if (proseInfoFields.has(key)) definition.className = "rom-info-prose";
+      list.append(term, definition);
+    }
+    section.append(heading, list);
+    return section;
+  }
+
+  function renderRomInfo() {
+    const rom = state.rom;
+    const groups = [
+      ["Identity", Object.entries(rom.identity)],
+      ["Image", [
+        ...Object.entries(rom.registry),
+        ["Size", `${formatAddress(rom.size, rom.size)} (${formatBytes(rom.size)})`],
+        ["Layout", rom.layout],
+        ["Annotation source", rom.metadata["Annotation source"]],
+      ]],
+    ];
+    if (rom.family) {
+      groups.push([`Family ${rom.family.key}`, Object.entries(rom.family.fields)]);
+      for (const relationship of rom.family.relationships) {
+        groups.push([
+          `Relationship with ${relationship.family}`,
+          Object.entries(relationship).filter(([key]) => key !== "family"),
+        ]);
+      }
+    } else {
+      groups.push(["Family", [["Homology family", "none declared"]]]);
+    }
+    elements.romInfoContent.replaceChildren(...groups
+      .map(([title, entries]) => [title, entries.filter(([, value]) => value !== "")])
+      .filter(([, entries]) => entries.length)
+      .map(([title, entries]) => infoSection(title, entries)));
   }
 
   function renderLayerFilters() {
@@ -1005,11 +1108,24 @@
     updateHash,
   });
 
+  const familyGroups = new Map();
   for (const [index, rom] of atlas.roms.entries()) {
     const option = document.createElement("option");
+    const details = [rom.identity.submodel, rom.identity.model].filter(Boolean);
     option.value = String(index);
-    option.textContent = `${rom.id} - ${rom.label}`;
-    elements.romPicker.append(option);
+    option.textContent = [rom.id, ...(details.length ? details : [rom.label])].join(" \u2013 ");
+    if (!rom.family) {
+      elements.romPicker.append(option);
+      continue;
+    }
+    let group = familyGroups.get(rom.family.key);
+    if (!group) {
+      group = document.createElement("optgroup");
+      group.label = [rom.family.key, rom.family.fields.kind].filter(Boolean).join(" \u2013 ");
+      familyGroups.set(rom.family.key, group);
+      elements.romPicker.append(group);
+    }
+    group.append(option);
   }
   elements.romPickerLabel.hidden = false;
   elements.romPicker.addEventListener("change", () => {

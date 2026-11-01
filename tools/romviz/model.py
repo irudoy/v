@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 
 from patches import rom_address_profiles
 from patches import rom_checksums
+from tools import rom_homology
 from tools import rom_sources
 from tools.mapkit import definition_projections
 from tools.romviz import graph_atlas
@@ -322,7 +323,7 @@ def _registry_image(manifest):
         raise ModelError(
             f"{image_path}: SHA-256 is {digest}, expected {row['sha256']}"
         )
-    return image_path, data, digest
+    return image_path, data, digest, row
 
 
 def _page_metrics(data, page_size=256):
@@ -383,6 +384,28 @@ def _identity(manifest):
     if not isinstance(identity, dict):
         raise ModelError(f"{path}: identity for {manifest['rom']} is not a table")
     return identity
+
+
+def _family(rom):
+    """Return the homology family of a ROM with the relationships that name it."""
+    _, families, relationships = rom_homology.load_homology()
+    keys = [key for key, family in families.items() if rom in family.get("members", ())]
+    if len(keys) > 1:
+        raise ModelError(f"{rom} is a member of several homology families: {keys}")
+    if not keys:
+        return None
+    key = keys[0]
+    sides = ("left_family", "right_family")
+    related = []
+    for relationship in relationships:
+        left, right = (relationship.get(side) for side in sides)
+        if key not in (left, right):
+            continue
+        related.append({
+            "family": right if left == key else left,
+            **{name: value for name, value in relationship.items() if name not in sides},
+        })
+    return {"key": key, "fields": dict(families[key]), "relationships": related}
 
 
 def _reviewed_functions(path):
@@ -1602,7 +1625,7 @@ def _bind_objects(objects, architecture, knowledge):
 
 def build_rom_model(manifest_path, architecture_cache=None):
     manifest = _load_manifest(manifest_path)
-    image_path, image, digest = _registry_image(manifest)
+    image_path, image, digest, registry_row = _registry_image(manifest)
     rom_size = len(image)
     warnings = list(manifest.get("warnings", []))
     overrides_path = None
@@ -1694,6 +1717,12 @@ def build_rom_model(manifest_path, architecture_cache=None):
             "Byte order": rom_info.get("endian", ""),
             "Annotation source": manifest.get("annotation_source", manifest["rom"]),
         },
+        "identity": dict(rom_info),
+        "registry": {
+            name: value for name, value in registry_row.items() if name != "_line"
+        },
+        "layout": layout,
+        "family": _family(manifest["rom"]),
         "counts": dict(counts),
         "reviewedFunctions": reviewed_functions,
         "structuralFunctions": structural_functions,
