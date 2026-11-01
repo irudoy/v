@@ -58,10 +58,13 @@ CALLS = ("jsr", "bsr", "bsrf")
 NO_FALL_THROUGH = ("branch", "jump", "return")
 # The delayed transfers whose slot runs before a census call.
 CALL_TRANSFERS = ("call", "jump", "branch")
+# Every delayed transfer: a call, a jump, a branch, a return, and bt/s or bf/s.
+DELAYED_TRANSFERS = CALL_TRANSFERS + ("return", "cbranch")
 # The values that an instruction derives from registers alone: a copy, a
-# register sum or difference, an extension, and a shift. An address that a
-# Ghidra reference names there is the value of a source register, which an
-# earlier instruction produces. An immediate addition produces a new address.
+# register sum or difference, an extension, and a shift. A Ghidra reference
+# there names either the value of a source register, which an earlier site
+# produces, or a new value, such as an address that a sum computes. An
+# immediate addition always produces a new address.
 FORWARDED = frozenset({"copy", "add", "sub", "extu", "exts", "shl", "shr", "sar"})
 
 
@@ -111,7 +114,7 @@ def forwards_in_slot(data, site, owned):
     derives a register from registers alone."""
     if site - 2 not in owned:
         return False
-    slot = delay_slot(data, site - 2, CALL_TRANSFERS + ("return",))
+    slot = delay_slot(data, site - 2, DELAYED_TRANSFERS)
     return slot is not None and slot.value is not None and slot.value[0] in FORWARDED
 
 
@@ -123,18 +126,18 @@ def references(layout_id, root=repo.ROOT, effective=False):
     and the pool slot of the literal. With `effective`, it references only the
     address it accesses; the load before it produces the literal. A Ghidra
     reference on a delay slot that derives a register from registers names a
-    value that an earlier instruction produces, and the effective view drops
-    it.
+    value that the slot produces unless an earlier site of the body names the
+    same address: an instruction outside such slots or a census operand of a
+    call. The effective view leaves such a reference to the earlier site.
     """
     base = root / repo.L0 / layout_id
     data = derive.image_bytes(repo.layout(layout_id, root), root)
     owned = owners(layout_id, root) if effective else {}
     found = collections.defaultdict(set)
     pools = {}
-    for row in _rows(base / "function_references.csv"):
-        site = int(row["ins_addr"], 16)
-        if effective and forwards_in_slot(data, site, owned):
-            continue
+    slots = []
+
+    def add(site, row):
         found[site].add(int(row["ref_addr"], 16))
         if row["value_hex"] and row["width"] in ("2", "4"):
             value = int(row["value_hex"], 16)
@@ -142,6 +145,13 @@ def references(layout_id, root=repo.ROOT, effective=False):
                 value = sh2.sext(value, 16) & sh2.MASK
             found[site].add(value)
             pools[int(row["ref_addr"], 16)] = value
+
+    for row in _rows(base / "function_references.csv"):
+        site = int(row["ins_addr"], 16)
+        if effective and forwards_in_slot(data, site, owned):
+            slots.append((site, row))
+        else:
+            add(site, row)
     for pair in derive.literal_pairs(layout_id, root):
         found[pair.ins].update((pair.address,) if effective else
                                (pair.address, pair.literal, pair.pool))
@@ -164,6 +174,12 @@ def references(layout_id, root=repo.ROOT, effective=False):
             found[site].update(int(row[column], 16) for column in CENSUS_ADDRESSES[:4]
                                if row[column])
             found[site].update(address for _, address in census_operands(row, data))
+    produced = [(site, row) for site, row in slots
+                if not any(int(row["ref_addr"], 16) in found.get(other, ())
+                           for func in owned[site - 2]
+                           for other in bodies(layout_id, root)[func] if other < site)]
+    for site, row in produced:
+        add(site, row)
     for pool, value in pools.items():
         found[pool].add(value)
     return found

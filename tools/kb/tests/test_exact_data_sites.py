@@ -241,6 +241,9 @@ def test_independent_ghidra_reference_survives_rejected_census_cell(bounded_code
     (0xB036, 0x66FC, True, True),    # bsr; extu.b r15,r6
     (0x000B, 0x351C, True, True),    # rts; add r1,r5
     (0x430B, 0x66E3, True, True),    # jsr @r3; mov r14,r6
+    (0x8D04, 0x66E3, True, True),    # bt/s; mov r14,r6
+    (0x8F04, 0x351C, True, True),    # bf/s; add r1,r5
+    (0x8904, 0x66E3, True, False),   # bt has no delay slot
     (0xB036, 0x66FC, False, False),  # the transfer lies in no L0 body
     (0x430B, 0x7408, True, False),   # add #8,r4 produces a new address
     (0xB036, 0xD47F, True, False),   # mov.l @(disp,pc),r4 produces a literal
@@ -254,16 +257,19 @@ def test_a_delay_slot_forwards_a_register_value(transfer, slot, owned, forwards)
     assert sites.forwards_in_slot(data, 0x12, {0x10} if owned else set()) is forwards
 
 
-def test_ghidra_reference_on_a_forwarding_delay_slot_is_no_effective_site(bounded_code):
+def test_forwarding_delay_slot_leaves_an_address_of_another_site_to_that_site(bounded_code):
     path = bounded_code.root / repo.L0 / 't1' / 'function_references.csv'
-    # extu.b r15,r6 at 0x12 is the delay slot of bsr at 0x10.
+    # extu.b r15,r6 at 0x12 is the delay slot of bsr at 0x10, whose census
+    # operand names 0x280. No other site of the body names 0x2E0.
     write_rows(path, ('func_addr', 'ins_addr', 'ref_addr', 'value_hex', 'width', 'ref_type'),
-               [dict(func_addr='00000010', ins_addr='00000012', ref_addr='00000260',
-                     value_hex='', width='0', ref_type='data')])
-    assert 0x260 in sites.references('t1', bounded_code.root)[0x12]
-    assert 0x260 not in sites.references('t1', bounded_code.root, effective=True).get(0x12, ())
-    model, symbol = symbol_model(bounded_code, 0x260)
+               [dict(func_addr='00000010', ins_addr='00000012', ref_addr=f'{address:08x}',
+                     value_hex='', width='0', ref_type='data') for address in (0x280, 0x2E0)])
+    assert {0x280, 0x2E0} <= sites.references('t1', bounded_code.root)[0x12]
+    assert sites.references('t1', bounded_code.root, effective=True)[0x12] == {0x2E0}
+    model, symbol = symbol_model(bounded_code, 0x280)
     assert verify(model, symbol, 0x12) is not None
+    _, produced = symbol_model(bounded_code, 0x2E0)
+    assert verify(model, produced, 0x12) is None
 
 
 def test_jk00d_slot_additions_leave_the_site_to_the_producing_load():
@@ -275,6 +281,18 @@ def test_jk00d_slot_additions_leave_the_site_to_the_producing_load():
         assert 0x104A2 in raw[slot]
         assert 0x104A2 not in found.get(slot, ())
     assert 0x104A2 in found[0x75C6A]
+
+
+def test_a_slot_sum_that_names_a_new_address_is_its_site():
+    # add r2,r6 in the slot of the call at 0002a8b8 computes ffff155a from
+    # ffff128c and 0x2ce; no earlier site of the body names it. The same sum
+    # outside a slot at 0002a8b0 names ffff1558. portable-gecko and
+    # solid-jackdaw follow the same pattern.
+    found = sites.references('7mfk', effective=True)
+    assert 0xFFFF155A in found[0x2A8BA]
+    assert 0xFFFF1558 in found[0x2A8B0]
+    assert 0xFFFF224E in found[0x2BEF8]
+    assert 0xFFFF301C in found[0xB2C8A]
 
 
 def test_decoded_literal_survives_a_rejected_fallback_at_the_same_site(bounded_code):
