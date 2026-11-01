@@ -735,6 +735,9 @@ class Builder:
                     link.props[name] = max(current, value, key=vocab.RELIES.index)
                 elif name in ("supports", "reverse_supports"):
                     link.props[name] = sorted({*_listed(current), *_listed(value)})
+                elif name == "layouts":
+                    # Each entry of the link states its own layouts.
+                    link.props[name] = [*current, *(item for item in value if item not in current)]
         model.links = [link for meaning in model.meanings for link in meaning.links]
 
 

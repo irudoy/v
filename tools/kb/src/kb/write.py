@@ -1723,11 +1723,16 @@ class Change:
             raise KbError(f"{path.as_posix()} exists", code=3)
 
     def _gate(self, meaning):
-        """Refuse a meaning that an earlier operation of the change renames."""
-        new = self.renamed.get(meaning.key) or self.rehomed.get(meaning.key)
+        """Refuse a meaning that an earlier operation of the change renames or
+        moves by a change of its home."""
+        new = self.renamed.get(meaning.key)
         if new is not None:
             raise KbError(f"{meaning.key} takes the name {new} earlier in this change; a batch "
                           "renames a meaning after its other operations", code=3)
+        new = self.rehomed.get(meaning.key)
+        if new is not None:
+            raise KbError(f"{meaning.key} moves to {new} by a change of its home earlier in this "
+                          "change; put the home change last in the batch", code=3)
 
     def _path(self, meaning):
         """The file of a meaning: the file of its name, or else its only file."""

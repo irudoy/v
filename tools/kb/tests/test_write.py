@@ -1724,6 +1724,11 @@ def test_a_home_change_moves_the_file_of_an_unnamed_meaning(probe_store):
     assert change.lines[-1] == ("move kb/ram/athletic-gharial.toml to "
                                 "kb/ram/statuesque-puma.toml: the home of "
                                 "athletic-gharial/ram is jk78c")
+    with pytest.raises(KbError, match=(
+            "athletic-gharial/ram moves to statuesque-puma/ram by a change of its home earlier "
+            "in this change; put the home change last in the batch")):
+        planned(base, assign("athletic-gharial/ram", {"home": "jk78c"}),
+                assign("athletic-gharial/ram", {"note": "probe"}))
 
 
 class OverlayTest(unittest.TestCase):

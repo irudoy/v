@@ -427,6 +427,15 @@ def links(model):
             issues.append(Issue(
                 "links", ";".join(sorted(link.sources)), _subject(link.owner),
                 "a function-result selector has no bit or axis slot"))
+        # `layouts` lists every stated layout, so it covers the evidence layouts.
+        allowed = link.props.get("layouts")
+        if isinstance(allowed, list):
+            outside = sorted(store.evidence_layouts({"evidence": link.evidence}) - set(allowed))
+            if outside:
+                issues.append(Issue(
+                    "links", ";".join(sorted(link.sources)), _subject(link.owner),
+                    f"{link.type} link to {_subject(link.to)} has evidence on "
+                    f"{', '.join(outside)} outside its layouts {', '.join(allowed)}"))
     return issues
 
 

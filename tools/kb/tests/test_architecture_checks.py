@@ -66,6 +66,32 @@ def test_a_function_result_selector_has_no_bit_or_axis_slot(model, slot):
     assert 'function-result selector has no bit or axis slot' in messages(checks.links, model)
 
 
+def test_link_layouts_cover_the_layouts_of_its_evidence(model):
+    datum = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff102c))
+    reader = model.meaning_of(SymbolKey('7mfk', 'fn', 0x26740))
+    link = Link(datum, 'reader', reader, None, None, props={'layouts': ['7mfk']},
+                evidence=[{'kind': 'l0', 'at': 'jk00d:00027350'}])
+    model.links.append(link)
+    assert 'has evidence on jk00d outside its layouts 7mfk' in messages(checks.links, model)
+    link.props['layouts'] = ['7mfk', 'jk00d']
+    assert checks.links(model) == []
+
+
+def test_the_entries_of_one_link_join_their_layouts():
+    b = Builder(repo.layouts(), compile.spaces(repo.config()),
+                {'7mfk': frozenset({0x26740})}, {},
+                config=repo.config(repo.ROOT, {repo.OWNER_CONFIG: None}))
+    datum = b.symbol('7mfk', 'ram', 0xffff102c, 'fixture')
+    reader = b.symbol('7mfk', 'fn', 0x26740, 'fixture')
+    b.link(datum, 'reader', reader, 'fixture', props={'layouts': ['7mfk']}, layouts={'7mfk'})
+    b.link(datum, 'reader', reader, 'fixture', props={'layouts': ['jk00d']},
+           evidence=[{'kind': 'l0', 'at': 'jk00d:00027350'}], layouts={'jk00d'})
+    model = b.finish()
+    [link] = model.links
+    assert (link.props['layouts'], link.stated) == (['7mfk', 'jk00d'], {'7mfk', 'jk00d'})
+    assert checks.links(model) == []
+
+
 @pytest.mark.parametrize(('kind', 'slug', 'field'), [
     ('stage', 'control', 'title'), ('stage', 'control', 'summary'),
     ('stage', 'control', 'lane'), ('block', 'calculation', 'title'),

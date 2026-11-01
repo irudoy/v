@@ -593,7 +593,9 @@ A link is stored at one end and read in both directions.
   of `layouts`; a link with neither states the layout of its owning symbol or
   the home of its meaning. `kb link` and the join of two links in `kb merge`
   extend `layouts`, where the link has it, to the layouts of its evidence, so
-  that `layouts` lists every stated layout.
+  that `layouts` lists every stated layout. Several entries of one link join
+  their `layouts` in their order, and the `links` check fails on a link whose
+  evidence lies outside its `layouts`.
 - A `selector` whose `to` is a function states the result condition in its
   note and has no `slot`; bit slots describe a datum, not a return register.
 - On each claimed layout a link holds when its verifier reproduces it, when
@@ -1674,7 +1676,7 @@ its last pass and the files that it read beyond those it states in advance.
 | `homology` | Every file-owned symbol whose identity level is not explicitly declared `candidate` is an anchor or reaches one through homology evidence of an accepted kind ([Symbols](#73-symbols)); every identity and homology evidence item whose kind L0 or the images decide holds ([Evidence](#76-evidence)); every typed evidence item of a named bit lies on the layout of a symbol of its meaning, and each whose kind L0 decides holds for that symbol |
 | `levels` | No declared level exceeds its effective level; `candidate` claims carry evidence, and `code` and `silicon` claims grounding; every `hardware` key names a record whose `hardware_status` is `pass`; every `arithmetic` equation holds ([Levels](#71-levels)) |
 | `ledgers` | Every owned ledger view selects existing evidence and notes and a canonical dependency with the selected direction, layout, offset, role, and claim; the selected curated name is current or former |
-| `links` | The kinds of both ends and the keys match the link type; every link holds on every claimed layout ([Links](#75-links)) |
+| `links` | The kinds of both ends and the keys match the link type; `layouts` covers the evidence layouts; every link holds on every claimed layout ([Links](#75-links)) |
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source: on every layout that a feature requiring an `ecu_ram` field targets, the symbol that the field reads states a width of at least the bits of the field, and the allocation of a field of another origin holds at least its bytes |
 | `code` | Declared writer and reader relations reproduce through normalized L0 accesses; wider RAM and register accesses have an exact unresolved review with a reason, claim digest and L0 digest; new, changed, duplicate and vanished differences fail |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout |
