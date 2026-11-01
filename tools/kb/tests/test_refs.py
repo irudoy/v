@@ -12,23 +12,34 @@ def sym(name, kind, address, layout="7mfk", former=()):
 class Store:
     """Symbols and meanings as the queries of `refs` read them."""
 
-    def __init__(self, symbols=(), meanings=()):
+    def __init__(self, symbols=(), meanings=(), owners=None):
         self.symbols = list(symbols)
         self.meanings = list(meanings)
+        self.owners = owners or {}
+
+    def row(self, node):
+        return {"s": node, "m": self.owners.get(node["key"])}
 
     def run(self, query, **params):
+        kind = "$kind" not in query or None
         if "WHERE s.key = $key" in query:
-            return [{"s": node, "m": None} for node in self.symbols if node["key"] == params["key"]]
+            return [self.row(node) for node in self.symbols if node["key"] == params["key"]]
         if "WHERE s.layout = $layout AND s.kind = $kind AND" in query:
-            return [{"s": node, "m": None} for node in self.symbols
+            return [self.row(node) for node in self.symbols
                     if (node["layout"], node["kind"]) == (params["layout"], params["kind"])
                     and (node["name"] == params["name"] or params["name"] in node["former"])]
         if "WHERE s.layout = $layout AND s.address = $address" in query:
-            return [{"s": node, "m": None} for node in self.symbols
+            return [self.row(node) for node in self.symbols
                     if (node["layout"], node["address"]) == (params["layout"], params["address"])]
         if "WHERE m.name = $name" in query:
             return [{"m": node} for node in self.meanings if node["name"] == params["name"]
-                    and ("$kind" not in query or node["kind"] == params["kind"])]
+                    and (kind or node["kind"] == params["kind"])]
+        if "WHERE $name IN m.former" in query:
+            return [{"m": node} for node in self.meanings if params["name"] in node["former"]
+                    and (kind or node["kind"] == params["kind"])]
+        if "WHERE $name IN s.former" in query:
+            return [self.row(node) for node in self.symbols if params["name"] in node["former"]
+                    and (kind or node["kind"] == params["kind"])]
         return []
 
 
@@ -73,6 +84,32 @@ class ResolveTest(unittest.TestCase):
         self.assertEqual(raised.exception.code, 4)
         self.assertIn("idle/ram", str(raised.exception))
         self.assertEqual(refs.resolve(store, "idle/fn").text, "idle/fn")
+
+    def test_a_former_name_after_a_semantic_rename_names_the_meaning(self):
+        # The rename keeps the former meaning name and the former full
+        # reference of the one symbol, whose name is the same.
+        meaning = {"key": "trim_updater/fn", "name": "trim_updater", "kind": "fn",
+                   "former": ["status_reporter"]}
+        symbol = sym("trim_updater", "fn", 0x812FA, layout="1nd", former=["status_reporter"])
+        store = Store([symbol], [meaning], owners={symbol["key"]: meaning})
+        for text in ("status_reporter/fn", "status_reporter"):
+            found = refs.resolve(store, text)
+            self.assertEqual((found.kind, found.text), ("meaning", "trim_updater/fn"))
+            self.assertEqual(found.note, "former name status_reporter; current trim_updater/fn")
+        found = refs.resolve(store, "status_reporter/fn/1nd-000812fa")
+        self.assertEqual((found.kind, found.text), ("symbol", "trim_updater/fn/1nd-000812fa"))
+
+    def test_a_former_name_of_unrelated_entities_stays_ambiguous(self):
+        meaning = {"key": "trim_updater/fn", "name": "trim_updater", "kind": "fn",
+                   "former": ["status_reporter"]}
+        other = {"key": "immo_gate/fn", "name": "immo_gate", "kind": "fn", "former": []}
+        symbol = sym("immo_gate", "fn", 0x90000, layout="1nd", former=["status_reporter"])
+        store = Store([symbol], [meaning, other], owners={symbol["key"]: other})
+        with self.assertRaises(KbError) as raised:
+            refs.resolve(store, "status_reporter/fn")
+        self.assertEqual(raised.exception.code, 4)
+        self.assertIn("trim_updater/fn", str(raised.exception))
+        self.assertIn("immo_gate/fn/1nd-00090000", str(raised.exception))
 
 
 if __name__ == "__main__":

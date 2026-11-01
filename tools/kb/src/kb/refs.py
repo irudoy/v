@@ -206,8 +206,13 @@ def _former(graph, name, kind):
     kind_clause = " AND m.kind = $kind" if kind else ""
     refs = [Ref("meaning", node, note=f"former name {name}; current {node['key']}") for node in
             _meanings(graph, "$name IN m.former" + kind_clause, name=name, kind=kind)]
+    # A former name of a meaning is also the name of the former references of
+    # its symbols; those symbols are no further candidates.
+    meanings = {ref.node["key"] for ref in refs}
     symbol_clause = " AND s.kind = $kind" if kind else ""
     for found in _symbols(graph, "$name IN s.former" + symbol_clause, name=name, kind=kind):
+        if found[1] is not None and found[1]["key"] in meanings:
+            continue
         ref = _symbol(found)
         ref.note = f"former name {name}; current {ref.text}"
         refs.append(ref)
