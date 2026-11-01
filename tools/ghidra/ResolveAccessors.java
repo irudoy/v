@@ -15,6 +15,9 @@
 // interpolation wrapper. Optional script arguments identify helpers with the project ABI
 // r0=length, r1=destination, r2=source. In that case the resolver emits the original ROM source
 // as kind copy rather than losing the axis behind a dynamic stack pointer.
+// The delay slot of a call runs before the callee. The fallback and the copy match read a
+// register that the slot writes at the end of the slot; backtrack takes the slot's literal or
+// constant for it, or no value. The decompiler data flow follows the slot itself.
 //
 // GBR (condition B) is resolved locally: each function sets its own value (`ldc rN,gbr`).
 // JK03A has both a RAM base (FUN_0003b75c: gbr=0xffff1dec) and a ROM base
@@ -96,6 +99,7 @@ import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceIterator;
 import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.util.ContextEvaluatorAdapter;
+import ghidra.program.model.scalar.Scalar;
 import ghidra.program.util.SymbolicPropogator;
 import java.io.File;
 import java.io.FileWriter;
@@ -496,14 +500,13 @@ public class ResolveAccessors extends GhidraScript {
         if (reg == null) return null;
         SymbolicPropogator sp = propagator(s);
         if (sp == null) return null;
-        SymbolicPropogator.Value v = sp.getRegisterValue(s.at, reg);
+        Arg v = argumentValue(sp, s.at, reg);
         if (v == null) return null;
-        if (v.isRegisterRelativeValue()) {
-            Register rel = v.getRelativeRegister();
-            if (rGbr != null && rel != null && rGbr.getName().equals(rel.getName())) lastGbrRel = true;
+        if (v.rel != null) {
+            if (rGbr != null && rGbr.getName().equals(v.rel.getName())) lastGbrRel = true;
             return null;
         }
-        return v.getValue() & 0xFFFFFFFFL;
+        return v.value & 0xFFFFFFFFL;
     }
 
     // Recover the ROM source of a local buffer populated by a reviewed byte-copy helper.
@@ -515,7 +518,7 @@ public class ResolveAccessors extends GhidraScript {
                 || rCopyDst == null || rCopySrc == null) return null;
         SymbolicPropogator sp = propagator(s);
         if (sp == null) return null;
-        SymbolicPropogator.Value wanted = sp.getRegisterValue(s.at, operand);
+        Arg wanted = argumentValue(sp, s.at, operand);
         if (!relativeTo(wanted, rSp)) return null;
 
         Long found = null;
@@ -524,15 +527,114 @@ public class ResolveAccessors extends GhidraScript {
             Instruction ins = ii.next();
             if (ins.getAddress().compareTo(s.at) >= 0) break;
             if (!ins.getFlowType().isCall() || !isCopyHelperCall(ins)) continue;
-            SymbolicPropogator.Value dst = sp.getRegisterValue(ins.getAddress(), rCopyDst);
+            Arg dst = argumentValue(sp, ins.getAddress(), rCopyDst);
             if (!sameRelative(wanted, dst)) continue;
-            SymbolicPropogator.Value src = sp.getRegisterValue(ins.getAddress(), rCopySrc);
-            if (src == null || src.isRegisterRelativeValue()) continue;
-            long v = src.getValue() & 0xFFFFFFFFL;
+            Arg src = argumentValue(sp, ins.getAddress(), rCopySrc);
+            if (src == null || src.rel != null) continue;
+            long v = src.value & 0xFFFFFFFFL;
             Address a = toAddr(v);
             if (v < ROM_HI && a != null && mem.contains(a)) found = v;
         }
         return found;
+    }
+
+    // A register value: a constant, or an offset from the incoming value of `rel`.
+    static class Arg {
+        final Register rel;
+        final long value;
+
+        Arg(Register rel, long value) {
+            this.rel = rel;
+            this.value = value;
+        }
+    }
+
+    Arg arg(SymbolicPropogator.Value v) {
+        if (v == null) return null;
+        return new Arg(v.isRegisterRelativeValue() ? v.getRelativeRegister() : null, v.getValue());
+    }
+
+    // The delay slot of the call at `call`, or null. On SH-2E the slot runs before the
+    // callee, so a register that it writes reaches the callee with the slot's value.
+    Instruction delaySlot(Address call) {
+        Instruction ins = listing.getInstructionAt(call);
+        if (ins == null || ins.getDelaySlotDepth() == 0) return null;
+        return listing.getInstructionAfter(ins.getAddress());
+    }
+
+    boolean writes(Instruction ins, Register reg) {
+        for (Object o : ins.getResultObjects())
+            if (o instanceof Register && reg.equals(o)) return true;
+        return false;
+    }
+
+    // The mnemonic without the "_" that the listing gives a delay-slot instruction.
+    String mnemonic(Instruction ins) {
+        String m = ins.getMnemonicString();
+        return m.startsWith("_") ? m.substring(1) : m;
+    }
+
+    // The immediate of mov #imm,Rn, or -1.
+    long immediate(Instruction ins) {
+        if (!mnemonic(ins).equals("mov")) return -1;
+        Scalar v = ins.getScalar(0);
+        return v == null ? -1 : v.getSignedValue() & 0xFFFFFFFFL;
+    }
+
+    // The value of a register when the callee of `call` starts. A register that the delay
+    // slot writes takes the slot's result, which the values at the call determine for
+    // mov Rm,Rn, mov #imm,Rn, a PC-relative load, add #imm,Rn, and extu/exts of a constant.
+    // Any other write leaves no value.
+    Arg argumentValue(SymbolicPropogator sp, Address call, Register reg) {
+        Instruction slot = delaySlot(call);
+        if (slot == null || !writes(slot, reg)) return arg(sp.getRegisterValue(call, reg));
+        String m = mnemonic(slot);
+        Object[] first = slot.getOpObjects(0);
+        Register source = first.length == 1 && first[0] instanceof Register
+                ? (Register) first[0] : null;
+        if (m.equals("mov") && source != null) return arg(sp.getRegisterValue(call, source));
+        Long literal = literal(slot);
+        if (literal != null) return new Arg(null, literal);
+        if (m.equals("add") && first.length == 1 && first[0] instanceof Scalar) {
+            Arg base = arg(sp.getRegisterValue(call, reg));
+            if (base == null) return null;
+            long sum = base.value + ((Scalar) first[0]).getSignedValue();
+            return new Arg(base.rel, base.rel == null ? sum & 0xFFFFFFFFL : sum);
+        }
+        if (source != null && (m.startsWith("extu.") || m.startsWith("exts."))) {
+            Arg v = arg(sp.getRegisterValue(call, source));
+            if (v == null || v.rel != null) return null;
+            int bits = m.endsWith(".b") ? 8 : 16;
+            long low = v.value & ((1L << bits) - 1);
+            if (m.startsWith("exts.") && (low >> (bits - 1)) != 0) low -= 1L << bits;
+            return new Arg(null, low & 0xFFFFFFFFL);
+        }
+        return null;
+    }
+
+    // The value that mov #imm,Rn or a PC-relative mov.l or mov.w loads, or null.
+    Long literal(Instruction ins) {
+        String m = mnemonic(ins);
+        if (m.equals("mov.l") || m.equals("mov.w")) return poolValue(ins, m.equals("mov.l") ? 4 : 2);
+        long imm = immediate(ins);
+        return imm == -1 ? null : imm;
+    }
+
+    // The literal of a PC-relative load, sign-extended for a word, or null.
+    Long poolValue(Instruction ins, int size) {
+        boolean pc = false;
+        for (Object o : ins.getOpObjects(0))
+            if (o instanceof Register && ((Register) o).getName().equals("pc")) pc = true;
+        if (!pc) return null;
+        for (Reference r : ins.getReferencesFrom()) {
+            Address to = r.getToAddress();
+            if (to == null || !to.isMemoryAddress()) continue;
+            Long v = readWord(to, size);
+            if (v == null) return null;
+            if (size == 2 && (v & 0x8000L) != 0) v = (v | 0xFFFF0000L) & 0xFFFFFFFFL;
+            return v;
+        }
+        return null;
     }
 
     boolean isCopyHelperCall(Instruction ins) {
@@ -544,13 +646,12 @@ public class ResolveAccessors extends GhidraScript {
         return false;
     }
 
-    boolean relativeTo(SymbolicPropogator.Value v, Register base) {
-        if (v == null || !v.isRegisterRelativeValue() || v.getRelativeRegister() == null) return false;
-        return v.getRelativeRegister().getName().equals(base.getName());
+    boolean relativeTo(Arg v, Register base) {
+        return v != null && v.rel != null && v.rel.getName().equals(base.getName());
     }
 
-    boolean sameRelative(SymbolicPropogator.Value a, SymbolicPropogator.Value b) {
-        return relativeTo(a, rSp) && relativeTo(b, rSp) && a.getValue() == b.getValue();
+    boolean sameRelative(Arg a, Arg b) {
+        return relativeTo(a, rSp) && relativeTo(b, rSp) && a.value == b.value;
     }
 
     SymbolicPropogator propagator(Site s) {
@@ -620,11 +721,20 @@ public class ResolveAccessors extends GhidraScript {
     }
 
     // Baseline: MapInventory.backtrack, 14 instructions backward to the nearest
-    // PC-relative load.
+    // PC-relative load. A register that the delay slot of the call writes takes the slot's
+    // literal or constant, or no value.
     long[] backtrack(Address site) {
         long[] out = {-1, -1, -1};
         Instruction ins = listing.getInstructionContaining(site);
         if (ins == null) return out;
+        Instruction slot = delaySlot(ins.getAddress());
+        if (slot != null) {
+            for (int i = 0; i < 3; i++) {
+                if (!writes(slot, argRegs[i])) continue;
+                Long v = literal(slot);
+                out[i] = v == null ? -2 : v;
+            }
+        }
         Instruction cur = listing.getInstructionBefore(ins.getAddress());
         for (int k = 0; k < 14 && cur != null; k++) {
             for (Object o : cur.getResultObjects()) {

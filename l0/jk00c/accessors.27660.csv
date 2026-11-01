@@ -1,5 +1,5 @@
 kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,df_r7,k4,k5,k6,k7,verdict,branch
 00027660,00026fc0,00026fd4,00077426,00077488,orig,000178b2,,,000178b2,,,ffff12a4,sp,none,none,sp,agree,
-00027660,00026fc0,00026fd4,00077426,00077498,orig,000178b2,,,000178ba,,,ffff12a4,slice,dyn,none,sp,conflict,
-00027660,00026fc0,00026fd4,000871ac,00087c70,orig,00016d8c,,,00016d8c,00000003,,,pool,sp,none,none,df_only,
+00027660,00026fc0,00026fd4,00077426,00077498,orig,,,,000178ba,,,ffff12a4,slice,dyn,none,sp,df_only,
+00027660,00026fc0,00026fd4,000871ac,00087c70,orig,00016d8c,,,00016d8c,,,,pool,dyn,none,none,agree,
 00027660,00026fc0,00026fd4,000871ac,00087c7c,orig,00016d94,,,00016d94,,00000000,,slice,dyn,sp,none,df_only,

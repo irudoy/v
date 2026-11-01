@@ -682,15 +682,17 @@ A link is stored at one end and read in both directions.
   address below the symbol, within `[match] base` bytes, as a literal, an
   access, or a census operand.
 - An `l0` item cites the instruction that produces the address. A census
-  operand counts at its call when data flow describes it, or when the delay
-  slot of the call leaves its register; backtrack columns never count. A
+  operand counts at its call when data flow describes it, or as a fallback
+  at a complete delayed call, whose slot the export evaluates before the
+  callee starts; backtrack columns never count. A
   Ghidra reference on the delay slot of any delayed transfer, `bt/s` and
   `bf/s` included, that derives its register from registers alone, by a copy,
-  a register sum or difference, an extension, or a shift, counts at the
-  earlier site of the body that names the same address: an instruction
-  outside such slots or a census operand of a call. Without such a site, the
-  slot produces the value, as a register sum produces a new address, and its
-  reference counts. An immediate addition in a slot always produces a new
+  a register sum or difference, an extension, or a shift, counts at a site at
+  a lower address of the same body that names the same address: an
+  instruction outside such slots or a census operand of a call. Without such
+  a site, the slot is the first site of the body that names the address, and
+  its reference counts; a register sum, an extension, or a shift there
+  computes a new value. An immediate addition in a slot always produces a new
   address, and its reference counts.
 - An `l0-context` item reproduces its recorded classification on current L0
   and image bytes. Its span is positive and does not exceed the table's

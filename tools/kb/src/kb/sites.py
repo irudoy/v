@@ -62,9 +62,9 @@ CALL_TRANSFERS = ("call", "jump", "branch")
 DELAYED_TRANSFERS = CALL_TRANSFERS + ("return", "cbranch")
 # The values that an instruction derives from registers alone: a copy, a
 # register sum or difference, an extension, and a shift. A Ghidra reference
-# there names either the value of a source register, which an earlier site
-# produces, or a new value, such as an address that a sum computes. An
-# immediate addition always produces a new address.
+# there names either the value of a source register, which another site may
+# name, or a new value, such as an address that a sum computes. An immediate
+# addition always produces a new address.
 FORWARDED = frozenset({"copy", "add", "sub", "extu", "exts", "shl", "shr", "sar"})
 
 
@@ -85,16 +85,15 @@ def census_operands(row, data):
     """Trustworthy (column, address) arguments of one normalized census row.
 
     Backtrack columns never qualify a reference. The sp/copy fallbacks hold
-    only before a complete delayed transfer whose slot leaves their register
-    unchanged; pool/const/slice/phi describe the data-flow result itself.
+    at a complete delayed transfer, whose slot the export evaluates before the
+    callee starts; pool/const/slice/phi describe the data-flow result itself.
     """
-    slot = delay_slot(data, int(row["callsite"], 16), CALL_TRANSFERS)
+    complete = delay_slot(data, int(row["callsite"], 16), CALL_TRANSFERS) is not None
     for register, column in zip(range(4, 8), CENSUS_OPERANDS):
         value, kind = row.get(column), row.get(f"k{register}")
         if not value:
             continue
-        if kind in CENSUS_KINDS or (kind in {"sp", "copy"} and slot is not None
-                                    and register not in slot.writes):
+        if kind in CENSUS_KINDS or (kind in {"sp", "copy"} and complete):
             yield column, int(value, 16)
 
 
@@ -125,10 +124,10 @@ def references(layout_id, root=repo.ROOT, effective=False):
     A literal-pair access references the address it accesses, its literal,
     and the pool slot of the literal. With `effective`, it references only the
     address it accesses; the load before it produces the literal. A Ghidra
-    reference on a delay slot that derives a register from registers names a
-    value that the slot produces unless an earlier site of the body names the
-    same address: an instruction outside such slots or a census operand of a
-    call. The effective view leaves such a reference to the earlier site.
+    reference on a delay slot that derives a register from registers stays
+    only when no site at a lower address of the body names the same address:
+    an instruction outside such slots or a census operand of a call. The
+    effective view leaves such a reference to that site.
     """
     base = root / repo.L0 / layout_id
     data = derive.image_bytes(repo.layout(layout_id, root), root)

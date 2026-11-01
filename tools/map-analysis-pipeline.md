@@ -87,9 +87,14 @@ The resolver reads `r4`, `r5`, `r6`, and `r7` at interpolation callsites,
 dereferences literal-pool slots, folds p-code define-use chains, resolves local
 GBR setup, preserves aligned `MULTIEQUAL` branch sets, recognizes explicitly
 declared byte-copy helpers, and falls back to instruction propagation without
-discarding unresolved dynamic operands. It emits both the earlier linear
-backtrack and the data-flow result. `bt_only` is a regression; `conflict` is a
-review finding; `selector` preserves multiple legitimate operand tuples.
+discarding unresolved dynamic operands. The fallback and the copy match take an
+argument register that the delay slot of the call writes after the slot: a
+literal, a constant, a register copy, an immediate addition, or an extension of
+a known value sets it, and any other write leaves it without a value. It emits
+both the earlier linear backtrack, which takes such a register only from a slot
+literal or constant, and the data-flow result. `bt_only` is a regression;
+`conflict` is a review finding; `selector` preserves multiple legitimate operand
+tuples.
 
 For non-inheriting families, `tools/rom_correspondence.py` uses unique function
 signatures and equal call ordinals to propose addressed map and axis pairs.

@@ -117,6 +117,7 @@ map,0000f8fc,8x8:uint16,homolog,0000fec8,8x8:uint16,aligned-reference,yes,
 map,0000f97c,8x8:uint16,homolog,0000ff48,8x8:uint16,aligned-reference,yes,
 map,0000f9fc,8x8:uint16,homolog,0000ffc8,8x8:uint16,aligned-reference,no,
 map,0000fa7c,16x16:uint16,homolog,00010048,16x16:uint16,aligned-reference,yes,
+axis,0000fc5c,16:uint16,unpaired,,,,,no-content-match
 map,0000fe7c,16x16:uint16,homolog,00010448,16x16:uint16,aligned-reference,yes,
 map,0001007c,16x16:uint16,homolog,00010648,16x16:uint16,published-registry,yes,
 map,0001027c,8x8:uint16,homolog,0000e748,8x8:uint16,aligned-reference,yes,

@@ -1,0 +1,47 @@
+summary = """
+Implicit eight-point byte curve, the second of the two curves of accessor \
+00068cb8. The accessor copies the curve to a stack buffer through copy \
+helper 00022558, looks the copy up through byte wrapper 00026370 at 00068d3a \
+by clamp(u16[ffff2020]-144,0,255), and writes (lookup of 000120ce + this \
+lookup - 128)*8 as a word to ffff2018 when ffff24c0.bit2 is set."""
+note = [
+    """
+Geometry from the code: the call at 00068cc8 copies r0 = 8 bytes from r2 = \
+000237ac to the stack buffer r1 = r15 through 00022558, and the lookup at \
+00068d3a passes that buffer in r4 to the implicit 1D-8 byte wrapper \
+00026370, so the table holds 8 uint8 cells. The physical quantity and unit \
+are unknown; the offset -128 applies to this lookup alone, and the factor 8 \
+to its sum with the lookup of 000120ce.""",
+]
+level = "candidate"
+role = "table"
+block = "idle_air/block"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 1000
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0]
+
+[[symbol]]
+layout = "7mfk"
+address = "000237ac"
+name = "persimmon-aardwolf"
+level = "candidate"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00068d3a"
+note = """
+The census copy operand of the call at 00068d3a: mov r15,r4 in its delay \
+slot passes the stack buffer that the copy helper 00022558 fills from \
+000237ac."""

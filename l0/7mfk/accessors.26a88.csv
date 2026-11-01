@@ -7,4 +7,4 @@ kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,d
 00026a88,000263a0,000263b8,0003d2dc,0003d32e,orig,00012dea,,,00012dea,,,,pool,dyn,none,none,agree,
 00026a88,000263a0,000263b8,0003d4a8,0003d4c0,orig,00012dea,,,00012dea,,,,pool,dyn,none,none,agree,
 00026a88,000263a0,000263b8,0003eb84,0003ec0c,orig,00012c6e,,,00012c6e,,,ffff1114,slice,dyn,dyn,sp,agree,
-00026a88,000263a0,000263b8,0008092e,0008093a,orig,00012dea,ffff1114,,00012dea,ffff1114,,,pool,sp,none,none,agree,
+00026a88,000263a0,000263b8,0008092e,0008093a,orig,00012dea,,,00012dea,,,,pool,dyn,none,none,agree,

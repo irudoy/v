@@ -5,7 +5,7 @@ kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,d
 00026a60,000263d8,000263ec,0004c02e,0004c0ce,orig,,,000263d8,00014bea,,000263d8,,pool,dyn,sp,none,df_only,
 00026a60,000263d8,000263ec,00052576,000525aa,orig,00014ed2,,,00014ed2,0000ffff,,ffffffff,pool,sp,none,sp,df_only,
 00026a60,000263d8,000263ec,00055098,000551a8,orig,00014a2a,,ffff106a,00014a2a,,ffff106a,,pool,dyn,sp,none,agree,
-00026a60,000263d8,000263ec,00066186,000661be,orig,00015320,,,00015330,0000ffff,ffff40c6,ffffffff,slice,sp,sp,sp,conflict,
+00026a60,000263d8,000263ec,00066186,000661be,orig,,,,00015330,0000ffff,ffff40c6,ffffffff,slice,sp,sp,sp,df_only,
 00026a60,000263d8,000263ec,0006f8fa,0006f918,orig,00023824,,,00023824,,0000ffff,,pool,dyn,sp,none,df_only,
 00026a60,000263d8,000263ec,00071448,000714e6,orig,00015750,,,00015750,,,,pool,dyn,none,none,agree,
 00026a60,000263d8,000263ec,0007173c,00071830,orig,000148ea,,,000148ea,0000ffff,ffff11d4,,pool,sp,sp,none,df_only,

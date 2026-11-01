@@ -9,7 +9,7 @@ kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,d
 0002888c,0002821c,00028230,000a25fa,000a26a0,orig,00015ba2,,ffff118c,00015ba2,,ffff118c,,pool,dyn,sp,none,agree,
 0002888c,0002821c,00028230,000a3410,000a36c8,orig,0001625a,,,0001625a,,,ffffffff,phi,dyn,none,sp,selector,1
 0002888c,0002821c,00028230,000a3410,000a36c8,orig,0001625a,,,0001627a,,,ffffffff,phi,dyn,none,sp,selector,0
-0002888c,0002821c,00028230,000a3410,000a373c,orig,0001625a,,,0001625a,00003c00,,ffffffff,phi,sp,none,sp,selector,1
-0002888c,0002821c,00028230,000a3410,000a373c,orig,0001625a,,,0001627a,00003c00,,ffffffff,phi,sp,none,sp,selector,0
+0002888c,0002821c,00028230,000a3410,000a373c,orig,0001625a,,,0001625a,,,ffffffff,phi,dyn,none,sp,selector,1
+0002888c,0002821c,00028230,000a3410,000a373c,orig,0001625a,,,0001627a,,,ffffffff,phi,dyn,none,sp,selector,0
 0002888c,0002821c,00028230,000ca55c,000ca5be,orig,0001643a,,ffff1064,0001643a,,ffff1064,,pool,dyn,sp,none,agree,
 0002888c,0002821c,00028230,000ca9d8,000caa3a,orig,0001643a,,ffff1064,0001643a,,ffff1064,,pool,dyn,sp,none,agree,

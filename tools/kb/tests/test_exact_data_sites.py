@@ -43,11 +43,11 @@ def test_backtracking_and_unknown_dataflow_are_not_operand_proofs(kind):
 
 @pytest.mark.parametrize('kind', ['sp', 'copy'])
 @pytest.mark.parametrize('transfer', [0xB036, 0xA036, 0x440B, 0x442B])
-def test_fallback_is_per_register_after_the_call_delay_slot(kind, transfer):
-    row = census_row(df_r6='00000260', k6=kind, df_r7='00000270', k7=kind)
-    # extu.b r15,r6 destroys only the r6 fallback.
+def test_fallback_holds_after_the_call_delay_slot(kind, transfer):
+    row = census_row(df_r6='000000ff', k6=kind, df_r7='00000270', k7=kind)
+    # The export evaluates r6 after extu.b r15,r6 in the slot.
     data = image_words({0x10: transfer, 0x12: 0x66FC})
-    assert list(sites.census_operands(row, data)) == [('df_r7', 0x270)]
+    assert list(sites.census_operands(row, data)) == [('df_r6', 0xFF), ('df_r7', 0x270)]
 
 
 @pytest.mark.parametrize('kind', ['sp', 'copy'])
@@ -89,7 +89,7 @@ def bounded_code(tmp_path, monkeypatch):
     image_path.write_bytes(data)
     image = SimpleNamespace(path=image_path, sha256=hashlib.sha256(data).hexdigest())
     row = census_row(df_r4='00000280', k4='pool', df_r5='00000270', k5='unknown',
-                     df_r6='00000260', k6='sp', df_r7='00000290', k7='copy',
+                     df_r6='00000260', k6='dyn', df_r7='00000290', k7='copy',
                      bt_r4='000002c0')
     for layout in ('t1', 't2'):
         directory = root / repo.L0 / layout
