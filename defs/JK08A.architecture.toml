@@ -1731,7 +1731,8 @@ block = "can-network"
 peripheral = "HCAN1 receive mailboxes"
 summary = """
 Receive dispatcher 000c3b14 matches software-table keys; the payload \
-decoders handle 0x174, 0x177, 0x280, and the meter frame."""
+decoders handle 0x174, 0x177, the vehicle-speed frame 0x284, and the meter \
+frame 0x280."""
 functions = ["000c3b14", "000c47ea", "000c4ace", "000c4506", "000c456c"]
 specs = ["defs/JK08A.can.md"]
 

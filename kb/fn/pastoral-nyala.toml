@@ -2,7 +2,9 @@ summary = """
 Meter CAN payload decoder used by the fuel-level monitor. It assembles \
 ffff3e24 from payload byte 1 and the top two bits of byte 2, assembles a \
 second ten-bit field at ffff3e2e from payload byte 6 and the top two bits of \
-byte 7, and sets validity bit 7 at ffff4225."""
+byte 7, and sets validity bit 7 at ffff4225. Only when ROM 0x8349 bit 3 is \
+set, 0x834f = 1, and 0x89c0 = 0 does it also write vehicle-speed word \
+ffff113c through the divide-by-10 helper; the 7mfk images carry 0x834f = 2."""
 note = [
     """
 Dispatcher FUN 000c3b14 invokes this handler for encoded identifier 0x5000. \

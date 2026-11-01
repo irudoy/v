@@ -1,12 +1,15 @@
 summary = """
-CAN 0x280 vehicle-speed receive path. It assembles bytes 4 and 5 as \
-big-endian uint16, treats 0xffff as invalid, otherwise divides by 10, and \
-writes ffff113c."""
+CAN 0x284 vehicle-speed receive path, called by dispatcher 000c3b14 for key \
+0x5080. When ROM 0x8349 bit 3 is set, 0x834f = 2, and 0x89c0 = 0, it \
+assembles bytes 4 and 5 as big-endian uint16, writes 0 for 0xffff, otherwise \
+divides by 10, and writes ffff113c. It always sets ffff422f bit 3."""
 note = [
     """
 Homologous observed Z34 CAN data identifies frame 0x280 bytes 4 and 5 as \
-vehicle speed with approximate raw/100 km/h scaling. The exact firmware \
-division produces 0.1 km/h units at ffff113c before filtering.""",
+vehicle speed with approximate raw/100 km/h scaling. Frame 0x284 carries a \
+speed word in the same bytes that reads about 4.5% below the 0x280 word in \
+the target moving captures. The exact firmware division produces 0.1 km/h \
+units at ffff113c before filtering.""",
 ]
 level = "code"
 role = "driver"

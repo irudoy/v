@@ -557,12 +557,44 @@ zero. Measured whole-bus load is 57.185% to 69.437% on average, with a
 Frame `0x280` bytes 4 and 5 form a big-endian moving quantity. The homologous
 Z34 formula `raw / 100 km/h` yields 0.00 to 68.54 km/h in this target capture
 and returns to zero at the operator-confirmed stationary end. This establishes
-the target field location and zero state. The firmware confirms the scale:
-`FUN_000C4506` divides the word by 10 into `0xFFFF113C`, `FUN_0003A174`
-filters it into `0xFFFF115E`, `FUN_0003A254` divides that by 20 into
-`0xFFFF118E`, and J1979 Mode 01 PID `0x0D` returns twice that byte as km/h, so
-the word is km/h*100 by the ECU's declaration. A synchronized independent
-speed reference remains a hardware check of the vehicle, not of the scale.
+the target field location and zero state of `0x280`.
+
+### Vehicle-speed source
+
+The ECU vehicle speed comes from frame `0x284`, which carries a big-endian
+speed word in the same bytes 4 and 5. `hcan1_receive_payload_dispatch`
+(`0x000C3B14`) calls `FUN_000C4506` for key `0x5080` (`0x284 << 5`, software
+record 13, table entry `0x978E`), and the handler reads bytes 4 and 5 of that
+record at `0xFFFF3B3D` and `0xFFFF3B3E`. It writes only when ROM `0x8349`
+bit 3 is set, `0x834F` equals 2 and `0x89C0` equals 0, which JK00A, JK03A,
+JK03B and JK08A all satisfy. `FUN_000C456C` decodes `0x280` (record 26) into the
+same word only when `0x834F` equals 1, and `FUN_000C4D6A` decodes bytes 0 and
+1 of `0x354` (record 14) into it only when `0x89C0` equals 1.
+The firmware declares the scale: `FUN_000C4506` stores 0 for the word
+`0xFFFF` and otherwise divides the word by 10 into `0xFFFF113C`,
+`FUN_0003A174` filters it into `0xFFFF115E`, `FUN_0003A254` divides that by 20
+into `0xFFFF118E`, and J1979 Mode 01 PID `0x0D` returns twice that byte as
+km/h, so the `0x284` word is km/h*100 by the ECU's declaration.
+
+Both frames arrive with a 20 ms median period in the 2026-09-22 moving
+captures. At speed the `0x284` word reads about 4.5% below the `0x280` word,
+for example 135.78 against 142.02 km/h at `raw / 100`. Frame `0x280` is the
+meter frame, whose fuel-level fields `FUN_000C456C` decodes; whether its speed
+word is the indicated speed is unresolved. The offset matters for speed ranges
+compared across the two frames, such as an activation window or a dashboard
+that shows both. A synchronized independent speed reference remains a
+hardware check of the vehicle.
+
+Software receive record `i` occupies 10 bytes at `0xFFFF3AB5 + 10 * i`: a
+state byte, an age byte and the 8 payload bytes. `FUN_000C3994`, entry 3 of
+the pending-task table `0x00021834`, increments the age of every receive
+record each tenth periodic tick, saturating at 255. `FUN_000C34A8` clears the
+age after a pass that processed a new frame, and holds it at zero while
+`0xFFFF4185` bit 7 is clear; the increment also requires `0xFFFF4195` bit 0.
+The age of the speed record 13 is `0xFFFF3B38`. The dispatcher sets
+`0xFFFF4224` bit 6 when an age reaches ROM `0x834C` (254), and the CAN
+diagnostics treat an age above 199 as a lost frame. No stock path rewrites
+`0xFFFF113C` while `0x284` is absent, so the word keeps its last value.
 
 ### Navigation-coordinate boundary
 

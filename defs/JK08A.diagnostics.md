@@ -108,7 +108,7 @@ fuel-system status bytes `0xFFFF3F2C` and `0xFFFF3F2D`.
 | `0x06`..`0x09` | `0xFFFF22DC`, `0xFFFF2302`, `0xFFFF22DE`, `0xFFFF2304` | `min(255, floor(word / 200))` | `(A - 128) * 100 / 128` percent trim | Q8.8 percent words: STFT bank 1, LTFT bank 1, STFT bank 2, LTFT bank 2 |
 | `0x0B` | `0xFFFF16D2` word | `floor((word * 118 + 98304) / 65536)` | `A` kPa | word is `(kPa - 1.5) * 65536 / 118` |
 | `0x0C` | `0xFFFF11F4` word | `min(65535, 50 * word)` as two bytes | `(256 A + B) / 4` RPM | 12.5 RPM per count |
-| `0x0D` | `0xFFFF118E` | `min(255, 2 * byte)` | `A` km/h | 2 km/h per count; the chain is CAN `0x280` bytes 4..5 (km/h*100) -> `0xFFFF113C` (/10) -> `0xFFFF115E` (filter) -> /20 |
+| `0x0D` | `0xFFFF118E` | `min(255, 2 * byte)` | `A` km/h | 2 km/h per count; the chain is CAN `0x284` bytes 4..5 (km/h*100) -> `0xFFFF113C` (/10) -> `0xFFFF115E` (filter) -> /20 |
 | `0x0E` | `0xFFFF2022` | `clamp((110 - byte) * 2, -128..127) + 128` with `ROM8[0x83D5] = 110` | `A / 2 - 64` degrees before TDC | `110 - raw` is crank degrees of advance, and `0xFFFF11D4` is degBTDC |
 | `0x0F` | `0xFFFF3F41` | byte unchanged; `FUN_0003D832` copies lane 0 of `0xFFFF3F42`, where `FUN_0003D4A8` writes `max(lookup(0x12DEA, uint8(0xFFFF1D58 >> 2)) - 10, 0)` | `A - 40` degC | the transfer code is `degC + 50`, and AN1 lane 0 is the intake-air-temperature channel |
 | `0x10` | `0xFFFF105C` word | `(105 * word) >> 8` as two bytes with `ROM8[0x83EC] = 105`; DID `0x1209` word `0xFFFF3852` is the same product | `(256 A + B) / 100` g/s | 105/25600 g/s per count of the total, and `0xFFFF3852` is g/s*100 |

@@ -1561,7 +1561,7 @@
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator
-         ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x280 vehicle speed
+         ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x284 vehicle speed
          through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required
          zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and
          ffff2458 bit 5 remain physically unnamed.

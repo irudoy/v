@@ -1,7 +1,11 @@
 summary = """
-CAN-derived vehicle-speed word. FUN 000c4506 assembles CAN 0x280 bytes 4 and \
-5 as big-endian uint16, treats 0xffff as invalid, divides by 10, and writes \
-the word; FUN 0003a174 filters it into ffff115e."""
+CAN-derived vehicle-speed word. FUN 000c4506 assembles CAN 0x284 bytes 4 and \
+5 (software receive record 13, dispatcher key 0x5080) as big-endian uint16, \
+treats 0xffff as invalid, divides by 10, and writes the word; FUN 0003a174 \
+filters it into ffff115e. ROM 0x8349 bit 3, 0x834f = 2, and 0x89c0 = 0 \
+select this writer; meter-frame decoder 000c456c writes the word only when \
+0x834f = 1, and FUN 000c4d6a only when 0x89c0 = 1. No stock path rewrites \
+the word while 0x284 is absent; the receive age of record 13 is ffff3b38."""
 note = [
     """
 J1979 PID 0x0D returns min(255, 2*ffff118e) with ffff118e = ffff115e/20, so \
@@ -41,6 +45,26 @@ name = "vivid-macaque"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003a186"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c3c50"
+value = "5080"
+note = "Dispatcher key 0x284 << 5 that selects writer 000c4506"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000834f"
+value = "02"
+note = """
+ROM selector of the 0x284 writer; the 0x280 meter-frame writer requires 01"""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.can.md"
 
 [[link]]
 type = "reader"
