@@ -237,6 +237,46 @@ def test_independent_ghidra_reference_survives_rejected_census_cell(bounded_code
     assert verify(model, symbol, 0x10) is None
 
 
+@pytest.mark.parametrize('transfer,slot,owned,forwards', [
+    (0xB036, 0x66FC, True, True),    # bsr; extu.b r15,r6
+    (0x000B, 0x351C, True, True),    # rts; add r1,r5
+    (0x430B, 0x66E3, True, True),    # jsr @r3; mov r14,r6
+    (0xB036, 0x66FC, False, False),  # the transfer lies in no L0 body
+    (0x430B, 0x7408, True, False),   # add #8,r4 produces a new address
+    (0xB036, 0xD47F, True, False),   # mov.l @(disp,pc),r4 produces a literal
+    (0xB036, 0xE47F, True, False),   # mov #imm,r4 produces a constant
+    (0xB036, 0x8544, True, False),   # mov.w @(4,r4),r0 accesses memory
+    (0xB036, 0x0009, True, False),   # nop writes no register
+    (0x0009, 0x66FC, True, False),   # no delayed transfer
+])
+def test_a_delay_slot_forwards_a_register_value(transfer, slot, owned, forwards):
+    data = image_words({0x10: transfer, 0x12: slot})
+    assert sites.forwards_in_slot(data, 0x12, {0x10} if owned else set()) is forwards
+
+
+def test_ghidra_reference_on_a_forwarding_delay_slot_is_no_effective_site(bounded_code):
+    path = bounded_code.root / repo.L0 / 't1' / 'function_references.csv'
+    # extu.b r15,r6 at 0x12 is the delay slot of bsr at 0x10.
+    write_rows(path, ('func_addr', 'ins_addr', 'ref_addr', 'value_hex', 'width', 'ref_type'),
+               [dict(func_addr='00000010', ins_addr='00000012', ref_addr='00000260',
+                     value_hex='', width='0', ref_type='data')])
+    assert 0x260 in sites.references('t1', bounded_code.root)[0x12]
+    assert 0x260 not in sites.references('t1', bounded_code.root, effective=True).get(0x12, ())
+    model, symbol = symbol_model(bounded_code, 0x260)
+    assert verify(model, symbol, 0x12) is not None
+
+
+def test_jk00d_slot_additions_leave_the_site_to_the_producing_load():
+    # add r14,r5 in the slots of the calls at 00075c70 and 00075c86 consumes
+    # the address that mov.l at 00075c6a loads.
+    raw = sites.references('jk00d')
+    found = sites.references('jk00d', effective=True)
+    for slot in (0x75C72, 0x75C88):
+        assert 0x104A2 in raw[slot]
+        assert 0x104A2 not in found.get(slot, ())
+    assert 0x104A2 in found[0x75C6A]
+
+
 def test_decoded_literal_survives_a_rejected_fallback_at_the_same_site(bounded_code):
     row = census_row(0, df_r4='00000240', k4='sp')
     write_rows(bounded_code.root / repo.L0 / 't1' / l0.Census.file('90'),

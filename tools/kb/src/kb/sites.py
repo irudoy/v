@@ -56,6 +56,13 @@ KINDS = ("reference", "body", "pointer", "linked")
 CALLS = ("jsr", "bsr", "bsrf")
 # Transfers after whose delay slot execution does not continue in sequence.
 NO_FALL_THROUGH = ("branch", "jump", "return")
+# The delayed transfers whose slot runs before a census call.
+CALL_TRANSFERS = ("call", "jump", "branch")
+# The values that an instruction derives from registers alone: a copy, a
+# register sum or difference, an extension, and a shift. An address that a
+# Ghidra reference names there is the value of a source register, which an
+# earlier instruction produces. An immediate addition produces a new address.
+FORWARDED = frozenset({"copy", "add", "sub", "extu", "exts", "shl", "shr", "sar"})
 
 
 @dataclass(frozen=True)
@@ -78,12 +85,7 @@ def census_operands(row, data):
     only before a complete delayed transfer whose slot leaves their register
     unchanged; pool/const/slice/phi describe the data-flow result itself.
     """
-    site = int(row["callsite"], 16)
-    slot = None
-    if 0 <= site and site + 4 <= len(data):
-        transfer = sh2.decode(derive._word(data, site), site)
-        if transfer.delayed and transfer.flow in {"call", "jump", "branch"}:
-            slot = sh2.decode(derive._word(data, site + 2), site + 2)
+    slot = delay_slot(data, int(row["callsite"], 16), CALL_TRANSFERS)
     for register, column in zip(range(4, 8), CENSUS_OPERANDS):
         value, kind = row.get(column), row.get(f"k{register}")
         if not value:
@@ -93,20 +95,46 @@ def census_operands(row, data):
             yield column, int(value, 16)
 
 
+def delay_slot(data, site, flows):
+    """The decoded delay slot of a complete delayed transfer of `flows` at
+    `site`, or None."""
+    if not (0 <= site and site + 4 <= len(data)):
+        return None
+    transfer = sh2.decode(derive._word(data, site), site)
+    if not (transfer.delayed and transfer.flow in flows):
+        return None
+    return sh2.decode(derive._word(data, site + 2), site + 2)
+
+
+def forwards_in_slot(data, site, owned):
+    """Whether `site` is the delay slot of a transfer of an L0 body that
+    derives a register from registers alone."""
+    if site - 2 not in owned:
+        return False
+    slot = delay_slot(data, site - 2, CALL_TRANSFERS + ("return",))
+    return slot is not None and slot.value is not None and slot.value[0] in FORWARDED
+
+
 @lru_cache(maxsize=None)
 def references(layout_id, root=repo.ROOT, effective=False):
     """{instruction or pool address: addresses L0 references there}.
 
     A literal-pair access references the address it accesses, its literal,
     and the pool slot of the literal. With `effective`, it references only the
-    address it accesses; the load before it produces the literal.
+    address it accesses; the load before it produces the literal. A Ghidra
+    reference on a delay slot that derives a register from registers names a
+    value that an earlier instruction produces, and the effective view drops
+    it.
     """
     base = root / repo.L0 / layout_id
     data = derive.image_bytes(repo.layout(layout_id, root), root)
+    owned = owners(layout_id, root) if effective else {}
     found = collections.defaultdict(set)
     pools = {}
     for row in _rows(base / "function_references.csv"):
         site = int(row["ins_addr"], 16)
+        if effective and forwards_in_slot(data, site, owned):
+            continue
         found[site].add(int(row["ref_addr"], 16))
         if row["value_hex"] and row["width"] in ("2", "4"):
             value = int(row["value_hex"], 16)

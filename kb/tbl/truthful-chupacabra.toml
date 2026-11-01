@@ -59,7 +59,10 @@ at = "7mfk:0003ede4"
 
 [[symbol.evidence]]
 kind = "l0"
-at = "7mfk:0003ede6"
+at = "7mfk:0003eddc"
+note = """
+MOV.L 0003eddc loads 00013d94 into r14, and the delay slot of the call at \
+0003ede4 copies it to r6."""
 
 [[symbol.evidence]]
 kind = "test"
