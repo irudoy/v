@@ -1,5 +1,5 @@
 summary = """
-Periodic-table index-27 six-channel fuel-output inhibit coordinator. It \
+Periodic-table index-28 six-channel fuel-output inhibit coordinator. It \
 converts the OR of exactly 15 global Boolean contributors to G=00 or 3f \
 through 0004fb5e; calls 0004f758 and 0004f7e0 only for side effects; forms \
 P=G|DFCO_mask_000503e0|count_mask_0005079c; applies service-0x30 Power \

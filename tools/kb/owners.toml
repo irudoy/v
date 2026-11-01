@@ -5435,17 +5435,6 @@ reason = "reader 7mfk-ffff22de/ram -> 7mfk-0004ead4/fn: no matching normalized L
 
 [[reconciliation.review]]
 kind = "access"
-subject = "7mfk-ffff22e0/ram"
-layout = "7mfk"
-claim_sha256 = "58c006e6754df9b157888cee4f461ad85788ace7edc48ee9801477e08eff7bab"
-l0 = "0f8c389d5cf1a2c8"
-detail = "reader 7mfk-ffff22e0/ram -> 7mfk-00050a4c/fn: no matching normalized L0 access; the original claim remains unresolved"
-sources = ["kb/ram/fuel_inhibit_mask.toml"]
-state = "unresolved"
-reason = "reader 7mfk-ffff22e0/ram -> 7mfk-00050a4c/fn: no matching normalized L0 access; the original claim remains unresolved"
-
-[[reconciliation.review]]
-kind = "access"
 subject = "7mfk-ffff2302/ram"
 layout = "7mfk"
 claim_sha256 = "0509dee4b68ef1b305b5756cc89c92b2d69f9ccea3b021f222caa1ffdc649a34"

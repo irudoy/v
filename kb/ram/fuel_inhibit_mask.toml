@@ -164,14 +164,6 @@ relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
-role = "consumer"
-to = "merge_six_channel_masks/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
 role = "writes"
 to = "fuel_output_inhibit_coordinator/fn"
 type = "writer"
@@ -380,13 +372,6 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "merge_six_channel_masks/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "selector"

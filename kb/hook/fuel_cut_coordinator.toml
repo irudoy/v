@@ -46,6 +46,16 @@ layout = "7mfk"
 address = "000219dc"
 
 [[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000212ee"
+value = 112
+mode = "base"
+note = """
+Entry 28 of the dispatcher table points to the sole writer of the final \
+six-cylinder fuel inhibit mask"""
+
+[[symbol.evidence]]
 kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:000219dc"
