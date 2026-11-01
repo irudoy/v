@@ -19,7 +19,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import checks, match, sites, vocab
+from kb import checks, match, sites, store, vocab
 from kb.model import Issue, SymbolKey
 
 HARDWARE = Path("patches/hardware-results.toml")
@@ -277,7 +277,7 @@ class _Collector:
     def __init__(self, model):
         self.model = model
         self.owned = {key for key, symbol in model.symbols.items()
-                      if checks._owned(model, symbol)}
+                      if store.owns(model, symbol)}
         self.pointed = entries(model)
         self.claims, self.meanings, self.symbols = [], {}, {}
 

@@ -319,9 +319,11 @@ class TypedTest(unittest.TestCase):
         m = self.model()
         symbol = m.symbols[SymbolKey("jk00d", "tbl", 0x104A2)]
         other = m.symbols[SymbolKey("7mfk", "tbl", 0xE98E)]
+        # The delay slot of the call at 00075c70 adds a row offset to r5, so
+        # its operand is no address of the table.
         self.assertEqual(match.typed(m, symbol, other),
                          {"kind": "call-ordinal", "supports": "homology",
-                          "at": "jk00d:00075c70", "to": "7mfk:000734d4", "count": 1, "value": 0})
+                          "at": "jk00d:0007617e", "to": "7mfk:000739e2", "count": 1, "value": 4})
         # The call at 000725cc precedes it, but no function that calls the
         # table on 7MFK at that ordinal is homologous to its caller.
         refuted = [item for item in match.homology_items(m, symbol, other)
@@ -333,8 +335,13 @@ class TypedTest(unittest.TestCase):
     def test_touching_lists_every_instruction_that_touches_the_storage(self):
         m = self.model()
         found = match.touching(m, m.symbols[SymbolKey("jk00d", "tbl", 0x104A2)])
-        self.assertEqual(len(found), 25)
+        self.assertEqual(len(found), 23)
         self.assertEqual(found[:2], [0x725C2, 0x725CC])
+        # The delay slots of the calls at 00075c70 and 00075c86 add a row
+        # offset to r5; the loads before them touch the storage.
+        self.assertIn(0x75C6A, found)
+        self.assertNotIn(0x75C70, found)
+        self.assertNotIn(0x75C86, found)
 
 
 class InterpContractTest(unittest.TestCase):

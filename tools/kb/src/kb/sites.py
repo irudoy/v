@@ -48,6 +48,8 @@ STORAGE_BYTES = {"uint8": 1, "int8": 1, "uint16": 2, "int16": 2, "uint32": 4, "i
                  "float": 4}
 CENSUS_ADDRESSES = ("kernel", "wrapper", "slot", "accessor", "bt_r4", "bt_r5", "bt_r6",
                     "df_r4", "df_r5", "df_r6", "df_r7")
+CENSUS_OPERANDS = tuple(f"df_r{register}" for register in range(4, 8))
+CENSUS_KINDS = frozenset({"pool", "const", "slice", "phi"})
 KINDS = ("reference", "body", "pointer", "linked")
 # The call instructions of SH-2E: a `bra` that a Ghidra flow override records
 # as a call is a jump.
@@ -69,10 +71,38 @@ def _rows(path):
         yield from csv.DictReader(source)
 
 
+def census_operands(row, data):
+    """Trustworthy (column, address) arguments of one normalized census row.
+
+    Backtrack columns never qualify a reference. The sp/copy fallbacks hold
+    only before a complete delayed transfer whose slot leaves their register
+    unchanged; pool/const/slice/phi describe the data-flow result itself.
+    """
+    site = int(row["callsite"], 16)
+    slot = None
+    if 0 <= site and site + 4 <= len(data):
+        transfer = sh2.decode(derive._word(data, site), site)
+        if transfer.delayed and transfer.flow in {"call", "jump", "branch"}:
+            slot = sh2.decode(derive._word(data, site + 2), site + 2)
+    for register, column in zip(range(4, 8), CENSUS_OPERANDS):
+        value, kind = row.get(column), row.get(f"k{register}")
+        if not value:
+            continue
+        if kind in CENSUS_KINDS or (kind in {"sp", "copy"} and slot is not None
+                                    and register not in slot.writes):
+            yield column, int(value, 16)
+
+
 @lru_cache(maxsize=None)
-def references(layout_id, root=repo.ROOT):
-    """{instruction or pool address: addresses L0 references there}."""
+def references(layout_id, root=repo.ROOT, effective=False):
+    """{instruction or pool address: addresses L0 references there}.
+
+    A literal-pair access references the address it accesses, its literal,
+    and the pool slot of the literal. With `effective`, it references only the
+    address it accesses; the load before it produces the literal.
+    """
     base = root / repo.L0 / layout_id
+    data = derive.image_bytes(repo.layout(layout_id, root), root)
     found = collections.defaultdict(set)
     pools = {}
     for row in _rows(base / "function_references.csv"):
@@ -85,14 +115,27 @@ def references(layout_id, root=repo.ROOT):
             found[site].add(value)
             pools[int(row["ref_addr"], 16)] = value
     for pair in derive.literal_pairs(layout_id, root):
-        found[pair.ins].update((pair.address, pair.literal, pair.pool))
+        found[pair.ins].update((pair.address,) if effective else
+                               (pair.address, pair.literal, pair.pool))
         pools[pair.pool] = pair.literal
+    for addresses in bodies(layout_id, root).values():
+        for site in addresses:
+            insn = sh2.decode(derive._word(data, site), site)
+            if insn.value and insn.value[0] == "pool":
+                _, pool, size = insn.value
+                if pool + size <= len(data):
+                    value = int.from_bytes(data[pool:pool + size], "big")
+                    if size == 2:
+                        value = sh2.sext(value, 16) & sh2.MASK
+                    found[site].add(value)
+                    pools[pool] = value
     plan = l0.census(layout_id, root)
     for kernel in plan.kernels:
         for row in _rows(base / l0.Census.file(kernel)):
-            found[int(row["callsite"], 16)].update(
-                int(row[column], 16) for column in CENSUS_ADDRESSES if row[column]
-            )
+            site = int(row["callsite"], 16)
+            found[site].update(int(row[column], 16) for column in CENSUS_ADDRESSES[:4]
+                               if row[column])
+            found[site].update(address for _, address in census_operands(row, data))
     for pool, value in pools.items():
         found[pool].add(value)
     return found
@@ -126,6 +169,7 @@ def linkers(layout_id, root=repo.ROOT):
     """Sorted (address, function) pairs: the functions that reach an address,
     by a reference in their body or as the path of a census call."""
     owned = owners(layout_id, root)
+    data = derive.image_bytes(repo.layout(layout_id, root), root)
     found = set()
     for site, addresses in references(layout_id, root).items():
         for func in owned.get(site, ()):
@@ -135,9 +179,8 @@ def linkers(layout_id, root=repo.ROOT):
         for row in _rows(base / l0.Census.file(kernel)):
             path = {int(row["kernel"], 16), int(row["wrapper"], 16)}
             path |= owned.get(int(row["callsite"], 16), set())
-            for column in CENSUS_ADDRESSES[4:]:
-                if row[column]:
-                    found.update((int(row[column], 16), func) for func in path)
+            for _, address in census_operands(row, data):
+                found.update((address, func) for func in path)
     return sorted(found)
 
 

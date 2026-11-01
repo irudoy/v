@@ -39,12 +39,7 @@ def _from_files(sources):
     return any(_file(src) for src in sources)
 
 
-def _owned(model, symbol):
-    """Whether the files own a symbol: only files state it, or a file entry
-    states its evidence. A file entry that only names the symbol of a registry
-    joins its meaning, and the registry keeps the symbol's evidence."""
-    return symbol.key in model.file_evidence or (
-        bool(symbol.sources) and all(_file(src) for src in symbol.sources))
+_owned = store.owns
 
 
 def _files(sources):
@@ -389,7 +384,7 @@ def homology(model, *, subjects=None):
     issues = _bits(model, subjects)
     symbols = sorted((key, symbol) for key, symbol in model.symbols.items()
                      if subjects is None or key.key in subjects)
-    keys = [key for key, symbol in symbols if _owned(model, symbol)]
+    keys = [key for key, symbol in symbols if store.owns(model, symbol)]
     owned = set(keys)
     ranks = match.grounded(model, keys) if keys else {}
     for key, symbol in symbols:

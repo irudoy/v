@@ -300,6 +300,15 @@ def path_of(kind, name):
     return TREE / kind / f"{name}.toml"
 
 
+def owns(model, symbol):
+    """Whether the files own a symbol: only files state it, or a file entry
+    states its evidence. A file entry that only names the symbol of a registry
+    joins its meaning, and the registry keeps the symbol's evidence."""
+    tree = f"{TREE.as_posix()}/"
+    return symbol.key in model.file_evidence or (
+        bool(symbol.sources) and all(source.startswith(tree) for source in symbol.sources))
+
+
 def files(root, overlay=None):
     """[(kind, name, repository path)] of every entity file, by kind and name.
     `overlay` maps repository paths to the text that replaces a file, or to

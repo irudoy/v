@@ -42,7 +42,7 @@ import pickle
 import tomllib
 import weakref
 
-from kb import derive, evidence_ref, l0, repo, sh2, sites, vocab
+from kb import derive, evidence_ref, l0, repo, sh2, sites, store, vocab
 from kb.model import SymbolKey
 
 DEFAULT_WORDS = 12
@@ -55,7 +55,6 @@ GBR_DISPLACEMENT = frozenset({0xC0, 0xC1, 0xC2, 0xC4, 0xC5, 0xC6})
 CONDITIONAL = frozenset({0x89, 0x8B, 0x8D, 0x8F})
 MOVA = 0xC7
 CALL_REFERENCES = ("unconditional_call", "computed_call")
-OPERANDS = sites.CENSUS_ADDRESSES[4:]
 HASHES = ("exact", "mnemonic", "shape")
 STORES = frozenset({"store", "update"})
 STORAGE_BYTES = {**sites.STORAGE_BYTES, "float32": 4}
@@ -199,6 +198,7 @@ class Code:
     @classmethod
     def load(cls, layout_id, root=repo.ROOT, gram=DEFAULT_WORDS):
         layout = repo.layout(layout_id, root)
+        data = derive.image_bytes(layout, root)
         base = root / repo.L0 / layout_id
         functions = {}
         for row in derive.read_rows(base / "function_signatures.csv"):
@@ -213,9 +213,9 @@ class Code:
         for kernel in l0.census(layout_id, root).kernels:
             for row in derive.read_rows(base / l0.Census.file(kernel)):
                 site = int(row["callsite"], 16)
-                operands.extend((site, column, int(row[column], 16))
-                                for column in OPERANDS if row[column])
-        return cls(layout_id, derive.image_bytes(layout, root), derive.bodies(layout_id, root),
+                operands.extend((site, column, address)
+                                for column, address in sites.census_operands(row, data))
+        return cls(layout_id, data, derive.bodies(layout_id, root),
                    functions, calls, derive.literal_pairs(layout_id, root), operands, gram)
 
     def raw(self, address):
@@ -588,15 +588,40 @@ def _span(symbol):
     return 1 if symbol.kind == "fn" else storage_size(symbol) or 1
 
 
+def _owned_data(model, symbol):
+    """Data whose evidence the files own."""
+    return symbol.kind in {"tbl", "axis", "const"} and store.owns(model, symbol)
+
+
+def _image_reference(ctx, address, own_pool=False):
+    """An exact aligned pointer word, or a constant's own PC-relative pool slot."""
+    layout, site = ctx.at
+    image = repo.images(ctx.model.root)[repo.layout(layout, ctx.model.root).image]
+    data = _image(image.path)
+    if 0 <= site and site % 4 == 0 and site + 4 <= len(data):
+        if int.from_bytes(data[site:site + 4], "big") == address:
+            return True
+    if (own_pool and site in sites.owners(layout, ctx.model.root)
+            and 0 <= site and site + 2 <= len(data)):
+        insn = sh2.decode(derive._word(data, site), site)
+        if insn.value and insn.value[0] == "pool":
+            _, pool, size = insn.value
+            return pool == address and pool + size <= len(data)
+    return False
+
+
 def _verify_l0(ctx):
     failure = _own(ctx)
     if failure:
         return failure
     layout, site = ctx.at
     symbol, root = ctx.symbol, ctx.model.root
-    found = sites.references(layout, root).get(site, ())
-    span = _span(symbol)
+    exact = _owned_data(ctx.model, symbol)
+    found = sites.references(layout, root, effective=exact).get(site, ())
+    span = 1 if exact else _span(symbol)
     if any(symbol.address <= address < symbol.address + span for address in found):
+        return None
+    if exact and _image_reference(ctx, symbol.address, symbol.kind == "const"):
         return None
     if symbol.kind == "fn" and symbol.address in sites.owners(layout, root).get(site, ()):
         return None
@@ -977,7 +1002,9 @@ def _verify_indirect(ctx):
         return "a base item states the offset of the symbol from its base as `value`"
     layout, site = ctx.at
     base = (ctx.symbol.address - offset) & sh2.MASK
-    if base in sites.references(layout, ctx.model.root).get(site, ()):
+    exact = _owned_data(ctx.model, ctx.symbol)
+    if (base in sites.references(layout, ctx.model.root, effective=exact).get(site, ())
+            or exact and _image_reference(ctx, base)):
         return None
     return f"L0 of {layout} holds no reference to the base {base:08x} at {site:08x}"
 
