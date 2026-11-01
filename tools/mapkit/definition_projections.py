@@ -363,10 +363,12 @@ def _variant_label(variant):
 
 
 def _append_projection_note(note, projection, binding):
+    evidence = binding.evidence.rstrip()
+    end = "" if evidence.endswith((".", "!", "?")) else "."
     statement = (
         f"Definition address projected from {projection.source} "
         f"{binding.source} through {projection.address_path.name}: "
-        f"{binding.evidence}."
+        f"{evidence}{end}"
     )
     return f"{note.rstrip()} {statement}".strip()
 

@@ -1534,7 +1534,7 @@
          row axis 000137b9 and column axis 00013640. The column is normalized-BFS snapshot
          fffe8034 or 255 under the wide-open latch, and the row coordinate is word fffe81b6. The
          Q7 result has neutral 128 and reaches the Q14 af_state_factor path at fffe9318 after
-         the reader's native latches and state selection..
+         the reader's native latches and state selection.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Target Mixture - Main" category="Fuelling//Target Mixture"
            storagetype="uint8" storageaddress="0x0A7D0" sizex="8" sizey="8" endian="big">
@@ -1622,7 +1622,7 @@
          eight-byte curve under fffe9488.bit6, indexes it by byte fffe81a8 over explicit axis
          000137c1 and applies it as a Q7 multiplier of the main surface's deviation from 128
          before byte saturation. Its factor normalization is code; the RPM-byte conversion
-         remains a candidate..
+         remains a candidate.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Target Mixture Multiplier - High-Detonation State"
            category="Fuelling//Target Mixture" storagetype="uint8" storageaddress="0x13F0A"
@@ -2130,7 +2130,7 @@
          uint16(threshold) using strict CMP/HI at 0006ed64. These operands and the consumer
          support raw threshold-role homology with 7mfk:0001108e. Target axis knots end at
          464,504,544, unlike the 7mfk knots 448,480,512. Target execution, full arithmetic and
-         ABI equivalence, engineering scale and physical channel identity remain unestablished..
+         ABI equivalence, engineering scale and physical channel identity remain unestablished.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Knock Threshold by Evaluator Channel"
            category="Ignition Timing//Knock Control//Thresholds" storagetype="uint16"

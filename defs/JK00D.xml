@@ -1304,7 +1304,7 @@
          JK08A-JK00D.definition-addresses.csv: Target function 00075bce corresponds to JK08A
          00073432 at the calls 00075c70 and 7mfk:000734d4. MOV.L 00075c6a loads 000104a2 into
          r5, as MOV.L 7mfk:000734ce loads 0000e98e. The delay slot of each call adds the row
-         offset in r14 to r5..
+         offset in r14 to r5.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Requested Torque Conversion by QH0 - Primary"
            category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
