@@ -1791,9 +1791,13 @@ def build_atlas(manifests):
         if architecture.view_key in architectures:
             raise ModelError(f"duplicate architecture models for {architecture.view_key}")
         architectures[architecture.view_key] = architecture.export()
-    return {
+    found = {
         "schemaVersion": 1,
         "layers": [{"id": key, "label": label} for key, label in LAYERS],
         "roms": roms,
         "architectures": architectures,
     }
+    if knowledge:
+        found["coverage"] = knowledge.coverage(
+            sorted({rom["architecture"]["layout"] for rom in roms if rom.get("architecture")}))
+    return found

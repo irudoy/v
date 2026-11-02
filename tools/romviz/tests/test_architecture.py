@@ -41,6 +41,9 @@ ROM_BINDINGS = {
     'JK00C': 'jk00c', 'JK00D': 'jk00d', 'JK78C': 'jk78c',
     '1ND0A': '1nd', '1ND3B': '1nd', '1ME3B': '1me3b',
 }
+# Images of one layout share a view while every image-restricted symbol treats
+# them alike; the exact-mode byte table keeps JK08A apart.
+SHARED_VIEWS = {'JK08A', 'JK00A+JK03A+JK03B', 'JK00C', 'JK00D', 'JK78C', '1ND0A+1ND3B', '1ME3B'}
 
 
 @pytest.fixture(scope="module")
@@ -271,7 +274,7 @@ def test_the_output_carries_no_impact_of_its_own(tracked):
 
 @pytest.mark.slow
 def test_atlas_ships_the_gated_architecture(atlas, tracked):
-    assert set(atlas['architectures']) == set(ROM_BINDINGS)
+    assert set(atlas['architectures']) == SHARED_VIEWS
     home = atlas['architectures']['JK08A']
     assert len(home['blocks']) == len(tracked.blocks)
     assert len(home['endpoints']) == len(tracked.endpoints)
@@ -288,13 +291,16 @@ def test_every_rom_binds_the_architecture(atlas):
     bindings = {rom["id"]: rom["architecture"] for rom in atlas["roms"]}
     assert set(bindings) == set(ROM_BINDINGS)
     for rom, layout in ROM_BINDINGS.items():
-        assert bindings[rom] == {'source': rom, 'mode': 'layout', 'layout': layout, 'image': rom}
-        view = atlas['architectures'][rom]
-        assert view['id'] == view['image'] == rom and view['layout'] == layout
+        view = atlas['architectures'][bindings[rom]['source']]
+        assert bindings[rom] == {'source': view['id'], 'mode': 'layout', 'layout': layout,
+                                 'image': rom}
+        assert view['id'] == '+'.join(view['images']) and rom in view['images']
+        assert view['image'] == (rom if view['images'] == [rom] else None)
+        assert view['layout'] == layout
         for node in view['nodes']:
             binding = node['meta']['binding']
             assert binding['layout'] == layout
-            assert binding['image'] == rom
+            assert binding['image'] == view['image']
             assert not binding['images'] or rom in binding['images']
             assert binding['symbol'] == f'{layout}-{node["addr"]}/{node["meta"]["kbKind"]}'
         for chain in view['chainAvailability']:
@@ -303,9 +309,40 @@ def test_every_rom_binds_the_architecture(atlas):
 
 
 @pytest.mark.slow
+def test_coverage_agrees_with_the_bound_nodes_of_each_view(atlas):
+    coverage = atlas['coverage']
+    assert coverage['layouts'] == sorted(set(ROM_BINDINGS.values()))
+    bound = set('SCDPB')
+    for rom in atlas['roms']:
+        view = atlas['architectures'][rom['architecture']['source']]
+        column = coverage['layouts'].index(view['layout'])
+        nodes = {(node.get('block'), node['meta']['binding']['meaning']) for node in view['nodes']}
+        # A block member keeps the block of its meaning; other nodes take a derived block.
+        members = {(node['block'], node['meta']['binding']['meaning']) for node in view['nodes']
+                   if node.get('pinned') and node['kind'] in ('function', 'map', 'axis', 'signal')}
+        listed = set()
+        for block, entries in coverage['blocks'].items():
+            for entry in entries:
+                assert len(entry['states']) == len(coverage['layouts'])
+                assert set(entry['states']) <= set(coverage['states'])
+                images = entry.get('images', {}).get(view['layout'])
+                if entry['states'][column] in bound and (not images or rom['id'] in images):
+                    listed.add((block, entry['meaning']))
+        assert members <= listed <= nodes
+
+
+@pytest.mark.slow
+def test_chain_steps_carry_their_unresolved_semantic_review(atlas):
+    steps = [step for chain in atlas['architectures']['JK08A']['chains'] for step in chain['steps']]
+    research = [step['research'] for step in steps if 'research' in step]
+    assert research and all(item['state'] == 'unresolved' for item in research)
+
+
+@pytest.mark.slow
 def test_same_layout_images_keep_exact_mode_byte_applicability(atlas):
+    sources = {rom['id']: rom['architecture']['source'] for rom in atlas['roms']}
     for rom in ('JK08A', 'JK00A', 'JK03A', 'JK03B'):
-        view = atlas['architectures'][rom]
+        view = atlas['architectures'][sources[rom]]
         nodes = {node['meta']['binding']['meaning']: node for node in view['nodes']}
         assert ('bfs_mode_flags/tbl' in nodes) == (rom == 'JK08A')
         if rom == 'JK08A':

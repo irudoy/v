@@ -139,11 +139,19 @@
               <p id="arch-subtitle"></p>
             </div>
             <div id="arch-options" class="arch-options">
-              <label class="semantic-toggle">
+              <label id="arch-coverage-option" class="semantic-toggle">
+                <input id="arch-coverage" type="checkbox">
+                <span>Layout coverage</span>
+              </label>
+              <label id="arch-levels-option" class="semantic-toggle" hidden>
+                <input id="arch-levels" type="checkbox">
+                <span>Evidence levels</span>
+              </label>
+              <label id="arch-support-option" class="semantic-toggle">
                 <input id="arch-support" type="checkbox">
                 <span>Support-system flows</span>
               </label>
-              <label class="arch-range">
+              <label id="arch-flow-option" class="arch-range">
                 <span>Flows</span>
                 <input id="arch-flow-limit" type="range" min="10" max="400" step="10" value="60">
                 <output id="arch-flow-limit-value" for="arch-flow-limit">60</output>

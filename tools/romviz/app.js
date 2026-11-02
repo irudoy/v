@@ -1105,6 +1105,12 @@
       showView("address");
       jumpToAddress(address, true);
     },
+    selectRom(id) {
+      const index = atlas.roms.findIndex((rom) => rom.id === id);
+      if (index < 0 || index === state.romIndex) return;
+      setupRom(index);
+      updateHash(true);
+    },
     updateHash,
   });
 

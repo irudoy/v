@@ -180,13 +180,49 @@ def test_image_restriction_filters_nodes_relations_endpoints_and_complete_chains
     assert missing[0]['symbols'][0]['images'] == ['JK08A']
     assert included is knowledge.model('7mfk', 'JK08A')
     assert excluded is knowledge.model('7mfk', 'JK00A') and excluded is not included
-    assert included.export()['image'] == 'JK08A'
-    assert excluded.export()['image'] == 'JK00A'
+    assert included.export()['image'] == 'JK08A' and included.export()['images'] == ['JK08A']
+    assert excluded.export()['image'] == 'JK00A' and excluded.export()['images'] == ['JK00A']
     foreign = knowledge.binding('output/ram', 'jk00d', 'JK00D')
     assert foreign['availability'] == 'missing'
     assert foreign['former'] == ['old_speed']
     assert foreign['statuses'][0]['state'] == 'unresolved'
     assert foreign['analogs'][0]['to'] == 'alternative/ram'
+
+
+def test_coverage_states_every_block_meaning_on_every_layout():
+    rows = fixture_rows()
+    rows['meanings'][2]['block'] = 'engine_speed/block'
+    rows['statuses'][0]['props']['note'] = 'Search found no writer.'
+    rows['statuses'].append({'meaning': 'producer/fn', 'layout': 'jk78c',
+                             'props': {'state': 'absent'}})
+    rows['symbols'][1]['props'].update(level='candidate', images=['JK00D'])
+    rows['layouts'].append({'key': 'jk78c'})
+    found = graph_atlas.Knowledge(rows).coverage(['7mfk', 'jk00d', 'jk78c'])
+    assert found['layouts'] == ['7mfk', 'jk00d', 'jk78c']
+    assert found['states']['U'] == 'unresolved' and found['states']['.'] == 'no record'
+    entries = {item['meaning']: item for item in found['blocks']['engine-speed']}
+    assert entries == {
+        'producer/fn': {'meaning': 'producer/fn', 'title': 'Producer', 'states': 'CDA',
+                        'images': {'jk00d': ['JK00D']}},
+        'output/ram': {'meaning': 'output/ram', 'title': 'Output', 'states': 'BU.',
+                       'notes': {'jk00d': 'Search found no writer.'}},
+    }
+
+
+def test_images_with_the_same_applicable_symbols_share_one_view():
+    rows = fixture_rows()
+    rows['symbols'][0]['props']['images'] = ['JK08A', 'JK00A']
+    knowledge = graph_atlas.Knowledge(rows)
+    shared = knowledge.model('7mfk', 'JK08A')
+    assert shared is knowledge.model('7mfk', 'JK00A')
+    assert knowledge.image_group('7mfk', 'JK00A') == ('JK00A', 'JK08A')
+    found = shared.export()
+    assert found['id'] == 'JK00A+JK08A' and found['image'] is None
+    assert found['images'] == ['JK00A', 'JK08A']
+    assert found['summary'] == 'Architecture from symbols applicable to JK00A and JK08A in layout 7mfk.'
+    bindings = [node['meta']['binding'] for node in found['nodes']]
+    assert bindings and all(item['image'] is None for item in bindings)
+    assert bindings[0]['images'] == ['JK08A', 'JK00A']
 
 
 @pytest.mark.parametrize('image', ['JK00D', 'unknown'])

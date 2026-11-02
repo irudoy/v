@@ -41,6 +41,11 @@
   };
   // Levels below code: a box with one of them has a dashed frame.
   const TENTATIVE_LEVELS = new Set(["pattern", "candidate"]);
+  // Level colors and the coverage states that count as bound.
+  const LEVEL_TINTS = new Set(["silicon", "code", "candidate", "pattern"]);
+  const BOUND_LETTERS = new Set(["S", "C", "D", "P", "B"]);
+  const BOUND_STATES = new Set(["silicon", "code", "candidate", "pattern", "bound"]);
+  const COVERAGE_LIMIT = 40;
   const TITLE_LINE = 13;
   const SECTION_STORAGE = "romviz-arch-open-sections";
   const SIGN_GLYPHS = {positive: "+", negative: "-", none: "~", mixed: "+/-"};
@@ -192,6 +197,8 @@
       inOther,
       outOther,
       nodeById,
+      byMeaning: new Map(nodes.map((node, index) => [node.meta?.binding?.meaning, index])
+        .filter(([meaning]) => meaning)),
       relationOrigins,
       blockById: new Map(raw.blocks.map((block) => [block.id, block])),
       stageById: new Map(raw.stages.map((stage) => [stage.id, stage])),
@@ -557,6 +564,12 @@
       options: document.getElementById("arch-options"),
       filters: document.getElementById("arch-filters"),
       support: document.getElementById("arch-support"),
+      supportOption: document.getElementById("arch-support-option"),
+      coverage: document.getElementById("arch-coverage"),
+      coverageOption: document.getElementById("arch-coverage-option"),
+      levels: document.getElementById("arch-levels"),
+      levelsOption: document.getElementById("arch-levels-option"),
+      flowOption: document.getElementById("arch-flow-option"),
       flowLimit: document.getElementById("arch-flow-limit"),
       flowLimitValue: document.getElementById("arch-flow-limit-value"),
       canvas: document.getElementById("arch-canvas"),
@@ -582,6 +595,11 @@
       content: {width: 1, height: 1},
       fitPending: true,
       support: false,
+      coverage: false,
+      levels: false,
+      notice: "",
+      pending: null,
+      lastRom: new Map(),
       stages: new Set(),
       focus: false,
       boxes: new Map(),
@@ -732,6 +750,7 @@
       }
       state.route = route;
       state.selection = selection;
+      state.notice = "";
       state.fitPending = true;
       hideResults();
       renderChrome();
@@ -789,6 +808,140 @@
       return null;
     }
 
+    // Coverage: the meanings of a block and their state on every layout.
+
+    function coverageEntries(blockId) {
+      const coverage = bridge.atlas.coverage;
+      return coverage ? coverage.blocks[blockId] || [] : [];
+    }
+
+    // The state of an entry on a layout; a symbol of other images is
+    // "image-excluded" on the selected image.
+    function coverageState(entry, layout) {
+      const coverage = bridge.atlas.coverage;
+      const letter = entry.states[coverage.layouts.indexOf(layout)] || ".";
+      if (!BOUND_LETTERS.has(letter)) return coverage.states[letter];
+      const images = entry.images?.[layout];
+      if (layout === state.model.raw.layout && images && !images.includes(state.rom.id)) return "image-excluded";
+      return coverage.states[letter];
+    }
+
+    function coverageTally(blockId, layout = state.model.raw.layout) {
+      const tally = {bound: 0, unresolved: 0, absent: 0, excluded: 0, none: 0, total: 0};
+      for (const entry of coverageEntries(blockId)) {
+        const value = coverageState(entry, layout);
+        if (value === "absent") tally.absent += 1;
+        else {
+          tally.total += 1;
+          if (BOUND_STATES.has(value)) tally.bound += 1;
+          else if (value === "image-excluded") tally.excluded += 1;
+          else if (value === "no record") tally.none += 1;
+          else tally.unresolved += 1;
+        }
+      }
+      return tally;
+    }
+
+    function coverageText(tally) {
+      return [`${tally.bound} of ${tally.total} meanings bound`, tally.unresolved ? `${tally.unresolved} unresolved` : "",
+        tally.excluded ? `${tally.excluded} on other images` : "", tally.none ? `${tally.none} without a record` : "",
+        tally.absent ? `${tally.absent} absent` : ""].filter(Boolean).join("; ");
+    }
+
+    // The ROM that shows a symbol of `layout`: the selected ROM when it fits,
+    // then the ROM last shown on that layout, then the first ROM of the layout
+    // among `images`.
+    function romFor(layout, images = []) {
+      const fits = (rom) => rom.architecture?.layout === layout && (!images.length || images.includes(rom.id));
+      if (fits(state.rom)) return state.rom;
+      const last = state.lastRom.get(layout);
+      if (last && fits(last)) return last;
+      return bridge.atlas.roms.find(fits) || null;
+    }
+
+    function openOn(rom, meaning, label, block) {
+      state.pending = {meaning, label, block};
+      bridge.selectRom(rom.id);
+    }
+
+    function openButtons(meaning, label, block, symbols) {
+      const buttons = [];
+      const seen = new Set();
+      for (const symbol of symbols) {
+        const rom = romFor(symbol.layout, symbol.images || []);
+        if (!rom || rom === state.rom || seen.has(rom.id)) continue;
+        seen.add(rom.id);
+        buttons.push(action(`Open on ${rom.id}`, () => openOn(rom, meaning, label, block)));
+      }
+      return actions(...buttons);
+    }
+
+    // The route of the previous model on the next one: the same block or
+    // chain, the node of the same meaning, or the block of a meaning that the
+    // new layout does not bind, with a notice.
+    function carryRoute(previous, next) {
+      const route = state.route;
+      const pending = state.pending;
+      state.pending = null;
+      const system = {route: {type: "system"}, selection: null, notice: ""};
+      let meaning = pending?.meaning;
+      let label = pending?.label || "";
+      let block = pending?.block || null;
+      if (!pending) {
+        if (!previous) return system;
+        if (route.type === "block") return next.blockById.has(route.id) ? {route, selection: null, notice: ""} : system;
+        if (route.type === "chain") {
+          if (next.chainById.has(route.id)) return {route, selection: null, notice: ""};
+          return {...system, selection: `unavailable:${route.id}`};
+        }
+        if (route.type !== "node" && route.type !== "trace") return system;
+        const item = previous.nodes[route.node];
+        meaning = item?.meta?.binding?.meaning;
+        label = item?.label || "";
+        block = item?.block || null;
+      }
+      const index = meaning ? next.byMeaning.get(meaning) : undefined;
+      if (index !== undefined) {
+        const carried = route.type === "trace" && !pending ? {...route, node: index} : {type: "node", node: index};
+        return {route: carried, selection: `node:${index}`, notice: ""};
+      }
+      const notice = ` ${(label || meaning).replace(/\.$/, "")} is not bound on ${state.rom.id}.`;
+      if (block && next.blockById.has(block)) {
+        return {route: {type: "block", id: block}, selection: null, notice: `${notice} Its block is shown.`};
+      }
+      return {...system, notice};
+    }
+
+    function coverageSection(blockId) {
+      const coverage = bridge.atlas.coverage;
+      const entries = coverageEntries(blockId);
+      if (!coverage || !entries.length) return null;
+      const layout = state.model.raw.layout;
+      const header = html("tr", {}, ...["Layout", "Bound", "Unresolved", "No record", "Absent"].map((text) => html("th", {text})));
+      const rows = coverage.layouts.map((other) => {
+        const tally = coverageTally(blockId, other);
+        return html("tr", {className: other === layout ? "is-current" : ""},
+          html("td", {text: other}), html("td", {text: `${tally.bound}/${tally.total}`}),
+          html("td", {text: String(tally.unresolved)}), html("td", {text: String(tally.none + tally.excluded)}),
+          html("td", {text: String(tally.absent)}));
+      });
+      const missing = entries.filter((entry) => !BOUND_STATES.has(coverageState(entry, layout)));
+      const list = html("ul", {className: "arch-coverage-list"}, ...missing.slice(0, COVERAGE_LIMIT).map((entry) => {
+        const value = coverageState(entry, layout);
+        const symbols = coverage.layouts.filter((other) => other !== layout && BOUND_LETTERS.has(entry.states[coverage.layouts.indexOf(other)]))
+          .map((other) => ({layout: other, images: entry.images?.[other] || []}));
+        if (value === "image-excluded") symbols.unshift({layout, images: entry.images[layout]});
+        const note = entry.notes?.[layout];
+        return html("li", {}, html("strong", {text: entry.title}), ` ${value}${note ? `: ${note}` : ""}`,
+          html("span", {className: "arch-coverage-meaning", text: entry.meaning}),
+          openButtons(entry.meaning, entry.title, blockId, symbols));
+      }));
+      return collapsible(`Coverage by layout`,
+        html("table", {className: "arch-coverage-table"}, html("thead", {}, header), html("tbody", {}, ...rows)),
+        missing.length ? html("p", {className: "detail-copy secondary", text: `Not bound on ${state.rom.id} (${missing.length})${missing.length > COVERAGE_LIMIT ? `; the first ${COVERAGE_LIMIT} are listed` : ""}:`}) : null,
+        missing.length ? list : null);
+    }
+
     // Chrome: banner, breadcrumbs, chain list, options.
 
     function renderChrome() {
@@ -797,9 +950,12 @@
       elements.banner.replaceChildren();
       elements.banner.dataset.mode = binding.mode;
       const lead = html("strong", {text: `${MODE_LABELS[binding.mode]}: `});
+      const notice = state.notice ? html("span", {className: "arch-notice", text: state.notice}) : null;
+      const shared = (raw.images || []).filter((image) => image !== state.rom.id);
       const text = `${raw.layout}: ${raw.nodes.length.toLocaleString()} bound symbols for ${state.rom.id}. `
+        + (shared.length ? `The same symbols apply to ${shared.join(", ")}. ` : "")
         + "Calculation chains require every binding for this image.";
-      elements.banner.append(lead, text);
+      elements.banner.append(lead, text, notice || "");
 
       elements.crumbs.replaceChildren();
       const crumbs = [["System map", {type: "system"}]];
@@ -843,12 +999,15 @@
         elements.chains.append(html("span", {className: "arch-chains-label", text: "Calculation chains"}));
         raw.chains.forEach((chain, chainIndex) => {
           const active = route.type === "chain" && route.id === chain.id;
+          // Steps whose original statement stays source-bound until a review resolves it.
+          const unresolved = chain.steps.filter((step) => step.research).length;
           elements.chains.append(html("button", {
             type: "button",
             className: `arch-chain-chip${active ? " is-active" : ""}`,
             "aria-pressed": active ? "true" : "false",
-            title: chain.summary,
-            text: chain.name,
+            title: unresolved
+              ? `${chain.summary}\n${unresolved} of ${chain.steps.length} steps have unresolved semantics.`
+              : chain.summary,
             onclick: () => navigate({type: "chain", id: chain.id}, `chain:${chain.id}`),
             onmouseenter: () => {
               state.hoverChain = chainIndex;
@@ -858,7 +1017,7 @@
               state.hoverChain = null;
               if (state.route.type === "system") scheduleRender();
             },
-          }));
+          }, chain.name, unresolved ? html("span", {className: "arch-chain-count", text: String(unresolved)}) : null));
         });
       } else {
         elements.chains.append(html("span", {
@@ -882,7 +1041,11 @@
           },
         }));
       }
-      elements.options.hidden = route.type !== "system";
+      const system = route.type === "system";
+      elements.supportOption.hidden = !system;
+      elements.flowOption.hidden = !system;
+      elements.coverageOption.hidden = !system || !bridge.atlas.coverage;
+      elements.levelsOption.hidden = system;
       renderFilters();
     }
 
@@ -1170,17 +1333,22 @@
             (flow.from === focusBlock && flow.to === block.id) || (flow.to === focusBlock && flow.from === block.id)
           ));
           const inChain = chainBlocks && chainBlocks.has(block.id);
+          const tally = state.coverage ? coverageTally(block.id) : null;
           drawBox(layers.boxes, box, {
             key,
             kind: `block${block.generic ? " is-generic" : ""}${supportIds.has(block.id) ? " is-support" : ""}`,
             title: block.name,
-            subtitle: subtitle || (block.generic ? "shared kernels" : ""),
+            subtitle: tally ? `${tally.bound}/${tally.total} bound on ${raw.layout}`
+              : subtitle || (block.generic ? "shared kernels" : ""),
+            meter: tally ? {fraction: tally.total ? tally.bound / tally.total : 0} : null,
             selected: selected === key,
             related: neighbor || inChain,
             dimmed: (focusBlock && block.id !== focusBlock && !neighbor) || (chainBlocks && !inChain),
             label: `${block.name} block`,
           });
-          state.tips.set(key, () => [block.name, firstSentence(block.summary)]);
+          state.tips.set(key, () => [block.name, tally
+            ? coverageText(tally)
+            : firstSentence(block.summary)]);
         }
       }
 
@@ -1192,7 +1360,7 @@
         width: sceneWidth,
         height,
         draw,
-        title: `${raw.id} system map`,
+        title: `${state.rom.id} system map`,
         subtitle: `${kept ? `Showing ${kept.size} of ${raw.blocks.length} blocks: ${filters.join("; ")}. ` : ""}`
           + `${raw.blocks.length} blocks in ${raw.stages.length} stages; ${raw.endpoints.length} peripheral endpoints; `
           + `${visible.size} of ${raw.flows.length} inter-block flows drawn. Click a block to trace its flows; double-click to open it.`,
@@ -1201,6 +1369,7 @@
           ["swatch endpoint-input", "Sensor or input peripheral"],
           ["swatch endpoint-output", "Actuator or output peripheral"],
           ["line", "Data or control flow; width follows the relation count"],
+          ...(state.coverage ? [["swatch meter", `Meanings of the block bound on ${raw.layout}`]] : []),
         ],
       };
     }
@@ -1363,6 +1532,7 @@
           drawBox(boxLayer, box, {
             key,
             kind: "node kind-function",
+            level: node(index).confidence || "",
             title: nodeTitle(index),
             subtitle: nodeSubtitle(index),
             selected: selected === key,
@@ -1732,13 +1902,16 @@
 
     function drawBox(parent, box, options) {
       if (!box) return;
-      const {key, kind, title, subtitle, selected, related, dimmed, badge, chips = [], label} = options;
+      const {key, kind, title, subtitle, selected, related, dimmed, badge, chips = [], label, meter} = options;
       state.boxes.set(key, {box, selected, dimmed});
       const index = options.node;
       const item = index === undefined ? null : node(index);
       const marked = index !== undefined && editable(index);
       const classes = ["arch-box", ...String(kind).split(" ")];
       if (item && TENTATIVE_LEVELS.has(item.confidence)) classes.push(`level-${item.confidence}`);
+      // A block diagram draws its functions without node boxes and passes the level.
+      const level = item ? item.confidence : options.level;
+      if (state.levels && (item || "level" in options)) classes.push(`tint-${LEVEL_TINTS.has(level) ? level : "none"}`);
       if (marked) classes.push("is-editable");
       if (selected) classes.push("is-selected");
       if (related) classes.push("is-related");
@@ -1779,6 +1952,13 @@
         badgeGroup.append(svg("text", {x: width / 2, y: 13, "text-anchor": "middle"}, badge.text));
         group.append(badgeGroup);
       }
+      if (meter) {
+        const width = box.w - 22;
+        group.append(svg("rect", {class: "arch-meter-track", x: 14, y: box.h - 7, width, height: 3, rx: 1.5}));
+        if (meter.fraction > 0) {
+          group.append(svg("rect", {class: "arch-meter-fill", x: 14, y: box.h - 7, width: Math.max(2, width * meter.fraction), height: 3, rx: 1.5}));
+        }
+      }
       chips.forEach((chip, position) => {
         const y = 44 + offset + position * 15;
         const chipGroup = svg("g", {class: `arch-chip kind-${chip.kind}`, "data-key": chip.key, transform: `translate(14,${y})`});
@@ -1816,7 +1996,10 @@
 
     function renderLegend(entries) {
       elements.legend.replaceChildren();
-      for (const [className, text] of entries || []) {
+      const levels = state.levels && state.route.type !== "system"
+        ? [...LEVEL_TINTS].map((level) => [`swatch tint-${level}`, `${level} level`]).concat([["swatch tint-none", "no level"]])
+        : [];
+      for (const [className, text] of [...(entries || []), ...levels]) {
         const mark = html("span", {className: `arch-legend-mark ${className}`, "aria-hidden": "true"});
         const sign = className.match(/^sign sign-(\w+)$/);
         if (sign) mark.textContent = SIGN_GLYPHS[sign[1]] || "";
@@ -2201,6 +2384,16 @@
       state.support = elements.support.checked;
       scheduleRender();
     });
+    elements.coverage.addEventListener("change", () => {
+      state.coverage = elements.coverage.checked;
+      scheduleRender();
+      bridge.updateHash();
+    });
+    elements.levels.addEventListener("change", () => {
+      state.levels = elements.levels.checked;
+      scheduleRender();
+      bridge.updateHash();
+    });
     elements.flowLimit.addEventListener("input", () => {
       state.flowLimit = Number(elements.flowLimit.value) || DEFAULT_FLOW_LIMIT;
       elements.flowLimitValue.textContent = String(state.flowLimit);
@@ -2477,18 +2670,20 @@
       if (!binding) return null;
       return collapsible("Meaning bindings", metaList([
         ["Meaning", binding.meaning], ["Selected layout", binding.layout],
-        ["Selected image", binding.image],
+        ["Selected image", state.rom.id],
         ["Applicable images", binding.images.length ? binding.images.join(", ")
           : binding.availability === "missing" ? "unknown" : "all images of the layout"],
         ["Symbol", binding.reference || (binding.availability === "image-excluded"
-          ? `not applicable to ${binding.image}`
+          ? `not applicable to ${state.rom.id}`
           : binding.statuses.find((item) => item.layout === binding.layout)?.state || "unknown")],
         ["Home layout", binding.home],
         ...binding.symbols.map((symbol) => [symbol.layout,
           `${symbol.ref}${symbol.level ? ` [${symbol.level}]` : ""}${symbol.images.length ? ` (${symbol.images.join(", ")})` : ""}`]),
         ...binding.statuses.map((status) => [status.layout,
           `${status.state}${status.stale ? " (stale search)" : ""}${status.note ? `: ${status.note}` : ""}`]),
-      ]), binding.analogs.length ? html("ul", {className: "arch-reach-list"},
+      ]), openButtons(binding.meaning, binding.name, null, binding.symbols
+        .filter((symbol) => symbol.layout !== binding.layout || binding.availability === "image-excluded")),
+      binding.analogs.length ? html("ul", {className: "arch-reach-list"},
         ...binding.analogs.map((analog) => html("li", {},
           html("strong", {text: `Analog: ${analog.to}`}), ` ${analog.note || ""}`))) : null);
     }
@@ -2572,6 +2767,7 @@
         endpoints.length ? section("Peripheral endpoints", html("ul", {className: "arch-reach-list"}, ...endpoints.map((endpoint) => html("li", {}, html("strong", {text: endpoint.name}), ` ${endpoint.direction}, ${endpoint.peripheral}`)))) : null,
         upstream.length ? section(`Receives from (${upstream.length})`, flowList(upstream, "in")) : null,
         downstream.length ? section(`Feeds (${downstream.length})`, flowList(downstream, "out")) : null,
+        coverageSection(blockId),
         byKind("map").length ? section(`Maps (${byKind("map").length})`, linkList(byKind("map"))) : null,
         byKind("function").length ? section(`Functions (${byKind("function").length})`, linkList(byKind("function"))) : null,
         byKind("signal").length + byKind("register").length ? section(`Signals (${byKind("signal").length + byKind("register").length})`, linkList([...byKind("signal"), ...byKind("register")])) : null,
@@ -2720,7 +2916,7 @@
       if (route.type === "node" || route.type === "trace") return nodeDetails(route.node);
       const raw = state.model.raw;
       return [
-        html("div", {className: "details-heading"}, html("div", {}, html("p", {className: "eyebrow", text: "Architecture"}), html("h2", {text: `${raw.id} firmware`}))),
+        html("div", {className: "details-heading"}, html("div", {}, html("p", {className: "eyebrow", text: "Architecture"}), html("h2", {text: `${state.rom.id} firmware`}))),
         html("p", {className: "detail-copy", text: raw.summary}),
         metaList([
           ["Stages", raw.stages.length],
@@ -2804,6 +3000,7 @@
 
     function setRom(rom) {
       state.rom = rom;
+      if (rom.architecture) state.lastRom.set(rom.architecture.layout, rom);
       const binding = rom.architecture;
       const available = Boolean(binding && atlasModels()[binding.source]);
       elements.view.dataset.available = available ? "true" : "false";
@@ -2819,10 +3016,12 @@
       }
       if (!models.has(binding.source)) models.set(binding.source, prepare(atlasModels()[binding.source]));
       const next = models.get(binding.source);
-      if (state.model !== next) {
+      if (state.model !== next || state.pending) {
+        const carried = carryRoute(state.model, next);
         state.model = next;
-        state.route = {type: "system"};
-        state.selection = null;
+        state.route = carried.route;
+        state.selection = carried.selection;
+        state.notice = carried.notice;
         state.stages = new Set([...state.stages].filter((id) => next.stageById.has(id)));
         state.focus = false;
       }
@@ -2865,6 +3064,8 @@
       if (selection) entries.push(["sel", selection]);
       if (state.stages.size) entries.push(["stages", [...state.stages].join(",")]);
       if (state.focus) entries.push(["focus", "1"]);
+      if (state.coverage) entries.push(["cov", "1"]);
+      if (state.levels) entries.push(["levels", "1"]);
       return entries;
     }
 
@@ -2874,6 +3075,11 @@
       state.selection = decodeSelection(parameters.get("sel"));
       state.stages = new Set((parameters.get("stages") || "").split(",").filter((id) => state.model.stageById.has(id)));
       state.focus = parameters.get("focus") === "1";
+      state.coverage = parameters.get("cov") === "1" && Boolean(bridge.atlas.coverage);
+      state.levels = parameters.get("levels") === "1";
+      elements.coverage.checked = state.coverage;
+      elements.levels.checked = state.levels;
+      state.notice = "";
       state.fitPending = true;
       renderChrome();
       renderDetails();

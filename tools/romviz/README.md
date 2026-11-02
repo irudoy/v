@@ -106,11 +106,26 @@ zoom in, zoom out, and fit, and Selection zooms to the selected box. A minimap
 shows the visible part of a diagram larger than the canvas and moves the view
 on click or drag. A node or trace route opens with its node in view.
 
+The atlas carries one coverage matrix: for each block, its meanings and the
+state of each on every layout, which is the level of a bound symbol, unresolved,
+absent, or no record. Layout coverage on the system map draws the share of the
+meanings of each block that the selected layout binds, and the block details
+count the states by layout and list the meanings that the selected image does
+not bind. A ROM switch keeps the route: the same block or chain, or the node of
+the same meaning; a meaning that the new layout does not bind opens its block
+with a notice. Open on a ROM, in the binding details and in the coverage list,
+switches to a ROM that binds the meaning and opens its node. Evidence levels
+colors the nodes of a diagram by the level of their symbols. A chain chip
+counts the steps whose semantics remain unresolved; their original statements
+stay source-bound until a review resolves them.
+
 Each manifest declares `[architecture]` with `layout`. The graph's image
-membership must agree with it. All ROM views use one graph snapshot, with
-separate architecture models for each image. A symbol's `images` list limits
-its applicability within a layout; an absent list admits every image of that
-layout. Excluded symbols and their incident relations do not enter the image's
+membership must agree with it. All ROM views use one graph snapshot. A
+symbol's `images` list limits its applicability within a layout; an absent list
+admits every image of that layout. The images of a layout that every
+image-restricted symbol treats alike share one architecture model, keyed by
+their joined names such as `JK00A+JK03A+JK03B`; its bindings name no single
+image, and the view names the selected ROM. Excluded symbols and their incident relations do not enter the image's
 architecture or semantic object bindings. Address-map geometry follows its
 declared sources, and a layout without ledgers adds its `kb` bindings as the
 evidence model describes. Binding details expose image restrictions and retain

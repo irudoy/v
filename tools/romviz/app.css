@@ -867,6 +867,124 @@ footer p {
   color: var(--surface);
 }
 
+.arch-notice {
+  margin-left: 6px;
+  color: var(--patches);
+}
+
+.arch-meter-track {
+  fill: var(--grid);
+}
+
+.arch-meter-fill {
+  fill: var(--axes);
+}
+
+.arch-legend-mark.meter {
+  height: 4px;
+  border: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--axes) 60%, var(--grid) 60%);
+}
+
+.arch-box.tint-silicon .arch-box-frame {
+  fill: var(--structure-soft);
+}
+
+.arch-box.tint-code .arch-box-frame {
+  fill: var(--axes-soft);
+}
+
+.arch-box.tint-candidate .arch-box-frame {
+  fill: var(--diagnostics-soft);
+}
+
+.arch-box.tint-pattern .arch-box-frame {
+  fill: var(--maps-soft);
+}
+
+.arch-box.tint-none .arch-box-frame {
+  fill: var(--grid);
+}
+
+.arch-legend-mark.tint-silicon {
+  background: var(--structure-soft);
+}
+
+.arch-legend-mark.tint-code {
+  background: var(--axes-soft);
+}
+
+.arch-legend-mark.tint-candidate {
+  background: var(--diagnostics-soft);
+}
+
+.arch-legend-mark.tint-pattern {
+  background: var(--maps-soft);
+}
+
+.arch-legend-mark.tint-none {
+  background: var(--grid);
+}
+
+.arch-coverage-table {
+  width: 100%;
+  margin: 4px 0 10px;
+  border-collapse: collapse;
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.arch-coverage-table th,
+.arch-coverage-table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+
+.arch-coverage-table th:first-child,
+.arch-coverage-table td:first-child {
+  text-align: left;
+}
+
+.arch-coverage-table tr.is-current td {
+  font-weight: 650;
+  background: var(--bg);
+}
+
+.arch-coverage-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 0.76rem;
+}
+
+.arch-coverage-list li {
+  margin-bottom: 8px;
+}
+
+.arch-coverage-meaning {
+  display: block;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.arch-coverage-list .arch-actions {
+  margin-top: 4px;
+}
+
+.arch-chain-count {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 9px;
+  background: var(--integrity-soft);
+  color: inherit;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .arch-heading {
   align-items: flex-start;
 }

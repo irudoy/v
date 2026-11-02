@@ -31,6 +31,21 @@ def readable_name(name):
 
 
 EDITOR_FIELDS = ('name', 'category', 'view', 'emit')
+# The coverage letter of a bound symbol by its level; B is a symbol without one.
+LEVEL_LETTERS = {'silicon': 'S', 'code': 'C', 'candidate': 'D', 'pattern': 'P'}
+COVERAGE_STATES = {'S': 'silicon', 'C': 'code', 'D': 'candidate', 'P': 'pattern', 'B': 'bound',
+                   'A': 'absent', 'U': 'unresolved', 'R': 'stale unresolved', '.': 'no record'}
+
+
+def node_title(facts, symbol, meaning):
+    """The editor name, the title, a semantic meaning name, or the first summary sentence."""
+    props = {**facts, **symbol}
+    editor = props.get('editor') or {}
+    # The editor name is the name a tuner knows; a summary sentence is the
+    # last resort because it rarely fits a diagram box.
+    return text(editor.get('name') or props.get('title') or readable_name(facts['name'])
+                or architecture_model.first_sentence(text(props.get('summary', '')),
+                                                     symbol.get('name') or meaning))
 
 
 class Knowledge:
@@ -151,12 +166,63 @@ class Knowledge:
         return (symbol['layout'] == layout
                 and self.binding(meaning, layout, image)['symbol'] == key)
 
+    def coverage(self, layouts):
+        """The meanings of each block and the state of each on every layout.
+
+        A state is one letter per layout: the level of a bound symbol, or the
+        status of the meaning there (COVERAGE_STATES). A symbol restricted to
+        images lists them, and a status note is kept with its layout.
+        """
+        blocks = defaultdict(list)
+        for meaning, facts in sorted(self.meanings.items()):
+            if not facts.get('block'):
+                continue
+            symbols = self.symbols[meaning]
+            statuses = {item['layout']: item for item in self.statuses[meaning]}
+            states, images, notes = [], {}, {}
+            for layout in layouts:
+                symbol = symbols.get(layout)
+                status = statuses.get(layout)
+                if symbol:
+                    states.append(LEVEL_LETTERS.get(symbol.get('level', facts.get('level')), 'B'))
+                    if symbol.get('images'):
+                        images[layout] = sorted(symbol['images'])
+                elif status is None:
+                    states.append('.')
+                else:
+                    states.append('A' if status.get('state') == 'absent'
+                                  else 'R' if status.get('stale') else 'U')
+                    if status.get('note'):
+                        notes[layout] = text(status['note'])
+            home = symbols.get(facts.get('home')) or next(iter(symbols.values()), {})
+            entry = {'meaning': meaning, 'title': node_title(facts, home, meaning),
+                     'states': ''.join(states)}
+            if images:
+                entry['images'] = images
+            if notes:
+                entry['notes'] = notes
+            blocks[identifier(facts['block'])].append(entry)
+        return {'layouts': list(layouts), 'states': COVERAGE_STATES, 'blocks': dict(blocks)}
+
+    def image_group(self, layout, image):
+        """The images of a layout that every image-restricted symbol treats as it treats one."""
+        restricted = [symbol['images'] for symbols in self.symbols.values()
+                      if (symbol := symbols.get(layout)) and symbol.get('images')]
+
+        def applicability(key):
+            return tuple(key in images for images in restricted)
+
+        own = applicability(image)
+        return tuple(sorted(key for key, home in self.images.items()
+                            if home == layout and applicability(key) == own))
+
     def model(self, layout, image=None):
+        """The view of an image, shared by the images that keep the same symbols."""
         if image is not None and self.images.get(image) != layout:
             raise ValueError(f'{image} belongs to {self.images.get(image)}, not to {layout}')
-        key = (layout, image)
+        key = (layout, self.image_group(layout, image) if image else ())
         if key not in self.models:
-            self.models[key] = LayoutArchitecture(self, layout, image)
+            self.models[key] = LayoutArchitecture(self, layout, key[1])
         return self.models[key]
 
 
@@ -242,12 +308,18 @@ LINK_RULES = {
 class LayoutArchitecture(architecture_model.Architecture):
     """The existing view schema with nodes from one layout's real symbols."""
 
-    def __init__(self, knowledge, layout, image=None):
-        self.knowledge, self.rom = knowledge, layout
-        self.image, self.view_key = image, image or layout
+    def __init__(self, knowledge, layout, images=()):
+        self.knowledge, self.rom, self.images = knowledge, layout, tuple(images)
+        # One image of the group decides applicability for all of them; the
+        # bindings of a shared view name no single image.
+        self.probe = self.images[0] if self.images else None
+        self.image = self.probe if len(self.images) == 1 else None
+        self.view_key = '+'.join(self.images) or layout
         self.source = repo.ROOT / 'tools/kb'
-        self.summary = (f'Architecture from symbols applicable to {image} in layout {layout}.'
-                        if image else f'Architecture from the bound symbols of layout {layout}.')
+        names = (', '.join(self.images[:-1]) + f' and {self.images[-1]}'
+                 if len(self.images) > 1 else ''.join(self.images))
+        self.summary = (f'Architecture from symbols applicable to {names} in layout {layout}.'
+                        if names else f'Architecture from the bound symbols of layout {layout}.')
         self.ledgers = SimpleNamespace(paths={})
         self.errors, self.nodes, self.edges, self._spec_cache = [], {}, {}, {}
         self.by_meaning, self.by_symbol = {}, {}
@@ -255,20 +327,15 @@ class LayoutArchitecture(architecture_model.Architecture):
             if layout not in symbols:
                 continue
             symbol, facts = symbols[layout], knowledge.meanings[meaning]
-            binding = knowledge.binding(meaning, layout, image)
+            binding = self.binding(meaning)
             if binding['symbol'] is None:
                 continue
             props = {**facts, **symbol}
             kind, address = symbol['kind'], f'{symbol["address"]:08x}'
             node_id = f'{PREFIXES.get(kind, kind)}:{address}'
             editor = props.get('editor') or {}
-            # The editor name is the name a tuner knows; a summary sentence is
-            # the last resort because it rarely fits a diagram box.
-            label = (editor.get('name') or props.get('title') or readable_name(facts['name'])
-                     or architecture_model.first_sentence(text(props.get('summary', '')),
-                                                            symbol.get('name') or meaning))
             self.nodes[node_id] = architecture_model.Node(
-                node_id, NODE_KINDS[kind], address, text(label),
+                node_id, NODE_KINDS[kind], address, node_title(facts, symbol, meaning),
                 text(props.get('summary')), text(props.get('note')),
                 props.get('level', ''), props.get('role', ''), props.get('unit', ''),
                 ', '.join(facts.get('src', [])),
@@ -388,7 +455,7 @@ class LayoutArchitecture(architecture_model.Architecture):
                     props['effect'], props['sign'],
                     tuple(self.by_meaning[key] for key in refs['THROUGH']),
                     text(props.get('note')), tuple(props.get('specs', [])),
-                    'claim')
+                    'claim', props.get('research'))
                 members = (step.source, step.target, *step.via)
                 if self._connected(members):
                     step.support = 'graph'
@@ -403,7 +470,7 @@ class LayoutArchitecture(architecture_model.Architecture):
             availability.append({'id': identifier(item['key']), 'name': item.get('title', ''),
                                  'home': item.get('home', '7mfk'), 'bound': len(steps),
                                  'total': len(rows), 'missing': [
-                                     self.knowledge.binding(key, self.rom, self.image)
+                                     self.binding(key)
                                      for key in sorted(missing)]})
             # An incomplete calculation is reported as unavailable, never as a
             # complete chain assembled from a subset of its steps.
@@ -415,9 +482,13 @@ class LayoutArchitecture(architecture_model.Architecture):
                 tuple(item.get('specs', [])), steps))
         return found, availability
 
+    def binding(self, meaning):
+        return {**self.knowledge.binding(meaning, self.rom, self.probe), 'image': self.image}
+
     def export(self):
         found = super().export()
         found.update({'id': self.view_key, 'layout': self.rom, 'image': self.image,
+                      'images': list(self.images),
                       'fingerprint': self.knowledge.fingerprint,
                       'source': 'kb graph', 'chainAvailability': self.chain_availability,
                       'edgeEvidence': [{'from': edge.source, 'to': edge.target,
