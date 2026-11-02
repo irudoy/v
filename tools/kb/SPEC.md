@@ -1860,6 +1860,16 @@ security boundary: the gates validate every file whatever wrote it.
   `--input` and `-F` values that start with `@` remain read operands, and an
   unresolved `-F` value receives the operand check. Redirections and active
   substitutions retain their checks before these option roles apply.
+  `jq` treats its program text, the values of `--arg`, `--argjson` and
+  `--indent`, and the operands after `--args` or `--jsonargs` as data; its
+  input files, the files of `--slurpfile`, `--rawfile` and `--argfile`, and
+  the program file of `-f` remain read operands. A jq program that loads
+  modules (`import`, `include`, `modulemeta`, `-L`) or that a shell expansion
+  supplies is denied. `exit` and `return` take no file operands.
+  A brace pattern in an operand expands to at most 256 alternatives, and an
+  operand with more is denied. A value with whitespace is a quoted or document
+  value, which no shell or Python call brace-expands, so it is checked as
+  written.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations

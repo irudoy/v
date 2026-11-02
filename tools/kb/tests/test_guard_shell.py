@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 
 from kb import project
 from tools.kb.tests.test_guard import GuardCase, PROJECTIONS
@@ -432,6 +433,69 @@ read = "open"
         ):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_jq_programs_are_data_and_its_inputs_are_read_operands(self):
+        for command in (
+            "jq '{l0:.l0, symbols:[.symbols[]|{ref:.ref,keys:(.keys|{layout,address,name,summary,"
+            "note}),links:.links}]}' tmp/fuel-map.json tmp/request-map.json",
+            "jq -r 'input_filename as $file | .l0.accessors[] | select(.modes | index(\"store\")) "
+            "| [$file, .function, (.sites | tojson)] | @tsv' tmp/1nd:fffe8079.json",
+            "jq '.symbols[] | select(.ref | test(\"/ram$\")) | .ref' tmp/fuel-map.json",
+            "jq '{location, l0}' tmp/jk00c:0003f240.json",
+            "jq -n --slurpfile a tmp/a.json --slurpfile b tmp/b.json "
+            "'[$a[0][], $b[0][]] | map({ref, table: .l0})'",
+            "jq '[.[] as $m | $m.accesses[] | {reader:.function_address,table:$m.table_address}]' "
+            "tmp/jk78c-table-reader-inventory.json",
+            "jq -nr --arg layout l0 --argjson count 1 '{$layout, $count, include: .include}'",
+            "jq -n '$ARGS' --args kb/names.csv l0",
+            "jq -f open.jq tmp/a.json",
+            "jq -n --rawfile text open.txt '$text' > tmp/out.json",
+            "cat tmp/a.json | jq -c '.l0'",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "jq . kb/names.csv", "jq '.l0' l0/7mfk/funcs.csv", "jq . defs/JK08A.xml",
+            "jq -n --slurpfile a l0/7mfk/funcs.csv '$a'", "jq -n --rawfile a defs/JK08A.xml '$a'",
+            "jq -f kb/names.csv tmp/a.json", "jq --from-file kb/names.csv", "jq -nf kb/names.csv",
+            'jq . "$file"', "jq . $(cat list.txt)", "jq . tmp/a.json > kb/names.csv",
+            'jq "$program" tmp/a.json', "jq $program tmp/a.json",
+            "jq 'import \"kb/names\" as $names; $names' -n", "jq -n 'include \"lib\"; .'",
+            "jq -n '\"lib\" | modulemeta'", "jq -L kb -n .", "jq -Lkb -n .",
+            "jq --library-path kb -n .", "F=kb/names.csv jq . tmp/a.json",
+            'jq . tmp/a.json "$(cat kb/names.csv)"',
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_exit_statuses_are_not_file_operands(self):
+        for command in (
+            'for ref in 1nd:fffe945f 1nd:fffe9460; do uv run --frozen kb at "$ref" --json --full '
+            '> "tmp/$ref.json" || exit $?; done',
+            "uv run kb brief || exit $?", "test -f open.txt || return 1",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "exit $(cat kb/names.csv)", 'for f in names.csv; do cat "kb/$f" || exit $?; done',
+            "uv run kb brief > kb/names.csv || exit $?",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_brace_patterns_and_document_values_have_bounded_inspection(self):
+        rows = "".join(f'  {{ kind = \\"l0\\", supports = \\"identity\\", at = \\"jk78c:{n:08x}\\", '
+                       f'value = \\"{n:08x}\\" }},\n' for n in range(16))
+        draft = ("python3 -c \"from pathlib import Path\nPath('TARGET').write_text('''[[op]]\n"
+                 f"evidence = [\n{rows}]\n''')\"")
+        started = time.monotonic()
+        self.assertIsNone(self.denied("Bash", command=draft.replace("TARGET", "tmp/draft.toml")))
+        self.assertIsNotNone(self.denied("Bash", command=draft.replace("TARGET", "defs/JK08A.xml")))
+        self.assertIn("brace pattern", self.denied("Bash", command="cat " + "{a,b}" * 12))
+        self.assertLess(time.monotonic() - started, 5)
+        self.assertIsNotNone(self.denied("Bash", command="cat {open.txt,kb/names.csv}"))
+        self.assertIsNone(self.denied("Bash", command="cat {open.txt,defs/open.csv}"))
+        self.assertEqual(project.hook.expand("{a,b}/{c,d}"), ["a/c", "a/d", "b/c", "b/d"])
 
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):

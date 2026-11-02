@@ -14,6 +14,9 @@ Shell inspection preserves quotes, operators, subshell directories and raw
 here-documents. Literal pipeline data becomes file operands for reading xargs
 commands. File operands, redirections, substitutions and selected Git
 operations have access checks; literal draft and message bodies remain data.
+The program text of jq is data apart from module loading, and its input and
+program files are read operands. A brace pattern expands to a bounded number
+of alternatives, beyond which the check denies.
 Inline Python supports finite literal file and metadata forms, with a
 conservative refusal for unknown operations involving protected references.
 Trusted `kb`, `make` and repository runners keep their input access after
@@ -70,6 +73,14 @@ HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)[ \t]*(['\"]?)([^\s'\"<>|&;()]+)\2")
 PATHLIKE = re.compile(r"[^\s'\"`()\[\]{},:;=<>|&$]+")
 DYNAMIC = re.compile(r"\$\([^()]*\)|`[^`]*`|\$\{?\w+\}?")
 BRACES = re.compile(r"\{([^{}]*)\}")
+# The alternatives of one brace pattern that a path check expands at most.
+EXPANSIONS = 256
+# Options of jq that take the next words as their values: data values, and a
+# variable name followed by a file that jq reads.
+JQ_DATA = {"--arg": 2, "--argjson": 2, "--indent": 1}
+JQ_FILES = {"--slurpfile", "--rawfile", "--argfile"}
+# Program text that loads jq modules or their metadata from the search path.
+JQ_MODULES = re.compile(r"(?<![.\w$])(?:import|include)\s*\"|\bmodulemeta\b")
 # An edit reason lists the inputs of a projection up to this many.
 LISTED_INPUTS = 4
 
@@ -148,13 +159,23 @@ def split(path):
     return file, section or None
 
 
-def expand(pattern):
-    """The patterns of a projection path whose `{a,b}` lists alternatives."""
-    match = BRACES.search(pattern)
-    if match is None:
-        return [pattern]
-    return [option for choice in match.group(1).split(",")
-            for option in expand(pattern[:match.start()] + choice + pattern[match.end():])]
+def expand(pattern, limit=EXPANSIONS):
+    """The patterns of a path whose `{a,b}` lists alternatives, in order.
+    More than `limit` alternatives raise ValueError instead of growing with
+    the product of the lists."""
+    found, pending = [], [pattern]
+    while pending:
+        item = pending.pop()
+        match = BRACES.search(item)
+        if match is None:
+            found.append(item)
+        else:
+            pending.extend(reversed([item[:match.start()] + choice + item[match.end():]
+                                     for choice in match.group(1).split(",")]))
+        # Every pending item yields at least one alternative.
+        if len(found) + len(pending) > limit:
+            raise ValueError(f"more than {limit} alternatives")
+    return found
 
 
 def matches(pattern, relative):
@@ -512,7 +533,8 @@ class Guard:
                 if reason:
                     return reason
                 continue
-            if program in {"printf", "echo", "true", "false", ":"}:
+            # Exit statuses such as `$?` are numbers, not file operands.
+            if program in {"printf", "echo", "true", "false", ":", "exit", "return"}:
                 continue
             if program in {"test", "[", "[["} and not any(
                     word in {"-e", "-f", "-d", "-r", "-w", "-x", "-s", "-L", "-h", "-nt", "-ot", "-ef"} for word in clean):
@@ -520,6 +542,11 @@ class Guard:
             reason = self.shell_paths([part for value in extra_refs for part in candidates(value)], "unknown", cwd)
             if reason:
                 return reason
+            if program == "jq":
+                reason = self.jq_operation(clean[1:], variables, cwd)
+                if reason:
+                    return reason
+                continue
             if program == "sort":
                 reason = self.shell_paths(option_files(clean[1:], {"-o", "--output"}), "edit", cwd)
                 if reason:
@@ -565,7 +592,14 @@ class Guard:
                         and not base.resolve().is_relative_to(self.root)):
                     continue
                 return "cannot inspect a dynamic file operand; use an explicit path or the KB command."
-            for option in expand(value):
+            # Text with whitespace is a quoted or document value, which no
+            # shell or Python call brace-expands; its path-like parts are
+            # separate candidates.
+            try:
+                options = [value] if re.search(r"\s", value) else expand(value)
+            except ValueError as error:
+                return f"cannot inspect a brace pattern with {error}; use explicit file operands."
+            for option in options:
                 absolute = os.path.expanduser(option)
                 if not os.path.isabs(absolute):
                     absolute = str(cwd / absolute)
@@ -618,6 +652,47 @@ class Guard:
         if self.git_passes(words):
             return None
         return self.shell_paths([part for word in args for part in candidates(word)], "unknown", cwd)
+
+    def jq_operation(self, words, variables, cwd):
+        """Inspect the files that jq reads; its program text is data.
+
+        The first operand is the program, or with `-f` the file that holds
+        it, and the later operands are input files, or data after `--args`
+        and `--jsonargs`. Module loading reads files that the program names,
+        so it is denied, as is a program that a shell expansion supplies.
+        """
+        program, files, strings, from_file, done, index = None, [], False, False, False, 0
+        while index < len(words):
+            word = words[index]
+            index += 1
+            if done or not word.startswith("-") or word == "-":
+                if program is None:
+                    program = word
+                elif not strings:
+                    files.append(word)
+            elif word == "--":
+                done = True
+            elif word in JQ_DATA:
+                index += JQ_DATA[word]
+            elif word in JQ_FILES:
+                files += words[index + 1:index + 2]
+                index += 2
+            elif word in {"--args", "--jsonargs"}:
+                strings = True
+            elif word == "--from-file":
+                from_file = True
+            elif word == "--library-path" or not word.startswith("--") and "L" in word:
+                return "cannot inspect jq module loading; use jq without -L, import, or include."
+            elif not word.startswith("--") and "f" in word:
+                from_file = True
+        if program is not None and from_file:
+            files.insert(0, program)
+        elif program is not None:
+            if getattr(program, "parameter", False):
+                return "cannot inspect a jq program that a shell expansion supplies; use a literal program."
+            if JQ_MODULES.search(program):
+                return "cannot inspect jq module loading; use jq without -L, import, or include."
+        return self.shell_paths([shell_value(word, variables) for word in files], "read", cwd)
 
     def python_operations(self, source, cwd, extra_refs=()):
         """Inspect finite literal file forms; unknown uses of protected data refuse."""
@@ -1142,9 +1217,12 @@ def literal_loops(items, budget=None):
 
 
 class ShellWord(str):
-    def __new__(cls, value, *, operator=False, expansion=False):
+    """A shell word: an operator, or a word with an active command
+    substitution (`expansion`) or parameter expansion (`parameter`)."""
+
+    def __new__(cls, value, *, operator=False, expansion=False, parameter=False):
         instance = super().__new__(cls, value)
-        instance.operator, instance.expansion = operator, expansion
+        instance.operator, instance.expansion, instance.parameter = operator, expansion, parameter
         return instance
 
 
@@ -1186,13 +1264,13 @@ def _substitution_end(text, start):
 
 def _shell_words(text):
     """POSIX quote removal retains operators and executable substitutions."""
-    tokens, value, quote, started, expansion, index = [], "", None, False, False, 0
+    tokens, value, quote, started, expansion, parameter, index = [], "", None, False, False, False, 0
 
     def word():
-        nonlocal value, started, expansion
+        nonlocal value, started, expansion, parameter
         if started:
-            tokens.append(ShellWord(value, expansion=expansion))
-        value, started, expansion = "", False, False
+            tokens.append(ShellWord(value, expansion=expansion, parameter=parameter))
+        value, started, expansion, parameter = "", False, False, False
 
     while index < len(text):
         char = text[index]
@@ -1221,6 +1299,10 @@ def _shell_words(text):
             value += text[index:end]
             started, expansion, index = True, True, end
             continue
+        if char == "$":
+            # Unquoted and double-quoted parameters expand; single quotes
+            # and escapes keep a literal `$`.
+            parameter = True
         if quote == '"':
             if char == '"':
                 quote = None
