@@ -488,6 +488,12 @@ END_OF_INJECTION = {
     "1ND3B": (0x16540, 0x16560, 0x16550, 0x7F4E0),
     "1ME3B": (0x164E4, 0x16504, 0x164F4, 0x841B4),
 }
+# The stock cell words of the base and the conditional curve, the same on
+# every target.
+END_OF_INJECTION_CELLS = (
+    [133] * 8,
+    [175, 133, 133, 155, 155, 150, 140, 138],
+)
 
 
 @pytest.mark.parametrize("rom", sorted(END_OF_INJECTION))
@@ -498,12 +504,14 @@ def test_apply_target_publishes_the_end_of_injection_word_curves(rom):
     maps, axes, overrides = vq37_native_tables.apply_target(
         rom, {}, _projected_axes(target), {"table": {}}, image
     )
-    words = [
-        int.from_bytes(image.data[address : address + 2], "big")
-        for address in range(axis, axis + 16, 2)
-    ]
 
-    for address in (base, conditional):
+    def words(start):
+        return [
+            int.from_bytes(image.data[address : address + 2], "big")
+            for address in range(start, start + 16, 2)
+        ]
+
+    for address, cells in zip((base, conditional), END_OF_INJECTION_CELLS):
         key = f"{address:08x}"
         model = maps[key]
 
@@ -512,7 +520,8 @@ def test_apply_target_publishes_the_end_of_injection_word_curves(rom):
         assert model["accessors"] == [f"{writer:08x}"]
         assert model["scale_expr"] == "x*4-590"
         assert overrides["table"][key]["category"] == "Fuelling / Injection"
-    assert axes[f"{axis:08x}"]["values"] == words
+        assert words(int(model["addr"], 16)) == cells
+    assert axes[f"{axis:08x}"]["values"] == words(axis)
     assert axes[f"{axis:08x}"]["scale_expr"] == "x*12.5"
 
 
