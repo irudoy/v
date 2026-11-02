@@ -50,8 +50,8 @@ def canonical_profile(profile, protocol_version):
     """Return the wire-layout identity document covered by the profile CRC.
 
     Field names, context names, and scale strings are outside the document:
-    the CRC identifies byte placement, and the profile ID identifies which
-    quantity each slot carries.
+    the CRC identifies byte placement and the dynamic page, and the profile
+    ID identifies which quantity each slot carries.
     """
     result = {
         "protocol_version": protocol_version,
@@ -79,6 +79,8 @@ def canonical_profile(profile, protocol_version):
     if profile.get("padding"):
         result["padding"] = sorted(profile["padding"],
                                    key=lambda row: (row["page"], row.get("tag", -1), row["offset"]))
+    if profile.get("dynamic"):
+        result["dynamic"] = dict(profile["dynamic"])
     return result
 
 

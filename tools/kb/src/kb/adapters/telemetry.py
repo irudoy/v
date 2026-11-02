@@ -20,10 +20,10 @@
   states.
 - The source of a field of another origin is the allocation, named after
   the field without `_raw`, of the feature that owns its address: the state
-  record and the configuration record of `can_telemetry` for
-  `telemetry_state` and `rom_configuration`, and the active RAM of
-  `map_switching` or `rolling_launch` in the reservation ledger for
-  `runtime_state` (`layouts.origin_regions`). The field keeps its `scale` and
+  record or the dynamic page state and the configuration record of
+  `can_telemetry` for `telemetry_state` and `rom_configuration`, and the
+  active RAM of `map_switching` or `rolling_launch` in the reservation ledger
+  for `runtime_state` (`layouts.origin_regions`). The field keeps its `scale` and
   names the allocation as `<feature>.<allocation>`. `feature_ram` of the
   stash holds the active RAM of every feature.
 - The wire constants, `[[profile]]`, and the contexts become keys of the
@@ -69,6 +69,8 @@ OPTIONAL_FIELD_KEYS = frozenset({"dashboard"})
 STREAM_KEYS = FIELD_KEYS | {"page", "offset", "profiles"}
 CONTEXT_KEYS = frozenset({"page", "tag", "name", "field"})
 PROFILE_KEYS = frozenset({"name", "id", "page_count"})
+# The dynamic page, which a profile may state.
+OPTIONAL_PROFILE_KEYS = frozenset({"dynamic"})
 KINDS = ("ecu_ram", "rom_configuration", "runtime_state", "telemetry_state")
 
 NUMBER = r"\d+(?:\.\d+)?"
@@ -143,7 +145,7 @@ def declare_profile(b, document, regions, src):
         return
     profiles = []
     for index, item in enumerate(document.get("profile", ())):
-        if set(item) != PROFILE_KEYS:
+        if not PROFILE_KEYS <= set(item) <= PROFILE_KEYS | OPTIONAL_PROFILE_KEYS:
             b.issue("schema", src, f"profile.{item.get('name', index)}",
                     f"keys {sorted(item)}; the adapter reads {sorted(PROFILE_KEYS)}")
             continue
@@ -282,11 +284,13 @@ HEADER = """\
 # the SH-2E capture loop and emits a ROM-neutral host decoder schema. Producer
 # addresses, mailbox ownership, and ROM identity are not part of the host
 # contract. The profile CRC covers the wire layout alone: protocol version,
-# profile ID, page count, and the placement, width, and signedness of every
-# slot. Names, scale strings, and the host presentation of [field.dashboard]
-# are outside it, and a slot that carries a different quantity takes a new
-# profile ID. The host decodes the current profile ID alone. Runtime
-# arbitrary-address interpretation is intentionally unsupported.
+# profile ID, page count, the placement, width, and signedness of every slot,
+# and the dynamic page. Names, scale strings, and the host presentation of
+# [field.dashboard] are outside it, and a slot that carries a different
+# quantity takes a new profile ID. The host decodes the current profile ID
+# alone. Under a nonzero configuration ID, the data bytes of the dynamic page
+# of a profile carry the RAM slots of a host configuration; the fields of the
+# page are its default configuration, ID 0.
 """
 # The keys of the profile, its profiles, its fields, and its contexts in the
 # order of the file.
@@ -295,6 +299,7 @@ TOP = ("schema_version", "rom", "protocol_version", "byte_order", "mailbox",
        "fixed_page_count", "context_pages", "context_count", "header_sequence_bits",
        *ADDRESS_KEYS)
 PROFILE_ORDER = ("name", "id", "page_count")
+DYNAMIC_ORDER = ("page", "data_bytes", "configuration_offset")
 STREAM_ORDER = ("name", "page", "offset", "width", "source", "profiles", "kind", "signed",
                 "scale")
 CONTEXT_ORDER = ("page", "tag", "name")
@@ -465,8 +470,13 @@ def render_profile(document):
            if key not in ("profile", "field", "context", "padding")}
     order = TOP + (("padding_source",) if "padding_source" in top else ())
     blocks = [HEADER + "\n" + _block(None, top, order, "profile")]
-    blocks += [_block("[[profile]]", item, PROFILE_ORDER, f"profile.{item.get('name')}")
-               for item in document.get("profile", ())]
+    for item in document.get("profile", ()):
+        subject = f"profile.{item.get('name')}"
+        blocks.append(_block("[[profile]]", {key: value for key, value in item.items()
+                                             if key != "dynamic"}, PROFILE_ORDER, subject))
+        if item.get("dynamic"):
+            blocks.append(_block("[profile.dynamic]", item["dynamic"], DYNAMIC_ORDER,
+                                 f"{subject}.dynamic"))
     blocks += [_block("[[padding]]", item,
                       ("page", "offset", "width") + (("tag",) if "tag" in item else ()),
                       "padding") for item in document.get("padding", ())]

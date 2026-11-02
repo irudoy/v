@@ -25,11 +25,13 @@ SOURCE_LABELS = {
     "knock_wrapper": "telemetry_knock_wrapper",
     "startup_wrapper": "telemetry_startup_wrapper",
     "capture": "telemetry_capture",
+    "dynamic_slot": "telemetry_dynamic_slot",
     "build_bank": "telemetry_build_bank",
     "knock_margin_wrapper": "telemetry_knock_margin_wrapper",
     "request_page": "telemetry_request_page",
     "sle1_isr": "telemetry_sle1_isr",
     "completion": "telemetry_handle_completion",
+    "dynamic_command": "telemetry_dynamic_command",
     "hcan1_init_wrapper": "telemetry_hcan1_init_wrapper",
     "control_poll": "telemetry_control_poll",
 }
@@ -157,6 +159,12 @@ def _expected_long_literals():
             "telemetry_request_bank_b": 0xFFFF5E78,
             "telemetry_mailbox_data": 0xFFFFDC48,
             "telemetry_txpr1": 0xFFFFD820,
+            "telemetry_dynamic_window_start": 0x00FF0000,
+            "telemetry_dynamic_window_end": 0x00FFC000,
+            "telemetry_dynamic_page_low": 0xFFFE8000,
+            "telemetry_dynamic_page_high": 0xFFFF0000,
+            "telemetry_dynamic_crc_poly": 0x10210000,
+            "telemetry_dynamic_page_state": 0xFFFF5F00,
         },
         "completion": {
             "telemetry_isr_txack1": 0xFFFFD830,
@@ -171,6 +179,9 @@ def _expected_long_literals():
             "telemetry_completion_request_page": 0x000D4700,
             "telemetry_completion_bank_a": 0xFFFF5E20,
             "telemetry_completion_bank_b": 0xFFFF5E78,
+            "telemetry_dynamic_command_state": 0xFFFF5F00,
+            "telemetry_dynamic_command_crc": 0x000D44B0,
+            "telemetry_dynamic_command_slot": 0x000D4460,
         },
         "control": {
             "telemetry_control_stock_hcan1_init": 0x000C338A,
@@ -190,6 +201,7 @@ def _expected_long_literals():
             "telemetry_control_start_tail": 0x0201B632,
             "telemetry_control_stop_tail": 0x0200A613,
             "telemetry_control_config_integrity": 0x54454C32,
+            "telemetry_control_dynamic_command": 0x000D4A70,
         },
     }
 
@@ -275,8 +287,8 @@ def _validate_wrappers(parsed):
         raise ValueError("wrapper call or PR preservation count differs")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 2:
         raise ValueError("startup clear or knock margin arm loop differs")
-    if "mov #0x40,r2" not in texts:
-        raise ValueError("startup does not clear exactly 256 active RAM bytes")
+    if "mov #0x64,r2" not in texts:
+        raise ValueError("startup does not clear exactly 400 active RAM bytes")
     clear = texts.index("mov.l r0,@r1")
     arm = [
         "mov.l @(telemetry_startup_margin_latch,pc),r1",
@@ -291,8 +303,10 @@ def _validate_wrappers(parsed):
 
 def _validate_capture(parsed):
     texts = _texts(parsed)
-    if texts[0] != "sts.l pr,@-r15" or texts.count("lds.l @r15+,pr") != 2:
-        raise ValueError("capture or knock margin wrapper does not preserve PR")
+    if texts[0] != "sts.l pr,@-r15" or texts.count("lds.l @r15+,pr") != 3:
+        raise ValueError(
+            "capture, knock margin wrapper or dynamic page does not preserve PR"
+        )
     if texts.count("bsr telemetry_build_bank") != 2:
         raise ValueError("capture bank-build publication paths differ")
     if texts.count("bsr telemetry_request_page") != 1:
@@ -309,7 +323,7 @@ def _validate_capture(parsed):
             raise ValueError(
                 f"capture configuration guard lacks {required}"
             )
-    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 5:
+    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 6:
         raise ValueError("bounded snapshot or mailbox copy loops differ")
     rearm = [
         "mov r6,r0", "cmp/eq 0x4,r0", "bf telemetry_build_context_advance",
@@ -328,7 +342,7 @@ def _validate_capture(parsed):
         "jsr @r0", "nop",
     ]:
         raise ValueError("knock margin wrapper does not run stock first")
-    if texts.count("jsr @r0") != 1 or texts.count("sts.l pr,@-r15") != 2:
+    if texts.count("jsr @r0") != 1 or texts.count("sts.l pr,@-r15") != 3:
         raise ValueError("knock margin wrapper call graph differs")
     if (
         texts.count("mov.w r2,@(r0,r1)") != 1
@@ -345,9 +359,56 @@ def _validate_capture(parsed):
         "telemetry_margin_primary_channel", "telemetry_margin_exceeded",
         "telemetry_margin_negative", "telemetry_margin_compare",
         "telemetry_margin_return",
+        "telemetry_dynamic_slot_invalid", "telemetry_dynamic_crc",
+        "telemetry_dynamic_page_default", "telemetry_dynamic_page_reset",
     ):
         if required not in parsed.labels:
             raise ValueError(f"capture lacks {required}")
+    _validate_dynamic_page(texts)
+
+
+def _contains(texts, sequence):
+    return any(
+        texts[index : index + len(sequence)] == sequence
+        for index in range(len(texts) - len(sequence) + 1)
+    )
+
+
+def _validate_dynamic_page(texts):
+    """Bind page 3 to the dynamic configuration and its default fallback."""
+    for name, sequence in (
+        ("page 3 dispatch", [
+            "mov #0x7,r2", "mov r6,r0", "cmp/eq 0x3,r0",
+            "bf telemetry_build_byte_loop",
+            "bra telemetry_build_dynamic_page", "nop",
+        ]),
+        ("default for configuration ID 0", [
+            "mov.l @(telemetry_dynamic_page_state,pc),r1", "mov.b @r1,r0",
+            "tst r0,r0", "bt telemetry_dynamic_page_default",
+        ]),
+        ("six-byte slot budget", [
+            "tst r0,r0", "bt telemetry_dynamic_page_reset",
+            "cmp/hs r2,r7", "bf telemetry_dynamic_page_reset", "sub r2,r7",
+        ]),
+        ("fallback to the default row", [
+            "add -0x6,r4", "add r7,r4", "mov #0x0,r0", "mov.b r0,@r8",
+            "mov #0x7,r2", "bra telemetry_dynamic_page_return", "nop",
+        ]),
+        ("slot window", [
+            "mov.l @(telemetry_dynamic_window_start,pc),r0", "cmp/hs r0,r1",
+            "bf telemetry_dynamic_slot_invalid",
+            "mov.l @(telemetry_dynamic_window_end,pc),r0", "sub r2,r0",
+            "cmp/hi r0,r1", "bt telemetry_dynamic_slot_invalid",
+        ]),
+        ("slot alignment", [
+            "add -0x1,r0", "and r1,r0", "tst r0,r0",
+            "bf telemetry_dynamic_slot_invalid",
+        ]),
+    ):
+        if not _contains(texts, sequence):
+            raise ValueError(f"dynamic page {name} differs")
+    if texts.count("mov #0x6,r7") != 1 or texts.count("mov.b r0,@r8") != 1:
+        raise ValueError("dynamic page budget or fallback differs")
 
 
 def _validate_completion(parsed, variant="combined-mailbox26"):
@@ -365,12 +426,13 @@ def _validate_completion(parsed, variant="combined-mailbox26"):
         ]
         if texts[:9] != prologue or texts[9 : 9 + len(tail)] != tail:
             raise ValueError("tail-chain SLE1 wrapper ABI differs")
-        if texts.count("rte") != 0 or texts.count("jsr @r0") != 3:
+        if texts.count("rte") != 0 or texts.count("jsr @r0") != 5:
             raise ValueError("tail-chain completion call graph differs")
         if texts.count("mov.w r5,@r4") != 2:
             raise ValueError("custom mailbox acknowledgment behavior differs")
         if "telemetry_queue_corrupt" not in parsed.labels:
             raise ValueError("completion lacks fail-closed corrupt-state path")
+        _validate_dynamic_command(parsed, texts)
         return
     if variant != "combined-mailbox26":
         raise ValueError(f"unsupported completion variant {variant!r}")
@@ -380,7 +442,7 @@ def _validate_completion(parsed, variant="combined-mailbox26"):
     restore = texts.index("lds.l @r15+,pr")
     if texts[restore : restore + len(epilogue)] != epilogue:
         raise ValueError("SLE1 handler exception epilogue differs")
-    if texts.count("rte") != 1 or texts.count("jsr @r0") != 4:
+    if texts.count("rte") != 1 or texts.count("jsr @r0") != 6:
         raise ValueError("SLE1 return or call graph differs")
     if texts.count("mov.b r0,@r4") != 2:
         raise ValueError("stock mailbox-28 activity-state behavior differs")
@@ -390,6 +452,59 @@ def _validate_completion(parsed, variant="combined-mailbox26"):
         raise ValueError("mailbox-26 acknowledgment behavior differs")
     if "telemetry_queue_corrupt" not in parsed.labels:
         raise ValueError("completion lacks fail-closed corrupt-state path")
+    _validate_dynamic_command(parsed, texts)
+
+
+def _validate_status_acknowledgment(parsed, manifest):
+    """Bind the completion to the wire byte of telemetry_status: a complete
+    group clears the status bits that its transmitted status byte carries."""
+    (status,) = [field for field in manifest.fields if field.name == "telemetry_status"]
+    if not _contains(_texts(parsed), [
+        f"add 0x{8 * status.page + status.offset:x},r4", "mov.b @r4,r1", "not r1,r1",
+    ]):
+        raise ValueError("completion clears status bits outside the telemetry_status byte")
+
+
+def _validate_dynamic_command(parsed, texts):
+    """Bind the command opcodes, the CRC gate, and the reject path."""
+    for name, sequence in (
+        ("CRC gate", [
+            "mov.l @(telemetry_dynamic_command_crc,pc),r0", "jsr @r0", "nop",
+            "extu.w r5,r1", "cmp/eq r1,r0", "bf telemetry_dynamic_reject",
+        ]),
+        ("opcode dispatch", [
+            "exts.b r0,r0", "cmp/eq -0x40,r0", "bt telemetry_dynamic_default",
+            "cmp/eq -0x3f,r0", "bt telemetry_dynamic_set",
+            "cmp/eq -0x3e,r0", "bt telemetry_dynamic_commit",
+        ]),
+        ("saturating reject counter", [
+            "mov.b @(0x3,r8),r0", "cmp/eq -0x1,r0",
+            "bt telemetry_dynamic_clear", "add 0x1,r0", "mov.b r0,@(0x3,r8)",
+        ]),
+        ("staging clear", [
+            "mov #0x0,r0", "mov.w r0,@(0x6,r8)", "mov.b r0,@(0x8,r8)",
+        ]),
+        ("SET slot check", [
+            "mov r7,r1", "mov.l @(telemetry_dynamic_command_slot,pc),r0",
+            "jsr @r0", "nop", "tst r0,r0", "bt telemetry_dynamic_reject",
+        ]),
+        ("COMMIT staged-mask match", [
+            "mov.w @(0x6,r8),r0", "cmp/eq r10,r0",
+            "bf telemetry_dynamic_reject",
+        ]),
+    ):
+        if not _contains(texts, sequence):
+            raise ValueError(f"dynamic command {name} differs")
+    if texts.count("mov.b r0,@r8") != 2:
+        raise ValueError("dynamic commands write the active ID outside DEFAULT and COMMIT")
+    for required in (
+        "telemetry_dynamic_reject", "telemetry_dynamic_clear",
+        "telemetry_dynamic_return", "telemetry_dynamic_default",
+        "telemetry_dynamic_set", "telemetry_dynamic_commit",
+        "telemetry_dynamic_group",
+    ):
+        if required not in parsed.labels:
+            raise ValueError(f"dynamic commands lack {required}")
 
 
 def _validate_control(parsed):
@@ -416,6 +531,15 @@ def _validate_control(parsed):
         raise ValueError("control poll does not clear every pending mailbox flag")
     if texts.count("tst 0x8,r0") != 1:
         raise ValueError("control poll does not reject a retained remote frame")
+    if not _contains(texts, [
+        "mov.l @(telemetry_control_command_magic,pc),r2", "cmp/eq r2,r0",
+        "bf telemetry_control_poll_dynamic",
+    ]) or not _contains(texts, [
+        "mov r0,r4", "mov r1,r5",
+        "mov.l @(telemetry_control_dynamic_command,pc),r0", "jsr @r0", "nop",
+        "bra telemetry_control_poll_return", "nop",
+    ]):
+        raise ValueError("control poll does not pass other frames to the dynamic commands")
     for required in (
         "telemetry_control_init_return",
         "telemetry_control_poll_data",
@@ -432,7 +556,8 @@ def _validate_control(parsed):
 def validate_assembly_sources(layout=None):
     layout = layout or layout_model.load_layout()
     can_telemetry_profile.generate(check=True)
-    identity = _manifest_identity(can_telemetry_profile.load_manifest())
+    manifest = can_telemetry_profile.load_manifest()
+    identity = _manifest_identity(manifest)
     expected_words = _expected_word_literals(identity)
     source_dir = layout_model.DEFAULT_MANIFEST.parent
     parsed_by_unit = {}
@@ -491,6 +616,7 @@ def validate_assembly_sources(layout=None):
             )
         elif unit.key == "completion":
             _validate_completion(parsed, layout.variant)
+            _validate_status_acknowledgment(parsed, manifest)
         elif unit.key == "control":
             _validate_control(parsed)
             _validate_identity_symbols(source, unit.key)

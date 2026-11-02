@@ -83,9 +83,14 @@ def origin_regions(telemetry, active):
     [(start, end, owner)] of the reservation ledger."""
     ram = telemetry["ram"]
     configuration = telemetry["configuration_address"]
+    # The state record and the state of the dynamic page hold the telemetry
+    # state that the wire carries.
+    state = [(ram["state_start"], ram["state_start"] + ram["state_size"], "can_telemetry")]
+    if "dynamic_start" in ram:
+        state.append((ram["dynamic_start"], ram["dynamic_start"] + ram["dynamic_size"],
+                      "can_telemetry"))
     return {
-        "telemetry_state": [(ram["state_start"], ram["state_start"] + ram["state_size"],
-                             "can_telemetry")],
+        "telemetry_state": state,
         "rom_configuration": [(configuration, configuration + telemetry["configuration_size"],
                                "can_telemetry")],
         "runtime_state": [span for span in active if span[2] in RUNTIME_OWNERS],

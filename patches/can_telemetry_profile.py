@@ -93,11 +93,28 @@ class Context:
 
 
 @dataclass(frozen=True)
+class DynamicPage:
+    """The page whose data bytes carry the RAM slots of a host configuration
+    under a nonzero configuration ID, which the configuration byte states."""
+    page: int
+    data_bytes: int
+    configuration_offset: int
+
+    def wire(self):
+        return {
+            "page": self.page,
+            "data_bytes": self.data_bytes,
+            "configuration_offset": self.configuration_offset,
+        }
+
+
+@dataclass(frozen=True)
 class Profile:
     name: str
     profile_id: int
     page_count: int
     crc16: int
+    dynamic: DynamicPage | None = None
 
 
 @dataclass(frozen=True)
@@ -234,9 +251,10 @@ def _parse_field(raw, *, context, page_field, runtime_spans=()):
         and field.source + field.width <= 0xFFFF5D00
     ):
         raise ValueError(f"{context}: ECU RAM source is outside the safe application range")
-    if field.kind == "telemetry_state" and not (
-        0xFFFF5E00 <= field.source
-        and field.source + field.width <= 0xFFFF5E20
+    # The state record and the header of the dynamic page state.
+    if field.kind == "telemetry_state" and not any(
+        start <= field.source and field.source + field.width <= end
+        for start, end in ((0xFFFF5E00, 0xFFFF5E20), (0xFFFF5F00, 0xFFFF5F10))
     ):
         raise ValueError(f"{context}: telemetry source is outside state RAM")
     if field.kind == "runtime_state" and not any(
@@ -265,10 +283,11 @@ def _canonical_profile(raw, fields, contexts, protocol_version, padding=()):
 
     The document holds what decides the byte placement of a value: protocol
     version, profile ID, page count, the page, offset, width, and signedness of
-    every fixed field, and the page, tag, and ordered widths and signedness of
-    every context. Field names, context names, scale strings, and producer
-    addresses stay outside, so a renamed field or a restated scale keeps the
-    CRC. A slot that carries a different quantity takes a new profile ID.
+    every fixed field, the page, tag, and ordered widths and signedness of
+    every context, and the dynamic page. Field names, context names, scale
+    strings, and producer addresses stay outside, so a renamed field or a
+    restated scale keeps the CRC. A slot that carries a different quantity
+    takes a new profile ID.
     """
     selected = sorted(
         (
@@ -303,7 +322,37 @@ def _canonical_profile(raw, fields, contexts, protocol_version, padding=()):
     }
     if padding:
         result["padding"] = [pad.wire() for pad in padding]
+    if raw.get("dynamic"):
+        result["dynamic"] = dict(raw["dynamic"])
     return result
+
+
+def _dynamic_page(raw, fields, fixed_page_count, context):
+    """Return the dynamic page of a profile: a fixed page whose data bytes
+    precede the configuration byte, an unsigned telemetry state field."""
+    _require_keys(raw, {"page", "data_bytes", "configuration_offset"}, (), context)
+    dynamic = DynamicPage(**raw)
+    if (
+        any(type(value) is not int for value in raw.values())
+        or not 0 <= dynamic.page < fixed_page_count
+        or dynamic.configuration_offset != 7
+        or dynamic.data_bytes != dynamic.configuration_offset - 1
+    ):
+        raise ValueError(f"{context}: invalid dynamic page")
+    configuration = [
+        field for field in fields
+        if (field.page, field.offset) == (dynamic.page, dynamic.configuration_offset)
+    ]
+    if (
+        len(configuration) != 1
+        or configuration[0].width != 1
+        or configuration[0].signed
+        or configuration[0].kind != "telemetry_state"
+    ):
+        raise ValueError(
+            f"{context}: the configuration byte is no unsigned telemetry state byte"
+        )
+    return dynamic
 
 
 def load_manifest(path=DEFAULT_SOURCE):
@@ -437,7 +486,12 @@ def load_manifest(path=DEFAULT_SOURCE):
     page_count = raw["fixed_page_count"] + len(raw["context_pages"])
     profiles = []
     for index, item in enumerate(profile_raw):
-        _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")
+        _require_keys(item, {"name", "id", "page_count"}, ("dynamic",), f"profile[{index}]")
+        dynamic = (
+            _dynamic_page(item["dynamic"], fields, raw["fixed_page_count"],
+                          f"profile[{index}].dynamic")
+            if "dynamic" in item else None
+        )
         # The configuration guards compare the sign-extended configuration
         # byte with a signed 8-bit immediate, and the capture always builds
         # every fixed and context page.
@@ -457,6 +511,7 @@ def load_manifest(path=DEFAULT_SOURCE):
             item["id"],
             item["page_count"],
             can_telemetry_schema.crc16_ccitt_false(encoded),
+            dynamic,
         ))
     profiles = tuple(profiles)
 
@@ -608,6 +663,7 @@ def render_schema(manifest):
                 ],
                 **({"padding": [pad.wire() for pad in manifest.padding]}
                    if manifest.padding else {}),
+                **({"dynamic": profile.dynamic.wire()} if profile.dynamic else {}),
             }
             for profile in manifest.profiles
         ],
@@ -644,6 +700,15 @@ def render_identity(manifest):
         f"#define TELEMETRY_PROFILE_ID 0x{profile.profile_id:02X}",
         f"#define TELEMETRY_PAGE_COUNT 0x{profile.page_count:02X}",
         f"#define TELEMETRY_PROFILE_CRC 0x{profile.crc16:04X}",
+        *(
+            (
+                f"#define TELEMETRY_DYNAMIC_PAGE {profile.dynamic.page}U",
+                f"#define TELEMETRY_DYNAMIC_DATA_BYTES {profile.dynamic.data_bytes}U",
+                "#define TELEMETRY_DYNAMIC_CONFIGURATION_OFFSET "
+                f"{profile.dynamic.configuration_offset}U",
+            )
+            if profile.dynamic else ()
+        ),
         "#define TELEMETRY_CONFIGURATION { "
         + ", ".join(f"0x{value:02X}" for value in record)
         + " }",

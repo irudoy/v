@@ -114,13 +114,23 @@ mov.w r2,@r3
 
 mov.l @(telemetry_control_command_magic,pc),r2
 cmp/eq r2,r0
-bf telemetry_control_poll_return
+bf telemetry_control_poll_dynamic
 mov.l @(telemetry_control_start_tail,pc),r2
 cmp/eq r2,r1
 bt telemetry_control_start
 mov.l @(telemetry_control_stop_tail,pc),r2
 cmp/eq r2,r1
 bt telemetry_control_stop
+bra telemetry_control_poll_return
+nop
+
+// A frame without the TEL2 magic is a dynamic page command.
+telemetry_control_poll_dynamic:
+mov r0,r4
+mov r1,r5
+mov.l @(telemetry_control_dynamic_command,pc),r0
+jsr @r0
+nop
 bra telemetry_control_poll_return
 nop
 
@@ -227,6 +237,8 @@ telemetry_control_start_tail:
 .long 0x0201B632
 telemetry_control_stop_tail:
 .long 0x0200A613
+telemetry_control_dynamic_command:
+.long 0x000D4A70
 telemetry_control_config_integrity:
 .long 0x54454C32
 telemetry_control_mailbox31_mask_poll:

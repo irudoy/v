@@ -26,8 +26,8 @@ purpose = "Rolling Launch state record."
 [[active_ram]]
 owner = "can_telemetry"
 start = 0xFFFF5E00
-end = 0xFFFF5F00
-purpose = "Queue state, two snapshot banks, event data, and active slack."
+end = 0xFFFF5F90
+purpose = "Queue state, two snapshot banks, event data, active slack, and the dynamic page configuration."
 
 [[future_rom]]
 owner = "can_telemetry"
@@ -49,7 +49,7 @@ purpose = "Map Switching executable and table expansion."
 
 [[future_ram]]
 owner = "can_telemetry"
-start = 0xFFFF5F00
+start = 0xFFFF5F90
 end = 0xFFFF6000
 purpose = "CAN telemetry queue or signal expansion."
 

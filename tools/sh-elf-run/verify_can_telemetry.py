@@ -37,8 +37,11 @@ from patches import rolling_launch_layout
 
 HARNESS_ISR_RETURNS = 5
 CAN_COVERAGE_UNITS = ("wrappers", "control", "capture", "completion")
-CAPTURE_MEASURED_REGIONS = ("capture", "build_bank", "knock_margin_wrapper", "request_page")
-COMPLETION_MEASURED_REGIONS = ("sle1_isr", "completion")
+CAPTURE_MEASURED_REGIONS = (
+    "capture", "dynamic_slot", "build_bank", "knock_margin_wrapper",
+    "request_page",
+)
+COMPLETION_MEASURED_REGIONS = ("sle1_isr", "completion", "dynamic_command")
 HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
 HARNESS_INCLUDE_DIR = ROOT / "patches"
 # The harness takes its configuration fixture from the generated identity
@@ -628,6 +631,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
     magic_target = map_switching_assembly._validate_direct_branch_encoding(
         parsed_by_unit["capture"], magic_fail,
         int.from_bytes(fixture[magic_fail.address:magic_fail.address + 2], "big"))
+    capture = parsed_by_unit["capture"]
+    dynamic_reset = next(row for row in measured_capture
+                         if row.kind == "instruction"
+                         and row.text == "bt telemetry_dynamic_page_reset"
+                         and capture.statement_by_address[row.address - 2].text == "tst r0,r0")
+    dynamic_reset_target = map_switching_assembly._validate_direct_branch_encoding(
+        capture, dynamic_reset,
+        int.from_bytes(fixture[dynamic_reset.address:dynamic_reset.address + 2], "big"))
     measured_completion = _measured_statements("completion", parsed_by_unit["completion"], layout)
     abort_edge = next(row for row in measured_completion
                       if row.kind == "instruction" and row.text == "bt telemetry_isr_restore")
@@ -669,6 +680,13 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, layout, parsed_by_unit,
         ),
          f"uncovered CAN wrapper outcome {magic_fail.address:#010x}->{magic_target:#010x}",
          "VQ_SH_ELF_CAN_CAPTURE_COVERAGE_NEGATIVE"),
+        ("dynamic-reset", (
+            ("    write_u32(dynamic_state() + 0x14, 0x03000000U | (b & 0x00ffffffU));\n",
+             "    dynamic_state()[0] = 0;\n"),
+        ),
+         f"uncovered CAN wrapper outcome {dynamic_reset.address:#010x}->"
+         f"{dynamic_reset_target:#010x}",
+         "VQ_SH_ELF_CAN_DYNAMIC_COVERAGE_NEGATIVE"),
         ("isr-abort", (
             ('if (!run_isr_case("isr-stock-abort", 0, MAILBOX28_MASK, 0))',
              'if (!run_isr_case("isr-stock-abort", 0, 0, 0))'),

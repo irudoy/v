@@ -76,6 +76,7 @@ SH7058S_SH2E_MNEMONICS = frozenset({
     "cmp/pl",
     "cmp/pz",
     "dt",
+    "exts.b",
     "extu.b",
     "extu.w",
     "jmp",
@@ -97,13 +98,18 @@ SH7058S_SH2E_MNEMONICS = frozenset({
     "shar",
     "shll",
     "shll2",
+    "shll8",
+    "shll16",
     "shlr",
+    "shlr2",
     "shlr8",
+    "shlr16",
     "stc",
     "sts.l",
     "sts",
     "sub",
     "tst",
+    "xor",
 })
 
 

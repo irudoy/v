@@ -908,7 +908,12 @@
           "tag": 4
         }
       ],
-      "crc16_ccitt_false": "0xBCAB",
+      "crc16_ccitt_false": "0x5DEF",
+      "dynamic": {
+        "configuration_offset": 7,
+        "data_bytes": 6,
+        "page": 3
+      },
       "fields": [
         {
           "dashboard": {
@@ -1354,15 +1359,38 @@
           "width": 2
         },
         {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
           "dashboard": {
+            "description": "Measured exhaust camshaft position of bank 1 in crank degrees, from the phase of the cam sensor edges.",
+            "digits": 1,
+            "group": "CVTC",
+            "label": "Exhaust CVTC actual B1",
+            "order": 10,
+            "panel": "CVTC detail"
+          },
+          "name": "exhaust_cvtc_actual_b1_raw",
+          "offset": 6,
+          "page": 3,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "dashboard": {
+            "description": "The dynamic configuration that page 3 carries: its ID in bits 0 through 6 and the group of the frame in bit 7. ID 0 is the default configuration, whose fields the profile names.",
             "digits": 0,
             "group": "Transport",
-            "label": "Telemetry status"
+            "label": "Page 3 configuration"
           },
-          "name": "telemetry_status",
+          "name": "telemetry_page_configuration",
           "offset": 7,
           "page": 3,
-          "scale": "bit mask",
+          "scale": "ID in bits 0 through 6, group in bit 7",
           "signed": false,
           "width": 1
         },
@@ -1800,25 +1828,16 @@
           "width": 2
         },
         {
-          "candidate": false,
-          "conversion": {
-            "factor": 0.5,
-            "offset": -64.0
-          },
           "dashboard": {
-            "description": "Measured exhaust camshaft position of bank 1 in crank degrees, from the phase of the cam sensor edges.",
-            "digits": 1,
-            "group": "CVTC",
-            "label": "Exhaust CVTC actual B1",
-            "order": 10,
-            "panel": "CVTC detail"
+            "digits": 0,
+            "group": "Transport",
+            "label": "Telemetry status"
           },
-          "name": "exhaust_cvtc_actual_b1_raw",
+          "name": "telemetry_status",
           "offset": 7,
           "page": 7,
-          "scale": "raw * 0.5 - 64 degCA",
+          "scale": "bit mask",
           "signed": false,
-          "unit": "degCA",
           "width": 1
         },
         {
@@ -1921,15 +1940,8 @@
           "width": 1
         }
       ],
-      "id": 8,
+      "id": 9,
       "name": "tuning",
-      "padding": [
-        {
-          "offset": 6,
-          "page": 3,
-          "width": 1
-        }
-      ],
       "page_count": 11
     }
   ],

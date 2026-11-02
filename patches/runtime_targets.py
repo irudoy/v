@@ -68,6 +68,12 @@ ZERO_SHA256 = "0" * 64
 
 NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_])0x[0-9A-Fa-f]+")
 
+# The dynamic telemetry page reads only on-chip RAM. The canonical source
+# starts its window at the SH7058S RAM, and an SH7059 layout starts it at the
+# larger RAM of its MCU; both windows end at 0x00FFC000.
+CAN_DYNAMIC_WINDOW_START = 0x00FF0000
+SH7059_CAN_DYNAMIC_WINDOW_START = 0x00FE8000
+
 # The dual-CVTC layout reuses the canonical exhaust-target family
 # allocation for the target intake-cam family and allocates separate
 # storage for the target exhaust-cam family.
@@ -439,6 +445,13 @@ def _render_source(source, profile, mapping, overrides=None):
         code = NUMBER_RE.sub(replace_number, code)
         rendered.append(code + (marker + comment if marker else ""))
     return "\n".join(rendered) + "\n"
+
+
+def can_dynamic_window_overrides(profile):
+    """Bind the dynamic telemetry window to the on-chip RAM of a layout."""
+    if profile.family in rom_address_profiles.SH7059_FAMILIES:
+        return {CAN_DYNAMIC_WINDOW_START: SH7059_CAN_DYNAMIC_WINDOW_START}
+    return {}
 
 
 def render_target_text(rom, source, overrides=None):
@@ -1184,7 +1197,9 @@ def _project_can(
                         control_layout.control_mailbox_address,
                     base.control_mailbox_mask:
                         control_layout.control_mailbox_mask,
-                } if unit.key == "control" else None,
+                } if unit.key == "control"
+                else can_dynamic_window_overrides(profile)
+                if unit.key == "capture" else None,
             )
             if unit.key == "capture":
                 source_texts[unit.key] = _move_knock_surface_bit(
@@ -1231,6 +1246,7 @@ def _project_can(
         bank_b=_shift_range(base.ram.bank_b, ram_delta),
         event=_shift_range(base.ram.event, ram_delta),
         active_reserved=_shift_range(base.ram.active_reserved, ram_delta),
+        dynamic=_shift_range(base.ram.dynamic, ram_delta),
     )
     extra = profile.extra_cvtc_storage
     state_storage = profile.ignition_state_storage

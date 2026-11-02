@@ -42,8 +42,8 @@ class ApplyCanTelemetryTest(unittest.TestCase):
                 self.assertEqual(
                     result.mailbox_record, configuration.mailbox_record()
                 )
-                self.assertEqual(result.instruction_count, 720)
-                self.assertEqual(result.code_entry_count, 11)
+                self.assertEqual(result.instruction_count, 1068)
+                self.assertEqual(result.code_entry_count, 13)
                 self.assertGreater(result.final_changed_bytes, 1100)
 
     def test_output_changes_only_closed_write_set_and_checksums(self):

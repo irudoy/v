@@ -4,7 +4,7 @@
 // after its coherent interrupt-disabled boundary. The knock wrapper latches
 // the completed interval before FUN_000493E8 clears its event count. This latch
 // is refreshed on every base tick, so a divisor greater than one can overwrite
-// an interval before publication. Startup clears only the active 256-byte
+// an interval before publication. Startup clears only the active 400-byte
 // telemetry allocation, arms the six knock margin latches with the idle
 // value, and continues the existing Rolling Launch and map-switching
 // startup chain.
@@ -64,7 +64,7 @@ telemetry_knock_stock:
 telemetry_startup_wrapper:
 sts.l pr,@-r15
 mov.l @(telemetry_startup_state,pc),r1
-mov #0x40,r2
+mov #0x64,r2
 mov #0x0,r0
 telemetry_startup_clear_loop:
 mov.l r0,@r1

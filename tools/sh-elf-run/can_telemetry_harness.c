@@ -6,7 +6,10 @@
 
 #define TEST_RAM_BASE 0x01000000U
 #define TELEMETRY_STATE 0xffff5e00U
-#define TELEMETRY_ACTIVE_SIZE 0x100U
+#define TELEMETRY_ACTIVE_SIZE 0x190U
+#define DYNAMIC_STATE 0xffff5f00U
+#define DYNAMIC_WINDOW_START 0x00ff0000U
+#define DYNAMIC_WINDOW_END 0x00ffc000U
 #define BANK_A 0xffff5e20U
 #define BANK_B 0xffff5e78U
 #define CONFIG 0x000d4e00U
@@ -85,6 +88,8 @@ extern void invoke_exception_probe(uint32_t *registers);
 
 static size_t case_count;
 static uint8_t margin_snapshot[12];
+/* Expected bytes 1..7 of the dynamic page under a dynamic configuration. */
+static const uint8_t *dynamic_page;
 
 static const uint8_t configuration[16] = TELEMETRY_CONFIGURATION;
 
@@ -343,6 +348,8 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
             uint8_t expected = wire_byte(
                 page * 7 + offset,
                 ((volatile uint8_t *)(uintptr_t)source)[0]);
+            if (page == TELEMETRY_DYNAMIC_PAGE && dynamic_page != NULL)
+                expected = dynamic_page[offset];
             if (actual[page * 8 + offset + 1] != expected)
                 return fail_value(
                     name, "page_source",
@@ -377,10 +384,14 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
             return fail_value(
                 name, "context_10_source", actual[82 + offset], expected);
     }
-    /* Reserved profile bytes have a zero-value contract independent of the
-       source-pointer table used by the generic capture comparison. */
-    if (actual[3 * 8 + 6] != 0)
-        return fail_value(name, "fixed_reserved_zero", actual[3 * 8 + 6], 0);
+    /* The default configuration carries configuration byte 0, independent
+       of the source-pointer table used by the generic capture comparison. */
+    if (dynamic_page == NULL
+            && actual[TELEMETRY_DYNAMIC_PAGE * 8
+                + TELEMETRY_DYNAMIC_CONFIGURATION_OFFSET] != 0)
+        return fail_value(name, "default_configuration",
+            actual[TELEMETRY_DYNAMIC_PAGE * 8
+                + TELEMETRY_DYNAMIC_CONFIGURATION_OFFSET], 0);
     return 1;
 }
 
@@ -453,7 +464,7 @@ static int run_wrapper_cases(void)
 
     count_case();
     reset_case();
-    fill_bytes(ram_pointer(0xffff5df0U), 0x120, 0xa5);
+    fill_bytes(ram_pointer(0xffff5df0U), 0x1b0, 0xa5);
     ram_pointer(MAP_SELECTOR_STATE)[0] = 0xa5;
     (void)invoke_r4(STARTUP_WRAPPER, 0);
     if (ram_pointer(MAP_SELECTOR_STATE)[0] != 0)
@@ -473,7 +484,7 @@ static int run_wrapper_cases(void)
     for (index = 0; index < 16; ++index) {
         if (ram_pointer(0xffff5df0U)[index] != 0xa5)
             return fail_value("startup", "lower_guard", index, 0);
-        if (ram_pointer(0xffff5f00U)[index] != 0xa5)
+        if (ram_pointer(0xffff5f90U)[index] != 0xa5)
             return fail_value("startup", "upper_guard", index, 0);
     }
 
@@ -870,6 +881,13 @@ static int run_control_command_probe(unsigned mode, uint8_t divisor,
         state[4 + 11] = 2;
         state[4 + 10] = 0;
         state[4 + 1] = 0;
+    } else if (mode == 5) {
+        /* Without the TEL2 magic the frame is a dynamic page command, and
+           its CRC fails: the reject counter advances and the staging clears. */
+        state[4 + 0x103] = 0x6e;
+        state[4 + 0x106] = 0;
+        state[4 + 0x107] = 0;
+        state[4 + 0x108] = 0;
     }
     __asm__ volatile ("mov r15,%0" : "=r" (before) : : "memory");
     (void)invoke_r4(CONTROL_POLL, 0);
@@ -1335,7 +1353,7 @@ static int run_completion_cases(void)
     state[2] = 1;
     state[3] = 10;
     state[4] = 11;
-    ram_pointer(BANK_A)[31] = 0x03;
+    ram_pointer(BANK_A)[63] = 0x03;
     state[7] = 0x0f;
     signal_ack(MAILBOX26_MASK);
     (void)invoke_r4(COMPLETION, 0);
@@ -1501,6 +1519,471 @@ static int run_isr_cases(void)
     return 1;
 }
 
+/* Dynamic page: commands on the control frame and page 3 of the capture. */
+static volatile uint8_t *dynamic_state(void)
+{
+    return ram_pointer(DYNAMIC_STATE);
+}
+
+static uint32_t window_start(uint32_t offset)
+{
+    return 0xff000000U | (DYNAMIC_WINDOW_START + offset);
+}
+
+static uint32_t window_end(uint32_t offset)
+{
+    return 0xff000000U | (DYNAMIC_WINDOW_END - offset);
+}
+
+static uint16_t dynamic_crc(const uint8_t *bytes)
+{
+    uint16_t crc = 0xffffU;
+    size_t index;
+    unsigned bit;
+
+    for (index = 0; index < 6; ++index) {
+        crc ^= (uint16_t)(bytes[index] << 8);
+        for (bit = 0; bit < 8; ++bit)
+            crc = (crc & 0x8000U)
+                ? (uint16_t)((crc << 1) ^ 0x1021U)
+                : (uint16_t)(crc << 1);
+    }
+    return crc;
+}
+
+static void send_dynamic(
+    uint8_t opcode, uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4,
+    uint8_t b5, int corrupt)
+{
+    uint8_t frame[8] = {opcode, b1, b2, b3, b4, b5, 0, 0};
+    uint16_t crc = dynamic_crc(frame);
+
+    if (corrupt)
+        crc ^= 1U;
+    frame[6] = (uint8_t)(crc >> 8);
+    frame[7] = (uint8_t)crc;
+    seed_control_command(frame, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+}
+
+static void send_set(
+    uint8_t id, unsigned group, unsigned slot, unsigned width,
+    uint32_t address)
+{
+    send_dynamic(0xc1, id, (uint8_t)((group << 7) | (slot << 4) | width),
+        (uint8_t)(address >> 16), (uint8_t)(address >> 8), (uint8_t)address,
+        0);
+}
+
+static void send_commit(uint8_t id, uint8_t groups, uint8_t n0, uint8_t n1)
+{
+    send_dynamic(0xc2, id, groups, n0, n1, 0, 0);
+}
+
+static int expect_dynamic(
+    const char *name, uint8_t active, uint8_t staging, uint16_t mask,
+    uint8_t rejects)
+{
+    volatile uint8_t *state = dynamic_state();
+
+    if (state[0] != active)
+        return fail_value(name, "active_id", state[0], active);
+    if (state[8] != staging)
+        return fail_value(name, "staging_id", state[8], staging);
+    if (read_u16(state + 6) != mask)
+        return fail_value(name, "staged_mask", read_u16(state + 6), mask);
+    if (state[3] != rejects)
+        return fail_value(name, "rejects", state[3], rejects);
+    return 1;
+}
+
+static void seed_slot(uint32_t address, unsigned width, uint8_t first)
+{
+    unsigned index;
+
+    for (index = 0; index < width; ++index)
+        ram_pointer(address + index)[0] = (uint8_t)(first + index * 13U);
+}
+
+/* Bytes 1..7 of the dynamic page: the slot bytes, zero padding, and the
+   configuration byte. */
+static void expect_page(
+    uint8_t *page, const uint32_t *addresses, const uint8_t *widths,
+    size_t count, uint8_t id_byte)
+{
+    size_t slot;
+    size_t out = 0;
+    unsigned index;
+
+    for (slot = 0; slot < count; ++slot)
+        for (index = 0; index < widths[slot]; ++index)
+            page[out++] = ram_pointer(addresses[slot] + index)[0];
+    while (out < TELEMETRY_DYNAMIC_DATA_BYTES)
+        page[out++] = 0;
+    page[TELEMETRY_DYNAMIC_DATA_BYTES] = id_byte;
+}
+
+/* Build one idle snapshot of context 0 and verify every page of it. */
+static int capture_dynamic(const char *name, const uint8_t *page)
+{
+    volatile uint8_t *state = ram_pointer(TELEMETRY_STATE);
+    uint32_t bank = state[0] ? BANK_A : BANK_B;
+    int result;
+
+    state[1] = 0;
+    state[2] = 0;
+    state[6] = 0;
+    dynamic_page = page;
+    (void)invoke_r4(CAPTURE, 0);
+    result = verify_bank(name, bank, 0);
+    dynamic_page = NULL;
+    return result;
+}
+
+static int run_dynamic_command_cases(void)
+{
+    uint32_t a = window_start(0x100);
+    volatile uint8_t *state;
+
+    count_case();
+    reset_case();
+    if (dynamic_crc(start_command) != 0xb632U
+            || dynamic_crc(stop_command) != 0xa613U)
+        return fail_value("dyn-crc-model", "crc", dynamic_crc(start_command),
+            0xb632U);
+    send_set(1, 0, 0, 1, a);
+    if (!expect_dynamic("dyn-set", 0, 1, 0x0001U, 0))
+        return 0;
+    send_dynamic(0xc1, 1, 0x11, (uint8_t)(a >> 16), (uint8_t)(a >> 8),
+        (uint8_t)a, 1);
+    if (!expect_dynamic("dyn-crc", 0, 0, 0, 1))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 1, a);
+    send_dynamic(0xc3, 1, 0x01, 0, 0, 0, 0);
+    if (!expect_dynamic("dyn-opcode", 0, 0, 0, 2))
+        return 0;
+
+    count_case();
+    send_dynamic(0xc0, 1, 0, 0, 0, 0, 0);
+    if (!expect_dynamic("dyn-default-head", 0, 0, 0, 3))
+        return 0;
+
+    count_case();
+    send_dynamic(0xc0, 0, 0, 0, 0, 1, 0);
+    if (!expect_dynamic("dyn-default-tail", 0, 0, 0, 4))
+        return 0;
+
+    count_case();
+    send_set(0, 0, 0, 1, a);
+    if (!expect_dynamic("dyn-set-id-zero", 0, 0, 0, 5))
+        return 0;
+
+    count_case();
+    send_set(0x80, 0, 0, 1, a);
+    if (!expect_dynamic("dyn-set-id-high", 0, 0, 0, 6))
+        return 0;
+
+    count_case();
+    send_set(1, 0, TELEMETRY_DYNAMIC_DATA_BYTES, 1, a);
+    if (!expect_dynamic("dyn-set-slot", 0, 0, 0, 7))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 3, a);
+    if (!expect_dynamic("dyn-set-width", 0, 0, 0, 8))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 2, a + 1);
+    if (!expect_dynamic("dyn-set-word-align", 0, 0, 0, 9))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 4, a + 2);
+    if (!expect_dynamic("dyn-set-long-align", 0, 0, 0, 10))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 1, window_start(0) - 1);
+    if (!expect_dynamic("dyn-set-below-byte", 0, 0, 0, 11))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 2, window_start(0) - 2);
+    if (!expect_dynamic("dyn-set-below-word", 0, 0, 0, 12))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 1, window_end(0));
+    if (!expect_dynamic("dyn-set-above-byte", 0, 0, 0, 13))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 2, window_end(0));
+    if (!expect_dynamic("dyn-set-above-word", 0, 0, 0, 14))
+        return 0;
+
+    count_case();
+    send_set(1, 0, 0, 4, window_end(0));
+    if (!expect_dynamic("dyn-set-above-long", 0, 0, 0, 15))
+        return 0;
+
+    count_case();
+    send_set(2, 0, 0, 1, window_start(0));
+    send_set(2, 0, 1, 2, window_start(0));
+    send_set(2, 0, 2, 4, window_start(0));
+    send_set(2, 1, 0, 1, window_end(1));
+    send_set(2, 1, 1, 2, window_end(2));
+    send_set(2, 1, 5, 4, window_end(4));
+    if (!expect_dynamic("dyn-set-edges", 0, 2, 0x2307U, 15))
+        return 0;
+
+    count_case();
+    send_set(3, 0, 1, 1, a);
+    if (!expect_dynamic("dyn-set-restart", 0, 3, 0x0002U, 15))
+        return 0;
+
+    count_case();
+    state = dynamic_state();
+    state[3] = 0xff;
+    send_dynamic(0xc3, 0, 0, 0, 0, 0, 0);
+    if (!expect_dynamic("dyn-reject-saturates", 0, 0, 0, 0xff))
+        return 0;
+    state[3] = 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_commit(0, 1, 1, 0);
+    if (!expect_dynamic("dyn-commit-id-zero", 0, 0, 0, 1))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_commit(5, 1, 1, 0);
+    if (!expect_dynamic("dyn-commit-id-staging", 0, 0, 0, 2))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_dynamic(0xc2, 4, 1, 1, 0, 1, 0);
+    if (!expect_dynamic("dyn-commit-reserved", 0, 0, 0, 3))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_commit(4, 1, 0, 0);
+    if (!expect_dynamic("dyn-commit-count-zero", 0, 0, 0, 4))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_commit(4, 1, TELEMETRY_DYNAMIC_DATA_BYTES + 1, 0);
+    if (!expect_dynamic("dyn-commit-count-high", 0, 0, 0, 5))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 4, a);
+    send_set(4, 0, 1, 2, a + 4);
+    send_set(4, 0, 2, 1, a + 6);
+    send_commit(4, 1, 3, 0);
+    if (!expect_dynamic("dyn-commit-wide", 0, 0, 0, 6))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_commit(4, 2, 1, 0);
+    if (!expect_dynamic("dyn-commit-groups", 0, 0, 0, 7))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_set(4, 1, 0, 1, a);
+    send_commit(4, 2, 1, TELEMETRY_DYNAMIC_DATA_BYTES + 1);
+    if (!expect_dynamic("dyn-commit-group-1", 0, 0, 0, 8))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_set(4, 0, 1, 1, a);
+    send_set(4, 0, 2, 1, a);
+    send_commit(4, 1, 2, 0);
+    if (!expect_dynamic("dyn-commit-mask", 0, 0, 0, 9))
+        return 0;
+
+    count_case();
+    send_set(4, 0, 0, 1, a);
+    send_set(4, 1, 0, 1, a);
+    send_commit(4, 1, 1, 0);
+    if (!expect_dynamic("dyn-commit-extra-group", 0, 0, 0, 10))
+        return 0;
+    return 1;
+}
+
+static int run_dynamic_capture_cases(void)
+{
+    uint32_t a = window_start(0x101);
+    uint32_t b = window_start(0x106);
+    uint32_t c = window_start(0x108);
+    uint32_t d = window_start(0x10e);
+    uint32_t e = window_start(0x113);
+    uint8_t page[TELEMETRY_DYNAMIC_DATA_BYTES + 1];
+    volatile uint8_t *state;
+
+    count_case();
+    reset_case();
+    seed_slot(a, 1, 0x3c);
+    seed_slot(b, 2, 0x51);
+    send_set(7, 0, 0, 1, a);
+    send_set(7, 0, 1, 2, b);
+    send_commit(7, 1, 2, 0);
+    state = dynamic_state();
+    if (!expect_dynamic("dyn-one-group", 7, 0, 0, 0)
+            || state[1] != 1 || state[2] != 0 || state[4] != 2
+            || state[5] != 0)
+        return fail_value("dyn-one-group", "configuration", state[4], 2);
+    {
+        const uint32_t addresses[] = {a, b};
+        const uint8_t widths[] = {1, 2};
+
+        expect_page(page, addresses, widths, 2, 7);
+        if (!capture_dynamic("dyn-one-group-first", page))
+            return 0;
+        count_case();
+        if (!capture_dynamic("dyn-one-group-second", page))
+            return 0;
+    }
+
+    count_case();
+    seed_slot(c, 4, 0x92);
+    seed_slot(d, 2, 0x17);
+    seed_slot(e, 1, 0xe4);
+    send_set(9, 0, 0, 4, c);
+    send_set(9, 0, 1, 1, a);
+    send_set(9, 0, 2, 1, e);
+    send_set(9, 1, 0, 2, b);
+    send_set(9, 1, 1, 2, d);
+    send_set(9, 1, 2, 1, e);
+    send_commit(9, 2, 3, 3);
+    if (!expect_dynamic("dyn-two-groups", 9, 0, 0, 0)
+            || state[1] != 2 || state[4] != 3 || state[5] != 3)
+        return fail_value("dyn-two-groups", "configuration", state[5], 3);
+    {
+        const uint32_t first[] = {c, a, e};
+        const uint8_t first_widths[] = {4, 1, 1};
+        const uint32_t second[] = {b, d, e};
+        const uint8_t second_widths[] = {2, 2, 1};
+
+        expect_page(page, first, first_widths, 3, 9);
+        if (!capture_dynamic("dyn-two-groups-0", page))
+            return 0;
+        count_case();
+        expect_page(page, second, second_widths, 3, 0x89);
+        if (!capture_dynamic("dyn-two-groups-1", page))
+            return 0;
+        count_case();
+        expect_page(page, first, first_widths, 3, 9);
+        if (!capture_dynamic("dyn-two-groups-again", page))
+            return 0;
+    }
+
+    count_case();
+    seed_slot(window_start(0), 4, 0x21);
+    seed_slot(window_end(1), 1, 0xc7);
+    send_set(10, 0, 0, 4, window_start(0));
+    send_set(10, 0, 1, 1, window_end(1));
+    send_commit(10, 1, 2, 0);
+    {
+        const uint32_t addresses[] = {window_start(0), window_end(1)};
+        const uint8_t widths[] = {4, 1};
+
+        expect_page(page, addresses, widths, 2, 10);
+        if (!capture_dynamic("dyn-window-edges", page))
+            return 0;
+    }
+
+    count_case();
+    seed_slot(window_end(4), 4, 0x6b);
+    seed_slot(window_end(2), 2, 0x1d);
+    send_set(11, 0, 0, 4, window_end(4));
+    send_set(11, 1, 0, 2, window_end(2));
+    send_set(11, 1, 1, 2, window_start(0));
+    send_commit(11, 2, 1, 2);
+    {
+        const uint32_t first[] = {window_end(4)};
+        const uint8_t first_widths[] = {4};
+
+        expect_page(page, first, first_widths, 1, 11);
+        if (!capture_dynamic("dyn-window-end", page))
+            return 0;
+    }
+
+    count_case();
+    {
+        uint32_t addresses[TELEMETRY_DYNAMIC_DATA_BYTES];
+        uint8_t widths[TELEMETRY_DYNAMIC_DATA_BYTES];
+        unsigned slot;
+
+        for (slot = 0; slot < TELEMETRY_DYNAMIC_DATA_BYTES; ++slot) {
+            addresses[slot] = window_start(0x120 + slot);
+            widths[slot] = 1;
+            seed_slot(addresses[slot], 1, (uint8_t)(0x40 + slot * 7U));
+            send_set(15, 0, slot, 1, addresses[slot]);
+        }
+        send_commit(15, 1, TELEMETRY_DYNAMIC_DATA_BYTES, 0);
+        expect_page(page, addresses, widths, TELEMETRY_DYNAMIC_DATA_BYTES, 15);
+        if (!capture_dynamic("dyn-six-slots", page))
+            return 0;
+    }
+
+    count_case();
+    send_dynamic(0xc0, 0, 0, 0, 0, 0, 0);
+    if (!expect_dynamic("dyn-default", 0, 0, 0, 0))
+        return 0;
+    if (!capture_dynamic("dyn-default-page", NULL))
+        return 0;
+
+    count_case();
+    send_set(12, 0, 0, 1, a);
+    send_set(12, 0, 1, 1, b);
+    send_commit(12, 1, 2, 0);
+    write_u32(dynamic_state() + 0x14, 0x03000000U | (b & 0x00ffffffU));
+    if (!capture_dynamic("dyn-corrupt-slot", NULL))
+        return 0;
+    if (dynamic_state()[0] != 0)
+        return fail_value("dyn-corrupt-slot", "active_id",
+            dynamic_state()[0], 0);
+
+    count_case();
+    send_set(13, 0, 0, 4, c);
+    send_commit(13, 1, 1, 0);
+    write_u32(dynamic_state() + 0x14, 0x04000000U | (c & 0x00ffffffU));
+    dynamic_state()[4] = 2;
+    if (!capture_dynamic("dyn-corrupt-budget", NULL))
+        return 0;
+    if (dynamic_state()[0] != 0)
+        return fail_value("dyn-corrupt-budget", "active_id",
+            dynamic_state()[0], 0);
+
+    count_case();
+    send_set(14, 0, 0, 1, a);
+    send_commit(14, 1, 1, 0);
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 1
+            || !expect_dynamic("dyn-start", 14, 0, 0, 0))
+        return fail_value("dyn-start", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 1);
+    seed_control_command(stop_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 2
+            || !expect_dynamic("dyn-stop", 14, 0, 0, 0))
+        return fail_value("dyn-stop", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 2);
+    return 1;
+}
+
 int main(void)
 {
 #ifdef TARGET_1ME3B
@@ -1512,6 +1995,10 @@ int main(void)
     if (!run_configuration_cases())
         return 1;
     if (!run_control_cases())
+        return 1;
+    if (!run_dynamic_command_cases())
+        return 1;
+    if (!run_dynamic_capture_cases())
         return 1;
     if (!run_capture_cases())
         return 1;
@@ -1532,7 +2019,7 @@ int main(void)
     if (!run_isr_cases())
         return 1;
     printf(
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=11 "
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=13 "
         "profiles=1 contexts=10 isr_rte=5\n",
         (unsigned long)case_count);
     return 0;

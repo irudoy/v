@@ -220,7 +220,7 @@ class BuildRomTest(unittest.TestCase):
                 # high-detonation bit of the knock surface byte into the wire bit.
                 self.assertEqual(
                     result.telemetry_instruction_count,
-                    696 if rom in runtime_targets.SH7059_1ME3B_ROMS else 690,
+                    1044 if rom in runtime_targets.SH7059_1ME3B_ROMS else 1038,
                 )
                 self.assertEqual(
                     target.map_layout.variant,

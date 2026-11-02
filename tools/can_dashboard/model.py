@@ -820,6 +820,7 @@ class DemoGenerator:
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
+            "telemetry_page_configuration": 0,
             "ltft_learned_b1_raw": 101.8 * 256,
             "ltft_adjustment_b1_raw": 100.3 * 256,
             "ltft_learned_b2_raw": 101.2 * 256,

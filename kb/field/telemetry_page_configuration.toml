@@ -1,0 +1,17 @@
+source = "can_telemetry.telemetry_page_configuration"
+origin = "telemetry_state"
+width = 1
+signed = false
+scale = "ID in bits 0 through 6, group in bit 7"
+profiles = ["tuning"]
+page = 3
+offset = 0x7
+
+[dashboard]
+label = "Page 3 configuration"
+digits = 0
+group = "Transport"
+description = """
+The dynamic configuration that page 3 carries: its ID in bits 0 through 6 \
+and the group of the frame in bit 7. ID 0 is the default configuration, \
+whose fields the profile names."""

@@ -4,11 +4,13 @@
 # the SH-2E capture loop and emits a ROM-neutral host decoder schema. Producer
 # addresses, mailbox ownership, and ROM identity are not part of the host
 # contract. The profile CRC covers the wire layout alone: protocol version,
-# profile ID, page count, and the placement, width, and signedness of every
-# slot. Names, scale strings, and the host presentation of [field.dashboard]
-# are outside it, and a slot that carries a different quantity takes a new
-# profile ID. The host decodes the current profile ID alone. Runtime
-# arbitrary-address interpretation is intentionally unsupported.
+# profile ID, page count, the placement, width, and signedness of every slot,
+# and the dynamic page. Names, scale strings, and the host presentation of
+# [field.dashboard] are outside it, and a slot that carries a different
+# quantity takes a new profile ID. The host decodes the current profile ID
+# alone. Under a nonzero configuration ID, the data bytes of the dynamic page
+# of a profile carry the RAM slots of a host configuration; the fields of the
+# page are its default configuration, ID 0.
 
 schema_version = 2
 rom = "JK08A"
@@ -27,17 +29,16 @@ table_address = 0x000D4C00
 table_end = 0x000D4E00
 configuration_address = 0x000D4E00
 state_address = 0xFFFF5E00
-padding_source = 0x000D4E07
 
 [[profile]]
 name = "tuning"
-id = 8
+id = 9
 page_count = 11
 
-[[padding]]
+[profile.dynamic]
 page = 3
-offset = 6
-width = 1
+data_bytes = 6
+configuration_offset = 7
 
 [[field]]
 name = "tick16"
@@ -460,20 +461,45 @@ modes use a separate latched path. Physical units and producer signedness \
 remain unresolved, and the state is not exclusive to TCM requests."""
 
 [[field]]
-name = "telemetry_status"
+name = "exhaust_cvtc_actual_b1_raw"
+page = 3
+offset = 6
+width = 1
+source = 0xFFFF2324
+profiles = ["tuning"]
+kind = "ecu_ram"
+signed = false
+scale = "raw * 0.5 - 64 degCA"
+
+[field.dashboard]
+label = "Exhaust CVTC actual B1"
+digits = 1
+group = "CVTC"
+panel = "CVTC detail"
+order = 10
+description = """
+Measured exhaust camshaft position of bank 1 in crank degrees, from the \
+phase of the cam sensor edges."""
+
+[[field]]
+name = "telemetry_page_configuration"
 page = 3
 offset = 7
 width = 1
-source = 0xFFFF5E07
+source = 0xFFFF5F00
 profiles = ["tuning"]
 kind = "telemetry_state"
 signed = false
-scale = "bit mask"
+scale = "ID in bits 0 through 6, group in bit 7"
 
 [field.dashboard]
-label = "Telemetry status"
+label = "Page 3 configuration"
 digits = 0
 group = "Transport"
+description = """
+The dynamic configuration that page 3 carries: its ID in bits 0 through 6 \
+and the group of the frame in bit 7. ID 0 is the default configuration, \
+whose fields the profile names."""
 
 [[field]]
 name = "knock_state_snapshot_raw"
@@ -914,25 +940,20 @@ eight; other branches retain, limit, rebuild, decrease, or clear it. Raw \
 stored counts without a physical torque conversion."""
 
 [[field]]
-name = "exhaust_cvtc_actual_b1_raw"
+name = "telemetry_status"
 page = 7
 offset = 7
 width = 1
-source = 0xFFFF2324
+source = 0xFFFF5E07
 profiles = ["tuning"]
-kind = "ecu_ram"
+kind = "telemetry_state"
 signed = false
-scale = "raw * 0.5 - 64 degCA"
+scale = "bit mask"
 
 [field.dashboard]
-label = "Exhaust CVTC actual B1"
-digits = 1
-group = "CVTC"
-panel = "CVTC detail"
-order = 10
-description = """
-Measured exhaust camshaft position of bank 1 in crank degrees, from the \
-phase of the cam sensor edges."""
+label = "Telemetry status"
+digits = 0
+group = "Transport"
 
 [[field]]
 name = "throttle_target_shared_raw"

@@ -474,9 +474,9 @@ class DashboardModelTest(unittest.TestCase):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         feed_group(dashboard, generator.group(4), 1.0)
         group = list(generator.group(5))
-        page = bytearray(group[3].data)
+        page = bytearray(group[7].data)
         page[7] = 0x09
-        group[3] = model.FrameRecord(0x6F0, bytes(page))
+        group[7] = model.FrameRecord(0x6F0, bytes(page))
         feed_group(dashboard, group, 2.0)
         self.assertTrue(dashboard.telemetry_status_flags["overrun_latched"])
         self.assertTrue(dashboard.telemetry_status_flags["preempted"])

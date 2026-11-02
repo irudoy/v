@@ -25,6 +25,7 @@ SLOT_ASSIGNMENT_SHA256 = {
     6: "2110176f4c4c6be218b8e3356ba6f69185082a6e234a9699aa6297f2375d5f19",
     7: "99f46715917a3e0d3d8c4dd666b6fc5848764f36377fb5898161e181ffd43228",
     8: "7b2efd638d3fc25e8859d7b381e9d21f3608fb62aaae4c270fd2ea6b2eabd6e2",
+    9: "af383f1b8d7bd30f207b2ef81cafd9884a18d60f4726a800121f2c05da0d4df4",
 }
 
 
@@ -444,10 +445,10 @@ class CanTelemetryContractTest(unittest.TestCase):
             (0xD4280, 0xD6000),
         )
         self.assertEqual(self.layout.reserved_rom.size, 0x1000)
-        self.assertEqual(self.layout.ram.active.size, 0x100)
-        self.assertEqual(self.layout.ram.future.size, 0x100)
-        self.assertEqual(self.layout.assembled_instruction_count, 720)
-        self.assertEqual(self.layout.assembled_data_bytes, 770)
+        self.assertEqual(self.layout.ram.active.size, 0x190)
+        self.assertEqual(self.layout.ram.future.size, 0x70)
+        self.assertEqual(self.layout.assembled_instruction_count, 1068)
+        self.assertEqual(self.layout.assembled_data_bytes, 812)
 
     def test_static_assembly_and_default_composition_are_locked(self):
         parsed = can_telemetry_assembly.validate_assembly_sources(
@@ -456,7 +457,7 @@ class CanTelemetryContractTest(unittest.TestCase):
         audit = can_telemetry_assembly.validate_instruction_semantics(
             self.layout, parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 720)
+        self.assertEqual(audit.instructions, 1068)
         composition = can_telemetry_compose.compose(
             layout=self.layout, blobs=self.blobs
         )
@@ -464,8 +465,8 @@ class CanTelemetryContractTest(unittest.TestCase):
             composition.sha256,
             self.layout.expected_composition_sha256,
         )
-        self.assertEqual(composition.instruction_count, 720)
-        self.assertEqual(composition.code_entry_count, 11)
+        self.assertEqual(composition.instruction_count, 1068)
+        self.assertEqual(composition.code_entry_count, 13)
         self.assertEqual(
             composition.data[
                 self.layout.reserved_rom.start : self.layout.reserved_rom.end
@@ -514,7 +515,7 @@ class CanTelemetryContractTest(unittest.TestCase):
             sum(item.span.size for item in ledger.future_rom), 7648
         )
         self.assertEqual(
-            sum(item.span.size for item in ledger.future_ram), 768
+            sum(item.span.size for item in ledger.future_ram), 624
         )
 
 

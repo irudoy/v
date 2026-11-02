@@ -34,6 +34,7 @@ class RamLayout:
     bank_b: common.AddressRange
     event: common.AddressRange
     active_reserved: common.AddressRange
+    dynamic: common.AddressRange
 
 
 @dataclass(frozen=True)
@@ -153,7 +154,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "active_end", "future_start", "future_end", "state_start",
             "state_size", "bank_a_start", "bank_size", "bank_b_start",
             "event_start", "event_size", "active_reserved_start",
-            "active_reserved_size",
+            "active_reserved_size", "dynamic_start", "dynamic_size",
         ),
         f"{path.name} [ram]",
     )
@@ -171,6 +172,11 @@ def load_layout(path=DEFAULT_MANIFEST):
             ram_raw["active_reserved_start"],
             ram_raw["active_reserved_start"] + ram_raw["active_reserved_size"],
             "ram.active_reserved",
+        ),
+        dynamic=common.AddressRange(
+            ram_raw["dynamic_start"],
+            ram_raw["dynamic_start"] + ram_raw["dynamic_size"],
+            "ram.dynamic",
         ),
     )
     code_regions = tuple(
@@ -379,8 +385,8 @@ def validate_structure(layout):
         ram.active.start != ram.reservation.start
         or ram.active.end != ram.future.start
         or ram.future.end != ram.reservation.end
-        or ram.active.size != 0x100
-        or ram.future.size != 0x100
+        or ram.active.size != 0x190
+        or ram.future.size != 0x70
     ):
         raise ValueError("telemetry RAM budget differs")
     if (
@@ -391,13 +397,16 @@ def validate_structure(layout):
         )
     ):
         raise ValueError("canonical telemetry RAM reservation differs")
-    partitions = (ram.state, ram.bank_a, ram.bank_b, ram.event, ram.active_reserved)
+    partitions = (
+        ram.state, ram.bank_a, ram.bank_b, ram.event, ram.active_reserved,
+        ram.dynamic,
+    )
     if partitions[0].start != ram.active.start or partitions[-1].end != ram.active.end:
         raise ValueError("active RAM partition boundaries differ")
     for left, right in zip(partitions, partitions[1:]):
         if left.end != right.start:
             raise ValueError("active RAM partitions are not contiguous")
-    if tuple(item.size for item in partitions) != (32, 88, 88, 16, 32):
+    if tuple(item.size for item in partitions) != (32, 88, 88, 16, 32, 0x90):
         raise ValueError("active RAM partition sizes differ")
 
     if layout.variant == "combined-mailbox26":

@@ -4,8 +4,8 @@ origin = "ecu_ram"
 width = 1
 signed = false
 profiles = ["tuning"]
-page = 7
-offset = 0x7
+page = 3
+offset = 0x6
 
 [dashboard]
 label = "Exhaust CVTC actual B1"

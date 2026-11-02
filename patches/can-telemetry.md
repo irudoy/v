@@ -387,7 +387,8 @@ Fixed pages 0 through 8, bytes 1..7:
 | 3 | 2 | `fuel_learning_permit_a_raw` | u8 | ECU RAM `0xFFFF1458` | bits: 0 BANK_1_STABILITY_PERMIT, 1 BANK_2_STABILITY_PERMIT |
 | 3 | 3 | `ltft_publication_neutral_control_raw` | u8 | ECU RAM `0xFFFF41B5` | bits: 0 NEUTRALIZE_PUBLICATION_AND_RESET_GRID |
 | 3 | 4..5 | `torque_transition_state_raw` | u16 | ECU RAM `0xFFFF23C2` | raw count |
-| 3 | 7 | `telemetry_status` | u8 | `can_telemetry` RAM `0xFFFF5E07` | bit mask |
+| 3 | 6 | `exhaust_cvtc_actual_b1_raw` | u8 | ECU RAM `0xFFFF2324` | raw * 0.5 - 64 degCA |
+| 3 | 7 | `telemetry_page_configuration` | u8 | `can_telemetry` RAM `0xFFFF5F00` | ID in bits 0 through 6, group in bit 7 |
 | 4 | 1 | `knock_state_snapshot_raw` | u8 | ECU RAM `0xFFFF2467` | bits: 6 DIRECT_DIFFERENCE_ENABLE |
 | 4 | 2 | `knock_branch_state_raw` | u8 | ECU RAM `0xFFFF2469` | bits: 7 DIRECT_DIFFERENCE_INHIBIT |
 | 4 | 3..4 | `knock_timing_state_raw` | s16 | ECU RAM `0xFFFF121A` | raw / 256 deg |
@@ -407,12 +408,11 @@ Fixed pages 0 through 8, bytes 1..7:
 | 7 | 1..2 | `throttle_request_bounded_raw` | s16 | ECU RAM `0xFFFF19C6` | raw count |
 | 7 | 3..4 | `engine_torque_state_raw` | s16 | ECU RAM `0xFFFF18CC` | raw count |
 | 7 | 5..6 | `transmission_reduction_state_raw` | u16 | ECU RAM `0xFFFF1866` | raw count |
-| 7 | 7 | `exhaust_cvtc_actual_b1_raw` | u8 | ECU RAM `0xFFFF2324` | raw * 0.5 - 64 degCA |
+| 7 | 7 | `telemetry_status` | u8 | `can_telemetry` RAM `0xFFFF5E07` | bit mask |
 | 8 | 1..2 | `throttle_target_shared_raw` | u16 | ECU RAM `0xFFFF19B2` | raw count |
 | 8 | 3..4 | `throttle_target_channel_0_raw` | u16 | ECU RAM `0xFFFF28BC` | raw * 34285 / 1114112 percent |
 | 8 | 5..6 | `throttle_target_channel_1_raw` | u16 | ECU RAM `0xFFFF28BE` | raw * 34285 / 1114112 percent |
 | 8 | 7 | `exhaust_cvtc_actual_b2_raw` | u8 | ECU RAM `0xFFFF2325` | raw * 0.5 - 64 degCA |
-| 3 | 6..6 | Reserved zero | bytes | ROM `0x000D4E07` repeated | 0 |
 
 Context pages 9 and 10, bytes 2..7 after the tag in byte 1:
 

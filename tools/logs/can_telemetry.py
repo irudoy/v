@@ -333,6 +333,31 @@ def _parse_profile(source_profile, context, protocol_version):
         raise DecodeError(f"{context} context pages use different tags")
     if not contexts_by_page or health_contexts != 1:
         raise DecodeError(f"{context} must define exactly one health context")
+    dynamic = source_profile.get("dynamic")
+    if dynamic is not None:
+        # The data bytes of the dynamic page precede its configuration byte,
+        # an unsigned byte field of the page.
+        if (
+            not isinstance(dynamic, dict)
+            or dynamic.keys() != {"page", "data_bytes", "configuration_offset"}
+            or any(type(value) is not int for value in dynamic.values())
+            or dynamic["page"] not in fixed_pages
+            or dynamic["configuration_offset"] != 7
+            or dynamic["data_bytes"] != dynamic["configuration_offset"] - 1
+        ):
+            raise DecodeError(f"{context} has an invalid dynamic page")
+        name = occupied.get((dynamic["page"], dynamic["configuration_offset"]))
+        configuration = next(
+            (field for field in fields if field["name"] == name), None
+        )
+        if (
+            configuration is None
+            or configuration["width"] != 1
+            or configuration["signed"]
+        ):
+            raise DecodeError(
+                f"{context} dynamic page lacks an unsigned configuration byte"
+            )
     if (
         can_telemetry_schema.profile_crc16(
             source_profile, protocol_version

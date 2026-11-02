@@ -4,7 +4,7 @@ width = 1
 signed = false
 scale = "bit mask"
 profiles = ["tuning"]
-page = 3
+page = 7
 offset = 0x7
 
 [dashboard]

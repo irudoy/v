@@ -361,6 +361,10 @@ def _render_harness(target, name, build_dir):
             overrides[unknown + 1] = (
                 families["ignition_surface_state_3"].canonical_address + 1
             )
+    elif name == "can_telemetry_harness.c":
+        overrides = runtime_targets.can_dynamic_window_overrides(
+            runtime_targets.rom_address_profiles.profile_for_rom(target.rom)
+        )
     rendered = runtime_targets.render_target_text(
         target.rom, source, overrides
     )
@@ -818,7 +822,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ca
         (invoke, exception),
         build_dir,
         "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
-        f"cases={105 if target.rom == '1ME3B' else 115 if target.rom in MEASURED_CAN_ROMS else 84} entries=11 "
+        f"cases={145 if target.rom == '1ME3B' else 155 if target.rom in MEASURED_CAN_ROMS else 124} entries=13 "
         "profiles=1 contexts=10 isr_rte=5",
         defines=can_defines + (
             ("MEASURE_CAN_TELEMETRY",) if target.rom in MEASURED_CAN_ROMS else ()

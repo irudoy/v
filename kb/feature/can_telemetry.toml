@@ -15,7 +15,6 @@ context_pages = [9, 10]
 fixed_page_count = 9
 full_rate_hz = 97.65625
 header_sequence_bits = 4
-padding_source = "can_telemetry.configuration_reserved"
 pphi_hz = 20000000
 protocol_version = 2
 rotating_divisor = 5
@@ -248,10 +247,6 @@ state_address = "ffff5e00"
 table_address = "000d4c00"
 table_end = "000d4e00"
 
-[target.allocations.configuration_reserved]
-address = "000d4e07"
-width = 1
-
 [target.allocations.knock_channel_mask_latched]
 address = "ffff5e0d"
 width = 1
@@ -298,6 +293,10 @@ width = 1
 
 [target.allocations.snapshot_overrun_count]
 address = "ffff5e0e"
+width = 1
+
+[target.allocations.telemetry_page_configuration]
+address = "ffff5f00"
 width = 1
 
 [target.allocations.telemetry_status]
@@ -631,12 +630,12 @@ name = "knock_margin_channels_4_to_6"
 page = 10
 tag = 4
 
-[[padding]]
-offset = 6
-page = 3
-width = 1
-
 [[profiles]]
-id = 8
+id = 9
 name = "tuning"
 page_count = 11
+
+[profiles.dynamic]
+configuration_offset = 7
+data_bytes = 6
+page = 3

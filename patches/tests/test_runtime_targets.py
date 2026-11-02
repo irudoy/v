@@ -182,7 +182,7 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     ).instructions == 453
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == 690
+    ).instructions == 1038
 
 
 @pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
@@ -284,7 +284,7 @@ def test_vq37_sources_encode_target_variants(rom):
     # high-detonation bit of the knock surface byte into the wire bit.
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == (696 if rom == "1ME3B" else 690)
+    ).instructions == (1044 if rom == "1ME3B" else 1038)
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
@@ -720,10 +720,10 @@ def test_the_capture_carries_the_high_detonation_bit_of_the_target(rom, bit):
     assert canonical.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
     if bit == 6:
         assert capture.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
-        assert "shlr" not in capture
+        assert move not in capture
     else:
         assert capture.count(
             loop_end + move + "\nmov.b @(0x9,r3),r0\n"
         ) == 1
-        assert capture.count("shlr") == 1
+        assert capture.count(move) == 1
 
