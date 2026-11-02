@@ -1,3 +1,5 @@
+retired = true
+
 [[symbol]]
 layout = "jk78c"
 address = "00009042"

@@ -14,7 +14,8 @@ independently"""
 
 [[link]]
 type = "target"
-to = "fabulous-jackrabbit/const"
+to = "rev_limit_fuel_cut_caps/tbl"
+offset = 0x2
 
 [[link.evidence]]
 kind = "rom-bytes"
