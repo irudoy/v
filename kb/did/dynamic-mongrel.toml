@@ -1,0 +1,6 @@
+number = 0x121f
+
+[[symbol]]
+layout = "7mfk"
+address = "00022918"
+name = "dynamic-mongrel"

@@ -753,7 +753,7 @@ request, the command before the rate limit, and the RPM ceiling latch; bytes
 `+0x1C..+0x2C`: the quiet-event count, the cut counter, a reserved zero word,
 and the six accumulators. Corrupt-state recovery clears the first 28 bytes,
 and the startup wrapper clears all 44. An `ACTIVE` state with a latch other
-than 0 or 1 is corrupt. The nine diagnostic views read fixed offsets of that
+than 0 or 1 is corrupt. The diagnostic views read fixed offsets of that
 record.
 
 The flags publish every satisfied gate, `ACTIVE`, hold, and the RPM ceiling
@@ -761,7 +761,7 @@ latch. The fuel-cut flag of an active state reports the ceiling request or bit 2
 the active cut bit of the main RPM fuel-cut state byte. The other bits of the
 byte leave the flag clear.
 
-Raw engineering DIDs expose nine two-byte views:
+Raw engineering DIDs expose two-byte views of the state:
 
 | DID | View |
 | --- | --- |
@@ -774,6 +774,17 @@ Raw engineering DIDs expose nine two-byte views:
 | `0x1227` | target speed |
 | `0x1228` | torque fraction |
 | `0x1229` | speed error |
+| `0x121D` | integrator |
+| `0x121E` | fuel-cut request |
+| `0x121F` | command before the rate limit |
+| `0x1231` | RPM ceiling latch |
+| `0x1232` | quiet-event count (high byte) and cut counter (low byte) |
+
+Every view uses a free pointer slot of the service `0x22` table of family
+`0x12`, whose records outside the low bytes `0x00`, `0x20`, and `0x40`
+answer two bytes. Every historical endpoint publishes the views `0x1211`
+to `0x1229` and leaves the slots of `0x121D`, `0x121E`, `0x121F`,
+`0x1231`, and `0x1232` stock.
 
 These DIDs are custom instrumentation, not factory CONSULT parameters. They are
 useful only when the diagnostic client can request the raw identifiers and are

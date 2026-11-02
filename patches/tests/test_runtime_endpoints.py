@@ -78,10 +78,19 @@ def test_signature_that_does_not_describe_its_layout_is_internal(monkeypatch):
     )
     monkeypatch.setattr(runtime_endpoints, "HISTORICAL_ROLLING_ENDPOINTS", (misnamed,))
     layout = target("JK08A").rolling_layout
-    # A historical endpoint keeps the current configuration span erased.
-    source = installed_rolling_layer("JK08A", bytes([0xFF]) * layout.configuration.size)
+    # A historical endpoint keeps the current configuration span erased and
+    # the DID slots that only the current runtime publishes stock.
+    source = bytearray(
+        installed_rolling_layer("JK08A", bytes([0xFF]) * layout.configuration.size)
+    )
+    for item in layout.diagnostics:
+        if item.did not in runtime_endpoints.HISTORICAL_ROLLING_DIDS:
+            source[item.pointer_address : item.pointer_address + 4] = (
+                item.stock.to_bytes(4, layout.byte_order)
+            )
     with pytest.raises(runtime_endpoints.EndpointError,
                        match="does not describe the selected layout"):
         runtime_endpoints.require_coherent_rolling_endpoint(
-            source, layout, target("JK08A").rolling_payloads, "misnamed", "JK08A"
+            bytes(source), layout, target("JK08A").rolling_payloads, "misnamed",
+            "JK08A",
         )

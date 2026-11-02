@@ -254,6 +254,12 @@ def test_schema_1_record_is_reported_and_only_calibration_is_written(tmp_path, c
         "04012c0064737373737300adb3a55a"
     )
     historical[0x8725] ^= 0x01
+    # A historical endpoint leaves the pointer slots of the later views stock.
+    for item in layout.diagnostics:
+        if item.did not in runtime_endpoints.HISTORICAL_ROLLING_DIDS:
+            historical[item.pointer_address : item.pointer_address + 4] = (
+                item.stock.to_bytes(4, layout.byte_order)
+            )
     historical = closed("JK08A", historical)
     signature = runtime_endpoints.RollingEndpointSignature(
         key="test-schema-1-endpoint",

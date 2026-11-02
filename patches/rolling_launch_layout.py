@@ -533,19 +533,24 @@ def validate_structure(layout):
         ):
             raise ValueError(f"{hook.key}: canonical hook binding differs")
 
-    expected_dids = (0x1211, 0x1212, 0x1213, 0x1216, 0x1217,
-                     0x1224, 0x1227, 0x1228, 0x1229)
-    if tuple(item.did for item in layout.diagnostics) != expected_dids:
+    # DID and state offset of every view. The first nine read the first 18
+    # bytes; the spark-cut counters share one view at +0x1C.
+    expected_views = (
+        (0x1211, 0x00), (0x1212, 0x02), (0x1213, 0x04), (0x1216, 0x06),
+        (0x1217, 0x08), (0x1224, 0x0A), (0x1227, 0x0C), (0x1228, 0x0E),
+        (0x1229, 0x10), (0x121D, 0x12), (0x121E, 0x14), (0x121F, 0x16),
+        (0x1231, 0x18), (0x1232, 0x1C),
+    )
+    if tuple(item.did for item in layout.diagnostics) != tuple(
+        did for did, _offset in expected_views
+    ):
         raise ValueError("diagnostic DID set or order differs")
-    expected_targets = tuple(range(
-        layout.ram.state.start, layout.ram.state.start + 18, 2
-    ))
-    for item, target in zip(layout.diagnostics, expected_targets):
+    for item, (_did, offset) in zip(layout.diagnostics, expected_views):
         if (
             item.did >> 8 != 0x12
             or item.pointer_address % 4
             or item.stock != 0xFFFFFFFF
-            or item.target != target
+            or item.target != layout.ram.state.start + offset
             or item.width != 2
             or not item.name
         ):

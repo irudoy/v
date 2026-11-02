@@ -328,8 +328,9 @@ def edited_record():
 
 
 def without_spark_cut(rom, data):
-    """Return ``data`` with the spark-cut unit erased and the stock vector of
-    the GR11A spark handler, as in every runtime before the hold actuator."""
+    """Return ``data`` with the spark-cut unit erased, the stock vector of the
+    GR11A spark handler, and stock pointers in the DID slots that only the
+    current runtime publishes, as in every runtime before the hold actuator."""
     layout = target(rom).rolling_layout
     source = bytearray(data)
     spark = layout.assembly_unit_by_key["spark_cut"].span
@@ -338,6 +339,11 @@ def without_spark_cut(rom, data):
     source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
         hook.width, layout.byte_order
     )
+    for item in layout.diagnostics:
+        if item.did not in runtime_endpoints.HISTORICAL_ROLLING_DIDS:
+            source[item.pointer_address : item.pointer_address + 4] = (
+                item.stock.to_bytes(4, layout.byte_order)
+            )
     return source
 
 

@@ -107,6 +107,11 @@ GUARDED_SPEED_CONTROLLER_SHA256 = (
 BOUNDED_SPEED_CONTROLLER_SHA256 = (
     "0b0cede4221a03624990ba79d9df1ca827b947f29da705f14c3b702158a5a9b3"
 )
+# Every historical endpoint publishes these nine DIDs and leaves the later
+# Rolling Launch DID slots stock.
+HISTORICAL_ROLLING_DIDS = frozenset(
+    {0x1211, 0x1212, 0x1213, 0x1216, 0x1217, 0x1224, 0x1227, 0x1228, 0x1229}
+)
 # Mode names of configuration schemas 1 to 3.
 HISTORICAL_MODE_NAMES = ("observe", "rpm_hold", "rpm_hold_retard")
 # Wrapper and engine bytes of every endpoint that holds RPM through the
@@ -556,7 +561,12 @@ def require_coherent_rolling_endpoint(
         if current_units and current_configuration:
             return "current"
 
-    if dids_current and configuration == bytes([0xFF]) * len(configuration):
+    dids_historical = all(
+        did_values[item.did]
+        == (item.target if item.did in HISTORICAL_ROLLING_DIDS else item.stock)
+        for item in layout.diagnostics
+    )
+    if dids_historical and configuration == bytes([0xFF]) * len(configuration):
         actual_hashes = {
             key: sha256(value) for key, value in unit_bytes.items()
         }

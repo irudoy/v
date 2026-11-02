@@ -45,13 +45,14 @@ class RollingLaunchCompositionTest(unittest.TestCase):
             )
         )
         self.assertEqual(self.layout.ram.state.size, 44)
+        # Every state word up to the spark-cut counters has a view, apart from
+        # the reserved word at +0x1A.
         self.assertEqual(
             tuple(item.target for item in self.layout.diagnostics),
-            tuple(range(
-                self.layout.ram.state.start,
-                self.layout.ram.state.start + 18,
-                2,
-            )),
+            tuple(
+                self.layout.ram.state.start + offset
+                for offset in (*range(0, 0x1A, 2), 0x1C)
+            ),
         )
 
     def test_scheduler_tick_formula_matches_target_measurement(self):
@@ -119,9 +120,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 2880)
-        self.assertEqual(self.result.permitted_write_bytes, 2880)
-        self.assertEqual(self.result.changed_bytes, 2345)
+        self.assertEqual(sum(item.size for item in ranges), 2900)
+        self.assertEqual(self.result.permitted_write_bytes, 2900)
+        self.assertEqual(self.result.changed_bytes, 2355)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 

@@ -16,7 +16,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "492fe4ff50a5d7d55e68bd45fcdf5bd5b03d2f12f8b7e227069cf398c671ec25"
+expected_composition_sha256 = "a37b33e2ccbf935d92002f9bcbed84cfc5e7b0569356ee4860659c8346748211"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -335,3 +335,43 @@ stock = 0xFFFFFFFF
 target = 0xFFFF5D50
 width = 2
 name = "speed_error"
+
+[[diagnostic]]
+did = 0x121D
+pointer_address = 0x00022910
+stock = 0xFFFFFFFF
+target = 0xFFFF5D52
+width = 2
+name = "integrator"
+
+[[diagnostic]]
+did = 0x121E
+pointer_address = 0x00022914
+stock = 0xFFFFFFFF
+target = 0xFFFF5D54
+width = 2
+name = "fuel_cut_request"
+
+[[diagnostic]]
+did = 0x121F
+pointer_address = 0x00022918
+stock = 0xFFFFFFFF
+target = 0xFFFF5D56
+width = 2
+name = "torque_command"
+
+[[diagnostic]]
+did = 0x1231
+pointer_address = 0x00022960
+stock = 0xFFFFFFFF
+target = 0xFFFF5D58
+width = 2
+name = "rpm_ceiling_latch"
+
+[[diagnostic]]
+did = 0x1232
+pointer_address = 0x00022964
+stock = 0xFFFFFFFF
+target = 0xFFFF5D5C
+width = 2
+name = "spark_cut_counters"
