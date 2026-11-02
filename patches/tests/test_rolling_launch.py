@@ -560,21 +560,27 @@ class SparkCutActuatorTest(unittest.TestCase):
 
     def test_cut_count_and_cylinder_balance_hold_for_every_fraction(self):
         period = 6 * rl.SPARK_CYLINDER_COUNT
-        for u in range(rl.U_ONE + 1):
-            runtime = dataclasses.replace(self.HOLD, torque_fraction=u)
-            _cut, vetoes = self.run_events(runtime, 6 * period)
-            ideal = period * (rl.U_ONE - u) / rl.U_ONE
-            for start in range(len(vetoes) - period + 1):
-                count = sum(vetoes[start : start + period])
-                self.assertLessEqual(abs(count - ideal), 3, (u, start))
-                if start % period:
-                    continue
-                self.assertLessEqual(abs(count - ideal), 1, (u, start))
-                cylinders = [
-                    sum(vetoes[start + index : start + period : rl.SPARK_CYLINDER_COUNT])
-                    for index in range(rl.SPARK_CYLINDER_COUNT)
-                ]
-                self.assertLessEqual(max(cylinders) - min(cylinders), 1, (u, start))
+        for first in range(1, rl.SPARK_CYLINDER_COUNT + 1):
+            for u in range(rl.U_ONE + 1):
+                runtime = dataclasses.replace(self.HOLD, torque_fraction=u)
+                _cut, vetoes = self.run_events(runtime, 6 * period, first=first)
+                ideal = period * (rl.U_ONE - u) / rl.U_ONE
+                for start in range(len(vetoes) - period + 1):
+                    case = (first, u, start)
+                    count = sum(vetoes[start : start + period])
+                    self.assertLessEqual(abs(count - ideal), 3, case)
+                    if start % period:
+                        continue
+                    self.assertLessEqual(abs(count - ideal), 1, case)
+                    cylinders = [
+                        sum(
+                            vetoes[
+                                start + index : start + period : rl.SPARK_CYLINDER_COUNT
+                            ]
+                        )
+                        for index in range(rl.SPARK_CYLINDER_COUNT)
+                    ]
+                    self.assertLessEqual(max(cylinders) - min(cylinders), 1, case)
 
     def test_timeout_forced_match_changes_nothing(self):
         cut = rl.SparkCutState(quiet_events=7, cut_count=9)
@@ -587,7 +593,7 @@ class SparkCutActuatorTest(unittest.TestCase):
         cut, _ = self.run_events(self.HOLD, 4)
         for event in (
             rl.SparkEvent(cylinder=5, synchronized=False),
-            rl.SparkEvent(cylinder=5, cam_fallback=True),
+            rl.SparkEvent(cylinder=5, apc_fallback=True),
             rl.SparkEvent(cylinder=5, dwell_degrees=rl.SPARK_DWELL_LIMIT_DEGREES + 1),
             rl.SparkEvent(cylinder=5, dwell_degrees=0xFF),
             rl.SparkEvent(cylinder=0),

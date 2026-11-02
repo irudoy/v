@@ -536,7 +536,7 @@ def _expected_long_literals():
             "rl_spark_state_address": 0xFFFF5D40,
             "rl_spark_misfire_latch_address": 0xFFFF436F,
             "rl_spark_sync_address": 0xFFFF8501,
-            "rl_spark_cam_address": 0xFFFF24C9,
+            "rl_spark_apc_mode_address": 0xFFFF24C9,
             "rl_spark_dwell_address": 0xFFFF237A,
             "rl_spark_cylinder_address": 0xFFFF13C9,
             "rl_spark_stock_handler": 0x0002AB24,

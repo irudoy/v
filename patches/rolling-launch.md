@@ -455,8 +455,8 @@ The veto fails toward a fired event. A dwell armed before the bit is set
 consumes the bit at its `GR11B` service and fires, so a misplaced or late veto
 never leaves a coil energized. Handler `0x0002AF38` is the only stock writer
 of `0xFFFF8511`, so a cut point sets the bit with one `OR.B` on `GBR` or with
-interrupts masked. The cam fallback reads `0xFFFF8511` in `0x0002B768` and in
-the fallback branch of `0x0002AF38`, which arms a dwell while
+interrupts masked. The P0335 APC fallback scheduler reads `0xFFFF8511` in
+`0x0002B768` and in the fallback branch of `0x0002AF38`, which arms a dwell while
 `0xFFFF24C9.bit6` and bit 5 or 6 of `0xFFFF8518` are set and enables the high
 byte only while `0xFFFF8511.bit7` is clear (`0x0002B344..0x0002B358`). Every
 cut point therefore passes all events through while `0xFFFF24C9.bit6` is set.
@@ -513,7 +513,7 @@ handler receives the machine state of its entry. It runs without loops.
 
 A `GR11A` match without `0xFFFF8517.bit7` is a forced timeout match and passes
 through unchanged. In an `ACTIVE` hold with `u <= 1000`, a spark is eligible
-with the sync bit `0xFFFF8501.bit7`, without the cam fallback
+with the sync bit `0xFFFF8501.bit7`, without the P0335 APC fallback
 `0xFFFF24C9.bit6`, with the dwell angle `0xFFFF237A` at most 110 degrees, and
 with an event cylinder `0xFFFF13C9` of 1..6. The veto at the match of event
 cylinder `c` withholds the dwell of its successor `ROM8[0x22680 + c]`, a
@@ -532,10 +532,13 @@ Outside an `ACTIVE` hold, for `u > 1000`, and at an eligible match whose
 accumulator holds 6000 or more, every accumulator returns to its offset
 `1000 * k + 250`, with `k = (0, 2, 4, 1, 3, 5)` for event cylinders 1..6. The
 offsets differ by exact sixths in firing order, so over whole engine cycles
-the cuts total those of one accumulator. For every `u` the cuts of an aligned
-36-event period are within one of `36 * (1 - u)`, those of any 36 consecutive
-eligible events within three, and those of every cylinder within one of the
-mean. A single accumulator would cut the same cylinders whenever `1 - u` is a
+the cuts total those of one accumulator. For every `u` and every start
+cylinder the cuts of an aligned 36-event period are within one of
+`36 * (1 - u)`, those of any 36 consecutive eligible events within three,
+and those of every cylinder within one of the mean. The bound of 36
+consecutive events holds with a margin of 0.016 events (2.984 at
+`u = 444`), so a change of the offsets requires the full sweep over every
+`u` and every start cylinder again. A single accumulator would cut the same cylinders whenever `1 - u` is a
 multiple of 1/6. An ineligible match leaves every accumulator unchanged, so
 the cut fraction applies to eligible events.
 

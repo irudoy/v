@@ -716,7 +716,7 @@ class SparkEvent:
 
     spark_armed: bool = True
     synchronized: bool = True
-    cam_fallback: bool = False
+    apc_fallback: bool = False
     dwell_degrees: int = 60
     cylinder: int = 1
     veto_byte: int = 0
@@ -773,7 +773,7 @@ def spark_event(runtime, cut, event):
         return SparkResult(reset, event.veto_byte, latch)
     if (
         not event.synchronized
-        or event.cam_fallback
+        or event.apc_fallback
         or event.dwell_degrees > SPARK_DWELL_LIMIT_DEGREES
         or not 1 <= event.cylinder <= SPARK_CYLINDER_COUNT
     ):

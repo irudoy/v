@@ -15,7 +15,7 @@
 //
 // A match without 0xFFFF8517.bit7 is a forced timeout match and passes
 // through unchanged. In an ACTIVE hold with u <= 1000, a spark is eligible
-// with the sync bit 0xFFFF8501.bit7, without the cam fallback
+// with the sync bit 0xFFFF8501.bit7, without the P0335 APC fallback
 // 0xFFFF24C9.bit6, with the dwell angle 0xFFFF237A at most 110 degrees, and
 // with a cylinder number of 1..6. An ineligible spark leaves every
 // accumulator unchanged. An eligible spark adds 6 * (1000 - u) to the
@@ -106,7 +106,7 @@ mov.l @(rl_spark_sync_address,pc),r3
 mov.b @r3,r0
 tst 0x80,r0
 bt rl_spark_chain
-mov.l @(rl_spark_cam_address,pc),r3
+mov.l @(rl_spark_apc_mode_address,pc),r3
 mov.b @r3,r0
 tst 0x40,r0
 bf rl_spark_chain
@@ -194,7 +194,7 @@ rl_spark_misfire_latch_address:
 .long 0xFFFF436F
 rl_spark_sync_address:
 .long 0xFFFF8501
-rl_spark_cam_address:
+rl_spark_apc_mode_address:
 .long 0xFFFF24C9
 rl_spark_dwell_address:
 .long 0xFFFF237A

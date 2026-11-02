@@ -2045,7 +2045,7 @@ struct spark_ineligible_case {
 
 static const struct spark_ineligible_case spark_ineligible_cases[] = {
     {"spark-ineligible-sync", CRANK_SYNC, 0x7f},
-    {"spark-ineligible-cam", APC_MODE_SNAPSHOT, 0x40},
+    {"spark-ineligible-apc-fallback", APC_MODE_SNAPSHOT, 0x40},
     {"spark-ineligible-dwell", DWELL_ANGLE, SPARK_DWELL_LIMIT + 1U},
     {"spark-ineligible-cylinder-low", EVENT_CYLINDER, 0},
     {"spark-ineligible-cylinder-high", EVENT_CYLINDER, SPARK_CYLINDERS + 1U},
@@ -2075,44 +2075,55 @@ static const uint16_t spark_sweep_fractions[] = {
     1000,
 };
 
-/* Two aligned 36-match periods per fraction: the cut count of each period
-   is within one of 36 * (1 - u), and every event cylinder within one of the
-   mean of its six matches. */
+/* Two aligned 36-match periods of a hold that starts at event cylinder
+   first + 1: the cut count of each period is within one of 36 * (1 - u), and
+   every event cylinder within one of the mean of its six matches. */
+static int run_spark_sweep_hold(uint16_t fraction, size_t first)
+{
+    uint32_t ideal = 36U * (TORQUE_ONE - fraction);
+    uint32_t period = 0, cuts[SPARK_CYLINDERS] = {0};
+    size_t match, cylinder;
+
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, fraction);
+    for (match = 0; match < 72U; ++match) {
+        size_t index = (first + match) % SPARK_CYLINDERS;
+
+        ram_pointer(EVENT_CYLINDER)[0] = (uint8_t)(index + 1U);
+        ram_pointer(DWELL_VETO)[0] = 0x15;
+        if (!spark_match("spark-sweep"))
+            return 0;
+        if (ram_pointer(DWELL_VETO)[0] & 0x80U) {
+            ++period;
+            ++cuts[index];
+        }
+        if (match % 36U != 35U)
+            continue;
+        if (1000U * period + 1000U < ideal || 1000U * period > ideal + 1000U)
+            return fail_value("spark-sweep", "period_cuts", period, fraction);
+        for (cylinder = 0; cylinder < SPARK_CYLINDERS; ++cylinder) {
+            uint32_t scaled = 6000U * cuts[cylinder];
+            if (scaled + 1000U * 6U < ideal || scaled > ideal + 6000U)
+                return fail_value(
+                    "spark-sweep", "cylinder_cuts", cuts[cylinder], fraction);
+            cuts[cylinder] = 0;
+        }
+        period = 0;
+    }
+    return 1;
+}
+
+/* Every sweep fraction from every start cylinder. */
 static int run_spark_sweep(void)
 {
-    size_t fraction_index, match, cylinder;
+    size_t fraction_index, first;
 
     count_case();
     for (fraction_index = 0;
-         fraction_index < ARRAY_SIZE(spark_sweep_fractions); ++fraction_index) {
-        uint16_t fraction = spark_sweep_fractions[fraction_index];
-        uint32_t ideal = 36U * (TORQUE_ONE - fraction);
-        uint32_t period = 0, cuts[SPARK_CYLINDERS] = {0};
-
-        reset_spark_case(PHASE_ACTIVE, MODE_HOLD, fraction);
-        for (match = 0; match < 72U; ++match) {
-            ram_pointer(EVENT_CYLINDER)[0] = (uint8_t)(match % 6U + 1U);
-            ram_pointer(DWELL_VETO)[0] = 0x15;
-            if (!spark_match("spark-sweep"))
+         fraction_index < ARRAY_SIZE(spark_sweep_fractions); ++fraction_index)
+        for (first = 0; first < SPARK_CYLINDERS; ++first)
+            if (!run_spark_sweep_hold(spark_sweep_fractions[fraction_index],
+                                      first))
                 return 0;
-            if (ram_pointer(DWELL_VETO)[0] & 0x80U) {
-                ++period;
-                ++cuts[match % 6U];
-            }
-            if (match % 36U != 35U)
-                continue;
-            if (1000U * period + 1000U < ideal || 1000U * period > ideal + 1000U)
-                return fail_value("spark-sweep", "period_cuts", period, fraction);
-            for (cylinder = 0; cylinder < SPARK_CYLINDERS; ++cylinder) {
-                uint32_t scaled = 6000U * cuts[cylinder];
-                if (scaled + 1000U * 6U < ideal || scaled > ideal + 6000U)
-                    return fail_value(
-                        "spark-sweep", "cylinder_cuts", cuts[cylinder], fraction);
-                cuts[cylinder] = 0;
-            }
-            period = 0;
-        }
-    }
     return 1;
 }
 
