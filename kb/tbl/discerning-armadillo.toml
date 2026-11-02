@@ -213,7 +213,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:0001473a"
 count = 0
-l0 = "6bd18b774cb344a9"
+l0 = "ad2dc37ff374398e"
 note = """
 No accepted JK78C reader is established for the JK08A 1473A implicit \
 threshold curve. Its JK08A branch is disabled by the stock ROM selector; \

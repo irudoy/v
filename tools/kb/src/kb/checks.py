@@ -590,9 +590,24 @@ def stale(model):
                 notes.append(Issue(
                     "statuses", _files(status.sources), _status_subject(meaning, layout),
                     f"the search ran on L0 {recorded}, and the L0 of {layout} is "
-                    f"{digests[layout]}; `uv run kb unresolved {meaning.key} --layout {layout}` "
-                    "repeats it"))
+                    f"{digests[layout]}; `{_repeat(meaning, layout, status.props)}` repeats it"))
     return notes
+
+
+def _repeat(meaning, layout, props):
+    """The command that repeats a held search and keeps its note: the search
+    of `kb.match` from the symbol that it names, or else the stated search."""
+    command = f"uv run kb unresolved {meaning.key} --layout {layout}"
+    place = match.location(str(props.get("target")))
+    source = meaning.symbols.get(place[0]) if place else None
+    if (props.get("method") == "masked-match" and source is not None
+            and source.address == place[1]):
+        home = meaning.home_symbol
+        return command if home is source else f"{command} --from {place[0]}"
+    command += f" --method {props.get('method')} --target {props.get('target')} --count {props.get('count')}"
+    if props.get("candidate"):
+        command += f" --candidate {props['candidate']}"
+    return command
 
 
 def writers(model):

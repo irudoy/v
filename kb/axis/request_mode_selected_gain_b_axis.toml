@@ -45,7 +45,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00014248"
 count = 0
-l0 = "cb701875f15725a4"
+l0 = "80899b88e0770eef"
 note = """
 1ND 000a254a reads one curve in each branch of the fffe9488 bit 6 selection \
 (00016ff2 or 00016fe2) and stores it capped at 0x7fff; it calls no 2D \

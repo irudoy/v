@@ -17,7 +17,11 @@ disposition: consumer (ffff13dc).""",
 ]
 level = "code"
 role = "table"
+former = ["parameter_state_gain_curve"]
 access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
 unit = "raw"
 scale = "x"
 to_raw = "x"
@@ -53,6 +57,47 @@ type = "lookup"
 end = "to"
 relies = "structure"
 supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013852"
+level = "code"
+former = ["parameter_state_gain_curve/tbl/1me3b-00013852"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0009654a"
+to = "jk78c:00013674"
+note = """
+Target reader 000964b8 matches 1ND 00090988 instruction for instruction and \
+corresponds to JK78C 00082cb0 with the same three state branches: the 4x4 \
+mode-selected surface on the sample and mode axes, the state gain curve at \
+coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, and the direct constants \
+at curve+8 and curve+0xc. At 0009654a the target reads 00013852 as the state \
+gain curve of the byte lookup, as JK78C 00082cb0 reads 00013674 at 00082e12. \
+Stock bytes differ from JK78C and equal 1ND0A; 1ND3B stock bytes equal \
+JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013a76"
+level = "code"
+former = ["parameter_state_gain_curve/tbl/1nd-00013a76"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090a1a"
+to = "jk78c:00013674"
+note = """
+Target reader 00090988 corresponds to JK78C 00082cb0 with the same three \
+state branches: the 4x4 mode-selected surface on the sample and mode axes, \
+the state gain curve at coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, \
+and the direct constants at curve+8 and curve+0xc. At 00090a1a the target \
+reads 00013a76 as the state gain curve of the byte lookup, as JK78C 00082cb0 \
+reads 00013674 at 00082e12. 1ND0A stock bytes differ from JK78C and equal \
+1ME3B; 1ND3B stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "7mfk"
@@ -165,17 +210,40 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
-[[status]]
+[[symbol]]
 layout = "jk78c"
-state = "unresolved"
-method = "l0"
-target = "7mfk:00011fe6"
-count = 0
-l0 = "6bd18b774cb344a9"
+address = "00013674"
+level = "code"
+former = ["parameter_state_gain_curve/tbl/jk78c-00013674"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082e12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00082e12"
+to = "7mfk:00011fe6"
 note = """
-The canonical curve supplies the saturating decrement of the reduction word. \
-The reviewed JK78C mode-parameter family supplies a selected byte, but its \
-relationship to this exact decrement path is not qualified."""
+JK78C 00082cb0 corresponds to the 7mfk product builder 000647e8. It scales a \
+word by 0x2d0e, shifts right by 15, subtracts 0x20 and clamps to 0..255 to \
+index this implicit 8-point uint8 curve, multiplies the result by a state \
+byte, and stores the word product at ffff13d6, as 000647e8 does into \
+ffff13dc. Consumer 00083174 subtracts that product from a nonzero state word \
+with saturation at 0, as 00064cb2 does with ffff1866."""
+
+[[link]]
+type = "reader"
+to = "parameter_mode_selected_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082e12"
 
 [[link]]
 type = "reader"

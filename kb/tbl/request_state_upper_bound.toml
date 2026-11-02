@@ -161,7 +161,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0001619a"
 count = 2
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 JK78C 0009a20a reads one curve over axis 0001616a. The 1ME3B counterpart \
 000b81dc reads two curves over axis 0001675c, 000167bc and 000167dc, in two \

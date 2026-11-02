@@ -11,7 +11,11 @@ used. Result disposition: consumer.""",
 ]
 level = "code"
 role = "table"
+former = ["parameter_mode_selected_gain_surface"]
 access = "explicit"
+cols = 4
+rows = 4
+storage = "uint8"
 unit = "raw"
 scale = "x"
 to_raw = "x"
@@ -38,6 +42,47 @@ type = "lookup"
 end = "to"
 relies = "structure"
 supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "0000b8b4"
+level = "code"
+former = ["parameter_mode_selected_gain_surface/tbl/1me3b-0000b8b4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000965c2"
+to = "jk78c:0000b3ba"
+note = """
+Target reader 000964b8 matches 1ND 00090988 instruction for instruction and \
+corresponds to JK78C 00082cb0 with the same three state branches: the 4x4 \
+mode-selected surface on the sample and mode axes, the state gain curve at \
+coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, and the direct constants \
+at curve+8 and curve+0xc. At 000965c2 the target reads 0000b8b4 as the 4x4 \
+surface in r4 of the 2D lookup, as JK78C 00082cb0 reads 0000b3ba at \
+00082d2a. Stock bytes differ from JK78C and equal 1ND0A; 1ND3B stock bytes \
+equal JK78C."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000b800"
+level = "code"
+former = ["parameter_mode_selected_gain_surface/tbl/1nd-0000b800"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090a92"
+to = "jk78c:0000b3ba"
+note = """
+Target reader 00090988 corresponds to JK78C 00082cb0 with the same three \
+state branches: the 4x4 mode-selected surface on the sample and mode axes, \
+the state gain curve at coordinate (x*0x2d0e>>15)-0x20 clamped to 0..255, \
+and the direct constants at curve+8 and curve+0xc. At 00090a92 the target \
+reads 0000b800 as the 4x4 surface in r4 of the 2D lookup, as JK78C 00082cb0 \
+reads 0000b3ba at 00082d2a. 1ND0A stock bytes differ from JK78C and equal \
+1ME3B; 1ND3B stock bytes equal JK78C."""
 
 [[symbol]]
 layout = "7mfk"
@@ -105,18 +150,62 @@ supports = "identity"
 to = "careful-terrier/fn/7mfk"
 relies = "structure"
 
-[[status]]
+[[symbol]]
 layout = "jk78c"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000b5fa"
-count = 0
-l0 = "6bd18b774cb344a9"
+address = "0000b3ba"
+level = "code"
+former = ["parameter_mode_selected_gain_surface/tbl/jk78c-0000b3ba"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d2a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00082d2a"
+to = "7mfk:0000b5fa"
 note = """
-The canonical multiplier participates in a bounded reduction-state \
-decrement. No reviewed JK78C multiplier and complete decrement branch \
-establish this role; the target mode-selected byte curves remain separate \
-native meanings."""
+JK78C 00082cb0 corresponds to the 7mfk product builder 000647e8. In its mode \
+branch it reads this 4x4 uint8 surface through the 4x4 helper 00027e24, the \
+counterpart of 00026084, multiplies the result by a state byte, and stores \
+the word product at ffff13d6, as 000647e8 does into ffff13dc. Consumer \
+00083174 subtracts that product from a nonzero state word with saturation at \
+0, as 00064cb2 does with ffff1866."""
+
+[[link]]
+type = "axis"
+to = "parameter_gain_mode_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d40"
+
+[[link]]
+type = "axis"
+to = "parameter_gain_sample_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d30"
+
+[[link]]
+type = "reader"
+to = "parameter_mode_selected_gain_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082d2a"
 
 [[link]]
 type = "reader"

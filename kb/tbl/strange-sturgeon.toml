@@ -171,7 +171,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000246e4"
 count = 3
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
 and 000246e4, with the count byte 0000866f; values derived from their \
@@ -187,7 +187,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000246e4"
 count = 2
-l0 = "cb701875f15725a4"
+l0 = "80899b88e0770eef"
 note = """
 JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
 and 000246e4, with the count byte 0000866f; values derived from their \

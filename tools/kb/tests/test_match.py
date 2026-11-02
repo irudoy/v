@@ -786,6 +786,30 @@ class FileChecksTest(unittest.TestCase):
         notes = checks.stale(model)
         self.assertEqual([note.subject for note in notes], ["apc_probe/ram on 1nd"])
 
+    def test_a_stale_search_names_the_repeat_that_keeps_its_note(self):
+        def status(layout, method, target, count, **keys):
+            return {"layout": layout, "state": "unresolved", "method": method, "target": target,
+                    "count": count, "l0": "0123456789abcdef", **keys}
+
+        home, other = f"7mfk:{APC_7MFK:08x}", f"jk00d:{APC_JK00D:08x}"
+        statuses = [
+            status("jk78c", "masked-match", home, 0),
+            status("1nd", "masked-match", other, 0),
+            status("1me3b", "l0", home, 2, note="Two readers take the role."),
+            status("jk00c", "l0", home, 1, candidate="jk00c:ffff17a4",
+                   note="The load of the candidate lies outside every L0 function."),
+        ]
+        model = self.model({"symbol": self.symbols(APC_JK00D), "status": statuses})
+        repeats = {note.subject: note.message.split("`")[1] for note in checks.stale(model)}
+        command = "uv run kb unresolved apc_probe/ram --layout"
+        self.assertEqual(repeats, {
+            "apc_probe/ram on jk78c": f"{command} jk78c",
+            "apc_probe/ram on 1nd": f"{command} 1nd --from jk00d",
+            "apc_probe/ram on 1me3b": f"{command} 1me3b --method l0 --target {home} --count 2",
+            "apc_probe/ram on jk00c": f"{command} jk00c --method l0 --target {home} --count 1 "
+                                      "--candidate jk00c:ffff17a4",
+        })
+
     def test_a_status_of_one_candidate_locates_it_and_states_why_it_is_not_bound(self):
         def status(layout, count, **keys):
             return {"layout": layout, "state": "unresolved", "method": "l0",

@@ -131,7 +131,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff2469"
 count = 0
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 The reviewed 1ME3B knock coordinator 00071d64 has no canonical direct Q8 \
 timing-map difference block or corresponding inhibit-history update. Its \
@@ -148,7 +148,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff2469"
 count = 0
-l0 = "cb701875f15725a4"
+l0 = "80899b88e0770eef"
 note = """
 The target-specific inhibit state is reviewed as \
 knock_direct_difference_inhibit_state/ram at fffe948b: coordinator 0006d948 \
@@ -164,7 +164,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff2469"
 count = 0
-l0 = "6bd18b774cb344a9"
+l0 = "ad2dc37ff374398e"
 note = """
 The target-specific inhibit state is reviewed as \
 knock_direct_difference_inhibit_state/ram at ffff23c9: coordinator 00062780 \

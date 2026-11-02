@@ -419,19 +419,49 @@ kind = "arithmetic"
 supports = "scale"
 value = "800*727/800=727"
 
-[[status]]
+[[symbol]]
 layout = "jk78c"
-state = "unresolved"
-method = "l0"
-target = "7mfk:00013d14"
-count = 0
-l0 = "6bd18b774cb344a9"
+address = "0001507c"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+scale_level = "code"
 note = """
-No unique JK78C counterpart is qualified for the dynamic inverse coordinate \
-00013d14 of canonical reader 00076ad0. Forward-use correspondence of the \
-shared 0000de8e surface does not establish this inverse coordinate or its \
-target reader. The canonical x*800/727 conversion is not propagated without \
-that operand and consumer chain."""
+The JK78C restoration passes the coordinate and the bound 0x320 to 00021ce8; \
+the 7mfk conversion x*800/727 is not asserted for JK78C."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009628e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009628e"
+to = "7mfk:00013d14"
+note = """
+JK78C 0009621c corresponds to the first inverse pass of 7mfk 00076ad0. Gated \
+by bit 5 of ROM8[00008870] or bit 6 of ROM8[00008950], as 00076ad0 is by bit \
+5 and bit 6 of two calibration bytes, it interpolates the rows of \
+request_conditional_signed_endpoint_a (jk78c 0000f14e, 7mfk 0000de8e) across \
+the forward context axis (jk78c 0001509c, 7mfk 00013d34) into a sixteen-word \
+stack vector, searches the offset-binary target against it, and returns the \
+coordinate from this table. It publishes the result through 00021ce8 with \
+the bound 0x320, and its disabled path copies a stored word, as 00076ad0 \
+does. As on 7mfk, the same sixteen words are the forward input axis of the \
+endpoint surfaces. The second inverse surface and the blend of 00076ad0 have \
+no JK78C counterpart."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk78c:00096416"
+note = """
+Reader 0009621c passes this table to the inverse lookup 00028320 and stores \
+the returned coordinate unchanged in ffff1eba before the 0x320 restoration. \
+Identity conversion records the raw coordinate; it assigns no engineering \
+unit."""
 
 [[link]]
 type = "depends"

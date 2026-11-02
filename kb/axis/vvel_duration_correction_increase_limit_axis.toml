@@ -26,7 +26,7 @@ state = "unresolved"
 method = "masked-match"
 target = "jk78c:0001512c"
 count = 0
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 The role belongs to the JK78C ratio corrections FUN_00055F2C and \
 FUN_00055FF2, which look up the duration characteristic axis over the \
@@ -41,7 +41,7 @@ state = "unresolved"
 method = "masked-match"
 target = "jk78c:0001512c"
 count = 0
-l0 = "cb701875f15725a4"
+l0 = "80899b88e0770eef"
 note = """
 The role belongs to the JK78C ratio corrections FUN_00055F2C and \
 FUN_00055FF2, which look up the duration characteristic axis over the \

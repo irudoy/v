@@ -303,7 +303,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:0001211e"
 count = 0
-l0 = "6bd18b774cb344a9"
+l0 = "ad2dc37ff374398e"
 note = """
 The canonical three-byte product, right shift by 14 and byte cap have no \
 accepted JK78C reader/operand counterpart. Weak structural suggestions \

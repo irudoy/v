@@ -75,7 +75,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0001431c"
 count = 0
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 The S-curve and its reader are unqualified on 1ME3B; the reviewed \
 word-difference source mechanism supplies no accepted same-role axis \

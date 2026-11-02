@@ -267,7 +267,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000098ca"
 count = 2
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 JK78C 0009a16a reads this surface through the 4x4 helper 00027e24 \
 (gleaming-walrus) in the state block between 00099db0 and 0009a848. On 1ME3B \

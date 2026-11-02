@@ -26,7 +26,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0001482c"
 count = 2
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 JK78C 000978d6 reads this curve through 00028200 after the 00022560 steps. \
 1ME3B 000b3cfc reorders the corresponding section: it reads the curve \
@@ -39,7 +39,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0001482c"
 count = 2
-l0 = "cb701875f15725a4"
+l0 = "80899b88e0770eef"
 note = """
 JK78C 000978d6 reads this curve through 00028200 after the 00022560 steps. \
 1ND 000ac9ac reorders the corresponding section: it reads the curve 00014d42 \

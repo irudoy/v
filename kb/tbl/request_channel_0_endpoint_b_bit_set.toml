@@ -161,7 +161,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000165e4"
 count = 3
-l0 = "28a4e19998ef4d2c"
+l0 = "7ed4ee54a3133ddd"
 note = """
 1ME3B 000b85ac runs an extended channel program: after the crossfade surface \
 it reads ten curves over axis 0001675c, the block 00015fa4/00015fc4/00015fe4 \

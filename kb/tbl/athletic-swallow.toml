@@ -206,7 +206,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:000120ce"
 count = 0
-l0 = "6bd18b774cb344a9"
+l0 = "ad2dc37ff374398e"
 note = """
 FUN_00087288, the homolog of FUN_00068CB8, reads the uint16 curve 00015D72 \
 at the first-lookup position of 000120CE, but the index of that lookup has \
