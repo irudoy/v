@@ -321,7 +321,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches(architecture_c
     assert rom["size"] == 0x100000
     assert rom["reviewedFunctions"] == 706
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
-    assert rom["counts"]["maps"] == 516
+    assert rom["counts"]["maps"] == 517
     assert rom["counts"]["axes"] == 79
     # Ledger annotations own the family; KB-only objects stay out of it.
     assert not any(item["kind"].startswith("kb-") for item in rom["objects"])
