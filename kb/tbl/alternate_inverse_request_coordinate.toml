@@ -433,12 +433,12 @@ the 7mfk conversion x*800/727 is not asserted for JK78C."""
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0009628e"
+at = "jk78c:00096230"
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "jk78c:0009628e"
+at = "jk78c:00096230"
 to = "7mfk:00013d14"
 note = """
 JK78C 0009621c corresponds to the first inverse pass of 7mfk 00076ad0. Gated \
