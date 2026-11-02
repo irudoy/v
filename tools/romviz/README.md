@@ -96,6 +96,16 @@ derived relations from one node to the registers that drive the actuators; a
 relation records evidence rather than a signed effect, and the view labels it
 as such.
 
+The system map starts from the declared block order and exchanges neighbors
+within a column while that reduces the weighted crossings of the flows. Stage
+chips keep the blocks of the chosen stages, and Focus selection keeps the
+selected block and the blocks that exchange flows with it; the URL fragment
+records both. A block diagram aligns its partner columns with the rows of the
+functions they connect when that reduces crossings. The `+`, `-`, and `0` keys
+zoom in, zoom out, and fit, and Selection zooms to the selected box. A minimap
+shows the visible part of a diagram larger than the canvas and moves the view
+on click or drag. A node or trace route opens with its node in view.
+
 Each manifest declares `[architecture]` with `layout`. The graph's image
 membership must agree with it. All ROM views use one graph snapshot, with
 separate architecture models for each image. A symbol's `images` list limits

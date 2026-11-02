@@ -122,9 +122,10 @@
           <div id="arch-results" class="arch-results" role="listbox" aria-label="Architecture search results" hidden></div>
         </div>
         <div class="button-group" aria-label="Diagram zoom controls">
-          <button id="arch-zoom-in" type="button" aria-label="Zoom in">+</button>
-          <button id="arch-zoom-out" type="button" aria-label="Zoom out">-</button>
-          <button id="arch-fit" type="button">Fit</button>
+          <button id="arch-zoom-in" type="button" aria-label="Zoom in" title="Zoom in (+)">+</button>
+          <button id="arch-zoom-out" type="button" aria-label="Zoom out" title="Zoom out (-)">-</button>
+          <button id="arch-fit" type="button" title="Fit the diagram (0)">Fit</button>
+          <button id="arch-zoom-selection" type="button" title="Zoom to the selection" disabled>Selection</button>
         </div>
       </div>
       <p id="arch-banner" class="arch-banner"></p>
@@ -149,9 +150,13 @@
               </label>
             </div>
           </div>
-          <svg id="arch-canvas" class="arch-canvas" role="group" aria-label="Firmware architecture diagram" aria-describedby="arch-canvas-desc">
-            <desc id="arch-canvas-desc"></desc>
-          </svg>
+          <div id="arch-filters" class="arch-filters" role="group" aria-label="Stage filter" hidden></div>
+          <div class="arch-canvas-frame">
+            <svg id="arch-canvas" class="arch-canvas" role="group" aria-label="Firmware architecture diagram" aria-describedby="arch-canvas-desc">
+              <desc id="arch-canvas-desc"></desc>
+            </svg>
+            <div id="arch-minimap" class="arch-minimap" hidden></div>
+          </div>
           <div id="arch-legend" class="arch-legend" aria-label="Legend"></div>
           <div id="arch-table" class="arch-table" hidden></div>
         </div>

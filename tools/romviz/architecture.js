@@ -57,6 +57,10 @@
   const READABLE_SCALE = 0.62;
   const NEIGHBOR_LIMIT = 28;
   const LIST_LIMIT = 12;
+  const SYSTEM_BOX = {blockWidth: 188, blockHeight: 48, endpointWidth: 166, endpointHeight: 42, gap: 10};
+  const DEFAULT_FLOW_LIMIT = 60;
+  const MINIMAP_WIDTH = 180;
+  const MINIMAP_HEIGHT = 120;
 
   function clamp(value, minimum, maximum) {
     return Math.max(minimum, Math.min(maximum, value));
@@ -364,30 +368,180 @@
         sweep(compact[position], successors);
       }
     }
-    const columns = [];
-    for (const members of compact) {
-      for (let offset = 0; offset < members.length; offset += maxPerColumn) {
-        columns.push(members.slice(offset, offset + maxPerColumn));
+    // An aligned layer deals its members across its columns in turn, so that
+    // every column runs in the order of the rows.
+    const interleaved = new Set();
+    const place = () => {
+      const columns = [];
+      compact.forEach((members, layerIndex) => {
+        const count = Math.ceil(members.length / maxPerColumn);
+        for (let column = 0; column < count; column += 1) {
+          columns.push(interleaved.has(layerIndex)
+            ? members.filter((_node, position) => position % count === column)
+            : members.slice(column * maxPerColumn, (column + 1) * maxPerColumn));
+        }
+      });
+      const heights = columns.map((members) => members.reduce(
+        (sum, node, position) => sum + items[node].height + (position ? rowGap : 0),
+        0,
+      ));
+      const height = Math.max(1, ...heights);
+      const boxes = new Map();
+      let x = 0;
+      columns.forEach((members, column) => {
+        const width = Math.max(...members.map((node) => items[node].width));
+        let y = (height - heights[column]) / 2;
+        for (const node of members) {
+          const item = items[node];
+          boxes.set(item.key, {x: x + (width - item.width) / 2, y, w: item.width, h: item.height});
+          y += item.height + rowGap;
+        }
+        x += width + columnGap;
+      });
+      return {boxes, width: Math.max(1, x - columnGap), height};
+    };
+    const placed = place();
+    // The first and last layers follow the rows of the boxes they link to:
+    // the layer order mixes layers of different sizes, the final rows do not.
+    const center = (node) => {
+      const box = placed.boxes.get(items[node].key);
+      return box.y + box.h / 2;
+    };
+    const align = (members, neighbors) => {
+      const keyed = members.map((node, position) => {
+        const values = [...neighbors[node]].map(center);
+        return [values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : center(node), position, node];
+      });
+      keyed.sort((left, right) => left[0] - right[0] || left[1] - right[1]);
+      return keyed.map((entry) => entry[2]);
+    };
+    const ends = [];
+    if (first.size && compact.length && compact[0].every((node) => first.has(items[node].key))) ends.push([0, successors]);
+    const tail = compact.length - 1;
+    if (last.size && tail > 0 && compact[tail].every((node) => last.has(items[node].key))) ends.push([tail, predecessors]);
+    if (!ends.length) return placed;
+    for (const [position, neighbors] of ends) {
+      compact[position] = align(compact[position], neighbors);
+      interleaved.add(position);
+    }
+    // The aligned layout replaces the layer order only when it crosses less.
+    const aligned = place();
+    const fewer = crossings(items, successors, aligned) < crossings(items, successors, placed);
+    return fewer ? aligned : placed;
+  }
+
+  // Crossings of the links of a layout, drawn as straight segments between
+  // the right side of the source box and the left side of the target box.
+  function crossings(items, successors, layout) {
+    const segments = [];
+    successors.forEach((targets, source) => {
+      const a = layout.boxes.get(items[source].key);
+      for (const target of targets) {
+        const b = layout.boxes.get(items[target].key);
+        segments.push([a.x + a.w, a.y + a.h / 2, b.x, b.y + b.h / 2]);
+      }
+    });
+    const side = (x1, y1, x2, y2, x, y) => Math.sign((y - y1) * (x2 - x1) - (y2 - y1) * (x - x1));
+    let total = 0;
+    for (let left = 0; left < segments.length; left += 1) {
+      const [x1, y1, x2, y2] = segments[left];
+      for (let right = left + 1; right < segments.length; right += 1) {
+        const [x3, y3, x4, y4] = segments[right];
+        if (side(x3, y3, x4, y4, x1, y1) * side(x3, y3, x4, y4, x2, y2) < 0
+          && side(x1, y1, x2, y2, x3, y3) * side(x1, y1, x2, y2, x4, y4) < 0) total += 1;
       }
     }
-    const heights = columns.map((members) => members.reduce(
-      (sum, node, position) => sum + items[node].height + (position ? rowGap : 0),
-      0,
-    ));
-    const height = Math.max(1, ...heights);
-    const boxes = new Map();
-    let x = 0;
-    columns.forEach((members, column) => {
-      const width = Math.max(...members.map((node) => items[node].width));
-      let y = (height - heights[column]) / 2;
-      for (const node of members) {
-        const item = items[node];
-        boxes.set(item.key, {x: x + (width - item.width) / 2, y, w: item.width, h: item.height});
-        y += item.height + rowGap;
-      }
-      x += width + columnGap;
+    return total;
+  }
+
+  // Order the members of fixed columns by exchanges of neighbors that reduce
+  // the weighted crossings of the links, drawn as straight segments between
+  // row centers. A crossing of two links weighs the product of their weights.
+  // The search starts from the given order and keeps only improvements, so
+  // the result never crosses more than the given order.
+  function orderColumns(columns, links, rowOf, passes = 8) {
+    const keys = columns.flat();
+    const indexOf = new Map(keys.map((key, index) => [key, index]));
+    const column = new Int32Array(keys.length);
+    const row = new Float64Array(keys.length);
+    const order = columns.map((members, position) => members.map((key) => {
+      const index = indexOf.get(key);
+      column[index] = position;
+      return index;
+    }));
+    const place = (members) => members.forEach((index, position) => {
+      row[index] = rowOf(keys[index], position);
     });
-    return {boxes, width: Math.max(1, x - columnGap), height};
+    order.forEach(place);
+    const from = [];
+    const to = [];
+    const weight = [];
+    for (const link of links) {
+      const left = indexOf.get(link.from);
+      const right = indexOf.get(link.to);
+      if (left === undefined || right === undefined || column[left] === column[right]) continue;
+      from.push(column[left] < column[right] ? left : right);
+      to.push(column[left] < column[right] ? right : left);
+      weight.push(link.weight);
+    }
+    const incident = keys.map(() => []);
+    from.forEach((index, edge) => {
+      incident[index].push(edge);
+      incident[to[edge]].push(edge);
+    });
+    const count = from.length;
+    const width = columns.length;
+    const start = Int32Array.from(from, (index) => column[index]);
+    const end = Int32Array.from(to, (index) => column[index]);
+    // The row of every link at each column it spans.
+    const height = new Float64Array(count * width);
+    const trace = (edge) => {
+      const a = row[from[edge]];
+      const b = row[to[edge]];
+      for (let position = start[edge]; position <= end[edge]; position += 1) {
+        height[edge * width + position] = a + (b - a) * (position - start[edge]) / (end[edge] - start[edge]);
+      }
+    };
+    for (let edge = 0; edge < count; edge += 1) trace(edge);
+    const mark = new Uint8Array(count);
+    // The crossings that involve a link of the two members, each pair once.
+    const cost = (first, second) => {
+      const own = [...new Set([...incident[first], ...incident[second]])];
+      for (const edge of own) mark[edge] = 1;
+      let total = 0;
+      for (const edge of own) {
+        for (let other = 0; other < count; other += 1) {
+          if (other === edge || (mark[other] && other < edge)) continue;
+          const low = Math.max(start[edge], start[other]);
+          const high = Math.min(end[edge], end[other]);
+          if (low >= high) continue;
+          const before = height[edge * width + low] - height[other * width + low];
+          const after = height[edge * width + high] - height[other * width + high];
+          if (before * after < 0) total += weight[edge] * weight[other];
+        }
+      }
+      for (const edge of own) mark[edge] = 0;
+      return total;
+    };
+    const exchange = (members, position) => {
+      [members[position], members[position + 1]] = [members[position + 1], members[position]];
+      place(members);
+      for (const member of members) for (const edge of incident[member]) trace(edge);
+    };
+    for (let pass = 0; pass < passes; pass += 1) {
+      let improved = false;
+      for (const members of order) {
+        for (let position = 0; position + 1 < members.length; position += 1) {
+          const [first, second] = [members[position], members[position + 1]];
+          const before = cost(first, second);
+          exchange(members, position);
+          if (cost(first, second) < before) improved = true;
+          else exchange(members, position);
+        }
+      }
+      if (!improved) break;
+    }
+    return order.map((members) => members.map((index) => keys[index]));
   }
 
   function create(bridge) {
@@ -401,16 +555,19 @@
       title: document.getElementById("arch-title"),
       subtitle: document.getElementById("arch-subtitle"),
       options: document.getElementById("arch-options"),
+      filters: document.getElementById("arch-filters"),
       support: document.getElementById("arch-support"),
       flowLimit: document.getElementById("arch-flow-limit"),
       flowLimitValue: document.getElementById("arch-flow-limit-value"),
       canvas: document.getElementById("arch-canvas"),
+      minimap: document.getElementById("arch-minimap"),
       legend: document.getElementById("arch-legend"),
       table: document.getElementById("arch-table"),
       details: document.getElementById("arch-details"),
       zoomIn: document.getElementById("arch-zoom-in"),
       zoomOut: document.getElementById("arch-zoom-out"),
       fit: document.getElementById("arch-fit"),
+      zoomSelection: document.getElementById("arch-zoom-selection"),
       tooltip: document.getElementById("tooltip"),
     };
     const models = new Map();
@@ -425,7 +582,12 @@
       content: {width: 1, height: 1},
       fitPending: true,
       support: false,
-      flowLimit: Number(elements.flowLimit.value) || 60,
+      stages: new Set(),
+      focus: false,
+      boxes: new Map(),
+      minimap: null,
+      minimapPointer: null,
+      flowLimit: Number(elements.flowLimit.value) || DEFAULT_FLOW_LIMIT,
       hoverChain: null,
       sceneLinks: new Map(),
       results: [],
@@ -552,6 +714,11 @@
 
     function select(key, updateLocation = true) {
       state.selection = key;
+      if (state.route.type === "system") {
+        // The focus filter follows the selected block.
+        if (state.focus) state.fitPending = true;
+        renderFilters();
+      }
       renderDetails();
       scheduleRender();
       if (updateLocation) bridge.updateHash(false);
@@ -716,32 +883,129 @@
         }));
       }
       elements.options.hidden = route.type !== "system";
+      renderFilters();
+    }
+
+    // Stage chips and the focus on the selected block; the hash keeps both.
+    function renderFilters() {
+      const container = elements.filters;
+      container.replaceChildren();
+      container.hidden = state.route.type !== "system";
+      if (container.hidden) return;
+      const chip = (label, active, onclick, title, disabled = false) => html("button", {
+        type: "button",
+        className: `arch-filter-chip${active ? " is-active" : ""}`,
+        "aria-pressed": active ? "true" : "false",
+        disabled,
+        title,
+        text: label,
+        onclick,
+      });
+      const changed = () => {
+        state.fitPending = true;
+        renderFilters();
+        scheduleRender();
+        bridge.updateHash(false);
+      };
+      container.append(html("span", {className: "arch-chains-label", text: "Stages"}));
+      container.append(chip("All", !state.stages.size, () => {
+        state.stages.clear();
+        changed();
+      }, "Show the blocks of every stage"));
+      for (const stage of state.model.raw.stages) {
+        container.append(chip(stage.name, state.stages.has(stage.id), () => {
+          if (state.stages.has(stage.id)) state.stages.delete(stage.id);
+          else state.stages.add(stage.id);
+          changed();
+        }, stage.summary));
+      }
+      const selection = state.selection || "";
+      const focusable = selection.startsWith("block:") || selection.startsWith("endpoint:");
+      container.append(chip("Focus selection", state.focus, () => {
+        state.focus = !state.focus;
+        changed();
+      }, focusable ? "Keep the selected block and the blocks that exchange flows with it" : "Select a block to focus on it", !focusable && !state.focus));
     }
 
     // Scenes.
+
+    // The rank of every flow-lane block and endpoint in its system-map column:
+    // the crossing-reduced order of the whole model, shared by every filter.
+    function systemOrder() {
+      const raw = state.model.raw;
+      const flowStages = raw.stages.filter((stage) => stage.lane === "flow");
+      const flowStageIds = new Set(flowStages.map((stage) => stage.id));
+      const flowBlocks = new Set(raw.blocks.filter((block) => flowStageIds.has(block.stage)).map((block) => block.id));
+      const columns = [
+        raw.endpoints.filter((endpoint) => endpoint.direction === "input").map((endpoint) => `endpoint:${endpoint.id}`),
+        ...flowStages.map((stage) => raw.blocks.filter((block) => block.stage === stage.id).map((block) => `block:${block.id}`)),
+        raw.endpoints.filter((endpoint) => endpoint.direction !== "input").map((endpoint) => `endpoint:${endpoint.id}`),
+      ];
+      const links = raw.flows
+        .filter((flow) => flowBlocks.has(flow.from) && flowBlocks.has(flow.to))
+        .map((flow) => ({from: `block:${flow.from}`, to: `block:${flow.to}`, weight: flow.weight}));
+      // An endpoint link carries no relation count; it weighs as a median flow.
+      const sorted = raw.flows.map((flow) => flow.weight).sort((left, right) => left - right);
+      const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 1;
+      for (const endpoint of raw.endpoints) {
+        if (flowBlocks.has(endpoint.block)) links.push({from: `endpoint:${endpoint.id}`, to: `block:${endpoint.block}`, weight: median});
+      }
+      const rowOf = (key, position) => {
+        const height = key.startsWith("endpoint:") ? SYSTEM_BOX.endpointHeight : SYSTEM_BOX.blockHeight;
+        return position * (height + SYSTEM_BOX.gap) + height / 2;
+      };
+      const rank = new Map();
+      orderColumns(columns, links, rowOf).forEach((keys) => keys.forEach((key, position) => rank.set(key, position)));
+      return rank;
+    }
+
+    // The blocks that the stage filter and the focus on the selection keep, or
+    // null when every block shows.
+    function systemFilter(focusBlock) {
+      const raw = state.model.raw;
+      const partners = state.focus && focusBlock ? new Set([focusBlock]) : null;
+      if (partners) {
+        for (const flow of raw.flows) {
+          if (flow.from === focusBlock) partners.add(flow.to);
+          if (flow.to === focusBlock) partners.add(flow.from);
+        }
+      }
+      if (!partners && !state.stages.size) return null;
+      return new Set(raw.blocks
+        .filter((block) => (!state.stages.size || state.stages.has(block.stage)) && (!partners || partners.has(block.id)))
+        .map((block) => block.id));
+    }
 
     function systemScene() {
       const raw = state.model.raw;
       const flowStages = raw.stages.filter((stage) => stage.lane === "flow");
       const supportStages = raw.stages.filter((stage) => stage.lane !== "flow");
-      const blockWidth = 188;
-      const blockHeight = 48;
-      const endpointWidth = 166;
-      const endpointHeight = 42;
-      const gap = 10;
+      const {blockWidth, blockHeight, endpointWidth, endpointHeight, gap} = SYSTEM_BOX;
       const columnGap = 76;
       const headerHeight = 34;
       const boxes = new Map();
       const columns = [];
       let x = 0;
-      const inputs = raw.endpoints.filter((endpoint) => endpoint.direction === "input");
-      const outputs = raw.endpoints.filter((endpoint) => endpoint.direction !== "input");
-      columns.push({label: "Sensors and inputs", width: endpointWidth, items: inputs.map((endpoint) => ({key: `endpoint:${endpoint.id}`, h: endpointHeight}))});
+      state.model.systemOrder ||= systemOrder();
+      const rank = state.model.systemOrder;
+      const byRank = (left, right) => (rank.get(left.key) ?? 0) - (rank.get(right.key) ?? 0);
+      const selected = state.selection || "";
+      const selectedBlock = selected.startsWith("block:") ? selected.slice(6) : null;
+      const selectedEndpoint = selected.startsWith("endpoint:") ? state.model.endpointById.get(selected.slice(9)) : null;
+      const focusBlock = selectedBlock || selectedEndpoint?.block || null;
+      const kept = systemFilter(focusBlock);
+      const shown = (blockId) => !kept || kept.has(blockId);
+      const inputs = raw.endpoints.filter((endpoint) => endpoint.direction === "input" && shown(endpoint.block));
+      const outputs = raw.endpoints.filter((endpoint) => endpoint.direction !== "input" && shown(endpoint.block));
+      const endpointItems = (endpoints) => endpoints.map((endpoint) => ({key: `endpoint:${endpoint.id}`, h: endpointHeight})).sort(byRank);
+      columns.push({label: "Sensors and inputs", width: endpointWidth, items: endpointItems(inputs)});
       for (const stage of flowStages) {
-        const blocks = raw.blocks.filter((block) => block.stage === stage.id);
-        columns.push({label: stage.name, stage, width: blockWidth, items: blocks.map((block) => ({key: `block:${block.id}`, h: blockHeight}))});
+        const blocks = raw.blocks.filter((block) => block.stage === stage.id && shown(block.id));
+        columns.push({label: stage.name, stage, width: blockWidth, items: blocks.map((block) => ({key: `block:${block.id}`, h: blockHeight})).sort(byRank)});
       }
-      columns.push({label: "Actuators and links", width: endpointWidth, items: outputs.map((endpoint) => ({key: `endpoint:${endpoint.id}`, h: endpointHeight}))});
+      columns.push({label: "Actuators and links", width: endpointWidth, items: endpointItems(outputs)});
+      // A filter leaves out the columns it empties.
+      if (kept) columns.splice(0, columns.length, ...columns.filter((column) => column.items.length));
       let tallest = 0;
       for (const column of columns) {
         column.x = x;
@@ -754,15 +1018,19 @@
         tallest = Math.max(tallest, y);
         x += column.width + columnGap;
       }
-      const flowWidth = x - columnGap;
-      const supportTop = tallest + 46;
-      const supportLeft = columns[1] ? columns[1].x : 0;
-      const supportWidth = Math.max(blockWidth, flowWidth - supportLeft);
+      const shownSupport = supportStages.filter((stage) => raw.blocks.some((block) => block.stage === stage.id && shown(block.id)));
+      const flowWidth = Math.max(blockWidth, x - columnGap);
+      const supportTop = columns.length ? tallest + 46 : 0;
+      // The support rows start after the room of their labels, the width of
+      // the input column.
+      const supportLeft = endpointWidth + columnGap;
+      const supportWidth = Math.max(columns.length ? blockWidth : 4 * blockWidth + 3 * gap, flowWidth - supportLeft);
+      const sceneWidth = Math.max(flowWidth, supportLeft + supportWidth);
       const perRow = Math.max(1, Math.floor((supportWidth + gap) / (blockWidth + gap)));
       const supportRows = [];
       let y = supportTop + 30;
-      for (const stage of supportStages) {
-        const blocks = raw.blocks.filter((block) => block.stage === stage.id);
+      for (const stage of shownSupport) {
+        const blocks = raw.blocks.filter((block) => block.stage === stage.id && shown(block.id));
         const rowTop = y;
         blocks.forEach((block, position) => {
           const column = position % perRow;
@@ -778,37 +1046,34 @@
         supportRows.push({stage, top: rowTop, height: rows * (blockHeight + gap) - gap});
         y = rowTop + rows * (blockHeight + gap) + 10;
       }
-      const height = supportStages.length ? y : tallest;
+      const height = shownSupport.length ? y : tallest;
 
       const supportIds = new Set(raw.blocks.filter((block) => {
         const stage = state.model.stageById.get(block.stage);
         return stage && stage.lane !== "flow";
       }).map((block) => block.id));
-      const selected = state.selection || "";
-      const selectedBlock = selected.startsWith("block:") ? selected.slice(6) : null;
-      const selectedEndpoint = selected.startsWith("endpoint:") ? state.model.endpointById.get(selected.slice(9)) : null;
-      const focusBlock = selectedBlock || selectedEndpoint?.block || null;
       const chainBlocks = state.hoverChain !== null ? state.model.chainBlocks[state.hoverChain] : null;
 
-      const primary = raw.flows
+      const drawable = raw.flows.filter((flow) => shown(flow.from) && shown(flow.to));
+      const primary = drawable
         .filter((flow) => !supportIds.has(flow.from) && !supportIds.has(flow.to))
         .sort((left, right) => right.weight - left.weight)
         .slice(0, state.flowLimit);
       const secondary = state.support
-        ? raw.flows
+        ? drawable
           .filter((flow) => supportIds.has(flow.from) || supportIds.has(flow.to))
           .sort((left, right) => right.weight - left.weight)
           .slice(0, state.flowLimit)
         : [];
       const visible = new Set([...primary, ...secondary]);
       if (focusBlock) {
-        for (const flow of raw.flows) {
+        for (const flow of drawable) {
           if (flow.from === focusBlock || flow.to === focusBlock) visible.add(flow);
         }
       }
       if (selected.startsWith("flow:")) {
         const [from, to] = selected.slice(5).split(">");
-        const flow = raw.flows.find((item) => item.from === from && item.to === to);
+        const flow = drawable.find((item) => item.from === from && item.to === to);
         if (flow) visible.add(flow);
       }
       const maximum = Math.max(1, ...raw.flows.map((flow) => flow.weight));
@@ -827,11 +1092,11 @@
             layers.bands.append(svg("text", {x: column.x, y: 27, class: "arch-column-sub"}, truncate(column.stage.summary, 34)));
           }
         }
-        if (supportStages.length) {
+        if (shownSupport.length) {
           layers.bands.append(svg("rect", {
             x: -16,
             y: supportTop,
-            width: flowWidth + 32,
+            width: sceneWidth + 32,
             height: height - supportTop + 8,
             rx: 10,
             class: "arch-support-band",
@@ -919,12 +1184,17 @@
         }
       }
 
+      const filters = [
+        state.stages.size ? `stages ${[...state.stages].map((id) => state.model.stageById.get(id)?.name || id).join(", ")}` : "",
+        state.focus && focusBlock ? `${blockName(focusBlock)} and its partners` : "",
+      ].filter(Boolean);
       return {
-        width: flowWidth,
+        width: sceneWidth,
         height,
         draw,
         title: `${raw.id} system map`,
-        subtitle: `${raw.blocks.length} blocks in ${raw.stages.length} stages; ${raw.endpoints.length} peripheral endpoints; `
+        subtitle: `${kept ? `Showing ${kept.size} of ${raw.blocks.length} blocks: ${filters.join("; ")}. ` : ""}`
+          + `${raw.blocks.length} blocks in ${raw.stages.length} stages; ${raw.endpoints.length} peripheral endpoints; `
           + `${visible.size} of ${raw.flows.length} inter-block flows drawn. Click a block to trace its flows; double-click to open it.`,
         legend: [
           ["swatch block", "Functional block"],
@@ -1463,6 +1733,7 @@
     function drawBox(parent, box, options) {
       if (!box) return;
       const {key, kind, title, subtitle, selected, related, dimmed, badge, chips = [], label} = options;
+      state.boxes.set(key, {box, selected, dimmed});
       const index = options.node;
       const item = index === undefined ? null : node(index);
       const marked = index !== undefined && editable(index);
@@ -1560,6 +1831,7 @@
       const height = Math.max(1, Math.round(canvas.clientHeight));
       canvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
       state.tips.clear();
+      state.boxes = new Map();
       const current = scene();
       const description = svg("desc", {id: "arch-canvas-desc"}, current.subtitle);
       const viewport = svg("g", {class: "arch-viewport"});
@@ -1579,9 +1851,16 @@
       if (state.fitPending) {
         state.fitPending = false;
         fit(state.route.type === "system" ? 0 : READABLE_SCALE);
+        // A node or trace route keeps its node in view at the readable scale.
+        const anchor = state.route.type === "node" || state.route.type === "trace"
+          ? state.boxes.get(`node:${state.route.node}`)?.box
+          : null;
+        if (anchor) reveal(anchor);
       } else {
         applyTransform();
       }
+      renderMinimap();
+      elements.zoomSelection.disabled = !selectionBox();
     }
 
     function scheduleRender() {
@@ -1599,6 +1878,89 @@
       if (!state.viewport) return;
       const {x, y, k} = state.transform;
       state.viewport.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})`);
+      updateMinimap();
+    }
+
+    // The box of the selection: a drawn box, or both ends of a system flow.
+    function selectionBox() {
+      const key = state.selection;
+      if (!key) return null;
+      if (state.boxes.has(key)) return state.boxes.get(key).box;
+      if (!key.startsWith("flow:")) return null;
+      const [from, to] = key.slice(5).split(">");
+      const a = state.boxes.get(`block:${from}`)?.box;
+      const b = state.boxes.get(`block:${to}`)?.box;
+      if (!a || !b) return null;
+      const x = Math.min(a.x, b.x);
+      const y = Math.min(a.y, b.y);
+      return {x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y};
+    }
+
+    function centerOn(box, k) {
+      const rect = elements.canvas.getBoundingClientRect();
+      state.transform = {k, x: rect.width / 2 - (box.x + box.w / 2) * k, y: rect.height / 2 - (box.y + box.h / 2) * k};
+      applyTransform();
+    }
+
+    // Natural size, or smaller when the box does not fit.
+    function zoomTo(box) {
+      const rect = elements.canvas.getBoundingClientRect();
+      const margin = rect.width < 560 ? 12 : 28;
+      centerOn(box, clamp(Math.min(1, (rect.width - 2 * margin) / box.w, (rect.height - 2 * margin) / box.h), 0.12, 3.2));
+    }
+
+    // Pan at the current scale until the box is in view.
+    function reveal(box) {
+      const rect = elements.canvas.getBoundingClientRect();
+      const {x, y, k} = state.transform;
+      const left = x + box.x * k;
+      const top = y + box.y * k;
+      if (left >= 0 && top >= 0 && left + box.w * k <= rect.width && top + box.h * k <= rect.height) return;
+      centerOn(box, k);
+    }
+
+    // Minimap: the boxes of the scene and the visible rectangle. It hides
+    // while the whole scene is in view.
+    function renderMinimap() {
+      const {width, height} = state.content;
+      const scale = Math.min(MINIMAP_WIDTH / width, MINIMAP_HEIGHT / height);
+      const w = Math.max(24, Math.round(width * scale));
+      const h = Math.max(16, Math.round(height * scale));
+      const root = svg("svg", {width: w, height: h, viewBox: `0 0 ${w} ${h}`, "aria-hidden": "true", focusable: "false"});
+      for (const {box, selected, dimmed} of state.boxes.values()) {
+        root.append(svg("rect", {
+          x: (box.x * scale).toFixed(1),
+          y: (box.y * scale).toFixed(1),
+          width: Math.max(1, box.w * scale).toFixed(1),
+          height: Math.max(1, box.h * scale).toFixed(1),
+          class: `arch-minimap-box${selected ? " is-selected" : dimmed ? " is-dimmed" : ""}`,
+        }));
+      }
+      state.minimap = {scale, view: svg("rect", {class: "arch-minimap-view"}), root};
+      root.append(state.minimap.view);
+      elements.minimap.replaceChildren(root);
+      updateMinimap();
+    }
+
+    function updateMinimap() {
+      const minimap = state.minimap;
+      if (!minimap) return;
+      const rect = elements.canvas.getBoundingClientRect();
+      const {x, y, k} = state.transform;
+      const {width, height} = state.content;
+      elements.minimap.hidden = x >= -1 && y >= -1
+        && x + width * k <= rect.width + 1 && y + height * k <= rect.height + 1;
+      minimap.view.setAttribute("x", (-x / k * minimap.scale).toFixed(1));
+      minimap.view.setAttribute("y", (-y / k * minimap.scale).toFixed(1));
+      minimap.view.setAttribute("width", (rect.width / k * minimap.scale).toFixed(1));
+      minimap.view.setAttribute("height", (rect.height / k * minimap.scale).toFixed(1));
+    }
+
+    function minimapMove(event) {
+      const bounds = state.minimap.root.getBoundingClientRect();
+      const cx = (event.clientX - bounds.left) / state.minimap.scale;
+      const cy = (event.clientY - bounds.top) / state.minimap.scale;
+      centerOn({x: cx, y: cy, w: 0, h: 0}, state.transform.k);
     }
 
     function fit(minimum = 0) {
@@ -1803,12 +2165,44 @@
     elements.zoomIn.addEventListener("click", () => zoomAt(1.25));
     elements.zoomOut.addEventListener("click", () => zoomAt(0.8));
     elements.fit.addEventListener("click", () => fit());
+    elements.zoomSelection.addEventListener("click", () => {
+      const box = selectionBox();
+      if (box) zoomTo(box);
+    });
+    // + and - zoom, 0 fits; typing in a field keeps its keys.
+    document.addEventListener("keydown", (event) => {
+      if (!state.active || !state.model || event.defaultPrevented) return;
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.target.closest?.("input, textarea, select, [contenteditable]")) return;
+      if (event.key === "+" || event.key === "=") zoomAt(1.25);
+      else if (event.key === "-" || event.key === "_") zoomAt(0.8);
+      else if (event.key === "0") fit();
+      else return;
+      event.preventDefault();
+    });
+    elements.minimap.addEventListener("pointerdown", (event) => {
+      if (!state.minimap) return;
+      event.preventDefault();
+      elements.minimap.setPointerCapture(event.pointerId);
+      state.minimapPointer = event.pointerId;
+      minimapMove(event);
+    });
+    elements.minimap.addEventListener("pointermove", (event) => {
+      if (state.minimapPointer === event.pointerId) minimapMove(event);
+    });
+    for (const type of ["pointerup", "pointercancel"]) {
+      elements.minimap.addEventListener(type, (event) => {
+        if (state.minimapPointer !== event.pointerId) return;
+        state.minimapPointer = null;
+        if (elements.minimap.hasPointerCapture(event.pointerId)) elements.minimap.releasePointerCapture(event.pointerId);
+      });
+    }
     elements.support.addEventListener("change", () => {
       state.support = elements.support.checked;
       scheduleRender();
     });
     elements.flowLimit.addEventListener("input", () => {
-      state.flowLimit = Number(elements.flowLimit.value) || 60;
+      state.flowLimit = Number(elements.flowLimit.value) || DEFAULT_FLOW_LIMIT;
       elements.flowLimitValue.textContent = String(state.flowLimit);
       scheduleRender();
     });
@@ -2429,6 +2823,8 @@
         state.model = next;
         state.route = {type: "system"};
         state.selection = null;
+        state.stages = new Set([...state.stages].filter((id) => next.stageById.has(id)));
+        state.focus = false;
       }
       state.binding = prepareBinding(binding, next);
       const flows = next.raw.flows.length;
@@ -2467,6 +2863,8 @@
       const entries = [["arch", routeKey(state.route)]];
       const selection = encodeSelection(state.selection);
       if (selection) entries.push(["sel", selection]);
+      if (state.stages.size) entries.push(["stages", [...state.stages].join(",")]);
+      if (state.focus) entries.push(["focus", "1"]);
       return entries;
     }
 
@@ -2474,6 +2872,8 @@
       if (!state.model) return;
       state.route = parseRoute(parameters.get("arch"));
       state.selection = decodeSelection(parameters.get("sel"));
+      state.stages = new Set((parameters.get("stages") || "").split(",").filter((id) => state.model.stageById.has(id)));
+      state.focus = parameters.get("focus") === "1";
       state.fitPending = true;
       renderChrome();
       renderDetails();
@@ -2493,5 +2893,5 @@
     }};
   }
 
-  window.RomAtlasArchitecture = {create, layered, bezier};
+  window.RomAtlasArchitecture = {create, layered, orderColumns, bezier};
 })();

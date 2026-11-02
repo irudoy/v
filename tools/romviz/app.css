@@ -938,6 +938,80 @@ footer p {
   font-family: var(--font-mono);
 }
 
+.arch-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px 10px;
+}
+
+.arch-filters[hidden] {
+  display: none;
+}
+
+.arch-filter-chip {
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
+  font-size: 0.72rem;
+}
+
+.arch-filter-chip.is-active {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--surface);
+}
+
+.arch-filter-chip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.arch-canvas-frame {
+  position: relative;
+}
+
+.arch-minimap {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-raised);
+  box-shadow: var(--shadow);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.arch-minimap[hidden] {
+  display: none;
+}
+
+.arch-minimap svg {
+  display: block;
+}
+
+.arch-minimap-box {
+  fill: var(--border-strong);
+}
+
+.arch-minimap-box.is-dimmed {
+  fill: var(--border);
+}
+
+.arch-minimap-box.is-selected {
+  fill: var(--focus);
+}
+
+.arch-minimap-view {
+  fill: var(--focus);
+  fill-opacity: 0.12;
+  stroke: var(--focus);
+  stroke-width: 1.5;
+}
+
 .arch-canvas {
   display: block;
   width: 100%;
