@@ -16,6 +16,7 @@ from patches import build_rom
 from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
+from patches import preflash
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_endpoints
@@ -181,6 +182,74 @@ SCHEMA_1_RECORD = bytes.fromhex(
     "524c0101050000ff010000a00001001000"
     "04012c0064737373737300adb3a55a"
 )
+# Exact unit bytes of the speed-hold runtime without the RPM ceiling latch,
+# whose wrappers clear a 24-byte state and whose controller cuts inline.
+SPEED_HOLD_WRAPPERS = bytes.fromhex(
+    "4f22d019400b0009d018400b00094f26000b0009ffffffffffffffffffffffff"
+    "d113601088008902d012402b0009d012402b0009ffffffffffffffffffffffff"
+    "4f22d10ee000e2062102710442108bfbd00b400b00094f26000b0009ffffffff"
+    "ffffffffffffffff000a9554000d38e4ffff5d40000d09d8000d2108ffff5d40"
+    "000d22a0"
+)
+SPEED_HOLD_ENGINE = bytes.fromhex(
+    "4f22d57ee000815a6050880089058801890588028905a0dc0009a0040009a03c"
+    "0009a09700098454e10530128910845520088b0d8553600d20088b098554600d"
+    "20088b05b0ec000920088903a0d10009a0bf0009d569d46a60408054d4698443"
+    "8055e000815381548159d16760118155d1666211622d8548320c42118900e200"
+    "e3ff633d3322890062336023815690c68157e0012500a04e00098454e1053012"
+    "890c8455e102301289088554600d20088b048557600d91b230168b01a0890009"
+    "b0ae0009d54dd44e6240845432008903e0118051a0340009d44a844362038455"
+    "32008903e0128051a02a000984512008890dd448604088088b03e00f8051a01f"
+    "000988208b1ce0078051a019000985536203622d7201622dd43a854f6303633d"
+    "32328b06e00e80518452c9f78052a007000960238153d038400b0009a0590009"
+    "d52ee00081548452c90f8052e0022500a04f00098454e1053012893a8455e102"
+    "301289368554600d9158611d30128930b178000920088923d426604088208b1a"
+    "d51e85546203622d7201622dd41d6143712060116303633d32328b08e0002500"
+    "80528053805581538154a022000960238154a01e0009d511e0008154a0190009"
+    "d50ee0018051e000805280538154a0100009e400d00e400b0009d5086153e000"
+    "e2062102710442108bfbe0022500e01080514f26000b0009ffffffffffff5d40"
+    "ffff5d00000d6040ffff11bcffff113c000d3660ffff2a85000d40c0800003e8"
+    "4f22d583e000805180528053b11a00096703200889048453cb018053a0020009"
+    "e0018051d47b6240622ce10532128b06845120088b17e0028051a01400092778"
+    "890c6023d174021cd17484142029200889048453cb028053a005000984512008"
+    "8b01e0038051d46b844163038442230b8443203b20088b048453cb048053a005"
+    "0009845120088b01e004805161437104601220088b048453cb088053a0050009"
+    "845120088b01e0058051d45d6040c8808b048453cb108053a005000984512008"
+    "8b01e0068051d457604088028b048453cb208053a0050009845120088b01e008"
+    "80512778890ed4516240622cd44b614371226010600c30228b048452cb048052"
+    "a0050009845120088b01e00d805127788929d4456241622dd44060508801890e"
+    "8544600d2008890132028b1c8545600d200889203022891ee313a01500098556"
+    "600d32086143711a6010600c32078b02e314a00900098411600c600b3203890a"
+    "e315a0010009e309845120088b0660338051a00300098453cb4080532778890c"
+    "d42b6241622dd4258546600d32028b048453cb808053a0050009845120088b01"
+    "e00a80512778890cd4226241622dd41b8547600d32028b048452cb018052a005"
+    "0009845120088b01e00b805127788910d4196240622cd4118446600c32028b08"
+    "8447600c30228b048452cb028052a0050009845120088b01e00c805127788902"
+    "8452cb0880528451600c4f26000b0009ffff5d40ffff5d00000d3d40000d6040"
+    "ffff41aeffff2a85ffff113cffff3b38ffff11bcffff2672ffff107701020408"
+    "10ffffffd33f6031600d917d611d30108b74843288048b718433e1023012896d"
+    "8434c9e020088b69843520088b6684366203622c8437600c30228b5f8534620d"
+    "222889058535600d2008890130228b558536600d200889516433741a6044610c"
+    "2118894b6040620c222889478538310c41158b43320842158b40643374126040"
+    "2008893b9144853a600d2008893630168934853b40118b31853c600d3016892d"
+    "853e600d200889299131611d853f600d2008892330128921643374206045600d"
+    "2008891b301289196044600c20088915e1ff611c30108911604420088b0e6045"
+    "600d9112611d30108b086041600d910d611d30108b02e001000b0009e000000b"
+    "0009ffff000d6040524cadb3a55a800003e8ffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+)
+SPEED_HOLD_CONTROLLER = bytes.fromhex(
+    "4f22d540d440d1416211622d8556600d320860238158614371126010630c8411"
+    "600c3028e60040158b0a9677303289076163210e011a6033d335430b00096603"
+    "854b220f011a611b855967034021402140214021306c4015890341118907a005"
+    "0009935b30338b0241158b00e100371c854c4008400837078b006703600b3703"
+    "89006703607381594021402140214021306c40118900e000914030178b006013"
+    "815b6203854a630385576103303c32078b006203313832138900621360238157"
+    "8452cb106303845588018b0fe740237b8555610d854e600d310cd20e6021600d"
+    "30168b03e03f815ae7a0237bd20a6020c8048901e720237b603380524f26000b"
+    "0009ffffffff5d40000d6040ffff113c00021ce0ffff11bcffff249703e8ffff"
+)
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
 
 
@@ -269,6 +338,29 @@ def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROL
     source[current.start : current.end] = bytes([0xFF]) * current.size
     retired = layout.retired_configuration
     source[retired.start : retired.end] = record
+    return source
+
+
+def speed_hold_unlatched(rom, data, part):
+    """Return ``data`` with the speed-hold units that precede the RPM ceiling
+    latch over an erased ceiling span. ``runtime`` also restores the wrappers
+    and the hold-mode record with a zero hysteresis byte."""
+    layout = target(rom).rolling_layout
+    source = bytearray(data)
+    ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
+    source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
+    units = [
+        ("engine", SPEED_HOLD_ENGINE),
+        ("speed_controller", SPEED_HOLD_CONTROLLER),
+    ]
+    if part == "runtime":
+        units.append(("wrappers", SPEED_HOLD_WRAPPERS))
+        start = layout.configuration.start
+        source[start + 3] = rolling_launch.Mode.HOLD
+        source[start + 0x23] = 0
+    for key, blob in units:
+        unit = layout.assembly_unit_by_key[key]
+        source[unit.span.start : unit.span.end] = blob
     return source
 
 
@@ -607,6 +699,21 @@ def test_editor_disabling_only_map_1_travels_in_the_profile(rom):
     )
     with pytest.raises(apply_calibration.ApplicationError, match="rolling_launch"):
         apply_calibration.apply(built(rom), extraction.calibration)
+
+
+@pytest.mark.parametrize("part", ("runtime", "controller-engine"))
+def test_speed_hold_runtime_without_the_ceiling_latch_is_refused(part):
+    data = closed("JK08A", speed_hold_unlatched("JK08A", built("JK08A"), part))
+    with pytest.raises(
+        runtime_endpoints.EndpointError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        runtime_endpoints.classify_runtime(data, target("JK08A"), "image")
+    with pytest.raises(
+        preflash.PreflashError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        preflash.check_image(data, "JK08A")
 
 
 def _rolling_cases():

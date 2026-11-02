@@ -639,6 +639,9 @@ Every registered historical endpoint leaves the RPM ceiling span
 The speed-hold runtime without the ceiling latch, whose state has 24 bytes, is
 not a registered endpoint: the builder and `make preflash` classify its images
 as an unknown Rolling Launch state and refuse them.
+Its schema-4 record holds zero in the hysteresis byte `+0x23`, which is
+outside the field contract, so that record is also invalid for the current
+runtime.
 
 The composition replaces six declared call targets:
 
