@@ -900,7 +900,8 @@ def _targets(model):
 
 def _stocks(model):
     """{hook symbol key: stock word}: the address on the layout of a word of
-    the symbol of the meaning that the `target` link of the word names there."""
+    the symbol of the meaning that the `target` link of the word names there,
+    plus the offset of the link."""
     found = {}
     for link in model.links:
         if link.type != "target":
@@ -909,9 +910,10 @@ def _stocks(model):
             owner, to = link.owner.symbols.get(layout), link.to.symbols.get(layout)
             if owner is None or owner.kind != "hook" or to is None:
                 continue
-            if found.setdefault(owner.key, to.address) != to.address:
+            word = to.address + (link.offset or 0)
+            if found.setdefault(owner.key, word) != word:
                 raise KbError(f"{owner.key.key}: target links name the stock words "
-                              f"{found[owner.key]:08x} and {to.address:08x}", code=3)
+                              f"{found[owner.key]:08x} and {word:08x}", code=3)
     return found
 
 

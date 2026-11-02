@@ -643,6 +643,29 @@ class ProfileAdapterTest(unittest.TestCase):
         self.assertEqual(row["status"], profiles.UNSUPPORTED)
         self.assertIn("wire conversion", row["evidence"])
 
+    def test_a_pointer_into_a_table_row_keeps_the_row_address(self):
+        m = model()
+        # The release curve is the second row of the grouped rev-limit curves:
+        # its hook targets the table plus 0x10, and the fuel-cut binding of the
+        # same literal takes the stock word.
+        stocks = profiles._stocks(m)
+        self.assertEqual(stocks[SymbolKey("1nd", "hook", 0x76CAC)], 0x17212)
+        self.assertEqual(stocks[SymbolKey("1me3b", "hook", 0x7B334)], 0x172C6)
+        targets = native.fuel_cut_document(m)["target"]
+        self.assertIn({"site": 0x76CAC, "target": 0x17212},
+                      targets["1ND0A"]["pointer_bindings"])
+        self.assertIn({"site": 0x7B334, "target": 0x172C6},
+                      targets["1ME3B"]["pointer_bindings"])
+        # A stock word beyond the 32 bytes of the curves binds no owner.
+        [image] = [image for rom, _, image in native.targets(m) if rom == "1ND0A"]
+        data = bytearray(native._image(image.path))
+        data[0x76CAC:0x76CB0] = (0x17222).to_bytes(4, "big")
+        function = m.meaning_of(SymbolKey("1nd", "fn", 0x76AD2)).symbols["1nd"]
+        with self.assertRaises(KbError) as caught:
+            native._function_bindings(m, function, "1nd", data)
+        self.assertIn("the word 00017222 at 1nd:00076cac lies outside the storage of "
+                      "rev_limit_fuel_cut_curves/tbl", str(caught.exception))
+
     def test_a_target_specific_telemetry_row_fills_the_role_of_its_field(self):
         m = model()
         target = m.targets[("can_telemetry", "jk78c")].props

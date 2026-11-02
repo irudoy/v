@@ -791,14 +791,17 @@ def fuel_cut_document(model):
                   "state_active_mask": masks["active"], "state_armed_mask": masks["armed"],
                   **{name: symbol.address for name, symbol in found.items()},
                   **values, "delay_calibration_value": values["delay_calibration_value"][0],
-                  **_function_bindings(model, function, layout), "evidence": call["note"]}
+                  **_function_bindings(model, function, layout, data),
+                  "evidence": call["note"]}
         document["target"][rom] = target
     return document
 
 
-def _function_bindings(model, function, layout):
+def _function_bindings(model, function, layout, data):
     """The pointer bindings of the predicate function on a layout: the evidence
-    of the reader links to its meaning without a role, by site."""
+    of the reader links to its meaning without a role, by site. A ROM pointer
+    takes its target from the stock word at the site, which may address a row
+    inside the storage of the owner."""
     found = {name: [] for name in BINDINGS}
     for link in model.links:
         if link.type != "reader" or link.to is not function.meaning or link.roles:
@@ -806,7 +809,15 @@ def _function_bindings(model, function, layout):
         group = next(name for name, kinds in BINDINGS.items() if link.owner.kind in kinds)
         for item in link.evidence:
             site = _site(item, layout)
-            if site is not None:
-                found[group].append({"site": site,
-                                     "target": link.owner.symbols[layout].address})
+            if site is None:
+                continue
+            symbol = link.owner.symbols[layout]
+            target = symbol.address
+            if group == "pointer_bindings":
+                target = int.from_bytes(data[site:site + 4], "big")
+                size = match.storage_size(symbol) or 1
+                if not symbol.address <= target < symbol.address + size:
+                    raise repo.KbError(f"the word {target:08x} at {layout}:{site:08x} lies "
+                                       f"outside the storage of {link.owner.key}", code=3)
+            found[group].append({"site": site, "target": target})
     return {name: sorted(items, key=lambda item: item["site"]) for name, items in found.items()}

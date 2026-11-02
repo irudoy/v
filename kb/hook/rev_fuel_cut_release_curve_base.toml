@@ -25,17 +25,14 @@ Native state-machine literal selects the adjacent eight-point release curve"""
 
 [[link]]
 type = "target"
-to = "archetypal-coati/tbl"
+to = "rev_limit_fuel_cut_curves/tbl"
+offset = 0x10
 
 [[link.evidence]]
 kind = "rom-bytes"
 supports = "identity"
 at = "1nd:00076cac"
 value = "00017212"
-
-[[link]]
-type = "target"
-to = "ninja-beagle/const"
 
 [[link.evidence]]
 kind = "rom-bytes"

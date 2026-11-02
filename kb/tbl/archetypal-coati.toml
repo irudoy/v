@@ -1,3 +1,5 @@
+retired = true
+
 [[symbol]]
 layout = "1nd"
 address = "00017212"
