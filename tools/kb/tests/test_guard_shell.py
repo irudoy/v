@@ -521,6 +521,7 @@ read = "open"
         for command in (
             "ln -s ../kb/names.csv tmp/zz.txt", "ln -s ../../l0/7mfk/funcs.csv tmp/a/zz.txt",
             "ln -s -t tmp ../kb", "ln -sf kb/names.csv zz.txt",
+            "ln -s -- ../kb/names.csv -d/zz.txt",
         ):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
@@ -549,29 +550,42 @@ read = "open"
             "t = 'zz.txt'\nfor t in ['kb/names.csv']:\n    pass\nprint(open(t).read())",
             "for t in ['kb/names.csv']:\n    open(t)",
             "for print in [open]:\n    print('kb/names.csv')",
+            "import sys\n" + prelude + "sys.modules['__main__'].__dict__['t'] = 'names.csv'\n" + read,
+            "import sys\nt = 'zz.txt'\nsys.modules['__main__'].__dict__['t'] = 'kb/names.csv'\n"
+            "print(open(t).read())",
         ]
         for program in programs:
             with self.subTest(program=program):
                 self.assertIsNotNone(self.denied("Bash", command=f'python3 -c "{program}"'))
 
-    def test_python_reads_dynamic_files_whose_name_end_no_guarded_file_has(self):
+    def test_python_data_forms_pass_and_dynamic_reads_of_protected_programs_refuse(self):
         for command in (
             "python3 -c \"import csv, json\nfrom pathlib import Path\n"
-            "rows = list(csv.DictReader(open('tmp/operands.csv')))\nout = []\nfor row in rows:\n"
-            "    code = Path('tmp/jk78c-' + row['reader'] + '-code.txt').read_text()\n"
-            "    if row['site'] in code:\n"
-            "        out.append({'kind': 'l0', 'supports': 'identity', 'at': row['site']})\n"
+            "rows = list(csv.DictReader(open('tmp/operands.csv')))\n"
+            "out = [{'kind': 'l0', 'at': row['site'].replace('0x', '', 1)} for row in rows]\n"
             "Path('tmp/bindings.toml').write_text(json.dumps(out))\"",
             "python3 -c \"import json; ops = json.load(open('tmp/ops.json')); "
-            "[print(json.load(open('tmp/' + op['ref'].replace('/', '_') + '.json'))['l0']) "
-            "for op in ops]\"",
-            "python3 -c \"from pathlib import Path; "
-            "print([Path('tmp', f'{name}-code.txt').read_text() for name in ['a', 'l0']])\"",
+            "print([op['ref'].replace('/', '_') for op in ops], 'l0')\"",
+            "python3 -c \"from pathlib import Path; print(Path('tmp', 'a-code.txt').read_text(), 'l0')\"",
             "python3 -c \"import csv; csv.writer(open('tmp/out.csv', 'w')).writerows([['l0', 'x']])\"",
         ):
             with self.subTest(command=command):
                 self.assertIsNone(self.denied("Bash", command=command))
         for command in (
+            # A dynamic read in a program that names a protected reference
+            # may reach a guarded file through a link or a namespace.
+            "python3 -c \"import csv\nfrom pathlib import Path\n"
+            "for row in csv.DictReader(open('tmp/operands.csv')):\n"
+            "    print(Path('tmp/jk78c-' + row['reader'] + '-code.txt').read_text(), 'l0')\"",
+            "python3 -c \"import json; ops = json.load(open('tmp/ops.json')); "
+            "[print(json.load(open('tmp/' + op['ref'].replace('/', '_') + '.json'))['l0']) "
+            "for op in ops]\"",
+            "python3 -c \"from pathlib import Path; "
+            "print([Path('tmp', f'{name}-code.txt').read_text() for name in ['a', 'l0']])\"",
+            "ln -s ../kb/names.csv tmp/x/zz.txt && mv tmp/x/zz.txt tmp/zz.txt && "
+            "python3 -c \"d = ''.join(['tm', 'p']); print(open(d + '/zz.txt').read(), 'l0')\"",
+            "ln -s .. tmp/up && ln -s up/kb/names.csv tmp/zz.txt && "
+            "python3 -c \"d = ''.join(['tm', 'p']); print(open(d + '/zz.txt').read(), 'l0')\"",
             "python3 -c \"import sys; print(open('tmp/' + sys.argv[1] + '.toml').read(), 'l0')\" x",
             "python3 -c \"import json; name = json.load(open('tmp/a.json'))['l0']; "
             "print(open(name + 'names.csv').read())\"",

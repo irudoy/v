@@ -20,8 +20,9 @@ of alternatives, beyond which the check denies, and a brace sequence denies.
 A relative link target resolves against the directory of its link.
 Inline Python supports finite literal file and metadata forms, with a
 conservative refusal for unknown operations involving protected references.
-A dynamic read passes when its literal file-name end matches no guarded file;
-a name that the program binds more than once has no literal value.
+A name that the program binds more than once has no literal value, and a
+dynamic operand or namespace access in a program that names a protected
+reference is denied.
 Trusted `kb`, `make` and repository runners keep their input access after
 shell substitutions and redirections have been checked. An unsupported Python
 interpreter produces a deliberate denial, and any other failure denies the
@@ -206,8 +207,6 @@ class Guard:
         self.root = Path(root).resolve()
         self.cwd = Path(cwd) if cwd else self.root
         self.trees, self.git, self.projections = load(self.root)
-        # File names of the guarded trees and projections, read on first use.
-        self.names = None
 
     # Paths ---------------------------------------------------------------
 
@@ -771,24 +770,6 @@ class Guard:
                     return str(Path(left) / right) if isinstance(node.op, ast.Div) else left + right
             return None
 
-        def suffix(node, visited=()):
-            """The literal end of a path expression whose start may be dynamic."""
-            if isinstance(node, ast.Constant) and isinstance(node.value, str):
-                return node.value
-            if isinstance(node, ast.Name) and node.id in bindings and node.id not in visited:
-                return suffix(bindings[node.id], (*visited, node.id))
-            if isinstance(node, ast.Call) and node.args:
-                callee = call_name(node.func)
-                if callee.split(".")[-1] == "open":
-                    return suffix(node.args[0], visited)
-                if callee.split(".")[-1] == "Path" or callee == "os.path.join":
-                    return suffix(node.args[-1], visited)
-            if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Div, ast.Add)):
-                return suffix(node.right, visited)
-            if isinstance(node, ast.JoinedStr) and node.values:
-                return suffix(node.values[-1], visited)
-            return None
-
         protected = (any(self.shell_paths(candidates(value), "unknown", cwd) for value in extra_refs)
                      or any(self.shell_paths(candidates(node.value), "unknown", cwd)
                             for node in ast.walk(tree) if isinstance(node, ast.Constant) and isinstance(node.value, str)))
@@ -801,6 +782,11 @@ class Guard:
                     return "cannot inspect custom Python operations on protected references; use the KB command."
                 if isinstance(node, ast.Assign) and any(isinstance(target, ast.Attribute) for target in node.targets):
                     return "cannot inspect rebound Python operations on protected references; use the KB command."
+                # A namespace such as `sys.modules[...].__dict__` rebinds a
+                # name without a binding form.
+                if (isinstance(node, ast.Attribute) and (node.attr.startswith("__") or node.attr == "modules")
+                        or isinstance(node, ast.Name) and node.id.startswith("__")):
+                    return "cannot inspect Python namespace access on protected references; use the KB command."
                 if isinstance(node, ast.Import) and any(alias.name.split(".")[0] not in allowed for alias in node.names):
                     return "cannot inspect external Python operations on protected references; use the KB command."
                 if isinstance(node, ast.ImportFrom) and (node.module or "").split(".")[0] not in allowed:
@@ -849,15 +835,14 @@ class Guard:
                 "reader", "writer", "DictReader", "DictWriter", "writerow", "writerows"}
         for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
             name = call_name(call.func).split(".")[-1]
-            value, mode, operand = None, "read", None
+            value, mode = None, "read"
             if protected and isinstance(call.func, ast.Name) and name in safe and stores[name]:
                 return "cannot inspect a rebound Python operation on protected references; use the KB command."
             if name == "Path":
-                value, operand = (path(call), call) if call.args else (None, None)
+                value = path(call) if call.args else None
             elif name == "open":
                 method = isinstance(call.func, ast.Attribute)
-                operand = call.func.value if method else call.args[0] if call.args else None
-                value = path(operand) if operand is not None else None
+                value = path(call.func.value) if method else path(call.args[0]) if call.args else None
                 position = 0 if method else 1
                 flags = next((path(item.value) for item in call.keywords if item.arg == "mode"),
                              path(call.args[position]) if len(call.args) > position else "r")
@@ -886,37 +871,15 @@ class Guard:
             else:
                 continue
             if value is None:
-                # A dynamic file read whose literal file-name end no guarded
-                # file has cannot reach one; writes and listings stay denied.
-                bounded = (mode == "read" and name not in {"glob", "rglob", "iterdir"}
-                           and operand is not None and self.bounded(suffix(operand)))
-                if protected and not bounded:
+                # A dynamic operand may reach a guarded file through a link
+                # or a rebound namespace, so it is not inspected.
+                if protected:
                     return "cannot inspect a dynamic Python file operand; use the KB command."
             else:
                 reason = self.shell_paths([value], mode, cwd)
                 if reason:
                     return reason
         return None
-
-    def bounded(self, text):
-        """Whether a path that ends with `text` names no existing file of a
-        guarded tree or projection: its file-name end is literal, and no
-        guarded file name ends with it."""
-        tail = (text or "").rsplit("/", 1)[-1]
-        if tail in {"", ".", ".."}:
-            return False
-        if self.names is None:
-            names = set()
-            for tree in self.trees:
-                for _, _, files in os.walk(self.root / tree):
-                    names.update(files)
-            for entry in self.projections:
-                file, section = split(entry["path"])
-                if entry.get("read") == "guarded" and section is None:
-                    for option in expand(file):
-                        names.update(Path(found).name for found in glob.glob(str(self.root / option)))
-            self.names = names
-        return not any(name.endswith(tail) for name in self.names)
 
     def passes(self, words, cwd=None):
         """Whether a simple command may name a guarded path."""
@@ -1109,17 +1072,20 @@ def file_operands(words):
 def link_targets(args, cwd):
     """The paths that `ln` links to: a relative target resolves against the
     directory of its link, not against the working directory."""
-    directory, values, index = None, [], 0
+    directory, values, index, done = None, [], 0, False
     while index < len(args):
         word = args[index]
         index += 1
-        if word in {"-t", "--target-directory"} and index < len(args):
+        # After `--` every word is an operand, also one that starts with `-`.
+        if done or not word.startswith("-"):
+            values.append(word)
+        elif word == "--":
+            done = True
+        elif word in {"-t", "--target-directory"} and index < len(args):
             directory = args[index]
             index += 1
         elif word.startswith("--target-directory="):
             directory = word.split("=", 1)[1]
-        elif not word.startswith("-"):
-            values.append(word)
     if directory is None and len(values) > 1:
         link, values = values[-1], values[:-1]
         directory = link if link.endswith("/") or (cwd / link).is_dir() else os.path.dirname(link)
