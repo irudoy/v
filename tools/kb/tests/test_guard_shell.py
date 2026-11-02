@@ -497,6 +497,41 @@ read = "open"
         self.assertIsNone(self.denied("Bash", command="cat {open.txt,defs/open.csv}"))
         self.assertEqual(project.hook.expand("{a,b}/{c,d}"), ["a/c", "a/d", "b/c", "b/d"])
 
+    def test_python_reads_dynamic_files_whose_name_end_no_guarded_file_has(self):
+        for command in (
+            "python3 -c \"import csv, json\nfrom pathlib import Path\n"
+            "rows = list(csv.DictReader(open('tmp/operands.csv')))\nout = []\nfor row in rows:\n"
+            "    code = Path('tmp/jk78c-' + row['reader'] + '-code.txt').read_text()\n"
+            "    if row['site'] in code:\n"
+            "        out.append({'kind': 'l0', 'supports': 'identity', 'at': row['site']})\n"
+            "Path('tmp/bindings.toml').write_text(json.dumps(out))\"",
+            "python3 -c \"import json; ops = json.load(open('tmp/ops.json')); "
+            "[print(json.load(open('tmp/' + op['ref'].replace('/', '_') + '.json'))['l0']) "
+            "for op in ops]\"",
+            "python3 -c \"from pathlib import Path; "
+            "print([Path('tmp', f'{name}-code.txt').read_text() for name in ['a', 'l0']])\"",
+            "python3 -c \"import csv; csv.writer(open('tmp/out.csv', 'w')).writerows([['l0', 'x']])\"",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+        for command in (
+            "python3 -c \"import sys; print(open('tmp/' + sys.argv[1] + '.toml').read(), 'l0')\" x",
+            "python3 -c \"import json; name = json.load(open('tmp/a.json'))['l0']; "
+            "print(open(name + 'names.csv').read())\"",
+            "python3 -c \"import json\nfrom pathlib import Path\n"
+            "for ref in json.load(open('tmp/ops.json')):\n    Path('tmp/' + ref + '.json').write_text('l0')\"",
+            "python3 -c \"import json; from pathlib import Path; name = json.load(open('tmp/a.json'))['l0']; "
+            "print(list(Path(name + '.json').iterdir()))\"",
+            "python3 -c \"import json; name = json.load(open('tmp/a.json'))['l0']; print(open('tmp/' + name).read())\"",
+            "python3 -c \"import json; name = json.load(open('tmp/a.json'))['l0']; print(open(name + '/..').read())\"",
+            "python3 -c \"import csv; print(list(csv.reader(open('kb/names.csv'))))\"",
+            "python3 -c \"from csv import DictReader; print(list(DictReader(open('tmp/a.csv'))), 'l0')\"",
+            "python3 -c \"import os; os.replace('open.txt', 'defs/JK08A.xml')\"",
+            "python3 -c \"from pathlib import Path; print(Path('.', 'kb/names.csv').read_text())\"",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):
     script = ("import runpy,sys\nsys.version_info=(3,10,0)\n"

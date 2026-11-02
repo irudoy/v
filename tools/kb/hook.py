@@ -19,6 +19,7 @@ program files are read operands. A brace pattern expands to a bounded number
 of alternatives, beyond which the check denies.
 Inline Python supports finite literal file and metadata forms, with a
 conservative refusal for unknown operations involving protected references.
+A dynamic read passes when its literal file-name end matches no guarded file.
 Trusted `kb`, `make` and repository runners keep their input access after
 shell substitutions and redirections have been checked. An unsupported Python
 interpreter produces a deliberate denial rather than a hook error.
@@ -199,6 +200,8 @@ class Guard:
         self.root = Path(root).resolve()
         self.cwd = Path(cwd) if cwd else self.root
         self.trees, self.git, self.projections = load(self.root)
+        # File names of the guarded trees and projections, read on first use.
+        self.names = None
 
     # Paths ---------------------------------------------------------------
 
@@ -714,12 +717,34 @@ class Guard:
                 return node.value
             if isinstance(node, ast.Name) and node.id in bindings and node.id not in visited:
                 return path(bindings[node.id], (*visited, node.id))
-            if isinstance(node, ast.Call) and call_name(node.func).split(".")[-1] in {"Path", "open"} and node.args:
+            if isinstance(node, ast.Call) and call_name(node.func).split(".")[-1] == "open" and node.args:
                 return path(node.args[0], visited)
+            if isinstance(node, ast.Call) and call_name(node.func).split(".")[-1] == "Path" and node.args:
+                # Path joins all of its arguments.
+                parts = [path(arg, visited) for arg in node.args]
+                return None if None in parts else str(Path(*parts))
             if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Div, ast.Add)):
                 left, right = path(node.left, visited), path(node.right, visited)
                 if left is not None and right is not None:
                     return str(Path(left) / right) if isinstance(node.op, ast.Div) else left + right
+            return None
+
+        def suffix(node, visited=()):
+            """The literal end of a path expression whose start may be dynamic."""
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                return node.value
+            if isinstance(node, ast.Name) and node.id in bindings and node.id not in visited:
+                return suffix(bindings[node.id], (*visited, node.id))
+            if isinstance(node, ast.Call) and node.args:
+                callee = call_name(node.func)
+                if callee.split(".")[-1] == "open":
+                    return suffix(node.args[0], visited)
+                if callee.split(".")[-1] == "Path" or callee == "os.path.join":
+                    return suffix(node.args[-1], visited)
+            if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Div, ast.Add)):
+                return suffix(node.right, visited)
+            if isinstance(node, ast.JoinedStr) and node.values:
+                return suffix(node.values[-1], visited)
             return None
 
         protected = (any(self.shell_paths(candidates(value), "unknown", cwd) for value in extra_refs)
@@ -728,7 +753,7 @@ class Guard:
         imports = {alias.asname or alias.name.split(".")[0] for node in ast.walk(tree)
                    if isinstance(node, (ast.Import, ast.ImportFrom)) for alias in node.names}
         if protected:
-            allowed = {"pathlib", "json", "tomllib", "hashlib", "datetime", "re", "sys", "os"}
+            allowed = {"pathlib", "json", "tomllib", "hashlib", "datetime", "re", "sys", "os", "csv"}
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     return "cannot inspect custom Python operations on protected references; use the KB command."
@@ -773,18 +798,21 @@ class Guard:
                 "SystemExit", "ValueError", "RuntimeError", "AssertionError",
                 "enumerate", "range", "zip", "int", "bool", "isinstance", "split", "rsplit", "strip",
                 "lstrip", "rstrip", "startswith", "endswith", "partition", "rpartition", "replace",
-                "loads", "dumps", "dump", "sha256", "hexdigest", "encode", "decode", "join", "get",
-                "items", "keys", "values", "append", "now", "isoformat"}
+                "load", "loads", "dumps", "dump", "sha256", "hexdigest", "encode", "decode", "join",
+                "get", "items", "keys", "values", "append", "now", "isoformat",
+                # csv reads and writes only the file objects that open() checks.
+                "reader", "writer", "DictReader", "DictWriter", "writerow", "writerows"}
         for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
             name = call_name(call.func).split(".")[-1]
-            value, mode = None, "read"
+            value, mode, operand = None, "read", None
             if protected and isinstance(call.func, ast.Name) and name in safe and (name in imports or name in bindings):
                 return "cannot inspect a rebound Python operation on protected references; use the KB command."
             if name == "Path":
-                value = path(call.args[0]) if call.args else None
+                value, operand = (path(call), call) if call.args else (None, None)
             elif name == "open":
                 method = isinstance(call.func, ast.Attribute)
-                value = path(call.func.value) if method else path(call.args[0]) if call.args else None
+                operand = call.func.value if method else call.args[0] if call.args else None
+                value = path(operand) if operand is not None else None
                 position = 0 if method else 1
                 flags = next((path(item.value) for item in call.keywords if item.arg == "mode"),
                              path(call.args[position]) if len(call.args) > position else "r")
@@ -792,10 +820,13 @@ class Guard:
                     return "cannot inspect dynamic Python file mode; use an explicit mode."
                 mode = "edit" if any(flag in (flags or "") for flag in "wax+") else "read"
             elif isinstance(call.func, ast.Attribute) and name in readers | writers:
-                value = path(call.func.value)
+                operand = call.func.value
+                value = path(operand)
                 mode = "edit" if name in writers else "read"
-                # String replacement is data, unlike Path.replace().
-                if name == "replace" and data(call.func.value):
+                # String replacement is data, unlike Path.replace(), which
+                # takes one argument, and os.replace().
+                module = isinstance(operand, ast.Name) and operand.id in imports
+                if name == "replace" and (data(operand) or len(call.args) >= 2 and not module):
                     continue
                 if name in {"rename", "replace"} and call.args:
                     destination = path(call.args[0])
@@ -810,13 +841,37 @@ class Guard:
             else:
                 continue
             if value is None:
-                if protected:
+                # A dynamic file read whose literal file-name end no guarded
+                # file has cannot reach one; writes and listings stay denied.
+                bounded = (mode == "read" and name not in {"glob", "rglob", "iterdir"}
+                           and operand is not None and self.bounded(suffix(operand)))
+                if protected and not bounded:
                     return "cannot inspect a dynamic Python file operand; use the KB command."
             else:
                 reason = self.shell_paths([value], mode, cwd)
                 if reason:
                     return reason
         return None
+
+    def bounded(self, text):
+        """Whether a path that ends with `text` names no existing file of a
+        guarded tree or projection: its file-name end is literal, and no
+        guarded file name ends with it."""
+        tail = (text or "").rsplit("/", 1)[-1]
+        if tail in {"", ".", ".."}:
+            return False
+        if self.names is None:
+            names = set()
+            for tree in self.trees:
+                for _, _, files in os.walk(self.root / tree):
+                    names.update(files)
+            for entry in self.projections:
+                file, section = split(entry["path"])
+                if entry.get("read") == "guarded" and section is None:
+                    for option in expand(file):
+                        names.update(Path(found).name for found in glob.glob(str(self.root / option)))
+            self.names = names
+        return not any(name.endswith(tail) for name in self.names)
 
     def passes(self, words, cwd=None):
         """Whether a simple command may name a guarded path."""

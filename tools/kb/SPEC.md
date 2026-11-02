@@ -1873,7 +1873,15 @@ security boundary: the gates validate every file whatever wrote it.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
   unique simple bindings and path joins; known string and metadata operations
-  keep literal source headers as data. Unknown operations involving protected
+  keep literal source headers as data. `Path` joins all of its arguments.
+  `csv` reads and writes only the file objects that `open` checks, and a
+  `replace` call with two or more arguments on a value other than a module
+  is string replacement. In a program that names a protected reference, a
+  dynamic read operand passes when its literal file-name end, after the last
+  dynamic part of a `+` or `/` join, an f-string, `Path` or `os.path.join`,
+  is one that no existing file of a guarded tree or projection ends with;
+  dynamic writes, directory listings and operands without such an end are
+  denied. Unknown operations involving protected
   references are conservatively denied. The hook does not execute Python
   programs or provide general Python analysis. Unknown shell operations use
   conservative checks of their possible file operands.
