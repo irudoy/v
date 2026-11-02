@@ -44,10 +44,10 @@ def test_backtracking_and_unknown_dataflow_are_not_operand_proofs(kind):
 @pytest.mark.parametrize('kind', ['sp', 'copy'])
 @pytest.mark.parametrize('transfer', [0xB036, 0xA036, 0x440B, 0x442B])
 def test_fallback_holds_after_the_call_delay_slot(kind, transfer):
-    row = census_row(df_r6='000000ff', k6=kind, df_r7='00000270', k7=kind)
-    # The export evaluates r6 after extu.b r15,r6 in the slot.
-    data = image_words({0x10: transfer, 0x12: 0x66FC})
-    assert list(sites.census_operands(row, data)) == [('df_r6', 0xFF), ('df_r7', 0x270)]
+    row = census_row(df_r6='ffffffff', k6=kind, df_r7='00000270', k7=kind)
+    # The export evaluates r6 after mov #-1,r6 in the slot.
+    data = image_words({0x10: transfer, 0x12: 0xE6FF})
+    assert list(sites.census_operands(row, data)) == [('df_r6', 0xFFFFFFFF), ('df_r7', 0x270)]
 
 
 @pytest.mark.parametrize('kind', ['sp', 'copy'])

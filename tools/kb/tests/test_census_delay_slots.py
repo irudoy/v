@@ -3,7 +3,8 @@
 `tools/ghidra/ResolveAccessors.java` evaluates the symbolic fallback (`sp`),
 the copy match (`copy`) and the backtrack baseline (`bt_r4`..`bt_r6`) of such
 a register after the slot. A slot that loads a constant or a literal fixes the
-value; an extension bounds it.
+value; an extension bounds it. Any other write in the slot leaves the register
+without a fallback value.
 """
 
 import csv
@@ -33,6 +34,17 @@ def produced(slot, data):
     return None
 
 
+def evaluated(slot):
+    """Whether the export gives the slot result a value: mov Rm,Rn, mov #imm,
+    a PC-relative load, add #imm, or an extension. A post-increment or
+    pre-decrement access also adds to its register, but leaves no value."""
+    if not slot.value:
+        return False
+    kind = slot.value[0]
+    return kind in ("const", "pool", "copy", "extu", "exts") or (
+        kind == "addi" and slot.word >> 12 == 0x7)
+
+
 def bounded(slot, value):
     if slot.value and slot.value[0] == "extu":
         return value < 1 << slot.value[1]
@@ -59,7 +71,8 @@ def test_slot_written_arguments_hold_the_value_after_the_slot(layout):
                 cells.append((row[f"k{register}"], int(row[f"df_r{register}"], 16)))
             for kind, cell in cells:
                 if (value is not None and cell != value) or not bounded(slot, cell) or (
-                        kind == "bt" and value is None):
+                        kind == "bt" and value is None) or (
+                        kind != "bt" and not evaluated(slot)):
                     stale.append((row["callsite"], register, kind, f"{cell:08x}"))
     assert stale == []
 

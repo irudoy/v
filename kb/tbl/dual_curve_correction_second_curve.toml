@@ -1,9 +1,9 @@
 summary = """
 Second implicit eight-point word curve of FUN_00087288, read in place \
 through 00028200 with clamp((uint16[ffff1f74]-144)*256, 0, 0xFFFF) and \
-biased by 0x8000. It holds the position of the JK08A stack copy of the \
-unclassified curve 0x237AC; after the bias its stock values repeat those of \
-0x237AC except the fourth point (-8 against -7). The sum (l1+l2-0x8000)*8 \
+biased by 0x8000. It holds the position of the JK08A stack copy of the curve \
+0x237AC (persimmon-aardwolf); after the bias its stock values repeat those \
+of 0x237AC except the fourth point (-8 against -7). The sum (l1+l2-0x8000)*8 \
 saturates to the signed 16-bit range before the store to ffff1f6c. Physical \
 quantity and conversion remain unresolved."""
 note = [

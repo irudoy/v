@@ -16,6 +16,13 @@ reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
+type = "lookup"
+to = "persimmon-aardwolf/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
 type = "writer"
 to = "finicky-capybara/fn"
 layouts = ["7mfk"]

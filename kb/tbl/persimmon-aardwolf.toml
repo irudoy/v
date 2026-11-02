@@ -12,6 +12,10 @@ Geometry from the code: the call at 00068cc8 copies r0 = 8 bytes from r2 = \
 00026370, so the table holds 8 uint8 cells. The physical quantity and unit \
 are unknown; the offset -128 applies to this lookup alone, and the factor 8 \
 to its sum with the lookup of 000120ce.""",
+    """
+The census copy operand shows FUN_00068CB8 (finicky-capybara) reading this \
+curve. The reader link remains unresolved under issue #138: the L0 access \
+index does not hold the ROM source of a census copy operand.""",
 ]
 level = "candidate"
 role = "table"
@@ -45,3 +49,29 @@ note = """
 The census copy operand of the call at 00068d3a: mov r15,r4 in its delay \
 slot passes the stack buffer that the copy helper 00022558 fills from \
 000237ac."""
+
+[[symbol]]
+layout = "jk00c"
+address = "000238a4"
+name = "hulking-chimpanzee"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006af88"
+to = "7mfk:00068cac"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "000238a4"
+name = "copper-chameleon"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006af88"
+to = "7mfk:00068cac"
+count = 1
+value = 58
