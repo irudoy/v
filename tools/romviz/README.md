@@ -189,6 +189,16 @@ because its declared executable address ranges are byte-identical. Only the
 explicit `{target_rom}` presentation token is materialized for a target;
 provenance paths and source labels are preserved unchanged.
 
+The definition XML that the editor loads is the published definition of a ROM.
+`definition_xml` names it for a manifest that loads its maps from it, and
+`published_definition` names it for a manifest whose maps come from a canonical
+source, such as the exact JK08A family; a manifest declares at most one of them.
+The architecture view frames and tags every table that the published definition
+names, lists the published tables of the view by editor category on the system
+map, and lists the editable tables of a calculation chain in step order. A node
+title takes the `kb` editor name, then the meaning title, then a semantic
+meaning name; a generated name gives way to the first sentence of the summary.
+
 JK00C and JK00D do not inherit JK08A addresses. Their map, axis, and definition
 control objects are loaded from the generated `defs/JK00C.xml` and
 `defs/JK00D.xml` projections, which are backed by SHA-bound reviewed relocation

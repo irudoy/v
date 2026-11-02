@@ -58,6 +58,7 @@ MANIFEST_FIELDS = frozenset(
         "dtc",
         "overrides",
         "definition_xml",
+        "published_definition",
         "checksum_registry",
         "warnings",
         "metadata",
@@ -229,6 +230,9 @@ def _load_manifest(path):
         )
     if present_sources and "definition_xml" in raw:
         raise ModelError(f"{path}: canonical map source and definition_xml conflict")
+    if "published_definition" in raw and "definition_xml" in raw:
+        raise ModelError(f"{path}: definition_xml is the published definition; "
+                         "published_definition conflicts with it")
     warnings = raw.get("warnings", [])
     if not isinstance(warnings, list) or any(
         not isinstance(value, str) or not value.strip() for value in warnings
@@ -648,9 +652,8 @@ def _axis_objects(manifest, axis_uses, rom_size):
     return objects
 
 
-def _definition_xml_objects(manifest, rom_size):
-    """Load emitted target addresses without reconstructing source-ROM claims."""
-    path = _repo_path(manifest["definition_xml"])
+def _definition_rom(path, target_rom):
+    """The single ROM element of a definition XML whose identity is the target."""
     try:
         root = ET.parse(path).getroot()
     except (OSError, ET.ParseError) as error:
@@ -660,10 +663,50 @@ def _definition_xml_objects(manifest, rom_size):
         raise ModelError(f"{path}: expected one ROM definition")
     rom = roms[0]
     xml_id = (rom.findtext("./romid/xmlid") or "").strip()
-    if xml_id != manifest["rom"]:
+    if xml_id != target_rom:
         raise ModelError(
-            f"{path}: definition identity is {xml_id!r}, expected {manifest['rom']!r}"
+            f"{path}: definition identity is {xml_id!r}, expected {target_rom!r}"
         )
+    return rom
+
+
+def _published_tables(manifest):
+    """The names under which the published definition of an image shows each start.
+
+    A table carries its name and category. An axis carries its name and the
+    tables that use it, because one axis serves several tables.
+    """
+    source = manifest.get("definition_xml") or manifest.get("published_definition")
+    if not source:
+        return None
+    path = _repo_path(source)
+    rom = _definition_rom(path, manifest["rom"])
+    tables = defaultdict(list)
+    axes = {}
+    for table in rom.findall("./table"):
+        address = table.get("storageaddress")
+        if not address or table.get("type") in {"Switch", "BitwiseSwitch"}:
+            continue
+        name = table.get("name", "")
+        start = _parse_address(address, f"{path}: {name}")
+        tables[f"{start:08x}"].append({"name": name, "category": table.get("category", "")})
+        for axis in table.findall("./table"):
+            axis_address = axis.get("storageaddress")
+            if not axis_address:
+                continue
+            axis_start = _parse_address(axis_address, f"{path}: {name} / {axis.get('name')}")
+            record = axes.setdefault((f"{axis_start:08x}", axis.get("name", "")), [])
+            if name not in record:
+                record.append(name)
+    for (start, name), users in axes.items():
+        tables[start].append({"name": name, "axisOf": users})
+    return {"source": _display_path(path), "tables": dict(sorted(tables.items()))}
+
+
+def _definition_xml_objects(manifest, rom_size):
+    """Load emitted target addresses without reconstructing source-ROM claims."""
+    path = _repo_path(manifest["definition_xml"])
+    rom = _definition_rom(path, manifest["rom"])
 
     source_name = _display_path(path)
     map_objects = []
@@ -1723,6 +1766,7 @@ def build_rom_model(manifest_path, architecture_cache=None):
         },
         "layout": layout,
         "family": _family(manifest["rom"]),
+        "published": _published_tables(manifest),
         "counts": dict(counts),
         "reviewedFunctions": reviewed_functions,
         "structuralFunctions": structural_functions,

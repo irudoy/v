@@ -1020,6 +1020,27 @@ footer p {
   font-size: 10.5px;
 }
 
+.arch-box-tag {
+  fill: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  pointer-events: none;
+}
+
+.arch-box.is-editable .arch-box-tag {
+  fill: var(--maps);
+  font-weight: 650;
+}
+
+.arch-box.is-editable .arch-box-frame {
+  stroke: var(--maps);
+}
+
+.arch-box.level-candidate .arch-box-frame,
+.arch-box.level-pattern .arch-box-frame {
+  stroke-dasharray: 5 3;
+}
+
 .arch-box.is-support .arch-box-bar {
   fill: var(--faint);
 }
@@ -1314,6 +1335,11 @@ footer p {
   box-shadow: inset 3px 0 0 var(--structure);
 }
 
+.arch-legend-mark.swatch.is-editable {
+  border: 1.5px solid var(--maps);
+  background: var(--surface-raised);
+}
+
 .arch-legend-mark.swatch.external {
   border: 1px dashed var(--border-strong);
   background: var(--bg);
@@ -1466,12 +1492,23 @@ footer p {
   margin-top: 14px;
 }
 
-.arch-detail-section h3 {
+.arch-detail-section h3,
+.arch-detail-section.is-collapsible > summary {
   margin: 0 0 7px;
   color: var(--muted);
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.arch-detail-section.is-collapsible > summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.arch-detail-section.is-collapsible > summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .arch-actions {

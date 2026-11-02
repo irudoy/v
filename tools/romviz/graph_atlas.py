@@ -22,6 +22,17 @@ def text(value):
     return '\n'.join(value) if isinstance(value, list) else value or ''
 
 
+def readable_name(name):
+    """A semantic meaning name as words; a generated name reads as nothing."""
+    if not name or vocab.GENERATED_NAME.fullmatch(name):
+        return ''
+    words = name.replace('_', ' ')
+    return words[:1].upper() + words[1:]
+
+
+EDITOR_FIELDS = ('name', 'category', 'view', 'emit')
+
+
 class Knowledge:
     """One consistent graph snapshot shared by all ROMs in an atlas build."""
 
@@ -250,7 +261,10 @@ class LayoutArchitecture(architecture_model.Architecture):
             props = {**facts, **symbol}
             kind, address = symbol['kind'], f'{symbol["address"]:08x}'
             node_id = f'{PREFIXES.get(kind, kind)}:{address}'
-            label = (props.get('title') or props.get('editor', {}).get('name')
+            editor = props.get('editor') or {}
+            # The editor name is the name a tuner knows; a summary sentence is
+            # the last resort because it rarely fits a diagram box.
+            label = (editor.get('name') or props.get('title') or readable_name(facts['name'])
                      or architecture_model.first_sentence(text(props.get('summary', '')),
                                                             symbol.get('name') or meaning))
             self.nodes[node_id] = architecture_model.Node(
@@ -264,6 +278,7 @@ class LayoutArchitecture(architecture_model.Architecture):
                       'scale': props.get('scale'), 'scaleConfidence': props.get('scale_level'),
                       'contract': props.get('contract'),
                       'contractConfidence': props.get('contract_level'),
+                      'editor': {key: editor[key] for key in EDITOR_FIELDS if key in editor},
                       'shape': {key: props[key] for key in ('width', 'signed', 'storage',
                                 'cols', 'rows', 'points', 'count') if key in props}},
                 block=identifier(facts['block']) if facts.get('block') else None)

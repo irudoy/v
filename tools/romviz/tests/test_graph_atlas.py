@@ -70,6 +70,43 @@ def test_foreign_layout_uses_only_its_actual_symbol_addresses():
     assert unavailable['missing'][0]['statuses'][0]['state'] == 'unresolved'
 
 
+def test_node_labels_prefer_editor_names_and_carry_editor_metadata():
+    rows = fixture_rows()
+    rows['meanings'] += [
+        {'key': 'timing_surface/tbl', 'name': 'timing_surface', 'kind': 'tbl', 'home': '7mfk',
+         'title': 'Timing surface', 'summary': ['Surface statement.'],
+         'editor': {'name': 'Ignition Timing Surface', 'category': 'Ignition Timing / Surfaces',
+                    'view': 'Surface view', 'emit': True, 'order': 4, 'mask': '7F'}},
+        {'key': 'quiet-otter/tbl', 'name': 'quiet-otter', 'kind': 'tbl', 'home': '7mfk',
+         'summary': ['Unidentified 4x4 table. Its output is a byte.']},
+    ]
+    rows['symbols'] += [
+        {'meaning': 'timing_surface/tbl', 'props': {
+            'key': '7mfk-00009a1a/tbl', 'layout': '7mfk', 'kind': 'tbl', 'address': 0x9a1a,
+            'name': 'timing_surface', 'cols': 16, 'rows': 16, 'storage': 'uint8'}},
+        {'meaning': 'quiet-otter/tbl', 'props': {
+            'key': '7mfk-00009b1a/tbl', 'layout': '7mfk', 'kind': 'tbl', 'address': 0x9b1a,
+            'name': 'quiet-otter'}},
+    ]
+    view = graph_atlas.Knowledge(rows).model('7mfk')
+    surface = view.nodes['map:00009a1a']
+    # The editor name precedes the title; presentation-only keys stay out.
+    assert surface.label == 'Ignition Timing Surface'
+    assert surface.meta['editor'] == {'name': 'Ignition Timing Surface',
+                                      'category': 'Ignition Timing / Surfaces',
+                                      'view': 'Surface view', 'emit': True}
+    assert surface.meta['shape'] == {'cols': 16, 'rows': 16, 'storage': 'uint8'}
+    assert view.nodes['function:00003000'].label == 'Producer'
+    # A semantic name reads as words before the summary sentence.
+    assert view.nodes['signal:ffff1000'].label == 'Input'
+    # A generated name gives way to the first summary sentence.
+    unnamed = view.nodes['map:00009b1a']
+    assert unnamed.label == 'Unidentified 4x4 table.'
+    assert unnamed.meta['editor'] == {}
+    assert graph_atlas.readable_name('quiet-otter') == ''
+    assert graph_atlas.readable_name('rev_limit_fuel_cut_caps') == 'Rev limit fuel cut caps'
+
+
 def test_bindings_show_siblings_formers_and_analogs_without_joining_them():
     knowledge = graph_atlas.Knowledge(fixture_rows())
     binding = knowledge.binding('output/ram', '7mfk')

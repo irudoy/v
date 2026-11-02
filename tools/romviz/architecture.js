@@ -28,6 +28,21 @@
     rom: "ROM items",
     other: "other",
   };
+  const KIND_SHORT = {
+    function: "fn",
+    map: "map",
+    axis: "axis",
+    signal: "sig",
+    register: "reg",
+    ram: "ram",
+    io: "io",
+    rom: "rom",
+    other: "addr",
+  };
+  // Levels below code: a box with one of them has a dashed frame.
+  const TENTATIVE_LEVELS = new Set(["pattern", "candidate"]);
+  const TITLE_LINE = 13;
+  const SECTION_STORAGE = "romviz-arch-open-sections";
   const SIGN_GLYPHS = {positive: "+", negative: "-", none: "~", mixed: "+/-"};
   const SIGN_PHRASES = {
     positive: "increases",
@@ -196,6 +211,8 @@
         node.meta?.binding?.meaning || "",
         node.meta?.binding?.name || "",
         node.meta?.binding?.reference || "",
+        node.meta?.editor?.name || "",
+        node.meta?.editor?.category || "",
         ...(node.meta?.binding?.former || []),
         ...(node.meta?.binding?.symbols || []).map((symbol) => symbol.name || ""),
       ].join(" ").toLowerCase()),
@@ -419,7 +436,26 @@
       viewport: null,
       tips: new Map(),
       framePending: false,
+      openSections: readOpenSections(),
     };
+
+    function readOpenSections() {
+      try {
+        return new Set(JSON.parse(window.localStorage.getItem(SECTION_STORAGE) || "[]"));
+      } catch {
+        return new Set();
+      }
+    }
+
+    function rememberSection(title, open) {
+      if (open) state.openSections.add(title);
+      else state.openSections.delete(title);
+      try {
+        window.localStorage.setItem(SECTION_STORAGE, JSON.stringify([...state.openSections]));
+      } catch {
+        // The open state is a convenience; the panel works without storage.
+      }
+    }
 
     function model() {
       return state.model;
@@ -450,7 +486,62 @@
       const item = node(index);
       const info = addressInfo(index);
       const block = item.block ? blockName(item.block) : KIND_LABELS[item.kind];
-      return `${info.relocated ? info.text.split(",")[0] : info.reference} | ${block}`;
+      return [info.relocated ? info.text.split(",")[0] : info.reference, item.units, block]
+        .filter(Boolean).join(" | ");
+    }
+
+    // The names under which the published definition of the image shows a node.
+    function published(index) {
+      const tables = state.rom.published?.tables;
+      return (tables && tables[node(index).addr]) || [];
+    }
+
+    function editable(index) {
+      return published(index).some((entry) => !entry.axisOf);
+    }
+
+    function categoryText(category) {
+      return String(category || "").split("//").map((part) => part.trim()).join(" / ");
+    }
+
+    function editorStatus(index) {
+      const editor = node(index).meta?.editor;
+      if (published(index).length) return `published in ${state.rom.published.source}`;
+      if (editor?.emit === false) return "emit = false";
+      if (!editor) return "no editor declaration";
+      return `declared, not published for ${state.rom.id}`;
+    }
+
+    function editorLine(index) {
+      const names = published(index).map((entry) => (entry.axisOf ? `${entry.name} (axis)` : entry.name));
+      if (!names.length) return "";
+      return `Editor: ${names.slice(0, 2).join("; ")}${names.length > 2 ? "; ..." : ""}`;
+    }
+
+    function nodeTip(index, detail) {
+      return [nodeTitle(index), [detail, editorLine(index)].filter(Boolean).join(" | ")];
+    }
+
+    function titleChars(width, reserve) {
+      return Math.max(6, Math.floor((width - 16 - reserve) / 6.9));
+    }
+
+    // Wrap a title at word boundaries into at most two lines; the second line
+    // ends in an ellipsis when the title is longer still.
+    function wrapTitle(text, chars) {
+      const value = String(text || "");
+      if (value.length <= chars) return [value];
+      const words = value.split(/\s+/);
+      let first = "";
+      while (words.length && (first ? `${first} ${words[0]}` : words[0]).length <= chars) {
+        first = first ? `${first} ${words.shift()}` : words.shift();
+      }
+      if (!first) return [value.slice(0, chars), truncate(value.slice(chars), chars)];
+      return [first, truncate(words.join(" "), chars)];
+    }
+
+    function nodeHeight(index, width, base, reserve = 12) {
+      return base + (wrapTitle(nodeTitle(index), titleChars(width, reserve)).length - 1) * TITLE_LINE;
     }
 
     // Selection and routing.
@@ -912,7 +1003,7 @@
       const itemFor = (key) => {
         if (key.startsWith("in:") || key.startsWith("out:")) return {key, width: 188, height: 44};
         const maps = mapsOf.get(Number(key)) || [];
-        return {key, width: 224, height: 46 + 15 * Math.min(4, maps.length) + (maps.length > 4 ? 15 : 0)};
+        return {key, width: 224, height: nodeHeight(Number(key), 224, 46) + 15 * Math.min(4, maps.length) + (maps.length > 4 ? 15 : 0)};
       };
       const items = [
         ...upstreamKeys.map(itemFor),
@@ -1013,7 +1104,7 @@
             ],
             label: `${nodeTitle(index)}, function`,
           });
-          state.tips.set(key, () => [nodeTitle(index), `${nodeSubtitle(index)}${maps.length ? `; reads ${maps.length} tables` : ""}`]);
+          state.tips.set(key, () => nodeTip(index, `${nodeSubtitle(index)}${maps.length ? `; reads ${maps.length} tables` : ""}`));
           for (const map of maps.slice(0, 4)) {
             state.tips.set(`node:${map}`, () => [node(map).label, nodeSubtitle(map)]);
           }
@@ -1059,9 +1150,9 @@
       const items = [];
       const links = [];
       const center = `c:${index}`;
-      items.push({key: center, width: 250, height: 54});
+      items.push({key: center, width: 250, height: nodeHeight(index, 250, 54)});
       for (const [other] of predecessors.shown) {
-        items.push({key: `p:${other}`, width: 232, height: 44});
+        items.push({key: `p:${other}`, width: 232, height: nodeHeight(other, 232, 44)});
         links.push({from: `p:${other}`, to: center});
       }
       if (predecessors.hidden) {
@@ -1069,7 +1160,7 @@
         links.push({from: "p:more", to: center});
       }
       for (const [other] of successors.shown) {
-        items.push({key: `s:${other}`, width: 232, height: 44});
+        items.push({key: `s:${other}`, width: 232, height: nodeHeight(other, 232, 44)});
         links.push({from: center, to: `s:${other}`});
       }
       if (successors.hidden) {
@@ -1116,8 +1207,9 @@
             subtitle: nodeSubtitle(other),
             selected: selected === key,
             label: `${nodeTitle(other)}, ${KIND_LABELS[node(other).kind]}`,
+            node: other,
           });
-          state.tips.set(key, () => [nodeTitle(other), `${KIND_LABELS[node(other).kind]} | ${nodeSubtitle(other)}`]);
+          state.tips.set(key, () => nodeTip(other, `${KIND_LABELS[node(other).kind]} | ${nodeSubtitle(other)}`));
         }
       }
 
@@ -1145,7 +1237,10 @@
         nodes.add(step.from);
         nodes.add(step.to);
       });
-      const items = [...nodes].map((index) => ({key: String(index), width: 240, height: 50}));
+      const badged = (index) => index === chain.output || Boolean(chain.impact[String(index)]);
+      const items = [...nodes].map((index) => ({
+        key: String(index), width: 240, height: nodeHeight(index, 240, 50, badged(index) ? 34 : 12),
+      }));
       const links = chain.steps.map((step, position) => ({from: String(step.from), to: String(step.to), step, position}));
       const layout = layered(items, links, {maxPerColumn: 9, columnGap: 124, rowGap: 22});
       const selected = state.selection || "";
@@ -1193,8 +1288,9 @@
             )),
             badge: isOutput ? {text: "OUT", sign: "output"} : impact ? {text: SIGN_GLYPHS[impact.sign], sign: impact.sign} : null,
             label: `${nodeTitle(index)}${isOutput ? ", chain output" : impact ? `, ${impact.sign} effect on ${chain.quantity}` : ""}`,
+            node: index,
           });
-          state.tips.set(key, () => [nodeTitle(index), isOutput ? `Output: ${chain.quantity}` : impact ? `Increase ${SIGN_PHRASES[impact.sign]} ${chain.quantity}` : "Delivery after the output"]);
+          state.tips.set(key, () => nodeTip(index, isOutput ? `Output: ${chain.quantity}` : impact ? `Increase ${SIGN_PHRASES[impact.sign]} ${chain.quantity}` : "Delivery after the output"));
         }
       }
 
@@ -1214,6 +1310,7 @@
           ["sign sign-none", "No established sign: selection, gate, index, or closed loop"],
           ["sign sign-mixed", "Paths with different signs"],
           ["line is-dashed", "Step without a visible graph relation"],
+          ["swatch is-editable", "Table published in the editor definition of this ROM"],
         ],
         table: (container) => renderStepTable(container, chainIndex),
       };
@@ -1274,7 +1371,7 @@
       }
       const endpointKeys = result.paths.map((hit) => `endpoint:${hit.endpoint.id}`);
       const items = [
-        ...[...nodes].map((item) => ({key: String(item), width: 232, height: 46})),
+        ...[...nodes].map((item) => ({key: String(item), width: 232, height: nodeHeight(item, 232, 46)})),
         ...endpointKeys.map((key) => ({key, width: 196, height: 42})),
       ];
       const links = [...edges].map((edge) => {
@@ -1329,8 +1426,9 @@
             subtitle: nodeSubtitle(other),
             selected: selected === key,
             label: nodeTitle(other),
+            node: other,
           });
-          state.tips.set(key, () => [nodeTitle(other), nodeSubtitle(other)]);
+          state.tips.set(key, () => nodeTip(other, nodeSubtitle(other)));
         }
       }
 
@@ -1365,7 +1463,12 @@
     function drawBox(parent, box, options) {
       if (!box) return;
       const {key, kind, title, subtitle, selected, related, dimmed, badge, chips = [], label} = options;
+      const index = options.node;
+      const item = index === undefined ? null : node(index);
+      const marked = index !== undefined && editable(index);
       const classes = ["arch-box", ...String(kind).split(" ")];
+      if (item && TENTATIVE_LEVELS.has(item.confidence)) classes.push(`level-${item.confidence}`);
+      if (marked) classes.push("is-editable");
       if (selected) classes.push("is-selected");
       if (related) classes.push("is-related");
       if (dimmed) classes.push("is-dimmed");
@@ -1381,10 +1484,22 @@
       group.append(svg("rect", {class: "arch-box-frame", width: box.w, height: box.h, rx: radius}));
       group.append(svg("rect", {class: "arch-box-bar", width: 4, height: box.h - 8, x: 4, y: 4, rx: 2}));
       const reserve = badge ? 34 : 12;
-      const titleChars = Math.max(6, Math.floor((box.w - 16 - reserve) / 6.9));
-      group.append(svg("text", {class: "arch-box-title", x: 14, y: 19}, truncate(title, titleChars)));
+      const chars = titleChars(box.w, reserve);
+      // Node boxes wrap their title; their scenes size the box for two lines.
+      const lines = item ? wrapTitle(title, chars) : [truncate(title, chars)];
+      const offset = (lines.length - 1) * TITLE_LINE;
+      const titleText = svg("text", {class: "arch-box-title", x: 14, y: 19});
+      lines.forEach((line, position) => {
+        titleText.append(svg("tspan", {x: 14, y: 19 + position * TITLE_LINE}, line));
+      });
+      group.append(titleText);
+      const tag = item ? (marked ? "editor" : KIND_SHORT[item.kind]) : "";
+      if (tag) {
+        group.append(svg("text", {class: "arch-box-tag", x: box.w - 8, y: 35 + offset, "text-anchor": "end"}, tag));
+      }
       if (subtitle) {
-        group.append(svg("text", {class: "arch-box-sub", x: 14, y: 35}, truncate(subtitle, Math.floor((box.w - 22) / 6.3))));
+        const room = box.w - 22 - (tag ? tag.length * 6 + 8 : 0);
+        group.append(svg("text", {class: "arch-box-sub", x: 14, y: 35 + offset}, truncate(subtitle, Math.floor(room / 6.3))));
       }
       if (badge) {
         const width = Math.max(22, badge.text.length * 7 + 10);
@@ -1394,7 +1509,7 @@
         group.append(badgeGroup);
       }
       chips.forEach((chip, position) => {
-        const y = 44 + position * 15;
+        const y = 44 + offset + position * 15;
         const chipGroup = svg("g", {class: `arch-chip kind-${chip.kind}`, "data-key": chip.key, transform: `translate(14,${y})`});
         chipGroup.append(svg("rect", {class: "arch-chip-dot", width: 7, height: 7, y: 2, rx: 1.5}));
         chipGroup.append(svg("text", {x: 12, y: 9.5}, truncate(chip.text, Math.floor((box.w - 38) / 6.1))));
@@ -1735,13 +1850,19 @@
       }
       state.model.searchText.forEach((textValue, index) => {
         const item = node(index);
+        const names = [item.label, item.meta?.editor?.name || "", ...published(index).map((entry) => entry.name)];
         let score = null;
         if (address && item.addr === address) score = 0;
-        else if (item.label.toLowerCase().startsWith(query)) score = 4;
-        else if (textValue.includes(query)) score = 14 + KIND_ORDER.indexOf(item.kind);
+        else if (names.some((name) => name.toLowerCase().startsWith(query))) score = 4;
+        else if (textValue.includes(query) || names.some((name) => name.toLowerCase().includes(query))) {
+          score = 14 + KIND_ORDER.indexOf(item.kind);
+        }
         if (score === null) return;
         if (item.kind === "map" || item.kind === "function") score -= 1;
-        results.push({score, kind: KIND_LABELS[item.kind], label: item.label, detail: nodeSubtitle(index), key: `node:${index}`, route: {type: "node", node: index}});
+        // An editor name that matched in place of the label leads the detail line.
+        const matched = names.slice(1).find((name) => name && name !== item.label && name.toLowerCase().includes(query));
+        const detail = matched ? `${matched} | ${nodeSubtitle(index)}` : nodeSubtitle(index);
+        results.push({score, kind: KIND_LABELS[item.kind], label: item.label, detail, key: `node:${index}`, route: {type: "node", node: index}});
       });
       results.sort((left, right) => left.score - right.score || left.label.localeCompare(right.label));
       const seen = new Set();
@@ -1817,6 +1938,53 @@
       const items = content.flat().filter(Boolean);
       if (!items.length) return null;
       return html("section", {className: "arch-detail-section"}, html("h3", {text: title}), ...items);
+    }
+
+    function collapsible(title, ...content) {
+      const items = content.flat().filter(Boolean);
+      if (!items.length) return null;
+      const summary = html("summary", {text: title});
+      const element = html("details", {className: "arch-detail-section is-collapsible"}, summary, ...items);
+      element.open = state.openSections.has(title.replace(/ \(\d+\)$/, ""));
+      element.addEventListener("toggle", () => rememberSection(title.replace(/ \(\d+\)$/, ""), element.open));
+      return element;
+    }
+
+    function shapeDimension(shape) {
+      if (!shape) return "";
+      if (shape.cols || shape.rows) return `${shape.cols || 1}x${shape.rows || 1}`;
+      if (shape.points) return `${shape.points} points`;
+      if (shape.count) return `${shape.count} elements`;
+      return "";
+    }
+
+    function shapeStorage(shape) {
+      if (!shape) return "";
+      if (shape.storage) return shape.storage;
+      if (!shape.width) return "";
+      const sign = shape.signed === true ? " signed" : shape.signed === false ? " unsigned" : "";
+      return `${shape.width}-bit${sign}`;
+    }
+
+    function editorSection(index) {
+      const item = node(index);
+      const editor = item.meta?.editor;
+      const entries = published(index);
+      if (!editor && !entries.length && item.kind !== "map" && item.kind !== "axis") return null;
+      const tables = entries.filter((entry) => !entry.axisOf);
+      const axes = entries.filter((entry) => entry.axisOf);
+      return section("Editor",
+        metaList([
+          ["Name", editor?.name],
+          ["Category", categoryText(editor?.category)],
+          ["View", editor?.view],
+          [`Status for ${state.rom.id}`, editorStatus(index)],
+        ]),
+        tables.length ? html("ul", {className: "arch-reach-list"}, ...tables.map((entry) => html("li", {},
+          html("strong", {text: entry.name}), entry.category ? ` | ${categoryText(entry.category)}` : ""))) : null,
+        axes.length ? html("ul", {className: "arch-reach-list"}, ...axes.map((entry) => html("li", {},
+          html("strong", {text: entry.name}),
+          ` axis of ${entry.axisOf.length} ${entry.axisOf.length === 1 ? "table" : "tables"}: ${entry.axisOf.slice(0, 4).join("; ")}${entry.axisOf.length > 4 ? "; ..." : ""}`))) : null);
     }
 
     function nodeButton(index, extra = "") {
@@ -1913,7 +2081,7 @@
 
     function bindingDetails(binding) {
       if (!binding) return null;
-      return section("Meaning bindings", metaList([
+      return collapsible("Meaning bindings", metaList([
         ["Meaning", binding.meaning], ["Selected layout", binding.layout],
         ["Selected image", binding.image],
         ["Applicable images", binding.images.length ? binding.images.join(", ")
@@ -1951,35 +2119,34 @@
         heading(`${KIND_LABELS[item.kind]}${item.block ? ` / ${blockName(item.block)}` : ""}`, item.label),
         html("p", {className: "detail-range", text: info.text}),
         html("div", {className: "detail-badges"}, ...[item.confidence, item.role, item.units, item.pinned ? "placed" : ""].filter(Boolean).map((text) => html("span", {className: "badge", text}))),
-        metaList([
-          ...addressRows,
-          ["Block", item.block ? blockName(item.block) : ""],
-          ["Category", meta.category],
-          ["Dimension", meta.dimension],
-          ["Storage", meta.storage],
-          ["Scale", meta.scale],
-          ["Scale confidence", meta.scaleConfidence],
-          ["Family", meta.family],
-          ["Contract confidence", meta.contractConfidence],
-        ]),
         item.text ? html("p", {className: "detail-copy", text: item.text}) : null,
-        item.note ? html("p", {className: "detail-copy secondary", text: item.note}) : null,
-        bindingDetails(meta.binding),
-        section("Relation origins", metaList([...state.model.relationOrigins[index]])),
-        meta.contract ? section("Contract", html("p", {className: "detail-copy secondary", text: meta.contract})) : null,
         actions(
           state.route.type === "node" && state.route.node === index ? null : action("Open neighborhood", () => navigate({type: "node", node: index}, `node:${index}`), true),
           action("Trace to actuators", () => navigate({type: "trace", direction: "down", node: index}, `node:${index}`)),
           action("Trace from sensors", () => navigate({type: "trace", direction: "up", node: index}, `node:${index}`)),
           info.jump !== null ? action("Show in address map", () => bridge.showAddress(info.jump)) : null,
         ),
+        metaList([
+          ...addressRows,
+          ["Block", item.block ? blockName(item.block) : ""],
+          ["Dimension", shapeDimension(meta.shape)],
+          ["Storage", shapeStorage(meta.shape)],
+          ["Scale", meta.scale],
+          ["Scale confidence", meta.scaleConfidence],
+          ["Contract confidence", meta.contractConfidence],
+        ]),
+        editorSection(index),
         chainImpactSection(index),
+        item.note ? html("p", {className: "detail-copy secondary", text: item.note}) : null,
         endpoints.length ? section("Peripheral endpoints", html("ul", {className: "arch-reach-list"}, ...endpoints.map((endpoint) => html("li", {}, html("strong", {text: endpoint.name}), ` ${endpoint.peripheral}`)))) : null,
         reachSection(index),
         inputs.length ? section(`Inputs (${inputs.length})`, linkList(inputs)) : null,
         outputs.length ? section(`Outputs (${outputs.length})`, linkList(outputs)) : null,
-        calls.length ? section(`Calls (${calls.length})`, linkList(calls)) : null,
-        callers.length ? section(`Called by (${callers.length})`, linkList(callers)) : null,
+        bindingDetails(meta.binding),
+        meta.contract ? collapsible("Contract", html("p", {className: "detail-copy secondary", text: meta.contract})) : null,
+        calls.length ? collapsible(`Calls (${calls.length})`, linkList(calls)) : null,
+        callers.length ? collapsible(`Called by (${callers.length})`, linkList(callers)) : null,
+        collapsible("Relation origins", metaList([...state.model.relationOrigins[index]])),
         item.source ? html("p", {className: "detail-source", text: `Source: ${item.source}`}) : null,
       ];
     }
@@ -2053,16 +2220,30 @@
         .sort((left, right) => KIND_ORDER.indexOf(node(left[0]).kind) - KIND_ORDER.indexOf(node(right[0]).kind) || node(left[0]).label.localeCompare(node(right[0]).label));
       const tables = impacts.filter(([index]) => node(index).kind === "map" || node(index).kind === "axis");
       const others = impacts.filter(([index]) => node(index).kind !== "map" && node(index).kind !== "axis");
+      const firstStep = new Map();
+      chain.steps.forEach((step, position) => {
+        for (const index of [step.from, ...step.via, step.to]) {
+          if (!firstStep.has(index)) firstStep.set(index, position);
+        }
+      });
+      const editableTables = tables.filter(([index]) => editable(index))
+        .sort((left, right) => firstStep.get(left[0]) - firstStep.get(right[0]));
+      const otherTables = tables.filter(([index]) => !editable(index));
       const impactItem = ([index, value]) => html("li", {className: `sign-${value.sign}`},
         html("span", {className: `arch-sign-pill sign-${value.sign}`, text: SIGN_GLYPHS[value.sign]}),
         html("button", {type: "button", className: "arch-inline-link", text: node(index).label, onclick: () => select(`node:${index}`)}),
         ` ${SIGN_PHRASES[value.sign]} the output`);
+      const editableItem = ([index, value]) => html("li", {className: `sign-${value.sign}`},
+        html("span", {className: `arch-sign-pill sign-${value.sign}`, text: SIGN_GLYPHS[value.sign]}),
+        html("button", {type: "button", className: "arch-inline-link", text: published(index).find((entry) => !entry.axisOf).name, onclick: () => select(`node:${index}`)}),
+        ` step ${firstStep.get(index) + 1}; ${SIGN_PHRASES[value.sign]} the output`);
       return [
         heading("Calculation chain", chain.name),
         html("p", {className: "detail-copy", text: chain.summary}),
         metaList([["Quantity", chain.quantity], ["Output", `${node(chain.output).label} (${addressInfo(chain.output).text})`], ["Steps", chain.steps.length]]),
         actions(state.route.type === "chain" && state.route.id === chainId ? null : action("Open chain", () => navigate({type: "chain", id: chainId}, `chain:${chainId}`), true)),
-        tables.length ? section("Tables and axes: effect of an increase", html("ul", {className: "arch-impact-list"}, ...tables.map(impactItem))) : null,
+        editableTables.length ? section(`Editable tables for ${state.rom.id}: effect of an increase`, html("ul", {className: "arch-impact-list"}, ...editableTables.map(editableItem))) : null,
+        otherTables.length ? section(editableTables.length ? "Other tables and axes: effect of an increase" : "Tables and axes: effect of an increase", html("ul", {className: "arch-impact-list"}, ...otherTables.map(impactItem))) : null,
         others.length ? section("Signals and functions: effect of an increase", html("ul", {className: "arch-impact-list"}, ...others.map(impactItem))) : null,
         chain.specs.length ? section("Specifications", specList(chain.specs)) : null,
       ];
@@ -2107,6 +2288,37 @@
       ];
     }
 
+    // The tuning entry: the published tables of this view by editor category.
+    function editorTablesSection() {
+      const groups = new Map();
+      state.model.nodes.forEach((_item, index) => {
+        for (const entry of published(index)) {
+          if (entry.axisOf) continue;
+          const category = categoryText(entry.category) || "Uncategorized";
+          if (!groups.has(category)) groups.set(category, []);
+          groups.get(category).push([index, entry.name]);
+        }
+      });
+      if (!groups.size) return null;
+      const categories = [...groups.keys()].sort((left, right) => left.localeCompare(right));
+      return section(`Editor tables of ${state.rom.id}`,
+        html("p", {className: "detail-copy secondary", text: "Published tables bound in this view, by editor category. A table opens with the sign of its effect on each calculation chain."}),
+        ...categories.map((category) => {
+          const entries = groups.get(category).sort((left, right) => left[1].localeCompare(right[1]));
+          return collapsible(`${category} (${entries.length})`, html("div", {className: "arch-link-list"},
+            ...entries.map(([index, name]) => {
+              const chains = state.model.chainsByNode.get(index)?.size || 0;
+              return html("button", {
+                type: "button",
+                className: `arch-node-link kind-${node(index).kind}`,
+                title: `${KIND_LABELS[node(index).kind]} ${addressInfo(index).text}`,
+                onclick: () => navigate({type: "node", node: index}, `node:${index}`),
+              }, html("span", {className: "arch-node-dot", "aria-hidden": "true"}),
+              `${name}${chains ? ` (${chains} ${chains === 1 ? "chain" : "chains"})` : ""}`);
+            })));
+        }));
+    }
+
     function overviewDetails() {
       const route = state.route;
       if (route.type === "chain") return chainDetails(route.id);
@@ -2126,6 +2338,7 @@
           ["Source", raw.source],
         ]),
         html("p", {className: "detail-copy secondary", text: "Select a block to see its flows, members, and specifications. A calculation chain shows how an increase of each table and signal moves the actuator command."}),
+        editorTablesSection(),
       ];
     }
 

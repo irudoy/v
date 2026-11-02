@@ -72,6 +72,45 @@ def test_family_carries_its_fields_and_both_sides_of_its_relationships():
     assert model._family("XXXXX") is None
 
 
+PUBLISHED_DEFINITION = """<roms><rom><romid><xmlid>JK08A</xmlid></romid>
+  <table name="Timing" category="Ignition//Main" type="3D" storageaddress="0x9A1A">
+    <table name="Engine Speed" type="X Axis" storageaddress="0x11000"/>
+    <table name="Load" type="Y Axis" storageaddress="0x11010"/>
+  </table>
+  <table name="Fuel" category="Fuel" type="2D" storageaddress="0x9B00">
+    <table name="Engine Speed" type="Y Axis" storageaddress="0x11000"/>
+  </table>
+  <table name="Enable" category="Switches" type="Switch" storageaddress="0x8300"/>
+</rom></roms>"""
+
+
+def test_published_definition_names_tables_and_the_tables_of_each_axis(tmp_path):
+    path = tmp_path / "JK08A.xml"
+    path.write_text(PUBLISHED_DEFINITION)
+    published = model._published_tables({"rom": "JK08A", "published_definition": str(path)})
+
+    assert published["source"] == str(path)
+    assert published["tables"] == {
+        "00009a1a": [{"name": "Timing", "category": "Ignition//Main"}],
+        "00009b00": [{"name": "Fuel", "category": "Fuel"}],
+        "00011000": [{"name": "Engine Speed", "axisOf": ["Timing", "Fuel"]}],
+        "00011010": [{"name": "Load", "axisOf": ["Timing"]}],
+    }
+    assert model._published_tables({"rom": "JK08A"}) is None
+    with pytest.raises(model.ModelError, match="definition identity"):
+        model._published_tables({"rom": "JK03A", "published_definition": str(path)})
+
+
+def test_published_definition_conflicts_with_a_definition_source(tmp_path):
+    manifest = tmp_path / "1ND0A.toml"
+    source = model.resolve_manifest("1ND0A").read_text()
+    manifest.write_text(source.replace(
+        'definition_xml = "defs/1ND0A.xml"\n',
+        'definition_xml = "defs/1ND0A.xml"\npublished_definition = "defs/1ND0A.xml"\n'))
+    with pytest.raises(model.ModelError, match="published_definition conflicts"):
+        model._load_manifest(manifest)
+
+
 @pytest.mark.slow
 def test_all_models_build_with_exact_registered_identities():
     atlas = model.build_atlas(["all"])
@@ -166,6 +205,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert rom["registry"]["note"].startswith("owned bench read")
     assert rom["layout"] == "1me3b"
     assert rom["family"]["key"] == "sh7059_1me3b"
+    assert rom["published"]["source"] == "defs/1ME3B.xml"
     assert rom["family"]["fields"]["canonical"] == "1ME3B"
     assert {item["family"] for item in rom["family"]["relationships"]} == {
         "sh7059_1nd", "sh7058_jk78c"}
@@ -312,6 +352,15 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence(architecture_
     assert (multiplier["end"] - multiplier["start"], multiplier["exactExtent"]) == (8, True)
     assert not any("checksum layout" in warning for warning in rom["warnings"])
     assert not any("runtime address profile" in warning for warning in rom["warnings"])
+
+
+@pytest.mark.slow
+def test_jk08a_publication_names_the_editor_tables_of_its_definition(architecture_cache):
+    rom = model.build_rom_model(model.resolve_manifest("JK08A"), architecture_cache)
+
+    assert rom["published"]["source"] == "defs/JK08A.xml"
+    names = [entry["name"] for entry in rom["published"]["tables"]["00009a1a"]]
+    assert "Map 1 - Ignition Timing Surface - High-Octane State" in names
 
 
 @pytest.mark.slow

@@ -11,6 +11,7 @@ reviewed_functions = "defs/JK08A.funcs.csv"
 diagnostic_bindings = "defs/JK08A.diagnostic-bindings.csv"
 dtc = "defs/JK08A.dtc.csv"
 overrides = "defs/JK08A.overrides.toml"
+published_definition = "defs/JK08A.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 
 [architecture]
