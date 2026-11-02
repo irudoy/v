@@ -46,6 +46,37 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002a388"
+name = "giga-seahorse"
+
+[symbol.interp]
+access = "explicit"
+kernel = "bald-dachshund/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a388"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002a388"
+to = "7mfk:000262e0"
+value = "own-kernel-wrapper-and-library-position"
+key = "000262e0"
+note = """
+1ME3B compiles this explicit 16x16 uint16 over uint8/uint16 axes lookup with \
+its own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:000286e4."""
+
+[[symbol]]
 layout = "1nd"
 address = "000286e4"
 name = "beryl-seahorse"

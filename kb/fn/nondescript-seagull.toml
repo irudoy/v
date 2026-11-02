@@ -48,6 +48,39 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00029ec0"
+name = "glorious-elk"
+
+[symbol.interp]
+access = "explicit"
+kernel = "nondescript-seagull/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00029ec0"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:00029ec0"
+to = "7mfk:00026270"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026270"
+note = """
+1ME3B compiles this explicit 8x8 uint16 over uint16/uint16 axes lookup with \
+its own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028674. JK78C 0005da78 calls \
+00028058 and 1ME3B 0006c2c8 calls 00029ec0 at the same position with \
+corresponding tables."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028674"
 name = "beryl-sawfish"

@@ -17,6 +17,33 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002aa98"
+name = "rigorous-guppy"
+
+[symbol.interp]
+access = "implicit"
+kernel = "prudent-loon/fn"
+cols = 32
+step = 8
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002aa98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002aa98"
+to = "7mfk:000263a0"
+note = """
+1ME3B compiles this implicit 32-point step-8 lookup, the only entry of that \
+contract in the 1ME3B library, with its own unrolled kernel at the library \
+position of the shared entry; the masked-match ranking from 1ND names \
+1nd:000287e4."""
+
+[[symbol]]
 layout = "1nd"
 address = "000287e4"
 name = "opalescent-butterfly"

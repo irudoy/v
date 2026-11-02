@@ -922,7 +922,8 @@ class InterpFilesTest(unittest.TestCase):
         files = {**interp.render_registries(m), **interp.render_correspondences(m)}
         self.assertEqual(sorted(files), [f"defs/{name}" for name in (
             "1ME3B.interp.csv", "1ND0A.interp.csv", "JK00D.interp.csv",
-            "JK08A-1ND0A.interp-correspondence.csv", "JK08A-JK00D.interp-correspondence.csv",
+            "JK08A-1ME3B.interp-correspondence.csv", "JK08A-1ND0A.interp-correspondence.csv",
+            "JK08A-JK00D.interp-correspondence.csv",
             "JK08A-JK78C.interp-correspondence.csv", "JK08A.interp.csv", "JK78C.interp.csv")])
         for path, text in files.items():
             with self.subTest(path=path):

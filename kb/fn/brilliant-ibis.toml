@@ -45,6 +45,35 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002ac9c"
+name = "jolly-guan"
+
+[symbol.interp]
+access = "explicit"
+kernel = "brilliant-ibis/fn"
+cols = 8
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ac9c"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002ac9c"
+to = "7mfk:00026474"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026474"
+note = """
+1ME3B compiles this explicit 1D-8 uint8 over uint8 axes lookup with its own \
+unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:000288b8."""
+
+[[symbol]]
 layout = "1nd"
 address = "000288b8"
 name = "simple-pug"

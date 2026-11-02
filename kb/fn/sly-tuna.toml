@@ -28,6 +28,35 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002b1f0"
+name = "rigorous-kiwi"
+
+[symbol.interp]
+access = "explicit"
+kernel = "sly-tuna/fn"
+cols = 16
+storage = "uint8"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002b1f0"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002b1f0"
+to = "7mfk:00026550"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026550"
+note = """
+1ME3B compiles this explicit 1D-16 uint8 over uint16 axes lookup with its \
+own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028994."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028994"
 name = "helpful-toucan"

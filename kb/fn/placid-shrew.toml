@@ -27,6 +27,33 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002aaec"
+name = "quixotic-seahorse"
+
+[symbol.interp]
+access = "implicit"
+kernel = "placid-shrew/fn"
+cols = 4
+step = 16384
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002aaec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002aaec"
+to = "7mfk:000263bc"
+note = """
+1ME3B compiles this implicit 4-point step-16384 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:00028800."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028800"
 name = "exuberant-seahorse"

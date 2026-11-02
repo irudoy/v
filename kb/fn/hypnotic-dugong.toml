@@ -19,6 +19,33 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002a9a4"
+name = "magic-grouse"
+
+[symbol.interp]
+access = "implicit"
+kernel = "hypnotic-dugong/fn"
+cols = 4
+step = 64
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a9a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002a9a4"
+to = "7mfk:00026358"
+note = """
+1ME3B compiles this implicit 4-point step-64 lookup, the only entry of that \
+contract in the 1ME3B library, with its own unrolled kernel at the library \
+position of the shared entry; the masked-match ranking from 1ND names \
+1nd:0002879c."""
+
+[[symbol]]
 layout = "1nd"
 address = "0002879c"
 name = "crazy-tuatara"

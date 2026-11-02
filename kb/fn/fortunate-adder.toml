@@ -46,6 +46,35 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002ad6c"
+name = "groovy-lynx"
+
+[symbol.interp]
+access = "explicit"
+kernel = "fortunate-adder/fn"
+cols = 16
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ad6c"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002ad6c"
+to = "7mfk:000264a0"
+value = "own-kernel-wrapper-and-library-position"
+key = "000264a0"
+note = """
+1ME3B compiles this explicit 1D-16 uint8 over uint8 axes lookup with its own \
+unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:000288e4."""
+
+[[symbol]]
 layout = "1nd"
 address = "000288e4"
 name = "peach-beluga"

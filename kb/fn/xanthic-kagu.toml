@@ -29,6 +29,33 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002abec"
+name = "carrot-cheetah"
+
+[symbol.interp]
+access = "implicit"
+kernel = "xanthic-kagu/fn"
+cols = 64
+step = 256
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002abec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002abec"
+to = "7mfk:00026410"
+note = """
+1ME3B compiles this implicit 64-point step-256 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:00028854."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028854"
 name = "jade-lorikeet"

@@ -17,6 +17,33 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002ab40"
+name = "aspiring-kittiwake"
+
+[symbol.interp]
+access = "implicit"
+kernel = "urban-potoo/fn"
+cols = 8
+step = 8192
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ab40"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002ab40"
+to = "7mfk:000263d8"
+note = """
+1ME3B compiles this implicit 8-point step-8192 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:0002881c."""
+
+[[symbol]]
 layout = "1nd"
 address = "0002881c"
 name = "outgoing-dove"

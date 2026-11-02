@@ -44,6 +44,35 @@ sections = ["Producers of the transmit words"]
 anchor = "FUN_00028320"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002af88"
+name = "debonair-grouse"
+
+[symbol.interp]
+access = "explicit"
+kernel = "eminent-lynx/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002af88"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002af88"
+to = "7mfk:000264f8"
+value = "own-kernel-wrapper-and-library-position"
+key = "000264f8"
+note = """
+1ME3B compiles this explicit 1D-16 uint16 over uint16 axes lookup with its \
+own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:0002893c."""
+
+[[symbol]]
 layout = "1nd"
 address = "0002893c"
 name = "merciful-harrier"

@@ -1,0 +1,16 @@
+source_kernel,source_wrapper,target_kernel,target_wrapper,status,evidence
+00026984,00026270,00029ec0,00029ec0,mapped,own-kernel-wrapper-and-library-position
+00026984,000262a8,0002a0b4,0002a0b4,mapped,own-kernel-wrapper-and-library-position
+00026984,000262e0,0002a388,0002a388,mapped,own-kernel-wrapper-and-library-position
+00026944,00026474,0002ac9c,0002ac9c,mapped,own-kernel-wrapper-and-library-position
+00026944,000264a0,0002ad6c,0002ad6c,mapped,own-kernel-wrapper-and-library-position
+00026984,000264cc,0002aeac,0002aeac,mapped,own-kernel-wrapper-and-library-position
+00026984,000264f8,0002af88,0002af88,mapped,own-kernel-wrapper-and-library-position
+00026984,00026524,0002b0d4,0002b0d4,mapped,own-kernel-wrapper-and-library-position
+00026984,00026550,0002b1f0,0002b1f0,mapped,own-kernel-wrapper-and-library-position
+00026b84,000265f0,0002b3b0,0002b3b0,mapped,own-kernel-wrapper-and-library-position
+00026b84,00026628,0002b5a4,0002b5a4,mapped,own-kernel-wrapper-and-library-position
+00026b84,00026660,0002b878,0002b878,mapped,own-kernel-wrapper-and-library-position
+00026b84,000266bc,0002bbf8,0002bbf8,mapped,own-kernel-wrapper-and-library-position
+00026b84,000266e8,0002bcd4,0002bcd4,mapped,own-kernel-wrapper-and-library-position
+00026b84,00026714,0002be20,0002be20,mapped,own-kernel-wrapper-and-library-position

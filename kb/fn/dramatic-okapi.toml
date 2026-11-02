@@ -19,6 +19,33 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002ab98"
+name = "fresh-seal"
+
+[symbol.interp]
+access = "implicit"
+kernel = "dramatic-okapi/fn"
+cols = 16
+step = 4096
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ab98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002ab98"
+to = "7mfk:000263f4"
+note = """
+1ME3B compiles this implicit 16-point step-4096 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:00028838."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028838"
 name = "quixotic-tarsier"

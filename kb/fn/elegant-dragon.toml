@@ -30,6 +30,37 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002a0b4"
+name = "expert-herring"
+
+[symbol.interp]
+access = "explicit"
+kernel = "elegant-dragon/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a0b4"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002a0b4"
+to = "7mfk:000262a8"
+value = "own-kernel-wrapper-and-library-position"
+key = "000262a8"
+note = """
+1ME3B compiles this explicit 16x16 uint16 over uint16/uint16 axes lookup \
+with its own unrolled kernel at the library position of the shared entry; \
+the masked-match ranking from 1ND names 1nd:000286ac."""
+
+[[symbol]]
 layout = "1nd"
 address = "000286ac"
 name = "abstract-poodle"
