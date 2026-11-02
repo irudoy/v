@@ -692,13 +692,26 @@ def format_replay_time(seconds):
     return f"{int(minutes)}:{rest:04.1f}"
 
 
+# The commands of the frame that completes a page configuration.
+PAGE_FINAL_COMMANDS = frozenset({"page-commit", "page-default"})
+
+
 @dataclass(frozen=True)
 class PageRequest:
     """A queued configuration of the dynamic page and the monotonic time by
-    which the page must echo it."""
+    which the page must echo it.
+
+    ``final_index`` places its final frame among the final page frames that
+    the connection queues. ``committed`` marks that frame sent, and
+    ``echoed`` a snapshot after it whose configuration byte names the
+    configuration.
+    """
 
     configuration_id: int
     deadline: float
+    final_index: int = 0
+    committed: bool = False
+    echoed: bool = False
 
 
 def load_configuration_frames(path):
@@ -714,6 +727,10 @@ class DashboardApp:
     player = None
     page_request = None
     page_echo_reported = None
+    # The final page frames that the connection queued and that its source
+    # consumed, sent or failed.
+    page_finals_queued = 0
+    page_finals_done = 0
 
     def __init__(self, root, args):
         self.root = root
@@ -1764,6 +1781,8 @@ class DashboardApp:
         self.source_drops = 0
         self.page_request = None
         self.page_echo_reported = None
+        self.page_finals_queued = 0
+        self.page_finals_done = 0
 
     def toggle_source(self):
         if self.source_is_active():
@@ -1898,25 +1917,58 @@ class DashboardApp:
             self.control_requests.put_nowait(
                 ControlRequest(command, can_id, payload, PAGE_FRAME_SPACING)
             )
+        self.page_finals_queued += 1
         self.page_request = PageRequest(
             configuration_id,
             time.monotonic()
             + len(frames) * PAGE_FRAME_SPACING
             + PAGE_ECHO_TIMEOUT,
+            self.page_finals_queued,
         )
         self.page_echo_reported = None
         label = self.model.configuration_labels[configuration_id]
         self.control_var.set(f"Control: page configuration {label} queued")
 
     def page_echo(self, now):
-        """The state of the requested configuration: confirmed once the
-        page echoes it, not echoed after its deadline, else waiting."""
+        """The state of the requested configuration: confirmed once a
+        snapshot after its final frame echoes it, not echoed after its
+        deadline, else waiting."""
         request = self.page_request
         if request is None:
             return None
-        if self.model.page_configuration_id == request.configuration_id:
+        if request.echoed:
             return "confirmed"
         return "not echoed" if now > request.deadline else "waiting"
+
+    def _note_page_frame(self, command, sent):
+        """Count a final page frame that the source consumed; the frame
+        commits the request whose final frame it is once it is sent.
+
+        The source reports a frame after it leaves and before the frames it
+        receives later, so a snapshot after the report follows the frame.
+        """
+        if command not in PAGE_FINAL_COMMANDS:
+            return
+        self.page_finals_done += 1
+        request = self.page_request
+        if (
+            sent
+            and request is not None
+            and request.final_index == self.page_finals_done
+        ):
+            self.page_request = replace(request, committed=True)
+
+    def _note_page_snapshot(self):
+        """Mark the committed request echoed when the configuration byte of
+        the snapshot names it."""
+        request = self.page_request
+        if (
+            request is not None
+            and request.committed
+            and not request.echoed
+            and self.model.page_configuration_id == request.configuration_id
+        ):
+            self.page_request = replace(request, echoed=True)
 
     def _report_page_echo(self, now):
         state = self.page_echo(now)
@@ -2377,11 +2429,13 @@ class DashboardApp:
                     self._set_stream_command(
                         "stop" if event.command == "start" else "start"
                     )
+                self._note_page_frame(event.command, sent)
             elif isinstance(event, ReplayLoaded):
                 self._open_replay(event.timeline)
             elif isinstance(event, FrameRecord):
                 if self.model.process_frame(event) is not None:
                     new_snapshot = True
+                    self._note_page_snapshot()
                     self._record_snapshot(event, now)
         if self.player is not None:
             new_snapshot = self._advance_replay(now) or new_snapshot

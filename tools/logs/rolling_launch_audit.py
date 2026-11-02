@@ -532,10 +532,23 @@ def _owed_cuts(samples, start, end, bounds):
 
 
 def audit_hold(samples, calibration) -> tuple[HoldRun, ...]:
-    """Audit every ACTIVE run of the verified snapshots."""
+    """Audit every ACTIVE run of the verified snapshots.
+
+    The replay steps the controller once per snapshot, so a capture whose
+    snapshots do not step by one tick, which a tick divisor above 1
+    produces, is refused.
+    """
     samples = list(samples)
     if not any(sample.phase is not None for sample in samples):
         raise ValueError("the capture carries no Rolling Launch phase")
+    step = math.gcd(
+        *(after.tick - before.tick for before, after in zip(samples, samples[1:]))
+    )
+    if step > 1:
+        raise ValueError(
+            f"the snapshots step by {step} ticks; the hold audit needs one"
+            " snapshot per tick"
+        )
     active = rolling_launch.Phase.ACTIVE
     runs = []
     index = 0
@@ -623,6 +636,9 @@ def main(argv: list[str] | None = None) -> int:
         capture = read_capture(path)
         runs = audit_hold(capture.samples, calibration)
         print(f"{capture.path.name} sha256={capture.sha256} runs={len(runs)}")
+        # A capture without a run, or a run without a checked fraction,
+        # checks nothing and cannot pass.
+        failed |= not runs
         for run in runs:
             target = (
                 "none" if run.target_speed is None
@@ -642,7 +658,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             for tick, failure in run.failures:
                 print(f"    tick {tick}: {failure}")
-            failed |= bool(run.failures) or run.cuts_inside is False
+            failed |= (
+                bool(run.failures)
+                or run.cuts_inside is False
+                or not run.law_ticks
+            )
     return 1 if failed else 0
 
 

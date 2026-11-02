@@ -105,7 +105,7 @@ digits = 0
 group = "Ignition"
 panel = "Dynamic page"
 order = 50
-description = "Periodic snapshot of the ignition dwell angle, with a stock range of 0 through 114 degrees. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The dynamic page carries it while a launch-law configuration is active."
+description = "Candidate dwell angle: the periodic snapshot of the APC reset-offset source 0xFFFF2406, bounded to 0 through 114, from which builder 0x0004E080 derives the APC reset-edge command offset. Its reading as the dwell in crank degrees is unverified. Under that reading a dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The dynamic page carries it while a launch-law configuration is active."
 
 [[slot]]
 name = "speed_frame_receive_age_raw"

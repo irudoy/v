@@ -9,6 +9,32 @@ from tools.logs import can_telemetry_schema
 
 
 CAPTURE = Path(configurations.__file__).with_name("can-telemetry-capture.s")
+# The slot layouts of the released configuration IDs as (name, width, signed)
+# per group. A recorded trace decodes with any later catalog, so a released
+# ID keeps its layout for good; a changed layout takes a new ID and a new row.
+RELEASED = {
+    1: (
+        (
+            ("rolling_launch_speed_error_raw", 2, True),
+            ("rolling_launch_torque_fraction_raw", 2, False),
+            ("rolling_launch_cut_counter", 1, False),
+            ("ignition_dwell_angle_raw", 1, False),
+        ),
+    ),
+    2: (
+        (
+            ("rolling_launch_speed_error_raw", 2, True),
+            ("rolling_launch_torque_fraction_raw", 2, False),
+            ("rolling_launch_cut_counter", 1, False),
+            ("ignition_dwell_angle_raw", 1, False),
+        ),
+        (
+            ("rolling_launch_integrator_raw", 2, True),
+            ("speed_frame_receive_age_raw", 1, False),
+            ("rolling_launch_cut_counter", 1, False),
+        ),
+    ),
+}
 
 
 def catalog_text(change=None):
@@ -64,6 +90,19 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(
             [item.configuration_id for item in catalog.configurations], [1, 2]
         )
+
+    def test_released_configuration_ids_keep_their_layouts(self):
+        catalog = configurations.load_catalog()
+        layouts = {
+            item.configuration_id: tuple(
+                tuple((slot.name, slot.width, slot.signed) for slot in group)
+                for group in catalog.group_slots(item)
+            )
+            for item in catalog.configurations
+        }
+        for configuration_id, layout in RELEASED.items():
+            with self.subTest(configuration_id=configuration_id):
+                self.assertEqual(layouts.get(configuration_id), layout)
 
     def test_the_ram_window_is_the_window_of_the_capture(self):
         text = CAPTURE.read_text(encoding="utf-8")

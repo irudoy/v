@@ -180,9 +180,10 @@ the same form. The button requires an active/ACK PCAN connection, like
 
 The protocol has no response frame. The `Page configuration` panel shows the
 configuration that the page echoes, the group of the snapshot, the requested
-configuration, and the echo: `waiting` until the page carries the requested
-ID, `confirmed` once it does, and `not echoed` when it does not within one
-second after the last frame is due. The ECU keeps the active configuration
+configuration, and the echo: `waiting` until a snapshot after the sent final
+frame of the request carries the requested ID, `confirmed` once one does, and
+`not echoed` when none does within one second after the last frame is due.
+The ECU keeps the active configuration
 when it rejects a frame, so a rejected request stays `not echoed`. A
 configuration change drops the values that only the previous configuration
 carried, and the `Dynamic page` panel shows the slots of every

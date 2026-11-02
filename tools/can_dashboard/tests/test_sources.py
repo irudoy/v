@@ -653,6 +653,25 @@ class DashboardPresentationTest(unittest.TestCase):
         )
         self.assertEqual(dashboard.page_request.configuration_id, 1)
 
+    def test_only_the_final_frame_of_the_request_commits_it(self):
+        dashboard, _values = self.page_dashboard()
+        dashboard.send_page_configuration(1)
+        dashboard.send_page_configuration(2)
+        dashboard.model.schema_verified = True
+        dashboard.model.page_configuration = 0x02
+        # The final frame of the superseded request commits nothing.
+        dashboard._note_page_frame("page-commit", True)
+        dashboard._note_page_snapshot()
+        self.assertEqual(dashboard.page_echo(0.0), "waiting")
+        # A final frame that fails to leave commits nothing either.
+        dashboard._note_page_frame("page-commit", False)
+        dashboard._note_page_snapshot()
+        self.assertFalse(dashboard.page_request.committed)
+        dashboard.send_page_configuration(2)
+        dashboard._note_page_frame("page-commit", True)
+        dashboard._note_page_snapshot()
+        self.assertEqual(dashboard.page_echo(0.0), "confirmed")
+
     def test_a_page_configuration_is_confirmed_by_its_echo(self):
         dashboard, values = self.page_dashboard()
         dashboard.send_page_configuration(2)
@@ -665,8 +684,16 @@ class DashboardPresentationTest(unittest.TestCase):
             "Control error: page configuration Rolling Launch law and "
             "integrator not echoed",
         )
+        # The byte of a snapshot before the final frame leaves confirms
+        # nothing.
         dashboard.model.schema_verified = True
         dashboard.model.page_configuration = 0x82
+        dashboard._note_page_snapshot()
+        self.assertEqual(dashboard.page_echo(deadline + 0.2), "not echoed")
+        for _index in range(4):
+            dashboard._note_page_frame("page-set", True)
+        dashboard._note_page_frame("page-commit", True)
+        dashboard._note_page_snapshot()
         self.assertEqual(dashboard.page_echo(deadline + 0.2), "confirmed")
         dashboard._report_page_echo(deadline + 0.2)
         self.assertEqual(

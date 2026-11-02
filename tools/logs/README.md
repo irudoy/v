@@ -539,7 +539,11 @@ reports every run of contiguous `ACTIVE` snapshots:
 - The target range is the `0x280` speed minus the published error; it stays
   narrow while the speed word follows that frame.
 
-A law failure or a cut count outside its bounds makes the exit status 1.
+The replay steps the controller once per snapshot, so the audit refuses a
+capture whose snapshots do not step by one tick, which a tick divisor above 1
+produces. A law failure, a cut count outside its bounds, a run without a
+checked fraction, or a capture without an `ACTIVE` run makes the exit
+status 1.
 
 ## JK08A engine-torque scale audit
 

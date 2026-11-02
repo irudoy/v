@@ -1,5 +1,9 @@
+import contextlib
 from dataclasses import replace
+import io
+from pathlib import Path
 import unittest
+from unittest import mock
 
 from patches import rolling_launch as model
 from tools.logs import can_telemetry
@@ -269,6 +273,37 @@ class HoldAuditTest(unittest.TestCase):
         samples = [replace(s, phase=None) for s in samples]
         with self.assertRaisesRegex(ValueError, "no Rolling Launch phase"):
             audit.audit_hold(samples, CALIBRATION)
+
+    def test_a_capture_with_a_tick_divisor_is_refused(self):
+        samples = [replace(s, tick=2 * s.tick) for s in simulate(SPEEDS)]
+        with self.assertRaisesRegex(ValueError, "step by 2 ticks"):
+            audit.audit_hold(samples, CALIBRATION)
+
+    def test_a_run_without_its_idle_predecessor_checks_no_fraction(self):
+        samples = launch_law(simulate(SPEEDS))[2:]
+        (run,) = audit.audit_hold(samples, CALIBRATION)
+        self.assertEqual(run.law_ticks, 0)
+        self.assertEqual(run.failures, ())
+
+    def test_an_audit_that_checks_nothing_fails(self):
+        cases = {
+            "model run": (simulate(SPEEDS), 0),
+            "no fraction checked": (launch_law(simulate(SPEEDS))[2:], 1),
+            "no ACTIVE run": (simulate(SPEEDS)[:2], 1),
+        }
+        for name, (samples, status) in cases.items():
+            with self.subTest(name):
+                capture = audit.Capture(Path("hold.mlg"), "0" * 64, tuple(samples))
+                with (
+                    mock.patch.object(
+                        audit, "read_calibration", return_value=CALIBRATION
+                    ),
+                    mock.patch.object(audit, "read_capture", return_value=capture),
+                    contextlib.redirect_stdout(io.StringIO()),
+                ):
+                    self.assertEqual(
+                        audit.main(["--image", "image.bin", "hold.mlg"]), status
+                    )
 
     def test_cut_bounds_follow_the_accumulator_offsets(self):
         self.assertAlmostEqual(audit.CUTS_BELOW, 2.75 - 6 - 1)
