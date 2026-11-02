@@ -39,10 +39,13 @@ supports = "homology"
 at = "1me3b:0002bba4"
 to = "7mfk:000266a0"
 note = """
-1ME3B compiles this implicit 16-point step-4096 lookup, the only entry of \
-that contract in the 1ME3B library, with its own unrolled kernel at the \
-library position of the shared entry; the masked-match ranking from 1ND \
-names 1nd:00028ae4."""
+1ME3B compiles this implicit 16-point step-4096 lookup of uint16 elements \
+with limit 0xF000 with its own unrolled kernel. The 1ME3B library holds two \
+entries of that contract with identical code, 0002ab98 and 0002bba4, so the \
+library position decides the binding: 0002bba4 lies between \
+interesting-horse 1me3b:0002b878 and cerise-tapir 1me3b:0002bbf8, as the \
+shared entry 1nd:00028ae4 lies between 1nd:00028aa4 and 1nd:00028b00. The \
+masked-match ranking from 1ND names 1nd:00028ae4."""
 
 [[symbol]]
 layout = "1nd"
