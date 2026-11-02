@@ -94,14 +94,15 @@ CONTROLS = (
     Control(
         "speed_frame_age_limit", 0x22, "uint8",
         "Maximum receive age of the vehicle-speed frame for Rolling Launch",
-        "ms", "x*102.4", "x/102.4",
+        "ms", "x*10.24", "x/10.24",
         "The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per "
-        "ten 10.24 ms periodic ticks without a processed frame and saturates "
-        "at 255. Activation and every ACTIVE pass require the age at or "
-        "below this limit; the value must lie in 1..254 counts.",
+        "10.24 ms pass without a processed frame and saturates at 255; a "
+        "20 ms frame keeps it at 0..2 counts. Activation and every ACTIVE "
+        "pass require the age at or below this limit; the value must lie in "
+        "1..254 counts.",
         "Rolling Launch Speed Frame Age Limit",
         "Rolling Launch / Activation", 900040, "Speed frame age limit",
-        "0.0", 102.4, 1024,
+        "0.00", 10.24, 102.4,
     ),
     Control(
         "window_width", 0x12, "uint8",
@@ -184,10 +185,21 @@ CONTROLS = (
         "rpm_ceiling_offset_native", 0x1C, "uint16",
         "Rolling Launch RPM ceiling above the captured activation RPM",
         "RPM", "x*12.5", "x/12.5",
-        "Hold mode publishes the all-cylinder fuel-cut request while RPM "
+        "Hold mode latches the all-cylinder fuel-cut request when RPM "
         "exceeds the captured RPM plus this nonzero offset.",
         "Rolling Launch RPM Ceiling Offset",
         "Rolling Launch / RPM Ceiling", 900210, "RPM ceiling offset",
+        "0", 12.5, 100,
+    ),
+    Control(
+        "rpm_ceiling_hysteresis_native", 0x23, "uint8",
+        "Rolling Launch RPM ceiling hysteresis below the cut threshold",
+        "RPM", "x*12.5", "x/12.5",
+        "A latched ceiling request holds while RPM exceeds the cut threshold "
+        "minus this hysteresis and releases at or below it. The value must "
+        "be nonzero and must not exceed the ceiling offset.",
+        "Rolling Launch RPM Ceiling Hysteresis",
+        "Rolling Launch / RPM Ceiling", 900211, "RPM ceiling hysteresis",
         "0", 12.5, 100,
     ),
 )

@@ -3867,16 +3867,17 @@
     </table>
 
     <!-- 0xD6062  1 uint8  map [code]
-         scaling x*102.4 ms [code]
-         The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per ten 10.24 ms periodic
-         ticks without a processed frame and saturates at 255. Activation and every ACTIVE pass
-         require the age at or below this limit; the value must lie in 1..254 counts.
+         scaling x*10.24 ms [code]
+         The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per 10.24 ms pass without a
+         processed frame and saturates at 255; a 20 ms frame keeps it at 0..2 counts. Activation
+         and every ACTIVE pass require the age at or below this limit; the value must lie in
+         1..254 counts.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Speed Frame Age Limit"
            category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6062"
            sizex="1" endian="big">
-      <scaling units="ms" expression="x*102.4" to_byte="x/102.4" format="0.0"
-               fineincrement="102.4" coarseincrement="1024"/>
+      <scaling units="ms" expression="x*10.24" to_byte="x/10.24" format="0.00"
+               fineincrement="10.24" coarseincrement="102.4"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
         <data>Speed frame age limit</data>
       </table>
@@ -3988,8 +3989,8 @@
 
     <!-- 0xD605C  1 uint16  map [code]
          scaling x*12.5 RPM [code]
-         Hold mode publishes the all-cylinder fuel-cut request while RPM exceeds the captured
-         RPM plus this nonzero offset.
+         Hold mode latches the all-cylinder fuel-cut request when RPM exceeds the captured RPM
+         plus this nonzero offset.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch RPM Ceiling Offset"
            category="Rolling Launch//RPM Ceiling" storagetype="uint16" storageaddress="0xD605C"
@@ -3998,6 +3999,22 @@
                coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
         <data>RPM ceiling offset</data>
+      </table>
+    </table>
+
+    <!-- 0xD6063  1 uint8  map [code]
+         scaling x*12.5 RPM [code]
+         A latched ceiling request holds while RPM exceeds the cut threshold minus this
+         hysteresis and releases at or below it. The value must be nonzero and must not exceed
+         the ceiling offset.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch RPM Ceiling Hysteresis"
+           category="Rolling Launch//RPM Ceiling" storagetype="uint8" storageaddress="0xD6063"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM ceiling hysteresis</data>
       </table>
     </table>
   </rom>

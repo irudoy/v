@@ -6,11 +6,10 @@
 // u_p = clamp((W_top - e) * 1000 / W, 0, 1000) and steps the integrator by
 // -(Ki * e) unless the step deepens a saturated sum u_p + integrator / 16. The
 // integrator stays within 16 * limit. The command clamp(u_p + integrator / 16,
-// 0, 1000) moves u by at most the configured rate per pass. Hold mode publishes
-// the all-cylinder request while RPM exceeds the captured RPM plus the ceiling
-// offset; the unsigned 32-bit sum needs no saturation. The stock unsigned
-// divider at 0x21CE0 receives r0=divisor and r1=dividend and preserves r2
-// through r7.
+// 0, 1000) moves u by at most the configured rate per pass. The RPM ceiling
+// unit at 0xD6068 then adds the hold flag, the ceiling latch, and the request.
+// The stock unsigned divider at 0x21CE0 receives r0=divisor and r1=dividend
+// and preserves r2 through r7.
 
 .org 0x000D40C0
 rolling_launch_speed_controller:
@@ -129,30 +128,13 @@ rl_spd_rate_lower:
 mov r2,r0
 mov.w r0,@(0xE,r5)
 
-// Publish ACTIVE, hold, and the RPM ceiling request.
+// Publish ACTIVE; the RPM ceiling unit adds hold, the latch, and the request.
 mov.b @(0x2,r5),r0
 or 0x10,r0
 mov r0,r3
-mov.b @(0x5,r5),r0
-cmp/eq 0x1,r0
-bf rl_spd_stock_cut
-mov #0x40,r7
-or r7,r3
-mov.w @(0xA,r5),r0
-extu.w r0,r1
-mov.w @(0x1C,r4),r0
-extu.w r0,r0
-add r0,r1
-mov.l @(rl_spd_rpm_address,pc),r2
-mov.w @r2,r0
-extu.w r0,r0
-cmp/hi r1,r0
-bf rl_spd_stock_cut
-mov #0x3F,r0
-mov.w r0,@(0x14,r5)
-mov #-0x60,r7
-or r7,r3
-rl_spd_stock_cut:
+mov.l @(rl_spd_ceiling_entry,pc),r0
+jsr @r0
+nop
 mov.l @(rl_spd_fuel_cut_status,pc),r2
 mov.b @r2,r0
 tst 0x04,r0
@@ -166,7 +148,7 @@ lds.l @r15+,pr
 rts
 nop
 
-.org 0x000D41C4
+.org 0x000D41A4
 rl_spd_state_address:
 .long 0xFFFF5D40
 rl_spd_config_address:
@@ -175,8 +157,8 @@ rl_spd_speed_address:
 .long 0xFFFF113C
 rl_spd_unsigned_divide:
 .long 0x00021CE0
-rl_spd_rpm_address:
-.long 0xFFFF11BC
+rl_spd_ceiling_entry:
+.long 0x000D6068
 rl_spd_fuel_cut_status:
 .long 0xFFFF2497
 rl_spd_u_one:

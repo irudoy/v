@@ -54,12 +54,12 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             **kwargs,
         )
 
-    def test_profile_is_map1_only_hold_with_default_controller(self):
+    def test_profile_is_map1_only_observe_with_default_controller(self):
         calibration = rolling_launch.Calibration.from_bytes(
             self.result.configuration
         )
         self.assertEqual(self.result.profile, patcher.PROFILE_NAME)
-        self.assertEqual(calibration.mode, rolling_launch.Mode.HOLD)
+        self.assertEqual(calibration.mode, rolling_launch.Mode.OBSERVE)
         self.assertEqual(calibration.enable_mask, 0x01)
         self.assertEqual(calibration.options, rolling_launch.Option(0))
         self.assertEqual(
@@ -234,7 +234,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.result.instruction_count,
             self.rolling_layout.assembled_instruction_count,
         )
-        self.assertEqual(self.result.code_entry_count, 8)
+        self.assertEqual(self.result.code_entry_count, 9)
         self.assertEqual(
             self.result.diagnostic_count,
             len(self.rolling_layout.diagnostics),

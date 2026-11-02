@@ -50,6 +50,7 @@ def profile_text(*, telemetry=None, **overrides):
         "abort_above": "150",
         "abort_below": "100",
         "rpm_ceiling_offset_native": "80",
+        "rpm_ceiling_hysteresis_native": "8",
         "run_timeout_ticks": "781",
         "rearm_ticks": "98",
         "speed_frame_age_limit": "10",

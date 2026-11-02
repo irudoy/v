@@ -58,6 +58,7 @@ SOURCE_LABELS = {
     "speed_controller": "rolling_launch_speed_controller",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
     "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
+    "rpm_ceiling": "rolling_launch_rpm_ceiling",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -164,7 +165,7 @@ def _validate_wrapper_abi(parsed):
         raise ValueError("selector arbiter needs two tail jumps")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
         raise ValueError("startup state clear loop differs")
-    if texts.count("mov #0x6,r2") != 1:
+    if texts.count("mov #0x7,r2") != 1:
         raise ValueError("startup state clear size differs")
 
 
@@ -186,8 +187,12 @@ def _validate_engine_abi(parsed):
         )
     if texts.count("stc sr,r7") or texts.count("ldc r7,sr"):
         raise ValueError("engine writes the fuel-cut shadow")
-    if texts.count("mov #0x6,r2") != 1:
+    if texts.count("mov #0x7,r2") != 1:
         raise ValueError("corrupt-state clear size differs")
+    if texts.count("mov.w r0,@(0x18,r5)") != 2:
+        raise ValueError(
+            "engine must release the ceiling latch on activation and abort"
+        )
     if texts.count("mov.w r0,@(0x14,r5)") != 1 or "mov #0x3f,r0" in texts:
         raise ValueError("engine publishes the fuel-cut request outside the controller")
     if texts.count("mov.w r0,@(0x16,r5)") or texts.count("mov.w r0,@(0x10,r5)"):
@@ -267,6 +272,13 @@ def _validate_speed_controller_abi(parsed):
     ]
     if texts.count("jsr @r3") != 1 or not _contains(texts, divider_call):
         raise ValueError("speed controller divider call differs")
+    ceiling_call = [
+        "mov.l @(rl_spd_ceiling_entry,pc),r0",
+        "jsr @r0",
+        "nop",
+    ]
+    if texts.count("jsr @r0") != 1 or not _contains(texts, ceiling_call):
+        raise ValueError("speed controller RPM ceiling call differs")
     if texts.count("mulu.w r0,r1") != 1 or texts.count("muls.w r0,r2") != 1:
         raise ValueError("speed controller arithmetic differs")
     stores = sorted(
@@ -278,10 +290,9 @@ def _validate_speed_controller_abi(parsed):
         "mov.w r0,@(0x12,r5)",
         "mov.w r0,@(0x16,r5)",
         "mov.w r0,@(0xe,r5)",
-        "mov.w r0,@(0x14,r5)",
         "mov.b r0,@(0x2,r5)",
     ])
-    if stores != expected or texts.count("mov #0x3f,r0") != 1:
+    if stores != expected or texts.count("mov #0x3f,r0"):
         raise ValueError("speed controller store contract differs")
     registers = set()
     for statement in _instructions(parsed):
@@ -289,6 +300,36 @@ def _validate_speed_controller_abi(parsed):
     allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
     if not registers <= allowed:
         raise ValueError("speed controller clobbers an undeclared register")
+
+
+def _validate_rpm_ceiling_abi(parsed):
+    texts = _texts(parsed)
+    if texts[:3] != ["mov.b @(0x5,r5),r0", "cmp/eq 0x1,r0", "bf rl_ceil_release"]:
+        raise ValueError("RPM ceiling does not release the latch outside hold")
+    if texts.count("rts") != 2 or any(
+        text.startswith(("jsr", "bsr", "jmp", "sts.l pr", "lds.l"))
+        for text in texts
+    ):
+        raise ValueError("RPM ceiling must be a leaf with two returns")
+    stores = sorted(
+        text for text in texts
+        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
+    )
+    expected = sorted([
+        "mov.w r0,@(0x14,r5)",
+        "mov.w r0,@(0x18,r5)",
+        "mov.w r0,@(0x18,r5)",
+    ])
+    if stores != expected or texts.count("mov #0x3f,r0") != 1:
+        raise ValueError("RPM ceiling store contract differs")
+    if {"rl_ceil_latch", "rl_ceil_release"} - set(parsed.labels):
+        raise ValueError("RPM ceiling label set is incomplete")
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r7"}
+    if not registers <= allowed:
+        raise ValueError("RPM ceiling clobbers an undeclared register")
 
 
 def _validate_feedback_arbiter_abi(parsed):
@@ -394,7 +435,7 @@ def _expected_long_literals():
             "rl_controller_entry": 0x000D40C0,
             "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
-            "rl_gate_map_enable_masks": 0x000D3D40,
+            "rl_gate_map_enable_masks": 0x000D3D48,
             "rl_gate_config_address": 0x000D6040,
             "rl_gate_ascd_address": 0xFFFF41AE,
             "rl_gate_button_address": 0xFFFF2A85,
@@ -413,7 +454,7 @@ def _expected_long_literals():
             "rl_spd_config_address": 0x000D6040,
             "rl_spd_speed_address": 0xFFFF113C,
             "rl_spd_unsigned_divide": 0x00021CE0,
-            "rl_spd_rpm_address": 0xFFFF11BC,
+            "rl_spd_ceiling_entry": 0x000D6068,
             "rl_spd_fuel_cut_status": 0xFFFF2497,
         },
         "feedback_arbiter": {
@@ -426,6 +467,9 @@ def _expected_long_literals():
             "rl_fuel_stock_coordinator": 0x0004ED88,
             "rl_fuel_state_address": 0xFFFF5D40,
             "rl_fuel_final_mask_address": 0xFFFF22E0,
+        },
+        "rpm_ceiling": {
+            "rl_ceil_rpm_address": 0xFFFF11BC,
         },
     }
 
@@ -483,6 +527,8 @@ def validate_assembly_sources(layout=None):
             _validate_feedback_arbiter_abi(parsed)
         elif unit.key == "fuel_cut_wrapper":
             _validate_fuel_cut_wrapper_abi(parsed)
+        elif unit.key == "rpm_ceiling":
+            _validate_rpm_ceiling_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

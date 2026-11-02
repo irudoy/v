@@ -16,6 +16,7 @@ FIELD_OFFSETS = {
     "u_rate_limit": 0x14, "integral_gain": 0x16, "integrator_limit": 0x18,
     "abort_above": 0x1A, "abort_below": 0x1B,
     "rpm_ceiling_offset_native": 0x1C, "speed_frame_age_limit": 0x22,
+    "rpm_ceiling_hysteresis_native": 0x23,
 }
 FIELD_WIDTHS = {
     "coolant_min": 1, "min_speed": 2, "max_speed": 2,
@@ -23,6 +24,7 @@ FIELD_WIDTHS = {
     "u_rate_limit": 2, "integral_gain": 2, "integrator_limit": 2,
     "abort_above": 1, "abort_below": 1,
     "rpm_ceiling_offset_native": 2, "speed_frame_age_limit": 1,
+    "rpm_ceiling_hysteresis_native": 1,
 }
 
 
@@ -86,13 +88,14 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             "abort_above": "000d605a",
             "abort_below": "000d605b",
             "rpm_ceiling_offset_native": "000d605c",
+            "rpm_ceiling_hysteresis_native": "000d6063",
         })
-        self.assertEqual(projection.table_count, 13)
+        self.assertEqual(projection.table_count, 14)
         self.assertEqual(projection.masked_view_count, 0)
         self.assertEqual(projection.switch_count, 1)
         self.assertEqual(projection.bitwise_switch_count, 1)
         self.assertEqual(projection.enable_bit_count, 5)
-        self.assertEqual(projection.editor_view_count, 15)
+        self.assertEqual(projection.editor_view_count, 16)
 
     def test_controls_match_the_record_layout(self):
         projection = self.project()
@@ -144,7 +147,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                 "Rolling Launch Minimum Engine Speed",
             ),
             "speed_frame_age_limit": (
-                "uint8", "ms", "x*102.4",
+                "uint8", "ms", "x*10.24",
                 "Rolling Launch Speed Frame Age Limit",
             ),
             "window_width": (
@@ -161,6 +164,10 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             "rpm_ceiling_offset_native": (
                 "uint16", "RPM", "x*12.5",
                 "Rolling Launch RPM Ceiling Offset",
+            ),
+            "rpm_ceiling_hysteresis_native": (
+                "uint8", "RPM", "x*12.5",
+                "Rolling Launch RPM Ceiling Hysteresis",
             ),
         }
         for key, values in expected.items():
@@ -303,7 +310,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertIn('storageaddress="0xD6056"', romraider)
         self.assertIn('storageaddress="0xD6062"', romraider)
         self.assertIn('expression="x/10"', romraider)
-        self.assertIn('expression="x*102.4"', romraider)
+        self.assertIn('expression="x*10.24"', romraider)
 
         image = bytearray([0xFF] * 0x100000)
         xdf, stats = tunerpro.render(

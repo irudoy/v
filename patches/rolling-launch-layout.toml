@@ -7,13 +7,16 @@
 # The retired configuration span held the 32-byte record of schema 1 to 3. It
 # stays claimed and erased, so extraction can read the record of a historical
 # image.
+#
+# hold_actuator states whether a payload consumes the torque fraction. While it
+# is false, preflash refuses an image that enables a map in hold mode.
 
 schema_version = 3
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "e035062da5b648e5564b2543d7a2c776bde2321c126618b748c29dd9056b6f75"
+expected_composition_sha256 = "3a760fc2e7908b51ec3d3e1ad26d6bf93507a41b4caed8578f8eb1498a82afdb"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -22,7 +25,8 @@ configuration_address = 0x000D6040
 configuration_size = 40
 retired_configuration_address = 0x000D3F60
 retired_configuration_size = 32
-default_configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a00adb3a55a"
+hold_actuator = false
+default_configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a"
 
 [[claimed_rom_extension]]
 start = 0x000D40C0
@@ -30,7 +34,7 @@ end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
-end = 0x000D6068
+end = 0x000D60C0
 
 [scheduler]
 table_address = 0x0002196C
@@ -46,7 +50,7 @@ proven_free_end = 0xFFFF7000
 base_reservation_start = 0xFFFF5D00
 base_reservation_end = 0xFFFF5D3C
 state_start = 0xFFFF5D40
-state_size = 24
+state_size = 28
 
 [[code_region]]
 key = "periodic_wrapper"
@@ -96,6 +100,12 @@ start = 0x000D6000
 end = 0x000D6040
 entry = 0x000D6000
 
+[[code_region]]
+key = "rpm_ceiling"
+start = 0x000D6068
+end = 0x000D60C0
+entry = 0x000D6068
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -103,7 +113,7 @@ start = 0x000D3860
 end = 0x000D38E4
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "348049909aac6c5370fc7c91558cc1319e3b9edd4840927e82833aaeaa594155"
+expected_sha256 = "b0eeb27dff63ccd5232a34ed04220cca7d1daaf8f67ff0a4d0bef4fbe1e1c54e"
 instruction_count = 34
 data_bytes = 28
 code_regions = ["periodic_wrapper", "selector_arbiter", "startup_wrapper"]
@@ -115,8 +125,8 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "27f1b49f632f69560d39cb9d26f0eee3f49ecedd1846e3d43293bc4e40eb37b6"
-instruction_count = 643
+expected_sha256 = "7108080044c54a4eded9313657ce39af4729f5924beb3baa2380322274dd5e76"
+instruction_count = 654
 data_bytes = 99
 code_regions = ["engine"]
 
@@ -139,8 +149,8 @@ start = 0x000D40C0
 end = 0x000D41E0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "3d22c3b9e968ce70f877f4599fc9341fe7ffd30a47b8172763fd113c5b0fea48"
-instruction_count = 129
+expected_sha256 = "52d1a9ef8a671b731ff5c8fa3c86ae42a9ccf2d898e9a8d286e567dfb9793ef8"
+instruction_count = 113
 data_bytes = 26
 code_regions = ["speed_controller"]
 
@@ -167,6 +177,18 @@ expected_sha256 = "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86
 instruction_count = 21
 data_bytes = 12
 code_regions = ["fuel_cut_wrapper"]
+
+[[assembly_unit]]
+key = "rpm_ceiling"
+source = "rolling-launch-rpm-ceiling.s"
+start = 0x000D6068
+end = 0x000D60C0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "5de36173709c7fd3880724eb9f13474f1b515ba725869205a7f48eeeb4c2c2dd"
+instruction_count = 37
+data_bytes = 4
+code_regions = ["rpm_ceiling"]
 
 [[hook]]
 key = "displaced_periodic_task"

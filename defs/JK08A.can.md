@@ -588,7 +588,8 @@ hardware check of the vehicle.
 Software receive record `i` occupies 10 bytes at `0xFFFF3AB5 + 10 * i`: a
 state byte, an age byte and the 8 payload bytes. `FUN_000C3994`, entry 3 of
 the pending-task table `0x00021834`, increments the age of every receive
-record each tenth periodic tick, saturating at 255. `FUN_000C34A8` clears the
+record on each pass of that table, every tenth 1.024 ms base interrupt or
+10.24 ms, saturating at 255. `FUN_000C34A8` clears the
 age after a pass that processed a new frame, and holds it at zero while
 `0xFFFF4185` bit 7 is clear; the increment also requires `0xFFFF4195` bit 0.
 The age of the speed record 13 is `0xFFFF3B38`. The dispatcher sets

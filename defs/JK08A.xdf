@@ -28171,7 +28171,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x8FB2" flags="0x0">
     <title>Rolling Launch Speed Frame Age Limit</title>
-    <description>Exact JK08A. Address 0xD6062; 1 rows x 1 columns; uint8; map confidence code. Maximum receive age of the vehicle-speed frame for Rolling Launch The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per ten 10.24 ms periodic ticks without a processed frame and saturates at 255. Activation and every ACTIVE pass require the age at or below this limit; the value must lie in 1..254 counts.</description>
+    <description>Exact JK08A. Address 0xD6062; 1 rows x 1 columns; uint8; map confidence code. Maximum receive age of the vehicle-speed frame for Rolling Launch The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per 10.24 ms pass without a processed frame and saturates at 255; a 20 ms frame keeps it at 0..2 counts. Activation and every ACTIVE pass require the age at or below this limit; the value must lie in 1..254 counts.</description>
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28204,9 +28204,9 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xD6062" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>ms</units>
-      <decimalpl>1</decimalpl>
+      <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*102.4">
+      <MATH equation="X*10.24">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -28507,7 +28507,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xBD13" flags="0x0">
     <title>Rolling Launch RPM Ceiling Offset</title>
-    <description>Exact JK08A. Address 0xD605C; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch RPM ceiling above the captured activation RPM Hold mode publishes the all-cylinder fuel-cut request while RPM exceeds the captured RPM plus this nonzero offset.</description>
+    <description>Exact JK08A. Address 0xD605C; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch RPM ceiling above the captured activation RPM Hold mode latches the all-cylinder fuel-cut request when RPM exceeds the captured RPM plus this nonzero offset.</description>
     <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28539,6 +28539,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xD605C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xBF24" flags="0x0">
+    <title>Rolling Launch RPM Ceiling Hysteresis</title>
+    <description>Exact JK08A. Address 0xD6063; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch RPM ceiling hysteresis below the cut threshold A latched ceiling request holds while RPM exceeds the cut threshold minus this hysteresis and releases at or below it. The value must be nonzero and must not exceed the ceiling offset.</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="RPM ceiling hysteresis" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6063" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>RPM</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>

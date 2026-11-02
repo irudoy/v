@@ -440,7 +440,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 871)
+        self.assertEqual(result.instruction_count, 903)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -513,8 +513,8 @@ mov #0x5,r1
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
         self.assertIn("feedback=8", harness)
-        self.assertIn("fuel_cut=13", harness)
-        self.assertIn("entries=8", harness)
+        self.assertIn("fuel_cut=14", harness)
+        self.assertIn("entries=9", harness)
 
     def test_can_telemetry_composition_lock_matches_verifier(self):
         layout = can_telemetry_layout.load_layout()
@@ -1653,33 +1653,46 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                            (0x202, "jsr @r3", 0x430B), (0x204, "nop", 9),
                            (0x206, "bt controller_full", 0x8901), (0x208, "mov #1,r0", 0xE001),
                            (0x20A, "bra controller_return", 0xA000), (0x20C, "mov #2,r0", 0xE002),
-                           (0x20E, "rts", 11), (0x210, "nop", 9))
+                           (0x20E, "mov.l @(rl_spd_ceiling_entry,pc),r0", 0xD00A),
+                           (0x210, "jsr @r0", 0x400B), (0x212, "nop", 9),
+                           (0x214, "rts", 11), (0x216, "nop", 9))
+        ceiling_rows = ((0x2C0, "bt ceiling_release", 0x8901), (0x2C2, "rts", 11),
+                        (0x2C4, "nop", 9), (0x2C6, "rts", 11), (0x2C8, "nop", 9))
         engine_rows = ((0x280, "nop", 9),
                        (0x282, "mov.l @(rl_controller_entry,pc),r0", 0xD005),
                        (0x284, "jsr @r0", 0x400B), (0x286, "nop", 9),
                        (0x288, "rts", 11), (0x28A, "nop", 9))
         for unit, rows, labels in (
                 ("speed_controller", controller_rows,
-                 {"rl_spd_unsigned_divide": 0x23C, "controller_full": 0x20C,
-                  "controller_return": 0x20E}),
-                ("engine", engine_rows, {"rl_controller_entry": 0x298})):
+                 {"rl_spd_unsigned_divide": 0x23C, "rl_spd_ceiling_entry": 0x238,
+                  "controller_full": 0x20C, "controller_return": 0x20E}),
+                ("engine", engine_rows, {"rl_controller_entry": 0x298}),
+                ("rpm_ceiling", ceiling_rows, {"ceiling_release": 0x2C6})):
             statements = []
             for pc, text, word in rows:
                 image[pc:pc + 2] = word.to_bytes(2, "big")
                 statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
             units[unit] = assembly_model.ParsedSource(Path(unit + ".s"), labels, tuple(statements))
+        image[0x238:0x23C] = (0x2C0).to_bytes(4, "big")
         image[0x23C:0x240] = cls.DIVIDER.to_bytes(4, "big")
         image[0x298:0x29C] = (0x200).to_bytes(4, "big")
         regions.update({key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
                         for key, entry, end in (("speed_controller", 0x200, 0x240),
-                                                ("engine", 0x280, 0x2A0))})
+                                                ("engine", 0x280, 0x2A0),
+                                                ("rpm_ceiling", 0x2C0, 0x2E0))})
         controller_prefix = [event(0x200), event(0x202), event(0x204, 1),
                              event(cls.DIVIDER), event(cls.DIVIDER + 2, 1), event(0x206)]
-        controller_suffix = [event(0x20E), event(0x210, 1)]
-        traces.extend((prefix + controller_prefix + [event(0x20C)] + controller_suffix + suffix,
+
+        def controller_suffix(ceiling):
+            return [event(0x20E), event(0x210), event(0x212, 1), *ceiling,
+                    event(0x214), event(0x216, 1)]
+
+        latched = [event(0x2C0), event(0x2C2), event(0x2C4, 1)]
+        released = [event(0x2C0), event(0x2C6), event(0x2C8, 1)]
+        traces.extend((prefix + controller_prefix + [event(0x20C)] + controller_suffix(latched) + suffix,
                        prefix + [event(0x280), event(0x282), event(0x284), event(0x286, 1)]
                        + controller_prefix + [event(0x208), event(0x20A), event(0x20C, 1)]
-                       + controller_suffix + [event(0x288), event(0x28A, 1)] + suffix))
+                       + controller_suffix(released) + [event(0x288), event(0x28A, 1)] + suffix))
         feedback_rows = ((0x240, "mov.l @(rl_feedback_base_wrapper,pc),r0", 0xD00D),
                          (0x242, "jsr @r0", 0x400B), (0x244, "nop", 9),
                          (0x246, "bt feedback_other", 0x8901), (0x248, "mov #1,r0", 0xE001),
@@ -1748,8 +1761,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=8, instructions=57, outcomes=10,
-                                      delay_slots=17, call_return_paths=14, tail_paths=3))
+        self.assertEqual(result, dict(entries=9, instructions=65, outcomes=12,
+                                      delay_slots=20, call_return_paths=15, tail_paths=3))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
@@ -1802,6 +1815,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                 (0x200, "wrapper instruction"), (0x23C, "wrapper control literal"),
                                 (0x240, "wrapper instruction"), (0x278, "wrapper control literal"),
                                 (0x282, "wrapper instruction"), (0x298, "wrapper control literal"),
+                                (0x210, "wrapper instruction"), (0x238, "wrapper control literal"),
+                                (0x2C0, "wrapper instruction"),
                                 (0x3A0, "wrapper instruction"), (0x3A8, "wrapper control literal"),
                                 (0x400, "wrapper instruction"), (0x430, "wrapper control literal")):
             changed = bytearray(image)
@@ -1842,9 +1857,32 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         changed = bytearray(image)
         changed[0x23C:0x240] = (0x30C).to_bytes(4, "big")
-        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unique divider call"):
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unique divider and RPM ceiling calls"):
             ROLLING_VERIFIER.require_wrapper_coverage(
                 sum(traces, []), changed, parsed, regions, boundaries, invokes, 0x350, 0x380)
+
+    def test_rpm_ceiling_requires_its_bound_controller_call_and_two_returns(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        prefix, suffix = traces[0][:2], traces[0][-1:]
+        direct = prefix + [(0x2C0, 0x8901, 0), (0x2C2, 11, 0), (0x2C4, 9, 1)] + suffix
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "bound controller call"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []) + direct, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+        changed = bytearray(image)
+        changed[0x238:0x23C] = (0x30C).to_bytes(4, "big")
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unique divider and RPM ceiling calls"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []), changed, parsed, regions, boundaries, invokes, 0x350, 0x380)
+        source = parsed["rpm_ceiling"]
+        rows = tuple(assembly_model.SourceStatement(row.line_number, row.address, row.kind,
+                     "nop" if row.address == 0x2C6 else row.text, row.size)
+                     for row in source.statements)
+        changed = bytearray(image)
+        changed[0x2C6:0x2C8] = (9).to_bytes(2, "big")
+        leaf = {**parsed, "rpm_ceiling": assembly_model.ParsedSource(source.path, source.labels, rows)}
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "two native RTS"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []), changed, leaf, regions, boundaries, invokes, 0x350, 0x380)
 
     def test_engine_window_instruction_and_literal_are_bound_before_execution(self):
         image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()

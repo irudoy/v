@@ -80,6 +80,7 @@ ROLLING_INTEGER_KEYS = (
     "run_timeout_ticks",
     "rearm_ticks",
     "speed_frame_age_limit",
+    "rpm_ceiling_hysteresis_native",
 )
 ROLLING_PROFILE_KEYS = frozenset(
     ("mode", "enabled_maps", *ROLLING_INTEGER_KEYS)

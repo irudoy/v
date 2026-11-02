@@ -70,6 +70,7 @@ class Layout:
     configuration: common.AddressRange
     retired_configuration: common.AddressRange
     default_configuration: bytes
+    hold_actuator: bool
     scheduler: SchedulerLayout
     ram: RamLayout
     code_regions: tuple[common.CodeRegion, ...]
@@ -169,6 +170,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "retired_configuration_address",
             "retired_configuration_size",
             "default_configuration",
+            "hold_actuator",
             "scheduler",
             "ram",
             "code_region",
@@ -328,6 +330,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "retired_configuration",
         ),
         default_configuration=default_configuration,
+        hold_actuator=raw["hold_actuator"],
         scheduler=scheduler,
         ram=ram,
         code_regions=tuple(code_regions),
@@ -345,6 +348,8 @@ def validate_structure(layout):
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
+    if not isinstance(layout.hold_actuator, bool):
+        raise ValueError("hold_actuator must be a boolean")
     if (
         layout.byte_order != "big"
         or layout.variant != "canonical"
@@ -423,7 +428,7 @@ def validate_structure(layout):
         raise ValueError("Rolling Launch state lies outside the proven free range")
     if layout.ram.base_reservation.overlaps(layout.ram.state):
         raise ValueError("Rolling Launch state overlaps map-switching RAM")
-    if layout.ram.state.size != 24:
+    if layout.ram.state.size != contract.STATE_SIZE:
         raise ValueError("runtime RAM sizes differ from the implementation")
 
     _unique(layout.code_regions, lambda item: item.key, "code region keys")

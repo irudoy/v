@@ -10,6 +10,8 @@ image of its ROM at HEAD:
 - it carries no runtime settings that the current profile cannot express, and
   a rebuild from the stock image with the settings and calibration that the
   image carries reproduces it byte for byte;
+- its Rolling Launch record enables no map in hold mode while the runtime has
+  no hold actuator, the payload that consumes the torque fraction (#100);
 - the tracked worktree equals HEAD, and the `Verify` workflow of GitHub Actions
   has a green run of the exact HEAD commit. A running, failed, cancelled, or
   missing run refuses the image; runs of other commits do not count.
@@ -107,6 +109,34 @@ def _rebuild(stock, target, extraction):
     return data, "current"
 
 
+def require_hold_actuator(target, extraction):
+    """Refuse a hold-mode record while no payload consumes the torque fraction.
+
+    Observe mode publishes no fuel-cut request, and a record that enables no map
+    never activates, so both qualify.
+    """
+    layout = target.rolling_layout
+    calibration = extraction.rolling
+    if (
+        layout is None
+        or layout.hold_actuator
+        or calibration is None
+        or calibration.mode != rolling_launch.Mode.HOLD
+        or calibration.enable_mask == 0
+    ):
+        return
+    maps = ", ".join(
+        str(index + 1)
+        for index in range(rolling_launch.SLOT_COUNT)
+        if calibration.enable_mask & (1 << index)
+    )
+    raise PreflashError(
+        f"Rolling Launch enables map {maps} in hold mode, but the runtime has "
+        "no hold actuator until #100; build with mode observe or with no "
+        "enabled map"
+    )
+
+
 def check_image(data, rom):
     """Return the report of an image that rebuilds byte for byte at HEAD."""
     data = bytes(data)
@@ -125,6 +155,7 @@ def check_image(data, rom):
             "image carries runtime settings that the current profile cannot express"
         )
     target = runtime_targets.load_runtime_target(rom)
+    require_hold_actuator(target, extraction)
     rebuilt, runtime = _rebuild(target.stock_image.data, target, extraction)
     if rebuilt != data:
         offset = next(

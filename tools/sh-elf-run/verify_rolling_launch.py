@@ -30,14 +30,14 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "e035062da5b648e5564b2543d7a2c776bde2321c126618b748c29dd9056b6f75"
+    "3a760fc2e7908b51ec3d3e1ad26d6bf93507a41b4caed8578f8eb1498a82afdb"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1945
-EXPECTED_COMPOSITION_WRITE_BYTES = 2436
-EXPECTED_INSTRUCTION_COUNT = 871
-EXPECTED_CODE_ENTRY_COUNT = 8
+EXPECTED_COMPOSITION_CHANGED_BYTES = 2013
+EXPECTED_COMPOSITION_WRITE_BYTES = 2524
+EXPECTED_INSTRUCTION_COUNT = 903
+EXPECTED_CODE_ENTRY_COUNT = 9
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 163
+EXPECTED_DYNAMIC_CASES = 175
 RETURN_STUB = bytes.fromhex("000b0009")
 # The stock unsigned divider runs unstubbed: r0=divisor, r1=dividend.
 STOCK_UNSIGNED_DIVIDER = 0x00021CE0
@@ -52,8 +52,8 @@ FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper", "fuel_cut_wrapper")
-COVERAGE_UNITS = ("wrappers", "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "fuel_cut_wrapper")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "feedback_arbiter", "ignition_adapter", "speed_controller")
+COVERAGE_UNITS = ("wrappers", "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "fuel_cut_wrapper", "rpm_ceiling")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "rpm_ceiling")
 
 
 class VerificationError(RuntimeError):
@@ -282,14 +282,15 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
     arbiter = regions["feedback_arbiter"].entry
     controller = regions["speed_controller"].entry
-    entries = wrapper_entries | {arbiter, controller}
+    ceiling = regions["rpm_ceiling"].entry
+    entries = wrapper_entries | {arbiter, controller, ceiling}
     adapter, adapter_tail = bind_ignition_adapter_window(
         fixture, fixture, parsed_by_unit["ignition_adapter"], regions, ignition_stock_entry)
     entries.add(adapter)
     engine, engine_call = bind_controller_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     entries.add(engine)
-    instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
+    instructions, owners, outcomes, slots, transfers, direct, registers = {}, {}, set(), set(), {}, {}, {}
     for unit in coverage_units:
         parsed = parsed_by_unit[unit]
         for row in parsed.statements:
@@ -322,20 +323,28 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             if mnemonic in {"jsr", "jmp"}:
                 previous = parsed.statement_by_address.get(pc - 2)
                 literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
-                register = "r3" if unit == "speed_controller" else "r0"
+                register = literal.group("register") if literal else None
+                allowed = {"r3", "r0"} if unit == "speed_controller" else {"r0"}
                 if (literal is None or literal.group("width") != "l"
-                        or literal.group("register") != register or row.text != f"{mnemonic} @{register}"
+                        or register not in allowed or row.text != f"{mnemonic} @{register}"
                         or unit not in {"wrappers", "ignition_adapter"} and mnemonic != "jsr"):
                     raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
+                registers[pc] = register
     controller_calls = [pc for pc in transfers if owners[pc] == controller]
     controller_returns = [pc for pc, word in instructions.items() if owners[pc] == controller and word == 11]
-    if (len(controller_calls) != 1 or len(controller_returns) != 1
-            or transfers[controller_calls[0]][0] != "jsr"
-            or transfers[controller_calls[0]][2] != STOCK_UNSIGNED_DIVIDER):
-        raise VerificationError("speed controller lacks its unique divider call and native RTS")
-    divider_call, controller_return = controller_calls[0], controller_returns[0]
+    divider_calls = [pc for pc in controller_calls if transfers[pc][2] == STOCK_UNSIGNED_DIVIDER]
+    ceiling_calls = [pc for pc in controller_calls if transfers[pc][2] == ceiling]
+    if (len(controller_calls) != 2 or len(divider_calls) != 1 or len(ceiling_calls) != 1
+            or len(controller_returns) != 1
+            or any(transfers[pc][0] != "jsr" for pc in controller_calls)
+            or registers[divider_calls[0]] != "r3" or registers[ceiling_calls[0]] != "r0"):
+        raise VerificationError("speed controller lacks its unique divider and RPM ceiling calls and native RTS")
+    divider_call, ceiling_call, controller_return = divider_calls[0], ceiling_calls[0], controller_returns[0]
+    ceiling_returns = {pc for pc, word in instructions.items() if owners[pc] == ceiling and word == 11}
+    if len(ceiling_returns) != 2 or any(owners[pc] == ceiling for pc in transfers):
+        raise VerificationError("RPM ceiling is not a leaf with two native RTS")
     arbiter_calls = [pc for pc in transfers if owners[pc] == arbiter]
     arbiter_returns = [pc for pc, word in instructions.items() if owners[pc] == arbiter and word == 11]
     if len(arbiter_calls) != 1 or len(arbiter_returns) != 1:
@@ -411,6 +420,9 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                         or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
                     raise VerificationError("controller divider call lacks its bound R3 load")
                 frame["divider_called"] = True
+            if pc == ceiling_call and (frame is None or frame["entry"] != controller
+                    or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
+                raise VerificationError("RPM ceiling call lacks its bound R0 load and controller frame")
             if pc == arbiter_call and (frame is None or frame["entry"] != arbiter
                     or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
                 raise VerificationError("feedback Map call lacks its bound R0 load and arbiter frame")
@@ -443,6 +455,10 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     origin = frames[-1]["origin"]
                 else:
                     raise VerificationError("speed controller lacks its bound engine or invoke origin")
+            elif target == ceiling:
+                if not frames or frames[-1]["entry"] != controller or pc != ceiling_call:
+                    raise VerificationError("RPM ceiling lacks its bound controller call")
+                origin = frames[-1]["origin"]
             elif not frames and target == engine and pc in invoke_words:
                 origin = {"entry": engine, "stock_return": False}
             elif frames:
@@ -485,6 +501,10 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             elif entry == controller:
                 if pc != controller_return or frame["divider_called"] and not frame["divider_return"]:
                     raise VerificationError("speed controller return lacks its divider return and native RTS")
+                returned.add(entry)
+            elif entry == ceiling:
+                if pc not in ceiling_returns:
+                    raise VerificationError("RPM ceiling return lacks its native RTS")
                 returned.add(entry)
             elif entry == engine:
                 returned.add(entry)
@@ -599,10 +619,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                                        base_hooks["cruise_feedback_serializer"].stock,
                                        rolling_layout.hook_by_key["primary_ignition_command"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=163 "
-        "structural=12 gates=39 config=30 controller=18 activation=6 "
-        "hold=7 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=13 "
-        "feedback=8 entries=8"
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=175 "
+        "structural=13 gates=39 config=32 controller=24 activation=6 "
+        "hold=9 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=14 "
+        "feedback=8 entries=9"
     )
     if marker not in result.stdout:
         raise VerificationError(

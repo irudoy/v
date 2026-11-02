@@ -77,7 +77,9 @@ class RollingLaunchTest(unittest.TestCase):
             {"rearm_ticks": 0x8000},
             {"speed_frame_age_limit": 0},
             {"speed_frame_age_limit": 255},
-            {"reserved": 1},
+            {"rpm_ceiling_hysteresis_native": 0},
+            {"rpm_ceiling_hysteresis_native": 0x100},
+            {"rpm_ceiling_hysteresis_native": 81},
             {"magic_inverse": 0},
             {"end_marker": 0},
         )
@@ -98,6 +100,7 @@ class RollingLaunchTest(unittest.TestCase):
             integral_gain=0x7FFF,
             integrator_limit=rl.U_ONE,
             rpm_ceiling_offset_native=0xFFFF,
+            rpm_ceiling_hysteresis_native=0xFF,
             run_timeout_ticks=0x7FFF,
             rearm_ticks=0x7FFF,
             speed_frame_age_limit=rl.SPEED_FRAME_AGE_LIMIT_MAX,
@@ -105,6 +108,11 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertTrue(candidate.is_valid())
         self.assertTrue(
             dataclasses.replace(candidate, target_speed_offset=-149).is_valid()
+        )
+        self.assertTrue(
+            dataclasses.replace(
+                self.calibration, rpm_ceiling_hysteresis_native=80
+            ).is_valid()
         )
 
     def test_gate_flags_report_all_conditions_not_only_first_failure(self):
@@ -282,11 +290,12 @@ class RollingLaunchTest(unittest.TestCase):
 
     def test_harness_controller_table_matches_the_model(self):
         rows = CONTROLLER_ROW.findall(HARNESS.read_text(encoding="utf-8"))
-        self.assertEqual(len(rows), 18)
+        self.assertEqual(len(rows), 24)
         for name, values in rows:
             (mode, target, fraction, integrator, speed, rpm, captured, gain,
              limit, fuel, error, next_integrator, command, next_fraction,
-             request, flags) = (int(item, 0) for item in values.split(","))
+             request, flags, latch, next_latch) = (
+                int(item, 0) for item in values.split(","))
             with self.subTest(case=name):
                 calibration = dataclasses.replace(
                     self.calibration,
@@ -301,6 +310,7 @@ class RollingLaunchTest(unittest.TestCase):
                     target_speed=target,
                     torque_fraction=fraction,
                     integrator=integrator,
+                    ceiling_latch=latch,
                 )
                 inputs = dataclasses.replace(
                     self.inputs,
@@ -313,9 +323,10 @@ class RollingLaunchTest(unittest.TestCase):
                 self.assertEqual(
                     (result.speed_error, result.integrator,
                      result.torque_command, result.torque_fraction,
-                     result.fuel_cut_request, int(result.flags)),
+                     result.fuel_cut_request, int(result.flags),
+                     result.ceiling_latch),
                     (error, next_integrator, command, next_fraction,
-                     request, flags),
+                     request, flags, next_latch),
                 )
 
     def test_observe_mode_never_requests_a_fuel_cut(self):
@@ -326,21 +337,26 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(state.phase, rl.Phase.ACTIVE)
         self.assertFalse(state.flags & rl.Flag.HOLD)
         high = dataclasses.replace(self.inputs, rpm_native=0xFFFF)
-        held = rl.step(state, high, calibration).state
+        held = rl.step(
+            dataclasses.replace(state, ceiling_latch=1), high, calibration
+        ).state
         self.assertEqual(held.phase, rl.Phase.ACTIVE)
         self.assertEqual(held.fuel_cut_request, 0)
+        self.assertEqual(held.ceiling_latch, 0)
         self.assertFalse(held.flags & rl.Flag.CEILING)
 
-    def test_the_ceiling_request_holds_strictly_above_the_ceiling(self):
+    def test_the_ceiling_latch_cuts_above_the_ceiling_and_restores_below_the_hysteresis(self):
+        # Activation at 300 places the cut sum at 380 and the restore sum at 372.
         state = self.activate()
         for rpm, held in (
-            (379, False), (380, False), (381, True), (300, False),
-            (400, True),
+            (379, False), (380, False), (381, True), (373, True),
+            (372, False), (376, False), (400, True),
         ):
             with self.subTest(rpm=rpm):
                 inputs = dataclasses.replace(self.inputs, rpm_native=rpm)
                 state = rl.step(state, inputs, self.calibration).state
                 self.assertEqual(state.phase, rl.Phase.ACTIVE)
+                self.assertEqual(state.ceiling_latch, int(held))
                 self.assertEqual(state.fuel_cut_request, 0x3F if held else 0)
                 self.assertEqual(bool(state.flags & rl.Flag.CEILING), held)
                 self.assertEqual(bool(state.flags & rl.Flag.FUEL_CUT), held)
@@ -350,7 +366,15 @@ class RollingLaunchTest(unittest.TestCase):
         state = rl.step(state, released, self.calibration).state
         self.assertEqual(state.phase, rl.Phase.COOLDOWN)
         self.assertEqual(state.fuel_cut_request, 0)
+        self.assertEqual(state.ceiling_latch, 0)
         self.assertFalse(state.flags & rl.ACTIVE_OUTPUT_FLAGS)
+
+    def test_activation_clears_a_retained_ceiling_latch(self):
+        state = rl.step(
+            rl.RuntimeState(ceiling_latch=1), self.inputs, self.calibration
+        ).state
+        self.assertEqual(state.phase, rl.Phase.ACTIVE)
+        self.assertEqual(state.ceiling_latch, 0)
 
     def test_every_tick_clears_a_stale_request(self):
         cooldown = rl.RuntimeState(
@@ -487,6 +511,7 @@ class RollingLaunchTest(unittest.TestCase):
             rl.RuntimeState(active_mode_snapshot=rl.Mode.HOLD),
             rl.RuntimeState(phase=rl.Phase.ACTIVE, active_mode_snapshot=2),
             rl.RuntimeState(phase=rl.Phase.ACTIVE, torque_fraction=1001),
+            rl.RuntimeState(phase=rl.Phase.ACTIVE, ceiling_latch=2),
             rl.RuntimeState(phase=rl.Phase.COOLDOWN, rearm_ticks=0x8000),
         ):
             with self.subTest(state=state):

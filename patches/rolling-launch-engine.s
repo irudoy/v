@@ -16,13 +16,16 @@
 //   +0x14 u16 fuel-cut request: the cylinder mask that the fuel-cut wrapper
 //             ORs into the stock coordinator result; cleared on every entry
 //   +0x16 u16 torque command before the rate limit, thousandths
+//   +0x18 u16 RPM ceiling latch: 0 released, 1 latched
+//   +0x1A u16 reserved, zero
 //
 // One tick is one exact periodic scheduler pass: 204800/Pphi seconds. Passive
 // target-CAN timing establishes Pphi=20 MHz and a 10.24 ms target period.
 // The default calibration enables no map slot. Modes are 0 observe and 1
-// hold. Hold publishes the all-cylinder request 0x003F while RPM exceeds the
-// captured RPM plus the ceiling offset. No mode writes the fuel-cut shadow of
-// the selected map.
+// hold. Hold latches the all-cylinder request 0x003F when RPM exceeds the
+// captured RPM plus the ceiling offset and releases it at or below that sum
+// minus the hysteresis. No mode writes the fuel-cut shadow of the selected
+// map.
 
 .org 0x000D38E4
 rolling_launch_engine:
@@ -79,7 +82,7 @@ nop
 rl_idle_activate:
 
 // Capture the map, mode, native RPM, and target speed. The controller starts
-// from full torque and an empty integrator.
+// from full torque, an empty integrator, and a released ceiling latch.
 mov.l @(rl_state_address,pc),r5
 mov.l @(rl_selector_address,pc),r4
 mov.b @r4,r0
@@ -91,6 +94,7 @@ mov #0x0,r0
 mov.w r0,@(0x6,r5)
 mov.w r0,@(0x8,r5)
 mov.w r0,@(0x12,r5)
+mov.w r0,@(0x18,r5)
 mov.l @(rl_rpm_address,pc),r1
 mov.w @r1,r0
 mov.w r0,@(0xA,r5)
@@ -118,8 +122,8 @@ mov.b r0,@r5
 bra rl_run_controller
 nop
 
-// ACTIVE validates the captured arbitration state and the torque fraction
-// before checking runtime gates. Map or mode changes take priority over all
+// ACTIVE validates the captured arbitration state, the torque fraction, and
+// the ceiling latch before checking runtime gates. Map or mode changes take priority over all
 // input-gate reasons.
 rl_active:
 mov.b @(0x4,r5),r0
@@ -137,6 +141,10 @@ bf rl_active_corrupt
 mov.w @(0xE,r5),r0
 extu.w r0,r0
 mov.w @(rl_u_one,pc),r1
+cmp/hi r1,r0
+bt rl_active_corrupt
+mov.w @(0x18,r5),r0
+mov #0x1,r1
 cmp/hi r1,r0
 bf rl_active_state_valid
 rl_active_corrupt:
@@ -215,12 +223,14 @@ nop
 bra rl_engine_return
 nop
 
-// Leave ACTIVE through COOLDOWN. This tick has already cleared the request.
-// The controller fields remain as diagnostics until the next activation.
+// Leave ACTIVE through COOLDOWN. This tick has already cleared the request,
+// and the abort releases the ceiling latch. The controller fields remain as
+// diagnostics until the next activation.
 rl_abort_active:
 mov.l @(rl_state_address,pc),r5
 mov #0x0,r0
 mov.w r0,@(0x8,r5)
+mov.w r0,@(0x18,r5)
 mov.b @(0x2,r5),r0
 and 0x0F,r0
 mov.b r0,@(0x2,r5)
@@ -309,7 +319,7 @@ nop
 mov.l @(rl_state_address,pc),r5
 mov r5,r1
 mov #0x0,r0
-mov #0x6,r2
+mov #0x7,r2
 rl_corrupt_clear_loop:
 mov.l r0,@r1
 add 0x4,r1
@@ -327,7 +337,7 @@ nop
 
 // Core-local literal pool. SH PC-relative loads are forward-only, so each
 // independently sized code section owns the exact addresses it consumes.
-.org 0x000D3AE0
+.org 0x000D3AE8
 rl_state_address:
 .long 0xFFFF5D40
 rl_selector_address:
@@ -352,7 +362,7 @@ rl_u_one:
 // Evaluate every gate and publish all satisfied bits. The first failure is
 // retained by priority in abort_reason. r0 returns that reason. IDLE checks
 // the activation speed range; ACTIVE checks the speed-error window.
-.org 0x000D3B04
+.org 0x000D3B0C
 rl_evaluate_gates:
 sts.l pr,@-r15
 mov.l @(rl_gate_state_address,pc),r5
@@ -485,8 +495,8 @@ bf rl_gate_speed_frame
 mov #0x8,r0
 mov.b r0,@(0x1,r5)
 
-// The stock receive age of the vehicle-speed record 13 advances once per ten
-// periodic ticks without a processed 0x284 frame and saturates at 255.
+// The stock receive age of the vehicle-speed record 13 advances once per
+// 10.24 ms tick without a processed 0x284 frame and saturates at 255.
 rl_gate_speed_frame:
 tst r7,r7
 bt rl_gate_speed_frame_fail
@@ -663,13 +673,13 @@ rts
 nop
 
 // Gate-local literal pool.
-.org 0x000D3D14
+.org 0x000D3D1C
 rl_gate_state_address:
 .long 0xFFFF5D40
 rl_gate_selector_address:
 .long 0xFFFF5D00
 rl_gate_map_enable_masks:
-.long 0x000D3D40
+.long 0x000D3D48
 rl_gate_config_address:
 .long 0x000D6040
 rl_gate_ascd_address:
@@ -691,7 +701,7 @@ rl_gate_map_enable_mask_bytes:
 
 // Full configuration validation is independent of current state and inputs.
 // It uses only r0..r4 so callers may retain r5..r7.
-.org 0x000D3D48
+.org 0x000D3D50
 rl_validate_config:
 mov.l @(rl_helper_config_address,pc),r3
 mov.w @r3,r0
@@ -803,8 +813,14 @@ mov #-0x1,r1
 extu.b r1,r1
 cmp/eq r1,r0
 bt rl_config_invalid
+// The ceiling hysteresis is nonzero and does not exceed the ceiling offset.
 mov.b @r4+,r0
-tst r0,r0
+extu.b r0,r2
+tst r2,r2
+bt rl_config_invalid
+mov.w @(0x1C,r3),r0
+extu.w r0,r0
+cmp/hs r2,r0
 bf rl_config_invalid
 mov.w @r4+,r0
 extu.w r0,r0
@@ -826,7 +842,7 @@ mov #0x0,r0
 rts
 nop
 
-.org 0x000D3E48
+.org 0x000D3E58
 rl_helper_config_address:
 .long 0x000D6040
 rl_helper_config_magic:

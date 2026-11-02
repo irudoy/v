@@ -8,8 +8,8 @@ schema_version = 2
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
-base_composition_sha256 = "e035062da5b648e5564b2543d7a2c776bde2321c126618b748c29dd9056b6f75"
-expected_composition_sha256 = "55ccb9e6bde106a1a86ec07b397d078659928fba8da5cd2d9074902bda55bdc7"
+base_composition_sha256 = "3a760fc2e7908b51ec3d3e1ad26d6bf93507a41b4caed8578f8eb1498a82afdb"
+expected_composition_sha256 = "fa6d1990d67728b65228c308f02bb0152a7c1b9a4d607efc48aa8bdfe5a55b91"
 free_rom_start = 0x000D4280
 free_rom_end = 0x000E1C2A
 owned_rom_start = 0x000D4280
@@ -26,7 +26,7 @@ control_mailbox_overrides = { "1ME3B" = 22 }
 [ram]
 proven_free_start = 0xFFFF5D00
 proven_free_end = 0xFFFF7000
-lower_runtime_end = 0xFFFF5D58
+lower_runtime_end = 0xFFFF5D5C
 reservation_start = 0xFFFF5E00
 reservation_end = 0xFFFF6000
 active_start = 0xFFFF5E00

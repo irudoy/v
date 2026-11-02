@@ -177,7 +177,7 @@ from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
 `selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
-`speed_controller`, `feedback_arbiter`, and `ignition_adapter`
+`speed_controller`, `rpm_ceiling`, `feedback_arbiter`, and `ignition_adapter`
 with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
@@ -196,22 +196,29 @@ partial stock results with zero, partial, full and malformed requests and
 check the final mask, the returned R0, the complete state, the fuel-cut
 shadow, SP and GBR. A scheduler case reads entries 1 and 28 of the composed
 periodic table and runs them in that order through an activation, a held
-request and a release, so the mask follows the request of the same pass.
+request and a release, so the mask follows the request of the same pass. An
+observe scheduler case runs above the RPM ceiling and requires the stock
+coordinator result in the final mask.
 
 The speed controller accepts an originating invoke call or the exact bound
 engine call window on an active engine frame. Its R3 load binds the composed
 control pool of the stock unsigned divider `0x00021CE0` before execution.
 Each divider call returns before the native RTS of the controller reaches the
-original continuation. Both outcomes of every controller branch and its delay
-slots must execute. The stock divider body receives no instruction-coverage
-qualification. The engine body is in the measured scope.
+original continuation. Its R0 load binds the pool word of the RPM ceiling
+unit, the only controller call besides the divider. The ceiling unit is a leaf
+reached only through that call, and each of its two native RTS returns to the
+controller continuation. Both outcomes of every controller and ceiling branch
+and their delay slots must execute. The stock divider body receives no
+instruction-coverage qualification. The engine body is in the measured scope.
 
 Controller rows of the canonical harness take their expected outputs from the
 reference model in `patches/rolling_launch.py`, and a Python test replays the
 model over the harness table. The rows cover the proportional floor, top,
 width and quotient, the integrator freeze on both saturated sums,
 accumulation, both integrator limits, the RPM ceiling at, above and across the
-16-bit range of its 32-bit sum, and the stock cut bit. The complete state,
+16-bit range of its 32-bit sum, the latch held above and released at the
+hysteresis restore point, the unlatched band, observe release of a set latch,
+and the stock cut bit. The complete state,
 configuration, selector, shadows, runtime words, named input/output buffers,
 stack pointer and GBR must otherwise remain intact. The observed R4 retains
 the configuration-pointer role exposed by `invoke_r4`; it is not a C

@@ -3,9 +3,10 @@
 Rolling Launch is an optional runtime layered on the complete five-slot
 Map Switching composition. While CANCEL is held it captures vehicle speed as
 the hold target and runs a speed-hold controller that publishes a torque
-fraction. Hold mode adds an all-cylinder fuel-cut request above the captured
-engine speed plus a ceiling offset, and a wrapper of the stock fuel-output
-inhibit coordinator merges the request into the final cylinder mask. It runs
+fraction. Hold mode latches an all-cylinder fuel-cut request above the
+captured engine speed plus a ceiling offset and releases it below a
+hysteresis, and a wrapper of the stock fuel-output inhibit coordinator merges
+the request into the final cylinder mask. It runs
 on the exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated
 targets JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch
 runtime.
@@ -91,11 +92,19 @@ a map-request abort so map selection can begin after rearm.
 
 Vehicle speed is the word `0xFFFF113C` in km/h*10, which the stock receive
 handler of CAN frame `0x284` publishes (`../defs/JK08A.can.md`). Gate 8 reads
-the stock receive age `0xFFFF3B38` of that record, which advances once per ten
-periodic ticks without a processed frame and saturates at 255; a lost speed
-frame therefore refuses activation and aborts a run with `SPEED_FRAME_STALE`. The
-vehicle check that this age follows frame `0x284` alongside the speed word is
-open (issue #103).
+the stock receive age `0xFFFF3B38` of that record. `FUN_000C3994` advances the
+age on every pass of the pending-task table `0x00021834`, which runs every
+10.24 ms like the Rolling Launch tick, and a pass that processes a new frame
+clears it; it saturates at 255. Frame `0x284` arrives every 20 ms, so the age
+stays at 0 to 2. One count is 10.24 ms, and the default limit of 10 tolerates
+102.4 ms without a frame. A lost speed frame therefore refuses activation and
+aborts a run with `SPEED_FRAME_STALE`.
+
+The age stays at zero while `0xFFFF4185` bit 7 is clear and advances only
+while `0xFFFF4195` bit 0 is set. Outside those CAN states a lost frame leaves
+the age below the limit and `0xFFFF113C` at its last value, so only the run
+timeout and the CANCEL release end the hold. The vehicle check that this age
+follows frame `0x284` alongside the speed word is open (issue #103).
 
 On JK08A, gate 6 follows the MAIN switch itself: the MAIN switch bit is set
 only while MAIN is pressed. The MAIN state that each press toggles,
@@ -341,7 +350,7 @@ crankshaft and electrical injector output remain outside the measurement.
 | Mode | Torque fraction | Fuel cut |
 | --- | --- | --- |
 | `observe` | computed and published | unchanged |
-| `hold` | computed and published | all-cylinder request above the RPM ceiling |
+| `hold` | computed and published | all-cylinder request latched above the RPM ceiling |
 
 ## Speed-hold controller
 
@@ -378,13 +387,27 @@ inside the abort window `-abort_below <= e <= abort_above`.
 
 ## Fuel-cut request
 
-In `hold`, every `ACTIVE` tick that runs the controller publishes the request
-`0x003F` in the state record while the native RPM exceeds the captured RPM
-plus the ceiling offset. The sum is formed in 32 bits, so a high captured RPM
-never wraps below the ceiling. Every engine entry clears the request first,
-so only such a tick publishes it, and an abort releases it in the tick that
-detects the abort. `observe` never publishes a request. No mode writes the
-fuel-cut shadow of the selected map.
+In `hold`, every `ACTIVE` tick that runs the controller evaluates the RPM
+ceiling latch at state offset `+0x18`:
+
+```text
+cut     = captured_rpm + ceiling_offset
+restore = cut - ceiling_hysteresis
+latch   = 1 if rpm > cut
+          else latch and rpm > restore
+```
+
+The tick publishes the request `0x003F` in the state record while the latch is
+set, so the cut starts strictly above the ceiling and ends at or below the
+restore point. Both sums are formed in 32 bits, so a high captured RPM never
+wraps below either threshold. Every engine entry clears the request first, so
+only such a tick publishes it. Activation and every abort clear the latch, and
+an abort releases the request in the tick that detects the abort. `observe`
+clears the latch and never publishes a request. No mode writes the fuel-cut
+shadow of the selected map.
+
+The speed controller calls the leaf unit at `0x000D6068`, which evaluates the
+latch and adds the hold, ceiling, and fuel-cut flags to the published flags.
 
 Periodic scheduler entry 28 at `0x000219DC` calls the fuel-cut wrapper in
 place of the stock six-channel fuel-output inhibit coordinator `0x0004ED88`
@@ -554,7 +577,7 @@ The strict 40-byte schema-4 record contains:
 | schema | version 4 |
 | mode | observe or hold |
 | enable mask | one bit per map, unused bits clear |
-| options, reserved | zero |
+| options | zero |
 | coolant minimum/maximum | ordered byte range |
 | minimum/maximum speed | km/h*10 words; zero disables that side; two nonzero bounds are ordered |
 | minimum RPM | nonzero native value |
@@ -569,9 +592,13 @@ The strict 40-byte schema-4 record contains:
 | RPM ceiling offset | nonzero native value |
 | run timeout and rearm | 1..0x7FFF ticks |
 | speed-frame age limit | 1..254 counts of the stock receive age |
+| RPM ceiling hysteresis | byte at `+0x23`, 1..255 native, at most the ceiling offset |
 
-The built-in production profile is `hold-map1-test`: Map 1 enabled,
-`hold` mode, and the controller defaults of the reference model. The
+The built-in production profile is `observe-map1-test`: Map 1 enabled,
+`observe` mode, and the controller defaults of the reference model. The
+layout declares no hold actuator (`hold_actuator = false`) until the
+torque-fraction actuator of #100 exists, and `make preflash` refuses an image
+that enables a map in `hold` mode while it is false. The
 relocated targets take the built-in `observe` profile with no enabled maps,
 and their images receive no Rolling Launch bytes. A strict local TOML profile
 can select either mode, any map mask, and every controller field. Every field
@@ -599,12 +626,19 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
 | `0x000D6000..0x000D6040` | 64 | fuel-cut coordinator wrapper |
 | `0x000D6040..0x000D6068` | 40 | configuration record |
-| `0xFFFF5D40..0xFFFF5D58` | 24 | runtime state |
+| `0x000D6068..0x000D60C0` | 88 | RPM ceiling latch |
+| `0xFFFF5D40..0xFFFF5D5C` | 28 | runtime state |
 
 Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`. The span stays
 claimed and erased inside the Rolling Launch write set, so the registered
 historical endpoints keep extracting their record from it. The Map Switching
 map copies at `0x000D3F80` leave no room to grow the record in place.
+
+Every registered historical endpoint leaves the RPM ceiling span
+`0x000D6068..0x000D60C0` erased, and its signature binds that erased span.
+The speed-hold runtime without the ceiling latch, whose state has 24 bytes, is
+not a registered endpoint: the builder and `make preflash` classify its images
+as an unknown Rolling Launch state and refuse them.
 
 The composition replaces six declared call targets:
 
@@ -624,14 +658,16 @@ Allocation and hook bytes are authoritative only in
 
 ## State and diagnostics
 
-The canonical 24-byte state records phase, abort reason, flags, map/mode
+The canonical 28-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, target speed, the torque
 fraction after the rate limit, the speed error, the integrator, the fuel-cut
-request, and the command before the rate limit. The nine diagnostic views
-read fixed offsets of that record.
+request, the command before the rate limit, and the RPM ceiling latch; its
+last two bytes are reserved and zero. An `ACTIVE` state with a latch other
+than 0 or 1 is corrupt. The nine diagnostic views read fixed offsets of that
+record.
 
-The flags publish every satisfied gate, `ACTIVE`, hold, and the RPM ceiling.
-The fuel-cut flag of an active state reports the ceiling request or bit 2,
+The flags publish every satisfied gate, `ACTIVE`, hold, and the RPM ceiling
+latch. The fuel-cut flag of an active state reports the ceiling request or bit 2,
 the active cut bit of the main RPM fuel-cut state byte. The other bits of the
 byte leave the flag clear.
 
@@ -664,9 +700,10 @@ closed write set.
 The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.
 
-The canonical runtime uses `0xFFFF5D40..0xFFFF5D58` for active state and
-`0x000D6000..0x000D6068` for the fuel-cut wrapper and the configuration
-record. The cross-runtime ledger assigns `0x000D6068..0x000D6800` and
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D5C` for active state and
+`0x000D6000..0x000D60C0` for the fuel-cut wrapper, the configuration record,
+and the RPM ceiling latch. The cross-runtime ledger assigns
+`0x000D60C0..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
 `runtime-reservations.md`.
@@ -678,7 +715,8 @@ The implementation inventory is:
 | `rolling-launch-layout.toml` | allocation, hooks, diagnostics, and defaults |
 | `rolling-launch-payloads.toml` | exact assembled payloads |
 | `rolling-launch-engine.s` | state engine, gates, and configuration check |
-| `rolling-launch-speed-controller.s` | speed-hold controller and ceiling request |
+| `rolling-launch-speed-controller.s` | speed-hold controller |
+| `rolling-launch-rpm-ceiling.s` | RPM ceiling latch and request |
 | `rolling-launch-ignition-adapter.s` | primary ignition-command pass-through |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
 | `rolling-launch-fuel-cut-wrapper.s` | fuel-cut coordinator wrapper |
@@ -703,7 +741,7 @@ A candidate is software-valid only when all applicable checks pass:
 3. Assembly sources reproduce the exact injected bytes.
 4. The independent model covers every gate, phase transition, abort reason,
    corrupt-state recovery, map isolation, rearm boundary, controller bound,
-   and fuel-cut request.
+   and the ceiling latch with its hysteresis.
 5. The GNU SH fixture independently executes the same current payload bytes
    across all changed entries, branches, delay slots, call/return paths, and
    boundary cases, with controller expectations taken from the reference
@@ -714,7 +752,7 @@ A candidate is software-valid only when all applicable checks pass:
 8. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
 Software verification does not authorize a flash. The vehicle-speed capture,
-the controller, the ceiling request, corrupt-state recovery, and map changes
+the controller, the ceiling latch, corrupt-state recovery, and map changes
 while active remain software-only boundaries, and no actuator consumes the
 torque fraction. A physical timing claim requires a crank-referenced
 measurement, and an injector-pulse claim requires an electrical measurement at

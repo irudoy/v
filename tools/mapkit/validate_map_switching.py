@@ -177,6 +177,9 @@ def validate():
         "speed_frame_age_limit": (
             "Rolling Launch Speed Frame Age Limit", 0xD6062,
         ),
+        "rpm_ceiling_hysteresis_native": (
+            "Rolling Launch RPM Ceiling Hysteresis", 0xD6063,
+        ),
     }
     if dict(launch.control_addresses) != {
         key: f"{address:08x}" for key, (_name, address) in expected_controls.items()

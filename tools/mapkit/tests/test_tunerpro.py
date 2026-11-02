@@ -36,6 +36,7 @@ COMMON_TABLES = {
     "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
     "Rolling Launch RPM Ceiling Offset": "Rolling Launch / RPM Ceiling",
+    "Rolling Launch RPM Ceiling Hysteresis": "Rolling Launch / RPM Ceiling",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -380,7 +381,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 61)
-        self.assertEqual(len(tables), 116)
+        self.assertEqual(len(tables), 117)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

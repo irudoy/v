@@ -45,6 +45,7 @@ COMMON_TABLES = {
     "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
     "Rolling Launch RPM Ceiling Offset": "Rolling Launch / RPM Ceiling",
+    "Rolling Launch RPM Ceiling Hysteresis": "Rolling Launch / RPM Ceiling",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -653,6 +654,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "Rolling Launch Abort Below Target": "0xD605B",
             "Rolling Launch RPM Ceiling Offset": "0xD605C",
             "Rolling Launch Speed Frame Age Limit": "0xD6062",
+            "Rolling Launch RPM Ceiling Hysteresis": "0xD6063",
         }
         for name, address in expected.items():
             with self.subTest(name=name):

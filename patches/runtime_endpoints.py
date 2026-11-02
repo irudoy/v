@@ -74,6 +74,11 @@ ERASED_FEEDBACK_ARBITER_SHA256 = (
 ERASED_FUEL_CUT_WRAPPER_SHA256 = (
     "8667e718294e9e0df1d30600ba3eeb201f764aad2dad72748643e4a285e1d1f7"
 )
+# Every historical endpoint leaves the RPM-ceiling span 0xD6068..0xD60C0
+# erased: 88 bytes of 0xFF.
+ERASED_RPM_CEILING_SHA256 = (
+    "fc351643198ac4ec4e78649c99ad06b4cd45b554005990cdc70e520b49dd9bf0"
+)
 # The speed-controller span 0xD40C0..0xD41E0 joins the former ignition
 # controller span 0xD40C0..0xD4140 and the former threshold-helper span
 # 0xD4140..0xD41E0, so each historical digest covers both former units.
@@ -123,6 +128,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", ERASED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -143,6 +149,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", SCHEMA_2_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -163,6 +170,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", SCHEMA_2_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -183,6 +191,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", GUARDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -210,6 +219,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "0ec18b26a0ef6556bcb5f6056a2a9b988f8c895f65ec6b2b3665352ce73fb4dc",
             ),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -225,6 +235,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", GUARDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -242,6 +253,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", BOUNDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -259,6 +271,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("speed_controller", BOUNDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
             ("fuel_cut_wrapper", "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"),
+            ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
         ),
         hook_values=CURRENT_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,

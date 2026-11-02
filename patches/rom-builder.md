@@ -454,8 +454,9 @@ range. These static results establish software ownership only; JK78C remains
 ## Rolling Launch profile
 
 Without `--profile`, a Rolling Launch-capable target uses the built-in
-`hold-map1-test` profile: Map 1 enabled, `hold` mode, and the controller
-defaults of the reference model. The relocated targets JK00C, JK00D, JK78C,
+`observe-map1-test` profile: Map 1 enabled, `observe` mode, and the controller
+defaults of the reference model. `make preflash` refuses a `hold` profile with
+an enabled map while the Rolling Launch layout declares no hold actuator. The relocated targets JK00C, JK00D, JK78C,
 1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in
 `observe` profile with no enabled maps. A separate local TOML file selects the
 mode, the enabled maps, and every Rolling Launch field on a Rolling
@@ -464,10 +465,10 @@ Launch-capable family:
 ```toml
 schema_version = 3
 rom = "sh7058_7mfkavn86"
-name = "hold-maps-1-3"
+name = "observe-maps-1-3"
 
 [rolling_launch]
-mode = "hold"
+mode = "observe"
 enabled_maps = [1, 3]
 coolant_min = 10
 coolant_max = 220
@@ -484,6 +485,7 @@ integrator_limit = 500
 abort_above = 150
 abort_below = 100
 rpm_ceiling_offset_native = 80
+rpm_ceiling_hysteresis_native = 8
 run_timeout_ticks = 781
 rearm_ticks = 98
 speed_frame_age_limit = 10

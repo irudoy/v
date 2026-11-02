@@ -3,8 +3,9 @@
 
 The model is intentionally independent from the SH-2E implementation. It
 defines fail-closed calibration validation, gate ordering, the vehicle-speed
-capture, the windowed torque-fraction controller, the RPM ceiling request and
-its merge into the stock cylinder mask, and cooldown/rearm behavior. It never
+capture, the windowed torque-fraction controller, the latched RPM ceiling
+request and its merge into the stock cylinder mask, and cooldown/rearm
+behavior. It never
 reads or writes a ROM image.
 """
 
@@ -22,6 +23,8 @@ CONFIG_SCHEMA_VERSION = 4
 CONFIG_SIZE = 40
 CONFIG_FORMAT = ">H6B4HhBB3H2B3H2B2H"
 SLOT_COUNT = 5
+# The state record ends with the RPM ceiling latch word and a reserved word.
+STATE_SIZE = 28
 
 # The torque fraction u and its integrator are expressed in thousandths.
 U_ONE = 1000
@@ -136,7 +139,7 @@ class Calibration:
     run_timeout_ticks: int = 781
     rearm_ticks: int = 98
     speed_frame_age_limit: int = 10
-    reserved: int = 0
+    rpm_ceiling_hysteresis_native: int = 8
     magic: int = CONFIG_MAGIC
     schema_version: int = CONFIG_SCHEMA_VERSION
     magic_inverse: int = CONFIG_MAGIC_INVERSE
@@ -173,7 +176,9 @@ class Calibration:
             0 < self.run_timeout_ticks <= 0x7FFF,
             0 < self.rearm_ticks <= 0x7FFF,
             0 < self.speed_frame_age_limit <= SPEED_FRAME_AGE_LIMIT_MAX,
-            self.reserved == 0,
+            0 < self.rpm_ceiling_hysteresis_native <= 0xFF,
+            self.rpm_ceiling_hysteresis_native
+            <= self.rpm_ceiling_offset_native,
             self.magic_inverse == CONFIG_MAGIC_INVERSE,
             self.end_marker == CONFIG_END_MARKER,
         ))
@@ -209,7 +214,7 @@ class Calibration:
             self.run_timeout_ticks,
             self.rearm_ticks,
             self.speed_frame_age_limit,
-            self.reserved,
+            self.rpm_ceiling_hysteresis_native,
             self.magic_inverse,
             self.end_marker,
         )
@@ -248,7 +253,7 @@ class Calibration:
             run_timeout_ticks=values[20],
             rearm_ticks=values[21],
             speed_frame_age_limit=values[22],
-            reserved=values[23],
+            rpm_ceiling_hysteresis_native=values[23],
             magic_inverse=values[24],
             end_marker=values[25],
         )
@@ -290,6 +295,7 @@ class RuntimeState:
     integrator: int = 0
     fuel_cut_request: int = 0
     torque_command: int = 0
+    ceiling_latch: int = 0
 
 
 @dataclass(frozen=True)
@@ -422,10 +428,25 @@ def update_integrator(integrator, proportional, error, calibration):
 
 
 def rpm_ceiling(state, calibration):
-    return min(
-        0xFFFF,
-        state.captured_rpm_native + calibration.rpm_ceiling_offset_native,
-    )
+    """Return the cut and restore sums of the RPM ceiling latch.
+
+    The cut sum is the captured RPM plus the ceiling offset; the restore sum
+    lies the hysteresis below it. Both are exact integers, as in the 32-bit
+    runtime sums, so a high captured RPM never wraps below either threshold.
+    """
+    cut = state.captured_rpm_native + calibration.rpm_ceiling_offset_native
+    return cut, cut - calibration.rpm_ceiling_hysteresis_native
+
+
+def ceiling_latch(state, rpm_native, calibration):
+    """Return the next latch: set above the cut sum, held above the
+    restore sum while set, and released at or below it."""
+    cut, restore = rpm_ceiling(state, calibration)
+    if rpm_native > cut:
+        return 1
+    if state.ceiling_latch and rpm_native > restore:
+        return 1
+    return 0
 
 
 def _publish_active(state, flags, inputs, calibration):
@@ -444,9 +465,11 @@ def _publish_active(state, flags, inputs, calibration):
     )
     result = flags | Flag.ACTIVE
     request = 0
+    latch = 0
     if state.active_mode_snapshot == Mode.HOLD:
         result |= Flag.HOLD
-        if inputs.rpm_native > rpm_ceiling(state, calibration):
+        latch = ceiling_latch(state, inputs.rpm_native, calibration)
+        if latch:
             request = FUEL_CUT_CYLINDER_MASK
             result |= Flag.CEILING | Flag.FUEL_CUT
     if inputs.fuel_cut_status & FUEL_CUT_ACTIVE_MASK:
@@ -459,6 +482,7 @@ def _publish_active(state, flags, inputs, calibration):
         torque_command=command,
         torque_fraction=fraction,
         fuel_cut_request=request,
+        ceiling_latch=latch,
     )
 
 
@@ -543,7 +567,11 @@ def _state_is_structurally_valid(state):
             and state.rearm_ticks == 0
         )
     if phase == Phase.ACTIVE:
-        return state.rearm_ticks == 0 and state.torque_fraction <= U_ONE
+        return (
+            state.rearm_ticks == 0
+            and state.torque_fraction <= U_ONE
+            and state.ceiling_latch in (0, 1)
+        )
     # COOLDOWN never counts beyond the largest valid rearm period.
     return state.rearm_ticks <= 0x7FFF
 
@@ -556,6 +584,7 @@ def _abort_active(state, flags, reason):
         flags=flags & ~ACTIVE_OUTPUT_FLAGS,
         rearm_ticks=0,
         fuel_cut_request=0,
+        ceiling_latch=0,
     ))
 
 
@@ -620,6 +649,7 @@ def step(state, inputs, calibration):
             target_speed=target,
             torque_fraction=U_ONE,
             integrator=0,
+            ceiling_latch=0,
         )
         return StepResult(_publish_active(active, flags, inputs, calibration))
 

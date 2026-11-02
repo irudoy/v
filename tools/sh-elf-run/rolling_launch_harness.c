@@ -13,7 +13,7 @@
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
 #define THROTTLE_SHADOW_SIZE 28U
-#define RL_STATE_SIZE 24U
+#define RL_STATE_SIZE 28U
 #define RL_CONFIG 0x000d6040U
 #define RL_CONFIG_SIZE 40U
 #define BUTTON_CODE 0xffff2a85U
@@ -28,7 +28,7 @@
    the flag clear. */
 #define FUEL_CUT_ACTIVE 0x04U
 /* Vehicle speed in km/h*10 and the stock receive age of its CAN 0x284
-   record, which advances once per ten periodic ticks. */
+   record, which advances once per 10.24 ms tick without a frame. */
 #define SPEED 0xffff113cU
 #define SPEED_AGE 0xffff3b38U
 #define RPM 0xffff11bcU
@@ -120,6 +120,7 @@
 #define CFG_TIMEOUT 30U
 #define CFG_REARM 32U
 #define CFG_AGE 34U
+#define CFG_HYSTERESIS 35U
 
 /* State record offsets. */
 #define ST_FLAGS 2U
@@ -132,6 +133,7 @@
 #define ST_INTEGRATOR 18U
 #define ST_REQUEST 20U
 #define ST_COMMAND 22U
+#define ST_LATCH 24U
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
@@ -141,13 +143,13 @@ static size_t case_count;
 /* Schema 4 with short run and rearm periods: speeds 20..120 km/h, 160 native
    RPM, window 4.0 km/h with top 2.0 km/h, rate 50, no integral gain,
    integrator limit 500, abort window +15.0/-10.0 km/h, ceiling offset 80,
-   timeout 4, rearm 3, and speed-frame age limit 10. */
+   timeout 4, rearm 3, speed-frame age limit 10, and ceiling hysteresis 8. */
 static const uint8_t valid_configuration[RL_CONFIG_SIZE] = {
     0x52, 0x4c, 0x04, 0x00, 0x01, 0x00, 0x00, 0xff,
     0x00, 0xc8, 0x04, 0xb0, 0x00, 0xa0, 0x00, 0x01,
     0x00, 0x00, 0x28, 0x14, 0x00, 0x32, 0x00, 0x00,
     0x01, 0xf4, 0x96, 0x64, 0x00, 0x50, 0x00, 0x04,
-    0x00, 0x03, 0x0a, 0x00, 0xad, 0xb3, 0xa5, 0x5a,
+    0x00, 0x03, 0x0a, 0x08, 0xad, 0xb3, 0xa5, 0x5a,
 };
 
 static const uint8_t payload_seed[8] = {
@@ -431,21 +433,23 @@ struct structural_case {
     uint16_t run_ticks;
     uint16_t rearm_ticks;
     uint16_t fraction;
+    uint16_t latch;
 };
 
 static const struct structural_case structural_cases[] = {
-    {"invalid-phase", 3, 0, 0, 0, 0, 0},
-    {"idle-map-snapshot", 0, 5, 0, 0, 0, 0},
-    {"idle-mode-snapshot", 0, 0, 1, 0, 0, 0},
-    {"idle-run-ticks", 0, 0, 0, 1, 0, 0},
-    {"idle-rearm-ticks", 0, 0, 0, 0, 1, 0},
-    {"active-map-snapshot", 1, 5, 1, 0, 0, 1000},
-    {"active-mode-snapshot", 1, 0, 2, 0, 0, 1000},
-    {"active-rearm-ticks", 1, 0, 1, 0, 1, 1000},
-    {"active-fraction", 1, 0, 1, 0, 0, 1001},
-    {"cooldown-map-snapshot", 2, 5, 1, 0, 0, 0},
-    {"cooldown-mode-snapshot", 2, 0, 2, 0, 0, 0},
-    {"cooldown-rearm-range", 2, 0, 1, 0, 0x8000, 0},
+    {"invalid-phase", 3, 0, 0, 0, 0, 0, 0},
+    {"idle-map-snapshot", 0, 5, 0, 0, 0, 0, 0},
+    {"idle-mode-snapshot", 0, 0, 1, 0, 0, 0, 0},
+    {"idle-run-ticks", 0, 0, 0, 1, 0, 0, 0},
+    {"idle-rearm-ticks", 0, 0, 0, 0, 1, 0, 0},
+    {"active-map-snapshot", 1, 5, 1, 0, 0, 1000, 0},
+    {"active-mode-snapshot", 1, 0, 2, 0, 0, 1000, 0},
+    {"active-rearm-ticks", 1, 0, 1, 0, 1, 1000, 0},
+    {"active-fraction", 1, 0, 1, 0, 0, 1001, 0},
+    {"cooldown-map-snapshot", 2, 5, 1, 0, 0, 0, 0},
+    {"cooldown-mode-snapshot", 2, 0, 2, 0, 0, 0, 0},
+    {"cooldown-rearm-range", 2, 0, 1, 0, 0x8000, 0, 0},
+    {"active-ceiling-latch", 1, 0, 1, 0, 0, 1000, 2},
 };
 
 static int run_structural_cases(void)
@@ -465,6 +469,7 @@ static int run_structural_cases(void)
         write_u16(state + ST_RUN, test->run_ticks);
         write_u16(state + ST_REARM, test->rearm_ticks);
         write_u16(state + ST_FRACTION, test->fraction);
+        write_u16(state + ST_LATCH, test->latch);
         run_engine();
         if (!verify_corrupt_recovery(test->name))
             return 0;
@@ -797,7 +802,8 @@ static const struct config_case config_cases[] = {
     {"config-rearm-range", 32, 2, 0x8000},
     {"config-age-zero", 34, 1, 0},
     {"config-age-saturated", 34, 1, 255},
-    {"config-reserved", 35, 1, 1},
+    {"config-hysteresis-zero", 35, 1, 0},
+    {"config-hysteresis-above-offset", 35, 1, 81},
     {"config-inverse", 36, 2, 0},
     {"config-end", 38, 2, 0},
 };
@@ -847,6 +853,7 @@ static int run_config_cases(void)
     write_u16(config + CFG_TIMEOUT, 0x7fff);
     write_u16(config + CFG_REARM, 0x7fff);
     config[CFG_AGE] = 254;
+    config[CFG_HYSTERESIS] = 255;
     run_engine();
     if (!expect_phase_reason("config-upper-bounds", PHASE_ACTIVE, REASON_NONE)
             || !verify_state_guards("config-upper-bounds"))
@@ -858,6 +865,16 @@ static int run_config_cases(void)
     run_engine();
     if (!expect_phase_reason("config-offset-lowest", PHASE_ACTIVE, REASON_NONE)
             || !verify_state_guards("config-offset-lowest"))
+        return 0;
+
+    /* The hysteresis may equal the ceiling offset. */
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    rom_pointer(RL_CONFIG)[CFG_HYSTERESIS] = 80;
+    run_engine();
+    if (!expect_phase_reason(
+            "config-hysteresis-equal", PHASE_ACTIVE, REASON_NONE)
+            || !verify_state_guards("config-hysteresis-equal"))
         return 0;
     return 1;
 }
@@ -882,27 +899,36 @@ struct controller_case {
     uint16_t next_fraction;
     uint16_t request;
     uint16_t flags;
+    uint16_t latch;
+    uint16_t next_latch;
 };
 
+/* The ceiling of captured 300 is 380 and its restore point is 372. */
 static const struct controller_case controller_cases[] = {
-    {"ctrl-proportional-zero", 0, 500, 1000, 0, 525, 300, 300, 0, 500, 0x00, 25, 0, 0, 950, 0x0000, 0x1fff},
-    {"ctrl-proportional-full", 1, 500, 500, 0, 470, 300, 300, 0, 500, 0x00, -30, 0, 1000, 550, 0x0000, 0x5fff},
-    {"ctrl-proportional-divide", 0, 500, 520, 0, 500, 300, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x1fff},
-    {"ctrl-proportional-top", 0, 500, 30, 0, 520, 300, 300, 0, 500, 0x00, 20, 0, 0, 0, 0x0000, 0x1fff},
-    {"ctrl-proportional-width", 0, 500, 990, 0, 480, 300, 300, 0, 500, 0x00, -20, 0, 1000, 1000, 0x0000, 0x1fff},
-    {"ctrl-freeze-low", 0, 500, 1000, 0, 530, 300, 300, 2, 500, 0x00, 30, 0, 0, 950, 0x0000, 0x1fff},
-    {"ctrl-accumulate-low", 0, 500, 0, -11200, 495, 300, 300, 2, 1000, 0x00, -5, -11190, 0, 0, 0x0000, 0x1fff},
-    {"ctrl-freeze-high", 0, 500, 1000, 0, 470, 300, 300, 1, 500, 0x00, -30, 0, 1000, 1000, 0x0000, 0x1fff},
-    {"ctrl-accumulate-high", 0, 500, 1000, 11200, 504, 300, 300, 3, 1000, 0x00, 4, 11188, 1000, 1000, 0x0000, 0x1fff},
-    {"ctrl-integrator-upper", 0, 500, 600, 1590, 498, 300, 300, 10, 100, 0x00, -2, 1600, 650, 650, 0x0000, 0x1fff},
-    {"ctrl-integrator-lower", 0, 500, 400, -1590, 502, 300, 300, 10, 100, 0x00, 2, -1600, 350, 350, 0x0000, 0x1fff},
-    {"ctrl-integrator-restore", 0, 500, 1000, 16384, 500, 300, 300, 0, 500, 0x00, 0, 8000, 1000, 1000, 0x0000, 0x1fff},
-    {"ctrl-ceiling-at", 1, 500, 500, 0, 500, 380, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff},
-    {"ctrl-ceiling-above", 1, 500, 500, 0, 500, 381, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x003f, 0xffff},
-    {"ctrl-ceiling-wide", 1, 500, 500, 0, 500, 65535, 65520, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff},
-    {"ctrl-stock-cut", 0, 500, 500, 0, 500, 300, 300, 0, 500, 0x04, 0, 0, 500, 500, 0x0000, 0x3fff},
-    {"ctrl-stock-cut-other-bits", 0, 500, 500, 0, 500, 300, 300, 0, 500, 0xfb, 0, 0, 500, 500, 0x0000, 0x1fff},
-    {"ctrl-ceiling-stock-cut", 1, 500, 500, 0, 500, 381, 300, 0, 500, 0x04, 0, 0, 500, 500, 0x003f, 0xffff},
+    {"ctrl-proportional-zero", 0, 500, 1000, 0, 525, 300, 300, 0, 500, 0x00, 25, 0, 0, 950, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-proportional-full", 1, 500, 500, 0, 470, 300, 300, 0, 500, 0x00, -30, 0, 1000, 550, 0x0000, 0x5fff, 0, 0},
+    {"ctrl-proportional-divide", 0, 500, 520, 0, 500, 300, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-proportional-top", 0, 500, 30, 0, 520, 300, 300, 0, 500, 0x00, 20, 0, 0, 0, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-proportional-width", 0, 500, 990, 0, 480, 300, 300, 0, 500, 0x00, -20, 0, 1000, 1000, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-freeze-low", 0, 500, 1000, 0, 530, 300, 300, 2, 500, 0x00, 30, 0, 0, 950, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-accumulate-low", 0, 500, 0, -11200, 495, 300, 300, 2, 1000, 0x00, -5, -11190, 0, 0, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-freeze-high", 0, 500, 1000, 0, 470, 300, 300, 1, 500, 0x00, -30, 0, 1000, 1000, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-accumulate-high", 0, 500, 1000, 11200, 504, 300, 300, 3, 1000, 0x00, 4, 11188, 1000, 1000, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-integrator-upper", 0, 500, 600, 1590, 498, 300, 300, 10, 100, 0x00, -2, 1600, 650, 650, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-integrator-lower", 0, 500, 400, -1590, 502, 300, 300, 10, 100, 0x00, 2, -1600, 350, 350, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-integrator-restore", 0, 500, 1000, 16384, 500, 300, 300, 0, 500, 0x00, 0, 8000, 1000, 1000, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-ceiling-at", 1, 500, 500, 0, 500, 380, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff, 0, 0},
+    {"ctrl-ceiling-above", 1, 500, 500, 0, 500, 381, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x003f, 0xffff, 0, 1},
+    {"ctrl-ceiling-wide", 1, 500, 500, 0, 500, 65535, 65520, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff, 0, 0},
+    {"ctrl-stock-cut", 0, 500, 500, 0, 500, 300, 300, 0, 500, 0x04, 0, 0, 500, 500, 0x0000, 0x3fff, 0, 0},
+    {"ctrl-stock-cut-other-bits", 0, 500, 500, 0, 500, 300, 300, 0, 500, 0xfb, 0, 0, 500, 500, 0x0000, 0x1fff, 0, 0},
+    {"ctrl-ceiling-stock-cut", 1, 500, 500, 0, 500, 381, 300, 0, 500, 0x04, 0, 0, 500, 500, 0x003f, 0xffff, 0, 1},
+    {"ctrl-ceiling-latched-band", 1, 500, 500, 0, 500, 376, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x003f, 0xffff, 1, 1},
+    {"ctrl-ceiling-restore-above", 1, 500, 500, 0, 500, 373, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x003f, 0xffff, 1, 1},
+    {"ctrl-ceiling-restore-exact", 1, 500, 500, 0, 500, 372, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff, 1, 0},
+    {"ctrl-ceiling-unlatched-band", 1, 500, 500, 0, 500, 376, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff, 0, 0},
+    {"ctrl-ceiling-observe-latched", 0, 500, 500, 0, 500, 381, 300, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x1fff, 1, 0},
+    {"ctrl-ceiling-wide-latched", 1, 500, 500, 0, 500, 65535, 65520, 0, 500, 0x00, 0, 0, 500, 500, 0x0000, 0x5fff, 1, 0},
 };
 
 static int run_controller_case(const struct controller_case *test)
@@ -932,6 +958,7 @@ static int run_controller_case(const struct controller_case *test)
     write_u16(state + ST_ERROR, 0x5a5a);
     write_u16(state + ST_INTEGRATOR, (uint16_t)test->integrator);
     write_u16(state + ST_COMMAND, 0x5a5a);
+    write_u16(state + ST_LATCH, test->latch);
     for (byte = 0; byte < sizeof(expected_state); ++byte)
         expected_state[byte] = state[byte];
     write_u16(expected_state + ST_FLAGS, test->flags);
@@ -940,6 +967,7 @@ static int run_controller_case(const struct controller_case *test)
     write_u16(expected_state + ST_INTEGRATOR, (uint16_t)test->next_integrator);
     write_u16(expected_state + ST_REQUEST, test->request);
     write_u16(expected_state + ST_COMMAND, test->command);
+    write_u16(expected_state + ST_LATCH, test->next_latch);
     for (byte = 0; byte < sizeof(expected_configuration); ++byte)
         expected_configuration[byte] = configuration[byte];
     capture_buffers(buffers, ARRAY_SIZE(buffers));
@@ -1015,6 +1043,8 @@ static int verify_active_state(
     if (read_u16(state + ST_COMMAND) != command)
         return fail_value(
             name, "command", read_u16(state + ST_COMMAND), command);
+    if (read_u16(state + ST_LATCH) != 0)
+        return fail_value(name, "latch", read_u16(state + ST_LATCH), 0);
     if (!verify_request(name, 0) || !verify_fuel_untouched(name))
         return 0;
     return verify_state_guards(name);
@@ -1035,6 +1065,7 @@ static int run_activation_cases(void)
     write_u16(state + ST_INTEGRATOR, 0x4000);
     write_u16(state + ST_REQUEST, FUEL_CUT_REQUEST_ALL);
     write_u16(state + ST_COMMAND, 0x5a5a);
+    write_u16(state + ST_LATCH, 1);
     run_engine();
     if (!verify_active_state(
             "activate-observe", MODE_OBSERVE, 300, 500, 950, 0, 500,
@@ -1118,6 +1149,9 @@ static int run_hold_step(
         return 0;
     if (read_u16(state + ST_FLAGS) != flags)
         return fail_value(name, "flags", read_u16(state + ST_FLAGS), flags);
+    if (read_u16(state + ST_LATCH) != (request ? 1U : 0U))
+        return fail_value(
+            name, "latch", read_u16(state + ST_LATCH), request ? 1U : 0U);
     if (!verify_request(name, request) || !verify_fuel_untouched(name))
         return 0;
     return verify_state_guards(name);
@@ -1127,14 +1161,19 @@ static int run_hold_cases(void)
 {
     volatile uint8_t *state = ram_pointer(RL_STATE);
 
-    /* Activation at 300 places the ceiling at 380. */
+    /* Activation at 300 places the ceiling at 380; hysteresis 8 places the
+       restore point at 372. */
     if (!activate(MODE_HOLD, 0x01))
         return fail_value("hold", "setup", 0, 1);
     if (!run_hold_step("hold-below-ceiling", 379, 0, FLAGS_HOLD_ACTIVE)
             || !run_hold_step("hold-at-ceiling", 380, 0, FLAGS_HOLD_ACTIVE)
             || !run_hold_step("hold-above-ceiling", 381, FUEL_CUT_REQUEST_ALL,
                               FLAGS_HOLD_CEILING_ACTIVE)
-            || !run_hold_step("hold-released", 300, 0, FLAGS_HOLD_ACTIVE)
+            || !run_hold_step("hold-latched-band", 373, FUEL_CUT_REQUEST_ALL,
+                              FLAGS_HOLD_CEILING_ACTIVE)
+            || !run_hold_step("hold-restored", 372, 0, FLAGS_HOLD_ACTIVE)
+            || !run_hold_step("hold-unlatched-band", 376, 0,
+                              FLAGS_HOLD_ACTIVE)
             || !run_hold_step("hold-retrigger", 400, FUEL_CUT_REQUEST_ALL,
                               FLAGS_HOLD_CEILING_ACTIVE))
         return 0;
@@ -1149,6 +1188,9 @@ static int run_hold_cases(void)
     if (read_u16(state + ST_FLAGS) & FLAGS_ACTIVE_OUTPUTS)
         return fail_value(
             "hold-abort", "output_flags", read_u16(state + ST_FLAGS), 0);
+    if (read_u16(state + ST_LATCH) != 0)
+        return fail_value(
+            "hold-abort", "latch", read_u16(state + ST_LATCH), 0);
     if (!verify_request("hold-abort", 0)
             || !verify_fuel_untouched("hold-abort"))
         return 0;
@@ -1757,7 +1799,30 @@ static int run_fuel_cut_cases(void)
     if (ram_pointer(FUEL_INHIBIT_MASK)[0] != 0x00)
         return fail_value("fuel-cut-scheduler", "released_mask",
                           ram_pointer(FUEL_INHIBIT_MASK)[0], 0x00);
-    return verify_fuel_untouched("fuel-cut-scheduler");
+    if (!verify_fuel_untouched("fuel-cut-scheduler"))
+        return 0;
+
+    /* Observe never requests a cut: above the ceiling, the final mask keeps
+       the stock coordinator result. */
+    count_case();
+    reset_case(MODE_OBSERVE, 0x01);
+    ram_pointer(COORDINATOR_RESULT)[0] = 0x05;
+    run_periodic_entry();
+    write_u16(ram_pointer(RPM), 400);
+    run_periodic_entry();
+    (void)invoke_r0(coordinator);
+    if (!expect_phase_reason(
+            "fuel-cut-scheduler-observe", PHASE_ACTIVE, REASON_NONE))
+        return 0;
+    if (ram_pointer(FUEL_INHIBIT_MASK)[0] != 0x05)
+        return fail_value("fuel-cut-scheduler-observe", "stock_mask",
+                          ram_pointer(FUEL_INHIBIT_MASK)[0], 0x05);
+    if (read_u16(ram_pointer(RL_STATE) + ST_LATCH) != 0)
+        return fail_value("fuel-cut-scheduler-observe", "latch",
+                          read_u16(ram_pointer(RL_STATE) + ST_LATCH), 0);
+    if (!verify_request("fuel-cut-scheduler-observe", 0))
+        return 0;
+    return verify_fuel_untouched("fuel-cut-scheduler-observe");
 }
 
 int main(void)
@@ -1786,14 +1851,14 @@ int main(void)
         return 1;
     if (!run_feedback_cases())
         return 1;
-    if (case_count != 163U)
-        return fail_value("summary", "case_count", case_count, 163);
+    if (case_count != 175U)
+        return fail_value("summary", "case_count", case_count, 175);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=12 gates=39 config=30 controller=18 activation=6 "
-        "hold=7 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=13 "
-        "feedback=8 entries=8\n",
+        "structural=13 gates=39 config=32 controller=24 activation=6 "
+        "hold=9 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=14 "
+        "feedback=8 entries=9\n",
         (unsigned long)case_count);
     return 0;
 }

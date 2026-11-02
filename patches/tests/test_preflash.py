@@ -1,5 +1,6 @@
 """Preflash qualifies only a HEAD build of a green, clean commit."""
 
+from dataclasses import replace
 import hashlib
 import json
 from functools import lru_cache
@@ -9,6 +10,7 @@ import pytest
 
 from patches import build_rom
 from patches import preflash
+from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
 
@@ -56,6 +58,30 @@ def test_calibrated_image_qualifies_when_it_rebuilds(rom, base, runtime):
     report = preflash.check_image(edited(rom, data, map_edits(rom)), rom)
     assert report.runtime == runtime
     assert report.calibration_bytes == len(target(rom).map_layout.families)
+
+
+def built_with(rom, **changes):
+    profile = build_rom.builtin_profile(rom)
+    profile = replace(profile, calibration=replace(profile.calibration, **changes))
+    return build_rom.build_image(
+        target(rom).stock_image.data, rom=rom, profile=profile, source_name=f"{rom} stock"
+    ).data
+
+
+def test_hold_mode_map_is_refused_without_a_hold_actuator():
+    assert target("JK08A").rolling_layout.hold_actuator is False
+    data = built_with("JK08A", mode=rolling_launch.Mode.HOLD, enable_mask=0x05)
+    with pytest.raises(preflash.PreflashError, match=r"enables map 1, 3 in hold mode.*#100"):
+        preflash.check_image(data, "JK08A")
+
+
+@pytest.mark.parametrize(("mode", "mask"), (
+    (rolling_launch.Mode.OBSERVE, 0x1F),
+    (rolling_launch.Mode.HOLD, 0x00),
+))
+def test_observe_or_disabled_hold_qualifies_without_a_hold_actuator(mode, mask):
+    report = preflash.check_image(built_with("JK08A", mode=mode, enable_mask=mask), "JK08A")
+    assert (report.rom, report.runtime) == ("JK08A", "current")
 
 
 def test_image_of_another_rom_is_refused():

@@ -106,6 +106,15 @@ GUARDED_CONTROLLER = bytes.fromhex(
     "60432100d1077111210060f64f26d009402b0009ffffffffffffffffffffffff"
     "ffffffffffff5d40ffff11bc00021ce0ffff20220002a892ffffffffffffffff"
 )
+# Exact wrapper bytes of the last RPM-hold endpoint, which clears a 24-byte
+# state.
+SCHEMA_3_WRAPPERS = bytes.fromhex(
+    "4f22d019400b0009d018400b00094f26000b0009ffffffffffffffffffffffff"
+    "d113601088008902d012402b0009d012402b0009ffffffffffffffffffffffff"
+    "4f22d10ee000e2062102710442108bfbd00b400b00094f26000b0009ffffffff"
+    "ffffffffffffffff000a9554000d38e4ffff5d40000d09d8000d2108ffff5d40"
+    "000d22a0"
+)
 # Exact wrapper and engine bytes of the schema-3 endpoints that hold RPM
 # through the fuel-cut shadow and clear a 20-byte state.
 FUEL_SHADOW_WRAPPERS = bytes.fromhex(
@@ -242,10 +251,14 @@ def edited_record():
 
 def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
     """Return ``data`` with the units and record of the last RPM-hold endpoint,
-    whose record occupies the retired span while the current span is erased."""
+    whose record occupies the retired span while the current span and the RPM
+    ceiling unit are erased."""
     layout = target(rom).rolling_layout
     source = bytearray(data)
+    ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
+    source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
     for key, blob in (
+        ("wrappers", SCHEMA_3_WRAPPERS),
         ("engine", SCHEMA_3_ENGINE),
         ("ignition_adapter", SCHEMA_3_ADAPTER),
         ("speed_controller", controller + THRESHOLD_HELPER),
@@ -582,10 +595,10 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
 
 
 @pytest.mark.parametrize("rom", ("JK08A", "JK00A"))
-def test_editor_disabling_only_map_1_hold_travels_in_the_profile(rom):
+def test_editor_disabling_only_map_1_travels_in_the_profile(rom):
     start = target(rom).rolling_layout.configuration.start
     edited = bytearray(built(rom))
-    assert edited[start + 3] == rolling_launch.Mode.HOLD
+    assert edited[start + 3] == rolling_launch.Mode.OBSERVE
     assert edited[start + 4] & 1 == 1
     edited[start + 4] &= ~1
     extraction = extract(edited, rom)
