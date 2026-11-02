@@ -531,6 +531,71 @@ class PcanSourceTest(unittest.TestCase):
             app.build_parser().parse_args(["--active"])
 
 
+class ControlPacingTest(unittest.TestCase):
+    def test_spaced_frames_wait_for_their_spacing(self):
+        now = [10.0]
+        pacing = sources.ControlPacing(clock=lambda: now[0])
+        sent = []
+        events = []
+        requests = sources.queue.Queue()
+        for index in range(3):
+            requests.put(sources.ControlRequest(
+                "page-set", 0x6F1, bytes((0xC1, index, 0, 0, 0, 0, 0, 0)), 0.02
+            ))
+
+        class FakeMessage:
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+
+        bus = types.SimpleNamespace(
+            send=lambda message, timeout: sent.append(message.data[1])
+        )
+
+        def send():
+            sources._send_control_requests(
+                bus,
+                types.SimpleNamespace(Message=FakeMessage),
+                sources.PcanConfiguration(listen_only=False),
+                requests,
+                events.append,
+                pacing,
+            )
+
+        send()
+        self.assertEqual(sent, [0])
+        self.assertAlmostEqual(pacing.wait(0.1), 0.02)
+        now[0] = 10.015
+        send()
+        self.assertEqual(sent, [0])
+        self.assertAlmostEqual(pacing.wait(0.1), 0.005)
+        now[0] = 10.021
+        send()
+        self.assertEqual(sent, [0, 1])
+        now[0] += 0.5
+        send()
+        self.assertEqual(sent, [0, 1, 2])
+        self.assertIsNone(pacing.pending)
+        self.assertEqual(pacing.wait(0.1), 0.1)
+        self.assertEqual([event.state for event in events], ["sent"] * 3)
+
+    def test_an_unspaced_request_follows_at_once(self):
+        now = [5.0]
+        pacing = sources.ControlPacing(clock=lambda: now[0])
+        pacing.last_sent = 5.0
+        requests = sources.queue.Queue()
+        requests.put(sources.ControlRequest("stop", 0x6F1, bytes(8)))
+        bus = types.SimpleNamespace(send=mock.Mock())
+        sources._send_control_requests(
+            bus,
+            types.SimpleNamespace(Message=mock.Mock()),
+            sources.PcanConfiguration(listen_only=False),
+            requests,
+            lambda event: None,
+            pacing,
+        )
+        bus.send.assert_called_once()
+
+
 class DashboardPresentationTest(unittest.TestCase):
     @staticmethod
     def control_dashboard(*, active):
@@ -547,6 +612,90 @@ class DashboardPresentationTest(unittest.TestCase):
         values = []
         dashboard.control_var = types.SimpleNamespace(set=values.append)
         return dashboard, values
+
+    @staticmethod
+    def page_dashboard(*, queued=0):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.control_requests = sources.queue.Queue(
+            maxsize=app.CONTROL_QUEUE_SIZE
+        )
+        for _index in range(queued):
+            dashboard.control_requests.put_nowait(None)
+        dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
+        dashboard.pcan_active = True
+        dashboard.model = model.DashboardModel("tuning", 0x6F0, 1)
+        dashboard.configuration_frames = app.load_configuration_frames(
+            app.can_telemetry.DEFAULT_CONFIGURATION_FRAMES
+        )
+        values = []
+        dashboard.control_var = types.SimpleNamespace(set=values.append)
+        return dashboard, values
+
+    def test_a_page_configuration_queues_its_spaced_frames(self):
+        dashboard, values = self.page_dashboard()
+
+        dashboard.send_page_configuration(1)
+
+        requests = []
+        while not dashboard.control_requests.empty():
+            requests.append(dashboard.control_requests.get_nowait())
+        self.assertEqual(
+            [request.command for request in requests],
+            ["page-set"] * 4 + ["page-commit"],
+        )
+        self.assertTrue(all(request.can_id == 0x6F1 for request in requests))
+        self.assertTrue(
+            all(request.spacing == app.PAGE_FRAME_SPACING for request in requests)
+        )
+        self.assertGreaterEqual(app.PAGE_FRAME_SPACING, 0.02)
+        self.assertEqual(
+            values[-1], "Control: page configuration Rolling Launch law queued"
+        )
+        self.assertEqual(dashboard.page_request.configuration_id, 1)
+
+    def test_a_page_configuration_is_confirmed_by_its_echo(self):
+        dashboard, values = self.page_dashboard()
+        dashboard.send_page_configuration(2)
+        deadline = dashboard.page_request.deadline
+        self.assertEqual(dashboard.page_echo(deadline - 0.5), "waiting")
+        self.assertEqual(dashboard.page_echo(deadline + 0.1), "not echoed")
+        dashboard._report_page_echo(deadline + 0.1)
+        self.assertEqual(
+            values[-1],
+            "Control error: page configuration Rolling Launch law and "
+            "integrator not echoed",
+        )
+        dashboard.model.schema_verified = True
+        dashboard.model.page_configuration = 0x82
+        self.assertEqual(dashboard.page_echo(deadline + 0.2), "confirmed")
+        dashboard._report_page_echo(deadline + 0.2)
+        self.assertEqual(
+            values[-1],
+            "Control: page configuration Rolling Launch law and integrator "
+            "echoed",
+        )
+        self.assertEqual(dashboard._page_metric("page_group"), 1)
+        self.assertEqual(
+            dashboard._page_metric("page_configuration"),
+            "Rolling Launch law and integrator",
+        )
+
+    def test_a_page_configuration_needs_room_frames_and_a_defined_id(self):
+        dashboard, values = self.page_dashboard(queued=app.CONTROL_QUEUE_SIZE - 4)
+        dashboard.send_page_configuration(1)
+        self.assertEqual(values[-1], "Control error: command queue is full")
+        self.assertIsNone(dashboard.page_request)
+
+        dashboard, values = self.page_dashboard()
+        dashboard.send_page_configuration(9)
+        self.assertEqual(values[-1], "Control error: configuration 9 is undefined")
+
+        dashboard.configuration_frames = None
+        dashboard.send_page_configuration(1)
+        self.assertEqual(
+            values[-1], "Control error: the configuration frames are not loaded"
+        )
+        self.assertTrue(dashboard.control_requests.empty())
 
     def test_stream_start_queues_schema_declared_control_frame(self):
         dashboard, values = self.control_dashboard(active=True)

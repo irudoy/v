@@ -10,8 +10,10 @@ from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
 
 
-def frames(profile, tick, *, context_tag=0, health_valid=True, identity=None):
-    """Build one group; ``identity`` overrides the (ID, CRC) of tag 3."""
+def frames(profile, tick, *, context_tag=0, health_valid=True, identity=None,
+           configuration=0):
+    """Build one group; ``identity`` overrides the (ID, CRC) of tag 3 and
+    ``configuration`` is the configuration byte of the dynamic page."""
     manifest = can_telemetry_profile.load_manifest()
     profile_spec = manifest.profile_by_name[profile]
     profile_id, crc16 = identity or (profile_spec.profile_id, profile_spec.crc16)
@@ -26,6 +28,9 @@ def frames(profile, tick, *, context_tag=0, health_valid=True, identity=None):
     result[0][1:3] = tick.to_bytes(2, "big")
     for page in manifest.context_pages:
         result[page][1] = context_tag
+    if profile_spec.dynamic is not None:
+        dynamic = profile_spec.dynamic
+        result[dynamic.page][dynamic.configuration_offset] = configuration
     for pad in manifest.padding:
         if pad.tag is None or pad.tag == context_tag:
             result[pad.page][pad.offset:pad.offset + pad.width] = bytes(pad.width)
@@ -449,6 +454,180 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             (0x6F0, bytes.fromhex("A001020304050607"), 12.5),
         )
         self.assertIsNone(can_telemetry.parse_candump_line("can0 6F0 [8]"))
+
+
+class DynamicPageTest(unittest.TestCase):
+    """The configuration byte selects the placement of the dynamic page."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.raw = json.loads(can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8"))
+        cls.frames = json.loads(
+            can_telemetry.DEFAULT_CONFIGURATION_FRAMES.read_text(encoding="utf-8")
+        )
+        cls.profile = can_telemetry.load_schema()[1]["tuning"]
+        cls.page = cls.profile["dynamic"]["page"]
+
+    def decode(self, selector, data):
+        decoder = can_telemetry.Decoder("tuning")
+        group = [bytearray(page) for page in frames("tuning", 1, configuration=selector)]
+        group[self.page][1:7] = data
+        return decoder, feed_group(decoder, group)
+
+    def test_the_default_configuration_carries_the_fixed_fields(self):
+        decoder, snapshot = self.decode(0, bytes((1, 2, 3, 4, 5, 6)))
+        self.assertEqual(snapshot.fields["telemetry_page_configuration"], 0)
+        self.assertEqual(snapshot.fields["exhaust_cvtc_actual_b1_raw"], 6)
+        self.assertEqual(snapshot.fields["torque_transition_state_raw"], 0x0405)
+        self.assertNotIn("rolling_launch_speed_error_raw", snapshot.fields)
+        self.assertEqual(decoder.unknown_configurations, 0)
+
+    def test_a_configuration_places_its_slots_in_order(self):
+        data = (-25).to_bytes(2, "big", signed=True) + (523).to_bytes(2, "big") + bytes((7, 40))
+        decoder, snapshot = self.decode(1, data)
+        self.assertEqual(snapshot.fields["rolling_launch_speed_error_raw"], -25)
+        self.assertEqual(snapshot.fields["rolling_launch_torque_fraction_raw"], 523)
+        self.assertEqual(snapshot.fields["rolling_launch_cut_counter"], 7)
+        self.assertEqual(snapshot.fields["ignition_dwell_angle_raw"], 40)
+        self.assertNotIn("exhaust_cvtc_actual_b1_raw", snapshot.fields)
+        self.assertNotIn("torque_transition_state_raw", snapshot.fields)
+        self.assertEqual(decoder.unknown_configurations, 0)
+
+    def test_group_one_of_a_two_group_configuration_is_zero_padded(self):
+        data = (-32).to_bytes(2, "big", signed=True) + bytes((3, 9, 0, 0))
+        decoder, snapshot = self.decode(0x82, data)
+        self.assertEqual(snapshot.fields["rolling_launch_integrator_raw"], -32)
+        self.assertEqual(snapshot.fields["speed_frame_receive_age_raw"], 3)
+        self.assertEqual(snapshot.fields["rolling_launch_cut_counter"], 9)
+        self.assertNotIn("rolling_launch_speed_error_raw", snapshot.fields)
+        self.assertEqual(decoder.unknown_configurations, 0)
+
+    def test_an_undefined_layout_leaves_the_page_undecoded(self):
+        cases = {
+            "unknown ID": (5, bytes(6)),
+            "group of a one-group configuration": (0x81, bytes(6)),
+            "group 1 of the default": (0x80, bytes(6)),
+            "bytes after the slots": (0x82, bytes((0, 1, 2, 3, 0, 1))),
+        }
+        for name, (selector, data) in cases.items():
+            with self.subTest(name=name):
+                decoder, snapshot = self.decode(selector, data)
+                self.assertIsNotNone(snapshot)
+                self.assertEqual(decoder.unknown_configurations, 1)
+                self.assertEqual(snapshot.fields["telemetry_page_configuration"], selector)
+                self.assertFalse(
+                    can_telemetry.dynamic_field_names(self.profile) & snapshot.fields.keys()
+                )
+
+    def test_invalid_configurations_are_refused(self):
+        def mutate(change):
+            raw = json.loads(json.dumps(self.raw))
+            change(raw["profiles"][0])
+            return raw
+
+        def widen(profile):
+            profile["configurations"][0]["groups"][0].append(
+                "rolling_launch_integrator_raw"
+            )
+
+        def repeat_field(profile):
+            profile["dynamic_fields"][0]["name"] = "coolant_raw"
+
+        def place(profile):
+            profile["dynamic_fields"][0]["offset"] = 1
+
+        def no_dynamic(profile):
+            del profile["dynamic"]
+            profile["crc16_ccitt_false"] = "0x%04X" % can_telemetry_schema.profile_crc16(
+                profile, self.raw["protocol_version"]
+            )
+
+        cases = {
+            "group wider than the data bytes": widen,
+            "ID 0": lambda profile: profile["configurations"][0].update(id=0),
+            "ID 128": lambda profile: profile["configurations"][0].update(id=128),
+            "repeated ID": lambda profile: profile["configurations"][1].update(id=1),
+            "three groups": lambda profile: profile["configurations"][1]["groups"].append(
+                ["rolling_launch_cut_counter"]
+            ),
+            "unknown slot": lambda profile: profile["configurations"][0]["groups"][0].append("x"),
+            "slot named like a field": repeat_field,
+            "slot with a placement": place,
+            "configurations without a dynamic page": no_dynamic,
+        }
+        for name, change in cases.items():
+            with self.subTest(name=name):
+                with self.assertRaises(can_telemetry.DecodeError):
+                    can_telemetry.parse_schema(mutate(change))
+
+    def test_slot_fields_join_the_profile_fields_and_calibrations(self):
+        names = [field["name"] for field in can_telemetry.profile_fields(self.profile)]
+        self.assertEqual(len(names), len(set(names)))
+        self.assertIn("rolling_launch_speed_error_raw", names)
+        calibration = can_telemetry.calibrations(self.profile)["rolling_launch_integrator_raw"]
+        self.assertAlmostEqual(calibration.apply(-32), -0.2)
+        self.assertEqual(
+            can_telemetry.configuration_labels(self.profile)[0], "Default"
+        )
+
+    def test_configuration_commands_follow_the_schema_groups(self):
+        can_id, commands = can_telemetry_schema.configuration_commands(
+            self.frames, self.profile, 0x6F0, 2
+        )
+        self.assertEqual(can_id, 0x6F1)
+        self.assertEqual(
+            [command for command, _payload in commands],
+            ["page-set"] * 7 + ["page-commit"],
+        )
+        descriptors = [payload[2] for _command, payload in commands[:-1]]
+        self.assertEqual(descriptors, [0x02, 0x12, 0x21, 0x31, 0x82, 0x91, 0xA1])
+        self.assertEqual(commands[-1][1][:6], bytes((0xC2, 2, 2, 4, 3, 0)))
+        for command, payload in commands:
+            self.assertEqual(payload[1], 2)
+            if command == "page-set":
+                self.assertEqual(payload[3], 0xFF)
+            self.assertEqual(
+                int.from_bytes(payload[6:], "big"),
+                can_telemetry_schema.crc16_ccitt_false(payload[:6]),
+            )
+        _can_id, (default,) = can_telemetry_schema.configuration_commands(
+            self.frames, self.profile, 0x6F0, 0
+        )
+        self.assertEqual(default, ("page-default", bytes.fromhex("C00000000000B020")))
+
+    def test_configuration_commands_refuse_frames_that_differ(self):
+        def tampered(change):
+            frames = json.loads(json.dumps(self.frames))
+            change(frames)
+            return frames
+
+        def swap(frames):
+            row = frames["configurations"][0]
+            row["frames"][0], row["frames"][1] = row["frames"][1], row["frames"][0]
+
+        def corrupt(frames):
+            row = frames["configurations"][0]
+            row["frames"][0] = row["frames"][0][:-1] + "0"
+
+        cases = {
+            "swapped slots": (tampered(swap), 1),
+            "corrupt CRC": (tampered(corrupt), 1),
+            "dropped commit": (
+                tampered(lambda frames: frames["configurations"][0]["frames"].pop()), 1
+            ),
+            "other profile": (tampered(lambda frames: frames.update(profile="x")), 0),
+            "undefined ID": (self.frames, 9),
+        }
+        for name, (frames, configuration_id) in cases.items():
+            with self.subTest(name=name):
+                with self.assertRaises(ValueError):
+                    can_telemetry_schema.configuration_commands(
+                        frames, self.profile, 0x6F0, configuration_id
+                    )
+        with self.assertRaises(ValueError):
+            can_telemetry_schema.configuration_commands(
+                self.frames, self.profile, 0x7FF, 1
+            )
 
 
 class CanTelemetryControlTest(unittest.TestCase):

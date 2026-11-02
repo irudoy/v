@@ -17,8 +17,9 @@ The fixed dashboard presentation targets the semantic field names in the
 producer hooks, RAM addresses, and mailbox ownership stay outside the host
 schema. `--schema` selects another compatible schema file. In active/ACK mode
 the adapter acknowledges bus frames, and the only application frames sent by
-the dashboard are schema-declared START and STOP commands initiated by the
-stream button. The firmware keeps startup streaming disabled by default, so
+the dashboard are the schema-declared START and STOP commands of the stream
+button and the dynamic page commands of the `PAGE` button. The firmware keeps
+startup streaming disabled by default, so
 START is the normal way to begin a capture. Listen-only mode suppresses CAN
 transmission and ACK participation. The application connects at start, so
 `--listen-only` selects that mode from the first connection; in the window,
@@ -161,6 +162,32 @@ The button requires an active/ACK PCAN connection. The dashboard rejects the
 command in listen-only, demo, and replay modes. `sent` means the PCAN driver
 accepted the transmit request; the protocol has no response frame, so reception
 of new telemetry after START is the end-to-end confirmation.
+
+## Dynamic page configuration
+
+Page 3 is the dynamic page of the `tuning` profile: bytes 1..6 carry the
+default fields or the RAM slots of a host-defined configuration, and byte 7
+echoes the configuration ID and the group of the snapshot
+([`../../patches/can-telemetry.md`](../../patches/can-telemetry.md#dynamic-page)).
+The `PAGE` button of the `DYNAMIC` tab lists the configurations of the schema
+and sends the selected one on the control ID: DEFAULT for configuration 0, or
+a SET frame for every slot and a COMMIT frame. The frames go out at least
+20 ms apart because the ECU consumes one control frame per 10.24 ms tick.
+The frames come from `patches/can-telemetry-configurations.json`, the
+generated JK08A slot addresses; `--configurations` selects another file of
+the same form. The button requires an active/ACK PCAN connection, like
+`STREAM`.
+
+The protocol has no response frame. The `Page configuration` panel shows the
+configuration that the page echoes, the group of the snapshot, the requested
+configuration, and the echo: `waiting` until the page carries the requested
+ID, `confirmed` once it does, and `not echoed` when it does not within one
+second after the last frame is due. The ECU keeps the active configuration
+when it rejects a frame, so a rejected request stays `not echoed`. A
+configuration change drops the values that only the previous configuration
+carried, and the `Dynamic page` panel shows the slots of every
+configuration. `Undecoded pages` counts snapshots whose page carries a
+configuration or group that the schema does not define.
 
 ## Native macOS application
 
@@ -397,12 +424,15 @@ distinct snapshots share one timestamp. An interface clock that steps
 backwards, or ahead of the host clock by more than one second, is abandoned
 without breaking elapsed time.
 
-The `tuning` MLG schema has 88 channels: time, schema state, every fixed and
-rotating custom-telemetry field, a decoded high-detonation-surface selector,
-stock CAN RPM, vehicle speed, selector code, transmission gear, ASCD input,
-and dashboard state.
+The `tuning` MLG schema holds time, schema state, every fixed and rotating
+custom-telemetry field, the slot field of every dynamic page configuration, a
+decoded high-detonation-surface selector, stock CAN RPM, vehicle speed,
+selector code, transmission gear, ASCD input, and dashboard state.
 Decoded telemetry and context values use F32, so a rotating context that has
-not arrived yet can be represented as `NaN` rather than a fabricated zero.
+not arrived yet can be represented as `NaN` rather than a fabricated zero, and
+so can a field that the active configuration of the dynamic page does not
+carry. A group of a two-group configuration holds the last values of the
+other group.
 
 A telemetry channel takes the label, category, and digits of the
 presentation of its field in the schema and the display unit of its scale.
@@ -615,11 +645,11 @@ additional rows instead of leaving the window; a flow bar positions its items
 by coordinates inside itself, without row frames. The timer bar follows the
 status fields while the `0-100` button shows it, and a loaded replay adds its
 transport bar under the status fields or the timer bar. The card
-and panel area scrolls vertically when the remaining height is short. `PRIMARY` and
-`EXTENDED` select the panel set. Every field of the current profile that
-carries a conversion has a panel row or a card.
+and panel area scrolls vertically when the remaining height is short.
+`PRIMARY`, `EXTENDED`, and `DYNAMIC` select the panel set. Every field of the
+current profile that carries a conversion has a panel row or a card.
 
-The four detail panels of a set share one row and shrink with the window down
+The detail panels of a set share one row and shrink with the window down
 to a `250 px` cell. A narrower window folds them into two rows of two, and a
 window below two such cells into one column; a folded grid fills its rows
 evenly and leaves no single panel on a row of its own. A shrinking panel takes
@@ -652,12 +682,13 @@ parent and draws it across the text.
 | `0-100` | `stopwatch` | shows or hides the acceleration timer bar | timer bar shown |
 | `RESET TIMES` | `circular-arrow` | on the timer bar, clears the last and best 0-100 and 100-200 km/h times | never |
 | `LIGHT` / `DARK` | `sun` / `moon` | switches to the named color theme | never |
+| `PAGE` | `download` | on the tab row, lists the dynamic page configurations and sends the selected one | never |
 
 A transport button shows the icon of the action it takes next. The replay bar
 uses `play` for `PLAY`, `pause` for `PAUSE`, `repeat` for `LOOP`, `mark-in`
 for `IN`, `mark-out` for `OUT`, `floppy` for `SAVE LOOP`, and `fast-forward`
-for the speed button, and the tabs use `gauge` for `PRIMARY` and `list` for
-`EXTENDED`. The dialogs use `plus` for `ADD`, `minus` for `REMOVE`, `up` for
+for the speed button, and the tabs use `gauge` for `PRIMARY`, `list` for
+`EXTENDED`, and `broadcast` for `DYNAMIC`. The dialogs use `plus` for `ADD`, `minus` for `REMOVE`, `up` for
 `UP`, `down` for `DOWN`, `circular-arrow` for `DEFAULTS`, `cross` for
 `CANCEL`, `check` for `APPLY`, `share` for `PUBLISH`, and `download` for
 `INSTALL PLUGIN`.
@@ -676,8 +707,8 @@ row is therefore laid out from the width of the row alone, and a value that
 does not fit is elided instead of widening every card of the row.
 
 `CARDS` opens a dialog with the available metrics on the left and the shown
-cards, left to right, on the right. Every metric of the primary and extended
-panels can be a card, and the row holds 0 to 12 cards. `DEFAULTS` restores
+cards, left to right, on the right. Every metric of the panels can be a
+card, and the row holds 0 to 12 cards. `DEFAULTS` restores
 engine speed, vehicle speed, calculated load, timing command, total airflow,
 calculated injection, and coolant temperature. The selector position, the
 transmission gear, and the selected map are rows of the

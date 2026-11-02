@@ -55,6 +55,7 @@ class WindowsPackageTest(unittest.TestCase):
                     prefix + "requirements.txt",
                     prefix + "bootstrap-requirements.txt",
                     prefix + "patches/can-telemetry-schema.json",
+                    prefix + "patches/can-telemetry-configurations.json",
                     prefix + "tools/can_dashboard/app.py",
                     prefix + "tools/can_dashboard/feed_dialog.py",
                     prefix + "tools/can_dashboard/hero_picker.py",

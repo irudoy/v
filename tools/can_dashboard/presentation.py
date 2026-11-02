@@ -62,6 +62,10 @@ TABS = (
         "Throttle sensors and protocol",
         "Learning and knock state",
     )),
+    ("Dynamic", (
+        "Page configuration",
+        "Dynamic page",
+    )),
 )
 # The code metrics of each panel, each at its order among the telemetry
 # fields of the panel.
@@ -76,6 +80,13 @@ PANEL_CODE_METRICS = {
         (120, Metric("gps_lat", "GPS latitude", "deg", 6)),
         (130, Metric("gps_lon", "GPS longitude", "deg", 6)),
         (140, Metric("gps_status", "GPS source")),
+    ),
+    "Page configuration": (
+        (10, Metric("page_configuration", "Active configuration")),
+        (20, Metric("page_group", "Group", "", 0)),
+        (30, Metric("page_request", "Requested configuration")),
+        (40, Metric("page_echo", "Echo")),
+        (50, Metric("page_undecoded", "Undecoded pages", "", 0)),
     ),
 }
 

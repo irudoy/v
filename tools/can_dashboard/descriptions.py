@@ -75,6 +75,31 @@ DESCRIPTIONS = {
         "row reads --."
     ),
     "gps_status": "Source of the coordinates, when one is decoded.",
+    "page_configuration": (
+        "Configuration that the configuration byte of the dynamic page "
+        "echoes. Default carries the fixed fields of page 3; any other "
+        "configuration carries the RAM slots that its SET and COMMIT frames "
+        "installed."
+    ),
+    "page_group": (
+        "Group of the configuration in the current snapshot. A two-group "
+        "configuration alternates its groups, so each group arrives every "
+        "second snapshot."
+    ),
+    "page_request": (
+        "Configuration that the PAGE button last queued on this connection."
+    ),
+    "page_echo": (
+        "Whether the dynamic page echoes the requested configuration. The "
+        "ECU rejects a frame with a wrong CRC, slot, width, or address and "
+        "keeps the active configuration, so a rejected request is not "
+        "echoed."
+    ),
+    "page_undecoded": (
+        "Snapshots whose dynamic page carries a configuration ID or group "
+        "that the schema does not define, or nonzero bytes after its slots. "
+        "Their dynamic page stays undecoded."
+    ),
 }
 
 

@@ -18,6 +18,39 @@
   },
   "profiles": [
     {
+      "configurations": [
+        {
+          "groups": [
+            [
+              "rolling_launch_speed_error_raw",
+              "rolling_launch_torque_fraction_raw",
+              "rolling_launch_cut_counter",
+              "ignition_dwell_angle_raw"
+            ]
+          ],
+          "id": 1,
+          "label": "Rolling Launch law",
+          "name": "launch_law"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_speed_error_raw",
+              "rolling_launch_torque_fraction_raw",
+              "rolling_launch_cut_counter",
+              "ignition_dwell_angle_raw"
+            ],
+            [
+              "rolling_launch_integrator_raw",
+              "speed_frame_receive_age_raw",
+              "rolling_launch_cut_counter"
+            ]
+          ],
+          "id": 2,
+          "label": "Rolling Launch law and integrator",
+          "name": "launch_law_integrator"
+        }
+      ],
       "contexts": [
         {
           "fields": [
@@ -914,6 +947,128 @@
         "data_bytes": 6,
         "page": 3
       },
+      "dynamic_fields": [
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Vehicle speed less the Rolling Launch target speed, the input of the speed-hold law. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch speed error",
+            "order": 10,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_speed_error_raw",
+          "scale": "raw / 10 km/h; vehicle speed less the target speed",
+          "signed": true,
+          "unit": "km/h",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Torque fraction u of the speed-hold law after its rate limit. Hold mode withholds the dwell of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch torque fraction",
+            "order": 20,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_torque_fraction_raw",
+          "scale": "raw / 10 percent; torque fraction u after the rate limit",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.00625,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Integral term of the speed-hold law. The dynamic page carries it in group 1 of the launch-law and integrator configuration, every second snapshot.",
+            "digits": 2,
+            "group": "Rolling Launch",
+            "label": "Launch integrator",
+            "order": 30,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_integrator_raw",
+          "scale": "raw / 160 percent; speed-hold integrator",
+          "signed": true,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Wrapping count of the ignition dwells that hold mode withholds; the difference between two snapshots counts the cuts between them. The dynamic page carries it in every group of a launch-law configuration.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch cut counter",
+            "order": 40,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_cut_counter",
+          "scale": "raw count; wrapping count of withheld dwells",
+          "signed": false,
+          "unit": "count",
+          "width": 1
+        },
+        {
+          "candidate": true,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Periodic snapshot of the ignition dwell angle, with a stock range of 0 through 114 degrees. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 0,
+            "group": "Ignition",
+            "label": "Dwell angle",
+            "order": 50,
+            "panel": "Dynamic page"
+          },
+          "name": "ignition_dwell_angle_raw",
+          "scale": "candidate raw degrees; periodic dwell-angle snapshot, stock range 0 through 114",
+          "signed": false,
+          "unit": "degrees",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 10.24,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Receive age of the vehicle-speed frame 0x284 that the Rolling Launch speed gate checks; a pass that processes a new frame clears it. The dynamic page carries it in group 1 of the launch-law and integrator configuration.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Speed frame age",
+            "order": 60,
+            "panel": "Dynamic page"
+          },
+          "name": "speed_frame_receive_age_raw",
+          "scale": "raw * 10.24 ms; receive age of vehicle-speed frame 0x284, saturating at 255",
+          "signed": false,
+          "unit": "ms",
+          "width": 1
+        }
+      ],
       "fields": [
         {
           "dashboard": {

@@ -39,6 +39,28 @@ class ControlRequest:
     command: str
     can_id: int
     payload: bytes
+    # The least time in seconds after the previous control frame. The ECU
+    # consumes at most one control frame per 10.24 ms tick from a mailbox
+    # that does not overwrite, so frames of one configuration keep a spacing.
+    spacing: float = 0.0
+
+
+class ControlPacing:
+    """The request that waits for its spacing and the send time of the
+    previous control frame of one connection."""
+
+    def __init__(self, clock=time.monotonic):
+        self.clock = clock
+        self.pending = None
+        self.last_sent = None
+
+    def wait(self, limit):
+        """The receive timeout that wakes the sender when the pending
+        request is due, at most ``limit``."""
+        if self.pending is None or self.last_sent is None:
+            return limit
+        due = self.last_sent + self.pending.spacing - self.clock()
+        return max(0.0, min(limit, due))
 
 
 @dataclass(frozen=True)
@@ -76,14 +98,28 @@ def _check_pcan_driver():
     PCANBasic()
 
 
-def _send_control_requests(bus, can_module, config, requests, emit):
+def _send_control_requests(bus, can_module, config, requests, emit, pacing=None):
+    """Send the queued control frames in order, each no sooner than its
+    spacing after the previous frame; a request whose spacing has not
+    elapsed waits in ``pacing`` for a later call."""
     if requests is None:
         return
+    if pacing is None:
+        pacing = ControlPacing()
     while True:
-        try:
-            request = requests.get_nowait()
-        except queue.Empty:
+        request = pacing.pending
+        if request is None:
+            try:
+                request = requests.get_nowait()
+            except queue.Empty:
+                return
+        if (
+            pacing.last_sent is not None
+            and pacing.clock() - pacing.last_sent < request.spacing
+        ):
+            pacing.pending = request
             return
+        pacing.pending = None
         if config.listen_only:
             emit(ControlStatus(
                 "error",
@@ -99,6 +135,7 @@ def _send_control_requests(bus, can_module, config, requests, emit):
                 is_remote_frame=False,
             )
             bus.send(message, timeout=0.1)
+            pacing.last_sent = pacing.clock()
         except Exception as error:
             emit(ControlStatus(
                 "error",
@@ -169,6 +206,7 @@ def _run_pcan(config, stop_event, emit, control_requests):
 
     mode = "listen-only" if config.listen_only else "active/ACK"
     terminal_error = None
+    pacing = ControlPacing()
     try:
         emit(SourceStatus("connected", f"{config.channel}, {config.bitrate} bit/s, {mode}"))
         while not stop_event.is_set():
@@ -178,9 +216,10 @@ def _run_pcan(config, stop_event, emit, control_requests):
                 config,
                 control_requests,
                 emit,
+                pacing,
             )
             try:
-                message = bus.recv(timeout=0.1)
+                message = bus.recv(timeout=pacing.wait(0.1))
             except Exception as error:
                 terminal_error = f"PCAN receive failed: {error}"
                 break

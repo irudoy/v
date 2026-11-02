@@ -18,6 +18,8 @@ if str(ROOT) not in sys.path:
 from tools.logs import can_telemetry_schema
 
 DEFAULT_SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
+# The command frames that install the dynamic page configurations on JK08A.
+DEFAULT_CONFIGURATION_FRAMES = ROOT / "patches" / "can-telemetry-configurations.json"
 CANDUMP_COMPACT = re.compile(
     r"(?:^|\s)(?P<can_id>[0-9A-Fa-f]{3})#(?P<data>[0-9A-Fa-f]{16})(?:\s|$)"
 )
@@ -121,15 +123,32 @@ class Snapshot:
 
 
 @dataclass(frozen=True)
+class DynamicLayout:
+    """Byte placement of the dynamic page of one profile.
+
+    ``default`` holds the (field, offset) pairs of configuration ID 0 and
+    ``configurations`` maps every other ID to its groups of (field, offset)
+    pairs. The data bytes after the last slot of a group are zero.
+    """
+
+    page: int
+    configuration_offset: int
+    default: tuple
+    configurations: dict
+
+
+@dataclass(frozen=True)
 class Layout:
     """Byte placement of the fields of one profile.
 
     ``fixed`` holds (field, page, offset) and ``contexts`` maps (page, tag)
-    to the context name and its (field, offset) pairs.
+    to the context name and its (field, offset) pairs. The data bytes of a
+    dynamic page belong to ``dynamic`` and not to ``fixed``.
     """
 
     fixed: tuple
     contexts: dict
+    dynamic: DynamicLayout | None = None
 
 
 def load_schema(path=DEFAULT_SCHEMA):
@@ -358,6 +377,7 @@ def _parse_profile(source_profile, context, protocol_version):
             raise DecodeError(
                 f"{context} dynamic page lacks an unsigned configuration byte"
             )
+    _validate_configurations(source_profile, dynamic, field_names, context)
     if (
         can_telemetry_schema.profile_crc16(
             source_profile, protocol_version
@@ -374,19 +394,103 @@ def _parse_profile(source_profile, context, protocol_version):
     return profile
 
 
+def _validate_configurations(source_profile, dynamic, field_names, context):
+    """Validate the slot fields and the configurations of a dynamic page:
+    IDs 1..127 with one or two groups of known slots that fit its data
+    bytes."""
+    slot_fields = source_profile.get("dynamic_fields", [])
+    configurations = source_profile.get("configurations", [])
+    if not isinstance(slot_fields, list) or not isinstance(configurations, list):
+        raise DecodeError(f"{context} dynamic fields and configurations must be arrays")
+    if (slot_fields or configurations) and dynamic is None:
+        raise DecodeError(f"{context} configures no dynamic page")
+    widths = {}
+    for index, field in enumerate(slot_fields):
+        field_context = f"{context}.dynamic_fields[{index}]"
+        _validate_schema_field(field, field_context)
+        if "page" in field or "offset" in field:
+            raise DecodeError(f"{field_context} must use sequential slot placement")
+        if field["name"] in field_names:
+            raise DecodeError(f"duplicate field name {field['name']!r}")
+        field_names.add(field["name"])
+        widths[field["name"]] = field["width"]
+    identities = set()
+    for index, row in enumerate(configurations):
+        row_context = f"{context}.configurations[{index}]"
+        groups = row.get("groups") if isinstance(row, dict) else None
+        if (
+            not isinstance(row, dict)
+            or row.keys() != {"id", "name", "label", "groups"}
+            or type(row["id"]) is not int
+            or not 1 <= row["id"] <= 0x7F
+            or not _text(row["name"])
+            or not _text(row["label"])
+            or not isinstance(groups, list)
+            or not 1 <= len(groups) <= 2
+        ):
+            raise DecodeError(f"{row_context} has an invalid identity")
+        if {row["id"], row["name"]} & identities:
+            raise DecodeError(f"{row_context} repeats a configuration ID or name")
+        identities |= {row["id"], row["name"]}
+        for group in groups:
+            if (
+                not isinstance(group, list)
+                or not group
+                or not all(isinstance(name, str) for name in group)
+                or len(set(group)) != len(group)
+                or any(name not in widths for name in group)
+                or sum(widths[name] for name in group) > dynamic["data_bytes"]
+            ):
+                raise DecodeError(
+                    f"{row_context} has a group of unknown or repeated slots "
+                    "or one wider than the data bytes"
+                )
+
+
 def _profile_layout(profile):
+    dynamic = profile.get("dynamic")
+    data_bytes = (
+        set()
+        if dynamic is None
+        else {(dynamic["page"], offset) for offset in range(1, dynamic["configuration_offset"])}
+    )
     fixed = tuple(
-        (field, field["page"], field["offset"]) for field in profile["fields"]
+        (field, field["page"], field["offset"])
+        for field in profile["fields"]
+        if (field["page"], field["offset"]) not in data_bytes
     )
     contexts = {}
     for row in profile["contexts"]:
-        placed = []
-        offset = 2
-        for field in row["fields"]:
-            placed.append((field, offset))
-            offset += field["width"]
-        contexts[(row["page"], row["tag"])] = (row["name"], tuple(placed))
-    return Layout(fixed, contexts)
+        contexts[(row["page"], row["tag"])] = (
+            row["name"], _sequential(row["fields"], 2)
+        )
+    if dynamic is None:
+        return Layout(fixed, contexts)
+    slots = {field["name"]: field for field in profile.get("dynamic_fields", ())}
+    default = tuple(
+        (field, field["offset"])
+        for field in sorted(profile["fields"], key=lambda item: item["offset"])
+        if (field["page"], field["offset"]) in data_bytes
+    )
+    configurations = {
+        row["id"]: tuple(
+            _sequential([slots[name] for name in group], 1)
+            for group in row["groups"]
+        )
+        for row in profile.get("configurations", ())
+    }
+    return Layout(fixed, contexts, DynamicLayout(
+        dynamic["page"], dynamic["configuration_offset"], default, configurations
+    ))
+
+
+def _sequential(fields, offset):
+    """(field, offset) pairs of fields placed one after another."""
+    placed = []
+    for field in fields:
+        placed.append((field, offset))
+        offset += field["width"]
+    return tuple(placed)
 
 
 def _validate_schema_field(field, context):
@@ -515,7 +619,9 @@ class Decoder:
 
     The health context of a run verifies the protocol version, the profile
     ID, and the CRC16 of the selected profile; a group whose health context
-    publishes another identity is dropped.
+    publishes another identity is dropped. The configuration byte of a
+    dynamic page selects the placement of its data bytes; a configuration
+    that the schema does not define as published leaves them undecoded.
     """
 
     def __init__(self, profile, can_id=0x6F0, schema_path=DEFAULT_SCHEMA):
@@ -546,6 +652,7 @@ class Decoder:
         self.schema_mismatches = 0
         self.completed_groups = 0
         self.producer_restarts = 0
+        self.unknown_configurations = 0
 
     @property
     def schema_verified(self):
@@ -677,6 +784,8 @@ class Decoder:
                     pages[page], field, offset=offset
                 )
         context_name = " + ".join(context_names)
+        if self._layout.dynamic is not None:
+            self._decode_dynamic(pages, values)
 
         if run != self._run:
             self._run = run
@@ -698,6 +807,29 @@ class Decoder:
         )
 
 
+    def _decode_dynamic(self, pages, values):
+        """Decode the data bytes of the dynamic page by the configuration
+        and group of its configuration byte."""
+        dynamic = self._layout.dynamic
+        page = pages[dynamic.page]
+        selector = page[dynamic.configuration_offset]
+        configuration_id, group = selector & 0x7F, selector >> 7
+        if configuration_id == 0:
+            groups = (dynamic.default,)
+        else:
+            groups = dynamic.configurations.get(configuration_id, ())
+        placed = groups[group] if group < len(groups) else None
+        end = 1
+        if placed:
+            field, offset = placed[-1]
+            end = offset + field["width"]
+        if placed is None or any(page[end:dynamic.configuration_offset]):
+            self.unknown_configurations += 1
+            return
+        for field, offset in placed:
+            values[field["name"]] = _decode_value(page, field, offset=offset)
+
+
 @dataclass(frozen=True)
 class Calibration:
     """Affine conversion of one raw telemetry field to engineering units."""
@@ -717,10 +849,56 @@ def engineering_key(name):
 
 
 def profile_fields(profile):
-    """The fixed fields and then the context fields of one profile."""
-    return tuple(profile["fields"]) + tuple(
-        field for context in profile["contexts"] for field in context["fields"]
+    """The fixed fields, the context fields, and then the slot fields of the
+    dynamic page of one profile."""
+    return (
+        tuple(profile["fields"])
+        + tuple(
+            field
+            for context in profile["contexts"]
+            for field in context["fields"]
+        )
+        + tuple(profile.get("dynamic_fields", ()))
     )
+
+
+def configuration_field(profile):
+    """The name of the configuration byte of the dynamic page of a profile,
+    or None."""
+    dynamic = profile.get("dynamic")
+    if dynamic is None:
+        return None
+    return next(
+        field["name"]
+        for field in profile["fields"]
+        if (field["page"], field["offset"])
+        == (dynamic["page"], dynamic["configuration_offset"])
+    )
+
+
+def dynamic_field_names(profile):
+    """The names of the fields that the dynamic page of a profile carries in
+    some configuration: the default fields of its data bytes and the slot
+    fields."""
+    dynamic = profile.get("dynamic")
+    if dynamic is None:
+        return frozenset()
+    return frozenset(
+        field["name"]
+        for field in profile["fields"]
+        if field["page"] == dynamic["page"]
+        and field["offset"] < dynamic["configuration_offset"]
+    ) | {field["name"] for field in profile.get("dynamic_fields", ())}
+
+
+def configuration_labels(profile):
+    """The label of every configuration of the dynamic page by ID, with the
+    default configuration as ID 0."""
+    if profile.get("dynamic") is None:
+        return {}
+    return {0: "Default"} | {
+        row["id"]: row["label"] for row in profile.get("configurations", ())
+    }
 
 
 def calibrations(profile):
@@ -819,7 +997,8 @@ def main(argv=None):
         f" incomplete={decoder.incomplete_groups}"
         f" malformed={decoder.malformed_frames}"
         f" schema_mismatches={decoder.schema_mismatches}"
-        f" producer_restarts={decoder.producer_restarts}",
+        f" producer_restarts={decoder.producer_restarts}"
+        f" unknown_configurations={decoder.unknown_configurations}",
         file=sys.stderr,
     )
     return 0

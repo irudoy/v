@@ -101,10 +101,13 @@ class MacosPackageTest(unittest.TestCase):
             run.assert_not_called()
             self.assertTrue((target / "keep.txt").is_file())
 
-    def test_the_bundle_carries_the_wire_schema_only(self):
+    def test_the_bundle_carries_the_wire_schema_and_configuration_frames_only(self):
         self.assertEqual(
             [source.relative_to(package_macos.ROOT).as_posix() for source, _ in package_macos.DATA_FILES],
-            ["patches/can-telemetry-schema.json"],
+            [
+                "patches/can-telemetry-schema.json",
+                "patches/can-telemetry-configurations.json",
+            ],
         )
 
     def test_archive_preserves_bundle_modes_and_symlinks(self):

@@ -14,8 +14,8 @@ file directly and do not import the JK08A producer manifest. The producer
 binding retains the exact ROM, RAM, hook, source-address, and mailbox
 constraints required to build safe firmware. The profile CRC covers the wire
 layout alone: protocol version, profile ID, page count, the page, offset,
-width, and signedness of every fixed field, and the page, tag, and ordered
-widths and signedness of every context. ROM identity, source addresses,
+width, and signedness of every fixed field, the page, tag, and ordered
+widths and signedness of every context, and the dynamic page. ROM identity, source addresses,
 producer storage kinds, field names, context names, scale strings, and the host
 presentation are outside it, so a renamed field, a restated scale, or another
 presentation keeps the CRC and the firmware bytes. The profile ID states which
@@ -227,13 +227,14 @@ The runtime owns `0x000D4280..0x000D6000` inside the audited free ROM region.
 | ---: | ---: | --- |
 | `0x000D4280..0x000D4340` | 192 | main, knock, and startup wrappers |
 | `0x000D4340..0x000D4800` | 1,216 | configuration guard, capture, bank builder, knock margin wrapper at `0x000D4600`, and page request |
-| `0x000D4800..0x000D4C00` | 1,024 | combined SLE1 ISR and bounded queue |
+| `0x000D4800..0x000D4A70` | 624 | combined SLE1 ISR and bounded queue |
+| `0x000D4A70..0x000D4C00` | 400 | dynamic page command handler |
 | `0x000D4C00..0x000D4E00` | 512 | 492-byte generated source-pointer table plus erased tail |
 | `0x000D4E00..0x000D4E10` | 16 | fail-closed build configuration |
 | `0x000D4E10..0x000D5000` | 496 | HCAN1 initialization wrapper, control poller, exact command validator, and shared configuration guard |
 | `0x000D5000..0x000D6000` | 4,096 | exclusive erased future ROM reserve |
 
-The active RAM allocation is `0xFFFF5E00..0xFFFF5F00`.
+The active RAM allocation is `0xFFFF5E00..0xFFFF5F90`.
 
 | RAM range | Size | Purpose |
 | ---: | ---: | --- |
@@ -242,7 +243,8 @@ The active RAM allocation is `0xFFFF5E00..0xFFFF5F00`.
 | `0xFFFF5E78..0xFFFF5ED0` | 88 | complete frame bank B |
 | `0xFFFF5ED0..0xFFFF5EE0` | 16 | reserved event state |
 | `0xFFFF5EE0..0xFFFF5F00` | 32 | active reserve, cleared at startup |
-| `0xFFFF5F00..0xFFFF6000` | 256 | exclusive future telemetry RAM reserve |
+| `0xFFFF5F00..0xFFFF5F90` | 144 | dynamic page state: active and staged configurations |
+| `0xFFFF5F90..0xFFFF6000` | 112 | exclusive future telemetry RAM reserve |
 
 The main path constructs a complete inactive bank before publication. The ISR
 never reads a bank that the main path may overwrite.
@@ -315,8 +317,10 @@ group finish coherently. A reset clears the override and restores the ROM flag.
 
 Mailbox 31 uses non-overwrite receive mode. The poller rejects a retained RTR
 frame, clears RXPR, RFPR, and UMSR for every consumed or rejected frame, and
-accepts only an exact command payload with DLC 8. An invalid producer
-configuration does not consume the mailbox and cannot change runtime state.
+accepts only an exact command payload with DLC 8. A DLC-8 frame without the
+`TEL2` magic goes to the command handler of the [dynamic page](#dynamic-page).
+An invalid producer configuration does not consume the mailbox and cannot
+change runtime state.
 
 The executable gate covers STOP, START, and the rejection of invalid control
 frames. On the vehicle they remain untested: registry entry
@@ -551,6 +555,97 @@ mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
+## Dynamic page
+
+Page 3 is the dynamic page of the profile. Bytes 1..6 carry the data of the
+active configuration, and byte 7, `telemetry_page_configuration`, carries its
+ID in bits 0 through 6 and the group of the snapshot in bit 7. The profile
+states the page as `[profile.dynamic]`: the page, the six data bytes, and the
+configuration byte offset 7.
+
+Configuration ID 0 is the default: the fixed fields of page 3 in the slot
+table above. Startup clears the active telemetry RAM allocation, which
+installs it, and the DEFAULT command reinstalls it. Any other configuration
+has one or two groups of one to six RAM slots of 1, 2, or 4 bytes. The slots
+of a group fill the data bytes in order from byte 1, and the bytes after the
+last slot are zero. A two-group configuration alternates its groups per
+snapshot, so each group arrives every second snapshot, `48.828125 Hz` at
+divisor 1.
+
+### Commands
+
+The control frame of [Runtime control](#runtime-control) carries three page
+commands. Bytes 6..7 hold CRC-16/CCITT-FALSE over bytes 0..5. The opcodes
+`0xC0..0xC2` differ from `0x54`, the first byte of the `TEL2` magic, so START
+and STOP parse unchanged.
+
+| Command | Bytes 0..5 |
+| --- | --- |
+| DEFAULT | `C0 00 00 00 00 00` |
+| SET | `C1 id d a2 a1 a0` |
+| COMMIT | `C2 id g n0 n1 00` |
+
+- SET stages slot `(d >> 4) & 7`, below 6, of group `d >> 7`, with width
+  `d & 0x0F` at address `0xFF000000 + a2a1a0`, for configuration ID 1 through
+  127. A SET with an ID other than the staging ID restarts the staging.
+- COMMIT installs the staging ID with `g` groups, 1 or 2, of `n0` and `n1`
+  slots, when the staging holds exactly slots `0..n-1` of each group and each
+  group fits six bytes. The capture of the same tick uses it.
+- The handler rejects a wrong CRC, an unknown opcode, ID 0 or an ID above 127,
+  a group, slot, or width out of range, a word or long at an unaligned
+  address, an address outside the RAM window, a SET or COMMIT with an ID other
+  than the staging ID, and a COMMIT that does not match the staging. A
+  rejection consumes the frame, clears the staging, and advances a saturating
+  reject counter; the active configuration stays unchanged.
+
+The RAM window is the on-chip RAM of the MCU: `0xFFFF0000..0xFFFFC000` on the
+SH7058 targets JK08A, JK00C, JK00D, and JK78C, and `0xFFFE8000..0xFFFFC000` on
+the SH7059 targets 1ND0A, 1ND3B, and 1ME3B. HCAN1 and every other peripheral
+lie outside it. The commands write telemetry RAM alone. The capture checks
+every slot of the active group again before it reads it; a failing slot or a
+group wider than six bytes clears the configuration ID, and the page carries
+the default.
+
+The dynamic page state occupies `0xFFFF5F00..0xFFFF5F90`: the active ID, the
+group count, the next group, the reject counter, the slot counts, the
+staged-slot mask, the staging ID, and the active and staged slots of both
+groups. A relocated target moves it by its RAM delta.
+
+### Echo and decoding
+
+The ECU consumes at most one control frame per 10.24 ms tick from a mailbox
+that does not overwrite, so a host sends the frames of a configuration at
+least 20 ms apart. No command has a response frame, and a rejected frame
+leaves the active configuration in place. Every configuration change is
+echoed in the configuration byte before data under the new ID is decoded:
+the decoder places bytes 1..6 of a snapshot by the ID and group that byte 7 of
+the same page carries, never by the configuration that a host requested.
+A host confirms a request when the page carries its ID.
+
+A snapshot whose configuration byte names an ID that the schema does not
+define, a group beyond the groups of its configuration, or nonzero bytes after
+the last slot leaves the data bytes of the page undecoded and counts as an
+unknown configuration; the other pages decode. A field that the configuration
+of a snapshot does not carry is absent from it.
+
+### Host configurations
+
+`can-telemetry-configurations.toml` defines the configurations: the ID,
+name, label, and groups of slot names of each, and every slot with its width,
+signedness, scale, presentation, and JK08A source, a `[[diagnostic]]` view of
+`rolling-launch-layout.toml` with an optional byte offset or an ECU RAM
+address with the specification that describes it. `can_telemetry_profile.py`
+validates the catalog against the command rules and the JK08A RAM window and
+renders the ROM-neutral slot fields and configurations into the profile of
+the schema, and the JK08A slot addresses and command frames into
+`can-telemetry-configurations.json`. A configuration ID names one slot layout
+for good: a changed layout takes a new ID, so a recorded trace decodes with a
+later catalog. The relocated targets have no generated slot addresses.
+
+The dashboard sends the frames of a configuration, checks them against the
+groups of the schema, and confirms the echo; the MLVLG recorder and the TRC
+converter hold the slot fields of every configuration.
+
 ## Queue and interrupt behavior
 
 The queue contains one active bank and one replaceable pending bank:
@@ -655,6 +750,12 @@ receiver, active-group stop, corrupt-state
 fail-closed behavior, the knock surface byte with only its high-detonation
 bit set and with every other bit set, a real `TRAPA` exception entry, and the
 exact ISR `RTE`.
+The dynamic page cases cover the power-up and DEFAULT configuration, SET and
+COMMIT of one and two groups, six one-byte slots, the group alternation, the
+capture of 1-, 2-, and 4-byte slots, every rejection cause and the saturating
+reject counter, both edges of the RAM window and the alignment of words and
+longs, START and STOP beside the page commands, and the fallback of a corrupt
+slot or slot budget.
 The knock margin wrapper runs against a simulator-only evaluator stub that
 stores a staged metric and overwrites `r0..r7`, which binds the order of the
 stock call and the operand reads. Its cases cover channel 0, a channel above
@@ -715,6 +816,9 @@ changed entries.
 | `can-telemetry-profile.toml` | authoritative wire fields and exact JK08A producer bindings |
 | `can_telemetry_profile.py` | producer validator and generator of the pointer table, the neutral host schema, the identity header, and the slot tables of this specification |
 | `can-telemetry-schema.json` | generated ROM-neutral strict host contract |
+| `can-telemetry-configurations.toml` | host-defined dynamic page configurations and their JK08A slot sources |
+| `can_telemetry_configurations.py` | catalog validator and generator of the dynamic page schema entries and JK08A command frames |
+| `can-telemetry-configurations.json` | generated JK08A slot addresses and command frames of the configurations |
 | `can-telemetry-identity.h` | generated profile ID, page count, CRC, and harness configuration record |
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
 | `can-telemetry-*.s` | wrappers, capture, control receiver, queue, ISR, and generated tables |

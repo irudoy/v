@@ -23,13 +23,17 @@ LOCK_TARGET = TARGET_BY_NAME["windows"]
 SOURCE_BUILDS = ",".join(LOCK_TARGET.sources)
 
 PACKAGE_ROOT = f"{PRODUCT_SLUG}-v{__version__}"
-# The modules that the two launchers import, the wire schema they read, and
-# the dashboard documentation.
+# The modules that the two launchers import, the wire schema and the
+# configuration frames they read, and the dashboard documentation.
 ENTRY_POINTS = ("tools/can_dashboard/app.py", "tools/logs/trc_to_mlg.py")
-DATA_FILES = ("patches/can-telemetry-schema.json",)
+DATA_FILES = (
+    "patches/can-telemetry-schema.json",
+    "patches/can-telemetry-configurations.json",
+)
 DOCUMENTATION = ("tools/can_dashboard/README.md",)
 SOURCE_FILES = (
     "patches/can-telemetry-schema.json",
+    "patches/can-telemetry-configurations.json",
     "tools/logs/__init__.py",
     "tools/logs/can_telemetry.py",
     "tools/logs/can_telemetry_schema.py",

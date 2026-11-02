@@ -39,7 +39,7 @@ def projection(request, tmp_path, monkeypatch):
         manifest = object()
         monkeypatch.setattr(profile, 'load_manifest', lambda source: manifest)
         monkeypatch.setattr(profile, 'render_tables', lambda actual: content)
-        monkeypatch.setattr(profile, 'render_schema', lambda actual: 'schema fixture\n')
+        monkeypatch.setattr(profile, 'render_schema', lambda actual, catalog: 'schema fixture\n')
         monkeypatch.setattr(profile, 'render_identity', lambda actual: 'identity fixture\n')
         schema, identity = tmp_path / 'schema.json', tmp_path / 'identity.h'
         schema.write_bytes(b'schema fixture\n')

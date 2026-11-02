@@ -384,6 +384,17 @@ class DashboardModel:
         self._record_unwrapped = None
         fields = can_telemetry.profile_fields(self.decoder.profile)
         self._field_names = tuple(field["name"] for field in fields)
+        self._configuration_field = can_telemetry.configuration_field(
+            self.decoder.profile
+        )
+        self._dynamic_names = can_telemetry.dynamic_field_names(
+            self.decoder.profile
+        )
+        self.configuration_labels = can_telemetry.configuration_labels(
+            self.decoder.profile
+        )
+        # The configuration byte of the dynamic page of the last snapshot.
+        self.page_configuration = None
         # Both converted fields and fields shown raw require a verified layout.
         self._displays = {}
         self._raw_keys = {}
@@ -540,6 +551,16 @@ class DashboardModel:
             for name, value in snapshot.fields.items()
             if name not in KNOCK_MARGIN_FIELDS or value != KNOCK_MARGIN_IDLE
         }
+        selector = snapshot.fields.get(self._configuration_field)
+        if selector is not None:
+            if (
+                self.page_configuration is not None
+                and (selector ^ self.page_configuration) & 0x7F
+            ):
+                # Another configuration fills the dynamic page, so the
+                # values that only the previous one carried are not current.
+                self._clear_fields(self._dynamic_names - snapshot.fields.keys())
+            self.page_configuration = selector
         self.raw.update(fields)
         for name in fields:
             self.updated_at[name] = now
@@ -554,6 +575,31 @@ class DashboardModel:
         self.raw.clear()
         self.engineering.clear()
         self.updated_at.clear()
+        self.page_configuration = None
+
+    def _clear_fields(self, names):
+        for name in names:
+            self.raw.pop(name, None)
+            self.updated_at.pop(name, None)
+            self.engineering.pop(can_telemetry.engineering_key(name), None)
+
+    @property
+    def page_configuration_id(self):
+        """The configuration ID that the verified dynamic page echoes, or
+        None."""
+        if not self.schema_verified or self.page_configuration is None:
+            return None
+        return self.page_configuration & 0x7F
+
+    @property
+    def page_configuration_label(self):
+        """The label of the echoed configuration, or None."""
+        configuration_id = self.page_configuration_id
+        if configuration_id is None:
+            return None
+        return self.configuration_labels.get(
+            configuration_id, f"Unknown ID {configuration_id}"
+        )
 
     def _set_gear(self, code):
         self.gear_raw = code

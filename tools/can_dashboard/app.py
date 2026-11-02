@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from collections import deque
 from dataclasses import dataclass, replace
+import json
 import math
 from pathlib import Path
 import queue
@@ -245,6 +246,11 @@ def _parse_standard_can_id(value: str) -> int:
 
 
 RUN_METRICS = {"zero_to_100_s": "0-100", "hundred_to_200_s": "100-200"}
+# The code metrics of the configuration of the dynamic page.
+PAGE_METRICS = frozenset({
+    "page_configuration", "page_group", "page_request", "page_echo",
+    "page_undecoded",
+})
 TELEMETRY_MAP_SOURCE = "the map index of the telemetry stream"
 
 
@@ -631,7 +637,14 @@ THEME_CAPTIONS = {"dark": "LIGHT", "light": "DARK"}
 THEME_ICONS = {"dark": "sun", "light": "moon"}
 PLAY_CAPTIONS = {False: "PLAY", True: "PAUSE"}
 PLAY_ICONS = {False: "play", True: "pause"}
-TAB_ICONS = {"Primary": "gauge", "Extended": "list"}
+TAB_ICONS = {"Primary": "gauge", "Extended": "list", "Dynamic": "broadcast"}
+# The spacing of the frames of one dynamic page configuration: the ECU
+# consumes at most one control frame per 10.24 ms tick.
+PAGE_FRAME_SPACING = 0.02
+# How long after its last frame is due a configuration may take to appear in
+# the configuration byte of the dynamic page.
+PAGE_ECHO_TIMEOUT = 1.0
+CONTROL_QUEUE_SIZE = 32
 REPLAY_STEP_SECONDS = 5.0
 REPLAY_NOTE_CHARACTERS = 28
 REPLAY_FILETYPES = (
@@ -679,8 +692,28 @@ def format_replay_time(seconds):
     return f"{int(minutes)}:{rest:04.1f}"
 
 
+@dataclass(frozen=True)
+class PageRequest:
+    """A queued configuration of the dynamic page and the monotonic time by
+    which the page must echo it."""
+
+    configuration_id: int
+    deadline: float
+
+
+def load_configuration_frames(path):
+    """The command frames of the dynamic page configurations, or None when
+    the file cannot be read."""
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError):
+        return None
+
+
 class DashboardApp:
     player = None
+    page_request = None
+    page_echo_reported = None
 
     def __init__(self, root, args):
         self.root = root
@@ -706,6 +739,13 @@ class DashboardApp:
         )
         self.hero_catalog, self.hero_choices = hero_catalog(self.presentation)
         self.feed_channels = feed_channels(self.model.decoder.profile)
+        self.configuration_frames = load_configuration_frames(
+            getattr(
+                args,
+                "configurations",
+                can_telemetry.DEFAULT_CONFIGURATION_FRAMES,
+            )
+        )
         self.recorder = None
         self.recording_clock = None
         self.feed = None
@@ -1422,6 +1462,18 @@ class DashboardApp:
             )
             button.pack(side="left", padx=(0, 4))
             self.tab_buttons.append(button)
+            if tab_name == "Dynamic":
+                self.page_button = self._tool_button(
+                    tabs,
+                    "PAGE",
+                    self.open_page_menu,
+                    "Install a configuration of the dynamic page: the SET "
+                    "and COMMIT frames go out 20 ms apart, and the page "
+                    "echoes the configuration it carries",
+                    icon="download",
+                    pady=2,
+                )
+                self.page_button.pack(side="right")
             panels = ResponsiveGrid(
                 host,
                 min_column_width=PANEL_MIN_WIDTH,
@@ -1710,6 +1762,8 @@ class DashboardApp:
         )
         self.last_ui_group = 0
         self.source_drops = 0
+        self.page_request = None
+        self.page_echo_reported = None
 
     def toggle_source(self):
         if self.source_is_active():
@@ -1757,7 +1811,7 @@ class DashboardApp:
             reset_channel=self.args.reset_channel,
         )
         self.stop_event = threading.Event()
-        self.control_requests = queue.Queue(maxsize=8)
+        self.control_requests = queue.Queue(maxsize=CONTROL_QUEUE_SIZE)
         self.pcan_active = not config.listen_only
         self.worker = threading.Thread(
             target=run_pcan,
@@ -1783,18 +1837,104 @@ class DashboardApp:
             lit=command == "stop",
         )
 
-    def send_stream_command(self, command):
+    def _control_ready(self):
+        """Report whether an active PCAN connection takes control frames."""
         if (
             self.control_requests is None
             or self.worker is None
             or not self.worker.is_alive()
         ):
             self.control_var.set("Control error: connect PCAN first")
-            return
+            return False
         if not self.pcan_active:
             self.control_var.set(
                 "Control error: reconnect with ACK enabled"
             )
+            return False
+        return True
+
+    def open_page_menu(self):
+        menu = tk.Menu(self.root, tearoff=False)
+        for configuration_id, label in sorted(
+            self.model.configuration_labels.items()
+        ):
+            menu.add_command(
+                label=f"{configuration_id}: {label}",
+                command=lambda value=configuration_id: (
+                    self.send_page_configuration(value)
+                ),
+            )
+        button = self.page_button
+        try:
+            menu.tk_popup(
+                button.winfo_rootx(),
+                button.winfo_rooty() + button.winfo_height(),
+            )
+        finally:
+            menu.grab_release()
+
+    def send_page_configuration(self, configuration_id):
+        """Queue the frames that install one configuration of the dynamic
+        page; the configuration byte of the page confirms it."""
+        if not self._control_ready():
+            return
+        try:
+            if self.configuration_frames is None:
+                raise ValueError("the configuration frames are not loaded")
+            can_id, frames = can_telemetry_schema.configuration_commands(
+                self.configuration_frames,
+                self.model.decoder.profile,
+                self.model.can_id,
+                configuration_id,
+            )
+        except ValueError as error:
+            self.control_var.set(f"Control error: {error}")
+            return
+        free = self.control_requests.maxsize - self.control_requests.qsize()
+        if free < len(frames):
+            self.control_var.set("Control error: command queue is full")
+            return
+        for command, payload in frames:
+            self.control_requests.put_nowait(
+                ControlRequest(command, can_id, payload, PAGE_FRAME_SPACING)
+            )
+        self.page_request = PageRequest(
+            configuration_id,
+            time.monotonic()
+            + len(frames) * PAGE_FRAME_SPACING
+            + PAGE_ECHO_TIMEOUT,
+        )
+        self.page_echo_reported = None
+        label = self.model.configuration_labels[configuration_id]
+        self.control_var.set(f"Control: page configuration {label} queued")
+
+    def page_echo(self, now):
+        """The state of the requested configuration: confirmed once the
+        page echoes it, not echoed after its deadline, else waiting."""
+        request = self.page_request
+        if request is None:
+            return None
+        if self.model.page_configuration_id == request.configuration_id:
+            return "confirmed"
+        return "not echoed" if now > request.deadline else "waiting"
+
+    def _report_page_echo(self, now):
+        state = self.page_echo(now)
+        if state in (None, "waiting") or state == self.page_echo_reported:
+            return
+        self.page_echo_reported = state
+        label = self.model.configuration_labels[
+            self.page_request.configuration_id
+        ]
+        if state == "confirmed":
+            self.control_var.set(f"Control: page configuration {label} echoed")
+        else:
+            self.control_var.set(
+                f"Control error: page configuration {label} not echoed"
+            )
+
+    def send_stream_command(self, command):
+        if not self._control_ready():
             return
         try:
             can_id, payload = can_telemetry_schema.control_frame(
@@ -2287,6 +2427,8 @@ class DashboardApp:
     def _metric_value(self, key):
         if key == "selected_map":
             return self.model.selected_map
+        if key in PAGE_METRICS:
+            return self._page_metric(key)
         if key in RUN_METRICS:
             run = self.model.drive.acceleration.run(RUN_METRICS[key])
             return None if run.last is None else run.last.seconds
@@ -2318,6 +2460,24 @@ class DashboardApp:
             ]
             return sum(values) / len(values) if values else None
         return self.model.value(key)
+
+    def _page_metric(self, key):
+        model = self.model
+        if key == "page_configuration":
+            return model.page_configuration_label
+        if key == "page_group":
+            if model.page_configuration_id is None:
+                return None
+            return model.page_configuration >> 7
+        if key == "page_request":
+            if self.page_request is None:
+                return None
+            return model.configuration_labels[
+                self.page_request.configuration_id
+            ]
+        if key == "page_echo":
+            return self.page_echo(time.monotonic())
+        return model.decoder.unknown_configurations
 
     @staticmethod
     def _format(metric, value):
@@ -2393,6 +2553,7 @@ class DashboardApp:
                 self._format(metric, value),
                 value if new_group and isinstance(value, (int, float)) else None,
             )
+        self._report_page_echo(now)
         self._refresh_panels(self.active_tab)
         self._refresh_timers()
         self._refresh_replay()
@@ -2448,6 +2609,12 @@ def build_parser():
         type=Path,
         default=can_telemetry.DEFAULT_SCHEMA,
         help="ROM-neutral telemetry wire-schema JSON",
+    )
+    parser.add_argument(
+        "--configurations",
+        type=Path,
+        default=can_telemetry.DEFAULT_CONFIGURATION_FRAMES,
+        help="command frames of the dynamic page configurations of the ROM",
     )
     parser.add_argument("--profile", default="tuning")
     parser.add_argument("--tick-divisor", type=int, default=1)

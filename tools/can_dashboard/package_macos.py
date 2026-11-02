@@ -38,7 +38,10 @@ LOCK_TARGET = TARGET_BY_NAME["macos-build"]
 BUILD_REQUIREMENTS = LOCK_TARGET.requirements
 PYINSTALLER_VERSION = requirement_pin(BUILD_REQUIREMENTS, "pyinstaller")
 ENTRY_POINT = ROOT / "tools/can_dashboard/app.py"
-DATA_FILES = ((ROOT / "patches/can-telemetry-schema.json", "patches"),)
+DATA_FILES = (
+    (ROOT / "patches/can-telemetry-schema.json", "patches"),
+    (ROOT / "patches/can-telemetry-configurations.json", "patches"),
+)
 
 
 def pyinstaller_arguments(dist_path, work_path, spec_path):

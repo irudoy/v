@@ -598,6 +598,45 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIsNone(dashboard.telemetry_map)
         self.assertEqual(dashboard.selected_map, 3)
 
+    def test_a_configuration_change_drops_the_values_of_the_previous_one(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        page = dashboard.decoder.profile["dynamic"]["page"]
+
+        def feed(tick, selector, data):
+            group = list(generator.group(tick))
+            payload = bytearray(group[page].data)
+            payload[1:7] = data
+            payload[7] = selector
+            group[page] = model.FrameRecord(0x6F0, bytes(payload))
+            return feed_group(
+                dashboard, group, tick * model.BASE_TICK_SECONDS
+            )
+
+        for tick in range(1, 11):
+            feed_group(
+                dashboard,
+                generator.group(tick),
+                tick * model.BASE_TICK_SECONDS,
+            )
+        self.assertTrue(dashboard.schema_verified)
+        self.assertIn("exhaust_cvtc_actual_b1_raw", dashboard.raw)
+        self.assertEqual(dashboard.page_configuration_label, "Default")
+        feed(11, 2, bytes((0, 25, 1, 0x0B, 7, 40)))
+        self.assertNotIn("exhaust_cvtc_actual_b1_raw", dashboard.raw)
+        self.assertNotIn("exhaust_cvtc_actual_b1", dashboard.engineering)
+        self.assertEqual(dashboard.raw["rolling_launch_speed_error_raw"], 25)
+        self.assertAlmostEqual(dashboard.value("rolling_launch_speed_error"), 2.5)
+        feed(12, 0x82, bytes((0, 16, 3, 7, 0, 0)))
+        # The groups of one configuration keep the values of each other.
+        self.assertEqual(dashboard.raw["rolling_launch_speed_error_raw"], 25)
+        self.assertEqual(dashboard.raw["rolling_launch_integrator_raw"], 16)
+        feed(13, 1, bytes((0, 30, 1, 0x0B, 8, 40)))
+        self.assertNotIn("rolling_launch_integrator_raw", dashboard.raw)
+        self.assertNotIn("speed_frame_receive_age", dashboard.engineering)
+        self.assertEqual(dashboard.page_configuration_id, 1)
+        self.assertEqual(dashboard.page_configuration_label, "Rolling Launch law")
+
     def test_rolling_launch_codes_follow_the_runtime_enumerations(self):
         _document, profiles = can_telemetry.load_schema(
             can_telemetry.DEFAULT_SCHEMA

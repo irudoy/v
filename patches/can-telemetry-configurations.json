@@ -1,0 +1,126 @@
+{
+  "can_id": "data_can_id + 1",
+  "configurations": [
+    {
+      "frames": [
+        "C10102FF5D505FCC",
+        "C10112FF5D4EB794",
+        "C10121FF5D5D22F3",
+        "C10131FF237A4687",
+        "C201010400003B45"
+      ],
+      "id": 1,
+      "name": "launch_law",
+      "slots": [
+        {
+          "address": "0xFFFF5D50",
+          "group": 0,
+          "name": "rolling_launch_speed_error_raw",
+          "slot": 0,
+          "source": "rolling_launch.speed_error",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF5D4E",
+          "group": 0,
+          "name": "rolling_launch_torque_fraction_raw",
+          "slot": 1,
+          "source": "rolling_launch.torque_fraction",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF5D5D",
+          "group": 0,
+          "name": "rolling_launch_cut_counter",
+          "slot": 2,
+          "source": "rolling_launch.spark_cut_counters",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF237A",
+          "group": 0,
+          "name": "ignition_dwell_angle_raw",
+          "slot": 3,
+          "source": "ecu_ram (patches/rolling-launch.md)",
+          "width": 1
+        }
+      ]
+    },
+    {
+      "frames": [
+        "C10202FF5D50B11E",
+        "C10212FF5D4E5946",
+        "C10221FF5D5DCC21",
+        "C10231FF237AA855",
+        "C10282FF5D524C64",
+        "C10291FF3B38A07F",
+        "C102A1FF5D5D1119",
+        "C202020403001B18"
+      ],
+      "id": 2,
+      "name": "launch_law_integrator",
+      "slots": [
+        {
+          "address": "0xFFFF5D50",
+          "group": 0,
+          "name": "rolling_launch_speed_error_raw",
+          "slot": 0,
+          "source": "rolling_launch.speed_error",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF5D4E",
+          "group": 0,
+          "name": "rolling_launch_torque_fraction_raw",
+          "slot": 1,
+          "source": "rolling_launch.torque_fraction",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF5D5D",
+          "group": 0,
+          "name": "rolling_launch_cut_counter",
+          "slot": 2,
+          "source": "rolling_launch.spark_cut_counters",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF237A",
+          "group": 0,
+          "name": "ignition_dwell_angle_raw",
+          "slot": 3,
+          "source": "ecu_ram (patches/rolling-launch.md)",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF5D52",
+          "group": 1,
+          "name": "rolling_launch_integrator_raw",
+          "slot": 0,
+          "source": "rolling_launch.integrator",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF3B38",
+          "group": 1,
+          "name": "speed_frame_receive_age_raw",
+          "slot": 1,
+          "source": "ecu_ram (patches/rolling-launch.md)",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF5D5D",
+          "group": 1,
+          "name": "rolling_launch_cut_counter",
+          "slot": 2,
+          "source": "rolling_launch.spark_cut_counters",
+          "width": 1
+        }
+      ]
+    }
+  ],
+  "default": "C00000000000B020",
+  "profile": "tuning",
+  "rom": "JK08A",
+  "schema_version": 1
+}

@@ -269,6 +269,8 @@ class DashboardWindowTest(unittest.TestCase):
                 ("1x", "fast-forward"),
                 ("PRIMARY", "gauge"),
                 ("EXTENDED", "list"),
+                ("DYNAMIC", "broadcast"),
+                ("PAGE", "download"),
             ],
         )
         for button in buttons:
@@ -277,7 +279,7 @@ class DashboardWindowTest(unittest.TestCase):
         self.assertEqual(dashboard.theme_button.cget("icon"), "sun")
         self.assertEqual(
             [button.cget("icon") for button in dashboard.tab_buttons],
-            ["gauge", "list"],
+            ["gauge", "list", "broadcast"],
         )
         dashboard.toggle_theme()
         self.assertEqual(dashboard.theme_button.cget("icon"), "moon")
@@ -383,7 +385,7 @@ class DashboardWindowTest(unittest.TestCase):
         dashboard.select_tab(1)
         self.assertEqual(
             [button.lit for button in dashboard.tab_buttons],
-            [False, True],
+            [False, True, False],
         )
         self.assertEqual(dashboard.panel_grids[0].winfo_manager(), "")
         self.assertEqual(dashboard.panel_grids[1].winfo_manager(), "pack")

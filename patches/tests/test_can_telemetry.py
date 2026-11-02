@@ -9,6 +9,7 @@ import unittest
 from patches import can_telemetry
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
+from patches import can_telemetry_configurations
 from patches import can_telemetry_layout
 from patches import can_telemetry_profile
 from patches import jk08a_runtime_reservations
@@ -198,7 +199,9 @@ class CanTelemetryContractTest(unittest.TestCase):
             can_telemetry_profile.DEFAULT_TABLES.read_text(encoding="utf-8"),
         )
         self.assertEqual(
-            can_telemetry_profile.render_schema(self.manifest),
+            can_telemetry_profile.render_schema(
+                self.manifest, can_telemetry_configurations.load_catalog()
+            ),
             can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8"),
         )
         self.assertEqual(

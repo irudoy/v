@@ -1,0 +1,123 @@
+# Host-defined configurations of the dynamic telemetry page.
+#
+# A configuration fills bytes 1..6 of the dynamic page with RAM slots that
+# the dashboard installs through SET and COMMIT frames. A slot names its
+# JK08A source: a `[[diagnostic]]` view of rolling-launch-layout.toml with an
+# optional byte offset, or an ECU RAM address and the specification that
+# describes it. can_telemetry_profile.py renders the ROM-neutral slots and
+# configurations into the wire schema and the JK08A slot addresses and
+# command frames into can-telemetry-configurations.json.
+#
+# A configuration ID names one slot layout for good: a changed layout takes a
+# new ID, so a recorded trace decodes with any later catalog.
+
+schema_version = 1
+profile = "tuning"
+rom = "JK08A"
+
+[[configuration]]
+id = 1
+name = "launch_law"
+label = "Rolling Launch law"
+groups = [
+    ["rolling_launch_speed_error_raw", "rolling_launch_torque_fraction_raw", "rolling_launch_cut_counter", "ignition_dwell_angle_raw"],
+]
+
+[[configuration]]
+id = 2
+name = "launch_law_integrator"
+label = "Rolling Launch law and integrator"
+groups = [
+    ["rolling_launch_speed_error_raw", "rolling_launch_torque_fraction_raw", "rolling_launch_cut_counter", "ignition_dwell_angle_raw"],
+    ["rolling_launch_integrator_raw", "speed_frame_receive_age_raw", "rolling_launch_cut_counter"],
+]
+
+[[slot]]
+name = "rolling_launch_speed_error_raw"
+width = 2
+signed = true
+scale = "raw / 10 km/h; vehicle speed less the target speed"
+source = { rolling_launch = "speed_error" }
+
+[slot.dashboard]
+label = "Launch speed error"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 10
+description = "Vehicle speed less the Rolling Launch target speed, the input of the speed-hold law. The dynamic page carries it while a launch-law configuration is active."
+
+[[slot]]
+name = "rolling_launch_torque_fraction_raw"
+width = 2
+signed = false
+scale = "raw / 10 percent; torque fraction u after the rate limit"
+source = { rolling_launch = "torque_fraction" }
+
+[slot.dashboard]
+label = "Launch torque fraction"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 20
+description = "Torque fraction u of the speed-hold law after its rate limit. Hold mode withholds the dwell of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active."
+
+[[slot]]
+name = "rolling_launch_integrator_raw"
+width = 2
+signed = true
+scale = "raw / 160 percent; speed-hold integrator"
+source = { rolling_launch = "integrator" }
+
+[slot.dashboard]
+label = "Launch integrator"
+digits = 2
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 30
+description = "Integral term of the speed-hold law. The dynamic page carries it in group 1 of the launch-law and integrator configuration, every second snapshot."
+
+[[slot]]
+name = "rolling_launch_cut_counter"
+width = 1
+signed = false
+scale = "raw count; wrapping count of withheld dwells"
+source = { rolling_launch = "spark_cut_counters", byte = 1 }
+
+[slot.dashboard]
+label = "Launch cut counter"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 40
+description = "Wrapping count of the ignition dwells that hold mode withholds; the difference between two snapshots counts the cuts between them. The dynamic page carries it in every group of a launch-law configuration."
+
+[[slot]]
+name = "ignition_dwell_angle_raw"
+width = 1
+signed = false
+scale = "candidate raw degrees; periodic dwell-angle snapshot, stock range 0 through 114"
+source = { ecu_ram = 0xFFFF237A, specification = "patches/rolling-launch.md" }
+
+[slot.dashboard]
+label = "Dwell angle"
+digits = 0
+group = "Ignition"
+panel = "Dynamic page"
+order = 50
+description = "Periodic snapshot of the ignition dwell angle, with a stock range of 0 through 114 degrees. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The dynamic page carries it while a launch-law configuration is active."
+
+[[slot]]
+name = "speed_frame_receive_age_raw"
+width = 1
+signed = false
+scale = "raw * 10.24 ms; receive age of vehicle-speed frame 0x284, saturating at 255"
+source = { ecu_ram = 0xFFFF3B38, specification = "patches/rolling-launch.md" }
+
+[slot.dashboard]
+label = "Speed frame age"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 60
+description = "Receive age of the vehicle-speed frame 0x284 that the Rolling Launch speed gate checks; a pass that processes a new frame clears it. The dynamic page carries it in group 1 of the launch-law and integrator configuration."

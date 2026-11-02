@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from patches import can_telemetry_configurations
 from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
 
@@ -620,7 +621,13 @@ def _field_json(field):
     return result
 
 
-def render_schema(manifest):
+def render_schema(manifest, catalog=None):
+    """Render the host schema; `catalog` adds the slots and configurations
+    of the dynamic page to the profile it names."""
+    if catalog is not None and catalog.profile not in {
+        profile.name for profile in manifest.profiles if profile.dynamic
+    }:
+        raise ValueError(f"no dynamic profile {catalog.profile!r} for the configurations")
     document = {
         "schema_version": manifest.schema_version,
         "protocol_version": manifest.protocol_version,
@@ -664,6 +671,8 @@ def render_schema(manifest):
                 **({"padding": [pad.wire() for pad in manifest.padding]}
                    if manifest.padding else {}),
                 **({"dynamic": profile.dynamic.wire()} if profile.dynamic else {}),
+                **(can_telemetry_configurations.schema_entries(catalog)
+                   if catalog is not None and catalog.profile == profile.name else {}),
             }
             for profile in manifest.profiles
         ],
@@ -814,16 +823,21 @@ def generate(
     identity=DEFAULT_IDENTITY,
     specification=None,
     *,
+    configurations=can_telemetry_configurations.DEFAULT_SOURCE,
+    frames=can_telemetry_configurations.DEFAULT_FRAMES,
     check=False,
 ):
-    """Write or check the wire artifacts and, when `specification` names
-    it, the slot section of the specification. The assembly gate checks the
-    wire artifacts alone; the command line includes the specification."""
+    """Write or check the wire artifacts, the JK08A command frames of the
+    dynamic page configurations and, when `specification` names it, the slot
+    section of the specification. The assembly gate checks the wire
+    artifacts alone; the command line includes the specification."""
     manifest = load_manifest(source)
+    catalog = can_telemetry_configurations.load_catalog(configurations)
     outputs = {
         Path(tables): render_tables(manifest),
-        Path(schema): render_schema(manifest),
+        Path(schema): render_schema(manifest, catalog),
         Path(identity): render_identity(manifest),
+        Path(frames): can_telemetry_configurations.render_frames(catalog),
     }
     if specification is not None:
         outputs[Path(specification)] = specification_text(
@@ -856,6 +870,13 @@ def main(argv=None):
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
     parser.add_argument("--identity", type=Path, default=DEFAULT_IDENTITY)
     parser.add_argument(
+        "--configurations", type=Path,
+        default=can_telemetry_configurations.DEFAULT_SOURCE,
+    )
+    parser.add_argument(
+        "--frames", type=Path, default=can_telemetry_configurations.DEFAULT_FRAMES
+    )
+    parser.add_argument(
         "--specification", type=Path, default=DEFAULT_SPECIFICATION
     )
     parser.add_argument("--check", action="store_true")
@@ -866,6 +887,8 @@ def main(argv=None):
         args.schema,
         args.identity,
         args.specification,
+        configurations=args.configurations,
+        frames=args.frames,
         check=args.check,
     )
     print(

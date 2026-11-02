@@ -20,6 +20,8 @@ NAMED_SCALES = (
     ("bits: ", "bits", "bit"),
 )
 NAMED_ENTRY = re.compile(r"(\d+) ([A-Z][A-Z0-9_]*)")
+# The commands of the dynamic page by opcode.
+PAGE_COMMANDS = {0xC0: "page-default", 0xC1: "page-set", 0xC2: "page-commit"}
 
 
 def crc16_ccitt_false(data):
@@ -132,6 +134,91 @@ def control_frame(document, data_can_id, command):
             f"telemetry control command {command!r} has an invalid payload"
         )
     return data_can_id + 1, payload
+
+
+def _page_payload(encoded, context):
+    try:
+        payload = bytes.fromhex(encoded)
+    except (TypeError, ValueError) as error:
+        raise ValueError(f"{context} is not hexadecimal") from error
+    if len(payload) != 8 or crc16_ccitt_false(payload[:6]) != int.from_bytes(
+        payload[6:], "big"
+    ):
+        raise ValueError(f"{context} has an invalid payload")
+    return payload
+
+
+def configuration_commands(frames, profile, data_can_id, configuration_id):
+    """Return the control CAN ID and the (command, payload) frames that
+    install one configuration of the dynamic page of a profile.
+
+    ``frames`` is the generated command document of one ROM. ID 0 installs
+    the default configuration. The frames of any other ID stage every slot
+    of the groups that the schema states, in order and at the width of its
+    field, under that ID, and end with the COMMIT of those slot counts.
+    """
+    if type(data_can_id) is not int or not 1 <= data_can_id <= 0x7FE:
+        raise ValueError("data CAN ID must be in 0x001..0x7FE for control")
+    if (
+        not isinstance(frames, dict)
+        or frames.get("schema_version") != 1
+        or frames.get("profile") != profile.get("name")
+        or frames.get("can_id") != CONTROL_CAN_ID_EXPRESSION
+        or profile.get("dynamic") is None
+    ):
+        raise ValueError("configuration frames do not match the selected profile")
+    if configuration_id == 0:
+        payload = _page_payload(frames.get("default"), "the DEFAULT frame")
+        if payload[:6] != bytes((0xC0, 0, 0, 0, 0, 0)):
+            raise ValueError("the DEFAULT frame differs from C0 00 00 00 00 00")
+        return data_can_id + 1, (("page-default", payload),)
+    groups = next(
+        (
+            row["groups"]
+            for row in profile.get("configurations", ())
+            if row["id"] == configuration_id
+        ),
+        None,
+    )
+    row = next(
+        (
+            row
+            for row in frames.get("configurations", ())
+            if isinstance(row, dict) and row.get("id") == configuration_id
+        ),
+        None,
+    )
+    if groups is None or row is None or not isinstance(row.get("frames"), list):
+        raise ValueError(f"configuration {configuration_id} is undefined")
+    widths = {
+        field["name"]: field["width"]
+        for field in profile.get("dynamic_fields", ())
+    }
+    expected = [
+        bytes((
+            0xC1,
+            configuration_id,
+            group_index << 7 | slot_index << 4 | widths[name],
+        ))
+        for group_index, group in enumerate(groups)
+        for slot_index, name in enumerate(group)
+    ]
+    counts = [len(group) for group in groups] + [0] * (2 - len(groups))
+    expected.append(bytes((0xC2, configuration_id, len(groups), *counts, 0)))
+    payloads = [
+        _page_payload(encoded, f"configuration {configuration_id} frame {index}")
+        for index, encoded in enumerate(row["frames"])
+    ]
+    if len(payloads) != len(expected) or any(
+        payload[:len(prefix)] != prefix
+        for payload, prefix in zip(payloads, expected)
+    ):
+        raise ValueError(
+            f"configuration {configuration_id} frames differ from its schema groups"
+        )
+    return data_can_id + 1, tuple(
+        (PAGE_COMMANDS[payload[0]], payload) for payload in payloads
+    )
 
 
 def scale_terms(scale):
