@@ -487,10 +487,19 @@ neither `0xFFFF41B5` nor the remaining permit terms of `FUN 00057D1E`.
 ## JK08A Rolling Launch captures
 
 `rolling_launch_audit.py` reads the verified snapshots of a dashboard MLVLG
-recording or a strict schema-2 `tuning` TRC for the Rolling Launch audits.
-Each snapshot carries the stock button and dashboard frames, vehicle speed,
-coolant, and the fuel-inhibit, timing, APC, pedal, BFS, knock-surface, and
-exhaust-CVTC telemetry sources.
+recording or a strict schema-2 `tuning` TRC and audits the Rolling Launch
+hold. Each snapshot carries the stock button and dashboard frames, vehicle
+speed, coolant, and the fuel-inhibit, timing, APC, pedal, BFS, knock-surface,
+and exhaust-CVTC telemetry sources, and the Rolling Launch phase and abort
+reason. The integrator, speed error, torque fraction, and cut counter are
+slots of the launch-law configurations of the dynamic page (`can-telemetry.md`,
+Dynamic page). The configuration byte of a snapshot names the slots it
+carries; the reader leaves the others None, because the dashboard holds the
+last value of a slot that the snapshot does not carry.
+
+```bash
+python3 tools/logs/rolling_launch_audit.py --image <flashed image> <capture>...
+```
 
 - Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM, which
   the reader takes from stock frame `0x180`. The frame is sampled at another
@@ -502,8 +511,35 @@ exhaust-CVTC telemetry sources.
   first and last page of every snapshot group and of the `0x239` and `0x551`
   context frames, measured from the trace start.
 
-The activation audit of the vehicle-speed hold runtime is tracked in issue
-#103.
+The hold audit reads the configuration record of the flashed image and
+reports every run of contiguous `ACTIVE` snapshots:
+
+- The speed error of every `ACTIVE` snapshot lies inside the abort window.
+- The replay of `patches/rolling_launch.py` starts from zero integrator and
+  full torque after `IDLE`, and from the published values of a run without
+  its `IDLE` predecessor. The model integrator follows each published error;
+  a published integrator must equal it and replaces it, and a snapshot
+  without the error leaves it unknown. A published torque fraction must lie
+  within the model step from the previous fraction, or from the range that
+  the rate limit allows after a snapshot without the fraction.
+- Configuration 1 (`launch_law`) carries the error, the fraction, and the cut
+  counter on every tick, so every fraction of a run that starts after `IDLE`
+  equals its model step. Configuration 2 (`launch_law_integrator`) alternates
+  its groups: a group-0 snapshot follows the integrator of the group-1
+  snapshot before it, and its fraction lies within the model range of the
+  two-tick step.
+- In hold mode, the cut counter from the `IDLE` snapshot before a run through
+  the snapshot after it lies within the cuts that the delivered fractions owe
+  the spark events of the bracketed engine speed: three events per
+  revolution, the fraction ranges on both sides of each tick update, the 2.75
+  cuts of the accumulator offsets, the truncation of six accumulators, and
+  one event at each end.
+- The abort reason is the context value five snapshots after the run, which
+  the rotation has refreshed since the abort.
+- The target range is the `0x280` speed minus the published error; it stays
+  narrow while the speed word follows that frame.
+
+A law failure or a cut count outside its bounds makes the exit status 1.
 
 ## JK08A engine-torque scale audit
 
