@@ -10,6 +10,7 @@ from patches import apply_calibration
 from patches import build_rom
 from patches import calibration_file
 from patches import extract_calibration
+from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
 
@@ -69,6 +70,19 @@ def test_calibration_bound_to_another_stock_image_is_refused():
     foreign = replace(calibration, stock_sha256="0" * 64)
     with pytest.raises(apply_calibration.ApplicationError, match="stock SHA-256"):
         apply_calibration.apply(target("JK08A").stock_image.data, foreign)
+
+
+@pytest.mark.parametrize(("rom", "refused"), (("JK08A", True), ("JK00D", False)))
+def test_misfire_calibration_equal_to_the_spark_cut_marker_is_refused(rom, refused):
+    address = rolling_launch.MISFIRE_CALIBRATION_ADDRESS
+    stock = target(rom).stock_image.data[address]
+    source = edited(rom, built(rom), [(address, stock ^ rolling_launch.MISFIRE_MARKER)])
+    calibration = extract_calibration.extract(source, source_name="calibrated build").calibration
+    if not refused:
+        assert apply_calibration.apply(built(rom), calibration).data == source
+        return
+    with pytest.raises(apply_calibration.ApplicationError, match="misfire marker 0x01"):
+        apply_calibration.apply(built(rom), calibration)
 
 
 @pytest.mark.slow

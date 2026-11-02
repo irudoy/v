@@ -3,10 +3,12 @@
 Rolling Launch is an optional runtime layered on the complete five-slot
 Map Switching composition. While CANCEL is held it captures vehicle speed as
 the hold target and runs a speed-hold controller that publishes a torque
-fraction. Hold mode latches an all-cylinder fuel-cut request above the
-captured engine speed plus a ceiling offset and releases it below a
-hysteresis, and a wrapper of the stock fuel-output inhibit coordinator merges
-the request into the final cylinder mask. It runs
+fraction `u`. Hold mode withholds the dwell of a fraction `1 - u` of the
+eligible ignition events through a wrapper of the `GR11A` spark handler. It
+also latches an all-cylinder fuel-cut request above the captured engine speed
+plus a ceiling offset and releases it below a hysteresis, and a wrapper of the
+stock fuel-output inhibit coordinator merges the request into the final
+cylinder mask. It runs
 on the exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated
 targets JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch
 runtime.
@@ -19,18 +21,18 @@ The authoritative implementation sources are:
   model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The canonical JK08A runtime is software-verified. No payload consumes the
-torque fraction, so an image of this runtime holds no vehicle speed, and the
-only torque reduction it applies is the RPM ceiling request of hold mode.
-Such an image is not a vehicle candidate. The designed consumer of the torque
-fraction is the dwell-start veto under "Speed-hold cut actuator" (issue #100).
+The canonical JK08A runtime is software-verified. In hold mode the spark-cut
+actuator under "Speed-hold cut actuator" consumes the torque fraction, and the
+RPM ceiling request remains the hard limit. The spark cut has no vehicle
+evidence; the vehicle session confirms it together with the static claims
+under "Ignition output hardware".
 
 The target-vehicle evidence below comes from exact local combined images of
 the registered historical endpoint `schema-3-fuel-shadow-hold`, which held RPM
 through the fuel-cut shadow of the selected map. It qualifies button decoding,
 dashboard states, repeated rearm, and the full software fuel-inhibit mask. The
-vehicle-speed capture, the controller, the coordinator wrapper, and the
-ceiling request have no vehicle evidence. Physical spark timing and electrical
+vehicle-speed capture, the controller, the coordinator wrapper, the ceiling
+request, and the spark cut have no vehicle evidence. Physical spark timing and electrical
 injector output remain unmeasured. Concrete profiles, derived images, and
 active tune identities remain local and unversioned.
 
@@ -347,10 +349,10 @@ crankshaft and electrical injector output remain outside the measurement.
 
 ## Modes
 
-| Mode | Torque fraction | Fuel cut |
-| --- | --- | --- |
-| `observe` | computed and published | unchanged |
-| `hold` | computed and published | all-cylinder request latched above the RPM ceiling |
+| Mode | Torque fraction | Ignition events | Fuel cut |
+| --- | --- | --- | --- |
+| `observe` | computed and published | unchanged | unchanged |
+| `hold` | computed and published | dwell of a fraction `1 - u` of eligible events withheld | all-cylinder request latched above the RPM ceiling |
 
 ## Speed-hold controller
 
@@ -429,11 +431,10 @@ every phase and mode.
 
 ## Speed-hold cut actuator
 
-The speed-hold controller publishes the torque fraction, and no payload
-consumes it. The designed actuator cuts torque by withholding the dwell of
-selected ignition events, and the `GR11A` spark handler sets the veto
-(issue #100). The fuel-inhibit mask through the coordinator wrapper remains
-the hard limit and the abort path. The runtime runs on the `7mfk` layout; the other
+In hold mode a wrapper of the `GR11A` spark handler consumes the torque
+fraction: it withholds the dwell of selected ignition events. The
+fuel-inhibit mask through the coordinator wrapper remains the hard limit and
+the abort path. The runtime runs on the `7mfk` layout; the other
 layouts receive it after its vehicle acceptance on `7mfk`. The stock
 mechanisms are described in `../defs/JK08A.ignition-output.md`, the misfire
 readiness gate in `../defs/JK08A.diagnostics.md`, the inhibit history in
@@ -468,7 +469,7 @@ two alternative points:
 | Cut point | Veto delivery | Authority | Decision latency | Patch footprint |
 | --- | --- | --- | --- | --- |
 | Spark handler (chosen): table entry `0x000202E4` redirected to a wrapper that branches to `0x0002AB24` | No `GR11B` match falls between a spark and the dwell start of its successor, so the veto reaches the dwell of the successor that the handler writes to `0xFFFF13D3`. Above about 110 degrees of dwell the successor can be armed before the spark, and that event fires. | Every event | The preceding spark, 120 crank degrees before the target spark | One table word and a wrapper in the `GR11A` interrupt |
-| Countdown divider: literal `0x000296C0` redirected to a wrapper that tail-calls `0x00021CE0` | A `GR11B` match with priority above 8 can preempt between the wrapper and the mask-15 section, and that event fires. | Every event | The arming tooth, within 10 degrees of the dwell start | One literal word and a wrapper in the crank-tooth interrupt, run at every countdown expiry |
+| Countdown divider: literal `0x000296C0` redirected to a wrapper that tail-calls `0x00021CE0` | The divider call runs at mask 8 and the `GR11B` match at level 8, so no `GR11B` service falls between the wrapper and the mask-15 section. | Every event | The arming tooth, within 10 degrees of the dwell start | One literal word and a wrapper in the crank-tooth interrupt, run at every countdown expiry |
 | Ignition hook `0x0004E198` | The veto reaches the next dwell that a countdown arms, of the current cylinder or its successor. A dwell already armed consumes it, and that event fires. | Depends on the spark and dwell angles | The event tooth | The existing ignition adapter; no new hook |
 
 The wrapper decides the veto before it branches to `0x0002AB24`, which clears
@@ -481,26 +482,98 @@ with `0xFFFF8501.bit7`. The no-pending branch of the dwell timeout
 `0xFFFF8517.bit7`; a veto at that match would withhold an extra dwell and
 miscount the cut events.
 
-All three points use the same stock veto, so the open hardware questions are
-the same: the absence of a spark at the coil on a vetoed event, the behavior
-of the igniter driver stage with a withheld dwell, the A/F sensors and closed
-loop with unburned charge in the exhaust, and the misfire monitor gating on
-the vehicle. The interrupt priorities of the `GR11A` and
-`GR11B` matches are not established; a spark handler delayed past the arming
-of the next dwell meets the same edge case as a large dwell angle.
+All three points use the same stock veto and the same ignition output
+("Ignition output hardware"). `0x00028D3C` writes `0x8FFF` to `IPRJ`
+(`0xFFFFED12`), which places ATU channel 11 at level 8: `IMI11A`, the
+`GR11A` match at vector 184 and table entry `0x000202E4`, and `IMI11B`, the
+`GR11B` match at vector 186 and table entry `0x000202EC`, with
+`VBR = 0x00020004`. A `GR11B` match therefore cannot preempt the spark
+handler. An interrupt above level 8 can delay it, and a spark handler delayed
+past the arming of the next dwell meets the same edge case as a large dwell
+angle.
 
 The spark handler uses the same stock veto and failure direction as the
 countdown divider, adds no code to the crank-tooth interrupt, has no `GR11B`
 service in its veto window, and redirects the table entry of a handler that
-has no other caller. The countdown divider is not used because a `GR11B`
-match with priority above 8 can take its veto inside the crank-tooth
-interrupt. The ignition hook is not used because its authority depends on the
+has no other caller. The countdown divider is not used because its wrapper would run at every
+countdown expiry inside the crank-tooth interrupt. The ignition hook is not used because its authority depends on the
 spark and dwell angles. The edge case of the spark handler needs a dwell
 angle above about 110 degrees, and a log of `0xFFFF237A` over the hold range
 shows whether the hold reaches it. Above 120 degrees the `GR11B` match of the
 successor precedes the spark, so the veto passes to the following arming and
 the cut moves by one cylinder; the wrapper sets no veto above about 110
 degrees, which keeps the cut accounting per cylinder.
+
+### Cut selection
+
+The wrapper at `0x000D60C0` enters from table entry `0x000202E4` at interrupt
+level 8, saves `r0..r7` and `SR`, and restores them before it branches to
+`0x0002AB24`. It restores `r0` in the delay slot of that branch, so the stock
+handler receives the machine state of its entry. It runs without loops.
+
+A `GR11A` match without `0xFFFF8517.bit7` is a forced timeout match and passes
+through unchanged. In an `ACTIVE` hold with `u <= 1000`, a spark is eligible
+with the sync bit `0xFFFF8501.bit7`, without the cam fallback
+`0xFFFF24C9.bit6`, with the dwell angle `0xFFFF237A` at most 110 degrees, and
+with an event cylinder `0xFFFF13C9` of 1..6. The veto at the match of event
+cylinder `c` withholds the dwell of its successor `ROM8[0x22680 + c]`, a
+bijection, so the balance per event cylinder is the balance per cut cylinder.
+
+Six accumulators, one per event cylinder, count sixths of a thousandth of a
+cut:
+
+```text
+acc[c] = acc[c] + 6 * (1000 - u)
+cut    = acc[c] >= 6000
+acc[c] = acc[c] - 6000 if cut
+```
+
+Outside an `ACTIVE` hold, for `u > 1000`, and at an eligible match whose
+accumulator holds 6000 or more, every accumulator returns to its offset
+`1000 * k + 250`, with `k = (0, 2, 4, 1, 3, 5)` for event cylinders 1..6. The
+offsets differ by exact sixths in firing order, so over whole engine cycles
+the cuts total those of one accumulator. For every `u` the cuts of an aligned
+36-event period are within one of `36 * (1 - u)`, those of any 36 consecutive
+eligible events within three, and those of every cylinder within one of the
+mean. A single accumulator would cut the same cylinders whenever `1 - u` is a
+multiple of 1/6. An ineligible match leaves every accumulator unchanged, so
+the cut fraction applies to eligible events.
+
+A cut sets `0xFFFF8511.bit7` with interrupts masked and increments the
+wrapping cut counter. The first match that sees the state leave `ACTIVE` sets
+no veto and resets the accumulators. At most one carried-over event follows:
+the successor dwell vetoed at the preceding spark, because `0x0002AF38` is the
+only writer of `0xFFFF8511` and the runtime never clears it.
+
+`u = 0` cuts every eligible event. The run timeout bounds every hold (default
+781 ticks, 7.997 s), and the rearm period separates holds (default 98 ticks,
+1.004 s).
+
+### Ignition output hardware
+
+The 2007 G35 Sedan service manual for the VQ35HR
+(`../refs/nissan-esm-2007-g35-sedan/ENGINE CONTROL SYSTEM.pdf`) describes the
+output that the veto acts on:
+
+- EC-466: the power transistor of the coil amplifies the ECM ignition signal
+  and switches the primary circuit on and off; that switching induces the
+  secondary high voltage.
+- EC-490: ECM connector F101 terminals 20, 16, 12, 11, 15, and 19 carry the
+  individual ignition signals No. 1..6, which read 0-0.2 V at idle.
+- EC-468 and EC-469: coil terminal 1 receives the ECM signal, terminal 2 is
+  ground, and terminal 3 holds battery voltage through the condenser with the
+  key ON and no signal.
+
+A vetoed event gets no dwell enable, no recovery, and no timeout pin, so its
+PULS pin keeps the level it holds between dwells and the ignition signal of
+its cylinder keeps its rest level. The power transistor leaves the primary
+off, and the coil produces no spark: the circuit stays in its rest state with
+the key ON. The polarity and the internal protection of the ECM output stage
+between the PULS pin and the terminal are not established. Neither the
+service manual nor the JK08A DTC inventory defines an ignition-circuit DTC
+(P0351..P0356), so the misfire monitor is the only stock detector of a
+withheld spark. CONSULT POWER BALANCE cuts injectors, not sparks, so it does
+not exercise this path. The vehicle session confirms these static claims.
 
 ### Torque paths outside the ignition cut
 
@@ -554,18 +627,22 @@ cut port evaporates and must rebuild when the cylinder resumes.
 ### Misfire monitor gating
 
 A withheld spark and a fuel cut both leave the misfire monitor running,
-because no readiness condition reads the inhibit mask or the DFCO state. On
-activation the actuator design stores the marker `0x01` into latch `0xFFFF436F` when
-the latch is zero. The readiness gate then fails, which clears bits 6 and 7 of
-`0xFFFF4251` and the P030 working state. The COOLDOWN -> IDLE transition
-clears the latch only while it holds `0x01`, so a stock value is never
-overwritten. The stock writer stores calibration byte `ROM8[0x00008C2E]`
-(`0x32` in stock), so the rule requires that byte to differ from `0x01`. The
-check-and-store of the marker runs in the task of `0x00082C8A` or with
-interrupts masked, so it cannot interleave with the stock writer. The P030
-metrics span thirteen event periods, so the latch stays held for at least
-thirteen events after the last cut. The rearm period must cover that span; one
-second covers it above 260 RPM.
+because no readiness condition reads the inhibit mask or the DFCO state.
+During an `ACTIVE` hold the spark wrapper stores the marker `0x01` into latch
+`0xFFFF436F` at every armed match that finds the latch zero. The readiness
+gate then fails, which clears bits 6 and 7 of `0xFFFF4251` and the P030
+working state. The wrapper counts the armed matches outside `ACTIVE` in the
+quiet-event byte, which saturates at 255. In `IDLE`, once that count reaches
+14, it clears the latch only while the latch holds `0x01`, so a stock value is
+never overwritten. The P030 metrics span thirteen event periods, and the
+carried-over veto of the first match outside `ACTIVE` is the last cut, so the
+latch stays held for at least thirteen events after the last cut.
+
+The stock writer at `0x00082FC8` in `0x00082C8A` stores calibration byte
+`ROM8[0x00008C2E]` (`0x32` in stock) with a plain `MOV.B`. The calibration
+transfer and `make preflash` refuse a calibration that sets that byte to
+`0x01`. Both check-and-stores of the wrapper run in the `GR11A` interrupt with
+interrupts masked, so neither interleaves with the stock writer.
 
 ## Configuration
 
@@ -594,11 +671,10 @@ The strict 40-byte schema-4 record contains:
 | speed-frame age limit | 1..254 counts of the stock receive age |
 | RPM ceiling hysteresis | byte at `+0x23`, 1..255 native, at most the ceiling offset |
 
-The built-in production profile is `observe-map1-test`: Map 1 enabled,
-`observe` mode, and the controller defaults of the reference model. The
-layout declares no hold actuator (`hold_actuator = false`) until the
-torque-fraction actuator of #100 exists, and `make preflash` refuses an image
-that enables a map in `hold` mode while it is false. The
+The built-in production profile is `hold-map1-test`: Map 1 enabled, `hold`
+mode, and the controller defaults of the reference model. The layout declares
+the spark-cut hold actuator (`hold_actuator = true`); `make preflash` refuses
+an image that enables a map in `hold` mode while that field is false. The
 relocated targets take the built-in `observe` profile with no enabled maps,
 and their images receive no Rolling Launch bytes. A strict local TOML profile
 can select either mode, any map mask, and every controller field. Every field
@@ -627,7 +703,8 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | `0x000D6000..0x000D6040` | 64 | fuel-cut coordinator wrapper |
 | `0x000D6040..0x000D6068` | 40 | configuration record |
 | `0x000D6068..0x000D60C0` | 88 | RPM ceiling latch |
-| `0xFFFF5D40..0xFFFF5D5C` | 28 | runtime state |
+| `0x000D60C0..0x000D6220` | 352 | spark-cut actuator |
+| `0xFFFF5D40..0xFFFF5D6C` | 44 | runtime state |
 
 Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`. The span stays
 claimed and erased inside the Rolling Launch write set, so the registered
@@ -635,7 +712,9 @@ historical endpoints keep extracting their record from it. The Map Switching
 map copies at `0x000D3F80` leave no room to grow the record in place.
 
 Every registered historical endpoint leaves the RPM ceiling span
-`0x000D6068..0x000D60C0` erased, and its signature binds that erased span.
+`0x000D6068..0x000D60C0` and the spark-cut span `0x000D60C0..0x000D6220`
+erased and the `GR11A` table entry at the stock handler, and its signature
+binds those bytes.
 The speed-hold runtime without the ceiling latch, whose state has 24 bytes, is
 not a registered endpoint: the builder and `make preflash` classify its images
 as an unknown Rolling Launch state and refuse them.
@@ -643,7 +722,7 @@ Its schema-4 record holds zero in the hysteresis byte `+0x23`, which is
 outside the field contract, so that record is also invalid for the current
 runtime.
 
-The composition replaces six declared call targets:
+The composition replaces seven declared targets:
 
 - periodic scheduler entry 1 at `0x00021970`;
 - map-selector host at `0x000CE8DC`;
@@ -651,7 +730,9 @@ The composition replaces six declared call targets:
 - primary ignition-command consumer at `0x0004E198`;
 - dashboard feedback call at `0x000C3FA4`;
 - periodic scheduler entry 28 at `0x000219DC`, the fuel-output inhibit
-  coordinator.
+  coordinator;
+- `GR11A` interrupt-table entry at `0x000202E4`, the spark handler
+  `0x0002AB24`.
 
 The dashboard hook redirects the existing map-feedback wrapper call to the
 Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
@@ -661,11 +742,14 @@ Allocation and hook bytes are authoritative only in
 
 ## State and diagnostics
 
-The canonical 28-byte state records phase, abort reason, flags, map/mode
+The canonical 44-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, target speed, the torque
 fraction after the rate limit, the speed error, the integrator, the fuel-cut
-request, the command before the rate limit, and the RPM ceiling latch; its
-last two bytes are reserved and zero. An `ACTIVE` state with a latch other
+request, the command before the rate limit, and the RPM ceiling latch; bytes
+`+0x1A..+0x1C` are reserved and zero. The spark-cut actuator owns
+`+0x1C..+0x2C`: the quiet-event count, the cut counter, a reserved zero word,
+and the six accumulators. Corrupt-state recovery clears the first 28 bytes,
+and the startup wrapper clears all 44. An `ACTIVE` state with a latch other
 than 0 or 1 is corrupt. The nine diagnostic views read fixed offsets of that
 record.
 
@@ -703,10 +787,10 @@ closed write set.
 The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.
 
-The canonical runtime uses `0xFFFF5D40..0xFFFF5D5C` for active state and
-`0x000D6000..0x000D60C0` for the fuel-cut wrapper, the configuration record,
-and the RPM ceiling latch. The cross-runtime ledger assigns
-`0x000D60C0..0x000D6800` and
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` for active state and
+`0x000D6000..0x000D6220` for the fuel-cut wrapper, the configuration record,
+the RPM ceiling latch, and the spark-cut actuator. The cross-runtime ledger
+assigns `0x000D6220..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
 `runtime-reservations.md`.
@@ -720,6 +804,7 @@ The implementation inventory is:
 | `rolling-launch-engine.s` | state engine, gates, and configuration check |
 | `rolling-launch-speed-controller.s` | speed-hold controller |
 | `rolling-launch-rpm-ceiling.s` | RPM ceiling latch and request |
+| `rolling-launch-spark-cut.s` | spark-cut actuator and misfire latch |
 | `rolling-launch-ignition-adapter.s` | primary ignition-command pass-through |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
 | `rolling-launch-fuel-cut-wrapper.s` | fuel-cut coordinator wrapper |
@@ -744,19 +829,22 @@ A candidate is software-valid only when all applicable checks pass:
 3. Assembly sources reproduce the exact injected bytes.
 4. The independent model covers every gate, phase transition, abort reason,
    corrupt-state recovery, map isolation, rearm boundary, controller bound,
-   and the ceiling latch with its hysteresis.
+   the ceiling latch with its hysteresis, and the cut selection, eligibility,
+   resets, and misfire latch of the spark-cut actuator.
 5. The GNU SH fixture independently executes the same current payload bytes
    across all changed entries, branches, delay slots, call/return paths, and
    boundary cases, with controller expectations taken from the reference
-   model.
+   model. The spark wrapper runs through `TRAPA` and the composed `GR11A`
+   table entry against a C reference of the cut selection, which checks every
+   register, `SR` at the stock handler entry, and the per-period cut
+   bounds.
 6. Every final difference is inside the combined component and checksum write
    sets.
 7. The generated definition tables agree with the configuration contract.
 8. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
 Software verification does not authorize a flash. The vehicle-speed capture,
-the controller, the ceiling latch, corrupt-state recovery, and map changes
-while active remain software-only boundaries, and no actuator consumes the
-torque fraction. A physical timing claim requires a crank-referenced
+the controller, the ceiling latch, the spark cut, corrupt-state recovery, and
+map changes while active remain software-only boundaries. A physical timing claim requires a crank-referenced
 measurement, and an injector-pulse claim requires an electrical measurement at
 the output path.

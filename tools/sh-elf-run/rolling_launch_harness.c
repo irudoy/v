@@ -13,7 +13,10 @@
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
 #define THROTTLE_SHADOW_SIZE 28U
-#define RL_STATE_SIZE 28U
+/* The engine owns the first 28 bytes of the state; the spark-cut actuator
+   owns the rest. */
+#define RL_ENGINE_STATE_SIZE 28U
+#define RL_STATE_SIZE 44U
 #define RL_CONFIG 0x000d6040U
 #define RL_CONFIG_SIZE 40U
 #define BUTTON_CODE 0xffff2a85U
@@ -44,6 +47,27 @@
    cylinder mask and returns COORDINATOR_RETURN. */
 #define COORDINATOR_RESULT 0xffff6ff0U
 #define COORDINATOR_RETURN 0xc0de22e0U
+/* GR11A spark-cut actuator. TRAPA #0x40 enters the redirected vector, and
+   the simulator-only stock-handler stub pushes SR at its entry into
+   SPARK_ENTRY_SR and returns with RTE. The simulator sets SR bit 28 on
+   exception entry, so a control handler measures the entry SR without the
+   wrapper. */
+#define SPARK_CUT 0x000d60c0U
+#define SPARK_TABLE_ENTRY 0x000202e4U
+#define SPARK_TRAP_VECTOR 0x00000100U
+#define SPARK_ENTRY_SR 0xffff6fe8U
+#define DWELL_VETO 0xffff8511U
+#define SPARK_ARMED 0xffff8517U
+#define CRANK_SYNC 0xffff8501U
+#define DWELL_ANGLE 0xffff237aU
+#define EVENT_CYLINDER 0xffff13c9U
+#define MISFIRE_LATCH 0xffff436fU
+#define MISFIRE_MARKER 0x01U
+#define MISFIRE_RELEASE_EVENTS 14U
+#define SPARK_CYLINDERS 6U
+#define SPARK_CUT_ONE 6000U
+#define SPARK_DWELL_LIMIT 110U
+#define TORQUE_ONE 1000U
 
 #define PERIODIC_WRAPPER 0x000d3860U
 #define SELECTOR_ARBITER 0x000d3880U
@@ -134,9 +158,14 @@
 #define ST_REQUEST 20U
 #define ST_COMMAND 22U
 #define ST_LATCH 24U
+#define ST_QUIET 28U
+#define ST_CUTS 29U
+#define ST_ACCUMULATORS 32U
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
+extern void invoke_spark_probe(uint32_t *registers, uint32_t t_bit);
+extern void spark_entry_sr_handler(void);
 
 static size_t case_count;
 
@@ -154,6 +183,11 @@ static const uint8_t valid_configuration[RL_CONFIG_SIZE] = {
 
 static const uint8_t payload_seed[8] = {
     0x11, 0x22, 0x33, 0x44, 0x55, 0xb5, 0x77, 0x88,
+};
+
+/* Accumulator offsets of event cylinders 1..6, in firing order. */
+static const uint16_t spark_offsets[SPARK_CYLINDERS] = {
+    250, 2250, 4250, 1250, 3250, 5250,
 };
 
 static const uint32_t fuel_slots[5] = {
@@ -264,7 +298,9 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
 
     fill_bytes(selector, 8, 0);
     fill_bytes(ram_pointer(RL_STATE_GUARD), RL_STATE_SIZE + 8U, 0xa5);
-    fill_bytes(ram_pointer(RL_STATE), RL_STATE_SIZE, 0);
+    fill_bytes(ram_pointer(RL_STATE), RL_ENGINE_STATE_SIZE, 0);
+    fill_bytes(ram_pointer(RL_STATE) + RL_ENGINE_STATE_SIZE,
+               RL_STATE_SIZE - RL_ENGINE_STATE_SIZE, 0x3c);
     fill_bytes(ram_pointer(FUEL_SHADOW), FUEL_SHADOW_SIZE, 0xa5);
     fill_bytes(
         ram_pointer(THROTTLE_SHADOW), THROTTLE_SHADOW_SIZE, 0xa5);
@@ -334,9 +370,13 @@ static int verify_corrupt_recovery(const char *name)
 
     if (!expect_phase_reason(name, PHASE_COOLDOWN, REASON_STATE_CORRUPT))
         return 0;
-    for (index = 2; index < RL_STATE_SIZE; ++index) {
+    for (index = 2; index < RL_ENGINE_STATE_SIZE; ++index) {
         if (state[index] != 0)
             return fail_value(name, "cleared_state", state[index], 0);
+    }
+    for (; index < RL_STATE_SIZE; ++index) {
+        if (state[index] != 0x3c)
+            return fail_value(name, "actuator_state", state[index], 0x3c);
     }
     if (!verify_state_guards(name))
         return 0;
@@ -1825,6 +1865,414 @@ static int run_fuel_cut_cases(void)
     return verify_fuel_untouched("fuel-cut-scheduler-observe");
 }
 
+
+/* The C reference of the spark-cut actuator for one GR11A match, computed
+   from the RAM inputs and the state before the match. */
+struct spark_expect {
+    uint8_t state[RL_STATE_SIZE];
+    uint8_t veto;
+    uint8_t latch;
+};
+
+static void spark_reset(uint8_t *state)
+{
+    size_t index;
+
+    for (index = 0; index < SPARK_CYLINDERS; ++index)
+        write_u16(state + ST_ACCUMULATORS + 2U * index, spark_offsets[index]);
+}
+
+static void spark_reference(struct spark_expect *out)
+{
+    const volatile uint8_t *state = ram_pointer(RL_STATE);
+    uint8_t phase = state[0];
+    uint8_t cylinder = ram_pointer(EVENT_CYLINDER)[0];
+    int active = phase == PHASE_ACTIVE;
+    int hold = active && state[5] == MODE_HOLD;
+    uint16_t fraction = read_u16(state + ST_FRACTION);
+    uint16_t accumulator;
+    size_t index;
+
+    for (index = 0; index < RL_STATE_SIZE; ++index)
+        out->state[index] = state[index];
+    out->veto = ram_pointer(DWELL_VETO)[0];
+    out->latch = ram_pointer(MISFIRE_LATCH)[0];
+    if ((ram_pointer(SPARK_ARMED)[0] & 0x80U) == 0)
+        return;
+    if (active)
+        out->state[ST_QUIET] = 0;
+    else if (out->state[ST_QUIET] != 0xff)
+        ++out->state[ST_QUIET];
+    if (hold) {
+        if (out->latch == 0)
+            out->latch = MISFIRE_MARKER;
+    } else if (phase == PHASE_IDLE && out->latch == MISFIRE_MARKER
+               && out->state[ST_QUIET] >= MISFIRE_RELEASE_EVENTS) {
+        out->latch = 0;
+    }
+    if (!hold || fraction > TORQUE_ONE) {
+        spark_reset(out->state);
+        return;
+    }
+    if ((ram_pointer(CRANK_SYNC)[0] & 0x80U) == 0
+            || (ram_pointer(APC_MODE_SNAPSHOT)[0] & 0x40U) != 0
+            || ram_pointer(DWELL_ANGLE)[0] > SPARK_DWELL_LIMIT
+            || (uint8_t)(cylinder - 1U) >= SPARK_CYLINDERS)
+        return;
+    index = ST_ACCUMULATORS + 2U * (size_t)(cylinder - 1U);
+    accumulator = read_u16(out->state + index);
+    if (accumulator >= SPARK_CUT_ONE) {
+        spark_reset(out->state);
+        return;
+    }
+    accumulator = (uint16_t)(accumulator + 6U * (TORQUE_ONE - fraction));
+    if (accumulator >= SPARK_CUT_ONE) {
+        accumulator = (uint16_t)(accumulator - SPARK_CUT_ONE);
+        out->veto |= 0x80U;
+        ++out->state[ST_CUTS];
+    }
+    write_u16(out->state + index, accumulator);
+}
+
+/* Inputs of an eligible match of event cylinder 1 in an ACTIVE hold, with
+   the accumulators at their offsets and foreign bits in the veto byte. */
+static void reset_spark_case(uint8_t phase, uint8_t mode, uint16_t fraction)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    uint8_t offsets[RL_STATE_SIZE];
+
+    reset_case(mode, 0x01);
+    state[0] = phase;
+    state[5] = mode;
+    write_u16(state + ST_FRACTION, fraction);
+    state[ST_QUIET] = 0x40;
+    state[ST_CUTS] = 0x10;
+    spark_reset(offsets);
+    write_bytes(state + ST_ACCUMULATORS, offsets + ST_ACCUMULATORS,
+                2U * SPARK_CYLINDERS);
+    ram_pointer(SPARK_ARMED)[0] = 0x80;
+    ram_pointer(CRANK_SYNC)[0] = 0x80;
+    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
+    ram_pointer(DWELL_ANGLE)[0] = 60;
+    ram_pointer(EVENT_CYLINDER)[0] = 1;
+    ram_pointer(DWELL_VETO)[0] = 0x15;
+    ram_pointer(MISFIRE_LATCH)[0] = 0;
+}
+
+static uint32_t spark_matches;
+static uint32_t spark_entry_sr[2];
+
+/* One GR11A match through TRAPA and the redirected vector. The probe sets
+   r0..r7 to 1..8 and alternates the T bit; the stock-handler stub records SR
+   at its entry. */
+static int spark_match(const char *name)
+{
+    static const uint32_t inputs[] = {
+        SPARK_ARMED, CRANK_SYNC, APC_MODE_SNAPSHOT, DWELL_ANGLE,
+        EVENT_CYLINDER,
+    };
+    struct spark_expect expected;
+    uint32_t registers[10];
+    uint8_t before[ARRAY_SIZE(inputs)];
+    uint32_t t_bit = spark_matches++ & 1U;
+    size_t index;
+
+    spark_reference(&expected);
+    for (index = 0; index < ARRAY_SIZE(inputs); ++index)
+        before[index] = ram_pointer(inputs[index])[0];
+    write_u32(ram_pointer(SPARK_ENTRY_SR), 0xffffffffU);
+    invoke_spark_probe(registers, t_bit);
+    for (index = 0; index < 8; ++index) {
+        if (registers[index] != index + 1U)
+            return fail_value(name, "register", registers[index], index + 1U);
+    }
+    if ((registers[8] & 1U) != t_bit)
+        return fail_value(name, "t_bit", registers[8] & 1U, t_bit);
+    if (registers[9] != registers[8])
+        return fail_value(name, "returned_sr", registers[9], registers[8]);
+    if (read_u32(ram_pointer(SPARK_ENTRY_SR)) != spark_entry_sr[t_bit])
+        return fail_value(name, "stock_entry_sr",
+                          read_u32(ram_pointer(SPARK_ENTRY_SR)),
+                          spark_entry_sr[t_bit]);
+    for (index = 0; index < ARRAY_SIZE(inputs); ++index) {
+        if (ram_pointer(inputs[index])[0] != before[index])
+            return fail_value(name, "stock_input",
+                              ram_pointer(inputs[index])[0], before[index]);
+    }
+    if (ram_pointer(DWELL_VETO)[0] != expected.veto)
+        return fail_value(name, "veto", ram_pointer(DWELL_VETO)[0], expected.veto);
+    if (ram_pointer(MISFIRE_LATCH)[0] != expected.latch)
+        return fail_value(name, "misfire_latch",
+                          ram_pointer(MISFIRE_LATCH)[0], expected.latch);
+    if (!fail_bytes(name, "complete_state", ram_pointer(RL_STATE),
+                    expected.state, RL_STATE_SIZE))
+        return 0;
+    return verify_state_guards(name);
+}
+
+static int spark_expect(
+    const char *name, uint8_t veto, uint8_t latch, uint8_t quiet)
+{
+    if (ram_pointer(DWELL_VETO)[0] != veto)
+        return fail_value(name, "expected_veto", ram_pointer(DWELL_VETO)[0], veto);
+    if (ram_pointer(MISFIRE_LATCH)[0] != latch)
+        return fail_value(name, "expected_latch",
+                          ram_pointer(MISFIRE_LATCH)[0], latch);
+    if (ram_pointer(RL_STATE)[ST_QUIET] != quiet)
+        return fail_value(name, "expected_quiet",
+                          ram_pointer(RL_STATE)[ST_QUIET], quiet);
+    return 1;
+}
+
+static int spark_offsets_hold(const char *name)
+{
+    size_t index;
+
+    for (index = 0; index < SPARK_CYLINDERS; ++index) {
+        uint16_t actual = read_u16(
+            ram_pointer(RL_STATE) + ST_ACCUMULATORS + 2U * index);
+        if (actual != spark_offsets[index])
+            return fail_value(name, "offset", actual, spark_offsets[index]);
+    }
+    return 1;
+}
+
+struct spark_ineligible_case {
+    const char *name;
+    uint32_t address;
+    uint8_t value;
+};
+
+static const struct spark_ineligible_case spark_ineligible_cases[] = {
+    {"spark-ineligible-sync", CRANK_SYNC, 0x7f},
+    {"spark-ineligible-cam", APC_MODE_SNAPSHOT, 0x40},
+    {"spark-ineligible-dwell", DWELL_ANGLE, SPARK_DWELL_LIMIT + 1U},
+    {"spark-ineligible-cylinder-low", EVENT_CYLINDER, 0},
+    {"spark-ineligible-cylinder-high", EVENT_CYLINDER, SPARK_CYLINDERS + 1U},
+};
+
+struct spark_latch_case {
+    const char *name;
+    uint8_t phase;
+    uint8_t quiet;
+    uint8_t latch;
+    uint8_t expected_quiet;
+    uint8_t expected_latch;
+};
+
+static const struct spark_latch_case spark_latch_cases[] = {
+    {"spark-idle-count", PHASE_IDLE, 12, MISFIRE_MARKER, 13, MISFIRE_MARKER},
+    {"spark-idle-release", PHASE_IDLE, 13, MISFIRE_MARKER, 14, 0},
+    {"spark-idle-foreign-latch", PHASE_IDLE, 20, 0x32, 21, 0x32},
+    {"spark-idle-saturated", PHASE_IDLE, 0xff, MISFIRE_MARKER, 0xff, 0},
+    {"spark-cooldown-latch", PHASE_COOLDOWN, 30, MISFIRE_MARKER, 31,
+     MISFIRE_MARKER},
+    {"spark-corrupt", 3, 0, 0, 1, 0},
+};
+
+static const uint16_t spark_sweep_fractions[] = {
+    0, 1, 166, 167, 250, 333, 334, 500, 501, 666, 667, 750, 833, 834, 999,
+    1000,
+};
+
+/* Two aligned 36-match periods per fraction: the cut count of each period
+   is within one of 36 * (1 - u), and every event cylinder within one of the
+   mean of its six matches. */
+static int run_spark_sweep(void)
+{
+    size_t fraction_index, match, cylinder;
+
+    count_case();
+    for (fraction_index = 0;
+         fraction_index < ARRAY_SIZE(spark_sweep_fractions); ++fraction_index) {
+        uint16_t fraction = spark_sweep_fractions[fraction_index];
+        uint32_t ideal = 36U * (TORQUE_ONE - fraction);
+        uint32_t period = 0, cuts[SPARK_CYLINDERS] = {0};
+
+        reset_spark_case(PHASE_ACTIVE, MODE_HOLD, fraction);
+        for (match = 0; match < 72U; ++match) {
+            ram_pointer(EVENT_CYLINDER)[0] = (uint8_t)(match % 6U + 1U);
+            ram_pointer(DWELL_VETO)[0] = 0x15;
+            if (!spark_match("spark-sweep"))
+                return 0;
+            if (ram_pointer(DWELL_VETO)[0] & 0x80U) {
+                ++period;
+                ++cuts[match % 6U];
+            }
+            if (match % 36U != 35U)
+                continue;
+            if (1000U * period + 1000U < ideal || 1000U * period > ideal + 1000U)
+                return fail_value("spark-sweep", "period_cuts", period, fraction);
+            for (cylinder = 0; cylinder < SPARK_CYLINDERS; ++cylinder) {
+                uint32_t scaled = 6000U * cuts[cylinder];
+                if (scaled + 1000U * 6U < ideal || scaled > ideal + 6000U)
+                    return fail_value(
+                        "spark-sweep", "cylinder_cuts", cuts[cylinder], fraction);
+                cuts[cylinder] = 0;
+            }
+            period = 0;
+        }
+    }
+    return 1;
+}
+
+/* A volatile address keeps the compiler from treating the low vector
+   address as a null-pointer offset. */
+static volatile uint32_t spark_trap_vector = SPARK_TRAP_VECTOR;
+
+static int run_spark_cases(void)
+{
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    uint32_t vector;
+    size_t index;
+
+    count_case();
+    if (read_u32(rom_pointer(SPARK_TABLE_ENTRY)) != SPARK_CUT)
+        return fail_value("spark-vector", "table_entry",
+                          read_u32(rom_pointer(SPARK_TABLE_ENTRY)), SPARK_CUT);
+    vector = read_u32(rom_pointer(spark_trap_vector));
+    if (vector != SPARK_CUT)
+        return fail_value("spark-vector", "trap_vector", vector, SPARK_CUT);
+    write_u32(rom_pointer(spark_trap_vector),
+              (uint32_t)(uintptr_t)spark_entry_sr_handler);
+    for (index = 0; index < 2; ++index) {
+        uint32_t registers[10];
+        size_t item;
+
+        write_u32(ram_pointer(SPARK_ENTRY_SR), 0xffffffffU);
+        invoke_spark_probe(registers, (uint32_t)index);
+        for (item = 0; item < 8; ++item) {
+            if (registers[item] != item + 1U)
+                return fail_value("spark-vector", "control_register",
+                                  registers[item], item + 1U);
+        }
+        spark_entry_sr[index] = read_u32(ram_pointer(SPARK_ENTRY_SR));
+        if ((spark_entry_sr[index] & 1U) != index || registers[9] != registers[8])
+            return fail_value("spark-vector", "control_sr",
+                              spark_entry_sr[index], registers[8]);
+    }
+    write_u32(rom_pointer(spark_trap_vector), SPARK_CUT);
+
+    /* A forced timeout match without the armed spark bit changes nothing. */
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+    ram_pointer(SPARK_ARMED)[0] = 0x7f;
+    if (!spark_match("spark-timeout-match")
+            || !spark_expect("spark-timeout-match", 0x15, 0, 0x40))
+        return 0;
+
+    /* u = 0 cuts every eligible match; the cut counter wraps. */
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+    state[ST_CUTS] = 0xff;
+    if (!spark_match("spark-hold-cut")
+            || !spark_expect("spark-hold-cut", 0x95, MISFIRE_MARKER, 0))
+        return 0;
+    if (state[ST_CUTS] != 0)
+        return fail_value("spark-hold-cut", "cut_counter", state[ST_CUTS], 0);
+
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+    ram_pointer(MISFIRE_LATCH)[0] = 0x32;
+    if (!spark_match("spark-hold-foreign-latch")
+            || !spark_expect("spark-hold-foreign-latch", 0x95, 0x32, 0))
+        return 0;
+
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, TORQUE_ONE);
+    if (!spark_match("spark-hold-full-torque")
+            || !spark_expect("spark-hold-full-torque", 0x15, MISFIRE_MARKER, 0)
+            || !spark_offsets_hold("spark-hold-full-torque"))
+        return 0;
+
+    /* An ineligible match leaves every accumulator unchanged, even one that
+       an eligible match would cut. */
+    for (index = 0; index < ARRAY_SIZE(spark_ineligible_cases); ++index) {
+        const struct spark_ineligible_case *test = &spark_ineligible_cases[index];
+
+        count_case();
+        reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+        write_u16(state + ST_ACCUMULATORS, SPARK_CUT_ONE - 1U);
+        ram_pointer(test->address)[0] = test->value;
+        if (!spark_match(test->name)
+                || !spark_expect(test->name, 0x15, MISFIRE_MARKER, 0))
+            return 0;
+        if (read_u16(state + ST_ACCUMULATORS) != SPARK_CUT_ONE - 1U)
+            return fail_value(test->name, "accumulator",
+                              read_u16(state + ST_ACCUMULATORS),
+                              SPARK_CUT_ONE - 1U);
+    }
+
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 999);
+    write_u16(state + ST_ACCUMULATORS, SPARK_CUT_ONE - 6U);
+    ram_pointer(DWELL_ANGLE)[0] = SPARK_DWELL_LIMIT;
+    if (!spark_match("spark-dwell-limit")
+            || !spark_expect("spark-dwell-limit", 0x95, MISFIRE_MARKER, 0))
+        return 0;
+    if (read_u16(state + ST_ACCUMULATORS) != 0)
+        return fail_value("spark-dwell-limit", "accumulator",
+                          read_u16(state + ST_ACCUMULATORS), 0);
+
+    /* An out-of-range accumulator or fraction returns every accumulator to
+       its offset without a veto. */
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+    write_u16(state + ST_ACCUMULATORS, SPARK_CUT_ONE);
+    write_u16(state + ST_ACCUMULATORS + 2U, 7);
+    if (!spark_match("spark-accumulator-range")
+            || !spark_expect("spark-accumulator-range", 0x15, MISFIRE_MARKER, 0)
+            || !spark_offsets_hold("spark-accumulator-range"))
+        return 0;
+
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, TORQUE_ONE + 1U);
+    write_u16(state + ST_ACCUMULATORS + 2U, 7);
+    if (!spark_match("spark-fraction-invalid")
+            || !spark_expect("spark-fraction-invalid", 0x15, MISFIRE_MARKER, 0)
+            || !spark_offsets_hold("spark-fraction-invalid"))
+        return 0;
+
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_OBSERVE, 0);
+    write_u16(state + ST_ACCUMULATORS + 2U, 7);
+    if (!spark_match("spark-observe-active")
+            || !spark_expect("spark-observe-active", 0x15, 0, 0)
+            || !spark_offsets_hold("spark-observe-active"))
+        return 0;
+
+    for (index = 0; index < ARRAY_SIZE(spark_latch_cases); ++index) {
+        const struct spark_latch_case *test = &spark_latch_cases[index];
+
+        count_case();
+        reset_spark_case(test->phase, MODE_HOLD, 0);
+        state[ST_QUIET] = test->quiet;
+        ram_pointer(MISFIRE_LATCH)[0] = test->latch;
+        write_u16(state + ST_ACCUMULATORS + 2U, 7);
+        if (!spark_match(test->name)
+                || !spark_expect(test->name, 0x15, test->expected_latch,
+                                 test->expected_quiet)
+                || !spark_offsets_hold(test->name))
+            return 0;
+    }
+
+    /* The first match that sees the state leave ACTIVE sets no veto. */
+    count_case();
+    reset_spark_case(PHASE_ACTIVE, MODE_HOLD, 0);
+    if (!spark_match("spark-leave-active")
+            || !spark_expect("spark-leave-active", 0x95, MISFIRE_MARKER, 0))
+        return 0;
+    state[0] = PHASE_COOLDOWN;
+    ram_pointer(DWELL_VETO)[0] = 0x15;
+    ram_pointer(EVENT_CYLINDER)[0] = 2;
+    if (!spark_match("spark-leave-active")
+            || !spark_expect("spark-leave-active", 0x15, MISFIRE_MARKER, 1)
+            || !spark_offsets_hold("spark-leave-active"))
+        return 0;
+
+    return run_spark_sweep();
+}
+
 int main(void)
 {
     if (!run_structural_cases())
@@ -1851,14 +2299,16 @@ int main(void)
         return 1;
     if (!run_feedback_cases())
         return 1;
-    if (case_count != 175U)
-        return fail_value("summary", "case_count", case_count, 175);
+    if (!run_spark_cases())
+        return 1;
+    if (case_count != 197U)
+        return fail_value("summary", "case_count", case_count, 197);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=13 gates=39 config=32 controller=24 activation=6 "
         "hold=9 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=14 "
-        "feedback=8 entries=9\n",
+        "feedback=8 spark=22 entries=10\n",
         (unsigned long)case_count);
     return 0;
 }

@@ -44,7 +44,7 @@ class RollingLaunchCompositionTest(unittest.TestCase):
                 self.layout.ram.base_reservation
             )
         )
-        self.assertEqual(self.layout.ram.state.size, 28)
+        self.assertEqual(self.layout.ram.state.size, 44)
         self.assertEqual(
             tuple(item.target for item in self.layout.diagnostics),
             tuple(range(
@@ -91,11 +91,11 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         audit = rolling_launch_assembly.validate_instruction_semantics(
             self.layout, self.parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 903)
-        self.assertEqual(audit.delayed_transfers, 64)
-        self.assertEqual(audit.pc_relative_references, 71)
-        self.assertEqual(audit.direct_branches, 163)
-        self.assertEqual(audit.indirect_transfers, 23)
+        self.assertEqual(audit.instructions, 1051)
+        self.assertEqual(audit.delayed_transfers, 69)
+        self.assertEqual(audit.pc_relative_references, 88)
+        self.assertEqual(audit.direct_branches, 184)
+        self.assertEqual(audit.indirect_transfers, 24)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):
         blobs = dict(self.blobs)
@@ -119,9 +119,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 2524)
-        self.assertEqual(self.result.permitted_write_bytes, 2524)
-        self.assertEqual(self.result.changed_bytes, 2013)
+        self.assertEqual(sum(item.size for item in ranges), 2880)
+        self.assertEqual(self.result.permitted_write_bytes, 2880)
+        self.assertEqual(self.result.changed_bytes, 2345)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -198,15 +198,15 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_source_counts_equal_manifest_totals(self):
         self.assertEqual(
             sum(item.instruction_count for item in self.layout.assembly_units),
-            903,
+            1051,
         )
         self.assertEqual(
             sum(item.data_bytes for item in self.layout.assembly_units),
-            189,
+            237,
         )
         self.assertEqual(
             sum(item.instruction_count for item in self.parsed.values()),
-            903,
+            1051,
         )
 
 

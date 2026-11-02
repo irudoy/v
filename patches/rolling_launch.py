@@ -4,9 +4,9 @@
 The model is intentionally independent from the SH-2E implementation. It
 defines fail-closed calibration validation, gate ordering, the vehicle-speed
 capture, the windowed torque-fraction controller, the latched RPM ceiling
-request and its merge into the stock cylinder mask, and cooldown/rearm
-behavior. It never
-reads or writes a ROM image.
+request and its merge into the stock cylinder mask, cooldown/rearm
+behavior, and the spark-handler cut actuator with its misfire-monitor latch.
+It never reads or writes a ROM image.
 """
 
 from __future__ import annotations
@@ -23,8 +23,11 @@ CONFIG_SCHEMA_VERSION = 4
 CONFIG_SIZE = 40
 CONFIG_FORMAT = ">H6B4HhBB3H2B3H2B2H"
 SLOT_COUNT = 5
-# The state record ends with the RPM ceiling latch word and a reserved word.
-STATE_SIZE = 28
+# The engine owns the first 28 bytes of the state record, which end with the
+# RPM ceiling latch word and a reserved word. The spark-handler wrapper alone
+# writes the 16 actuator bytes that follow.
+ENGINE_STATE_SIZE = 28
+STATE_SIZE = 44
 
 # The torque fraction u and its integrator are expressed in thousandths.
 U_ONE = 1000
@@ -678,3 +681,117 @@ def step(state, inputs, calibration):
         run_ticks=run_ticks,
     )
     return StepResult(_publish_active(active, flags, inputs, calibration))
+
+
+# The spark-handler actuator selects cuts with one accumulator per event
+# cylinder 1..6 (0xFFFF13C9). The veto at the match of cylinder c withholds
+# the dwell of its successor ROM8[0x22680 + c], a bijection, so the balance
+# per event cylinder is the balance per cut cylinder. The accumulators count
+# sixths of a thousandth: each eligible event adds 6 * (1000 - u), and a sum
+# of 6000 is one cut. The offsets 1000 * k + 250 follow the firing order with
+# k = (0, 2, 4, 1, 3, 5). Since the six offsets differ by exact sixths, the
+# total over whole engine cycles equals that of one accumulator, and every
+# cylinder is cut within one event of the others over six cycles.
+SPARK_CYLINDER_COUNT = 6
+SPARK_CUT_ONE = 6 * U_ONE
+SPARK_CYLINDER_OFFSETS = (250, 2250, 4250, 1250, 3250, 5250)
+# Above this dwell angle the successor can be armed before the spark.
+SPARK_DWELL_LIMIT_DEGREES = 110
+SPARK_VETO_BIT = 0x80
+MISFIRE_MARKER = 0x01
+# The stock writer at 0x00082FC8 stores this calibration byte into the misfire
+# latch, so a calibration that equals the marker would let the release clear a
+# stock blanking request.
+MISFIRE_CALIBRATION_ADDRESS = 0x00008C2E
+# The latch is released after at least thirteen events past the last cut,
+# which is the carried-over veto of the first event that sees the state leave
+# ACTIVE.
+MISFIRE_RELEASE_EVENTS = 14
+QUIET_EVENTS_MAX = 0xFF
+
+
+@dataclass(frozen=True)
+class SparkEvent:
+    """Stock state that the wrapper reads at one GR11A match."""
+
+    spark_armed: bool = True
+    synchronized: bool = True
+    cam_fallback: bool = False
+    dwell_degrees: int = 60
+    cylinder: int = 1
+    veto_byte: int = 0
+    misfire_latch: int = 0
+
+
+@dataclass(frozen=True)
+class SparkCutState:
+    """Actuator bytes of the state record."""
+
+    quiet_events: int = 0
+    cut_count: int = 0
+    accumulators: tuple[int, ...] = (0,) * SPARK_CYLINDER_COUNT
+
+
+@dataclass(frozen=True)
+class SparkResult:
+    state: SparkCutState
+    veto_byte: int
+    misfire_latch: int
+
+    @property
+    def vetoed(self):
+        return bool(self.veto_byte & SPARK_VETO_BIT)
+
+
+def spark_event(runtime, cut, event):
+    """Return the actuator state, veto byte and misfire latch after one match.
+
+    A match without the armed spark bit is a timeout-forced match and changes
+    nothing. A spark resets the quiet-event count while ACTIVE and counts it
+    up otherwise. Outside an ACTIVE hold, and for an invalid fraction, the
+    accumulators return to their offsets. An ineligible event leaves every
+    accumulator unchanged; an out-of-range accumulator of an eligible event
+    resets them all.
+    """
+    if not event.spark_armed:
+        return SparkResult(cut, event.veto_byte, event.misfire_latch)
+    active = runtime.phase == Phase.ACTIVE
+    hold = active and runtime.active_mode_snapshot == Mode.HOLD
+    quiet = 0 if active else min(cut.quiet_events + 1, QUIET_EVENTS_MAX)
+    latch = event.misfire_latch
+    if hold and latch == 0:
+        latch = MISFIRE_MARKER
+    elif (
+        runtime.phase == Phase.IDLE
+        and latch == MISFIRE_MARKER
+        and quiet >= MISFIRE_RELEASE_EVENTS
+    ):
+        latch = 0
+    cut = replace(cut, quiet_events=quiet)
+    reset = replace(cut, accumulators=SPARK_CYLINDER_OFFSETS)
+    if not hold or runtime.torque_fraction > U_ONE:
+        return SparkResult(reset, event.veto_byte, latch)
+    if (
+        not event.synchronized
+        or event.cam_fallback
+        or event.dwell_degrees > SPARK_DWELL_LIMIT_DEGREES
+        or not 1 <= event.cylinder <= SPARK_CYLINDER_COUNT
+    ):
+        return SparkResult(cut, event.veto_byte, latch)
+    index = event.cylinder - 1
+    if cut.accumulators[index] >= SPARK_CUT_ONE:
+        return SparkResult(reset, event.veto_byte, latch)
+    accumulator = cut.accumulators[index] + 6 * (U_ONE - runtime.torque_fraction)
+    veto_byte = event.veto_byte
+    cut_count = cut.cut_count
+    if accumulator >= SPARK_CUT_ONE:
+        accumulator -= SPARK_CUT_ONE
+        veto_byte |= SPARK_VETO_BIT
+        cut_count = (cut_count + 1) & 0xFF
+    accumulators = list(cut.accumulators)
+    accumulators[index] = accumulator
+    return SparkResult(
+        replace(cut, cut_count=cut_count, accumulators=tuple(accumulators)),
+        veto_byte,
+        latch,
+    )

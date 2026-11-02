@@ -505,6 +505,7 @@ def validate_structure(layout):
         "primary_ignition_command",
         "feedback_arbitration",
         "fuel_cut_coordinator",
+        "spark_handler",
     }
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
@@ -515,6 +516,7 @@ def validate_structure(layout):
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
         "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
         "fuel_cut_coordinator": (0x219DC, 0x4ED88, 0xD6000),
+        "spark_handler": (0x202E4, 0x2AB24, 0xD60C0),
     }
     entries = {region.entry for region in layout.code_regions}
     for hook in layout.hooks:

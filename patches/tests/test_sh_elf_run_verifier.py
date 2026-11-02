@@ -440,7 +440,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 903)
+        self.assertEqual(result.instruction_count, 1051)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -491,7 +491,14 @@ mov #0x5,r1
 
         self.assertGreater(relocated, 0)
         self.assertGreater(differentiated, 0)
-        self.assertEqual(stubs, 6)
+        self.assertEqual(stubs, 7)
+        stub = ROLLING_VERIFIER.spark_stub()
+        self.assertEqual(fixture[0x2AB24 : 0x2AB24 + len(stub)], stub)
+        self.assertEqual(
+            fixture[ROLLING_VERIFIER.SPARK_TRAP_VECTOR : ROLLING_VERIFIER.SPARK_TRAP_VECTOR + 4],
+            composition.data[0x202E4 : 0x202E8],
+        )
+        self.assertEqual(composition.data[0x202E4 : 0x202E8], (0xD60C0).to_bytes(4, "big"))
         for unit in rolling_layout.assembly_units:
             for statement in parsed[unit.key].statements:
                 if statement.kind != "instruction":
@@ -514,7 +521,8 @@ mov #0x5,r1
         self.assertIn("cases=%lu", harness)
         self.assertIn("feedback=8", harness)
         self.assertIn("fuel_cut=14", harness)
-        self.assertIn("entries=9", harness)
+        self.assertIn("spark=22", harness)
+        self.assertIn("entries=10", harness)
 
     def test_can_telemetry_composition_lock_matches_verifier(self):
         layout = can_telemetry_layout.load_layout()
@@ -1755,14 +1763,35 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         fuel_suffix = [event(0x410), event(0x412), event(0x414, 1)]
         traces.extend((prefix + fuel_prefix + fuel_suffix + suffix,
                        prefix + fuel_prefix + [event(0x40C), event(0x40E)] + fuel_suffix + suffix))
+        rows = ((0x4C0, "tst r0,r0", 0x2008), (0x4C2, "bt rl_spark_chain", 0x8900),
+                (0x4C4, "mov #1,r1", 0xE101),
+                (0x4C6, "mov.l @(rl_spark_stock_handler,pc),r0", 0xD002),
+                (0x4C8, "jmp @r0", 0x402B), (0x4CA, "mov.l @r15+,r0", 0x60F6))
+        statements = []
+        for pc, text, word in rows:
+            image[pc:pc + 2] = word.to_bytes(2, "big")
+            statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
+        units["spark_cut"] = assembly_model.ParsedSource(Path("spark.s"),
+            {"rl_spark_chain": 0x4C6, "rl_spark_stock_handler": 0x4D0}, tuple(statements))
+        image[0x4D0:0x4D4] = (0x4E0).to_bytes(4, "big")
+        stub = ROLLING_VERIFIER.spark_stub()
+        image[0x4E0:0x4E0 + len(stub)] = stub
+        regions["spark_cut"] = SimpleNamespace(
+            entry=0x4C0, span=SimpleNamespace(start=0x4C0, end=0x4E0))
+        # TRAPA enters the spark wrapper from the untraced probe, and the stub
+        # returns from the exception.
+        spark_suffix = [event(0x4C6), event(0x4C8), event(0x4CA, 1),
+                        *(event(pc) for pc in range(0x4E0, 0x4EA, 2)), event(0x4EA, 1)]
+        traces.extend(([event(0x4C0), event(0x4C2)] + spark_suffix,
+                       [event(0x4C0), event(0x4C2), event(0x4C4)] + spark_suffix))
         return bytes(image), units, regions, boundaries, invokes, traces
 
     def test_each_entry_branch_delay_and_return_is_measured(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=9, instructions=65, outcomes=12,
-                                      delay_slots=20, call_return_paths=15, tail_paths=3))
+        self.assertEqual(result, dict(entries=10, instructions=71, outcomes=14,
+                                      delay_slots=21, call_return_paths=15, tail_paths=4))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
@@ -1772,7 +1801,9 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                   (traces[:6] + traces[8:], "uncovered wrapper entry 0x00000240"),
                                   (traces[:8] + traces[9:], "uncovered wrapper entry 0x000003a0"),
                                   (traces[:9], "uncovered wrapper entry 0x00000400"),
-                                  (traces[:10], "uncovered wrapper branch 0x0000040a"),
+                                  (traces[:10] + traces[11:], "uncovered wrapper branch 0x0000040a"),
+                                  (traces[:11], "uncovered wrapper entry 0x000004c0"),
+                                  (traces[:12], "uncovered wrapper branch 0x000004c2"),
                                   (traces[:6] + traces[7:], "uncovered wrapper branch 0x00000246"),
                                   (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
@@ -1809,6 +1840,23 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "executed wrapper data"):
             ROLLING_VERIFIER.require_wrapper_coverage(records, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
 
+    def test_spark_wrapper_requires_exception_entry_stock_tail_and_stub(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        records = sum(traces, [])
+        stub_return = [(0x4E8, 0x002B, 0), (0x4EA, 9, 1)]
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "lacks its spark frame"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                records + stub_return, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+        nested = traces[0][:2] + traces[11][:2] + traces[0][2:]
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "exception entry"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                records + nested, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+        changed = bytearray(image)
+        changed[0x4EC] ^= 1
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "spark handler boundary"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                records, bytes(changed), parsed, regions, boundaries, invokes, 0x350, 0x380)
+
     def test_fixture_instruction_and_control_literal_mutations_fail_before_linking(self):
         image, parsed, _regions, _boundaries, _invokes, _traces = self.fixture()
         for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal"),
@@ -1818,7 +1866,8 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                 (0x210, "wrapper instruction"), (0x238, "wrapper control literal"),
                                 (0x2C0, "wrapper instruction"),
                                 (0x3A0, "wrapper instruction"), (0x3A8, "wrapper control literal"),
-                                (0x400, "wrapper instruction"), (0x430, "wrapper control literal")):
+                                (0x400, "wrapper instruction"), (0x430, "wrapper control literal"),
+                                (0x4C0, "wrapper instruction"), (0x4D0, "wrapper control literal")):
             changed = bytearray(image)
             changed[address] ^= 1
             with self.subTest(reason=reason, address=address), tempfile.TemporaryDirectory() as directory:

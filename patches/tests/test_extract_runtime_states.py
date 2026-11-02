@@ -250,6 +250,15 @@ SPEED_HOLD_CONTROLLER = bytes.fromhex(
     "30168b03e03f815ae7a0237bd20a6020c8048901e720237b603380524f26000b"
     "0009ffffffff5d40000d6040ffff113c00021ce0ffff11bcffff249703e8ffff"
 )
+# Exact wrapper bytes of the speed-hold runtime with the RPM ceiling latch and
+# without the spark-cut actuator, whose startup wrapper clears a 28-byte state.
+CEILING_LATCH_WRAPPERS = bytes.fromhex(
+    "4f22d019400b0009d018400b00094f26000b0009ffffffffffffffffffffffff"
+    "d113601088008902d012402b0009d012402b0009ffffffffffffffffffffffff"
+    "4f22d10ee000e2072102710442108bfbd00b400b00094f26000b0009ffffffff"
+    "ffffffffffffffff000a9554000d38e4ffff5d40000d09d8000d2108ffff5d40"
+    "000d22a0"
+)
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
 
 
@@ -318,12 +327,26 @@ def edited_record():
     return bytes(record)
 
 
-def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
-    """Return ``data`` with the units and record of the last RPM-hold endpoint,
-    whose record occupies the retired span while the current span and the RPM
-    ceiling unit are erased."""
+def without_spark_cut(rom, data):
+    """Return ``data`` with the spark-cut unit erased and the stock vector of
+    the GR11A spark handler, as in every runtime before the hold actuator."""
     layout = target(rom).rolling_layout
     source = bytearray(data)
+    spark = layout.assembly_unit_by_key["spark_cut"].span
+    source[spark.start : spark.end] = bytes([0xFF]) * spark.size
+    hook = layout.hook_by_key["spark_handler"]
+    source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
+        hook.width, layout.byte_order
+    )
+    return source
+
+
+def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
+    """Return ``data`` with the units and record of the last RPM-hold endpoint,
+    whose record occupies the retired span while the current span, the RPM
+    ceiling unit, and the spark-cut unit are erased."""
+    layout = target(rom).rolling_layout
+    source = without_spark_cut(rom, data)
     ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
     source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
     for key, blob in (
@@ -346,7 +369,7 @@ def speed_hold_unlatched(rom, data, part):
     latch over an erased ceiling span. ``runtime`` also restores the wrappers
     and the hold-mode record with a zero hysteresis byte."""
     layout = target(rom).rolling_layout
-    source = bytearray(data)
+    source = without_spark_cut(rom, data)
     ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
     source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
     units = [
@@ -690,7 +713,7 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
 def test_editor_disabling_only_map_1_travels_in_the_profile(rom):
     start = target(rom).rolling_layout.configuration.start
     edited = bytearray(built(rom))
-    assert edited[start + 3] == rolling_launch.Mode.OBSERVE
+    assert edited[start + 3] == rolling_launch.Mode.HOLD
     assert edited[start + 4] & 1 == 1
     edited[start + 4] &= ~1
     extraction = extract(edited, rom)
@@ -704,6 +727,26 @@ def test_editor_disabling_only_map_1_travels_in_the_profile(rom):
 @pytest.mark.parametrize("part", ("runtime", "controller-engine"))
 def test_speed_hold_runtime_without_the_ceiling_latch_is_refused(part):
     data = closed("JK08A", speed_hold_unlatched("JK08A", built("JK08A"), part))
+    with pytest.raises(
+        runtime_endpoints.EndpointError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        runtime_endpoints.classify_runtime(data, target("JK08A"), "image")
+    with pytest.raises(
+        preflash.PreflashError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        preflash.check_image(data, "JK08A")
+
+
+def test_ceiling_latch_runtime_without_the_spark_cut_is_refused():
+    layout = target("JK08A").rolling_layout
+    data = without_spark_cut("JK08A", built("JK08A"))
+    wrappers = layout.assembly_unit_by_key["wrappers"].span
+    data[wrappers.start : wrappers.end] = CEILING_LATCH_WRAPPERS
+    # The built-in profile of that runtime observes on Map 1.
+    data[layout.configuration.start + 3] = rolling_launch.Mode.OBSERVE
+    data = closed("JK08A", data)
     with pytest.raises(
         runtime_endpoints.EndpointError,
         match="partial or unknown Rolling Launch state",

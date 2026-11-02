@@ -30,14 +30,14 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "3a760fc2e7908b51ec3d3e1ad26d6bf93507a41b4caed8578f8eb1498a82afdb"
+    "492fe4ff50a5d7d55e68bd45fcdf5bd5b03d2f12f8b7e227069cf398c671ec25"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 2013
-EXPECTED_COMPOSITION_WRITE_BYTES = 2524
-EXPECTED_INSTRUCTION_COUNT = 903
-EXPECTED_CODE_ENTRY_COUNT = 9
+EXPECTED_COMPOSITION_CHANGED_BYTES = 2345
+EXPECTED_COMPOSITION_WRITE_BYTES = 2880
+EXPECTED_INSTRUCTION_COUNT = 1051
+EXPECTED_CODE_ENTRY_COUNT = 10
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 175
+EXPECTED_DYNAMIC_CASES = 197
 RETURN_STUB = bytes.fromhex("000b0009")
 # The stock unsigned divider runs unstubbed: r0=divisor, r1=dividend.
 STOCK_UNSIGNED_DIVIDER = 0x00021CE0
@@ -51,9 +51,17 @@ COORDINATOR_RTS_OFFSET = 10
 FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
+# Simulator-only stock spark handler: it pushes SR at its entry below
+# SPARK_ENTRY_SR_CELL + 4, restores R1, and returns from the exception at
+# SPARK_RTE_OFFSET. With VBR zero, TRAPA #0x40 reads SPARK_TRAP_VECTOR, which
+# receives the composed GR11A interrupt-table entry.
+SPARK_ENTRY_SR_CELL = 0xFFFF6FE8
+SPARK_RTE_OFFSET = 8
+SPARK_TRAP_VECTOR = 0x00000100
+RTE_STUB = bytes.fromhex("002b0009")
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper", "fuel_cut_wrapper")
-COVERAGE_UNITS = ("wrappers", "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "fuel_cut_wrapper", "rpm_ceiling")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "rpm_ceiling")
+COVERAGE_UNITS = ("wrappers", "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "fuel_cut_wrapper", "rpm_ceiling", "spark_cut")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "rpm_ceiling", "spark_cut")
 
 
 class VerificationError(RuntimeError):
@@ -172,6 +180,30 @@ def coordinator_stub():
     return stub
 
 
+def spark_stub():
+    """Return the declared simulator-only stock spark-handler body."""
+    stub = bytes.fromhex("2f16d102410361f6002b0009") + (
+        base_verifier.alias_high_ram(SPARK_ENTRY_SR_CELL) + 4
+    ).to_bytes(4, "big")
+    if stub[SPARK_RTE_OFFSET : SPARK_RTE_OFFSET + 4] != RTE_STUB:
+        raise VerificationError("spark handler stub lacks its RTE/NOP boundary")
+    return stub
+
+
+def install_spark_vector(fixture, composed, rolling_layout):
+    """Stub the stock spark handler and bind TRAPA to the composed vector."""
+    hook = rolling_layout.hook_by_key["spark_handler"]
+    entry = rolling_layout.code_region_by_key["spark_cut"].entry
+    vector = composed[hook.address : hook.address + 4]
+    if (hook.stock != 0x0002AB24 or hook.stock % 4
+            or int.from_bytes(vector, "big") != entry):
+        raise VerificationError("spark handler vector differs from its layout")
+    stub = spark_stub()
+    fixture[hook.stock : hook.stock + len(stub)] = stub
+    fixture[SPARK_TRAP_VECTOR : SPARK_TRAP_VECTOR + 4] = vector
+    return 1
+
+
 def build_dynamic_fixture(
     composition,
     rolling_parsed,
@@ -200,6 +232,7 @@ def build_dynamic_fixture(
     stubs = install_stock_return_stubs(
         fixture, base_layout, rolling_layout
     )
+    stubs += install_spark_vector(fixture, composition.data, rolling_layout)
     return (
         bytes(fixture),
         base_relocated,
@@ -283,7 +316,8 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     arbiter = regions["feedback_arbiter"].entry
     controller = regions["speed_controller"].entry
     ceiling = regions["rpm_ceiling"].entry
-    entries = wrapper_entries | {arbiter, controller, ceiling}
+    spark = regions["spark_cut"].entry
+    entries = wrapper_entries | {arbiter, controller, ceiling, spark}
     adapter, adapter_tail = bind_ignition_adapter_window(
         fixture, fixture, parsed_by_unit["ignition_adapter"], regions, ignition_stock_entry)
     entries.add(adapter)
@@ -327,7 +361,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 allowed = {"r3", "r0"} if unit == "speed_controller" else {"r0"}
                 if (literal is None or literal.group("width") != "l"
                         or register not in allowed or row.text != f"{mnemonic} @{register}"
-                        or unit not in {"wrappers", "ignition_adapter"} and mnemonic != "jsr"):
+                        or unit not in {"wrappers", "ignition_adapter", "spark_cut"} and mnemonic != "jsr"):
                     raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
@@ -363,6 +397,16 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             or any(word == 11 and owners[pc] == adapter for pc, word in instructions.items())
             or fixture[ignition_stock_entry:ignition_stock_entry + 4] != RETURN_STUB):
         raise VerificationError("ignition adapter lacks its unique stock tail and declared RTS/NOP stub")
+    spark_tails = [pc for pc in transfers if owners[pc] == spark]
+    if (len(spark_tails) != 1 or transfers[spark_tails[0]][0] != "jmp"
+            or any(word in {0x000B, 0x002B} and owners[pc] == spark
+                   for pc, word in instructions.items())):
+        raise VerificationError("spark wrapper lacks its unique stock tail")
+    spark_tail = spark_tails[0]
+    spark_stock = transfers[spark_tail][2]
+    if spark_stock % 4 or fixture[spark_stock:spark_stock + len(spark_stub())] != spark_stub():
+        raise VerificationError("spark handler boundary differs from its declared fixture stub")
+    spark_rte = spark_stock + SPARK_RTE_OFFSET
     for entry, boundary in stock_boundaries.items():
         if entry not in wrapper_entries or fixture[boundary:boundary + 4] != RETURN_STUB:
             raise VerificationError("wrapper stock return boundary is not its RTS/NOP stub")
@@ -385,6 +429,14 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             raise VerificationError(f"executed wrapper-trace opcode differs at {pc:#010x}")
         if any(regions[key].span.start <= pc < regions[key].span.end for key in coverage_regions) and pc not in instructions:
             raise VerificationError(f"executed wrapper data at {pc:#010x}")
+        if pc == spark and not delay:
+            # TRAPA from the untraced probe enters the spark wrapper with no
+            # open frame; its stock tail returns from the exception.
+            if frames:
+                raise VerificationError("spark wrapper lacks its exception entry")
+            frames.append(dict(call=None, entry=spark, continuation=None,
+                               origin={"entry": spark, "stock_tail": False},
+                               divider_called=False, divider_return=False))
         frame = previous_frame if delay else (frames[-1] if frames else None)
         if not delay:
             previous_frame = dict(frame) if frame is not None else None
@@ -415,6 +467,10 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             frame["origin"]["adapter_stock_tail"] = True
         if pc in transfers:
             kind, _pool, target = transfers[pc]
+            if pc == spark_tail:
+                if frame is None or frame["entry"] != spark or len(frames) != 1:
+                    raise VerificationError("spark wrapper tail lacks its exception frame")
+                frame["origin"]["stock_tail"] = True
             if pc == divider_call:
                 if (frame is None or frame["entry"] != controller
                         or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
@@ -433,6 +489,8 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
         is_call = word & 0xF0FF == 0x400B or word & 0xF000 == 0xB000
         if is_call:
             target = successor(index, True)
+            if target == spark:
+                raise VerificationError("spark wrapper lacks its exception entry")
             if target in wrapper_entries:
                 if frames or pc not in invoke_words:
                     raise VerificationError("wrapper entry lacks its originating invoke call")
@@ -469,6 +527,14 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 continue
             frames.append(dict(call=pc, entry=target, continuation=pc + 4, origin=origin,
                                divider_called=False, divider_return=False))
+        elif word == 0x002B:
+            if (pc != spark_rte or len(frames) != 1 or frames[0]["entry"] != spark
+                    or not frames[0]["origin"]["stock_tail"]):
+                raise VerificationError(f"exception return lacks its spark frame at {pc:#010x}")
+            if index + 1 >= len(records) or records[index + 1][0::2] != (pc + 2, 1):
+                raise VerificationError(f"missing executed delay slot at {pc + 2:#010x}")
+            frames.pop()
+            returned.add(spark)
         elif word == 0x000B and (frames or pc in instructions):
             target = successor(index, True)
             if not frames:
@@ -535,6 +601,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     """Execute state, gate, output, and wrapper behavior cases."""
     rom_object = build_rom_object(fixture, build_dir)
     invoke_object = build_dir / "rolling-launch-invoke.o"
+    spark_object = build_dir / "rolling-launch-spark.o"
     harness_elf = build_dir / "rolling-launch-harness.elf"
     base_verifier.run_command([
         base_verifier.AS,
@@ -543,6 +610,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         "-o",
         invoke_object,
         TOOL_DIR / "invoke.s",
+    ])
+    base_verifier.run_command([
+        base_verifier.AS, "--big", "--isa=sh2e", "-o", spark_object, TOOL_DIR / "invoke_spark.s",
     ])
     for unit in COVERAGE_UNITS:
         parsed = parsed_by_unit[unit]
@@ -576,6 +646,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             harness_elf,
             positive,
             invoke_object,
+            spark_object,
             rom_object,
         ]
     base_verifier.run_command(command, timeout=120)
@@ -619,10 +690,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                                        base_hooks["cruise_feedback_serializer"].stock,
                                        rolling_layout.hook_by_key["primary_ignition_command"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=175 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=197 "
         "structural=13 gates=39 config=32 controller=24 activation=6 "
         "hold=9 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=14 "
-        "feedback=8 entries=9"
+        "feedback=8 spark=22 entries=10"
     )
     if marker not in result.stdout:
         raise VerificationError(

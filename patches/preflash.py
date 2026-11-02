@@ -11,7 +11,7 @@ image of its ROM at HEAD:
   a rebuild from the stock image with the settings and calibration that the
   image carries reproduces it byte for byte;
 - its Rolling Launch record enables no map in hold mode while the runtime has
-  no hold actuator, the payload that consumes the torque fraction (#100);
+  no hold actuator, the payload that consumes the torque fraction;
 - the tracked worktree equals HEAD, and the `Verify` workflow of GitHub Actions
   has a green run of the exact HEAD commit. A running, failed, cancelled, or
   missing run refuses the image; runs of other commits do not count.
@@ -132,8 +132,7 @@ def require_hold_actuator(target, extraction):
     )
     raise PreflashError(
         f"Rolling Launch enables map {maps} in hold mode, but the runtime has "
-        "no hold actuator until #100; build with mode observe or with no "
-        "enabled map"
+        "no hold actuator; build with mode observe or with no enabled map"
     )
 
 

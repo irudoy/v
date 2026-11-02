@@ -177,8 +177,8 @@ from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
 `selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
-`speed_controller`, `rpm_ceiling`, `feedback_arbiter`, and `ignition_adapter`
-with the same host PC observer. Typed instruction statements define this scope; pools and fill
+`speed_controller`, `rpm_ceiling`, `feedback_arbiter`, `ignition_adapter`,
+and `spark_cut` with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
 and invoke code. Each wrapper invocation retains its originating invoke frame
@@ -237,6 +237,25 @@ They check every payload byte, the complete Rolling Launch and selector state,
 configuration, pulse-count constants, concrete shadows and input/output
 buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
 pattern. The existing case counter reports both canonical boundary matrices.
+
+The spark-cut wrapper is an exception handler. The fixture copies the
+composed `GR11A` interrupt-table word at `0x000202E4` into the TRAPA vector
+`0x00000100`, and `invoke_spark.s` enters it with `TRAPA #0x40`, `r0..r7` set
+to 1..8 and the T bit alternating between matches. The trace opens the
+wrapper frame at its entry with no open frame; a call into it is rejected.
+The single literal tail reaches a declared simulator-only stub at
+`0x0002AB24`, which pushes SR below the harness cell `0xFFFF6FEC`, restores
+R1, and returns with RTE; the frame closes only at that RTE after the tail.
+The simulator sets SR bit 28 on exception entry, so a control handler in
+`invoke_spark.s` measures the entry SR of the same TRAPA without the wrapper,
+and every match requires that SR at the stub, `r0..r7` after the return, and
+the unchanged stock inputs. Spark cases take their expected state, veto byte
+and misfire latch from a C reference of the cut selection in the harness. They
+cover a forced timeout match, every eligibility condition and its boundary,
+the accumulator and fraction resets, observe and the latch rules in each
+phase, the first match after leaving ACTIVE, and two aligned 36-match periods
+for sixteen fractions with their period and per-cylinder bounds. The stub does
+not qualify the stock handler body.
 
 The ignition adapter is a single literal tail to the stock consumer
 `0x0002A892` with every argument register unchanged. Its entry, literal load

@@ -136,6 +136,22 @@ def _require_fresh_build(source, target, rom, source_name):
     return records
 
 
+def _require_misfire_calibration(target, data):
+    """Refuse a misfire-latch calibration equal to the spark-cut marker."""
+    layout = target.rolling_layout
+    if (
+        layout is not None
+        and layout.hold_actuator
+        and data[rolling_launch.MISFIRE_CALIBRATION_ADDRESS]
+        == rolling_launch.MISFIRE_MARKER
+    ):
+        raise ApplicationError(
+            f"calibration byte {rolling_launch.MISFIRE_CALIBRATION_ADDRESS:#x} "
+            f"equals the Rolling Launch misfire marker "
+            f"{rolling_launch.MISFIRE_MARKER:#04x}"
+        )
+
+
 def apply(source, calibration, *, replace_settings=False, source_name="<memory>"):
     """Apply ``calibration`` over the fresh build ``source`` in memory."""
     source = bytes(source)
@@ -205,6 +221,7 @@ def apply(source, calibration, *, replace_settings=False, source_name="<memory>"
         extract_calibration.extract(data, rom=rom, source_name="calibrated output")
     except extract_calibration.ExtractionError as error:
         raise ApplicationError(str(error)) from error
+    _require_misfire_calibration(target, data)
 
     return Application(
         data=data,

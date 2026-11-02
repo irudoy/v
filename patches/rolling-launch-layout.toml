@@ -16,7 +16,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "3a760fc2e7908b51ec3d3e1ad26d6bf93507a41b4caed8578f8eb1498a82afdb"
+expected_composition_sha256 = "492fe4ff50a5d7d55e68bd45fcdf5bd5b03d2f12f8b7e227069cf398c671ec25"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -25,7 +25,7 @@ configuration_address = 0x000D6040
 configuration_size = 40
 retired_configuration_address = 0x000D3F60
 retired_configuration_size = 32
-hold_actuator = false
+hold_actuator = true
 default_configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a"
 
 [[claimed_rom_extension]]
@@ -34,7 +34,7 @@ end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
-end = 0x000D60C0
+end = 0x000D6220
 
 [scheduler]
 table_address = 0x0002196C
@@ -50,7 +50,7 @@ proven_free_end = 0xFFFF7000
 base_reservation_start = 0xFFFF5D00
 base_reservation_end = 0xFFFF5D3C
 state_start = 0xFFFF5D40
-state_size = 28
+state_size = 44
 
 [[code_region]]
 key = "periodic_wrapper"
@@ -106,6 +106,12 @@ start = 0x000D6068
 end = 0x000D60C0
 entry = 0x000D6068
 
+[[code_region]]
+key = "spark_cut"
+start = 0x000D60C0
+end = 0x000D6220
+entry = 0x000D60C0
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -113,7 +119,7 @@ start = 0x000D3860
 end = 0x000D38E4
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "b0eeb27dff63ccd5232a34ed04220cca7d1daaf8f67ff0a4d0bef4fbe1e1c54e"
+expected_sha256 = "11232a674dcb39fcbe03354e2e6e3ae91e23bed27706c6b48db6e52ce95b3cf8"
 instruction_count = 34
 data_bytes = 28
 code_regions = ["periodic_wrapper", "selector_arbiter", "startup_wrapper"]
@@ -190,6 +196,18 @@ instruction_count = 37
 data_bytes = 4
 code_regions = ["rpm_ceiling"]
 
+[[assembly_unit]]
+key = "spark_cut"
+source = "rolling-launch-spark-cut.s"
+start = 0x000D60C0
+end = 0x000D6220
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "94127a113032ff40012973e8ddd3bb368bf36029ba806460b328848c2ef19743"
+instruction_count = 148
+data_bytes = 48
+code_regions = ["spark_cut"]
+
 [[hook]]
 key = "displaced_periodic_task"
 address = 0x00021970
@@ -237,6 +255,14 @@ width = 4
 stock = 0x0004ED88
 replacement = 0x000D6000
 purpose = "Run the stock fuel-output inhibit coordinator, then OR the Rolling Launch fuel-cut request into its final mask."
+
+[[hook]]
+key = "spark_handler"
+address = 0x000202E4
+width = 4
+stock = 0x0002AB24
+replacement = 0x000D60C0
+purpose = "Enter the GR11A spark interrupt through the cut actuator, which sets the dwell-start veto of selected events and then branches to the stock handler with the interrupted machine state."
 
 [[diagnostic]]
 did = 0x1211

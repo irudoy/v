@@ -5,7 +5,7 @@
 // periodic scheduler pass. The selector arbiter leaves normal map switching
 // unchanged only in IDLE. ACTIVE, COOLDOWN, and corrupt states call the
 // displaced stock ASCD host directly. The startup wrapper clears only the
-// dedicated 28-byte Rolling Launch state before the existing map-switching
+// dedicated 44-byte Rolling Launch state before the existing map-switching
 // startup wrapper initializes map 1 and both limiter shadows.
 
 .org 0x000D3860
@@ -40,7 +40,7 @@ rolling_launch_startup_wrapper:
 sts.l pr,@-r15
 mov.l @(rolling_launch_state_address_startup,pc),r1
 mov #0x0,r0
-mov #0x7,r2
+mov #0xb,r2
 rolling_launch_startup_clear_loop:
 mov.l r0,@r1
 add 0x4,r1

@@ -59,6 +59,7 @@ SOURCE_LABELS = {
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
     "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
     "rpm_ceiling": "rolling_launch_rpm_ceiling",
+    "spark_cut": "rolling_launch_spark_cut",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -165,7 +166,7 @@ def _validate_wrapper_abi(parsed):
         raise ValueError("selector arbiter needs two tail jumps")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
         raise ValueError("startup state clear loop differs")
-    if texts.count("mov #0x7,r2") != 1:
+    if texts.count("mov #0xb,r2") != 1:
         raise ValueError("startup state clear size differs")
 
 
@@ -332,6 +333,65 @@ def _validate_rpm_ceiling_abi(parsed):
         raise ValueError("RPM ceiling clobbers an undeclared register")
 
 
+def _validate_spark_cut_abi(parsed):
+    texts = _texts(parsed)
+    saves = [f"mov.l r{number},@-r15" for number in range(8)]
+    if texts[:10] != saves + ["stc sr,r0", "mov.l r0,@-r15"]:
+        raise ValueError("spark wrapper does not save r0..r7 and SR")
+    restores = [f"mov.l @r15+,r{number}" for number in range(7, 0, -1)]
+    if texts[-12:] != [
+        "mov.l @r15+,r0", "ldc r0,sr", *restores,
+        "mov.l @(rl_spark_stock_handler,pc),r0", "jmp @r0", "mov.l @r15+,r0",
+    ]:
+        raise ValueError("spark wrapper does not chain with its saved state")
+    if texts.count("jmp @r0") != 1 or any(
+        text.startswith(("jsr", "bsr", "rts", "rte", "sts.l pr", "lds.l"))
+        for text in texts
+    ):
+        raise ValueError("spark wrapper must leave through its stock tail only")
+    stores = sorted(
+        text for text in texts
+        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
+        and not text.endswith(",@-r15")
+    )
+    expected = sorted([
+        "mov.b r0,@r4", "mov.b r0,@r4",
+        "mov.b r0,@r3", "mov.b r0,@r3",
+        "mov.b r0,@r6",
+        "mov.b r0,@(0x1,r4)",
+        "mov.w r7,@(r0,r4)", "mov.w r7,@(r0,r4)",
+        "mov.w r0,@(0x4,r4)", "mov.w r0,@(0x6,r4)", "mov.w r0,@(0x8,r4)",
+        "mov.w r0,@(0xa,r4)", "mov.w r0,@(0xc,r4)", "mov.w r0,@(0xe,r4)",
+    ])
+    if stores != expected:
+        raise ValueError("spark wrapper store contract differs")
+    # Each stock-RAM store runs after a mask-15 LDC and before the SR restore.
+    for target, restore in (
+        ("mov.b r0,@r3", "ldc r7,sr"), ("mov.b r0,@r6", "ldc r3,sr"),
+    ):
+        for index, text in enumerate(texts):
+            if text != target:
+                continue
+            masked = max(
+                position for position in range(index)
+                if texts[position].startswith("ldc ")
+            )
+            if (
+                texts[masked - 1 : masked + 1] != ["or 0xf0,r0", "ldc r0,sr"]
+                or restore not in texts[index:]
+                or any(text.startswith("ldc ") for text in texts[masked + 1 : index])
+            ):
+                raise ValueError(
+                    "spark wrapper stores stock RAM outside its masked section"
+                )
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "sr"}
+    if not registers <= allowed:
+        raise ValueError("spark wrapper uses an undeclared register")
+
+
 def _validate_feedback_arbiter_abi(parsed):
     texts = _texts(parsed)
     prefix = [
@@ -471,6 +531,16 @@ def _expected_long_literals():
         "rpm_ceiling": {
             "rl_ceil_rpm_address": 0xFFFF11BC,
         },
+        "spark_cut": {
+            "rl_spark_veto_address": 0xFFFF8511,
+            "rl_spark_state_address": 0xFFFF5D40,
+            "rl_spark_misfire_latch_address": 0xFFFF436F,
+            "rl_spark_sync_address": 0xFFFF8501,
+            "rl_spark_cam_address": 0xFFFF24C9,
+            "rl_spark_dwell_address": 0xFFFF237A,
+            "rl_spark_cylinder_address": 0xFFFF13C9,
+            "rl_spark_stock_handler": 0x0002AB24,
+        },
     }
 
 
@@ -496,7 +566,10 @@ def validate_assembly_sources(layout=None):
             )
         parsed_by_unit[unit.key] = parsed
         _validate_16_bit_source_forms(parsed)
-        common._validate_delay_slots(parsed)
+        # Only the spark wrapper restores r0 in the delay slot of its tail.
+        common._validate_delay_slots(
+            parsed, allow_tail_restore=unit.key == "spark_cut"
+        )
         if parsed.instruction_count != unit.instruction_count:
             raise ValueError(
                 f"{unit.key}: source has {parsed.instruction_count} "
@@ -529,6 +602,8 @@ def validate_assembly_sources(layout=None):
             _validate_fuel_cut_wrapper_abi(parsed)
         elif unit.key == "rpm_ceiling":
             _validate_rpm_ceiling_abi(parsed)
+        elif unit.key == "spark_cut":
+            _validate_spark_cut_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit
@@ -553,6 +628,7 @@ def validate_instruction_semantics(layout, parsed_by_unit, blobs):
             blob,
             unit.span.start,
             instruction_addresses,
+            allow_tail_restore=unit.key == "spark_cut",
         ))
     return common.InstructionAudit(
         instructions=sum(item.instructions for item in audits),

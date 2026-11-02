@@ -533,5 +533,137 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertTrue(state.flags & rl.Flag.PEDAL_OK)
 
 
+class SparkCutActuatorTest(unittest.TestCase):
+    HOLD = rl.RuntimeState(
+        phase=rl.Phase.ACTIVE,
+        active_mode_snapshot=rl.Mode.HOLD,
+        torque_fraction=500,
+    )
+
+    def reset(self):
+        return rl.spark_event(
+            rl.RuntimeState(), rl.SparkCutState(), rl.SparkEvent()
+        ).state
+
+    def run_events(self, runtime, count, cut=None, first=1, **event):
+        """Run ``count`` matches in firing order from cylinder ``first``."""
+        cut = cut or self.reset()
+        vetoes = []
+        for index in range(count):
+            cylinder = (first - 1 + index) % rl.SPARK_CYLINDER_COUNT + 1
+            result = rl.spark_event(
+                runtime, cut, rl.SparkEvent(cylinder=cylinder, **event)
+            )
+            cut = result.state
+            vetoes.append(result.vetoed)
+        return cut, vetoes
+
+    def test_cut_count_and_cylinder_balance_hold_for_every_fraction(self):
+        period = 6 * rl.SPARK_CYLINDER_COUNT
+        for u in range(rl.U_ONE + 1):
+            runtime = dataclasses.replace(self.HOLD, torque_fraction=u)
+            _cut, vetoes = self.run_events(runtime, 6 * period)
+            ideal = period * (rl.U_ONE - u) / rl.U_ONE
+            for start in range(len(vetoes) - period + 1):
+                count = sum(vetoes[start : start + period])
+                self.assertLessEqual(abs(count - ideal), 3, (u, start))
+                if start % period:
+                    continue
+                self.assertLessEqual(abs(count - ideal), 1, (u, start))
+                cylinders = [
+                    sum(vetoes[start + index : start + period : rl.SPARK_CYLINDER_COUNT])
+                    for index in range(rl.SPARK_CYLINDER_COUNT)
+                ]
+                self.assertLessEqual(max(cylinders) - min(cylinders), 1, (u, start))
+
+    def test_timeout_forced_match_changes_nothing(self):
+        cut = rl.SparkCutState(quiet_events=7, cut_count=9)
+        event = rl.SparkEvent(spark_armed=False, veto_byte=0x41, misfire_latch=1)
+        for runtime in (rl.RuntimeState(), self.HOLD):
+            result = rl.spark_event(runtime, cut, event)
+            self.assertEqual(result, rl.SparkResult(cut, 0x41, 1))
+
+    def test_ineligible_events_leave_every_accumulator(self):
+        cut, _ = self.run_events(self.HOLD, 4)
+        for event in (
+            rl.SparkEvent(cylinder=5, synchronized=False),
+            rl.SparkEvent(cylinder=5, cam_fallback=True),
+            rl.SparkEvent(cylinder=5, dwell_degrees=rl.SPARK_DWELL_LIMIT_DEGREES + 1),
+            rl.SparkEvent(cylinder=5, dwell_degrees=0xFF),
+            rl.SparkEvent(cylinder=0),
+            rl.SparkEvent(cylinder=7),
+        ):
+            result = rl.spark_event(self.HOLD, cut, event)
+            self.assertEqual(result.state, cut)
+            self.assertFalse(result.vetoed)
+        limit = rl.SparkEvent(cylinder=5, dwell_degrees=rl.SPARK_DWELL_LIMIT_DEGREES)
+        result = rl.spark_event(self.HOLD, cut, limit)
+        self.assertNotEqual(result.state.accumulators[4], cut.accumulators[4])
+        self.assertEqual(result.state.accumulators[:4], cut.accumulators[:4])
+
+    def test_veto_sets_only_bit_7(self):
+        full = dataclasses.replace(self.HOLD, torque_fraction=0)
+        cut = self.reset()
+        for seed in (0x00, 0x40, 0x7F, 0x80, 0xC0):
+            result = rl.spark_event(full, cut, rl.SparkEvent(veto_byte=seed))
+            self.assertEqual(result.veto_byte, seed | 0x80)
+            self.assertEqual(result.state.cut_count, 1)
+        none = dataclasses.replace(self.HOLD, torque_fraction=rl.U_ONE)
+        _cut, vetoes = self.run_events(none, 72)
+        self.assertFalse(any(vetoes))
+
+    def test_states_outside_an_active_hold_reset_the_accumulators(self):
+        cut, _ = self.run_events(self.HOLD, 5)
+        for runtime in (
+            rl.RuntimeState(),
+            dataclasses.replace(self.HOLD, active_mode_snapshot=rl.Mode.OBSERVE),
+            dataclasses.replace(self.HOLD, phase=rl.Phase.COOLDOWN),
+            dataclasses.replace(self.HOLD, torque_fraction=rl.U_ONE + 1),
+        ):
+            result = rl.spark_event(runtime, cut, rl.SparkEvent())
+            self.assertFalse(result.vetoed)
+            self.assertEqual(result.state.accumulators, rl.SPARK_CYLINDER_OFFSETS)
+        corrupt = dataclasses.replace(cut, accumulators=(rl.SPARK_CUT_ONE,) * 6)
+        result = rl.spark_event(self.HOLD, corrupt, rl.SparkEvent(cylinder=3))
+        self.assertFalse(result.vetoed)
+        self.assertEqual(result.state.accumulators, rl.SPARK_CYLINDER_OFFSETS)
+
+    def test_leaving_active_sets_no_further_veto(self):
+        full = dataclasses.replace(self.HOLD, torque_fraction=0)
+        cut, vetoes = self.run_events(full, 6)
+        self.assertTrue(all(vetoes))
+        released = dataclasses.replace(full, phase=rl.Phase.COOLDOWN)
+        _cut, vetoes = self.run_events(released, 6, cut)
+        self.assertFalse(any(vetoes))
+
+    def test_misfire_latch_is_marked_and_released_only_by_its_rules(self):
+        cut = self.reset()
+        marked = rl.spark_event(self.HOLD, cut, rl.SparkEvent())
+        self.assertEqual(marked.misfire_latch, rl.MISFIRE_MARKER)
+        stock = rl.spark_event(self.HOLD, cut, rl.SparkEvent(misfire_latch=0x32))
+        self.assertEqual(stock.misfire_latch, 0x32)
+        observe = dataclasses.replace(self.HOLD, active_mode_snapshot=rl.Mode.OBSERVE)
+        self.assertEqual(rl.spark_event(observe, cut, rl.SparkEvent()).misfire_latch, 0)
+
+        held = marked.state
+        self.assertEqual(held.quiet_events, 0)
+        for phase in (rl.Phase.COOLDOWN, rl.Phase.IDLE):
+            runtime = rl.RuntimeState(phase=phase)
+            state = held
+            for count in range(1, rl.MISFIRE_RELEASE_EVENTS + 1):
+                result = rl.spark_event(
+                    runtime, state, rl.SparkEvent(misfire_latch=rl.MISFIRE_MARKER)
+                )
+                state = result.state
+                self.assertEqual(state.quiet_events, count)
+                released = (
+                    phase == rl.Phase.IDLE and count >= rl.MISFIRE_RELEASE_EVENTS
+                )
+                self.assertEqual(result.misfire_latch, 0 if released else 1)
+        quiet = dataclasses.replace(held, quiet_events=rl.QUIET_EVENTS_MAX)
+        result = rl.spark_event(rl.RuntimeState(), quiet, rl.SparkEvent(misfire_latch=0x32))
+        self.assertEqual(result.misfire_latch, 0x32)
+        self.assertEqual(result.state.quiet_events, rl.QUIET_EVENTS_MAX)
+
 if __name__ == "__main__":
     unittest.main()

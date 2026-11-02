@@ -454,7 +454,7 @@ range. These static results establish software ownership only; JK78C remains
 ## Rolling Launch profile
 
 Without `--profile`, a Rolling Launch-capable target uses the built-in
-`observe-map1-test` profile: Map 1 enabled, `observe` mode, and the controller
+`hold-map1-test` profile: Map 1 enabled, `hold` mode, and the controller
 defaults of the reference model. `make preflash` refuses a `hold` profile with
 an enabled map while the Rolling Launch layout declares no hold actuator. The relocated targets JK00C, JK00D, JK78C,
 1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in
@@ -465,10 +465,10 @@ Launch-capable family:
 ```toml
 schema_version = 3
 rom = "sh7058_7mfkavn86"
-name = "observe-maps-1-3"
+name = "hold-maps-1-3"
 
 [rolling_launch]
-mode = "observe"
+mode = "hold"
 enabled_maps = [1, 3]
 coolant_min = 10
 coolant_max = 220
@@ -526,7 +526,10 @@ of a calibration file refuses a build whose configuration records differ from
 the extracted settings and names the differing components, such as
 `rolling_launch` or `can_telemetry`. Disabling Map 1 Rolling Launch through an
 editor therefore carries over only through the extracted profile or an explicit
-replacement.
+replacement. On a Rolling Launch layout with the spark-cut hold actuator, the
+application also refuses a calibration that sets the misfire-latch byte
+`ROM8[0x00008C2E]` to the actuator marker `0x01`, and `make preflash` refuses
+such an image through its rebuild.
 
 ## CAN telemetry profile
 

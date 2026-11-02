@@ -68,10 +68,29 @@ def built_with(rom, **changes):
     ).data
 
 
-def test_hold_mode_map_is_refused_without_a_hold_actuator():
-    assert target("JK08A").rolling_layout.hold_actuator is False
+def without_hold_actuator(monkeypatch):
+    stock = target("JK08A")
+    patched = replace(
+        stock, rolling_layout=replace(stock.rolling_layout, hold_actuator=False)
+    )
+    load = runtime_targets.load_runtime_target
+    monkeypatch.setattr(
+        runtime_targets,
+        "load_runtime_target",
+        lambda rom: patched if rom == "JK08A" else load(rom),
+    )
+
+
+def test_hold_mode_maps_qualify_with_the_hold_actuator():
+    assert target("JK08A").rolling_layout.hold_actuator is True
     data = built_with("JK08A", mode=rolling_launch.Mode.HOLD, enable_mask=0x05)
-    with pytest.raises(preflash.PreflashError, match=r"enables map 1, 3 in hold mode.*#100"):
+    assert preflash.check_image(data, "JK08A").runtime == "current"
+
+
+def test_hold_mode_map_is_refused_without_a_hold_actuator(monkeypatch):
+    data = built_with("JK08A", mode=rolling_launch.Mode.HOLD, enable_mask=0x05)
+    without_hold_actuator(monkeypatch)
+    with pytest.raises(preflash.PreflashError, match=r"enables map 1, 3 in hold mode"):
         preflash.check_image(data, "JK08A")
 
 
@@ -79,9 +98,21 @@ def test_hold_mode_map_is_refused_without_a_hold_actuator():
     (rolling_launch.Mode.OBSERVE, 0x1F),
     (rolling_launch.Mode.HOLD, 0x00),
 ))
-def test_observe_or_disabled_hold_qualifies_without_a_hold_actuator(mode, mask):
-    report = preflash.check_image(built_with("JK08A", mode=mode, enable_mask=mask), "JK08A")
+def test_observe_or_disabled_hold_qualifies_without_a_hold_actuator(
+    monkeypatch, mode, mask
+):
+    data = built_with("JK08A", mode=mode, enable_mask=mask)
+    without_hold_actuator(monkeypatch)
+    report = preflash.check_image(data, "JK08A")
     assert (report.rom, report.runtime) == ("JK08A", "current")
+
+
+def test_misfire_calibration_equal_to_the_marker_is_refused():
+    address = rolling_launch.MISFIRE_CALIBRATION_ADDRESS
+    stock = target("JK08A").stock_image.data[address]
+    data = edited("JK08A", built("JK08A"), [(address, stock ^ rolling_launch.MISFIRE_MARKER)])
+    with pytest.raises(preflash.PreflashError, match="misfire marker"):
+        preflash.check_image(data, "JK08A")
 
 
 def test_image_of_another_rom_is_refused():

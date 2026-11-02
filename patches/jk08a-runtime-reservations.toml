@@ -20,7 +20,7 @@ purpose = "Selector state, fuel-cut shadows, and throttle shadows."
 [[active_ram]]
 owner = "rolling_launch"
 start = 0xFFFF5D40
-end = 0xFFFF5D5C
+end = 0xFFFF5D6C
 purpose = "Rolling Launch state record."
 
 [[active_ram]]
@@ -37,7 +37,7 @@ purpose = "CAN telemetry executable and table expansion."
 
 [[future_rom]]
 owner = "rolling_launch"
-start = 0x000D60C0
+start = 0x000D6220
 end = 0x000D6800
 purpose = "Rolling Launch executable and configuration expansion."
 

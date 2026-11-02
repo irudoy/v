@@ -35,7 +35,7 @@ from patches import rolling_launch_layout as rolling_layout_model
 from patches import rom_checksums
 
 
-PROFILE_NAME = "observe-map1-test"
+PROFILE_NAME = "hold-map1-test"
 HARDWARE_RESULTS_PATH = Path(__file__).with_name("hardware-results.toml")
 
 
@@ -67,10 +67,8 @@ def _load_base_digest():
 
 # The map-switching endpoint that the Rolling Launch stage is applied to.
 LOCKED_MAP_SWITCHING_SOURCE_SHA256 = _load_base_digest()
-# Observe mode while the layout declares no hold actuator: preflash refuses an
-# enabled hold-mode map until the torque-fraction actuator of #100 exists.
 PROFILE_CALIBRATION = rolling_launch.Calibration(
-    mode=rolling_launch.Mode.OBSERVE,
+    mode=rolling_launch.Mode.HOLD,
     enable_mask=0x01,
 )
 

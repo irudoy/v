@@ -323,9 +323,13 @@ section already run at the mask 8 that `0x000291E0..0x000291E8` set. The recover
 and enable under mask 15 from `0x0002932E`. Handler `0x0002AB24` has no caller
 besides its table entry; it saves its registers on entry and returns with
 `RTE`. Handler `0x0002AF38` is the only stock writer of `0xFFFF8511`; the
-crank-tooth handler, `0x0002A892`, `0x0002ACBA` and `0x0002B768` read it. The
-interrupt priorities of the `GR11A` and `GR11B` matches are not established
-here.
+crank-tooth handler, `0x0002A892`, `0x0002ACBA` and `0x0002B768` read it.
+The interrupt-priority initializer `0x00028D3C` writes `0x8FFF` to `IPRJ`
+(`0xFFFFED12`), so ATU channel 11 runs at level 8: `IMI11A` (vector 184,
+`GR11A`, entry `0x000202E4`) and `IMI11B` (vector 186, `GR11B`, entry
+`0x000202EC`) with `VBR = 0x00020004`. Neither match preempts the other or
+the crank-tooth sections at mask 8, and an interrupt above level 8 can delay
+both.
 
 ## Dwell sequence guard and recovery
 
