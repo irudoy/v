@@ -793,7 +793,7 @@ def _show_entity(graph, ref):
 
 def _status_text(props):
     parts = [props.get("state", "?")]
-    for key in ("method", "target", "count", "l0"):
+    for key in ("method", "target", "count", "candidate", "l0"):
         if props.get(key) not in (None, ""):
             parts.append(f"{key} {props[key]}")
     if props.get("producer") == "derived":
@@ -1659,6 +1659,8 @@ def gap_detail(row):
         parts = [status["method"], status.get("target")]
         if status.get("count") is not None:
             parts.append(f"count {status['count']}")
+        if status.get("candidate"):
+            parts.append(f"candidate {status['candidate']}")
         if status.get("l0") and row.get("current") and status["l0"] != row["current"]:
             parts.append("stale")
         return "  ".join(str(part) for part in parts if part not in (None, ""))

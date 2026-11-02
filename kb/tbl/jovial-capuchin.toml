@@ -140,8 +140,9 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013720"
-count = 0
-l0 = "28a4e19998ef4d2c"
+count = 1
+candidate = "1me3b:0001393e"
+l0 = "7ed4ee54a3133ddd"
 note = """
 JK78C 0003d092 (charcoal-foxhound) loads 00013720 at 0003d102 for a one-time \
 lookup. The target image holds the candidate 0001393e between the \
@@ -155,8 +156,9 @@ layout = "1nd"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013720"
-count = 0
-l0 = "cb701875f15725a4"
+count = 1
+candidate = "1nd:00013b52"
+l0 = "80899b88e0770eef"
 note = """
 JK78C 0003d092 (charcoal-foxhound) loads 00013720 at 0003d102 for a one-time \
 lookup. The target image holds the candidate 00013b52 between the \

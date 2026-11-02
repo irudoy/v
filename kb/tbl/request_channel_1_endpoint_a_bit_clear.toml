@@ -153,8 +153,9 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:0001b09a"
-count = 0
-l0 = "28a4e19998ef4d2c"
+count = 1
+candidate = "1me3b:0001b7c8"
+l0 = "7ed4ee54a3133ddd"
 note = """
 1ME3B 000b8990 runs an extended channel program: it reads the pairs \
 0001b9f8/0001ba18, 0001ba38/0001ba58 and 0001bc18/0001bc38 and the block \

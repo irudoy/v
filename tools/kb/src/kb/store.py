@@ -180,7 +180,8 @@ SYMBOL = Table(_plain("layout", "address", "name", "level", "former", "images", 
                + (("interp", INTERP), ("editor", EDITOR), ("curated", CURATED), ("bit", Array(BIT)),
                   ("evidence", Array(EVIDENCE))),
                sort=("layout", "address"))
-STATUS = Table(_plain("layout", "state", "method", "target", "count", "l0", "note")
+STATUS = Table(_plain("layout", "state", "method", "target", "count", "candidate", "l0",
+                      "note")
                + (("evidence", Array(EVIDENCE)),), sort=("layout",))
 LINK = Table(_plain("type", "to", "slot") + (("offset", HEX),)
              + _plain("via", "layouts", "relies", "supports", "reverse_relies",

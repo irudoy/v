@@ -246,6 +246,41 @@ class PlanTest(unittest.TestCase):
                                         count=2))
 
     @pytest.mark.slow
+    def test_a_status_records_one_candidate_that_cannot_be_bound(self):
+        note = "The load of the candidate lies outside every L0 function."
+        candidate = f"jk78c:{THROTTLE_JK78C:08x}"
+        change, texts, result = self.plan({"cmd": "unresolved", "meaning": THROTTLE,
+                                           "layout": "jk78c", "candidate": candidate,
+                                           "note": note})
+        document = tomllib.loads(texts[Path("kb/ram/throttle_runtime.toml")])
+        [status] = [entry for entry in document["status"] if entry["layout"] == "jk78c"]
+        self.assertEqual(status, {
+            "layout": "jk78c", "state": "unresolved", "method": "masked-match",
+            "target": f"7mfk:{THROTTLE_HOME:08x}", "count": 1, "candidate": candidate,
+            "l0": match.search_digest("jk78c"), "note": note})
+        self.assertEqual(checks.statuses(result), [])
+        self.assertEqual(change.lines, [
+            f"unresolved {THROTTLE} on jk78c: masked-match search of 7mfk:{THROTTLE_HOME:08x}, "
+            f"candidate {candidate}"])
+
+    def test_a_candidate_is_the_one_match_of_its_search_and_states_why_it_is_not_bound(self):
+        stated = {"cmd": "unresolved", "meaning": TABLE, "layout": "jk00c", "method": "l0",
+                  "target": f"7mfk:{TABLE_HOME:08x}"}
+        note = "The identity of the candidate is not established."
+        self.assertIn("a search with one match states its candidate", self.refused(
+            {**stated, "count": 1}, code=2))
+        self.assertIn("a candidate states in the note why it cannot be bound", self.refused(
+            {**stated, "count": 1, "candidate": f"jk00c:{TABLE_JK00C:08x}"}, code=2))
+        self.assertIn(f"candidate '1nd:{TABLE_JK00C:08x}' is no location on jk00c", self.refused(
+            {**stated, "count": 1, "candidate": f"1nd:{TABLE_JK00C:08x}", "note": note}, code=2))
+        self.assertIn("a candidate is the one match of a search, which finds 2", self.refused(
+            {**stated, "count": 2, "candidate": f"jk00c:{TABLE_JK00C:08x}", "note": note},
+            code=2))
+        self.assertIn(f"finds jk78c:{THROTTLE_JK78C:08x}, not the candidate jk78c:ffff17a6",
+                      self.refused({"cmd": "unresolved", "meaning": THROTTLE, "layout": "jk78c",
+                                    "candidate": "jk78c:ffff17a6", "note": note}))
+
+    @pytest.mark.slow
     def test_the_checks_of_the_result_refuse_evidence_that_l0_refutes(self):
         message = self.refused(bind(THROTTLE, "jk78c:ffff17a6", evidence=[{
             **TABLE_EVIDENCE, "at": "jk78c:0002ffb8", "to": "7mfk:0002ce62", "value": 12}]))

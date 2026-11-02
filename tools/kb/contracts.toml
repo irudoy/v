@@ -39,7 +39,7 @@ rows = [
   ["`kb set <ref> [--layout <l>] <key>=<value>... [--dry-run]`", "Keys of an entity, a symbol, or a feature target"],
   ["`kb bind <meaning> <layout>:<address> [--evidence <item>]... [--from <l>] [--level <level>] [--note <text>] [--dry-run]`", "A symbol of an existing meaning on another layout, with evidence"],
   ["`kb absent <meaning> --layout <l> --evidence <item>... [--note <text>] [--dry-run]`", "Status `absent` with the evidence that removes the mechanism"],
-  ["`kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--note <text>] [--dry-run]`", "Status `unresolved` with the method and target of the search"],
+  ["`kb unresolved <meaning> --layout <l> [--from <l>] [--method <kind> --target <ref> --count <n>] [--candidate <l>:<address>] [--note <text>] [--dry-run]`", "Status `unresolved` with the method and target of the search, and its one unbindable candidate"],
   ["`kb link <from> <type> <to> [<key>=<value>]... [--evidence <item>]... [--dry-run]`", "A typed link with its keys and evidence"],
   ["`kb unlink <from> <type> <to> [<key>=<value>]... [--dry-run]`", "Removes a typed link of the file of a meaning"],
   ["`kb set-link <from> <type> <to> <key>=<value>... [--slot <slot>] [--offset <offset>] [--dry-run]`", "Replaces mutable properties of one existing owned native link"],

@@ -779,11 +779,34 @@ class FileChecksTest(unittest.TestCase):
         messages = sorted(f"{issue.subject}: {issue.message}" for issue in checks.statuses(model))
         self.assertEqual(messages, [
             "apc_probe/ram on 1me3b: an unresolved status without target, count, l0",
-            "apc_probe/ram on 1nd: count 1; a search states 0 or more than 1 match",
+            "apc_probe/ram on 1nd: count 1 without a candidate; one match states its "
+            "location and why it cannot be bound",
             "apc_probe/ram on jk00c: an absent status without evidence",
         ])
         notes = checks.stale(model)
         self.assertEqual([note.subject for note in notes], ["apc_probe/ram on 1nd"])
+
+    def test_a_status_of_one_candidate_locates_it_and_states_why_it_is_not_bound(self):
+        def status(layout, count, **keys):
+            return {"layout": layout, "state": "unresolved", "method": "l0",
+                    "target": "7mfk:ffff2022", "count": count,
+                    "l0": match.search_digest(layout), **keys}
+
+        note = "The load of the candidate lies outside every L0 function."
+        statuses = [
+            status("jk78c", 1, candidate="jk78c:ffff17a4", note=note),
+            status("1nd", 0, candidate="1nd:ffff17a4", note=note),
+            status("1me3b", 1, candidate="jk78c:ffff17a4", note=note),
+            status("jk00c", 1, candidate="jk00c:ffff17a4"),
+        ]
+        model = self.model({"symbol": self.symbols(APC_JK00D), "status": statuses})
+        messages = sorted(f"{issue.subject}: {issue.message}" for issue in checks.statuses(model))
+        self.assertEqual(messages, [
+            "apc_probe/ram on 1me3b: candidate 'jk78c:ffff17a4' is no location on 1me3b",
+            "apc_probe/ram on 1nd: candidate 1nd:ffff17a4 with count 0; a candidate is the one "
+            "match of its search",
+            "apc_probe/ram on jk00c: a candidate without a note of why it cannot be bound",
+        ])
 
     def test_the_evidence_of_a_status_holds_on_l0_and_the_images(self):
         def absent(layout, *items):

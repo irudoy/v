@@ -117,8 +117,9 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013c72"
-count = 0
-l0 = "28a4e19998ef4d2c"
+count = 1
+candidate = "1me3b:00013f00"
+l0 = "7ed4ee54a3133ddd"
 note = """
 1me3b reader 00067bf8 reads 00013f00 at the position of this curve through \
 another lookup, 0002aa98, and the 1ME3B census records 00013f00 as a \

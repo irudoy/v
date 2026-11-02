@@ -544,10 +544,26 @@ def statuses(model):
             if props["method"] not in vocab.EVIDENCE_KINDS:
                 issues.append(Issue("statuses", path, subject,
                                     f"method {props['method']!r} is no evidence kind"))
-            count = props["count"]
-            if isinstance(count, bool) or not isinstance(count, int) or count < 0 or count == 1:
+            count, candidate = props["count"], props.get("candidate")
+            if isinstance(count, bool) or not isinstance(count, int) or count < 0:
                 issues.append(Issue("statuses", path, subject,
-                                    f"count {count!r}; a search states 0 or more than 1 match"))
+                                    f"count {count!r}; a search states its number of matches"))
+            elif count == 1 and candidate in (None, ""):
+                issues.append(Issue("statuses", path, subject,
+                                    "count 1 without a candidate; one match states its "
+                                    "location and why it cannot be bound"))
+            if candidate not in (None, ""):
+                place = match.location(str(candidate))
+                if count != 1:
+                    issues.append(Issue("statuses", path, subject,
+                                        f"candidate {candidate} with count {count!r}; a "
+                                        "candidate is the one match of its search"))
+                elif place is None or place[0] != layout:
+                    issues.append(Issue("statuses", path, subject,
+                                        f"candidate {candidate!r} is no location on {layout}"))
+                elif not props.get("note"):
+                    issues.append(Issue("statuses", path, subject,
+                                        "a candidate without a note of why it cannot be bound"))
             if not L0_DIGEST.fullmatch(str(props["l0"])):
                 issues.append(Issue("statuses", path, subject,
                                     f"l0 {props['l0']!r} is not 16 hexadecimal digits"))

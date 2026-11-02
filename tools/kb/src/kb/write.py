@@ -23,7 +23,8 @@ COMMANDS = {'new': ('kind', 'symbol', 'slug', 'name', 'evidence', 'level', 'note
  'set': ('ref', 'layout', 'keys', 'unset'),
  'bind': ('meaning', 'symbol', 'evidence', 'from', 'level', 'note'),
  'absent': ('meaning', 'layout', 'evidence', 'note'),
- 'unresolved': ('meaning', 'layout', 'from', 'method', 'target', 'count', 'note'),
+ 'unresolved': ('meaning', 'layout', 'from', 'method', 'target', 'count', 'candidate',
+                'note'),
  'link': ('meaning', 'type', 'to', 'keys', 'evidence'),
  'unlink': ('meaning', 'type', 'to', 'keys'),
  'set-link': ('meaning', 'type', 'to', 'selector', 'keys', 'unset'),
@@ -345,6 +346,19 @@ def _listed(value):
 
 def _link_key(link):
     return link.get("type"), link.get("to"), link.get("slot"), link.get("offset")
+
+
+def _candidate(text, layout, note):
+    """The canonical location of the one candidate of a search that cannot be
+    bound, which the note explains, or None."""
+    if text in (None, ""):
+        return None
+    place = match.location(text)
+    if place is None or place[0] != layout:
+        raise KbError(f"candidate {text!r} is no location on {layout}", code=2)
+    if not note:
+        raise KbError("a candidate states in the note why it cannot be bound", code=2)
+    return f"{layout}:{place[1]:08x}"
 
 
 def _widen(link):
@@ -821,6 +835,7 @@ class Change:
         meaning, named = self.resolve(op["meaning"])
         layout = self._layout(op["layout"])
         self._free(meaning, layout)
+        candidate = _candidate(op.get("candidate"), layout, op.get("note"))
         stated = [op.get(key) for key in SEARCH]
         if any(value is not None for value in stated):
             if any(value is None for value in stated):
@@ -830,16 +845,27 @@ class Change:
                 count = int(count)
             except ValueError:
                 raise KbError(f"count {count!r} is no integer", code=2) from None
+            if count == 1 and candidate is None:
+                raise KbError("a search with one match states its candidate and, in the "
+                              "note, why it cannot be bound", code=2)
         else:
             source = self._source(meaning, named, op.get("from"))
             found = match.search(self.model, source, layout)
             if found.count == 1:
                 [address] = found.candidates
-                raise KbError(
-                    f"the {found.method} search from {source.key.location} finds one "
-                    f"candidate, {layout}:{address:08x}; `kb bind {meaning.key} "
-                    f"{layout}:{address:08x}` records it", code=3)
+                if candidate is None:
+                    raise KbError(
+                        f"the {found.method} search from {source.key.location} finds one "
+                        f"candidate, {layout}:{address:08x}; `kb bind {meaning.key} "
+                        f"{layout}:{address:08x}` records it", code=3)
+                if candidate != f"{layout}:{address:08x}":
+                    raise KbError(
+                        f"the {found.method} search from {source.key.location} finds "
+                        f"{layout}:{address:08x}, not the candidate {candidate}", code=3)
             method, target, count = found.method, found.target, found.count
+        if candidate is not None and count != 1:
+            raise KbError(f"a candidate is the one match of a search, which finds {count}",
+                          code=2)
         note = op.get("note")
         if note is None:
             # A repeat of the held search on a new L0 keeps the note of its status.
@@ -851,11 +877,12 @@ class Change:
                     method, target, count):
                 note = held.get("note")
         self._status(meaning, {"layout": layout, "state": "unresolved", "method": method,
-                               "target": target, "count": count,
+                               "target": target, "count": count, "candidate": candidate,
                                "l0": match.search_digest(layout, self.root),
                                "note": note})
+        found = f"candidate {candidate}" if candidate else f"{count} matches"
         self.lines.append(f"unresolved {meaning.key} on {layout}: {method} search of {target}, "
-                          f"{count} matches")
+                          f"{found}")
 
     def link(self, op):
         meaning, to, type_ = self._ends(op)

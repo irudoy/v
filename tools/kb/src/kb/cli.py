@@ -495,7 +495,7 @@ def command_unresolved(args, root=repo.ROOT):
     return _write(args, [{
         "cmd": "unresolved", "meaning": args.meaning, "layout": args.layout,
         "from": args.source, "method": args.method, "target": args.target,
-        "count": args.count, "note": args.note}], root)
+        "count": args.count, "candidate": args.candidate, "note": args.note}], root)
 
 
 def _link_keys(args):
@@ -749,6 +749,8 @@ def build_parser():
                             help="the evidence kind of a stated search")
     unresolved.add_argument("--target", help="what a stated search looked for")
     unresolved.add_argument("--count", type=int, help="the matches of a stated search")
+    unresolved.add_argument("--candidate", help="the location of the one match, which cannot "
+                            "be bound; the note states why")
     unresolved.add_argument("--note", help="prose about the status")
     unresolved.set_defaults(handler=command_unresolved)
     ends = (("meaning", "the meaning whose file states the link"),

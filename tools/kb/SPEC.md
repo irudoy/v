@@ -33,7 +33,7 @@ content expectations live in `tools/kb/bench.toml`.
   meaning carries a generated two-word name of its own.
 - For every layout a meaning has either a symbol with evidence or a status.
   `absent` ("the mechanism does not exist") and `unresolved` ("the search
-  found nothing") are stored with their evidence and search; `unknown` is
+  bound no symbol") are stored with their evidence and search; `unknown` is
   computed for a layout that has neither a symbol nor a stored status.
 - Strict homology holds inside a code family. A symbol of another family joins
   a meaning only with evidence on its own code; otherwise the relation is an
@@ -533,7 +533,8 @@ because both differ by layout.
 | `state` | `absent` or `unresolved` |
 | `method` | For `unresolved`: the evidence kind of the search, such as `masked-match` |
 | `target` | For `unresolved`: what the search looked for, as a reference or a location |
-| `count` | For `unresolved`: the number of matches; 0 for none, more than 1 for an ambiguous search |
+| `count` | For `unresolved`: the number of matches; 0 for none, 1 for one candidate that cannot be bound, more than 1 for an ambiguous search |
+| `candidate` | For `unresolved` with `count` 1: the location of the candidate on the layout |
 | `l0` | For `unresolved`: the first 16 hexadecimal digits of the SHA-256 of the layout's L0 manifest at search time |
 | `note` | Prose |
 | `[[status.evidence]]` | Required for `absent` |
@@ -542,9 +543,12 @@ because both differ by layout.
 - `absent` states that the mechanism does not exist on the layout. Its
   evidence comes from the layout's own code, for example a DID table without
   the DID or a producer path that the code lacks.
-- `unresolved` states that a search found no unique symbol. When the L0
-  manifest of the layout changes, the search is stale: `kb brief` lists it,
-  and staleness is not a check failure.
+- `unresolved` states that a search bound no symbol: it found none, more
+  than one, or one candidate that cannot be bound. A status of one candidate
+  locates it as `candidate`, and its `note` states why it is not bound:
+  `kb bind` refuses the location, or the identity of the candidate is not
+  established. When the L0 manifest of the layout changes, the search is
+  stale: `kb brief` lists it, and staleness is not a check failure.
 - `unknown` is computed for a layout without a symbol or a status of a
   required meaning. A meaning is required on a layout when a feature that
   targets the layout requires it, directly or through a field, or when the
@@ -1509,7 +1513,10 @@ references.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
   and `--count` state together. A search that finds one candidate is refused
-  with the `kb bind` that records it. A repeat with the `method`, `target`,
+  with the `kb bind` that records it, unless `--candidate` names that
+  candidate. `--candidate` with `--note` records one candidate that cannot be
+  bound, with count 1, and a stated search with count 1 requires both. A
+  repeat with the `method`, `target`,
   and `count` of the held status keeps its `note` unless `--note` states one.
 - `kb merge <meaning> <other>` keeps the name and the file of the meaning.
   Each symbol of the other meaning takes the evidence of the join: the
@@ -1693,7 +1700,7 @@ its last pass and the files that it read beyond those it states in advance.
 | `widths` | Access widths in L0 agree with the `width` of `ram` and `reg` symbols; every field width fits its source: on every layout that a feature requiring an `ecu_ram` field targets, the symbol that the field reads states a width of at least the bits of the field, and the allocation of a field of another origin holds at least its bytes |
 | `code` | Declared writer and reader relations reproduce through normalized L0 accesses; wider RAM and register accesses have an exact unresolved review with a reason, claim digest and L0 digest; new, changed, duplicate and vanished differences fail |
 | `image-bytes` | `rom-bytes` values, those of the named bits included, hook `target` words, DID table entries, and the storage and dimensions of `tbl`, `axis`, and `const` symbols agree with every image of the layout |
-| `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`; stale searches are reported and do not fail |
+| `statuses` | `absent` carries evidence; `unresolved` carries `method`, `target`, `count`, and `l0`, and with count 1 a `candidate` location on its layout and a `note`; stale searches are reported and do not fail |
 | `writers` | Each store of a `ram` or `reg` symbol that aligns on the layout of another symbol of its meaning aligns with a store of that symbol, in both directions between the home symbol and each other symbol; `[writers] review` of `tools/kb/config.toml` lists the contradictions under review, each as the symbol and the store site, and an entry that no longer reproduces fails |
 | `blocks` | Stages, blocks, and endpoints carry the required text metadata of the generated view; order is a positive integer where stated; named specifications are repository files; every reviewed `fn` meaning has a block or appears in the unplaced report, as `tools/romviz/architecture.py check` reports them; every block names a stage |
 | `chains` | Required metadata is nonempty text, and named specifications are repository files; every step resolves; `effect` and `sign` are in their vocabularies; a step note is text and matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step |
