@@ -435,6 +435,9 @@ read = "open"
                 self.assertIsNotNone(self.denied("Bash", command=command))
 
     def test_jq_programs_are_data_and_its_inputs_are_read_operands(self):
+        (self.root / "open.jq").write_text(".l0\n")
+        (self.root / "tmp").mkdir(exist_ok=True)
+        (self.root / "tmp/prog.jq").write_text('import "names" as $d {search: "../kb"};\n$d\n')
         for command in (
             "jq '{l0:.l0, symbols:[.symbols[]|{ref:.ref,keys:(.keys|{layout,address,name,summary,"
             "note}),links:.links}]}' tmp/fuel-map.json tmp/request-map.json",
@@ -446,7 +449,7 @@ read = "open"
             "'[$a[0][], $b[0][]] | map({ref, table: .l0})'",
             "jq '[.[] as $m | $m.accesses[] | {reader:.function_address,table:$m.table_address}]' "
             "tmp/jk78c-table-reader-inventory.json",
-            "jq -nr --arg layout l0 --argjson count 1 '{$layout, $count, include: .include}'",
+            "jq -nr --arg layout l0 --argjson count 1 '{$layout, $count, mode: .include}'",
             "jq -n '$ARGS' --args kb/names.csv l0",
             "jq -f open.jq tmp/a.json",
             "jq -n --rawfile text open.txt '$text' > tmp/out.json",
@@ -464,6 +467,11 @@ read = "open"
             "jq -n '\"lib\" | modulemeta'", "jq -L kb -n .", "jq -Lkb -n .",
             "jq --library-path kb -n .", "F=kb/names.csv jq . tmp/a.json",
             'jq . tmp/a.json "$(cat kb/names.csv)"',
+            # Module loading through a comment, from a program file, or from
+            # a program file that cannot be read.
+            "jq -n 'import # c\n\"kb/names\" as $d {search: \".\"}; $d'",
+            "jq -n 'include #\n\"l0/x\" {search: \".\"}; .'",
+            "jq -n -f tmp/prog.jq", "jq -n -f tmp/missing.jq",
         ):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
@@ -496,6 +504,55 @@ read = "open"
         self.assertIsNotNone(self.denied("Bash", command="cat {open.txt,kb/names.csv}"))
         self.assertIsNone(self.denied("Bash", command="cat {open.txt,defs/open.csv}"))
         self.assertEqual(project.hook.expand("{a,b}/{c,d}"), ["a/c", "a/d", "b/c", "b/d"])
+
+    def test_unquoted_braces_expand_around_a_quoted_space_and_sequences_refuse(self):
+        for command in (
+            "cat {kb,' '}/names.csv", "cat l{0,\\ }/7mfk/funcs.csv", "cat defs/{JK08A.xml,' '}",
+            "cat {{kb,' '},x}/names.csv", "cat 'a b'{/../kb,}/names.csv",
+            "cat l{0..0}/7mfk/funcs.csv", "cat {k..k}b/names.csv",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in ("cat 'a {b,c} d'", "cat {open,tmp/a}.txt"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_a_link_target_resolves_against_the_directory_of_its_link(self):
+        for command in (
+            "ln -s ../kb/names.csv tmp/zz.txt", "ln -s ../../l0/7mfk/funcs.csv tmp/a/zz.txt",
+            "ln -s -t tmp ../kb", "ln -sf kb/names.csv zz.txt",
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in ("ln -s ../open.txt tmp/zz.txt", "ln -s open.txt zz.txt"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_python_names_bound_by_another_form_have_no_literal_value(self):
+        prelude = "d = ''.join(['k', 'b'])\nt = 'zz.txt'\n"
+        read = "print(open(d + '/' + t).read(), 'l0')"
+        programs = [prelude + rebinding + read for rebinding in (
+            "t = 'names.csv'\n",
+            "for t in ['names.csv']:\n    pass\n",
+            "t, u = 'names.csv', 0\n",
+            "(t := 'names.csv')\n",
+            "t: str = 'names.csv'\n",
+            "[(t := 'names.csv') for _ in [0]]\n",
+            "[t] = ['names.csv']\n",
+            "for t, u in [('names.csv', 0)]:\n    pass\n",
+            "match 'names.csv':\n    case t:\n        pass\n",
+        )] + [
+            "import os\n" + prelude + "for t in ['names.csv']:\n    pass\n"
+            "print(open(os.path.join(d, t)).read(), 'l0')",
+            "d = ''.join(['k', 'b', '/names.csv'])\nt = 'zz.txt'\nt *= 0\nt += d\n"
+            "print(open(t).read(), 'l0')",
+            "t = 'zz.txt'\nfor t in ['kb/names.csv']:\n    pass\nprint(open(t).read())",
+            "for t in ['kb/names.csv']:\n    open(t)",
+            "for print in [open]:\n    print('kb/names.csv')",
+        ]
+        for program in programs:
+            with self.subTest(program=program):
+                self.assertIsNotNone(self.denied("Bash", command=f'python3 -c "{program}"'))
 
     def test_python_reads_dynamic_files_whose_name_end_no_guarded_file_has(self):
         for command in (

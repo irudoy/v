@@ -16,16 +16,20 @@ commands. File operands, redirections, substitutions and selected Git
 operations have access checks; literal draft and message bodies remain data.
 The program text of jq is data apart from module loading, and its input and
 program files are read operands. A brace pattern expands to a bounded number
-of alternatives, beyond which the check denies.
+of alternatives, beyond which the check denies, and a brace sequence denies.
+A relative link target resolves against the directory of its link.
 Inline Python supports finite literal file and metadata forms, with a
 conservative refusal for unknown operations involving protected references.
-A dynamic read passes when its literal file-name end matches no guarded file.
+A dynamic read passes when its literal file-name end matches no guarded file;
+a name that the program binds more than once has no literal value.
 Trusted `kb`, `make` and repository runners keep their input access after
 shell substitutions and redirections have been checked. An unsupported Python
-interpreter produces a deliberate denial rather than a hook error.
+interpreter produces a deliberate denial, and any other failure denies the
+call with exit status 2.
 """
 
 import ast
+from collections import Counter
 import fnmatch
 import glob
 import hashlib
@@ -74,6 +78,8 @@ HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)[ \t]*(['\"]?)([^\s'\"<>|&;()]+)\2")
 PATHLIKE = re.compile(r"[^\s'\"`()\[\]{},:;=<>|&$]+")
 DYNAMIC = re.compile(r"\$\([^()]*\)|`[^`]*`|\$\{?\w+\}?")
 BRACES = re.compile(r"\{([^{}]*)\}")
+# A brace sequence such as `{0..9}` or `{a..z}`, which a shell expands.
+SEQUENCE = re.compile(r"\{[^{},]*\.\.[^{},]*\}")
 # The alternatives of one brace pattern that a path check expands at most.
 EXPANSIONS = 256
 # Options of jq that take the next words as their values: data values, and a
@@ -81,7 +87,7 @@ EXPANSIONS = 256
 JQ_DATA = {"--arg": 2, "--argjson": 2, "--indent": 1}
 JQ_FILES = {"--slurpfile", "--rawfile", "--argfile"}
 # Program text that loads jq modules or their metadata from the search path.
-JQ_MODULES = re.compile(r"(?<![.\w$])(?:import|include)\s*\"|\bmodulemeta\b")
+JQ_MODULES = re.compile(r"(?<![.\w$])(?:import|include)\b|\bmodulemeta\b")
 # An edit reason lists the inputs of a projection up to this many.
 LISTED_INPUTS = 4
 
@@ -554,6 +560,11 @@ class Guard:
                 reason = self.shell_paths(option_files(clean[1:], {"-o", "--output"}), "edit", cwd)
                 if reason:
                     return reason
+            if program == "ln":
+                reason = self.shell_paths(link_targets([shell_value(word, variables)
+                    for word in clean[1:]], cwd), "unknown", cwd)
+                if reason:
+                    return reason
             if program in {"sed", "awk", "gawk"}:
                 _, _, sources = editor_inputs(clean)
                 reason = self.shell_paths([part for source in sources
@@ -597,9 +608,13 @@ class Guard:
                 return "cannot inspect a dynamic file operand; use an explicit path or the KB command."
             # Text with whitespace is a quoted or document value, which no
             # shell or Python call brace-expands; its path-like parts are
-            # separate candidates.
+            # separate candidates. A shell word with an unquoted brace
+            # expands even where an alternative holds a quoted space.
+            literal = re.search(r"\s", value) and not getattr(value, "brace", False)
+            if not literal and SEQUENCE.search(value):
+                return "cannot inspect a brace sequence; use explicit file operands."
             try:
-                options = [value] if re.search(r"\s", value) else expand(value)
+                options = [value] if literal else expand(value)
             except ValueError as error:
                 return f"cannot inspect a brace pattern with {error}; use explicit file operands."
             for option in options:
@@ -689,7 +704,17 @@ class Guard:
             elif not word.startswith("--") and "f" in word:
                 from_file = True
         if program is not None and from_file:
-            files.insert(0, program)
+            # A program file may load modules too; its text is inspected.
+            source = shell_value(program, variables)
+            reason = self.shell_paths([source], "read", cwd)
+            if reason:
+                return reason
+            try:
+                text = (cwd / os.path.expanduser(source)).read_text()
+            except (OSError, UnicodeDecodeError):
+                return "cannot read the jq program file; use a literal program or a readable file."
+            if JQ_MODULES.search(text):
+                return "cannot inspect jq module loading; use jq without -L, import, or include."
         elif program is not None:
             if getattr(program, "parameter", False):
                 return "cannot inspect a jq program that a shell expansion supplies; use a literal program."
@@ -709,8 +734,25 @@ class Guard:
                 assignments.append((item.targets[0].id, item.value))
             if isinstance(item, ast.withitem) and isinstance(item.optional_vars, ast.Name):
                 assignments.append((item.optional_vars.id, item.context_expr))
-        bindings = {name: value for name, value in assignments
-                    if sum(other == name for other, _ in assignments) == 1}
+        # Every binding of each name. A name that another form also binds (a
+        # loop, tuple or walrus target, an augmented or annotated assignment,
+        # an import, an except or match capture, a parameter, global, nonlocal
+        # or del) has no literal value to resolve.
+        stores = Counter()
+        for item in ast.walk(tree):
+            if isinstance(item, ast.Name) and not isinstance(item.ctx, ast.Load):
+                stores[item.id] += 1
+            elif isinstance(item, ast.alias):
+                stores[item.asname or item.name.split(".")[0]] += 1
+            elif isinstance(item, (ast.Global, ast.Nonlocal)):
+                stores.update(item.names)
+            elif isinstance(item, ast.arg):
+                stores[item.arg] += 1
+            elif isinstance(item, (ast.ExceptHandler, ast.MatchAs, ast.MatchStar)) and item.name:
+                stores[item.name] += 1
+            elif isinstance(item, ast.MatchMapping) and item.rest:
+                stores[item.rest] += 1
+        bindings = {name: value for name, value in assignments if stores[name] == 1}
 
         def path(node, visited=()):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
@@ -776,7 +818,10 @@ class Guard:
             if isinstance(node, ast.Name):
                 # Repeated literal-data transformations are finite too. Every
                 # preceding assignment must be data; file operands still use
-                # the unique-binding resolver above.
+                # the unique-binding resolver above. A name that another form
+                # also binds is not data.
+                if sum(name == node.id for name, _ in assignments) != stores[node.id]:
+                    return False
                 values = [value for name, value in assignments if name == node.id
                           and (value.lineno, value.col_offset) < (node.lineno, node.col_offset)]
                 return bool(values) and all(id(value) not in visited and
@@ -805,7 +850,7 @@ class Guard:
         for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
             name = call_name(call.func).split(".")[-1]
             value, mode, operand = None, "read", None
-            if protected and isinstance(call.func, ast.Name) and name in safe and (name in imports or name in bindings):
+            if protected and isinstance(call.func, ast.Name) and name in safe and stores[name]:
                 return "cannot inspect a rebound Python operation on protected references; use the KB command."
             if name == "Path":
                 value, operand = (path(call), call) if call.args else (None, None)
@@ -947,8 +992,9 @@ def executed(words):
 
 
 def shell_value(word, variables):
-    return re.sub(r"\$(?:\{([A-Za-z_]\w*)\}|([A-Za-z_]\w*))",
-                  lambda match: variables.get(match.group(1) or match.group(2), match.group()), word)
+    value = re.sub(r"\$(?:\{([A-Za-z_]\w*)\}|([A-Za-z_]\w*))",
+                   lambda match: variables.get(match.group(1) or match.group(2), match.group()), word)
+    return word if value == word else ShellWord(value, brace=getattr(word, "brace", False))
 
 
 def option_files(words, options):
@@ -1058,6 +1104,27 @@ def file_operands(words):
         elif not word.startswith("-"):
             values.append(word)
     return mode, values if mode != "unknown" else [part for word in words for part in candidates(word)]
+
+
+def link_targets(args, cwd):
+    """The paths that `ln` links to: a relative target resolves against the
+    directory of its link, not against the working directory."""
+    directory, values, index = None, [], 0
+    while index < len(args):
+        word = args[index]
+        index += 1
+        if word in {"-t", "--target-directory"} and index < len(args):
+            directory = args[index]
+            index += 1
+        elif word.startswith("--target-directory="):
+            directory = word.split("=", 1)[1]
+        elif not word.startswith("-"):
+            values.append(word)
+    if directory is None and len(values) > 1:
+        link, values = values[-1], values[:-1]
+        directory = link if link.endswith("/") or (cwd / link).is_dir() else os.path.dirname(link)
+    base = cwd / os.path.expanduser(directory or ".")
+    return [value if os.path.isabs(value) else str(base / value) for value in values]
 
 
 def editor_inputs(words):
@@ -1273,11 +1340,13 @@ def literal_loops(items, budget=None):
 
 class ShellWord(str):
     """A shell word: an operator, or a word with an active command
-    substitution (`expansion`) or parameter expansion (`parameter`)."""
+    substitution (`expansion`), parameter expansion (`parameter`) or
+    unquoted brace (`brace`)."""
 
-    def __new__(cls, value, *, operator=False, expansion=False, parameter=False):
+    def __new__(cls, value, *, operator=False, expansion=False, parameter=False, brace=False):
         instance = super().__new__(cls, value)
         instance.operator, instance.expansion, instance.parameter = operator, expansion, parameter
+        instance.brace = brace
         return instance
 
 
@@ -1320,12 +1389,13 @@ def _substitution_end(text, start):
 def _shell_words(text):
     """POSIX quote removal retains operators and executable substitutions."""
     tokens, value, quote, started, expansion, parameter, index = [], "", None, False, False, False, 0
+    brace = False
 
     def word():
-        nonlocal value, started, expansion, parameter
+        nonlocal value, started, expansion, parameter, brace
         if started:
-            tokens.append(ShellWord(value, expansion=expansion, parameter=parameter))
-        value, started, expansion, parameter = "", False, False, False
+            tokens.append(ShellWord(value, expansion=expansion, parameter=parameter, brace=brace))
+        value, started, expansion, parameter, brace = "", False, False, False, False
 
     while index < len(text):
         char = text[index]
@@ -1384,6 +1454,7 @@ def _shell_words(text):
         else:
             value += char
             started = True
+            brace = brace or char == "{"
             index += 1
     if quote:
         raise ValueError("unterminated quote")
@@ -1535,6 +1606,11 @@ def main():
 if __name__ == "__main__":
     try:
         sys.exit(main())
-    except Exception as error:  # A broken guard must not block the session.
-        print(f"kb guard: {type(error).__name__}: {error}", file=sys.stderr)
-        sys.exit(1)
+    except Exception as error:
+        # A call that the guard cannot decide is denied: status 2 blocks it
+        # and returns the reason. `KB_GUARD=off` in the hook environment
+        # disables a broken guard for maintenance.
+        print(f"kb guard: cannot decide the call ({type(error).__name__}: {error}); "
+              "KB_GUARD=off in the hook environment disables the guard for maintenance.",
+              file=sys.stderr)
+        sys.exit(2)

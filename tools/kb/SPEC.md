@@ -1813,8 +1813,9 @@ security boundary: the gates validate every file whatever wrote it.
   library and reads its path lists from `[guard]` of `tools/kb/config.toml`
   and from `tools/kb/projections.toml`, and the stage from
   `tools/kb/bench.toml`. Python older than 3.11 or missing `tomllib` produces
-  a deliberate denial that names the required interpreter. Other hook
-  failures reach the user and do not block the call.
+  a deliberate denial that names the required interpreter. Any other
+  failure denies the call with exit status 2 and a reason that names the
+  error and `KB_GUARD=off`.
 - The hook denies with `permissionDecision = "deny"` and a reason that names
   the command to use:
 
@@ -1863,17 +1864,24 @@ security boundary: the gates validate every file whatever wrote it.
   `jq` treats its program text, the values of `--arg`, `--argjson` and
   `--indent`, and the operands after `--args` or `--jsonargs` as data; its
   input files, the files of `--slurpfile`, `--rawfile` and `--argfile`, and
-  the program file of `-f` remain read operands. A jq program that loads
-  modules (`import`, `include`, `modulemeta`, `-L`) or that a shell expansion
-  supplies is denied. `exit` and `return` take no file operands.
+  the program file of `-f` remain read operands. A jq program, or the text
+  of a program file, that holds an `import`, `include` or `modulemeta` token,
+  a program file that cannot be read, `-L`, and a program that a shell
+  expansion supplies are denied. `exit` and `return` take no file operands.
+  A relative `ln` target resolves against the directory of its link.
   A brace pattern in an operand expands to at most 256 alternatives, and an
-  operand with more is denied. A value with whitespace is a quoted or document
-  value, which no shell or Python call brace-expands, so it is checked as
-  written.
+  operand with more is denied, as is an operand with a brace sequence such
+  as `{0..9}`. A value with whitespace is a quoted or document value, which
+  no shell or Python call brace-expands, so it is checked as written; a
+  shell word with an unquoted brace expands even where an alternative holds
+  a quoted space.
 - Inline Python inspection accepts finite literal file operations and metadata
   transformations over captured responses. File paths support literals,
-  unique simple bindings and path joins; known string and metadata operations
-  keep literal source headers as data. `Path` joins all of its arguments.
+  unique simple bindings and path joins; a name that any other form also
+  binds, such as a loop, tuple, walrus, annotated or augmented assignment
+  target, a match capture or an import, has no literal value, and a known
+  call whose name the program binds is an unknown operation; known string
+  and metadata operations keep literal source headers as data. `Path` joins all of its arguments.
   `csv` reads and writes only the file objects that `open` checks, and a
   `replace` call with two or more arguments on a value other than a module
   is string replacement. In a program that names a protected reference, a

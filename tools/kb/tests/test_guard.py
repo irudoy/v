@@ -343,11 +343,20 @@ class HookProcessTest(unittest.TestCase):
         self.assertEqual(self.run_hook({**read, "tool_input": {
             "file_path": str(self.root / "open.txt")}}), (0, "", ""))
 
-    def test_a_broken_guard_does_not_block_the_session(self):
+    def test_a_call_that_the_guard_cannot_decide_is_denied(self):
         (self.root / "tools/kb/projections.toml").write_text("[[projection]\n")
         code, out, err = self.run_hook({"tool_name": "Read", "tool_input": {}})
-        self.assertEqual((code, out), (1, ""))
-        self.assertIn("kb guard: TOMLDecodeError", err)
+        self.assertEqual((code, out), (2, ""))
+        self.assertIn("kb guard: cannot decide the call (TOMLDecodeError", err)
+        self.assertIn("KB_GUARD=off", err)
+        # A Python operand nested beyond the parser recursion limit.
+        (self.root / "tools/kb/projections.toml").write_text(PROJECTIONS)
+        operand = " + ".join(["'a'"] * 3000)
+        command = f"python3 -c \"print(open('zz' + {operand}).read(), 'l0')\""
+        code, out, err = self.run_hook({"tool_name": "Bash", "cwd": str(self.root),
+                                        "tool_input": {"command": command}})
+        self.assertEqual((code, out), (2, ""))
+        self.assertIn("kb guard: cannot decide the call (RecursionError", err)
 
     def test_codex_events_return_a_supported_pre_tool_use_denial(self):
         for tool, arguments in (
