@@ -177,8 +177,7 @@ from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
 `selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
-`threshold_helper`, `feedback_arbiter`, `ignition_adapter`, and
-`ignition_controller`
+`speed_controller`, `feedback_arbiter`, and `ignition_adapter`
 with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
@@ -199,20 +198,23 @@ shadow, SP and GBR. A scheduler case reads entries 1 and 28 of the composed
 periodic table and runs them in that order through an activation, a held
 request and a release, so the mask follows the request of the same pass.
 
-The threshold helper accepts an originating invoke call or the exact bound
-engine call window on an active engine frame. Its R3 divider load binds the
-composed control pool before execution. Each helper invocation requires the
-actual divider call and return followed by its native RTS to the original
-continuation. Both outcomes of every helper branch and its delay slots must
-execute. The stock divider body receives no instruction-coverage
+The speed controller accepts an originating invoke call or the exact bound
+engine call window on an active engine frame. Its R3 load binds the composed
+control pool of the stock unsigned divider `0x00021CE0` before execution.
+Each divider call returns before the native RTS of the controller reaches the
+original continuation. Both outcomes of every controller branch and its delay
+slots must execute. The stock divider body receives no instruction-coverage
 qualification. The engine body is in the measured scope.
 
-The canonical Rolling Launch harness adds boundary
-inputs for the exact floor, rounding transition, wide ramp and saturated upper
-limit. Independent literal results specify the two output words. The complete
-state, configuration, selector, shadows, runtime words, named input/output
-buffers, stack pointer and GBR must otherwise remain intact. The observed R4
-retains the configuration-pointer role exposed by `invoke_r4`; it is not a C
+Controller rows of the canonical harness take their expected outputs from the
+reference model in `patches/rolling_launch.py`, and a Python test replays the
+model over the harness table. The rows cover the proportional floor, top,
+width and quotient, the integrator freeze on both saturated sums,
+accumulation, both integrator limits, the RPM ceiling at, above and across the
+16-bit range of its 32-bit sum, and the stock cut bit. The complete state,
+configuration, selector, shadows, runtime words, named input/output buffers,
+stack pointer and GBR must otherwise remain intact. The observed R4 retains
+the configuration-pointer role exposed by `invoke_r4`; it is not a C
 return-value contract.
 
 The feedback arbiter accepts only a bound invoke origin. Its literal R0 call
@@ -229,31 +231,25 @@ configuration, pulse-count constants, concrete shadows and input/output
 buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
 pattern. The existing case counter reports both canonical boundary matrices.
 
-The ignition adapter and controller share the original invoke frame of the
-adapter entry. Every typed adapter instruction and conditional outcome must
-execute, including both literal tails: the controller dispatch and the stock
-consumer. The controller's R3 divider call must return before its final stock
-tail, whose declared RTS/NOP stub returns to that original invoke continuation.
-The stock divider body receives no additional instruction qualification.
-Every typed controller instruction and conditional outcome must execute.
-Inside the blend path, BandStart < RPM < Cut implies Cut - BandStart >= 2.
+The ignition adapter is a single literal tail to the stock consumer
+`0x0002A892` with every argument register unchanged. Its entry, literal load
+and pool bind to the composed image before execution, and the tail reaches the
+declared RTS/NOP stub of the consumer, which returns to the original invoke
+continuation. Adapter cases check the unchanged command, the complete state,
+concrete buffers, configuration, SP and GBR.
 
-Canonical ignition cases use independent literal output commands and check the
-complete state, concrete buffers, configuration, SP and GBR. A negative build
-sets the existing APC fallback input only for the zero-band case, bypassing
-that real controller path while preserving its semantic assertions and case
-count. Coverage must reject the omitted zero-band outcome. An adapter build
-keeps the idle case count and stock-command result, but stages an active
-phase so the idle phase check does not branch to the stock tail. Coverage
-must reject that omitted outcome. An engine build keeps the invalid-config
-case and its idle result, but leaves the map index valid, so the held
-config reason does not skip the map-index update. Coverage must reject
-that omitted outcome.
+A controller negative build moves the integrator input of the lower-limit row
+so that the step ends exactly on the limit, preserving its semantic
+assertions and case count, and the lower-limit clamp does not run. Coverage
+must reject the omitted clamp outcome. An engine build keeps the
+invalid-config case and its idle result, but leaves the map index valid, so
+the held config reason does not skip the map-index update. Coverage must
+reject that omitted outcome.
 
 A Rolling Launch negative build calls the engine directly instead of the
 periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
 marker. Measured coverage must reject the omitted periodic entry. Calls
-into the threshold helper, the limiter commit and the internal gate
+into the speed controller, the limiter commit and the internal gate
 helpers stay paired with their returns. Stock callee bodies stay outside
 this qualification.
 

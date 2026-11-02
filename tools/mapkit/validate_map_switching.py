@@ -155,69 +155,55 @@ def validate():
             "runtime does not expose 70 slot-specific editor views"
         )
     launch = projection.rolling_launch
-    if launch.enable_mask_address != "000d3f64":
+    if launch.enable_mask_address != "000d6044":
         raise ValueError("Rolling Launch enable mask address differs")
-    expected_hysteresis_controls = {
-        "min_hysteresis_address": "000d3f70",
-        "max_hysteresis_address": "000d3f71",
-        "hysteresis_ratio_address": "000d3f7b",
-    }
-    for field, expected in expected_hysteresis_controls.items():
-        if getattr(launch, field) != expected:
-            raise ValueError(f"Rolling Launch {field} differs")
+    if launch.pedal_requirement_address != "000d604e":
+        raise ValueError("Rolling Launch pedal_requirement_address differs")
     expected_controls = {
-        "coolant_min_address": "000d3f66",
-        "min_speed_address": "000d3f68",
-        "retard_ramp_address": "000d3f69",
-        "min_rpm_address": "000d3f6a",
-        "pedal_requirement_address": "000d3f6c",
-        "rpm_offset_address": "000d3f6e",
+        "coolant_min": ("Rolling Launch Minimum Coolant Temperature", 0xD6046),
+        "min_speed": ("Rolling Launch Minimum Vehicle Speed", 0xD6048),
+        "max_speed": ("Rolling Launch Maximum Vehicle Speed", 0xD604A),
+        "min_rpm_native": ("Rolling Launch Minimum Engine Speed", 0xD604C),
+        "window_width": ("Rolling Launch Speed Window Width", 0xD6052),
+        "window_top": ("Rolling Launch Speed Window Top", 0xD6053),
+        "u_rate_limit": ("Rolling Launch Torque Fraction Rate Limit", 0xD6054),
+        "integral_gain": ("Rolling Launch Integral Gain", 0xD6056),
+        "integrator_limit": ("Rolling Launch Integrator Limit", 0xD6058),
+        "abort_above": ("Rolling Launch Abort Above Target", 0xD605A),
+        "abort_below": ("Rolling Launch Abort Below Target", 0xD605B),
+        "rpm_ceiling_offset_native": (
+            "Rolling Launch RPM Ceiling Offset", 0xD605C,
+        ),
+        "speed_frame_age_limit": (
+            "Rolling Launch Speed Frame Age Limit", 0xD6062,
+        ),
     }
-    for field, expected in expected_controls.items():
-        if getattr(launch, field) != expected:
-            raise ValueError(f"Rolling Launch {field} differs")
+    if dict(launch.control_addresses) != {
+        key: f"{address:08x}" for key, (_name, address) in expected_controls.items()
+    }:
+        raise ValueError("Rolling Launch control addresses differ")
     if launch.masked_view_count != 0:
         raise ValueError("Rolling Launch still exposes masked table views")
-    if launch.table_count != 8 or launch.switch_count != 1:
+    if launch.table_count != len(expected_controls) or launch.switch_count != 1:
         raise ValueError(
-            "runtime does not expose eight calibration tables and one pedal "
-            "switch"
+            "runtime does not expose one table per Rolling Launch control and "
+            "one pedal switch"
         )
     if launch.bitwise_switch_count != 1 or launch.enable_bit_count != 5:
         raise ValueError(
             "runtime does not expose one five-bit map-enable switch"
         )
-    if "Rolling Launch Minimum RPM Hysteresis" not in romraider_model:
-        raise ValueError("RomRaider projection lacks minimum hysteresis")
-    if 'storageaddress="0xD3F70"' not in romraider_model:
-        raise ValueError("RomRaider minimum hysteresis address differs")
-    if "Rolling Launch Maximum RPM Hysteresis" not in xdf:
-        raise ValueError("TunerPro projection lacks maximum hysteresis")
-    if 'mmedaddress="0xD3F71"' not in xdf:
-        raise ValueError("TunerPro maximum hysteresis address differs")
-    if "Rolling Launch RPM Hysteresis Ratio (%)" not in xdf:
-        raise ValueError("TunerPro projection lacks hysteresis ratio")
-    if 'mmedaddress="0xD3F7B"' not in xdf:
-        raise ValueError("TunerPro hysteresis ratio address differs")
-    if "Rolling Launch Minimum RPM Hysteresis" not in xdf:
-        raise ValueError("TunerPro projection lacks minimum hysteresis")
-    if 'mmedaddress="0xD3F70"' not in xdf:
-        raise ValueError("TunerPro minimum hysteresis address differs")
-    controls = {
-        "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
-        "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
-        "Rolling Launch Minimum Engine Speed": "0xD3F6A",
-        "Rolling Launch Minimum Retard Ramp Width": "0xD3F69",
-        "Rolling Launch RPM Offset": "0xD3F6E",
-    }
-    for name, address in controls.items():
-        if name not in romraider_model or address not in romraider_model:
+    for name, address in expected_controls.values():
+        if (
+            name not in romraider_model
+            or f'storageaddress="0x{address:X}"' not in romraider_model
+        ):
             raise ValueError(f"RomRaider projection lacks {name}")
-        if name not in xdf or address not in xdf:
+        if name not in xdf or f'mmedaddress="0x{address:X}"' not in xdf:
             raise ValueError(f"TunerPro projection lacks {name}")
     if "Rolling Launch Require Accelerator Pedal" not in romraider_model:
         raise ValueError("RomRaider projection lacks the pedal switch")
-    if 'storageaddress="0xD3F6C"' not in romraider_model:
+    if 'storageaddress="0xD604E"' not in romraider_model:
         raise ValueError("RomRaider pedal-switch address differs")
     if "Rolling Launch Require Accelerator Pedal" not in xdf:
         raise ValueError("TunerPro projection lacks the pedal switch")

@@ -62,10 +62,10 @@ all five slots: Map 1 is the stock storage, and Map 2 through Map 5 point into
 the allocated project layout and are active at runtime only with the
 map-switching patch.
 
-Rolling Launch exposes its validated activation thresholds, bounded-retard
-ramp width, RPM offset, and RPM hysteresis as direct tables. Five independent
-masked controls edit bits 0 through 4 of the `enable_mask` byte and preserve
-every other map-enable bit.
+Rolling Launch exposes its activation thresholds, speed-hold controller
+fields, and RPM ceiling offset as direct tables and the pedal requirement as a
+switch. One bitwise switch edits bits 0 through 4 of the `enable_mask` byte and
+preserves every other map-enable bit.
 
 ## Axes
 

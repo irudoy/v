@@ -52,7 +52,7 @@ AUTO_ROM = "auto"
 ROM_SERIES = "sh7058_7mfkavn86"
 CANONICAL_ROM = "JK08A"
 SUPPORTED_ROMS = runtime_targets.SUPPORTED_ROMS
-PROFILE_SCHEMA_VERSION = 2
+PROFILE_SCHEMA_VERSION = 3
 MANIFEST_SCHEMA_VERSION = 4
 TOOL_NAME = "patches/build_rom.py"
 OBSERVE_PROFILE_NAME = "observe"
@@ -61,29 +61,32 @@ PROFILE_REQUIRED_ROOT_KEYS = frozenset(
     ("schema_version", "rom", "name", "rolling_launch")
 )
 PROFILE_OPTIONAL_ROOT_KEYS = frozenset(("can_telemetry",))
+ROLLING_INTEGER_KEYS = (
+    "coolant_min",
+    "coolant_max",
+    "min_speed",
+    "max_speed",
+    "min_rpm_native",
+    "min_pedal",
+    "target_speed_offset",
+    "window_width",
+    "window_top",
+    "u_rate_limit",
+    "integral_gain",
+    "integrator_limit",
+    "abort_above",
+    "abort_below",
+    "rpm_ceiling_offset_native",
+    "run_timeout_ticks",
+    "rearm_ticks",
+    "speed_frame_age_limit",
+)
 ROLLING_PROFILE_KEYS = frozenset(
-    (
-        "mode",
-        "enabled_maps",
-        "coolant_min",
-        "coolant_max",
-        "min_speed",
-        "retard_ramp_native",
-        "min_rpm_native",
-        "min_pedal",
-        "rpm_offset_native",
-        "min_hysteresis_native",
-        "max_hysteresis_native",
-        "hysteresis_ratio_tenths",
-        "run_timeout_ticks",
-        "rearm_ticks",
-        "target_commands",
-    )
+    ("mode", "enabled_maps", *ROLLING_INTEGER_KEYS)
 )
 MODE_NAMES = {
     "observe": rolling_launch.Mode.OBSERVE,
-    "rpm_hold": rolling_launch.Mode.RPM_HOLD,
-    "rpm_hold_retard": rolling_launch.Mode.RPM_HOLD_RETARD,
+    "hold": rolling_launch.Mode.HOLD,
 }
 TELEMETRY_PROFILE_KEYS = frozenset(
     ("enabled", "can_id", "profile", "tick_divisor")
@@ -345,43 +348,13 @@ def parse_profile(raw_bytes, path):
         raise BuildError(f"{path}: enabled_maps values must be in 1..5")
     enable_mask = sum(1 << (item - 1) for item in enabled_maps)
 
-    targets = values["target_commands"]
-    if not isinstance(targets, list) or any(
-        type(item) is not int for item in targets
-    ):
-        raise BuildError(f"{path}: target_commands must be an integer array")
-
     calibration = rolling_launch.Calibration(
         mode=MODE_NAMES[mode_name],
         enable_mask=enable_mask,
-        coolant_min=_require_integer(values["coolant_min"], "coolant_min"),
-        coolant_max=_require_integer(values["coolant_max"], "coolant_max"),
-        min_speed=_require_integer(values["min_speed"], "min_speed"),
-        retard_ramp_native=_require_integer(
-            values["retard_ramp_native"], "retard_ramp_native"
-        ),
-        min_rpm_native=_require_integer(
-            values["min_rpm_native"], "min_rpm_native"
-        ),
-        min_pedal=_require_integer(values["min_pedal"], "min_pedal"),
-        rpm_offset_native=_require_integer(
-            values["rpm_offset_native"], "rpm_offset_native"
-        ),
-        min_hysteresis_native=_require_integer(
-            values["min_hysteresis_native"], "min_hysteresis_native"
-        ),
-        max_hysteresis_native=_require_integer(
-            values["max_hysteresis_native"], "max_hysteresis_native"
-        ),
-        hysteresis_ratio_tenths=_require_integer(
-            values["hysteresis_ratio_tenths"],
-            "hysteresis_ratio_tenths",
-        ),
-        run_timeout_ticks=_require_integer(
-            values["run_timeout_ticks"], "run_timeout_ticks"
-        ),
-        rearm_ticks=_require_integer(values["rearm_ticks"], "rearm_ticks"),
-        target_commands=tuple(targets),
+        **{
+            key: _require_integer(values[key], key)
+            for key in ROLLING_INTEGER_KEYS
+        },
     )
     if not calibration.is_valid():
         raise BuildError(f"{path}: Rolling Launch calibration is invalid")
@@ -460,24 +433,8 @@ def profile_text(name, rom, calibration, telemetry=None):
     ]
     lines += [
         f"{key} = {getattr(calibration, key)}"
-        for key in (
-            "coolant_min",
-            "coolant_max",
-            "min_speed",
-            "retard_ramp_native",
-            "min_rpm_native",
-            "min_pedal",
-            "rpm_offset_native",
-            "min_hysteresis_native",
-            "max_hysteresis_native",
-            "hysteresis_ratio_tenths",
-            "run_timeout_ticks",
-            "rearm_ticks",
-        )
+        for key in ROLLING_INTEGER_KEYS
     ]
-    lines.append(
-        f"target_commands = {json.dumps(list(calibration.target_commands))}"
-    )
     if telemetry is not None:
         lines += [
             "",

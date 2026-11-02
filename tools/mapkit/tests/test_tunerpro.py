@@ -25,12 +25,17 @@ COMMON_TABLES = {
     "Stationary Engine Speed Limit": "Limiters / Engine Speed / Stationary",
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
     "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
+    "Rolling Launch Maximum Vehicle Speed": "Rolling Launch / Activation",
     "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
-    "Rolling Launch Minimum Retard Ramp Width": "Rolling Launch / Ignition Retard",
-    "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
-    "Rolling Launch Minimum RPM Hysteresis": "Rolling Launch / RPM Hold",
-    "Rolling Launch Maximum RPM Hysteresis": "Rolling Launch / RPM Hold",
-    "Rolling Launch RPM Hysteresis Ratio (%)": "Rolling Launch / RPM Hold",
+    "Rolling Launch Speed Frame Age Limit": "Rolling Launch / Activation",
+    "Rolling Launch Speed Window Width": "Rolling Launch / Speed Hold",
+    "Rolling Launch Speed Window Top": "Rolling Launch / Speed Hold",
+    "Rolling Launch Torque Fraction Rate Limit": "Rolling Launch / Speed Hold",
+    "Rolling Launch Integral Gain": "Rolling Launch / Speed Hold",
+    "Rolling Launch Integrator Limit": "Rolling Launch / Speed Hold",
+    "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
+    "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
+    "Rolling Launch RPM Ceiling Offset": "Rolling Launch / RPM Ceiling",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -375,7 +380,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 61)
-        self.assertEqual(len(tables), 111)
+        self.assertEqual(len(tables), 116)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -411,7 +416,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertTrue(all(
             flags[f"Map {slot} - Rolling Launch Enable"]
             .find("./EMBEDDEDDATA")
-            .get("mmedaddress") == "0xD3F64"
+            .get("mmedaddress") == "0xD6044"
             for slot in range(1, 6)
         ))
         self.assertNotIn(
@@ -606,7 +611,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                     self.assertEqual(int(entry.get("datasize"), 16), len(patchdata))
                     runtime_controls = {
                         "Rolling Launch Require Accelerator Pedal": (
-                            0xD3F6C,
+                            0xD604E,
                             b"\x00\x01",
                             b"\x00\x00",
                         ),

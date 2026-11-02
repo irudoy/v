@@ -58,12 +58,43 @@ FUEL_SHADOW_ROLLING_HOOK_VALUES = (
     ("feedback_arbitration", 0x000D41E0),
     ("fuel_cut_coordinator", 0x0004ED88),
 )
+# The hooks of the endpoints that hold through the fuel-cut coordinator
+# wrapper, which the current runtime keeps.
+CURRENT_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x000D3860),
+    ("selector_arbitration", 0x000D3880),
+    ("startup_state_clear", 0x000D38A0),
+    ("primary_ignition_command", 0x000D3EA0),
+    ("feedback_arbitration", 0x000D41E0),
+    ("fuel_cut_coordinator", 0x000D6000),
+)
 ERASED_FEEDBACK_ARBITER_SHA256 = (
     "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539"
 )
 ERASED_FUEL_CUT_WRAPPER_SHA256 = (
     "8667e718294e9e0df1d30600ba3eeb201f764aad2dad72748643e4a285e1d1f7"
 )
+# The speed-controller span 0xD40C0..0xD41E0 joins the former ignition
+# controller span 0xD40C0..0xD4140 and the former threshold-helper span
+# 0xD4140..0xD41E0, so each historical digest covers both former units.
+# Erased controller and helper: 288 bytes of 0xFF.
+ERASED_SPEED_CONTROLLER_SHA256 = (
+    "c49fd3b652e068233b78f7300696e2201ddf3932072b8b303de297e7d0354827"
+)
+# The schema-2 band controller with an erased helper.
+SCHEMA_2_SPEED_CONTROLLER_SHA256 = (
+    "60ddce862b8f857b382d55ccb64a492d48321a81cf4de834af78b60c591106d9"
+)
+# The guarded schema-3 controller with the threshold helper.
+GUARDED_SPEED_CONTROLLER_SHA256 = (
+    "c66f18ba5f3f26bece4ba2ce3973292e1b613c26e1ba465abb301dd0c14203f8"
+)
+# The bounded schema-3 controller with the threshold helper.
+BOUNDED_SPEED_CONTROLLER_SHA256 = (
+    "0b0cede4221a03624990ba79d9df1ca827b947f29da705f14c3b702158a5a9b3"
+)
+# Mode names of configuration schemas 1 to 3.
+HISTORICAL_MODE_NAMES = ("observe", "rpm_hold", "rpm_hold_retard")
 # Wrapper and engine bytes of every endpoint that holds RPM through the
 # fuel-cut shadow and clears a 20-byte state.
 FUEL_SHADOW_WRAPPERS_SHA256 = (
@@ -89,14 +120,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_adapter",
                 "542aab5999c39903c6614daa4b44ca41a77fe37273ee57dc2c4390e53844311d",
             ),
-            (
-                "ignition_controller",
-                "e9175db65a9789096ca9cb5524d3abc2107df03e3c9ba3af1aca628f9c5d3bd2",
-            ),
-            (
-                "threshold_helper",
-                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
-            ),
+            ("speed_controller", ERASED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
@@ -116,14 +140,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_adapter",
                 "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952",
             ),
-            (
-                "ignition_controller",
-                "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c",
-            ),
-            (
-                "threshold_helper",
-                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
-            ),
+            ("speed_controller", SCHEMA_2_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
@@ -143,14 +160,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_adapter",
                 "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952",
             ),
-            (
-                "ignition_controller",
-                "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c",
-            ),
-            (
-                "threshold_helper",
-                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
-            ),
+            ("speed_controller", SCHEMA_2_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
@@ -170,14 +180,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_adapter",
                 "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b",
             ),
-            (
-                "ignition_controller",
-                "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7",
-            ),
-            (
-                "threshold_helper",
-                "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7",
-            ),
+            ("speed_controller", GUARDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
@@ -201,14 +204,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_adapter",
                 "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b",
             ),
-            (
-                "ignition_controller",
-                "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7",
-            ),
-            (
-                "threshold_helper",
-                "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7",
-            ),
+            ("speed_controller", GUARDED_SPEED_CONTROLLER_SHA256),
             (
                 "feedback_arbiter",
                 "0ec18b26a0ef6556bcb5f6056a2a9b988f8c895f65ec6b2b3665352ce73fb4dc",
@@ -226,8 +222,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             ("engine", "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"),
             ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
-            ("ignition_controller", "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7"),
-            ("threshold_helper", "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"),
+            ("speed_controller", GUARDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
@@ -244,12 +239,28 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("wrappers", FUEL_SHADOW_WRAPPERS_SHA256),
             ("engine", "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"),
             ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
-            ("ignition_controller", "0d8c3c17c50b936f48586febd0c46daf1cdbe4b46a25a8019bbdd9c7df2329b3"),
-            ("threshold_helper", "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"),
+            ("speed_controller", BOUNDED_SPEED_CONTROLLER_SHA256),
             ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+    # The last RPM-hold endpoint: the fuel-cut coordinator wrapper ORs the
+    # request into the final cylinder mask, and the state has 24 bytes.
+    RollingEndpointSignature(
+        key="schema-3-fuel-cut-wrapper",
+        roms=runtime_targets.EXACT_ROMS,
+        configuration_schema_version=3,
+        unit_sha256=(
+            ("wrappers", "348049909aac6c5370fc7c91558cc1319e3b9edd4840927e82833aaeaa594155"),
+            ("engine", "c5cf1751362ee50a8e3962ee0d70041a776659e17b8c2bc1c230d1bc1c922db6"),
+            ("ignition_adapter", "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"),
+            ("speed_controller", BOUNDED_SPEED_CONTROLLER_SHA256),
+            ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+            ("fuel_cut_wrapper", "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"),
+        ),
+        hook_values=CURRENT_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
     ),
 )
@@ -289,22 +300,45 @@ def _expected_pointer_table(layout, family):
     )
 
 
+HISTORICAL_SCHEMA_FORMATS = {
+    1: ">H8B6H5sBHH",
+    2: ">H8B6H5sBHH",
+    3: ">H8B3H2B2H5sBHH",
+}
+
+
 def historical_configuration_fields(configuration, schema_version):
-    """Return the named settings of a valid schema 1 or 2 Rolling Launch
+    """Return the named settings of a valid schema 1, 2, or 3 Rolling Launch
     record, which the current profile schema cannot express."""
-    if schema_version not in (1, 2) or not historical_configuration_is_valid(
-        configuration, schema_version
-    ):
+    if not historical_configuration_is_valid(configuration, schema_version):
         raise EndpointError(
             f"no valid schema {schema_version} Rolling Launch record"
         )
-    values = struct.unpack(">H8B6H5sBHH", bytes(configuration))
-    return {
-        "mode": rolling_launch.Mode(values[2]).name.lower(),
+    values = struct.unpack(
+        HISTORICAL_SCHEMA_FORMATS[schema_version], bytes(configuration)
+    )
+    fields = {
+        "mode": HISTORICAL_MODE_NAMES[values[2]],
         "enable_mask": values[3],
         "coolant_min": values[5],
         "coolant_max": values[6],
         "min_speed": values[7],
+    }
+    if schema_version == 3:
+        fields.update({
+            "retard_ramp_native": values[8],
+            "min_rpm_native": values[9],
+            "min_pedal": values[10],
+            "rpm_offset_native": values[11],
+            "min_hysteresis_native": values[12],
+            "max_hysteresis_native": values[13],
+            "run_timeout_ticks": values[14],
+            "rearm_ticks": values[15],
+            "target_commands": tuple(values[16]),
+            "hysteresis_ratio_tenths": values[17],
+        })
+        return fields
+    fields.update({
         ("speed_padding" if schema_version == 1 else "retard_ramp_native"): (
             values[8]
         ),
@@ -315,35 +349,49 @@ def historical_configuration_fields(configuration, schema_version):
         "run_timeout_ticks": values[13],
         "rearm_ticks": values[14],
         "target_commands": tuple(values[15]),
-    }
+    })
+    return fields
 
 
 def historical_configuration_is_valid(configuration, schema_version):
-    if schema_version == rolling_launch.CONFIG_SCHEMA_VERSION:
-        try:
-            return rolling_launch.Calibration.from_bytes(
-                configuration
-            ).is_valid()
-        except (TypeError, ValueError):
-            return False
-    if schema_version not in (1, 2):
+    if schema_version not in HISTORICAL_SCHEMA_FORMATS:
         raise EndpointError(
             "internal historical Rolling Launch schema is unsupported"
         )
     try:
-        values = struct.unpack(">H8B6H5sBHH", bytes(configuration))
-        rolling_launch.Mode(values[2])
+        values = struct.unpack(
+            HISTORICAL_SCHEMA_FORMATS[schema_version], bytes(configuration)
+        )
         options = rolling_launch.Option(values[4])
     except (TypeError, ValueError, struct.error):
         return False
     common = all((
         values[0] == rolling_launch.CONFIG_MAGIC,
         values[1] == schema_version,
+        0 <= values[2] < len(HISTORICAL_MODE_NAMES),
         0 <= values[3] <= 0x1F,
         options == rolling_launch.Option.NONE,
         0 <= values[5] <= values[6] <= 0xFF,
         0 < values[9] <= 0xFFFF,
-        0 <= values[10] <= 0xFFFF,
+        values[-2] == rolling_launch.CONFIG_MAGIC_INVERSE,
+        values[-1] == rolling_launch.CONFIG_END_MARKER,
+    ))
+    if schema_version == 3:
+        return all((
+            common,
+            0 < values[8] <= 0xFF,
+            0 < values[11] <= 0xFFFF,
+            0 < values[12] <= values[13] <= 0xFF,
+            values[13] < values[11],
+            values[8] <= values[11],
+            0 < values[14] <= 0x7FFF,
+            0 < values[15] <= 0x7FFF,
+            len(values[16]) == rolling_launch.SLOT_COUNT,
+            all(110 <= value <= 117 for value in values[16]),
+            0 < values[17] <= 0xFF,
+        ))
+    common = all((
+        common,
         0 < values[11] <= 0xFFFF,
         0 < values[12] < values[9],
         0 < values[13] <= 0x7FFF,
@@ -351,8 +399,6 @@ def historical_configuration_is_valid(configuration, schema_version):
         len(values[15]) == rolling_launch.SLOT_COUNT,
         all(110 <= value <= 117 for value in values[15]),
         values[16] == 0,
-        values[17] == rolling_launch.CONFIG_MAGIC_INVERSE,
-        values[18] == rolling_launch.CONFIG_END_MARKER,
     ))
     if schema_version == 1:
         return common and 0 < values[7] <= 0xFF and values[8] == 0
@@ -362,6 +408,17 @@ def historical_configuration_is_valid(configuration, schema_version):
         0 < values[8] <= 0xFF,
         values[12] < values[8] <= values[11],
     ))
+
+
+def configuration_record(source, layout, state):
+    """Return the Rolling Launch record of an endpoint state: the current
+    record, or the 32-byte record of a historical endpoint in the retired
+    configuration span."""
+    span = (
+        layout.configuration if state == "current"
+        else layout.retired_configuration
+    )
+    return bytes(source[span.start : span.end])
 
 
 def _endpoint_binding(endpoint, layout):
@@ -431,9 +488,8 @@ def require_coherent_rolling_endpoint(
         )
         for item in layout.diagnostics
     }
-    configuration = source[
-        layout.configuration.start : layout.configuration.end
-    ]
+    configuration = configuration_record(source, layout, "current")
+    retired_configuration = configuration_record(source, layout, "historical")
 
     claimed_erased = all(
         source[span.start : span.end] == bytes([0xFF]) * span.size
@@ -458,6 +514,8 @@ def require_coherent_rolling_endpoint(
         current_units = all(
             unit_bytes[unit.key] == payloads[unit.key]
             for unit in layout.assembly_units
+        ) and retired_configuration == bytes([0xFF]) * len(
+            retired_configuration
         )
         try:
             current_configuration = rolling_launch.Calibration.from_bytes(
@@ -468,7 +526,7 @@ def require_coherent_rolling_endpoint(
         if current_units and current_configuration:
             return "current"
 
-    if dids_current:
+    if dids_current and configuration == bytes([0xFF]) * len(configuration):
         actual_hashes = {
             key: sha256(value) for key, value in unit_bytes.items()
         }
@@ -480,7 +538,8 @@ def require_coherent_rolling_endpoint(
                 actual_hashes == expected_hashes
                 and hook_values == expected_hooks
                 and historical_configuration_is_valid(
-                    configuration, endpoint.configuration_schema_version
+                    retired_configuration,
+                    endpoint.configuration_schema_version,
                 )
             ):
                 return endpoint.key

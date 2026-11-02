@@ -80,22 +80,22 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         )
         self.assertEqual(
             calibration.run_timeout_ticks * scheduler.tick_microseconds,
-            3_072_000,
+            7_997_440,
         )
         self.assertEqual(
             calibration.rearm_ticks * scheduler.tick_microseconds,
-            1_024_000,
+            1_003_520,
         )
 
     def test_tracked_payloads_and_machine_control_flow_match_sources(self):
         audit = rolling_launch_assembly.validate_instruction_semantics(
             self.layout, self.parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 888)
-        self.assertEqual(audit.delayed_transfers, 65)
-        self.assertEqual(audit.pc_relative_references, 78)
-        self.assertEqual(audit.direct_branches, 154)
-        self.assertEqual(audit.indirect_transfers, 24)
+        self.assertEqual(audit.instructions, 871)
+        self.assertEqual(audit.delayed_transfers, 61)
+        self.assertEqual(audit.pc_relative_references, 70)
+        self.assertEqual(audit.direct_branches, 159)
+        self.assertEqual(audit.indirect_transfers, 20)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):
         blobs = dict(self.blobs)
@@ -119,9 +119,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 2396)
-        self.assertEqual(self.result.permitted_write_bytes, 2396)
-        self.assertEqual(self.result.changed_bytes, 2007)
+        self.assertEqual(sum(item.size for item in ranges), 2436)
+        self.assertEqual(self.result.permitted_write_bytes, 2436)
+        self.assertEqual(self.result.changed_bytes, 1945)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -146,7 +146,7 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_custom_valid_calibration_changes_only_configuration(self):
         calibration = dataclasses.replace(
             rolling_launch.Calibration(),
-            mode=rolling_launch.Mode.RPM_HOLD,
+            mode=rolling_launch.Mode.HOLD,
             enable_mask=0x01,
         )
         custom = rolling_launch_compose.compose(
@@ -198,15 +198,15 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_source_counts_equal_manifest_totals(self):
         self.assertEqual(
             sum(item.instruction_count for item in self.layout.assembly_units),
-            888,
+            871,
         )
         self.assertEqual(
             sum(item.data_bytes for item in self.layout.assembly_units),
-            226,
+            185,
         )
         self.assertEqual(
             sum(item.instruction_count for item in self.parsed.values()),
-            888,
+            871,
         )
 
 

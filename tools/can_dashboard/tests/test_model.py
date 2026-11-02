@@ -620,7 +620,7 @@ class DashboardModelTest(unittest.TestCase):
                 )
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for tick, (phase, reason, phase_name, reason_name) in enumerate(
-            ((2, 14, "COOLDOWN", "TIMEOUT"), (3, 19, "0x03", "0x13")),
+            ((2, 14, "COOLDOWN", "TIMEOUT"), (3, 22, "0x03", "0x16")),
             start=1,
         ):
             with self.subTest(phase=phase, reason=reason):

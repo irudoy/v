@@ -4,8 +4,9 @@
 
 This document describes the exact stock JK08A software path from the final
 signed timing coordinate to the SH7058 Advanced Pulse Controller (APC). It also
-defines the static acceptance boundary for a late retard-only override used by
-Rolling RPM Hold.
+defines the static acceptance boundary for a late retard-only override at the
+final consumer, which the historical Rolling Launch RPM-hold endpoints applied.
+The current Rolling Launch adapter passes the stock command through unchanged.
 
 The normal-mode software contract supports a target command range of
 `110..117`. In the normal diagnostic coordinate this range represents
@@ -395,7 +396,7 @@ The absolute time unit of the timeout is not established here.
 
 ## Acceptance boundary
 
-Static support for Rolling RPM Hold retard requires all of these conditions:
+Static support for a late retard-only override requires all of these conditions:
 
 - the adapter is placed at the final `0x0004E198` consumer;
 - inactive and invalid paths preserve the stock command;

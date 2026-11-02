@@ -55,8 +55,7 @@ SOURCE_LABELS = {
     "startup_wrapper": "rolling_launch_startup_wrapper",
     "engine": "rolling_launch_engine",
     "ignition_adapter": "rolling_launch_ignition_adapter",
-    "ignition_controller": "rolling_launch_ignition_controller",
-    "threshold_helper": "rolling_launch_threshold_helper",
+    "speed_controller": "rolling_launch_speed_controller",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
     "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
 }
@@ -183,36 +182,45 @@ def _validate_engine_abi(parsed):
     if texts.count("jsr @r0") != 2:
         raise ValueError(
             "engine must have one corrupt-state limiter commit and one "
-            "threshold call"
+            "controller call"
         )
     if texts.count("stc sr,r7") or texts.count("ldc r7,sr"):
         raise ValueError("engine writes the fuel-cut shadow")
     if texts.count("mov #0x6,r2") != 1:
         raise ValueError("corrupt-state clear size differs")
-    if texts.count("mov.w r0,@(0x14,r5)") != 2 or texts.count("mov #0x3f,r0") != 1:
-        raise ValueError("fuel-cut request publication differs")
-    if texts.count("mov.w r0,@(0x16,r5)") != 4:
-        raise ValueError("fuel-cut request latch stores differ")
-    validator_end = parsed.labels["rl_publish_active_flags"]
+    if texts.count("mov.w r0,@(0x14,r5)") != 1 or "mov #0x3f,r0" in texts:
+        raise ValueError("engine publishes the fuel-cut request outside the controller")
+    if texts.count("mov.w r0,@(0x16,r5)") or texts.count("mov.w r0,@(0x10,r5)"):
+        raise ValueError("engine writes a controller output field")
     validator = [
         item.text.lower()
         for item in _instructions(parsed)
         if parsed.labels["rl_validate_config"]
         <= item.address
-        < validator_end
+        < parsed.labels["rl_helper_config_address"]
     ]
-    if "mov.b @(0x8,r3),r0" in validator:
-        raise ValueError("configuration validation rejects minimum speed zero")
-    threshold_call = [
-        "mov.l @(rl_threshold_helper_entry,pc),r0",
+    speed_bound = [
+        "mov.w @(0x8,r3),r0",
+        "extu.w r0,r2",
+        "tst r2,r2",
+        "bt rl_config_speed_ordered",
+    ]
+    if not _contains(validator, speed_bound):
+        raise ValueError("configuration validation rejects a disabled minimum speed")
+    controller_call = [
+        "mov.l @(rl_controller_entry,pc),r0",
         "jsr @r0",
         "nop",
     ]
-    if not any(
-        texts[index : index + len(threshold_call)] == threshold_call
-        for index in range(len(texts) - len(threshold_call) + 1)
-    ):
-        raise ValueError("engine threshold-helper call differs")
+    if not _contains(texts, controller_call):
+        raise ValueError("engine controller call differs")
+    age_gate = [
+        "mov.l @(rl_gate_speed_age_address,pc),r4",
+        "mov.b @r4,r2",
+        "extu.b r2,r2",
+    ]
+    if not _contains(texts, age_gate) or texts.count("mov #0xd,r0") != 1:
+        raise ValueError("engine speed-frame age gate differs")
     required = {
         "rl_idle",
         "rl_active",
@@ -220,8 +228,9 @@ def _validate_engine_abi(parsed):
         "rl_corrupt_state",
         "rl_evaluate_gates",
         "rl_validate_config",
-        "rl_publish_active_flags",
-        "rl_hold_publish",
+        "rl_run_controller",
+        "rl_gate_speed_frame",
+        "rl_gate_speed_window",
     }
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
@@ -232,99 +241,54 @@ def _validate_engine_abi(parsed):
         raise ValueError("map-enable mask literal does not point to its table")
 
 
+def _contains(texts, sequence):
+    return any(
+        texts[index : index + len(sequence)] == sequence
+        for index in range(len(texts) - len(sequence) + 1)
+    )
+
+
 def _validate_ignition_abi(parsed):
     texts = _texts(parsed)
-    if any(text.startswith(("jsr ", "bsr ", "rts")) for text in texts):
-        raise ValueError("ignition adapter must be one tail-call leaf")
-    if texts[-2:] != ["jmp @r0", "nop"]:
-        raise ValueError("ignition adapter lacks stock tail jump")
-    if texts.count("jmp @r0") != 2:
-        raise ValueError("ignition adapter dispatch count differs")
-    if texts.count("mov.b r0,@r1") != 0:
-        raise ValueError("ignition adapter writes an output directly")
-    if texts.count("mov.b r0,@r2") != 2:
-        raise ValueError("ignition diagnostic store count differs")
-    if texts.count("cmp/hs r2,r4") != 1:
-        raise ValueError("ignition max(stock,target) comparison differs")
-    gate = [
-        "mov.l @(rl_ign_apc_mode_address,pc),r3",
-        "mov.b @r3,r0",
-        "tst 0x40,r0",
-        "bf rl_ign_tail",
-    ]
-    gate_start = next(
-        (
-            index
-            for index in range(len(texts) - len(gate) + 1)
-            if texts[index : index + len(gate)] == gate
-        ),
-        None,
-    )
-    if gate_start is None:
-        raise ValueError("ignition adapter lacks APC fallback-mode gate")
-    if gate_start > texts.index("cmp/eq 0x1,r0"):
-        raise ValueError("ignition APC fallback gate follows mode validation")
-    registers = set()
-    for statement in _instructions(parsed):
-        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    if not registers <= {"r0", "r1", "r2", "r3", "r4"}:
-        raise ValueError("ignition adapter clobbers an undeclared register")
+    if texts != ["mov.l @(rl_ign_stock_consumer,pc),r0", "jmp @r0", "nop"]:
+        raise ValueError("ignition adapter must be one stock tail jump")
 
 
-def _validate_ignition_controller_abi(parsed):
+def _validate_speed_controller_abi(parsed):
     texts = _texts(parsed)
     if texts[:1] != ["sts.l pr,@-r15"]:
-        raise ValueError("ignition controller does not save PR")
-    if texts[-2:] != ["jmp @r0", "nop"]:
-        raise ValueError("ignition controller lacks stock tail jump")
-    if texts.count("jsr @r3") != 1:
-        raise ValueError("ignition controller divider call count differs")
-    divider = texts.index("jsr @r3")
-    if texts[divider + 1] != "nop":
-        raise ValueError("ignition controller divider delay slot differs")
-    if texts.count("mulu.w r2,r1") != 1 or texts.count("sts macl,r1") != 1:
-        raise ValueError("ignition controller blend arithmetic differs")
-    if texts.count("mov.l r3,@-r15") != 1:
-        raise ValueError("ignition controller does not save Cut")
-    if texts.count("mov.l @r15+,r0") != 1:
-        raise ValueError("ignition controller does not discard saved Cut")
-    if texts.count("lds.l @r15+,pr") != 1:
-        raise ValueError("ignition controller does not restore PR")
-    if texts.count("mov.b r0,@r1") != 2:
-        raise ValueError("ignition controller output store count differs")
-    if texts.count("add r0,r4") != 1 or texts.count("add r2,r4") != 1:
-        raise ValueError("ignition controller bounded command paths differ")
-    registers = set()
-    for statement in _instructions(parsed):
-        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    allowed = {"r0", "r1", "r2", "r3", "r4", "r15", "pr", "macl"}
-    if not registers <= allowed:
-        raise ValueError("ignition controller clobbers an undeclared register")
-
-
-def _validate_threshold_helper_abi(parsed):
-    texts = _texts(parsed)
-    if texts[:1] != ["sts.l pr,@-r15"]:
-        raise ValueError("threshold helper does not save PR")
+        raise ValueError("speed controller does not save PR")
     if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
-        raise ValueError("threshold helper does not restore PR")
-    if texts.count("jsr @r3") != 1:
-        raise ValueError("threshold helper divider call count differs")
-    divider = texts.index("jsr @r3")
-    if texts[divider + 1] != "nop":
-        raise ValueError("threshold helper divider delay slot differs")
-    if texts.count("mulu.w r3,r2") != 1 or texts.count("sts macl,r1") != 1:
-        raise ValueError("threshold helper ratio arithmetic differs")
-    if texts.count("mov.w r0,@(0xe,r5)") != 1:
-        raise ValueError("threshold helper Restore store differs")
-    if texts.count("mov.w r0,@(0x12,r5)") != 1:
-        raise ValueError("threshold helper retard-band store differs")
+        raise ValueError("speed controller does not restore PR")
+    divider_call = [
+        "mov.l @(rl_spd_unsigned_divide,pc),r3",
+        "jsr @r3",
+        "nop",
+    ]
+    if texts.count("jsr @r3") != 1 or not _contains(texts, divider_call):
+        raise ValueError("speed controller divider call differs")
+    if texts.count("mulu.w r0,r1") != 1 or texts.count("muls.w r0,r2") != 1:
+        raise ValueError("speed controller arithmetic differs")
+    stores = sorted(
+        text for text in texts
+        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
+    )
+    expected = sorted([
+        "mov.w r0,@(0x10,r5)",
+        "mov.w r0,@(0x12,r5)",
+        "mov.w r0,@(0x16,r5)",
+        "mov.w r0,@(0xe,r5)",
+        "mov.w r0,@(0x14,r5)",
+        "mov.b r0,@(0x2,r5)",
+    ])
+    if stores != expected or texts.count("mov #0x3f,r0") != 1:
+        raise ValueError("speed controller store contract differs")
     registers = set()
     for statement in _instructions(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r15", "pr", "macl"}
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
     if not registers <= allowed:
-        raise ValueError("threshold helper clobbers an undeclared register")
+        raise ValueError("speed controller clobbers an undeclared register")
 
 
 def _validate_feedback_arbiter_abi(parsed):
@@ -422,46 +386,35 @@ def _expected_long_literals():
         "engine": {
             "rl_state_address": 0xFFFF5D40,
             "rl_selector_address": 0xFFFF5D00,
-            "rl_config_address": 0x000D3F60,
+            "rl_config_address": 0x000D6040,
             "rl_rpm_address": 0xFFFF11BC,
+            "rl_speed_address": 0xFFFF113C,
             "rl_limiter_commit": 0x000D3660,
             "rl_button_address": 0xFFFF2A85,
-            "rl_threshold_helper_entry": 0x000D4140,
+            "rl_controller_entry": 0x000D40C0,
             "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
-            "rl_gate_map_enable_masks": 0x000D3D18,
-            "rl_gate_config_address": 0x000D3F60,
+            "rl_gate_map_enable_masks": 0x000D3D40,
+            "rl_gate_config_address": 0x000D6040,
             "rl_gate_ascd_address": 0xFFFF41AE,
             "rl_gate_button_address": 0xFFFF2A85,
-            "rl_gate_speed_address": 0xFFFF110E,
+            "rl_gate_speed_address": 0xFFFF113C,
+            "rl_gate_speed_age_address": 0xFFFF3B38,
             "rl_gate_rpm_address": 0xFFFF11BC,
             "rl_gate_pedal_address": 0xFFFF2672,
             "rl_gate_coolant_address": 0xFFFF1077,
-            "rl_helper_config_address": 0x000D3F60,
-            "rl_helper_state_address": 0xFFFF5D40,
-            "rl_helper_rpm_address": 0xFFFF11BC,
-            "rl_helper_fuel_cut_status": 0xFFFF2497,
+            "rl_helper_config_address": 0x000D6040,
         },
         "ignition_adapter": {
-            "rl_ign_state_address": 0xFFFF5D40,
-            "rl_ign_config_address": 0x000D3F60,
             "rl_ign_stock_consumer": 0x0002A892,
-            "rl_ign_controller_entry": 0x000D40C0,
-            "rl_ign_enable_masks": 0x000D3F4C,
-            "rl_ign_integrity_markers": 0xADB3A55A,
-            "rl_ign_apc_mode_address": 0xFFFF24C9,
         },
-        "ignition_controller": {
-            "rl_ctrl_state_address": 0xFFFF5D40,
-            "rl_ctrl_rpm_address": 0xFFFF11BC,
-            "rl_ctrl_unsigned_divide": 0x00021CE0,
-            "rl_ctrl_output_address": 0xFFFF2022,
-            "rl_ctrl_stock_consumer": 0x0002A892,
-        },
-        "threshold_helper": {
-            "rl_threshold_config_address": 0x000D3F60,
-            "rl_threshold_state_address": 0xFFFF5D40,
-            "rl_threshold_unsigned_divide": 0x00021CE0,
+        "speed_controller": {
+            "rl_spd_state_address": 0xFFFF5D40,
+            "rl_spd_config_address": 0x000D6040,
+            "rl_spd_speed_address": 0xFFFF113C,
+            "rl_spd_unsigned_divide": 0x00021CE0,
+            "rl_spd_rpm_address": 0xFFFF11BC,
+            "rl_spd_fuel_cut_status": 0xFFFF2497,
         },
         "feedback_arbiter": {
             "rl_feedback_base_wrapper": 0x000D35E0,
@@ -524,10 +477,8 @@ def validate_assembly_sources(layout=None):
             _validate_engine_abi(parsed)
         elif unit.key == "ignition_adapter":
             _validate_ignition_abi(parsed)
-        elif unit.key == "ignition_controller":
-            _validate_ignition_controller_abi(parsed)
-        elif unit.key == "threshold_helper":
-            _validate_threshold_helper_abi(parsed)
+        elif unit.key == "speed_controller":
+            _validate_speed_controller_abi(parsed)
         elif unit.key == "feedback_arbiter":
             _validate_feedback_arbiter_abi(parsed)
         elif unit.key == "fuel_cut_wrapper":

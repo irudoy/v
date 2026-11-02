@@ -440,7 +440,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 888)
+        self.assertEqual(result.instruction_count, 871)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -514,7 +514,7 @@ mov #0x5,r1
         self.assertIn("cases=%lu", harness)
         self.assertIn("feedback=8", harness)
         self.assertIn("fuel_cut=13", harness)
-        self.assertIn("entries=9", harness)
+        self.assertIn("entries=8", harness)
 
     def test_can_telemetry_composition_lock_matches_verifier(self):
         layout = can_telemetry_layout.load_layout()
@@ -1591,9 +1591,11 @@ mov #0x5,r1
 
 
 class RollingWrapperCoverageTest(unittest.TestCase):
-    @staticmethod
-    def fixture():
-        image = bytearray(0x500)
+    DIVIDER = ROLLING_VERIFIER.STOCK_UNSIGNED_DIVIDER
+
+    @classmethod
+    def fixture(cls):
+        image = bytearray(cls.DIVIDER + 0x100)
         rows = [
             (0x100, "mov.l @(periodic_stock,pc),r0"), (0x102, "jsr @r0"),
             (0x104, "nop"), (0x106, "rts"), (0x108, "nop"),
@@ -1621,7 +1623,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         for pool, target in ((0x110, 0x300), (0x160, 0x304), (0x164, 0x304), (0x19C, 0x308)):
             image[pool:pool + 4] = target.to_bytes(4, "big")
             statements.append(assembly_model.SourceStatement(30, pool, "long", hex(target), 4))
-        for target in (0x300, 0x304, 0x308, 0x30C):
+        for target in (0x300, 0x304, 0x308, 0x30C, cls.DIVIDER):
             image[target:target + 4] = bytes.fromhex("000b0009")
         parsed = assembly_model.ParsedSource(Path("wrappers.s"), labels, tuple(statements))
         regions = {key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
@@ -1629,12 +1631,12 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                                            ("selector_arbiter", 0x140, 0x170),
                                            ("startup_wrapper", 0x180, 0x1A0))}
         boundaries = {0x100: 0x300, 0x140: 0x304, 0x180: 0x308}
-        invokes = {0x4000: 0x400B, 0x4002: 9, 0x4004: 9, 0x4006: 9}
+        invokes = {0x40000: 0x400B, 0x40002: 9, 0x40004: 9, 0x40006: 9}
 
         def event(pc, delay=0):
             return pc, invokes[pc] if pc in invokes else int.from_bytes(image[pc:pc + 2], "big"), delay
 
-        prefix, suffix = [event(0x4000), event(0x4002, 1)], [event(0x4004)]
+        prefix, suffix = [event(0x40000), event(0x40002, 1)], [event(0x40004)]
         traces = [
             prefix + [event(0x100), event(0x102), event(0x104, 1), event(0x300),
                       event(0x302, 1), event(0x106), event(0x108, 1)] + suffix,
@@ -1647,37 +1649,37 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                       event(0x30A, 1), event(0x18A), event(0x18C, 1)] + suffix,
         ]
         units = {"wrappers": parsed}
-        helper_rows = ((0x200, "mov.l @(rl_threshold_unsigned_divide,pc),r3", 0xD30E),
-                       (0x202, "jsr @r3", 0x430B), (0x204, "nop", 9),
-                       (0x206, "bt helper_high", 0x8901), (0x208, "mov #1,r0", 0xE001),
-                       (0x20A, "bra helper_return", 0xA000), (0x20C, "mov #2,r0", 0xE002),
-                       (0x20E, "rts", 11), (0x210, "nop", 9))
+        controller_rows = ((0x200, "mov.l @(rl_spd_unsigned_divide,pc),r3", 0xD30E),
+                           (0x202, "jsr @r3", 0x430B), (0x204, "nop", 9),
+                           (0x206, "bt controller_full", 0x8901), (0x208, "mov #1,r0", 0xE001),
+                           (0x20A, "bra controller_return", 0xA000), (0x20C, "mov #2,r0", 0xE002),
+                           (0x20E, "rts", 11), (0x210, "nop", 9))
         engine_rows = ((0x280, "nop", 9),
-                       (0x282, "mov.l @(rl_threshold_helper_entry,pc),r0", 0xD005),
+                       (0x282, "mov.l @(rl_controller_entry,pc),r0", 0xD005),
                        (0x284, "jsr @r0", 0x400B), (0x286, "nop", 9),
                        (0x288, "rts", 11), (0x28A, "nop", 9))
         for unit, rows, labels in (
-                ("threshold_helper", helper_rows,
-                 {"rl_threshold_unsigned_divide": 0x23C, "helper_high": 0x20C, "helper_return": 0x20E}),
-                ("engine", engine_rows, {"rl_threshold_helper_entry": 0x298})):
+                ("speed_controller", controller_rows,
+                 {"rl_spd_unsigned_divide": 0x23C, "controller_full": 0x20C,
+                  "controller_return": 0x20E}),
+                ("engine", engine_rows, {"rl_controller_entry": 0x298})):
             statements = []
             for pc, text, word in rows:
                 image[pc:pc + 2] = word.to_bytes(2, "big")
                 statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
             units[unit] = assembly_model.ParsedSource(Path(unit + ".s"), labels, tuple(statements))
-        image[0x23C:0x240] = (0x310).to_bytes(4, "big")
+        image[0x23C:0x240] = cls.DIVIDER.to_bytes(4, "big")
         image[0x298:0x29C] = (0x200).to_bytes(4, "big")
-        image[0x310:0x314] = bytes.fromhex("000b0009")
         regions.update({key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
-                        for key, entry, end in (("threshold_helper", 0x200, 0x240),
+                        for key, entry, end in (("speed_controller", 0x200, 0x240),
                                                 ("engine", 0x280, 0x2A0))})
-        helper_prefix = [event(0x200), event(0x202), event(0x204, 1),
-                         event(0x310), event(0x312, 1), event(0x206)]
-        helper_suffix = [event(0x20E), event(0x210, 1)]
-        traces.extend((prefix + helper_prefix + [event(0x20C)] + helper_suffix + suffix,
+        controller_prefix = [event(0x200), event(0x202), event(0x204, 1),
+                             event(cls.DIVIDER), event(cls.DIVIDER + 2, 1), event(0x206)]
+        controller_suffix = [event(0x20E), event(0x210, 1)]
+        traces.extend((prefix + controller_prefix + [event(0x20C)] + controller_suffix + suffix,
                        prefix + [event(0x280), event(0x282), event(0x284), event(0x286, 1)]
-                       + helper_prefix + [event(0x208), event(0x20A), event(0x20C, 1)]
-                       + helper_suffix + [event(0x288), event(0x28A, 1)] + suffix))
+                       + controller_prefix + [event(0x208), event(0x20A), event(0x20C, 1)]
+                       + controller_suffix + [event(0x288), event(0x28A, 1)] + suffix))
         feedback_rows = ((0x240, "mov.l @(rl_feedback_base_wrapper,pc),r0", 0xD00D),
                          (0x242, "jsr @r0", 0x400B), (0x244, "nop", 9),
                          (0x246, "bt feedback_other", 0x8901), (0x248, "mov #1,r0", 0xE001),
@@ -1704,46 +1706,20 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         traces.extend((prefix + feedback_prefix + [event(0x24C)] + feedback_suffix + suffix,
                        prefix + feedback_prefix + [event(0x248), event(0x24A), event(0x24C, 1)]
                        + feedback_suffix + suffix))
-        rows = ((0x3C0, "mov.l @(rl_ctrl_unsigned_divide,pc),r3", 0xD30B),
-                (0x3C2, "jsr @r3", 0x430B), (0x3C4, "nop", 9),
-                (0x3C6, "bt ctrl_full", 0x8901), (0x3C8, "nop", 9),
-                (0x3CA, "bra ctrl_tail", 0xA000), (0x3CC, "nop", 9),
-                (0x3CE, "mov.l @(rl_ctrl_stock_consumer,pc),r0", 0xD009),
-                (0x3D0, "jmp @r0", 0x402B), (0x3D2, "nop", 9))
-        statements = []
-        for pc, text, word in rows:
-            image[pc:pc + 2] = word.to_bytes(2, "big")
-            statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
-        units["ignition_controller"] = assembly_model.ParsedSource(Path("controller.s"),
-            {"rl_ctrl_unsigned_divide": 0x3F0, "rl_ctrl_stock_consumer": 0x3F4,
-             "ctrl_full": 0x3CC, "ctrl_tail": 0x3CE}, tuple(statements))
-        rows = ((0x3A0, "nop", 9),
-                (0x3A2, "mov.l @(rl_ign_controller_entry,pc),r0", 0xD003),
-                (0x3A4, "jmp @r0", 0x402B), (0x3A6, "nop", 9),
-                (0x3A8, "mov.l @(rl_ign_stock_consumer,pc),r0", 0xD002),
-                (0x3AA, "jmp @r0", 0x402B), (0x3AC, "nop", 9))
+        rows = ((0x3A0, "mov.l @(rl_ign_stock_consumer,pc),r0", 0xD001),
+                (0x3A2, "jmp @r0", 0x402B), (0x3A4, "nop", 9))
         statements = []
         for pc, text, word in rows:
             image[pc:pc + 2] = word.to_bytes(2, "big")
             statements.append(assembly_model.SourceStatement(1, pc, "instruction", text, 2))
         units["ignition_adapter"] = assembly_model.ParsedSource(Path("adapter.s"),
-            {"rl_ign_controller_entry": 0x3B0, "rl_ign_stock_consumer": 0x3B4}, tuple(statements))
-        for pool, target in ((0x3B0, 0x3C0), (0x3B4, 0x380), (0x3F0, 0x310), (0x3F4, 0x380)):
-            image[pool:pool + 4] = target.to_bytes(4, "big")
+            {"rl_ign_stock_consumer": 0x3A8}, tuple(statements))
+        image[0x3A8:0x3AC] = (0x380).to_bytes(4, "big")
         image[0x380:0x384] = bytes.fromhex("000b0009")
-        regions.update({key: SimpleNamespace(entry=entry, span=SimpleNamespace(start=entry, end=end))
-                        for key, entry, end in (("ignition_adapter", 0x3A0, 0x3C0),
-                                                ("ignition_controller", 0x3C0, 0x400))})
-        controller_prefix = [event(0x3A0), event(0x3A2), event(0x3A4), event(0x3A6, 1),
-                             event(0x3C0), event(0x3C2), event(0x3C4, 1),
-                             event(0x310), event(0x312, 1), event(0x3C6)]
-        controller_suffix = [event(0x3CE), event(0x3D0), event(0x3D2, 1),
-                             event(0x380), event(0x382, 1)]
-        traces.extend((prefix + controller_prefix + [event(0x3CC)] + controller_suffix + suffix,
-                       prefix + controller_prefix + [event(0x3C8), event(0x3CA), event(0x3CC, 1)]
-                       + controller_suffix + suffix,
-                       prefix + [event(0x3A0), event(0x3A8), event(0x3AA), event(0x3AC, 1),
-                                 event(0x380), event(0x382, 1)] + suffix))
+        regions["ignition_adapter"] = SimpleNamespace(
+            entry=0x3A0, span=SimpleNamespace(start=0x3A0, end=0x3C0))
+        traces.append(prefix + [event(0x3A0), event(0x3A2), event(0x3A4, 1),
+                                event(0x380), event(0x382, 1)] + suffix)
         rows = ((0x400, "sts.l pr,@-r15", 0x4F22),
                 (0x402, "mov.l @(rl_fuel_stock_coordinator,pc),r0", 0xD00B),
                 (0x404, "jsr @r0", 0x400B), (0x406, "nop", 9),
@@ -1772,18 +1748,18 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         result = ROLLING_VERIFIER.require_wrapper_coverage(
             sum(traces, []), image, parsed, regions, boundaries, invokes, 0x350, 0x380)
-        self.assertEqual(result, dict(entries=9, instructions=71, outcomes=12,
-                                      delay_slots=21, call_return_paths=15, tail_paths=5))
+        self.assertEqual(result, dict(entries=8, instructions=57, outcomes=10,
+                                      delay_slots=17, call_return_paths=14, tail_paths=3))
 
     def test_omission_and_single_outcome_cannot_pass(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         for selected, reason in ((traces[1:], "uncovered wrapper entry 0x00000100"),
                                   (traces[:4] + traces[6:], "uncovered wrapper entry 0x00000200"),
+                                  (traces[:5] + traces[6:], "uncovered wrapper entry 0x00000280"),
                                   (traces[:6] + traces[8:], "uncovered wrapper entry 0x00000240"),
-                                  (traces[:8], "uncovered wrapper entry 0x000003a0"),
-                                  (traces[:8] + traces[10:], "uncovered wrapper entry 0x000003c0"),
-                                  (traces[:11], "uncovered wrapper entry 0x00000400"),
-                                  (traces[:12], "uncovered wrapper branch 0x0000040a"),
+                                  (traces[:8] + traces[9:], "uncovered wrapper entry 0x000003a0"),
+                                  (traces[:9], "uncovered wrapper entry 0x00000400"),
+                                  (traces[:10], "uncovered wrapper branch 0x0000040a"),
                                   (traces[:6] + traces[7:], "uncovered wrapper branch 0x00000246"),
                                   (traces[:4] + traces[5:], "uncovered wrapper branch 0x00000206"),
                                   ([traces[0], *traces[2:]], "uncovered wrapper branch")):
@@ -1797,7 +1773,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         mutations = ((2, (0x100, 9, 0), "opcode differs"),
                      (4, (0x104, 9, 0), "missing executed delay slot"),
                      (5, (0x304, 11, 0), "wrapper JSR differs"),
-                     (9, (0x4006, 9, 0), "wrapper return differs"),
+                     (9, (0x40006, 9, 0), "wrapper return differs"),
                      (16, (0x30C, 11, 0), "wrapper JMP differs"))
         for index, replacement, reason in mutations:
             changed = list(records)
@@ -1825,13 +1801,12 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         for address, reason in ((0x100, "wrapper instruction"), (0x110, "wrapper control literal"),
                                 (0x200, "wrapper instruction"), (0x23C, "wrapper control literal"),
                                 (0x240, "wrapper instruction"), (0x278, "wrapper control literal"),
-                                (0x3A0, "wrapper instruction"), (0x3B0, "wrapper control literal"),
-                                (0x3C0, "wrapper instruction"), (0x3F0, "wrapper control literal"),
-                                (0x3F4, "wrapper control literal"),
+                                (0x282, "wrapper instruction"), (0x298, "wrapper control literal"),
+                                (0x3A0, "wrapper instruction"), (0x3A8, "wrapper control literal"),
                                 (0x400, "wrapper instruction"), (0x430, "wrapper control literal")):
             changed = bytearray(image)
             changed[address] ^= 1
-            with self.subTest(reason=reason), tempfile.TemporaryDirectory() as directory:
+            with self.subTest(reason=reason, address=address), tempfile.TemporaryDirectory() as directory:
                 build_dir = Path(directory)
                 with patch.object(ROLLING_VERIFIER, "build_rom_object", return_value=build_dir / "rom.o"), \
                         patch.object(ROLLING_VERIFIER.base_verifier, "run_command") as command, \
@@ -1842,18 +1817,17 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                 self.assertNotIn(ROLLING_VERIFIER.base_verifier.GCC,
                                  [call.args[0][0] for call in command.call_args_list])
 
-    def test_helper_requires_bound_origin_divider_return_and_native_rts(self):
+    def test_controller_requires_bound_origin_divider_return_and_native_rts(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
-        helper = traces[4]
+        controller = traces[4]
         engine = traces[5]
         cases = []
-        wrong_target = list(helper)
+        wrong_target = list(controller)
         wrong_target[5:7] = [(0x30C, 11, 0), (0x30E, 9, 1)]
         cases.append((wrong_target, "wrapper JSR differs"))
-        wrong_return = list(helper)
+        wrong_return = list(controller)
         wrong_return[7] = (0x208, 0xE001, 0)
         cases.append((wrong_return, "wrapper return differs"))
-        cases.append((helper[:3] + helper[7:], "divider return and native RTS"))
         # A call from the engine window without an actual engine parent is foreign.
         cases.append((engine[3:], "originating invoke frame"))
         foreign = list(engine)
@@ -1864,6 +1838,14 @@ class RollingWrapperCoverageTest(unittest.TestCase):
                 ROLLING_VERIFIER.require_wrapper_coverage(
                     sum(traces[:4], []) + records, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
 
+    def test_controller_requires_its_unique_divider_call(self):
+        image, parsed, regions, boundaries, invokes, traces = self.fixture()
+        changed = bytearray(image)
+        changed[0x23C:0x240] = (0x30C).to_bytes(4, "big")
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "unique divider call"):
+            ROLLING_VERIFIER.require_wrapper_coverage(
+                sum(traces, []), changed, parsed, regions, boundaries, invokes, 0x350, 0x380)
+
     def test_engine_window_instruction_and_literal_are_bound_before_execution(self):
         image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()
         for address in (0x280, 0x282, 0x284, 0x286, 0x298):
@@ -1871,17 +1853,17 @@ class RollingWrapperCoverageTest(unittest.TestCase):
             changed[address] ^= 1
             with self.subTest(address=address), self.assertRaisesRegex(
                     ROLLING_VERIFIER.VerificationError, "engine call binding"):
-                ROLLING_VERIFIER.bind_threshold_engine_window(changed, image, parsed["engine"], regions)
+                ROLLING_VERIFIER.bind_controller_engine_window(changed, image, parsed["engine"], regions)
         changed = bytearray(image)
         changed[0x298:0x29C] = (0x204).to_bytes(4, "big")
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "differs from its source"):
-            ROLLING_VERIFIER.bind_threshold_engine_window(changed, changed, parsed["engine"], regions)
+            ROLLING_VERIFIER.bind_controller_engine_window(changed, changed, parsed["engine"], regions)
 
-    def test_unknown_helper_and_feedback_transfer_forms_are_rejected(self):
+    def test_unknown_controller_feedback_and_fuel_transfer_forms_are_rejected(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
-        for unit, pc, transfer in (("threshold_helper", 0x202, "jsr @r0"),
+        for unit, pc, transfer in (("speed_controller", 0x202, "jsr @r0"),
                                    ("feedback_arbiter", 0x242, "jmp @r0"),
-                                   ("ignition_controller", 0x3C2, "jsr @r0")):
+                                   ("fuel_cut_wrapper", 0x404, "jmp @r0")):
             source = parsed[unit]
             rows = tuple(assembly_model.SourceStatement(row.line_number, row.address, row.kind,
                          transfer if row.address == pc else row.text, row.size)
@@ -1928,20 +1910,15 @@ class RollingWrapperCoverageTest(unittest.TestCase):
             ROLLING_VERIFIER.require_wrapper_coverage(
                 sum(traces, []) + [(0x278, 0, 0)], image, parsed, regions, boundaries, invokes, 0x350, 0x380)
 
-    def test_controller_requires_bound_adapter_divider_tail_and_stock_return(self):
+    def test_adapter_requires_bound_origin_tail_and_stock_return(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
         records = traces[8]
-        cases = [(records[6:], "originating invoke frame")]
-        wrong_divider = list(records)
-        wrong_divider[9] = (0x30C, 11, 0)
-        cases.append((wrong_divider, "wrapper JSR differs"))
+        cases = [(records[2:], "originating invoke frame")]
         wrong_tail = list(records)
-        wrong_tail[-3] = (0x30C, 11, 0)
-        cases.append((wrong_tail, "wrapper JMP differs"))
-        missing_divider_return = records[:11] + records[12:]
-        cases.append((missing_divider_return, "wrapper return differs"))
+        wrong_tail[5:7] = [(0x30C, 11, 0), (0x30E, 9, 1)]
+        cases.append((wrong_tail, "tail lacks its bound invoke origin"))
         wrong_return = list(records)
-        wrong_return[-1] = (0x4006, 9, 0)
+        wrong_return[-1] = (0x40006, 9, 0)
         cases.append((wrong_return, "wrapper return differs"))
         for changed, reason in cases:
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
@@ -1950,7 +1927,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
 
     def test_fuel_cut_wrapper_requires_invoke_coordinator_and_stub_boundary(self):
         image, parsed, regions, boundaries, invokes, traces = self.fixture()
-        fuel = traces[11]
+        fuel = traces[9]
         cases = [(fuel[2:], "originating invoke frame")]
         wrong_target = list(fuel)
         wrong_target[6:8] = [(0x30C, 11, 0), (0x30E, 9, 1)]
@@ -1961,7 +1938,7 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         for records, reason in cases:
             with self.subTest(reason=reason), self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, reason):
                 ROLLING_VERIFIER.require_wrapper_coverage(
-                    sum(traces[:11], []) + records, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
+                    sum(traces[:9], []) + records, image, parsed, regions, boundaries, invokes, 0x350, 0x380)
         changed = bytearray(image)
         changed[0x430:0x434] = (0x30C).to_bytes(4, "big")
         records = sum(traces, [])
@@ -1971,14 +1948,18 @@ class RollingWrapperCoverageTest(unittest.TestCase):
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "stock return boundary"):
             ROLLING_VERIFIER.require_wrapper_coverage(records, changed, parsed, regions, boundaries, invokes, 0x350, 0x380)
 
-    def test_controller_adapter_binding_rejects_instruction_pool_and_target_changes(self):
+    def test_adapter_binding_rejects_instruction_pool_and_target_changes(self):
         image, parsed, regions, _boundaries, _invokes, _traces = self.fixture()
-        for pc in (0x3A0, 0x3A2, 0x3A4, 0x3A6, 0x3A8, 0x3AA, 0x3AC, 0x3B0, 0x3B4):
+        for pc in (0x3A0, 0x3A2, 0x3A4, 0x3A8):
             changed = bytearray(image)
             changed[pc] ^= 1
             with self.subTest(pc=pc), self.assertRaisesRegex(
                     ROLLING_VERIFIER.VerificationError, "ignition adapter"):
-                ROLLING_VERIFIER.bind_ignition_adapter_windows(changed, image, parsed["ignition_adapter"], regions, 0x380)
+                ROLLING_VERIFIER.bind_ignition_adapter_window(changed, image, parsed["ignition_adapter"], regions, 0x380)
+        changed = bytearray(image)
+        changed[0x3A8:0x3AC] = (0x384).to_bytes(4, "big")
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "differs from its source binding"):
+            ROLLING_VERIFIER.bind_ignition_adapter_window(changed, changed, parsed["ignition_adapter"], regions, 0x380)
 
 
 if __name__ == "__main__":

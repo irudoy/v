@@ -34,12 +34,17 @@ COMMON_TABLES = {
     "Rolling Launch Require Accelerator Pedal": "Rolling Launch / Activation",
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
     "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
+    "Rolling Launch Maximum Vehicle Speed": "Rolling Launch / Activation",
     "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
-    "Rolling Launch Minimum Retard Ramp Width": "Rolling Launch / Ignition Retard",
-    "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
-    "Rolling Launch Minimum RPM Hysteresis": "Rolling Launch / RPM Hold",
-    "Rolling Launch Maximum RPM Hysteresis": "Rolling Launch / RPM Hold",
-    "Rolling Launch RPM Hysteresis Ratio (%)": "Rolling Launch / RPM Hold",
+    "Rolling Launch Speed Frame Age Limit": "Rolling Launch / Activation",
+    "Rolling Launch Speed Window Width": "Rolling Launch / Speed Hold",
+    "Rolling Launch Speed Window Top": "Rolling Launch / Speed Hold",
+    "Rolling Launch Torque Fraction Rate Limit": "Rolling Launch / Speed Hold",
+    "Rolling Launch Integral Gain": "Rolling Launch / Speed Hold",
+    "Rolling Launch Integrator Limit": "Rolling Launch / Speed Hold",
+    "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
+    "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
+    "Rolling Launch RPM Ceiling Offset": "Rolling Launch / RPM Ceiling",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -612,7 +617,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(len(switches), 1)
         switch = switches[0]
         self.assertEqual(switch.get("name"), "Rolling Launch Enable by Map")
-        self.assertEqual(switch.get("storageaddress"), "0xD3F64")
+        self.assertEqual(switch.get("storageaddress"), "0xD6044")
         self.assertEqual(
             [
                 (bit.get("name"), bit.get("position"))
@@ -634,15 +639,20 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             table.get("name"): table for table in rom.findall("./table")
         }
         expected = {
-            "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
-            "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
-            "Rolling Launch Minimum Retard Ramp Width": "0xD3F69",
-            "Rolling Launch Minimum Engine Speed": "0xD3F6A",
-            "Rolling Launch Require Accelerator Pedal": "0xD3F6C",
-            "Rolling Launch RPM Offset": "0xD3F6E",
-            "Rolling Launch Minimum RPM Hysteresis": "0xD3F70",
-            "Rolling Launch Maximum RPM Hysteresis": "0xD3F71",
-            "Rolling Launch RPM Hysteresis Ratio (%)": "0xD3F7B",
+            "Rolling Launch Minimum Coolant Temperature": "0xD6046",
+            "Rolling Launch Minimum Vehicle Speed": "0xD6048",
+            "Rolling Launch Maximum Vehicle Speed": "0xD604A",
+            "Rolling Launch Minimum Engine Speed": "0xD604C",
+            "Rolling Launch Require Accelerator Pedal": "0xD604E",
+            "Rolling Launch Speed Window Width": "0xD6052",
+            "Rolling Launch Speed Window Top": "0xD6053",
+            "Rolling Launch Torque Fraction Rate Limit": "0xD6054",
+            "Rolling Launch Integral Gain": "0xD6056",
+            "Rolling Launch Integrator Limit": "0xD6058",
+            "Rolling Launch Abort Above Target": "0xD605A",
+            "Rolling Launch Abort Below Target": "0xD605B",
+            "Rolling Launch RPM Ceiling Offset": "0xD605C",
+            "Rolling Launch Speed Frame Age Limit": "0xD6062",
         }
         for name, address in expected.items():
             with self.subTest(name=name):

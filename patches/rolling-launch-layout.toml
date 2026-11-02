@@ -3,20 +3,26 @@
 # The composition extends the complete SHA-locked map-switching runtime. It is
 # a verification fixture only: checksum fields are not recalculated and no
 # output-file operation is exposed.
+#
+# The retired configuration span held the 32-byte record of schema 1 to 3. It
+# stays claimed and erased, so extraction can read the record of a historical
+# image.
 
 schema_version = 3
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "46d9da1cc167e6bfc10b028b6d4f198e07b628504daaaf874336fdd3ed91ee8a"
+expected_composition_sha256 = "e035062da5b648e5564b2543d7a2c776bde2321c126618b748c29dd9056b6f75"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
 claimed_rom_end = 0x000D3F80
-configuration_address = 0x000D3F60
-configuration_size = 32
-default_configuration = "524c0300000000ff011000a000010010040c012c0064737373737314adb3a55a"
+configuration_address = 0x000D6040
+configuration_size = 40
+retired_configuration_address = 0x000D3F60
+retired_configuration_size = 32
+default_configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a00adb3a55a"
 
 [[claimed_rom_extension]]
 start = 0x000D40C0
@@ -24,7 +30,7 @@ end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
-end = 0x000D6040
+end = 0x000D6068
 
 [scheduler]
 table_address = 0x0002196C
@@ -73,16 +79,10 @@ end = 0x000D3F60
 entry = 0x000D3EA0
 
 [[code_region]]
-key = "ignition_controller"
+key = "speed_controller"
 start = 0x000D40C0
-end = 0x000D4140
-entry = 0x000D40C0
-
-[[code_region]]
-key = "threshold_helper"
-start = 0x000D4140
 end = 0x000D41E0
-entry = 0x000D4140
+entry = 0x000D40C0
 
 [[code_region]]
 key = "feedback_arbiter"
@@ -115,8 +115,8 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "c5cf1751362ee50a8e3962ee0d70041a776659e17b8c2bc1c230d1bc1c922db6"
-instruction_count = 618
+expected_sha256 = "27f1b49f632f69560d39cb9d26f0eee3f49ecedd1846e3d43293bc4e40eb37b6"
+instruction_count = 643
 data_bytes = 99
 code_regions = ["engine"]
 
@@ -127,34 +127,22 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"
-instruction_count = 72
-data_bytes = 35
+expected_sha256 = "66b1f07d71af484080746829ccb0f8a2a3b6513b6e4f1a87b1dc38c3c3d44c8a"
+instruction_count = 3
+data_bytes = 4
 code_regions = ["ignition_adapter"]
 
 [[assembly_unit]]
-key = "ignition_controller"
-source = "rolling-launch-ignition-controller.s"
+key = "speed_controller"
+source = "rolling-launch-speed-controller.s"
 start = 0x000D40C0
-end = 0x000D4140
-fill = 0xFF
-language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "0d8c3c17c50b936f48586febd0c46daf1cdbe4b46a25a8019bbdd9c7df2329b3"
-instruction_count = 40
-data_bytes = 20
-code_regions = ["ignition_controller"]
-
-[[assembly_unit]]
-key = "threshold_helper"
-source = "rolling-launch-threshold-helper.s"
-start = 0x000D4140
 end = 0x000D41E0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"
-instruction_count = 62
-data_bytes = 16
-code_regions = ["threshold_helper"]
+expected_sha256 = "3d22c3b9e968ce70f877f4599fc9341fe7ffd30a47b8172763fd113c5b0fea48"
+instruction_count = 129
+data_bytes = 26
+code_regions = ["speed_controller"]
 
 [[assembly_unit]]
 key = "feedback_arbiter"
@@ -210,7 +198,7 @@ address = 0x0004E198
 width = 4
 stock = 0x0002A892
 replacement = 0x000D3EA0
-purpose = "Apply the retard-only command rule before the displaced stock consumer."
+purpose = "Keep the primary ignition command consumer on the Rolling Launch layer; the adapter passes every argument to the stock consumer."
 
 [[hook]]
 key = "feedback_arbitration"
@@ -282,7 +270,7 @@ pointer_address = 0x00022938
 stock = 0xFFFFFFFF
 target = 0xFFFF5D4C
 width = 2
-name = "cut_rpm_native"
+name = "target_speed"
 
 [[diagnostic]]
 did = 0x1228
@@ -290,7 +278,7 @@ pointer_address = 0x0002293C
 stock = 0xFFFFFFFF
 target = 0xFFFF5D4E
 width = 2
-name = "restore_rpm_native"
+name = "torque_fraction"
 
 [[diagnostic]]
 did = 0x1229
@@ -298,4 +286,4 @@ pointer_address = 0x00022940
 stock = 0xFFFFFFFF
 target = 0xFFFF5D50
 width = 2
-name = "stock_effective_ignition_command"
+name = "speed_error"

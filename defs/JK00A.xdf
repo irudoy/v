@@ -29,9 +29,9 @@
     <CATEGORY index="0x12" name="Logging / CAN Telemetry" />
     <CATEGORY index="0x13" name="NATS / Immobilizer" />
     <CATEGORY index="0x14" name="Rolling Launch / Activation" />
-    <CATEGORY index="0x15" name="Rolling Launch / Ignition Retard" />
-    <CATEGORY index="0x16" name="Rolling Launch / Map Enable" />
-    <CATEGORY index="0x17" name="Rolling Launch / RPM Hold" />
+    <CATEGORY index="0x15" name="Rolling Launch / Map Enable" />
+    <CATEGORY index="0x16" name="Rolling Launch / RPM Ceiling" />
+    <CATEGORY index="0x17" name="Rolling Launch / Speed Hold" />
     <CATEGORY index="0x18" name="Torque Model / Engine Torque" />
     <CATEGORY index="0x19" name="Variable Valve Timing / Exhaust Cam" />
     <CATEGORY index="0x1A" name="Variable Valve Timing / Intake Cam" />
@@ -54,11 +54,11 @@
     <CATEGORYMEM index="0" category="1" />
     <XDFPATCHENTRY name="Cruise Control Switch" address="0x8B28" datasize="0x1" patchdata="2B" basedata="00" />
   </XDFPATCH>
-  <XDFPATCH uniqueid="0x62E9" flags="0x0">
+  <XDFPATCH uniqueid="0x418E" flags="0x0">
     <title>Rolling Launch Require Accelerator Pedal</title>
     <description>Exact JK00A. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage. Base state: Enabled. Patched state: Disabled.</description>
     <CATEGORYMEM index="0" category="21" />
-    <XDFPATCHENTRY name="Rolling Launch Require Accelerator Pedal" address="0xD3F6C" datasize="0x2" patchdata="0000" basedata="0001" />
+    <XDFPATCHENTRY name="Rolling Launch Require Accelerator Pedal" address="0xD604E" datasize="0x2" patchdata="0000" basedata="0001" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0xA555" flags="0x0">
     <title>DTC P0306 [index 10] - Cylinder 6 misfire detected</title>
@@ -535,39 +535,39 @@
     <XDFPATCHENTRY name="P0057 [178] descriptor" address="0x19BB8" datasize="0xC" patchdata="000000000000000000000000" basedata="330404000000005700000000" />
     <XDFPATCHENTRY name="P0057 [178] attribute" address="0x1618C" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
-  <XDFFLAG uniqueid="0xFF11" flags="0x0">
+  <XDFFLAG uniqueid="0xB346" flags="0x0">
     <title>Map 1 - Rolling Launch Enable</title>
     <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 1 - Rolling Launch Enable at bit 0.</description>
-    <CATEGORYMEM index="0" category="23" />
-    <EMBEDDEDDATA mmedaddress="0xD3F64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+    <CATEGORYMEM index="0" category="22" />
+    <EMBEDDEDDATA mmedaddress="0xD6044" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x01</mask>
   </XDFFLAG>
-  <XDFFLAG uniqueid="0xCF87" flags="0x0">
+  <XDFFLAG uniqueid="0x83D0" flags="0x0">
     <title>Map 2 - Rolling Launch Enable</title>
     <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 2 - Rolling Launch Enable at bit 1.</description>
-    <CATEGORYMEM index="0" category="23" />
-    <EMBEDDEDDATA mmedaddress="0xD3F64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+    <CATEGORYMEM index="0" category="22" />
+    <EMBEDDEDDATA mmedaddress="0xD6044" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x02</mask>
   </XDFFLAG>
-  <XDFFLAG uniqueid="0x9E3D" flags="0x0">
+  <XDFFLAG uniqueid="0xD26A" flags="0x0">
     <title>Map 3 - Rolling Launch Enable</title>
     <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 3 - Rolling Launch Enable at bit 2.</description>
-    <CATEGORYMEM index="0" category="23" />
-    <EMBEDDEDDATA mmedaddress="0xD3F64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+    <CATEGORYMEM index="0" category="22" />
+    <EMBEDDEDDATA mmedaddress="0xD6044" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x04</mask>
   </XDFFLAG>
-  <XDFFLAG uniqueid="0xAEAB" flags="0x0">
+  <XDFFLAG uniqueid="0xE2FC" flags="0x0">
     <title>Map 4 - Rolling Launch Enable</title>
     <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 4 - Rolling Launch Enable at bit 3.</description>
-    <CATEGORYMEM index="0" category="23" />
-    <EMBEDDEDDATA mmedaddress="0xD3F64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+    <CATEGORYMEM index="0" category="22" />
+    <EMBEDDEDDATA mmedaddress="0xD6044" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x08</mask>
   </XDFFLAG>
-  <XDFFLAG uniqueid="0x3B08" flags="0x0">
+  <XDFFLAG uniqueid="0x775F" flags="0x0">
     <title>Map 5 - Rolling Launch Enable</title>
     <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 5 - Rolling Launch Enable at bit 4.</description>
-    <CATEGORYMEM index="0" category="23" />
-    <EMBEDDEDDATA mmedaddress="0xD3F64" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+    <CATEGORYMEM index="0" category="22" />
+    <EMBEDDEDDATA mmedaddress="0xD6044" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x10</mask>
   </XDFFLAG>
   <XDFTABLE uniqueid="0x9D3C" flags="0x0">
@@ -28001,9 +28001,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xE99B" flags="0x0">
+  <XDFTABLE uniqueid="0x2929" flags="0x0">
     <title>Rolling Launch Minimum Coolant Temperature</title>
-    <description>Exact JK00A. Address 0xD3F66; 1 rows x 1 columns; uint8; map confidence code. Minimum normalized engine-coolant temperature required for Rolling Launch activation The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the saturated hot endpoint.</description>
+    <description>Exact JK00A. Address 0xD6046; 1 rows x 1 columns; uint8; map confidence code. Minimum normalized engine-coolant temperature required for Rolling Launch activation The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the saturated hot endpoint.</description>
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28034,7 +28034,7 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F66" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <EMBEDDEDDATA mmedaddress="0xD6046" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>deg C</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
@@ -28043,9 +28043,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xC49C" flags="0x0">
+  <XDFTABLE uniqueid="0x42E" flags="0x0">
     <title>Rolling Launch Minimum Vehicle Speed</title>
-    <description>Exact JK00A. Address 0xD3F68; 1 rows x 1 columns; uint8; map confidence code. Minimum coarse vehicle speed required for Rolling Launch activation; zero disables the speed gate The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per count physical scale depends on homologous observed CAN 0x280 data; zero disables this activation gate.</description>
+    <description>Exact JK00A. Address 0xD6048; 1 rows x 1 columns; uint16; map confidence code. Minimum vehicle speed required for Rolling Launch activation; zero disables this bound The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of CAN 0x284. Activation requires the word at or above this inclusive bound.</description>
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28076,18 +28076,60 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F68" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>km/h [cand]</units>
+      <EMBEDDEDDATA mmedaddress="0xD6048" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*2">
+      <MATH equation="X/10">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x2DCC" flags="0x0">
+  <XDFTABLE uniqueid="0xED7E" flags="0x0">
+    <title>Rolling Launch Maximum Vehicle Speed</title>
+    <description>Exact JK00A. Address 0xD604A; 1 rows x 1 columns; uint16; map confidence code. Maximum vehicle speed allowed for Rolling Launch activation; zero disables this bound The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of CAN 0x284. Activation requires the word at or below this inclusive bound; two nonzero bounds must be ordered.</description>
+    <CATEGORYMEM index="0" category="21" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum vehicle speed" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD604A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/10">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x8C52" flags="0x0">
     <title>Rolling Launch Minimum Engine Speed</title>
-    <description>Exact JK00A. Address 0xD3F6A; 1 rows x 1 columns; uint16; map confidence code. Minimum engine speed required for Rolling Launch activation The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive minimum.</description>
+    <description>Exact JK00A. Address 0xD604C; 1 rows x 1 columns; uint16; map confidence code. Minimum engine speed required for Rolling Launch activation The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive minimum.</description>
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28118,19 +28160,19 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F6A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <EMBEDDEDDATA mmedaddress="0xD604C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>RPM</units>
-      <decimalpl>1</decimalpl>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*12.5">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xF40A" flags="0x0">
-    <title>Rolling Launch Minimum Retard Ramp Width</title>
-    <description>Exact JK00A. Address 0xD3F69; 1 rows x 1 columns; uint8; map confidence code. Minimum Rolling Launch ignition-retard ramp width below the captured fuel-cut threshold At activation, the runtime computes effective_ramp = min(rpm_offset, max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command cap inside the band, and applies the cap at Cut.</description>
-    <CATEGORYMEM index="0" category="22" />
+  <XDFTABLE uniqueid="0x8FB2" flags="0x0">
+    <title>Rolling Launch Speed Frame Age Limit</title>
+    <description>Exact JK00A. Address 0xD6062; 1 rows x 1 columns; uint8; map confidence code. Maximum receive age of the vehicle-speed frame for Rolling Launch The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per ten 10.24 ms periodic ticks without a processed frame and saturates at 255. Activation and every ACTIVE pass require the age at or below this limit; the value must lie in 1..254 counts.</description>
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28140,7 +28182,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="Minimum retard ramp width" />
+      <LABEL index="0" value="Speed frame age limit" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -28160,18 +28202,18 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F69" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
+      <EMBEDDEDDATA mmedaddress="0xD6062" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>ms</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
+      <MATH equation="X*102.4">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xE9D5" flags="0x0">
-    <title>Rolling Launch RPM Offset</title>
-    <description>Exact JK00A. Address 0xD3F6E; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch fuel-cut threshold offset above captured activation RPM The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be nonzero.</description>
+  <XDFTABLE uniqueid="0xDC71" flags="0x0">
+    <title>Rolling Launch Speed Window Width</title>
+    <description>Exact JK00A. Address 0xD6052; 1 rows x 1 columns; uint8; map confidence code. Speed-error width over which the Rolling Launch torque fraction falls from full to zero With e = speed - target, the proportional fraction is clamp((window_top - e) * 1000 / width, 0, 1000) thousandths. The width must be nonzero.</description>
     <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28182,7 +28224,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="RPM offset" />
+      <LABEL index="0" value="Speed window width" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -28202,18 +28244,18 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F6E" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
+      <EMBEDDEDDATA mmedaddress="0xD6052" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
+      <MATH equation="X/10">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x7DEF" flags="0x0">
-    <title>Rolling Launch Minimum RPM Hysteresis</title>
-    <description>Exact JK00A. Address 0xD3F70; 1 rows x 1 columns; uint8; map confidence code. Minimum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive lower endpoint. The runtime then computes Restore = Cut - effective_hysteresis.</description>
+  <XDFTABLE uniqueid="0xECE7" flags="0x0">
+    <title>Rolling Launch Speed Window Top</title>
+    <description>Exact JK00A. Address 0xD6053; 1 rows x 1 columns; uint8; map confidence code. Speed error at which the Rolling Launch proportional torque fraction reaches zero The proportional fraction is full at e &lt;= window_top - width and zero at e &gt;= window_top.</description>
     <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28224,7 +28266,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="Minimum hysteresis" />
+      <LABEL index="0" value="Speed window top" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -28244,18 +28286,18 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F70" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
+      <EMBEDDEDDATA mmedaddress="0xD6053" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
+      <MATH equation="X/10">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x4D79" flags="0x0">
-    <title>Rolling Launch Maximum RPM Hysteresis</title>
-    <description>Exact JK00A. Address 0xD3F71; 1 rows x 1 columns; uint8; map confidence code. Maximum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive upper endpoint. The endpoint must be below the configured RPM offset.</description>
+  <XDFTABLE uniqueid="0x7944" flags="0x0">
+    <title>Rolling Launch Torque Fraction Rate Limit</title>
+    <description>Exact JK00A. Address 0xD6054; 1 rows x 1 columns; uint16; map confidence code. Largest change of the Rolling Launch torque fraction per scheduler pass The torque fraction moves toward the controller command by at most this many thousandths per 10.24 ms pass; the value must lie in 1..1000.</description>
     <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -28266,7 +28308,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="Maximum hysteresis" />
+      <LABEL index="0" value="Rate limit per pass" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -28286,53 +28328,221 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F71" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>RPM</units>
-      <decimalpl>1</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*12.5">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0x4D37" flags="0x0">
-    <title>Rolling Launch RPM Hysteresis Ratio (%)</title>
-    <description>Exact JK00A. Address 0xD3F7B; 1 rows x 1 columns; uint8; map confidence code. Captured-RPM ratio (%) used for adaptive Rolling Launch hysteresis The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation, then clamps the result between the configured minimum and maximum hysteresis.</description>
-    <CATEGORYMEM index="0" category="24" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Configuration</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="Hysteresis ratio (%)" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F7B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <EMBEDDEDDATA mmedaddress="0xD6054" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>%</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X/10">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x1868" flags="0x0">
+    <title>Rolling Launch Integral Gain</title>
+    <description>Exact JK00A. Address 0xD6056; 1 rows x 1 columns; uint16; map confidence code. Integral gain of the Rolling Launch speed controller Each pass steps the integrator by -(gain * e) sixteenths of one thousandth, with e in km/h*10, unless the step deepens a saturated command. Zero disables integral action; the value must not exceed 32767.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6056" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x356F" flags="0x0">
+    <title>Rolling Launch Integrator Limit</title>
+    <description>Exact JK00A. Address 0xD6058; 1 rows x 1 columns; uint16; map confidence code. Magnitude limit of the Rolling Launch speed integrator The integrator contribution stays within plus or minus this many thousandths of the torque fraction; the value must not exceed 1000.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integrator limit" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6058" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>%</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/10">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xDC3F" flags="0x0">
+    <title>Rolling Launch Abort Above Target</title>
+    <description>Exact JK00A. Address 0xD605A; 1 rows x 1 columns; uint8; map confidence code. Speed error above the target that ends a Rolling Launch run An ACTIVE pass with e above this nonzero bound aborts with SPEED_ABOVE_WINDOW.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Abort above target" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD605A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/10">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x8D85" flags="0x0">
+    <title>Rolling Launch Abort Below Target</title>
+    <description>Exact JK00A. Address 0xD605B; 1 rows x 1 columns; uint8; map confidence code. Speed error below the target that ends a Rolling Launch run An ACTIVE pass with e below the negative of this nonzero bound aborts with SPEED_BELOW_WINDOW.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Abort below target" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD605B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>km/h</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/10">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xBD13" flags="0x0">
+    <title>Rolling Launch RPM Ceiling Offset</title>
+    <description>Exact JK00A. Address 0xD605C; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch RPM ceiling above the captured activation RPM Hold mode publishes the all-cylinder fuel-cut request while RPM exceeds the captured RPM plus this nonzero offset.</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="RPM ceiling offset" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD605C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*12.5">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

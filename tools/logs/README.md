@@ -484,96 +484,26 @@ the replayed cell are software constructions, not recorded ECU states. The
 stream carries the bank 2 published word without its summands, and it carries
 neither `0xFFFF41B5` nor the remaining permit terms of `FUN 00057D1E`.
 
-## JK08A Rolling Launch activation audit
+## JK08A Rolling Launch captures
 
-`rolling_launch_audit.py` evaluates Rolling Launch activations in a dashboard
-MLVLG recording or a strict schema-2 `tuning` TRC. The 32-byte configuration
-record is read from the calibration image and replayed through the
-independent runtime model in `patches/rolling_launch.py`; `--map` declares the
-selected map of the capture.
+`rolling_launch_audit.py` reads the verified snapshots of a dashboard MLVLG
+recording or a strict schema-2 `tuning` TRC for the Rolling Launch audits.
+Each snapshot carries the stock button and dashboard frames, vehicle speed,
+coolant, and the fuel-inhibit, timing, APC, pedal, BFS, knock-surface, and
+exhaust-CVTC telemetry sources.
 
-```bash
-python3 tools/logs/rolling_launch_audit.py \
-  --calibration-image tmp/1JK08A-tune-v3-1.bin \
-  --map 3 \
-  tmp/logs-09-21/0-mixed-map-3.mlg
-```
-
-A TRC input adds the `trace_` figures:
-
-```bash
-python3 tools/logs/rolling_launch_audit.py \
-  --calibration-image tmp/1JK08A-tune-v3-1.bin \
-  --map 2 \
-  tmp/logs-09-22/11-map-2-rl.trc
-```
-
-- An activation is a CANCEL hold in frame `0x239` during which frame `0x551`
-  starts the `ACTIVE` state 4. A hold without that state counts as refused,
-  and state-5 records count as failed attempts. The activation window runs
-  from the first CANCEL record through the later of the release and the end
-  of the `ACTIVE` indication, extended over a full mask that continues past
-  that point.
-- The runtime writes its cut and restore words into both columns of the
-  fuel-cut shadow, and `FUN_0004F282` compares them with `0xFFFF11BC`, whose
-  value lies between the RPM words of two adjacent snapshots. A full record
-  after a clear one therefore needs a compared word at or above the cut word,
-  a full record after a full one a word at or above the restore word, a clear
-  record after a clear one a word below the cut word, and a clear record after
-  a full one a word below the restore word. The captured RPM word is bounded
-  by the RPM words from three records before the first CANCEL record through
-  the first `ACTIVE` record and by every such transition. Clear records after
-  the release, after the earliest possible timeout, or at an RPM word below
-  the configured minimum do not bound the window.
 - Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM, which
-  the audit takes from stock frame `0x180`. The frame is sampled at another
-  instant of the cycle, so every RPM word above is the interval between the
-  frames recorded with the snapshot and with the next one, widened by 8
-  counts, 100 RPM, beyond the excursion that registry entry
+  the reader takes from stock frame `0x180`. The frame is sampled at another
+  instant of the cycle, so every RPM word is the interval between the frames
+  recorded with the snapshot and with the next one, widened by 8 counts,
+  100 RPM, beyond the excursion that registry entry
   `can_telemetry.stock_speed_bracket_2026_09_22` records.
-- Full-mask cycles are counted inside the CANCEL hold and after its release,
-  and full-mask records outside every activation window are counted
-  separately.
-- The APC command must stay retard-only and bounded by the map target,
-  `stock <= command <= max(stock, target)` with `stock = 110 - final timing`.
-  Differences from that identity are counted inside and outside the
-  activation windows.
-- The release-to-clear distance is bounded by one snapshot on each side. A
-  clear record whose RPM word cannot fall below any consistent restore word is
-  attributed to the removal of the window rather than to the hysteresis.
-- `activation_capture_records` bounds the capture pass by the records,
-  counted in ticks from the first CANCEL record, whose compared RPM word can
-  equal a consistent captured word; the pass precedes the first `ACTIVE`
-  record.
-- A record whose stock APC command stays below the target with a clear mask,
-  while its RPM word and the words of the two records before it reach every
-  consistent cut word, excludes `ACTIVE`. `activation_exit_records` gives the
-  last retarded record and that record, `activation_active_ticks_bound`
-  bounds the ticks from the capture pass to the end of `ACTIVE`, and
-  `activation_release_exit_bound_ms` bounds the end of `ACTIVE` after the
-  release when the last retarded record follows the release.
-- A refused hold next to a SET record counts as a map-selection tap in
-  `gesture_tap_count`.
-- The exhaust CVTC target is replayed at the prior snapshot with every map
-  slot surface, which tests the declared map wherever the slot surfaces
-  differ.
-- A TRC adds frame times from the trace start. The `trace_` figures split the
-  CANCEL frame runs of `0x239` into holds between released frames and taps
-  next to a SET frame, and count in each hold the frames of the first state-4
-  and the first state-5 run of `0x551` that start after its first CANCEL frame
-  and before the next pressed frame. For each activation they give the delay
-  from the first CANCEL frame to the first `ACTIVE` frame, the dashboard
-  frames between the end of the `ACTIVE` run and the release, and the
-  release-to-clear distance from the first released `0x239` frame to the
-  first and the completing frame of the telemetry group that clears the full
-  mask.
+- A TRC is replayed through the dashboard model. It adds the times of the
+  first and last page of every snapshot group and of the `0x239` and `0x551`
+  context frames, measured from the trace start.
 
-The output is one `key = value` line per figure in TOML syntax. Figures without
-the `trace_` prefix count telemetry ticks for MLG and TRC inputs alike, so
-their event times are bounded by the 10.24 ms snapshot spacing and the
-dashboard state by the 102.4 ms period of frame `0x551`; the `trace_` figures
-use the frame times of the TRC. Every figure is a raw software quantity; the
-capture does not measure spark angle or injector output.
+The activation audit of the vehicle-speed hold runtime is tracked in issue
+#103.
 
 ## JK08A engine-torque scale audit
 

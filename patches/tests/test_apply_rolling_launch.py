@@ -54,33 +54,29 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             **kwargs,
         )
 
-    def test_profile_is_map1_only_rpm_hold_without_retard(self):
+    def test_profile_is_map1_only_hold_with_default_controller(self):
         calibration = rolling_launch.Calibration.from_bytes(
             self.result.configuration
         )
         self.assertEqual(self.result.profile, patcher.PROFILE_NAME)
-        self.assertEqual(calibration.mode, rolling_launch.Mode.RPM_HOLD)
+        self.assertEqual(calibration.mode, rolling_launch.Mode.HOLD)
         self.assertEqual(calibration.enable_mask, 0x01)
         self.assertEqual(calibration.options, rolling_launch.Option(0))
-        self.assertEqual(calibration.rpm_offset_native, 16)
-        self.assertEqual(calibration.min_hysteresis_native, 4)
-        self.assertEqual(calibration.max_hysteresis_native, 12)
-        self.assertEqual(calibration.hysteresis_ratio_tenths, 20)
-        self.assertEqual(calibration.retard_ramp_native, 16)
-        self.assertEqual(calibration.run_timeout_ticks, 300)
-        self.assertEqual(calibration.rearm_ticks, 100)
+        self.assertEqual(
+            replace(calibration, mode=rolling_launch.Mode.OBSERVE, enable_mask=0),
+            rolling_launch.Calibration(),
+        )
+        self.assertEqual(calibration.run_timeout_ticks, 781)
+        self.assertEqual(calibration.rearm_ticks, 98)
 
-    def test_hardware_hashes_are_well_formed_and_distinct(self):
-        digests = {
-            patcher.LOCKED_MAP_SWITCHING_SOURCE_SHA256,
-            patcher.LOCKED_PROFILE_OUTPUT_SHA256,
-            patcher.HISTORICAL_MAP_SWITCHING_SOURCE_SHA256,
-            patcher.HISTORICAL_PROFILE_OUTPUT_SHA256,
-        }
-        self.assertEqual(len(digests), 4)
-        for digest in digests:
-            self.assertEqual(len(digest), 64)
-            int(digest, 16)
+    def test_base_identity_is_the_declared_map_switching_endpoint(self):
+        digest = patcher.LOCKED_MAP_SWITCHING_SOURCE_SHA256
+        self.assertEqual(len(digest), 64)
+        int(digest, 16)
+        self.assertEqual(
+            digest,
+            "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d",
+        )
 
     def test_output_has_valid_checksums_and_exact_size(self):
         self.assertEqual(len(self.result.data), checksums.LAYOUT.rom_size)
@@ -238,7 +234,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.result.instruction_count,
             self.rolling_layout.assembled_instruction_count,
         )
-        self.assertEqual(self.result.code_entry_count, 9)
+        self.assertEqual(self.result.code_entry_count, 8)
         self.assertEqual(
             self.result.diagnostic_count,
             len(self.rolling_layout.diagnostics),

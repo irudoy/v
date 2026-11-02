@@ -33,28 +33,33 @@ STOCK = (
 
 def profile_text(*, telemetry=None, **overrides):
     values = {
-        "mode": '"rpm_hold_retard"',
+        "mode": '"hold"',
         "enabled_maps": "[1, 3]",
         "coolant_min": "10",
         "coolant_max": "220",
-        "min_speed": "2",
-        "retard_ramp_native": "12",
+        "min_speed": "200",
+        "max_speed": "1200",
         "min_rpm_native": "160",
         "min_pedal": "3",
-        "rpm_offset_native": "16",
-        "min_hysteresis_native": "4",
-        "max_hysteresis_native": "12",
-        "hysteresis_ratio_tenths": "20",
-        "run_timeout_ticks": "300",
-        "rearm_ticks": "100",
-        "target_commands": "[115, 114, 113, 112, 111]",
+        "target_speed_offset": "-20",
+        "window_width": "40",
+        "window_top": "20",
+        "u_rate_limit": "50",
+        "integral_gain": "3",
+        "integrator_limit": "500",
+        "abort_above": "150",
+        "abort_below": "100",
+        "rpm_ceiling_offset_native": "80",
+        "run_timeout_ticks": "781",
+        "rearm_ticks": "98",
+        "speed_frame_age_limit": "10",
     }
     values.update(overrides)
     body = "\n".join(f"{key} = {value}" for key, value in values.items())
     result = (
-        "schema_version = 2\n"
+        "schema_version = 3\n"
         'rom = "JK08A"\n'
-        'name = "mode-2-test"\n\n'
+        'name = "hold-test"\n\n'
         "[rolling_launch]\n"
         f"{body}\n"
     )
@@ -372,20 +377,15 @@ class BuildRomTest(unittest.TestCase):
             self.assertIn("make rom-extract", error.getvalue())
             self.assertEqual(list(Path(directory).iterdir()), [input_path])
 
-    def test_strict_profile_enables_independent_retard_mode(self):
+    def test_strict_profile_enables_hold_mode_and_controller_fields(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "profile.toml"
             path.write_text(profile_text(), encoding="utf-8")
             profile = build_rom.load_profile(path)
-        self.assertEqual(
-            profile.calibration.mode,
-            rolling_launch.Mode.RPM_HOLD_RETARD,
-        )
+        self.assertEqual(profile.calibration.mode, rolling_launch.Mode.HOLD)
         self.assertEqual(profile.calibration.enable_mask, 0x05)
-        self.assertEqual(
-            profile.calibration.target_commands,
-            (115, 114, 113, 112, 111),
-        )
+        self.assertEqual(profile.calibration.target_speed_offset, -20)
+        self.assertEqual(profile.calibration.integral_gain, 3)
         result = build_rom.build_image(self.stock, profile=profile)
         self.assertEqual(
             result.configuration, profile.calibration.to_bytes()
@@ -463,7 +463,7 @@ class BuildRomTest(unittest.TestCase):
 
             invalid = Path(directory) / "invalid.toml"
             invalid.write_text(
-                profile_text(max_hysteresis_native="16"), encoding="utf-8"
+                profile_text(window_width="0"), encoding="utf-8"
             )
             with self.assertRaisesRegex(
                 build_rom.BuildError, "calibration is invalid"

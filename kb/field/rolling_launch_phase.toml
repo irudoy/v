@@ -16,6 +16,6 @@ panel_label = "Rolling Launch"
 order = 80
 description = """
 Phase of the Rolling Launch runtime: IDLE while it evaluates the activation \
-gates, ACTIVE while it owns the launch fuel cut and the optional ignition \
-retard, and COOLDOWN after a run ends, until the buttons stay released for \
-the rearm period."""
+gates, ACTIVE while it runs the speed-hold controller and owns the \
+RPM-ceiling fuel cut, and COOLDOWN after a run ends, until the buttons stay \
+released for the rearm period."""

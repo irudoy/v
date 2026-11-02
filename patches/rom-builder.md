@@ -168,8 +168,8 @@ its enabled state, CAN ID, and divisor transfer through the current profile
 format. The
 extracted profile carries the settings in the strict profile format below and
 is read back through the profile loader before it is written. A source without
-Rolling Launch settings yields the calibration file only. A historical schema 1
-or schema 2 Rolling Launch record, which the profile schema cannot express, is
+Rolling Launch settings yields the calibration file only. A historical schema 1,
+2, or 3 Rolling Launch record, which the profile schema cannot express, is
 reported with its fields; the command then writes the calibration file only
 and exits with status 3.
 
@@ -453,34 +453,40 @@ range. These static results establish software ownership only; JK78C remains
 
 ## Rolling Launch profile
 
-Without `--profile`, a Rolling Launch-capable target
-uses the conservative built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
-ignition retard disabled. The relocated targets JK00C, JK00D, JK78C, 1ND0A,
-1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in `observe`
-profile with no enabled maps. A separate local TOML file can enable RPM Hold or
-bounded-retard mode on a Rolling Launch-capable family:
+Without `--profile`, a Rolling Launch-capable target uses the built-in
+`hold-map1-test` profile: Map 1 enabled, `hold` mode, and the controller
+defaults of the reference model. The relocated targets JK00C, JK00D, JK78C,
+1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in
+`observe` profile with no enabled maps. A separate local TOML file selects the
+mode, the enabled maps, and every Rolling Launch field on a Rolling
+Launch-capable family:
 
 ```toml
-schema_version = 2
+schema_version = 3
 rom = "sh7058_7mfkavn86"
-name = "rpm-hold-retard-maps-1-3"
+name = "hold-maps-1-3"
 
 [rolling_launch]
-mode = "rpm_hold_retard"
+mode = "hold"
 enabled_maps = [1, 3]
 coolant_min = 10
 coolant_max = 220
-min_speed = 2
-retard_ramp_native = 12
+min_speed = 200
+max_speed = 1200
 min_rpm_native = 160
 min_pedal = 3
-rpm_offset_native = 16
-min_hysteresis_native = 4
-max_hysteresis_native = 12
-hysteresis_ratio_tenths = 20
-run_timeout_ticks = 300
-rearm_ticks = 100
-target_commands = [115, 114, 113, 112, 111]
+target_speed_offset = 0
+window_width = 40
+window_top = 20
+u_rate_limit = 50
+integral_gain = 0
+integrator_limit = 500
+abort_above = 150
+abort_below = 100
+rpm_ceiling_offset_native = 80
+run_timeout_ticks = 781
+rearm_ticks = 98
+speed_frame_age_limit = 10
 
 [can_telemetry]
 enabled = false
@@ -496,30 +502,28 @@ make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin \
   PROFILE=LOCAL-PROFILE.toml
 ```
 
-The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
-`enabled_maps` uses one-based map numbers. Every field is mandatory, unknown
-fields are rejected, and the resulting 32-byte configuration must pass the
-independent fail-closed model. `rom` may name the complete
+The accepted mode names are `observe` and `hold`. `enabled_maps` uses one-based
+map numbers. Every field is mandatory, unknown fields are rejected, and the
+resulting 40-byte configuration must pass the independent fail-closed model.
+`rom` may name the complete
 applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, `sh7059_1nd`, or
 `sh7059_1me3b` series, or bind the profile to one exact member. A profile for
 `sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, 1ND3B, `sh7059_1me3b`, or 1ME3B
-accepts the same three modes and one-based map mask as the SH7058
+accepts the same modes and one-based map mask as the SH7058
 VQ25HR/VQ35HR families.
-`min_speed = 0` disables the vehicle-speed activation gate, and
-`min_pedal = 0` disables the pedal-position activation gate.
-`hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime
-rounds that proportional value and clamps it between the configured native-RPM
-minimum and maximum. The effective ignition-retard ramp is at least the
-configured minimum, at least twice the effective hysteresis, and no wider than
-the RPM offset.
+Speeds and the window and abort fields are km/h*10; `min_speed = 0` and
+`max_speed = 0` disable their side of the activation range, and
+`min_pedal = 0` disables the pedal-position activation gate. The controller
+fractions are thousandths of full torque, the timers count runtime ticks, and
+`rolling-launch.md` states the controller and the contract of every field.
 Concrete profiles remain local and are not versioned.
 
 Rolling Launch and CAN telemetry settings edited in a built image through an
 editor travel in the extracted profile of the calibration transfer. Application
 of a calibration file refuses a build whose configuration records differ from
 the extracted settings and names the differing components, such as
-`rolling_launch` or `can_telemetry`. Disabling Map 1 RPM Hold through an editor
-therefore carries over only through the extracted profile or an explicit
+`rolling_launch` or `can_telemetry`. Disabling Map 1 Rolling Launch through an
+editor therefore carries over only through the extracted profile or an explicit
 replacement.
 
 ## CAN telemetry profile

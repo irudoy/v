@@ -264,9 +264,9 @@ ROLLING_DIAGNOSTIC_KEYS = frozenset(
         "run_ticks",
         "rearm_ticks",
         "captured_rpm_native",
-        "cut_rpm_native",
-        "restore_rpm_native",
-        "stock_effective_ignition_command",
+        "target_speed",
+        "torque_fraction",
+        "speed_error",
     }
 )
 

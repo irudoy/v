@@ -572,7 +572,7 @@ frames were lost.
 reason `0xFFFF5D41` by the names of the runtime enumeration, such as
 `BUTTON INVALID` or `TIMEOUT`. In `IDLE` the reason names the first gate that
 fails, in `ACTIVE` it reads `NONE`, and in `COOLDOWN` it keeps the reason that
-ended the run. A code outside the enumeration shows as hex, such as `0x13`.
+ended the run. A code outside the enumeration shows as hex, such as `0x16`.
 The phase refreshes with every snapshot and the reason with context tag 0.
 [`../../patches/rolling-launch.md`](../../patches/rolling-launch.md) specifies
 the gates and the abort reasons.
@@ -877,8 +877,8 @@ clock with it. It corroborates transforms but cannot prove equality for values
 that can change between captures. Injection values are compensated software
 commands rather than verified electrical injector-open durations, and timing is
 a software command, not a measured spark angle. The current top-card label `Timing command` names
-`final_timing_raw`; during a Rolling Launch late override it is the upstream
-stock coordinate rather than the effective command. The detailed `APC command`
+`final_timing_raw`; during the late override of a historical Rolling Launch
+endpoint it is the upstream stock coordinate rather than the effective command. The detailed `APC command`
 field carries the effective command in the same unit.
 
 Health indicators include complete snapshot and frame rates, tick-derived

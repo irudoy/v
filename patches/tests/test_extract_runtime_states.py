@@ -24,6 +24,81 @@ from patches import runtime_targets
 
 pytestmark = pytest.mark.slow
 
+# Exact engine bytes of the last RPM-hold endpoint, which holds through the
+# fuel-cut coordinator wrapper.
+SCHEMA_3_ENGINE = bytes.fromhex(
+    "4f22d586e000815a6050880089058801890588028905a0db0009a0040009a03f"
+    "0009a09800098454e10530128910845520088b0d8553600d20088b098554600d"
+    "20088b05b0fa000920088903a0d00009a0be0009d571d47260408054d4718443"
+    "8055e00081538154815bd46f6241622d60238155d46b85476303633d323ce3ff"
+    "633d33228900623360238156d069400b0009d562e0012500b2420009a0a80009"
+    "84546203e105321289098455e103301289058554600d20088b01a0020009a087"
+    "0009b0bb0009d555d4556240845432008903e0118051a0330009d45284436203"
+    "845532008903e0128051a029000984512008890dd44e604088088b03e00f8051"
+    "a01e000988208b1be0078051a018000985536203622d7201622dd44285496303"
+    "633d32328b06e00e80518452c9f78052a006000960238153b1f20009a0580009"
+    "d536e0008154815b8452c90f8052e0022500a04d00098454e105301289388455"
+    "e103301289348554600d9165611d3012892eb16b000920088921d42d60408820"
+    "8b18d52685546203622d7201622dd425854a6303633d32328b08e00025008052"
+    "8053805581538154a022000960238154a01e0009d519e0008154a0190009d517"
+    "e0018051e000805280538154a0100009e400d016400b0009d5106153e000e206"
+    "2102710442108bfbe0022500e01080514f26000b0009ffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5d40"
+    "ffff5d00000d3f60ffff11bc000d3660ffff2a85000d41408000ffff4f22d573"
+    "e000805180528053b10000096703200889048453cb018053a0020009e0018051"
+    "d46b6240622ce10532128b06845120088b17e0028051a01400092778890c6023"
+    "d164021cd16484142029200889048453cb028053a0050009845120088b01e003"
+    "8051d45b844163038442230b8443203b20088b048453cb048053a00500098451"
+    "20088b01e004805161437104601220088b048453cb088053a005000984512008"
+    "8b01e0058051d44d6040c8808b048453cb108053a0050009845120088b01e006"
+    "8051d447604088028b048453cb208053a0050009845120088b01e00880512778"
+    "890cd4406240622cd43b8448600c32028b048453cb408053a005000984512008"
+    "8b01e00980512778890cd4376241622dd4318545600d32028b048453cb808053"
+    "a0050009845120088b01e00a80512778890cd42e6241622dd4278546600d3202"
+    "8b048452cb018052a0050009845120088b01e00b805127788910d4256240622c"
+    "d41d8446600c32028b088447600c30228b048452cb028052a005000984512008"
+    "8b01e00c8051277889028452cb0880528451600c4f26000b0009ffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffff5d40ffff5d00000d3d18000d3f60ffff41ae"
+    "ffff2a85ffff110effff11bcffff2672ffff10770102040810ffffffffffffff"
+    "ffffffffffffffffffffffffd3536031600d91ab611d30108b5f843288038b5c"
+    "8433e103301289588434c9e020088b54843520088b5184366203622c8437600c"
+    "30228b4a8439610c2118894685356203622d2228894185376403644d2448893c"
+    "34128b3a623372106024610c211889346020620c32128b303242892e8539600d"
+    "2008892a9175611d30128926853a600d200889223012892064337416e2056044"
+    "600ce16e30128b18e1763012891542108bf560402008891074016041600d9156"
+    "611d30108b0974026041600d9150611d30108b02e001000b0009e000000b0009"
+    "d51f8452cb1063038455620322288921d41c6141611d8556600d31028b03e001"
+    "815ba00600098557600d31028901e000815b855b88018b04e03f815a6033cb20"
+    "63036033cb406303e10232128b026033cb806303d40c6040c904200889026033"
+    "cb20630360338052000b0009ffffffffffffffffffffffffffffffff000d3f60"
+    "ffff5d40ffff11bcffff2497524cadb3a55a8000ffffffffffffffff"
+)
+# Exact ignition-adapter bytes of the schema-3 endpoints.
+SCHEMA_3_ADAPTER = bytes.fromhex(
+    "644cd125621372106043220072012200d3296030c8408b38601088018b358415"
+    "88028b3284146303633ce0053302892cd11a6011600d923c622d30208b258412"
+    "88038b22841388028b1f6033d216022c84142029200889186213721c6022d215"
+    "30208b1284192008890f621372166033022c622ce06e32028b07e07632028904"
+    "34228902d007402b0009d005402b0009ffffffffffffffffffff5d40000d3f60"
+    "0002a892000d40c0000d3f4c0102040810ff524cadb3a55affff24c9ffffffff"
+)
+# Exact threshold-helper bytes, which follow every schema-3 controller in the
+# speed-controller span.
+THRESHOLD_HELPER = bytes.fromhex(
+    "4f22d41fd51f85556203622d6143711b6010630c223e011a9038310c9037d31a"
+    "430b00096203614371106010600c3202890062038411600c3022890062038556"
+    "6303633d33286033815742008449610c3212890062138547610d312289006213"
+    "85566303633d33288555610d331289006313603381594f26000b0009ffffffff"
+    "000d3f60ffff5d4000021ce001f403e8ffffffffffffffffffffffffffffffff"
+)
+# Exact controller bytes of the bounded schema-3 endpoints.
+BOUNDED_CONTROLLER = bytes.fromhex(
+    "4f223248d1178516630d2f368519630d23388918d1146011610d31368b1360f2"
+    "3102890931383038212e011ad30f430b0009340ca0010009342cd10d60432100"
+    "d1087111210060f64f26d00a402b0009ffffffffffffffffffffffffffffffff"
+    "ffffffffffff5d40ffff11bc00021ce0ffff20220002a892ffffffffffffffff"
+)
 # Exact controller bytes of the registered schema-3 guarded endpoint.
 GUARDED_CONTROLLER = bytes.fromhex(
     "4f223248d1178516630d2f368519630d2338891ad1146011610d31368b1560f2"
@@ -88,6 +163,15 @@ FUEL_SHADOW_ENGINE = bytes.fromhex(
     "630360338052000b0009ffffffffffffffffffffffffffffffffffff000d3f60"
     "ffff5d40ffff5d10ffff2497524cadb3a55a8000ffffffffffffffff"
 )
+# The 32-byte schema-3 record of the RPM-hold Map 1 test profile.
+SCHEMA_3_RECORD = bytes.fromhex(
+    "524c0301010000ff011000a000010010040c012c0064737373737314adb3a55a"
+)
+# A schema-1 record that no current runtime reads.
+SCHEMA_1_RECORD = bytes.fromhex(
+    "524c0101050000ff010000a00001001000"
+    "04012c0064737373737300adb3a55a"
+)
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
 
 
@@ -126,12 +210,11 @@ def edited_runtime(rom, *, rolling=False, telemetry=False):
     edited = bytearray(built(rom))
     if rolling:
         start = target(rom).rolling_layout.configuration.start
-        # Editor fields in the current 32-byte Rolling Launch record.
-        edited[start + 3] = rolling_launch.Mode.RPM_HOLD
+        # Editor fields in the current 40-byte Rolling Launch record.
         edited[start + 4] = 0x02  # Map 1 disabled, Map 2 enabled.
-        edited[start + 8] = 0  # Vehicle-speed activation gate disabled.
-        edited[start + 18 : start + 20] = (301).to_bytes(2, "big")
-        edited[start + 22] = 114  # Map 1 target command.
+        edited[start + 8 : start + 10] = (0).to_bytes(2, "big")  # No speed floor.
+        edited[start + 22 : start + 24] = (3).to_bytes(2, "big")  # Integral gain.
+        edited[start + 30 : start + 32] = (301).to_bytes(2, "big")  # Run timeout.
     if telemetry:
         layout = target(rom).telemetry_layout
         start = layout.configuration.start
@@ -147,11 +230,40 @@ def edited_runtime(rom, *, rolling=False, telemetry=False):
     return closed(rom, edited)
 
 
-def fuel_shadow_lower(rom, data):
+def edited_record():
+    """Return the schema-3 record with the fields that an editor changed."""
+    record = bytearray(SCHEMA_3_RECORD)
+    record[4] = 0x02  # Map 1 disabled, Map 2 enabled.
+    record[8] = 0  # Vehicle-speed activation gate disabled.
+    record[18:20] = (301).to_bytes(2, "big")
+    record[22] = 114  # Map 1 target command.
+    return bytes(record)
+
+
+def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
+    """Return ``data`` with the units and record of the last RPM-hold endpoint,
+    whose record occupies the retired span while the current span is erased."""
+    layout = target(rom).rolling_layout
+    source = bytearray(data)
+    for key, blob in (
+        ("engine", SCHEMA_3_ENGINE),
+        ("ignition_adapter", SCHEMA_3_ADAPTER),
+        ("speed_controller", controller + THRESHOLD_HELPER),
+    ):
+        unit = layout.assembly_unit_by_key[key]
+        source[unit.span.start : unit.span.end] = blob
+    current = layout.configuration
+    source[current.start : current.end] = bytes([0xFF]) * current.size
+    retired = layout.retired_configuration
+    source[retired.start : retired.end] = record
+    return source
+
+
+def fuel_shadow_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
     """Return ``data`` with the wrappers, engine, and stock fuel-cut hook of the
     endpoints that hold RPM through the fuel-cut shadow."""
     layout = target(rom).rolling_layout
-    source = bytearray(data)
+    source = schema_3_lower(rom, data, record, controller)
     for key, blob in (
         ("wrappers", FUEL_SHADOW_WRAPPERS),
         ("engine", FUEL_SHADOW_ENGINE),
@@ -168,25 +280,24 @@ def fuel_shadow_lower(rom, data):
 
 def fuel_shadow_hold_image(rom="JK08A", *, telemetry=True, custom=False):
     source = (
-        edited_runtime(rom, rolling=True, telemetry=True)
-        if custom else built(rom)
+        edited_runtime(rom, telemetry=True) if custom else built(rom)
     )
     if not telemetry:
         source = without_telemetry(rom, source)
-    return closed(rom, fuel_shadow_lower(rom, source))
+    record = edited_record() if custom else SCHEMA_3_RECORD
+    return closed(rom, fuel_shadow_lower(rom, source, record))
 
 
 def previous_current_image(*, telemetry=True, custom=False):
     source = (
-        edited_runtime("JK08A", rolling=True, telemetry=True)
-        if custom else built("JK08A")
+        edited_runtime("JK08A", telemetry=True) if custom else built("JK08A")
     )
     if not telemetry:
         source = without_telemetry("JK08A", source)
-    historical = fuel_shadow_lower("JK08A", source)
-    unit = target("JK08A").rolling_layout.assembly_unit_by_key["ignition_controller"]
-    historical[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
-    return closed("JK08A", historical)
+    record = edited_record() if custom else SCHEMA_3_RECORD
+    return closed(
+        "JK08A", fuel_shadow_lower("JK08A", source, record, GUARDED_CONTROLLER)
+    )
 
 
 def state_6_7_arbiter_image():
@@ -194,13 +305,13 @@ def state_6_7_arbiter_image():
     unit = layout.assembly_unit_by_key["feedback_arbiter"]
     active_immediate = unit.span.start + 0x2D
     failed_immediate = unit.span.start + 0x41
-    historical = fuel_shadow_lower("JK08A", built("JK08A"))
+    historical = fuel_shadow_lower(
+        "JK08A", built("JK08A"), controller=GUARDED_CONTROLLER
+    )
     assert historical[active_immediate] == 0x40
     assert historical[failed_immediate] == 0x50
     historical[active_immediate] = 0x70
     historical[failed_immediate] = 0x60
-    controller = layout.assembly_unit_by_key["ignition_controller"]
-    historical[controller.span.start : controller.span.end] = GUARDED_CONTROLLER
     endpoint = next(
         item for item in runtime_endpoints.HISTORICAL_ROLLING_ENDPOINTS
         if item.key == "schema-3-state-6-7-indicators"
@@ -209,6 +320,15 @@ def state_6_7_arbiter_image():
         historical[unit.span.start : unit.span.end]
     )
     return closed("JK08A", historical)
+
+
+def unexpressed_fields(extraction, key):
+    """Return the reported settings of the one historical record."""
+    assert extraction.rolling is None
+    assert not extraction.has_profile
+    ((component, record, schema_version, fields),) = extraction.unexpressed
+    assert (component, record, schema_version) == ("rolling_launch", key, 3)
+    return fields
 
 
 def test_current_builder_output_is_the_current_runtime():
@@ -220,6 +340,36 @@ def test_current_builder_output_is_the_current_runtime():
     }
     assert extraction.calibration.elements == ()
     assert extraction.rolling == build_rom.builtin_profile().calibration
+
+
+def test_last_rpm_hold_endpoint_reports_its_record():
+    extraction = extract(closed("JK08A", schema_3_lower("JK08A", built("JK08A"))))
+    assert state(extraction) == {
+        "map_switching": "current",
+        "rolling_launch": "schema-3-fuel-cut-wrapper",
+        "can_telemetry": "current",
+    }
+    fields = unexpressed_fields(extraction, "schema-3-fuel-cut-wrapper")
+    assert fields["mode"] == "rpm_hold" and fields["enable_mask"] == 0x01
+    assert extraction.calibration.elements == ()
+
+
+@pytest.mark.parametrize("part", ("current-record", "retired-record"))
+def test_records_in_both_spans_are_refused(part):
+    layout = target("JK08A").rolling_layout
+    source = bytearray(schema_3_lower("JK08A", built("JK08A")))
+    if part == "current-record":
+        current = layout.configuration
+        source[current.start : current.end] = built("JK08A")[current.start : current.end]
+    else:
+        source = bytearray(built("JK08A"))
+        retired = layout.retired_configuration
+        source[retired.start : retired.end] = SCHEMA_3_RECORD
+    with pytest.raises(
+        extract_calibration.ExtractionError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        extract(source)
 
 
 def test_map_switching_endpoint_carries_no_settings():
@@ -285,7 +435,7 @@ def test_state_6_7_arbiter_endpoint_is_recognized_under_telemetry():
         "rolling_launch": "schema-3-state-6-7-indicators",
         "can_telemetry": "current",
     }
-    assert extraction.has_profile
+    unexpressed_fields(extraction, "schema-3-state-6-7-indicators")
 
 
 def test_telemetry_over_an_unflagged_historical_endpoint_is_rejected():
@@ -298,7 +448,11 @@ def test_telemetry_over_an_unflagged_historical_endpoint_is_rejected():
 
 def test_pre_feedback_indicator_endpoint_is_recognized():
     layout = target("JK08A").rolling_layout
-    historical = fuel_shadow_lower("JK08A", without_telemetry("JK08A", built("JK08A")))
+    historical = fuel_shadow_lower(
+        "JK08A",
+        without_telemetry("JK08A", built("JK08A")),
+        controller=GUARDED_CONTROLLER,
+    )
     unit = layout.assembly_unit_by_key["feedback_arbiter"]
     historical[unit.span.start : unit.span.end] = bytes([0xFF]) * unit.span.size
     hook = layout.hook_by_key["feedback_arbitration"]
@@ -308,12 +462,10 @@ def test_pre_feedback_indicator_endpoint_is_recognized():
     historical[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
         hook.width, layout.byte_order
     )
-    controller = layout.assembly_unit_by_key["ignition_controller"]
-    historical[controller.span.start : controller.span.end] = GUARDED_CONTROLLER
     extraction = extract(historical)
     assert state(extraction)["rolling_launch"] == "schema-3-pre-feedback-indicators"
     assert state(extraction)["can_telemetry"] == "absent"
-    assert extraction.rolling == build_rom.builtin_profile().calibration
+    unexpressed_fields(extraction, "schema-3-pre-feedback-indicators")
     assert extraction.telemetry is None
 
 
@@ -327,15 +479,18 @@ def test_fuel_shadow_hold_endpoint_is_recognized(rom, telemetry):
         "can_telemetry": "current" if telemetry else "absent",
     }
     assert extraction.calibration.elements == ()
-    assert extraction.rolling == build_rom.builtin_profile().calibration
+    fields = unexpressed_fields(extraction, "schema-3-fuel-shadow-hold")
+    assert fields["mode"] == "rpm_hold" and fields["enable_mask"] == 0x01
 
 
-def test_fuel_shadow_hold_endpoint_carries_its_editor_settings_into_the_profile():
+def test_fuel_shadow_hold_endpoint_reports_its_editor_settings():
     extraction = extract(fuel_shadow_hold_image(custom=True))
-    assert state(extraction)["rolling_launch"] == "schema-3-fuel-shadow-hold"
-    assert extraction.rolling.mode == rolling_launch.Mode.RPM_HOLD
-    assert extraction.rolling.enable_mask == 0x02
-    assert extraction.rolling.target_commands[0] == 114
+    fields = unexpressed_fields(extraction, "schema-3-fuel-shadow-hold")
+    assert fields["mode"] == "rpm_hold"
+    assert fields["enable_mask"] == 0x02
+    assert fields["min_speed"] == 0
+    assert fields["run_timeout_ticks"] == 301
+    assert fields["target_commands"][0] == 114
 
 
 @pytest.mark.parametrize("part", ("wrappers", "fuel_cut_wrapper", "hook"))
@@ -366,19 +521,17 @@ def test_previous_guarded_controller_is_recognized_with_or_without_telemetry(tel
 
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
 def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
-    unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
-    source = fuel_shadow_lower(rom, built(rom))
-    source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
+    source = fuel_shadow_lower(rom, built(rom), controller=GUARDED_CONTROLLER)
     extraction = extract(source, rom)
     assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
     assert extraction.calibration.elements == ()
 
 
-@pytest.mark.parametrize("part", ("ignition_controller", "engine", "configuration"))
+@pytest.mark.parametrize("part", ("speed_controller", "engine", "configuration"))
 def test_previous_guarded_controller_hybrid_and_malformed_endpoint_are_refused(part):
     layout = target("JK08A").rolling_layout
     address = (
-        layout.configuration.start if part == "configuration"
+        layout.retired_configuration.start if part == "configuration"
         else layout.assembly_unit_by_key[part].span.start
     )
     source = bytearray(previous_current_image())
@@ -389,11 +542,11 @@ def test_previous_guarded_controller_hybrid_and_malformed_endpoint_are_refused(p
         extract(source)
 
 
-def test_previous_endpoint_carries_its_editor_settings_into_the_profile():
+def test_previous_endpoint_reports_its_editor_settings_and_transfers_telemetry():
     extraction = extract(previous_current_image(custom=True))
-    assert extraction.rolling.mode == rolling_launch.Mode.RPM_HOLD
-    assert extraction.rolling.enable_mask == 0x02
-    assert extraction.rolling.min_speed == 0
+    fields = unexpressed_fields(extraction, "schema-3-guarded-controller")
+    assert fields["enable_mask"] == 0x02
+    assert fields["min_speed"] == 0
     assert extraction.telemetry == can_telemetry.Configuration(True, 0x6E0, "tuning", 7)
 
 
@@ -411,7 +564,9 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
     profile = build_rom.builtin_profile(target(rom).family)
     if component == "rolling_launch":
         assert extraction.rolling.enable_mask == 0x02
-        assert extraction.rolling.target_commands[0] == 114
+        assert extraction.rolling.min_speed == 0
+        assert extraction.rolling.integral_gain == 3
+        assert extraction.rolling.run_timeout_ticks == 301
         assert extraction.telemetry == profile.telemetry
     else:
         assert extraction.rolling == profile.calibration
@@ -427,10 +582,10 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
 
 
 @pytest.mark.parametrize("rom", ("JK08A", "JK00A"))
-def test_editor_disabling_only_map_1_rpm_hold_travels_in_the_profile(rom):
+def test_editor_disabling_only_map_1_hold_travels_in_the_profile(rom):
     start = target(rom).rolling_layout.configuration.start
     edited = bytearray(built(rom))
-    assert edited[start + 3] == rolling_launch.Mode.RPM_HOLD
+    assert edited[start + 3] == rolling_launch.Mode.HOLD
     assert edited[start + 4] & 1 == 1
     edited[start + 4] &= ~1
     extraction = extract(edited, rom)
@@ -457,12 +612,11 @@ def _rolling_cases():
         diagnostic.stock.to_bytes(4, layout.byte_order)
     )
     invalid_configuration = bytearray(base)
-    invalid_configuration[layout.configuration.start + 9] = 0
+    # A zero speed-window width is outside the record contract.
+    invalid_configuration[layout.configuration.start + 18] = 0
     mixed_schema = bytearray(base)
-    mixed_schema[layout.configuration.start : layout.configuration.end] = bytes.fromhex(
-        "524c0101050000ff010000a00001001000"
-        "04012c0064737373737300adb3a55a"
-    )
+    retired = layout.retired_configuration
+    mixed_schema[retired.start : retired.end] = SCHEMA_1_RECORD
     return {
         "unknown-payload": unknown_payload,
         "partial-hook": partial_hook,
@@ -531,36 +685,49 @@ def test_occupied_telemetry_reserve_is_rejected_by_address():
 
 
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
-def test_historical_endpoint_calibration_transfers_to_a_fresh_build(rom):
+def test_historical_endpoint_calibration_transfers_with_replaced_settings(rom):
     families = target(rom).map_layout.families
-    unit = target(rom).rolling_layout.assembly_unit_by_key["ignition_controller"]
-    source = fuel_shadow_lower(rom, edited_runtime(rom, rolling=True, telemetry=True))
-    source[unit.span.start : unit.span.end] = GUARDED_CONTROLLER
+    source = fuel_shadow_lower(
+        rom,
+        edited_runtime(rom, telemetry=True),
+        edited_record(),
+        GUARDED_CONTROLLER,
+    )
     for index, family in enumerate(families):
         source[family.canonical_address] ^= 1 + index
         source[family.copies[-1] + family.byte_length - 1] ^= 1 + index
     source = closed(rom, source)
     extraction = extract_calibration.extract(source, rom=rom)
-    assert state(extraction)["rolling_launch"].startswith("schema-3-guarded-controller")
-    profile = build_rom.parse_profile(
-        extract_calibration.profile_bytes(extraction, "transfer"), "transfer"
+    assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
+    profile = replace(
+        build_rom.builtin_profile(target(rom).family),
+        telemetry=extraction.telemetry,
     )
     fresh = build_rom.build_image(
         target(rom).stock_image.data, rom=rom, profile=profile
     ).data
-    result = apply_calibration.apply(fresh, extraction.calibration)
+    with pytest.raises(
+        apply_calibration.ApplicationError,
+        match="differ from the extracted settings: rolling_launch;",
+    ):
+        apply_calibration.apply(fresh, extraction.calibration)
+    result = apply_calibration.apply(
+        fresh, extraction.calibration, replace_settings=True
+    )
     assert dict(result.settings) == {
-        "rolling_launch": "matched",
+        "rolling_launch": "replaced",
         "can_telemetry": "matched",
     }
     ranges = calibration_ranges.load(rom)
     differences = {
-        offset for offset, (before, after) in enumerate(zip(source, result.data))
+        offset for offset, (before, after) in enumerate(zip(fresh, result.data))
         if before != after
     }
     assert differences
-    assert differences <= ranges.write_offsets | ranges.checksum_offsets
-    assert not differences & ranges.offsets()
-    for layout in (target(rom).rolling_layout, target(rom).telemetry_layout):
-        record = layout.configuration
-        assert result.data[record.start : record.end] == source[record.start : record.end]
+    assert differences <= ranges.offsets() | ranges.checksum_offsets
+    rolling = target(rom).rolling_layout.configuration
+    assert result.data[rolling.start : rolling.end] == fresh[rolling.start : rolling.end]
+    telemetry = target(rom).telemetry_layout.configuration
+    assert result.data[telemetry.start : telemetry.end] == (
+        source[telemetry.start : telemetry.end]
+    )

@@ -30,15 +30,17 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "46d9da1cc167e6bfc10b028b6d4f198e07b628504daaaf874336fdd3ed91ee8a"
+    "e035062da5b648e5564b2543d7a2c776bde2321c126618b748c29dd9056b6f75"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 2007
-EXPECTED_COMPOSITION_WRITE_BYTES = 2396
-EXPECTED_INSTRUCTION_COUNT = 888
-EXPECTED_CODE_ENTRY_COUNT = 9
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1945
+EXPECTED_COMPOSITION_WRITE_BYTES = 2436
+EXPECTED_INSTRUCTION_COUNT = 871
+EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 162
+EXPECTED_DYNAMIC_CASES = 163
 RETURN_STUB = bytes.fromhex("000b0009")
+# The stock unsigned divider runs unstubbed: r0=divisor, r1=dividend.
+STOCK_UNSIGNED_DIVIDER = 0x00021CE0
 # Simulator-only stock fuel-output inhibit coordinator: it copies the stock
 # result byte of a harness cell into the final cylinder mask and returns a
 # sentinel in R0. Its RTS/NOP boundary is at COORDINATOR_RTS_OFFSET.
@@ -50,8 +52,8 @@ FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
     "d103e0b52100000b00090009000901003ada"
 )
 WRAPPER_REGIONS = ("periodic_wrapper", "selector_arbiter", "startup_wrapper", "fuel_cut_wrapper")
-COVERAGE_UNITS = ("wrappers", "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller", "fuel_cut_wrapper")
-COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "threshold_helper", "feedback_arbiter", "ignition_adapter", "ignition_controller")
+COVERAGE_UNITS = ("wrappers", "engine", "feedback_arbiter", "ignition_adapter", "speed_controller", "fuel_cut_wrapper")
+COVERAGE_REGIONS = (*WRAPPER_REGIONS, "engine", "feedback_arbiter", "ignition_adapter", "speed_controller")
 
 
 class VerificationError(RuntimeError):
@@ -227,54 +229,48 @@ def build_rom_object(fixture, build_dir):
     return object_path
 
 
-def bind_threshold_engine_window(fixture, composed, parsed, regions):
-    """Bind only the engine entry and its exact helper call window."""
+def bind_controller_engine_window(fixture, composed, parsed, regions):
+    """Bind only the engine entry and its exact controller call window."""
     loads = [row for row in parsed.statements if row.kind == "instruction"
-             and row.text == "mov.l @(rl_threshold_helper_entry,pc),r0"]
+             and row.text == "mov.l @(rl_controller_entry,pc),r0"]
     if len(loads) != 1:
-        raise VerificationError("threshold helper lacks its unique engine call window")
+        raise VerificationError("speed controller lacks its unique engine call window")
     load = loads[0].address
     rows = parsed.statement_by_address
     if (rows.get(load + 2) is None or rows.get(load + 4) is None
             or rows[load + 2].text != "jsr @r0" or rows[load + 4].text != "nop"
             or not regions["engine"].span.start <= load < load + 6 <= regions["engine"].span.end):
-        raise VerificationError("unsupported threshold engine call window")
-    pool = parsed.labels["rl_threshold_helper_entry"]
+        raise VerificationError("unsupported controller engine call window")
+    pool = parsed.labels["rl_controller_entry"]
     entry = regions["engine"].entry
     for start, size in ((entry, 2), (load, 6), (pool, 4)):
         if fixture[start:start + size] != composed[start:start + size]:
-            raise VerificationError("simulator changes threshold engine call binding")
-    if (int.from_bytes(fixture[pool:pool + 4], "big") != regions["threshold_helper"].entry
+            raise VerificationError("simulator changes controller engine call binding")
+    if (int.from_bytes(fixture[pool:pool + 4], "big") != regions["speed_controller"].entry
             or int.from_bytes(fixture[load:load + 2], "big") !=
             0xD000 | ((pool - ((load + 4) & ~3)) // 4)
             or fixture[load + 2:load + 6] != bytes.fromhex("400b0009")):
-        raise VerificationError("threshold engine call window differs from its source")
+        raise VerificationError("controller engine call window differs from its source")
     return entry, load + 2
 
 
-def bind_ignition_adapter_windows(fixture, composed, parsed, regions, stock):
-    """Bind only adapter entry and its two literal tail windows."""
+def bind_ignition_adapter_window(fixture, composed, parsed, regions, stock):
+    """Bind only the adapter entry and its single literal stock tail."""
     entry = regions["ignition_adapter"].entry
-    if fixture[entry:entry + 2] != composed[entry:entry + 2]:
-        raise VerificationError("simulator changes ignition adapter entry")
-    jumps = []
-    for label, target in (("rl_ign_controller_entry", regions["ignition_controller"].entry),
-                          ("rl_ign_stock_consumer", stock)):
-        rows = [row for row in parsed.statements if row.kind == "instruction"
-                and row.text == f"mov.l @({label},pc),r0"]
-        if len(rows) != 1:
-            raise VerificationError("ignition adapter lacks its unique tail window")
-        pc, pool = rows[0].address, parsed.labels[label]
-        for start, size in ((pc, 6), (pool, 4)):
-            if fixture[start:start + size] != composed[start:start + size]:
-                raise VerificationError("simulator changes ignition adapter tail binding")
-        expected = 0xD000 | ((pool - ((pc + 4) & ~3)) // 4)
-        if (int.from_bytes(fixture[pc:pc + 2], "big") != expected
-                or fixture[pc + 2:pc + 6] != bytes.fromhex("402b0009")
-                or int.from_bytes(fixture[pool:pool + 4], "big") != target):
-            raise VerificationError("ignition adapter tail differs from its source binding")
-        jumps.append(pc + 2)
-    return entry, *jumps
+    rows = [row for row in parsed.statements if row.kind == "instruction"
+            and row.text == "mov.l @(rl_ign_stock_consumer,pc),r0"]
+    if len(rows) != 1 or rows[0].address != entry:
+        raise VerificationError("ignition adapter lacks its unique stock tail window")
+    pc, pool = rows[0].address, parsed.labels["rl_ign_stock_consumer"]
+    for start, size in ((pc, 6), (pool, 4)):
+        if fixture[start:start + size] != composed[start:start + size]:
+            raise VerificationError("simulator changes ignition adapter tail binding")
+    expected = 0xD000 | ((pool - ((pc + 4) & ~3)) // 4)
+    if (int.from_bytes(fixture[pc:pc + 2], "big") != expected
+            or fixture[pc + 2:pc + 6] != bytes.fromhex("402b0009")
+            or int.from_bytes(fixture[pool:pool + 4], "big") != stock):
+        raise VerificationError("ignition adapter tail differs from its source binding")
+    return entry, pc + 2
 
 
 def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_boundaries, invoke_words, serializer_entry, ignition_stock_entry, *, serializer_stub=None, coverage_regions=None, coverage_units=None):
@@ -284,14 +280,13 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
     if coverage_units is None:
         coverage_units = COVERAGE_UNITS
     wrapper_entries = {regions[key].entry for key in WRAPPER_REGIONS}
-    helper = regions["threshold_helper"].entry
     arbiter = regions["feedback_arbiter"].entry
-    controller = regions["ignition_controller"].entry
-    entries = wrapper_entries | {helper, arbiter, controller}
-    adapter, adapter_controller_tail, adapter_stock_tail = bind_ignition_adapter_windows(
+    controller = regions["speed_controller"].entry
+    entries = wrapper_entries | {arbiter, controller}
+    adapter, adapter_tail = bind_ignition_adapter_window(
         fixture, fixture, parsed_by_unit["ignition_adapter"], regions, ignition_stock_entry)
     entries.add(adapter)
-    engine, engine_call = bind_threshold_engine_window(
+    engine, engine_call = bind_controller_engine_window(
         fixture, fixture, parsed_by_unit["engine"], regions)
     entries.add(engine)
     instructions, owners, outcomes, slots, transfers, direct = {}, {}, set(), set(), {}, {}
@@ -327,18 +322,20 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             if mnemonic in {"jsr", "jmp"}:
                 previous = parsed.statement_by_address.get(pc - 2)
                 literal = map_switching_assembly.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
-                register = "r3" if (unit == "threshold_helper" or unit == "ignition_controller" and mnemonic == "jsr") else "r0"
+                register = "r3" if unit == "speed_controller" else "r0"
                 if (literal is None or literal.group("width") != "l"
                         or literal.group("register") != register or row.text != f"{mnemonic} @{register}"
-                        or unit not in {"wrappers", "ignition_controller", "ignition_adapter"} and mnemonic != "jsr"):
+                        or unit not in {"wrappers", "ignition_adapter"} and mnemonic != "jsr"):
                     raise VerificationError(f"unbound wrapper transfer at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
                 transfers[pc] = (mnemonic, pool, int.from_bytes(fixture[pool:pool + 4], "big"))
-    helper_calls = [pc for pc in transfers if owners[pc] == helper]
-    helper_returns = [pc for pc, word in instructions.items() if owners[pc] == helper and word == 11]
-    if len(helper_calls) != 1 or len(helper_returns) != 1:
-        raise VerificationError("threshold helper lacks its unique divider call and native RTS")
-    divider_call, helper_return = helper_calls[0], helper_returns[0]
+    controller_calls = [pc for pc in transfers if owners[pc] == controller]
+    controller_returns = [pc for pc, word in instructions.items() if owners[pc] == controller and word == 11]
+    if (len(controller_calls) != 1 or len(controller_returns) != 1
+            or transfers[controller_calls[0]][0] != "jsr"
+            or transfers[controller_calls[0]][2] != STOCK_UNSIGNED_DIVIDER):
+        raise VerificationError("speed controller lacks its unique divider call and native RTS")
+    divider_call, controller_return = controller_calls[0], controller_returns[0]
     arbiter_calls = [pc for pc in transfers if owners[pc] == arbiter]
     arbiter_returns = [pc for pc, word in instructions.items() if owners[pc] == arbiter and word == 11]
     if len(arbiter_calls) != 1 or len(arbiter_returns) != 1:
@@ -351,15 +348,12 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
         raise VerificationError("feedback serializer stub lacks its RTS at offset 6")
     if fixture[serializer_entry:serializer_entry + len(serializer_stub)] != serializer_stub:
         raise VerificationError("feedback serializer boundary differs from its declared fixture stub")
-    controller_calls = [pc for pc in transfers if owners[pc] == controller and transfers[pc][0] == "jsr"]
-    controller_tails = [pc for pc in transfers if owners[pc] == controller and transfers[pc][0] == "jmp"]
-    if len(controller_calls) != 1 or len(controller_tails) != 1 or any(
-            word == 11 and owners[pc] == controller for pc, word in instructions.items()):
-        raise VerificationError("controller lacks its unique divider call and stock tail")
-    controller_call, controller_tail = controller_calls[0], controller_tails[0]
-    if (transfers[controller_tail][2] != ignition_stock_entry
+    adapter_transfers = [pc for pc in transfers if owners[pc] == adapter]
+    if (adapter_transfers != [adapter_tail] or transfers[adapter_tail][0] != "jmp"
+            or transfers[adapter_tail][2] != ignition_stock_entry
+            or any(word == 11 and owners[pc] == adapter for pc, word in instructions.items())
             or fixture[ignition_stock_entry:ignition_stock_entry + 4] != RETURN_STUB):
-        raise VerificationError("controller stock return boundary is not its declared RTS/NOP stub")
+        raise VerificationError("ignition adapter lacks its unique stock tail and declared RTS/NOP stub")
     for entry, boundary in stock_boundaries.items():
         if entry not in wrapper_entries or fixture[boundary:boundary + 4] != RETURN_STUB:
             raise VerificationError("wrapper stock return boundary is not its RTS/NOP stub")
@@ -404,30 +398,22 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
             successor(index, True)
         if pc in direct and successor(index, True) != direct[pc]:
             raise VerificationError(f"executed wrapper BRA differs at {pc:#010x}")
-        if pc in {adapter_controller_tail, adapter_stock_tail}:
-            target = controller if pc == adapter_controller_tail else ignition_stock_entry
+        if pc == adapter_tail:
             if (frame is None or frame["entry"] != adapter or frame["origin"]["entry"] != adapter
                     or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]
-                    or successor(index, True) != target):
+                    or successor(index, True) != ignition_stock_entry):
                 raise VerificationError("ignition adapter tail lacks its bound invoke origin")
-            if target == controller:
-                frame["call_entry"] = adapter
-                frame["entry"] = controller
-            else:
-                frame["origin"]["adapter_stock_tail"] = True
+            frame["origin"]["adapter_stock_tail"] = True
         if pc in transfers:
             kind, _pool, target = transfers[pc]
-            if pc == controller_call:
-                if frame is None or frame["entry"] != controller or not index or records[index - 1][0] != pc - 2:
+            if pc == divider_call:
+                if (frame is None or frame["entry"] != controller
+                        or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
                     raise VerificationError("controller divider call lacks its bound R3 load")
-                frame["origin"]["controller_divider_called"] = True
-            if pc == controller_tail:
-                frame["origin"]["controller_stock_tail"] = True
+                frame["divider_called"] = True
             if pc == arbiter_call and (frame is None or frame["entry"] != arbiter
                     or not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
                 raise VerificationError("feedback Map call lacks its bound R0 load and arbiter frame")
-            if pc == divider_call and (not index or records[index - 1][0] != pc - 2 or records[index - 1][2]):
-                raise VerificationError("threshold divider call lacks its bound R3 load")
             if successor(index, True) != target:
                 raise VerificationError(f"executed wrapper {kind.upper()} differs at {pc:#010x}")
             if kind == "jmp":
@@ -439,38 +425,34 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 if frames or pc not in invoke_words:
                     raise VerificationError("wrapper entry lacks its originating invoke call")
                 origin = {"entry": target, "stock_return": False}
-            elif target == controller:
-                raise VerificationError("controller entry requires its bound adapter tail")
             elif target == adapter:
                 if frames or pc not in invoke_words:
                     raise VerificationError("ignition adapter lacks its originating invoke call")
-                origin = {"entry": adapter, "stock_return": False,
-                          "adapter_stock_tail": False, "controller_stock_tail": False,
-                          "controller_divider_called": False, "controller_divider_return": False}
+                origin = {"entry": adapter, "stock_return": False, "adapter_stock_tail": False}
             elif target == arbiter:
                 if frames or pc not in invoke_words:
                     raise VerificationError("feedback arbiter lacks its originating invoke call")
                 origin = {"entry": arbiter, "stock_return": False,
                           "serializer_return": False, "base_feedback_return": False}
-            elif target == helper:
+            elif target == controller:
                 if not frames and pc in invoke_words:
-                    origin = {"entry": helper, "stock_return": False}
+                    origin = {"entry": controller, "stock_return": False}
                 elif frames and frames[-1]["entry"] == engine and pc == engine_call:
                     if not index or records[index - 1][0] != pc - 2 or records[index - 1][2]:
-                        raise VerificationError("threshold engine call lacks its bound load")
+                        raise VerificationError("controller engine call lacks its bound load")
                     origin = frames[-1]["origin"]
                 else:
-                    raise VerificationError("threshold helper lacks its bound engine or invoke origin")
+                    raise VerificationError("speed controller lacks its bound engine or invoke origin")
             elif not frames and target == engine and pc in invoke_words:
                 origin = {"entry": engine, "stock_return": False}
             elif frames:
                 origin = frames[-1]["origin"]
                 if target == engine and (pc not in transfers or owners[pc] != regions["periodic_wrapper"].entry):
-                    raise VerificationError("threshold engine lacks its bound parent call")
+                    raise VerificationError("Rolling Launch engine lacks its bound parent call")
             else:
                 continue
-            frames.append(dict(call=pc, entry=target, continuation=pc + 4,
-                               origin=origin, divider_return=False))
+            frames.append(dict(call=pc, entry=target, continuation=pc + 4, origin=origin,
+                               divider_called=False, divider_return=False))
         elif word == 0x000B and (frames or pc in instructions):
             target = successor(index, True)
             if not frames:
@@ -492,14 +474,7 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                     if entry != base_feedback or not origin["serializer_return"]:
                         raise VerificationError("feedback Map return lacks its serializer return boundary")
                     origin["base_feedback_return"] = True
-            if call == controller_call and frames and frames[-1]["entry"] == controller:
-                origin["controller_divider_return"] = True
-            if entry == controller:
-                if (pc != ignition_stock_entry or not origin["controller_stock_tail"]
-                        or origin["controller_divider_called"] and not origin["controller_divider_return"]):
-                    raise VerificationError("controller return lacks its divider or declared stock tail boundary")
-                returned.add(entry)
-            elif entry == adapter:
+            if entry == adapter:
                 if pc != ignition_stock_entry or not origin["adapter_stock_tail"]:
                     raise VerificationError("ignition adapter return lacks its declared stock tail boundary")
                 returned.add(entry)
@@ -507,9 +482,9 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 if pc != arbiter_return or not origin["base_feedback_return"]:
                     raise VerificationError("feedback arbiter return lacks its Map return and native RTS")
                 returned.add(entry)
-            elif entry == helper:
-                if pc != helper_return or not frame["divider_return"]:
-                    raise VerificationError("threshold helper return lacks its divider return and native RTS")
+            elif entry == controller:
+                if pc != controller_return or frame["divider_called"] and not frame["divider_return"]:
+                    raise VerificationError("speed controller return lacks its divider return and native RTS")
                 returned.add(entry)
             elif entry == engine:
                 returned.add(entry)
@@ -517,10 +492,10 @@ def require_wrapper_coverage(records, fixture, parsed_by_unit, regions, stock_bo
                 if not origin["stock_return"]:
                     raise VerificationError("wrapper return lacks its stock return boundary")
                 returned.add(entry)
-            if call == divider_call and frames and frames[-1]["entry"] == helper:
+            if call == divider_call and frames and frames[-1]["entry"] == controller:
                 frames[-1]["divider_return"] = True
             if entry in entries or call in instructions:
-                calls.add((call, frame.get("call_entry", entry), continuation))
+                calls.add((call, entry, continuation))
     for missing in sorted(entries - seen):
         raise VerificationError(f"uncovered wrapper entry {missing:#010x}")
     for pc, target in sorted(outcomes - branches):
@@ -591,9 +566,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     def execute(elf):
         try:
             ranges, invoke_words = base_verifier._invoke_trace_bindings(elf, invoke_object, fixture, build_dir)
-            bind_threshold_engine_window(fixture, composed_image, parsed_by_unit["engine"], regions)
-            bind_ignition_adapter_windows(fixture, composed_image, parsed_by_unit["ignition_adapter"],
-                                          regions, rolling_layout.hook_by_key["primary_ignition_command"].stock)
+            bind_controller_engine_window(fixture, composed_image, parsed_by_unit["engine"], regions)
+            bind_ignition_adapter_window(fixture, composed_image, parsed_by_unit["ignition_adapter"],
+                                         regions, rolling_layout.hook_by_key["primary_ignition_command"].stock)
             trace = build_dir / f"{elf.stem}.pc-trace"
             environment = {**os.environ, "VQ_SH_PC_TRACE_FILE": str(trace),
                            "VQ_SH_PC_TRACE_FORMAT": "v1",
@@ -624,10 +599,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                                        base_hooks["cruise_feedback_serializer"].stock,
                                        rolling_layout.hook_by_key["primary_ignition_command"].stock)
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=162 "
-        "structural=11 gates=32 config=24 threshold=9 activation=6 "
-        "hold=12 active=9 cooldown=6 ignition=26 wrappers=6 fuel_cut=13 "
-        "feedback=8 entries=9"
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=163 "
+        "structural=12 gates=39 config=30 controller=18 activation=6 "
+        "hold=7 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=13 "
+        "feedback=8 entries=8"
     )
     if marker not in result.stdout:
         raise VerificationError(
@@ -659,14 +634,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             raise VerificationError(f"periodic bypass fails outside its omitted entry: {error}") from error
     else:
         raise VerificationError("wrapper coverage accepts the real periodic bypass")
-    zero_band_call = '    if (!invoke_ignition("ign-zero-band-start", 110, 308, 110))'
-    if source.count(zero_band_call) != 1:
-        raise VerificationError("controller negative lacks its unique zero-band case")
+    lower_case = '    {"ctrl-integrator-lower", 0, 500, 400, -1590, '
+    if source.count(lower_case) != 1:
+        raise VerificationError("controller negative lacks its unique lower-bound case")
     controller_negative_text = source.replace(
-        zero_band_call, '    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x40;\n' + zero_band_call)
-    controller_negative_source = build_dir / "rolling-launch-bypass-controller-zero-band.c"
+        lower_case, '    {"ctrl-integrator-lower", 0, 500, 400, -1580, ')
+    controller_negative_source = build_dir / "rolling-launch-bypass-controller-lower-bound.c"
     controller_negative_source.write_text(controller_negative_text, encoding="utf-8")
-    controller_negative_elf = build_dir / "rolling-launch-bypass-controller-zero-band.elf"
+    controller_negative_elf = build_dir / "rolling-launch-bypass-controller-lower-bound.elf"
     controller_negative_command = list(command)
     controller_negative_command[controller_negative_command.index("-o") + 1] = controller_negative_elf
     controller_negative_command[controller_negative_command.index(positive)] = controller_negative_source
@@ -675,12 +650,11 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     controller_negative, records, invoke_words = execute(controller_negative_elf)
     if marker not in controller_negative.stdout:
         raise VerificationError("controller bypass does not preserve the semantic PASS marker")
-    zero_edges = [row.address for row in parsed_by_unit["ignition_controller"].statements
-                  if row.kind == "instruction" and row.text == "bt rl_ctrl_tail"]
-    if len(zero_edges) != 1:
-        raise VerificationError("controller zero-band outcome is not its unique source-bound edge")
-    tail = parsed_by_unit["ignition_controller"].labels["rl_ctrl_tail"]
-    controller_expected = f"uncovered wrapper branch {zero_edges[0]:#010x}->{tail:#010x}"
+    lower_edges = [row.address for row in parsed_by_unit["speed_controller"].statements
+                   if row.kind == "instruction" and row.text == "bt rl_spd_integrator_lower"]
+    if len(lower_edges) != 1:
+        raise VerificationError("controller lower-bound outcome is not its unique source-bound edge")
+    controller_expected = f"uncovered wrapper branch {lower_edges[0]:#010x}->{lower_edges[0] + 2:#010x}"
     try:
         require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
                                  base_hooks["cruise_feedback_serializer"].stock,
@@ -689,47 +663,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         if str(error) != controller_expected:
             raise VerificationError(f"controller bypass fails outside its omitted outcome: {error}") from error
     else:
-        raise VerificationError("controller coverage accepts the real zero-band bypass")
-    idle_case = (
-        "    set_ignition_state(PHASE_IDLE, MODE_OBSERVE, 0);\n"
-        "    if (!invoke_ignition(\"ign-inactive\", 110, 316, 110))"
-    )
-    if source.count(idle_case) != 1:
-        raise VerificationError("adapter negative lacks its unique idle case")
-    adapter_negative_text = source.replace(
-        idle_case,
-        "    set_ignition_state(PHASE_ACTIVE, MODE_OBSERVE, 0);\n"
-        "    if (!invoke_ignition(\"ign-inactive\", 110, 316, 110))",
-    )
-    adapter_parsed = parsed_by_unit["ignition_adapter"]
-    phase_edge = next(
-        row for row in adapter_parsed.statements
-        if row.kind == "instruction" and row.text == "bf rl_ign_tail"
-        and adapter_parsed.statement_by_address[row.address - 2].text == "cmp/eq 0x1,r0")
-    phase_target = map_switching_assembly._validate_direct_branch_encoding(
-        adapter_parsed, phase_edge,
-        int.from_bytes(fixture[phase_edge.address:phase_edge.address + 2], "big"))
-    adapter_expected = f"uncovered wrapper branch {phase_edge.address:#010x}->{phase_target:#010x}"
-    adapter_negative_source = build_dir / "rolling-launch-bypass-adapter-idle.c"
-    adapter_negative_source.write_text(adapter_negative_text, encoding="utf-8")
-    adapter_negative_elf = build_dir / "rolling-launch-bypass-adapter-idle.elf"
-    adapter_negative_command = list(command)
-    adapter_negative_command[adapter_negative_command.index("-o") + 1] = adapter_negative_elf
-    adapter_negative_command[adapter_negative_command.index(positive)] = adapter_negative_source
-    base_verifier.run_command(adapter_negative_command, timeout=120)
-    require_separate_storage(adapter_negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
-    adapter_negative, records, invoke_words = execute(adapter_negative_elf)
-    if marker not in adapter_negative.stdout:
-        raise VerificationError("adapter bypass does not preserve the semantic PASS marker")
-    try:
-        require_wrapper_coverage(records, fixture, parsed_by_unit, regions, boundaries, invoke_words,
-                                 base_hooks["cruise_feedback_serializer"].stock,
-                                 rolling_layout.hook_by_key["primary_ignition_command"].stock)
-    except VerificationError as error:
-        if str(error) != adapter_expected:
-            raise VerificationError(f"adapter bypass fails outside its omitted outcome: {error}") from error
-    else:
-        raise VerificationError("adapter coverage accepts the real idle bypass")
+        raise VerificationError("controller coverage accepts the real lower-bound bypass")
     held_map = (
         "    write_u16(rom_pointer(RL_CONFIG), 0);\n"
         "    ram_pointer(SELECTOR_STATE)[0] = 5;\n"
@@ -780,7 +714,6 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             or positive.read_text(encoding="utf-8") != source
             or negative_source.read_text(encoding="utf-8") != negative_text
             or controller_negative_source.read_text(encoding="utf-8") != controller_negative_text
-            or adapter_negative_source.read_text(encoding="utf-8") != adapter_negative_text
             or engine_negative_source.read_text(encoding="utf-8") != engine_negative_text):
         raise VerificationError("Rolling Launch harness source changes during verification")
     measured = "VQ_SH_ELF_ROLLING_WRAPPER_COVERAGE status=PASS scope=JK08A:"
@@ -788,7 +721,6 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     return "\n".join((result.stdout.strip(), measured,
                       f"VQ_SH_ELF_ROLLING_WRAPPER_NEGATIVE status=PASS {expected}",
                       f"VQ_SH_ELF_ROLLING_CONTROLLER_NEGATIVE status=PASS {controller_expected}",
-                      f"VQ_SH_ELF_ROLLING_ADAPTER_NEGATIVE status=PASS {adapter_expected}",
                       f"VQ_SH_ELF_ROLLING_ENGINE_NEGATIVE status=PASS {engine_expected}"))
 
 

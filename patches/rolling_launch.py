@@ -2,9 +2,9 @@
 """Reference contract for the exact JK08A Rolling Launch runtime.
 
 The model is intentionally independent from the SH-2E implementation. It
-defines fail-closed calibration validation, gate ordering, state transitions,
-the held fuel-cut request and its merge into the stock cylinder mask,
-cooldown/rearm behavior, and the retard-only ignition command rule. It never
+defines fail-closed calibration validation, gate ordering, the vehicle-speed
+capture, the windowed torque-fraction controller, the RPM ceiling request and
+its merge into the stock cylinder mask, and cooldown/rearm behavior. It never
 reads or writes a ROM image.
 """
 
@@ -18,9 +18,17 @@ import struct
 CONFIG_MAGIC = 0x524C
 CONFIG_MAGIC_INVERSE = CONFIG_MAGIC ^ 0xFFFF
 CONFIG_END_MARKER = 0xA55A
-CONFIG_SCHEMA_VERSION = 3
-CONFIG_SIZE = 32
+CONFIG_SCHEMA_VERSION = 4
+CONFIG_SIZE = 40
+CONFIG_FORMAT = ">H6B4HhBB3H2B3H2B2H"
 SLOT_COUNT = 5
+
+# The torque fraction u and its integrator are expressed in thousandths.
+U_ONE = 1000
+# The integrator holds sixteenths of one u count.
+INTEGRATOR_SHIFT = 4
+# The stock receive age saturates at 255, so a larger limit never expires.
+SPEED_FRAME_AGE_LIMIT_MAX = 254
 
 BUTTON_RELEASED = 0x20
 BUTTON_CANCEL = 0x02
@@ -42,8 +50,7 @@ class Phase(IntEnum):
 
 class Mode(IntEnum):
     OBSERVE = 0
-    RPM_HOLD = 1
-    RPM_HOLD_RETARD = 2
+    HOLD = 1
 
 
 class Option(IntFlag):
@@ -61,11 +68,15 @@ class Flag(IntFlag):
     RPM_OK = 1 << 7
     PEDAL_OK = 1 << 8
     COOLANT_OK = 1 << 9
+    SPEED_FRAME_OK = 1 << 10
     TIMER_OK = 1 << 11
     ACTIVE = 1 << 12
     FUEL_CUT = 1 << 13
-    FUEL_HOLD = 1 << 14
-    IGNITION_RETARD = 1 << 15
+    HOLD = 1 << 14
+    CEILING = 1 << 15
+
+
+ACTIVE_OUTPUT_FLAGS = Flag.ACTIVE | Flag.FUEL_CUT | Flag.HOLD | Flag.CEILING
 
 
 class AbortReason(IntEnum):
@@ -82,17 +93,24 @@ class AbortReason(IntEnum):
     RPM_LOW = 10
     PEDAL_LOW = 11
     COOLANT_OUTSIDE = 12
-    RESERVED_13 = 13
+    SPEED_FRAME_STALE = 13
     TIMEOUT = 14
     MAP_REQUEST = 15
     STATE_CORRUPT = 16
     MAP_CHANGED = 17
     MODE_CHANGED = 18
+    SPEED_HIGH = 19
+    SPEED_ABOVE_WINDOW = 20
+    SPEED_BELOW_WINDOW = 21
 
 
 class LimiterAction(IntEnum):
     NONE = 0
     RESTORE_MAP_1 = 1
+
+
+def _clamp(value, low, high):
+    return min(high, max(low, value))
 
 
 @dataclass(frozen=True)
@@ -102,17 +120,23 @@ class Calibration:
     options: Option = Option.NONE
     coolant_min: int = 0
     coolant_max: int = 0xFF
-    min_speed: int = 1
-    retard_ramp_native: int = 16
+    min_speed: int = 200
+    max_speed: int = 1200
     min_rpm_native: int = 160
     min_pedal: int = 1
-    rpm_offset_native: int = 16
-    min_hysteresis_native: int = 4
-    max_hysteresis_native: int = 12
-    run_timeout_ticks: int = 300
-    rearm_ticks: int = 100
-    target_commands: tuple[int, ...] = (115, 115, 115, 115, 115)
-    hysteresis_ratio_tenths: int = 20
+    target_speed_offset: int = 0
+    window_width: int = 40
+    window_top: int = 20
+    u_rate_limit: int = 50
+    integral_gain: int = 0
+    integrator_limit: int = 500
+    abort_above: int = 150
+    abort_below: int = 100
+    rpm_ceiling_offset_native: int = 80
+    run_timeout_ticks: int = 781
+    rearm_ticks: int = 98
+    speed_frame_age_limit: int = 10
+    reserved: int = 0
     magic: int = CONFIG_MAGIC
     schema_version: int = CONFIG_SCHEMA_VERSION
     magic_inverse: int = CONFIG_MAGIC_INVERSE
@@ -120,31 +144,36 @@ class Calibration:
 
     def is_valid(self):
         try:
-            mode = Mode(self.mode)
+            Mode(self.mode)
             options = Option(self.options)
         except ValueError:
             return False
         return all((
             self.magic == CONFIG_MAGIC,
             self.schema_version == CONFIG_SCHEMA_VERSION,
-            mode in Mode,
             0 <= self.enable_mask <= 0x1F,
             options == Option.NONE,
             0 <= self.coolant_min <= self.coolant_max <= 0xFF,
-            0 <= self.min_speed <= 0xFF,
-            0 < self.retard_ramp_native <= 0xFF,
+            0 <= self.min_speed <= 0xFFFF,
+            0 <= self.max_speed <= 0xFFFF,
+            self.min_speed == 0
+            or self.max_speed == 0
+            or self.min_speed <= self.max_speed,
             0 < self.min_rpm_native <= 0xFFFF,
             0 <= self.min_pedal <= 0xFFFF,
-            0 < self.rpm_offset_native <= 0xFFFF,
-            0 < self.min_hysteresis_native
-            <= self.max_hysteresis_native <= 0xFF,
-            self.max_hysteresis_native < self.rpm_offset_native,
-            self.retard_ramp_native <= self.rpm_offset_native,
+            0 < self.abort_above <= 0xFF,
+            0 < self.abort_below <= 0xFF,
+            -self.abort_above < self.target_speed_offset < self.abort_below,
+            0 < self.window_width <= 0xFF,
+            0 <= self.window_top <= 0xFF,
+            0 < self.u_rate_limit <= U_ONE,
+            0 <= self.integral_gain <= 0x7FFF,
+            0 <= self.integrator_limit <= U_ONE,
+            0 < self.rpm_ceiling_offset_native <= 0xFFFF,
             0 < self.run_timeout_ticks <= 0x7FFF,
             0 < self.rearm_ticks <= 0x7FFF,
-            len(self.target_commands) == SLOT_COUNT,
-            all(110 <= value <= 117 for value in self.target_commands),
-            0 < self.hysteresis_ratio_tenths <= 0xFF,
+            0 < self.speed_frame_age_limit <= SPEED_FRAME_AGE_LIMIT_MAX,
+            self.reserved == 0,
             self.magic_inverse == CONFIG_MAGIC_INVERSE,
             self.end_marker == CONFIG_END_MARKER,
         ))
@@ -155,10 +184,8 @@ class Calibration:
         )
 
     def to_bytes(self):
-        if len(self.target_commands) != SLOT_COUNT:
-            raise ValueError("target command table must contain five bytes")
         data = struct.pack(
-            ">H8B3H2B2H5sBHH",
+            CONFIG_FORMAT,
             self.magic,
             self.schema_version,
             int(self.mode),
@@ -167,16 +194,22 @@ class Calibration:
             self.coolant_min,
             self.coolant_max,
             self.min_speed,
-            self.retard_ramp_native,
+            self.max_speed,
             self.min_rpm_native,
             self.min_pedal,
-            self.rpm_offset_native,
-            self.min_hysteresis_native,
-            self.max_hysteresis_native,
+            self.target_speed_offset,
+            self.window_width,
+            self.window_top,
+            self.u_rate_limit,
+            self.integral_gain,
+            self.integrator_limit,
+            self.abort_above,
+            self.abort_below,
+            self.rpm_ceiling_offset_native,
             self.run_timeout_ticks,
             self.rearm_ticks,
-            bytes(self.target_commands),
-            self.hysteresis_ratio_tenths,
+            self.speed_frame_age_limit,
+            self.reserved,
             self.magic_inverse,
             self.end_marker,
         )
@@ -190,7 +223,7 @@ class Calibration:
             raise ValueError(
                 f"configuration is {len(data)} bytes, expected {CONFIG_SIZE}"
             )
-        values = struct.unpack(">H8B3H2B2H5sBHH", data)
+        values = struct.unpack(CONFIG_FORMAT, data)
         return cls(
             magic=values[0],
             schema_version=values[1],
@@ -200,18 +233,24 @@ class Calibration:
             coolant_min=values[5],
             coolant_max=values[6],
             min_speed=values[7],
-            retard_ramp_native=values[8],
+            max_speed=values[8],
             min_rpm_native=values[9],
             min_pedal=values[10],
-            rpm_offset_native=values[11],
-            min_hysteresis_native=values[12],
-            max_hysteresis_native=values[13],
-            run_timeout_ticks=values[14],
-            rearm_ticks=values[15],
-            target_commands=tuple(values[16]),
-            hysteresis_ratio_tenths=values[17],
-            magic_inverse=values[18],
-            end_marker=values[19],
+            target_speed_offset=values[11],
+            window_width=values[12],
+            window_top=values[13],
+            u_rate_limit=values[14],
+            integral_gain=values[15],
+            integrator_limit=values[16],
+            abort_above=values[17],
+            abort_below=values[18],
+            rpm_ceiling_offset_native=values[19],
+            run_timeout_ticks=values[20],
+            rearm_ticks=values[21],
+            speed_frame_age_limit=values[22],
+            reserved=values[23],
+            magic_inverse=values[24],
+            end_marker=values[25],
         )
 
 
@@ -228,6 +267,7 @@ class Inputs:
     ascd_status: int = 0
     button: int = BUTTON_RELEASED
     speed: int = 0
+    speed_frame_age: int = 0
     rpm_native: int = 0
     pedal: int = 0
     coolant: int = 0
@@ -244,13 +284,12 @@ class RuntimeState:
     run_ticks: int = 0
     rearm_ticks: int = 0
     captured_rpm_native: int = 0
-    cut_rpm_native: int = 0
-    restore_rpm_native: int = 0
-    stock_ign_command: int = 0
-    effective_ign_command: int = 0
-    retard_band_start_native: int = 0
+    target_speed: int = 0
+    torque_fraction: int = 0
+    speed_error: int = 0
+    integrator: int = 0
     fuel_cut_request: int = 0
-    request_latch: int = 0
+    torque_command: int = 0
 
 
 @dataclass(frozen=True)
@@ -277,8 +316,12 @@ def _feedback_idle(inputs):
     )
 
 
-def evaluate_gates(inputs, calibration):
-    """Return all satisfied gate flags and the first failure by priority."""
+def evaluate_gates(inputs, calibration, target_speed=None):
+    """Return all satisfied gate flags and the first failure by priority.
+
+    IDLE passes ``target_speed=None`` and checks the activation speed range.
+    ACTIVE passes the captured target and checks the speed-error window.
+    """
     flags = Flag(0)
     reason = AbortReason.NONE
 
@@ -311,14 +354,27 @@ def evaluate_gates(inputs, calibration):
         AbortReason.BUTTON_INVALID,
     )
     gate(
-        valid
-        and (
-            calibration.min_speed == 0
-            or inputs.speed >= calibration.min_speed
-        ),
-        Flag.SPEED_OK,
-        AbortReason.SPEED_LOW,
+        valid and inputs.speed_frame_age <= calibration.speed_frame_age_limit,
+        Flag.SPEED_FRAME_OK,
+        AbortReason.SPEED_FRAME_STALE,
     )
+    if target_speed is None:
+        low_ok = valid and (
+            calibration.min_speed == 0 or inputs.speed >= calibration.min_speed
+        )
+        high_ok = valid and (
+            calibration.max_speed == 0 or inputs.speed <= calibration.max_speed
+        )
+        gate(low_ok, Flag(0), AbortReason.SPEED_LOW)
+        gate(high_ok, Flag(0), AbortReason.SPEED_HIGH)
+    else:
+        error = inputs.speed - target_speed
+        high_ok = valid and error <= calibration.abort_above
+        low_ok = valid and error >= -calibration.abort_below
+        gate(high_ok, Flag(0), AbortReason.SPEED_ABOVE_WINDOW)
+        gate(low_ok, Flag(0), AbortReason.SPEED_BELOW_WINDOW)
+    if low_ok and high_ok:
+        flags |= Flag.SPEED_OK
     gate(
         valid and inputs.rpm_native >= calibration.min_rpm_native,
         Flag.RPM_OK,
@@ -341,33 +397,68 @@ def evaluate_gates(inputs, calibration):
     return flags, reason
 
 
-def _publish_active(state, flags, inputs):
-    """Publish the ACTIVE flags and the held all-cylinder request.
+def proportional_fraction(error, calibration):
+    """Return u_p = clamp((W_top - e) / W, 0, 1) in thousandths."""
+    numerator = calibration.window_top - error
+    if numerator <= 0:
+        return 0
+    if numerator >= calibration.window_width:
+        return U_ONE
+    return numerator * U_ONE // calibration.window_width
 
-    The latch sets at or above Cut and releases below Restore. The request
-    stays published while the latch holds.
+
+def update_integrator(integrator, proportional, error, calibration):
+    """Advance the integrator unless the step deepens a saturated sum.
+
+    The integrator falls while the speed is above target and rises while it
+    is below. The result is always bounded by the configured limit.
     """
+    step = -(calibration.integral_gain * error)
+    total = proportional + (integrator >> INTEGRATOR_SHIFT)
+    if (total <= 0 and step < 0) or (total >= U_ONE and step > 0):
+        step = 0
+    bound = calibration.integrator_limit << INTEGRATOR_SHIFT
+    return _clamp(integrator + step, -bound, bound)
+
+
+def rpm_ceiling(state, calibration):
+    return min(
+        0xFFFF,
+        state.captured_rpm_native + calibration.rpm_ceiling_offset_native,
+    )
+
+
+def _publish_active(state, flags, inputs, calibration):
+    """Run the controller, publish the ACTIVE flags and the ceiling request."""
+    error = inputs.speed - state.target_speed
+    proportional = proportional_fraction(error, calibration)
+    integrator = update_integrator(
+        state.integrator, proportional, error, calibration
+    )
+    command = _clamp(
+        proportional + (integrator >> INTEGRATOR_SHIFT), 0, U_ONE
+    )
+    rate = calibration.u_rate_limit
+    fraction = _clamp(
+        command, state.torque_fraction - rate, state.torque_fraction + rate
+    )
     result = flags | Flag.ACTIVE
-    latch = state.request_latch
     request = 0
-    if state.active_mode_snapshot >= Mode.RPM_HOLD:
-        if inputs.rpm_native >= state.cut_rpm_native:
-            latch = 1
-        elif inputs.rpm_native < state.restore_rpm_native:
-            latch = 0
-        if latch == 1:
+    if state.active_mode_snapshot == Mode.HOLD:
+        result |= Flag.HOLD
+        if inputs.rpm_native > rpm_ceiling(state, calibration):
             request = FUEL_CUT_CYLINDER_MASK
-            result |= Flag.FUEL_CUT
-        result |= Flag.FUEL_HOLD
-    if state.active_mode_snapshot >= Mode.RPM_HOLD_RETARD:
-        result |= Flag.IGNITION_RETARD
+            result |= Flag.CEILING | Flag.FUEL_CUT
     if inputs.fuel_cut_status & FUEL_CUT_ACTIVE_MASK:
         result |= Flag.FUEL_CUT
     return replace(
         state,
         flags=result,
+        speed_error=error,
+        integrator=integrator,
+        torque_command=command,
+        torque_fraction=fraction,
         fuel_cut_request=request,
-        request_latch=latch,
     )
 
 
@@ -434,16 +525,15 @@ def _state_is_structurally_valid(state):
         state.run_ticks,
         state.rearm_ticks,
         state.captured_rpm_native,
-        state.cut_rpm_native,
-        state.restore_rpm_native,
-        state.retard_band_start_native,
+        state.target_speed,
+        state.torque_fraction,
         state.fuel_cut_request,
-        state.request_latch,
+        state.torque_command,
     )):
         return False
-    if not all(0 <= value <= 0xFF for value in (
-        state.stock_ign_command,
-        state.effective_ign_command,
+    if not all(-0x8000 <= value <= 0x7FFF for value in (
+        state.speed_error,
+        state.integrator,
     )):
         return False
     if phase == Phase.IDLE:
@@ -453,8 +543,9 @@ def _state_is_structurally_valid(state):
             and state.rearm_ticks == 0
         )
     if phase == Phase.ACTIVE:
-        return state.rearm_ticks == 0
-    return mode in Mode
+        return state.rearm_ticks == 0 and state.torque_fraction <= U_ONE
+    # COOLDOWN never counts beyond the largest valid rearm period.
+    return state.rearm_ticks <= 0x7FFF
 
 
 def _abort_active(state, flags, reason):
@@ -462,13 +553,9 @@ def _abort_active(state, flags, reason):
         state,
         phase=Phase.COOLDOWN,
         abort_reason=reason,
-        flags=flags & ~(
-            Flag.ACTIVE | Flag.FUEL_CUT | Flag.FUEL_HOLD
-            | Flag.IGNITION_RETARD
-        ),
+        flags=flags & ~ACTIVE_OUTPUT_FLAGS,
         rearm_ticks=0,
         fuel_cut_request=0,
-        request_latch=0,
     ))
 
 
@@ -508,8 +595,8 @@ def step(state, inputs, calibration):
             rearm_ticks=0,
         ))
 
-    flags, reason = evaluate_gates(inputs, calibration)
     if phase == Phase.IDLE:
+        flags, reason = evaluate_gates(inputs, calibration)
         idle = replace(
             state,
             abort_reason=reason,
@@ -520,23 +607,9 @@ def step(state, inputs, calibration):
         )
         if reason != AbortReason.NONE:
             return StepResult(idle)
-        cut = min(0xFFFF, inputs.rpm_native + calibration.rpm_offset_native)
-        proportional_hysteresis = (
-            inputs.rpm_native * calibration.hysteresis_ratio_tenths + 500
-        ) // 1000
-        hysteresis = min(
-            calibration.max_hysteresis_native,
-            max(
-                calibration.min_hysteresis_native,
-                proportional_hysteresis,
-            ),
+        target = _clamp(
+            inputs.speed + calibration.target_speed_offset, 0, 0xFFFF
         )
-        restore = cut - hysteresis
-        retard_ramp = min(
-            calibration.rpm_offset_native,
-            max(calibration.retard_ramp_native, 2 * hysteresis),
-        )
-        retard_band_start = max(inputs.rpm_native, cut - retard_ramp)
         active = replace(
             idle,
             phase=Phase.ACTIVE,
@@ -544,13 +617,13 @@ def step(state, inputs, calibration):
             active_index_snapshot=inputs.active_index,
             active_mode_snapshot=Mode(calibration.mode),
             captured_rpm_native=inputs.rpm_native,
-            cut_rpm_native=cut,
-            restore_rpm_native=restore,
-            retard_band_start_native=retard_band_start,
-            request_latch=0,
+            target_speed=target,
+            torque_fraction=U_ONE,
+            integrator=0,
         )
-        return StepResult(_publish_active(active, flags, inputs))
+        return StepResult(_publish_active(active, flags, inputs, calibration))
 
+    flags, reason = evaluate_gates(inputs, calibration, state.target_speed)
     if inputs.active_index != state.active_index_snapshot:
         return _abort_active(state, flags, AbortReason.MAP_CHANGED)
     if calibration.mode != state.active_mode_snapshot:
@@ -574,44 +647,4 @@ def step(state, inputs, calibration):
         abort_reason=AbortReason.NONE,
         run_ticks=run_ticks,
     )
-    return StepResult(_publish_active(active, flags, inputs))
-
-
-def apply_ignition_command(
-    state, calibration, stock_command, rpm_native, apc_mode_snapshot=0
-):
-    """Apply the normal-mode band-limited retard rule."""
-    if not 0 <= stock_command <= 0xFF:
-        raise ValueError("stock ignition command must fit in uint8")
-    if not 0 <= rpm_native <= 0xFFFF:
-        raise ValueError("native RPM must fit in uint16")
-    if not 0 <= apc_mode_snapshot <= 0xFF:
-        raise ValueError("APC mode snapshot must fit in uint8")
-    effective = stock_command
-    if (
-        (apc_mode_snapshot & 0x40) == 0
-        and _state_is_structurally_valid(state)
-        and state.phase == Phase.ACTIVE
-        and state.active_mode_snapshot == Mode.RPM_HOLD_RETARD
-        and calibration.is_valid()
-        and Mode(calibration.mode) == Mode.RPM_HOLD_RETARD
-        and calibration.enabled_for(state.active_index_snapshot)
-    ):
-        target = calibration.target_commands[state.active_index_snapshot]
-        if stock_command < target:
-            cut = state.cut_rpm_native
-            start = state.retard_band_start_native
-            if rpm_native >= cut and cut > start:
-                effective = target
-            elif start < rpm_native < cut:
-                command_span = target - stock_command
-                rpm_span = cut - start
-                progress = rpm_native - start
-                effective = stock_command + (
-                    command_span * progress // rpm_span
-                )
-    return replace(
-        state,
-        stock_ign_command=stock_command,
-        effective_ign_command=effective,
-    ), effective
+    return StepResult(_publish_active(active, flags, inputs, calibration))

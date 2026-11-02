@@ -68,7 +68,7 @@
     </table>
 
     <table type="Switch" name="Rolling Launch Require Accelerator Pedal"
-           category="Rolling Launch//Activation" storageaddress="0xD3F6C" storagetype="uint8"
+           category="Rolling Launch//Activation" storageaddress="0xD604E" storagetype="uint8"
            sizey="2" endian="big" userlevel="5">
       <description>Exact JK00A. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage.</description>
       <state name="Enabled" data="00 01"/>
@@ -818,7 +818,7 @@
     </table>
 
     <table type="BitwiseSwitch" name="Rolling Launch Enable by Map"
-           category="Rolling Launch//Map Enable" storageaddress="0xD3F64" storagetype="uint8"
+           category="Rolling Launch//Map Enable" storageaddress="0xD6044" storagetype="uint8"
            endian="big" userlevel="5">
       <description>Exact JK00A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise.</description>
       <bit name="Map 1 - Rolling Launch Enable" position="0"/>
@@ -3804,14 +3804,14 @@
       </table>
     </table>
 
-    <!-- 0xD3F66  1 uint8  map [code]
+    <!-- 0xD6046  1 uint8  map [code]
          scaling x*0.625-40 deg C [code]
          The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive
          minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the
          saturated hot endpoint.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Coolant Temperature"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD3F66"
+           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6046"
            sizex="1" endian="big">
       <scaling units="deg C" expression="x*0.625-40" to_byte="(x+40)/0.625" format="0.0"
                fineincrement="0.625" coarseincrement="10"/>
@@ -3820,110 +3820,184 @@
       </table>
     </table>
 
-    <!-- 0xD3F68  1 uint8  map [code]
-         scaling x*2 km/h [candidate]
-         The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per
-         count physical scale depends on homologous observed CAN 0x280 data; zero disables this
-         activation gate.
+    <!-- 0xD6048  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of
+         CAN 0x284. Activation requires the word at or above this inclusive bound.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Vehicle Speed"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD3F68"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD6048"
            sizex="1" endian="big">
-      <scaling units="km/h [cand]" expression="x*2" to_byte="x/2" format="0.0" fineincrement="2"
-               coarseincrement="10"/>
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
         <data>Minimum vehicle speed</data>
       </table>
     </table>
 
-    <!-- 0xD3F6A  1 uint16  map [code]
+    <!-- 0xD604A  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of
+         CAN 0x284. Activation requires the word at or below this inclusive bound; two nonzero
+         bounds must be ordered.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Maximum Vehicle Speed"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD604A"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum vehicle speed</data>
+      </table>
+    </table>
+
+    <!-- 0xD604C  1 uint16  map [code]
          scaling x*12.5 RPM [code]
          The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive
          minimum.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Engine Speed"
-           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD3F6A"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD604C"
            sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
         <data>Minimum engine speed</data>
       </table>
     </table>
 
-    <!-- 0xD3F69  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the runtime computes effective_ramp = min(rpm_offset,
-         max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or
-         below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command
-         cap inside the band, and applies the cap at Cut.
+    <!-- 0xD6062  1 uint8  map [code]
+         scaling x*102.4 ms [code]
+         The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per ten 10.24 ms periodic
+         ticks without a processed frame and saturates at 255. Activation and every ACTIVE pass
+         require the age at or below this limit; the value must lie in 1..254 counts.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum Retard Ramp Width"
-           category="Rolling Launch//Ignition Retard" storagetype="uint8"
-           storageaddress="0xD3F69" sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum retard ramp width</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F6E  1 uint16  map [code]
-         scaling x*12.5 RPM [code]
-         The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be
-         nonzero.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Offset" category="Rolling Launch//RPM Hold"
-           storagetype="uint16" storageaddress="0xD3F6E" sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>RPM offset</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F70  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the proportional hysteresis is clamped to this inclusive lower endpoint.
-         The runtime then computes Restore = Cut - effective_hysteresis.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Minimum RPM Hysteresis"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xD3F70"
+    <table type="2D" name="Rolling Launch Speed Frame Age Limit"
+           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6062"
            sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
+      <scaling units="ms" expression="x*102.4" to_byte="x/102.4" format="0.0"
+               fineincrement="102.4" coarseincrement="1024"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Minimum hysteresis</data>
+        <data>Speed frame age limit</data>
       </table>
     </table>
 
-    <!-- 0xD3F71  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         At activation, the proportional hysteresis is clamped to this inclusive upper endpoint.
-         The endpoint must be below the configured RPM offset.
+    <!-- 0xD6052  1 uint8  map [code]
+         scaling x/10 km/h [code]
+         With e = speed - target, the proportional fraction is clamp((window_top - e) * 1000 /
+         width, 0, 1000) thousandths. The width must be nonzero.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Maximum RPM Hysteresis"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xD3F71"
+    <table type="2D" name="Rolling Launch Speed Window Width"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6052"
            sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
-               fineincrement="12.5" coarseincrement="100"/>
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum hysteresis</data>
+        <data>Speed window width</data>
       </table>
     </table>
 
-    <!-- 0xD3F7B  1 uint8  map [code]
+    <!-- 0xD6053  1 uint8  map [code]
+         scaling x/10 km/h [code]
+         The proportional fraction is full at e <= window_top - width and zero at e >=
+         window_top.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Speed Window Top"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6053"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Speed window top</data>
+      </table>
+    </table>
+
+    <!-- 0xD6054  1 uint16  map [code]
          scaling x/10 % [code]
-         The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation,
-         then clamps the result between the configured minimum and maximum hysteresis.
+         The torque fraction moves toward the controller command by at most this many
+         thousandths per 10.24 ms pass; the value must lie in 1..1000.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Hysteresis Ratio (%)"
-           category="Rolling Launch//RPM Hold" storagetype="uint8" storageaddress="0xD3F7B"
+    <table type="2D" name="Rolling Launch Torque Fraction Rate Limit"
+           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6054"
            sizex="1" endian="big">
       <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
-               coarseincrement="0.5"/>
+               coarseincrement="1"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Hysteresis ratio (%)</data>
+        <data>Rate limit per pass</data>
+      </table>
+    </table>
+
+    <!-- 0xD6056  1 uint16  map [code]
+         scaling x raw [code]
+         Each pass steps the integrator by -(gain * e) sixteenths of one thousandth, with e in
+         km/h*10, unless the step deepens a saturated command. Zero disables integral action;
+         the value must not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Integral Gain" category="Rolling Launch//Speed Hold"
+           storagetype="uint16" storageaddress="0xD6056" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD6058  1 uint16  map [code]
+         scaling x/10 % [code]
+         The integrator contribution stays within plus or minus this many thousandths of the
+         torque fraction; the value must not exceed 1000.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Integrator Limit"
+           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6058"
+           sizex="1" endian="big">
+      <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integrator limit</data>
+      </table>
+    </table>
+
+    <!-- 0xD605A  1 uint8  map [code]
+         scaling x/10 km/h [code]
+         An ACTIVE pass with e above this nonzero bound aborts with SPEED_ABOVE_WINDOW.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Abort Above Target"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD605A"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Abort above target</data>
+      </table>
+    </table>
+
+    <!-- 0xD605B  1 uint8  map [code]
+         scaling x/10 km/h [code]
+         An ACTIVE pass with e below the negative of this nonzero bound aborts with
+         SPEED_BELOW_WINDOW.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Abort Below Target"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD605B"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Abort below target</data>
+      </table>
+    </table>
+
+    <!-- 0xD605C  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Hold mode publishes the all-cylinder fuel-cut request while RPM exceeds the captured
+         RPM plus this nonzero offset.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch RPM Ceiling Offset"
+           category="Rolling Launch//RPM Ceiling" storagetype="uint16" storageaddress="0xD605C"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM ceiling offset</data>
       </table>
     </table>
   </rom>

@@ -1,10 +1,13 @@
 """Definition projection for the exact-family Rolling Launch configuration.
 
-The runtime stores its tuner-facing activation thresholds, RPM hold values,
-bounded-retard ramp width, adaptive hysteresis controls, pedal requirement,
-and one enable bit per map in a validated 32-byte record. This module projects
-those fields into a target-specific RomRaider and TunerPro model backed by the
-canonical JK08A executable layout. It does not write definitions or ROM images.
+The runtime stores its activation gates, vehicle-speed hold controller, RPM
+ceiling, speed-frame age limit, pedal requirement, and one enable bit per map
+in a validated 40-byte record. This module projects the unsigned fields into a
+target-specific RomRaider and TunerPro model backed by the canonical JK08A
+executable layout. The signed target-speed offset, the coolant maximum, and
+the run and rearm periods stay in the build profile, because the editor
+projections carry unsigned storage only. It does not write definitions or ROM
+images.
 """
 
 from __future__ import annotations
@@ -16,21 +19,188 @@ from patches import rolling_launch as contract
 from patches import rolling_launch_layout
 
 
+ENABLE_MASK_OFFSET = 0x04
+PEDAL_REQUIREMENT_OFFSET = 0x0E
+
+
+@dataclass(frozen=True)
+class Control:
+    key: str
+    offset: int
+    storagetype: str
+    semantics: str
+    units: str
+    scale_expr: str
+    to_byte: str
+    note: str
+    name: str
+    category: str
+    order: int
+    axis_label: str
+    fmt: str
+    fine: float
+    coarse: float
+
+
+SPEED_NOTE = (
+    "The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the "
+    "firmware chain of CAN 0x284."
+)
+CONTROLS = (
+    Control(
+        "coolant_min", 0x06, "uint8",
+        "Minimum normalized engine-coolant temperature required for Rolling "
+        "Launch activation",
+        "deg C", "x*0.625-40", "(x+40)/0.625",
+        "The runtime compares the normalized coolant index at 0xFFFF1077 "
+        "against this inclusive minimum. The index maps 0, 16, ..., 240 to "
+        "-40, -30, ..., 110 deg C; 255 is the saturated hot endpoint.",
+        "Rolling Launch Minimum Coolant Temperature",
+        "Rolling Launch / Activation", 900010, "Minimum coolant temperature",
+        "0.0", 0.625, 10,
+    ),
+    Control(
+        "min_speed", 0x08, "uint16",
+        "Minimum vehicle speed required for Rolling Launch activation; zero "
+        "disables this bound",
+        "km/h", "x/10", "x*10",
+        SPEED_NOTE + " Activation requires the word at or above this "
+        "inclusive bound.",
+        "Rolling Launch Minimum Vehicle Speed",
+        "Rolling Launch / Activation", 900020, "Minimum vehicle speed",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "max_speed", 0x0A, "uint16",
+        "Maximum vehicle speed allowed for Rolling Launch activation; zero "
+        "disables this bound",
+        "km/h", "x/10", "x*10",
+        SPEED_NOTE + " Activation requires the word at or below this "
+        "inclusive bound; two nonzero bounds must be ordered.",
+        "Rolling Launch Maximum Vehicle Speed",
+        "Rolling Launch / Activation", 900021, "Maximum vehicle speed",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "min_rpm_native", 0x0C, "uint16",
+        "Minimum engine speed required for Rolling Launch activation",
+        "RPM", "x*12.5", "x/12.5",
+        "The runtime compares the native RPM/12.5 word at 0xFFFF11BC against "
+        "this inclusive minimum.",
+        "Rolling Launch Minimum Engine Speed",
+        "Rolling Launch / Activation", 900030, "Minimum engine speed",
+        "0", 12.5, 100,
+    ),
+    Control(
+        "speed_frame_age_limit", 0x22, "uint8",
+        "Maximum receive age of the vehicle-speed frame for Rolling Launch",
+        "ms", "x*102.4", "x/102.4",
+        "The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per "
+        "ten 10.24 ms periodic ticks without a processed frame and saturates "
+        "at 255. Activation and every ACTIVE pass require the age at or "
+        "below this limit; the value must lie in 1..254 counts.",
+        "Rolling Launch Speed Frame Age Limit",
+        "Rolling Launch / Activation", 900040, "Speed frame age limit",
+        "0.0", 102.4, 1024,
+    ),
+    Control(
+        "window_width", 0x12, "uint8",
+        "Speed-error width over which the Rolling Launch torque fraction "
+        "falls from full to zero",
+        "km/h", "x/10", "x*10",
+        "With e = speed - target, the proportional fraction is "
+        "clamp((window_top - e) * 1000 / width, 0, 1000) thousandths. The "
+        "width must be nonzero.",
+        "Rolling Launch Speed Window Width",
+        "Rolling Launch / Speed Hold", 900110, "Speed window width",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "window_top", 0x13, "uint8",
+        "Speed error at which the Rolling Launch proportional torque "
+        "fraction reaches zero",
+        "km/h", "x/10", "x*10",
+        "The proportional fraction is full at e <= window_top - width and "
+        "zero at e >= window_top.",
+        "Rolling Launch Speed Window Top",
+        "Rolling Launch / Speed Hold", 900111, "Speed window top",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "u_rate_limit", 0x14, "uint16",
+        "Largest change of the Rolling Launch torque fraction per scheduler "
+        "pass",
+        "%", "x/10", "x*10",
+        "The torque fraction moves toward the controller command by at most "
+        "this many thousandths per 10.24 ms pass; the value must lie in "
+        "1..1000.",
+        "Rolling Launch Torque Fraction Rate Limit",
+        "Rolling Launch / Speed Hold", 900120, "Rate limit per pass",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "integral_gain", 0x16, "uint16",
+        "Integral gain of the Rolling Launch speed controller",
+        "raw", "x", "x",
+        "Each pass steps the integrator by -(gain * e) sixteenths of one "
+        "thousandth, with e in km/h*10, unless the step deepens a saturated "
+        "command. Zero disables integral action; the value must not exceed "
+        "32767.",
+        "Rolling Launch Integral Gain",
+        "Rolling Launch / Speed Hold", 900130, "Integral gain",
+        "0", 1, 10,
+    ),
+    Control(
+        "integrator_limit", 0x18, "uint16",
+        "Magnitude limit of the Rolling Launch speed integrator",
+        "%", "x/10", "x*10",
+        "The integrator contribution stays within plus or minus this many "
+        "thousandths of the torque fraction; the value must not exceed 1000.",
+        "Rolling Launch Integrator Limit",
+        "Rolling Launch / Speed Hold", 900131, "Integrator limit",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "abort_above", 0x1A, "uint8",
+        "Speed error above the target that ends a Rolling Launch run",
+        "km/h", "x/10", "x*10",
+        "An ACTIVE pass with e above this nonzero bound aborts with "
+        "SPEED_ABOVE_WINDOW.",
+        "Rolling Launch Abort Above Target",
+        "Rolling Launch / Speed Hold", 900140, "Abort above target",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "abort_below", 0x1B, "uint8",
+        "Speed error below the target that ends a Rolling Launch run",
+        "km/h", "x/10", "x*10",
+        "An ACTIVE pass with e below the negative of this nonzero bound "
+        "aborts with SPEED_BELOW_WINDOW.",
+        "Rolling Launch Abort Below Target",
+        "Rolling Launch / Speed Hold", 900141, "Abort below target",
+        "0.0", 0.1, 1,
+    ),
+    Control(
+        "rpm_ceiling_offset_native", 0x1C, "uint16",
+        "Rolling Launch RPM ceiling above the captured activation RPM",
+        "RPM", "x*12.5", "x/12.5",
+        "Hold mode publishes the all-cylinder fuel-cut request while RPM "
+        "exceeds the captured RPM plus this nonzero offset.",
+        "Rolling Launch RPM Ceiling Offset",
+        "Rolling Launch / RPM Ceiling", 900210, "RPM ceiling offset",
+        "0", 12.5, 100,
+    ),
+)
+
+
 @dataclass(frozen=True)
 class DefinitionProjection:
     maps: dict
     overrides: dict
     configuration_address: str
     enable_mask_address: str
-    coolant_min_address: str
-    min_speed_address: str
-    retard_ramp_address: str
-    min_rpm_address: str
     pedal_requirement_address: str
-    rpm_offset_address: str
-    min_hysteresis_address: str
-    max_hysteresis_address: str
-    hysteresis_ratio_address: str
+    control_addresses: tuple[tuple[str, str], ...]
     table_count: int
     masked_view_count: int
     switch_count: int
@@ -44,6 +214,9 @@ class DefinitionProjection:
             + self.switch_count
             + self.bitwise_switch_count
         )
+
+    def address(self, key):
+        return dict(self.control_addresses)[key]
 
 
 def address_key(address):
@@ -170,242 +343,30 @@ def _scalar_presentation(
 
 
 def _configuration_tables(configuration_address):
-    coolant_min = configuration_address + 0x06
-    min_speed = configuration_address + 0x08
-    retard_ramp = configuration_address + 0x09
-    min_rpm = configuration_address + 0x0A
-    rpm_offset = configuration_address + 0x0E
-    min_hysteresis = configuration_address + 0x10
-    max_hysteresis = configuration_address + 0x11
-    hysteresis_ratio = configuration_address + 0x1B
-    return (
+    return tuple(
         (
-            coolant_min,
+            configuration_address + control.offset,
             _scalar_model(
-                coolant_min,
-                storagetype="uint8",
-                semantics=(
-                    "Minimum normalized engine-coolant temperature required "
-                    "for Rolling Launch activation"
-                ),
-                units="deg C",
-                scale_expr="x*0.625-40",
-                to_byte="(x+40)/0.625",
+                configuration_address + control.offset,
+                storagetype=control.storagetype,
+                semantics=control.semantics,
+                units=control.units,
+                scale_expr=control.scale_expr,
+                to_byte=control.to_byte,
                 scale_conf="code",
-                note=(
-                    "The runtime compares the normalized coolant index at "
-                    "0xFFFF1077 against this inclusive minimum. The index "
-                    "maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; "
-                    "255 is the saturated hot endpoint."
-                ),
+                note=control.note,
             ),
             _scalar_presentation(
-                "Rolling Launch Minimum Coolant Temperature",
-                "Rolling Launch / Activation",
-                900010,
-                "Minimum coolant temperature",
-                fine=0.625,
-                coarse=10,
+                control.name,
+                control.category,
+                control.order,
+                control.axis_label,
+                fmt=control.fmt,
+                fine=control.fine,
+                coarse=control.coarse,
             ),
-        ),
-        (
-            min_speed,
-            _scalar_model(
-                min_speed,
-                storagetype="uint8",
-                semantics=(
-                    "Minimum coarse vehicle speed required for Rolling "
-                    "Launch activation; zero disables the speed gate"
-                ),
-                units="km/h",
-                scale_expr="x*2",
-                to_byte="x/2",
-                scale_conf="candidate",
-                note=(
-                    "The exact firmware chain produces the byte at "
-                    "0xFFFF110E. Its approximately 2 km/h per count physical "
-                    "scale depends on homologous observed CAN 0x280 data; "
-                    "zero disables this activation gate."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch Minimum Vehicle Speed",
-                "Rolling Launch / Activation",
-                900020,
-                "Minimum vehicle speed",
-                fine=2,
-                coarse=10,
-            ),
-        ),
-        (
-            retard_ramp,
-            _scalar_model(
-                retard_ramp,
-                storagetype="uint8",
-                semantics=(
-                    "Minimum Rolling Launch ignition-retard ramp width below "
-                    "the captured fuel-cut threshold"
-                ),
-                units="RPM",
-                scale_expr="x*12.5",
-                to_byte="x/12.5",
-                scale_conf="code",
-                note=(
-                    "At activation, the runtime computes effective_ramp = "
-                    "min(rpm_offset, max(configured_minimum, "
-                    "2*effective_hysteresis)). Mode 2 keeps the stock command "
-                    "at or below max(captured_rpm, Cut - effective_ramp), "
-                    "blends toward the per-map late-command cap inside the "
-                    "band, and applies the cap at Cut."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch Minimum Retard Ramp Width",
-                "Rolling Launch / Ignition Retard",
-                900035,
-                "Minimum retard ramp width",
-                fine=12.5,
-                coarse=100,
-            ),
-        ),
-        (
-            min_rpm,
-            _scalar_model(
-                min_rpm,
-                storagetype="uint16",
-                semantics=(
-                    "Minimum engine speed required for Rolling Launch "
-                    "activation"
-                ),
-                units="RPM",
-                scale_expr="x*12.5",
-                to_byte="x/12.5",
-                scale_conf="code",
-                note=(
-                    "The runtime compares the native RPM/12.5 word at "
-                    "0xFFFF11BC against this inclusive minimum."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch Minimum Engine Speed",
-                "Rolling Launch / Activation",
-                900030,
-                "Minimum engine speed",
-                fine=12.5,
-                coarse=100,
-            ),
-        ),
-        (
-            rpm_offset,
-            _scalar_model(
-                rpm_offset,
-                storagetype="uint16",
-                semantics=(
-                    "Rolling Launch fuel-cut threshold offset above captured "
-                    "activation RPM"
-                ),
-                units="RPM",
-                scale_expr="x*12.5",
-                to_byte="x/12.5",
-                scale_conf="code",
-                note=(
-                    "The runtime computes Cut = saturate_u16(captured_rpm + "
-                    "rpm_offset). The value must be nonzero."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch RPM Offset",
-                "Rolling Launch / RPM Hold",
-                900040,
-                "RPM offset",
-                fine=12.5,
-                coarse=100,
-            ),
-        ),
-        (
-            min_hysteresis,
-            _scalar_model(
-                min_hysteresis,
-                storagetype="uint8",
-                semantics=(
-                    "Minimum adaptive Rolling Launch fuel-cut restore "
-                    "hysteresis"
-                ),
-                units="RPM",
-                scale_expr="x*12.5",
-                to_byte="x/12.5",
-                scale_conf="code",
-                note=(
-                    "At activation, the proportional hysteresis is clamped "
-                    "to this inclusive lower endpoint. The runtime then "
-                    "computes Restore = Cut - effective_hysteresis."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch Minimum RPM Hysteresis",
-                "Rolling Launch / RPM Hold",
-                900050,
-                "Minimum hysteresis",
-                fine=12.5,
-                coarse=100,
-            ),
-        ),
-        (
-            max_hysteresis,
-            _scalar_model(
-                max_hysteresis,
-                storagetype="uint8",
-                semantics=(
-                    "Maximum adaptive Rolling Launch fuel-cut restore "
-                    "hysteresis"
-                ),
-                units="RPM",
-                scale_expr="x*12.5",
-                to_byte="x/12.5",
-                scale_conf="code",
-                note=(
-                    "At activation, the proportional hysteresis is clamped "
-                    "to this inclusive upper endpoint. The endpoint must be "
-                    "below the configured RPM offset."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch Maximum RPM Hysteresis",
-                "Rolling Launch / RPM Hold",
-                900051,
-                "Maximum hysteresis",
-                fine=12.5,
-                coarse=100,
-            ),
-        ),
-        (
-            hysteresis_ratio,
-            _scalar_model(
-                hysteresis_ratio,
-                storagetype="uint8",
-                semantics=(
-                    "Captured-RPM ratio (%) used for adaptive Rolling "
-                    "Launch hysteresis"
-                ),
-                units="%",
-                scale_expr="x/10",
-                to_byte="x*10",
-                scale_conf="code",
-                note=(
-                    "The runtime rounds captured_rpm * ratio / 100 to native "
-                    "RPM units once at activation, then clamps the result "
-                    "between the configured minimum and maximum hysteresis."
-                ),
-            ),
-            _scalar_presentation(
-                "Rolling Launch RPM Hysteresis Ratio (%)",
-                "Rolling Launch / RPM Hold",
-                900052,
-                "Hysteresis ratio (%)",
-                fine=0.1,
-                coarse=0.5,
-            ),
-        ),
+        )
+        for control in CONTROLS
     )
 
 
@@ -420,8 +381,10 @@ def project_definition_model(maps, overrides, layout=None, target_rom=None):
         raise ValueError("definition overrides must contain a table mapping")
 
     configuration_address = layout.configuration.start
-    enable_mask_address = configuration_address + 0x04
-    pedal_requirement_address = configuration_address + 0x0C
+    enable_mask_address = configuration_address + ENABLE_MASK_OFFSET
+    pedal_requirement_address = (
+        configuration_address + PEDAL_REQUIREMENT_OFFSET
+    )
     tables = _configuration_tables(configuration_address)
 
     for address in (enable_mask_address, pedal_requirement_address):
@@ -477,15 +440,11 @@ def project_definition_model(maps, overrides, layout=None, target_rom=None):
         overrides=projected_overrides,
         configuration_address=address_key(configuration_address),
         enable_mask_address=address_key(enable_mask_address),
-        coolant_min_address=address_key(configuration_address + 0x06),
-        min_speed_address=address_key(configuration_address + 0x08),
-        retard_ramp_address=address_key(configuration_address + 0x09),
-        min_rpm_address=address_key(configuration_address + 0x0A),
         pedal_requirement_address=address_key(pedal_requirement_address),
-        rpm_offset_address=address_key(configuration_address + 0x0E),
-        min_hysteresis_address=address_key(configuration_address + 0x10),
-        max_hysteresis_address=address_key(configuration_address + 0x11),
-        hysteresis_ratio_address=address_key(configuration_address + 0x1B),
+        control_addresses=tuple(
+            (control.key, address_key(configuration_address + control.offset))
+            for control in CONTROLS
+        ),
         table_count=len(tables),
         masked_view_count=0,
         switch_count=1,
@@ -513,25 +472,26 @@ def validate_projection(
     layout = layout or load_layout()
     target_rom = target_rom or layout.rom
     configuration_address = layout.configuration.start
+    enable_mask_address = configuration_address + ENABLE_MASK_OFFSET
+    pedal_requirement_address = (
+        configuration_address + PEDAL_REQUIREMENT_OFFSET
+    )
     expected_addresses = {
         "configuration_address": configuration_address,
-        "enable_mask_address": configuration_address + 0x04,
-        "coolant_min_address": configuration_address + 0x06,
-        "min_speed_address": configuration_address + 0x08,
-        "retard_ramp_address": configuration_address + 0x09,
-        "min_rpm_address": configuration_address + 0x0A,
-        "pedal_requirement_address": configuration_address + 0x0C,
-        "rpm_offset_address": configuration_address + 0x0E,
-        "min_hysteresis_address": configuration_address + 0x10,
-        "max_hysteresis_address": configuration_address + 0x11,
-        "hysteresis_ratio_address": configuration_address + 0x1B,
+        "enable_mask_address": enable_mask_address,
+        "pedal_requirement_address": pedal_requirement_address,
     }
     for field, address in expected_addresses.items():
         if getattr(projection, field) != address_key(address):
             raise ValueError(f"Rolling Launch {field} differs")
-    if projection.table_count != 8:
+    if projection.control_addresses != tuple(
+        (control.key, address_key(configuration_address + control.offset))
+        for control in CONTROLS
+    ):
+        raise ValueError("Rolling Launch control addresses differ")
+    if projection.table_count != len(CONTROLS):
         raise ValueError(
-            "Rolling Launch projection must contain eight calibration tables"
+            "Rolling Launch projection must contain one table per control"
         )
     if projection.masked_view_count != 0:
         raise ValueError("Rolling Launch projection must not contain masked views")
@@ -569,11 +529,9 @@ def validate_projection(
             projection.overrides, "bitwise_switch"
         )
         if int(str(entry.get("storageaddress", "-1")), 0)
-        == configuration_address + 0x04
+        == enable_mask_address
     ]
-    if projected_bitwise != [
-        _enable_switch(configuration_address + 0x04, target_rom)
-    ]:
+    if projected_bitwise != [_enable_switch(enable_mask_address, target_rom)]:
         raise ValueError("Rolling Launch per-map bitwise switch differs")
     positions = [bit["position"] for bit in projected_bitwise[0]["bit"]]
     if positions != list(range(contract.SLOT_COUNT)):
@@ -583,10 +541,10 @@ def validate_projection(
         entry
         for entry in _override_entries(projection.overrides, "switch")
         if int(str(entry.get("storageaddress", "-1")), 0)
-        == configuration_address + 0x0C
+        == pedal_requirement_address
     ]
     if projected_pedal != [
-        _pedal_requirement_switch(configuration_address + 0x0C, target_rom)
+        _pedal_requirement_switch(pedal_requirement_address, target_rom)
     ]:
         raise ValueError("Rolling Launch pedal switch differs")
 

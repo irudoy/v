@@ -97,7 +97,7 @@ def _elements(source, reference, ranges):
 
 
 def _rolling_settings(source, layout, state):
-    record = bytes(source[layout.configuration.start : layout.configuration.end])
+    record = runtime_endpoints.configuration_record(source, layout, state)
     if state == "current":
         schema_version = rolling_launch.CONFIG_SCHEMA_VERSION
     else:

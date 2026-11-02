@@ -240,11 +240,16 @@ def test_schema_1_record_is_reported_and_only_calibration_is_written(tmp_path, c
     historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
         built("JK08A"), telemetry_layout, "current"
     ))
-    controller = layout.assembly_unit_by_key["ignition_controller"]
+    controller = layout.assembly_unit_by_key["speed_controller"]
     historical[controller.span.start : controller.span.end] = (
         bytes([0xFF]) * controller.span.size
     )
-    historical[layout.configuration.start : layout.configuration.end] = bytes.fromhex(
+    # A historical endpoint keeps its 32-byte record in the retired span.
+    historical[layout.configuration.start : layout.configuration.end] = (
+        bytes([0xFF]) * layout.configuration.size
+    )
+    retired = layout.retired_configuration
+    historical[retired.start : retired.end] = bytes.fromhex(
         "524c0101050000ff010000a00001001000"
         "04012c0064737373737300adb3a55a"
     )

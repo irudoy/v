@@ -58,6 +58,7 @@ def composition_write_ranges(layout):
         for unit in layout.assembly_units
     ]
     ranges.append(layout.configuration)
+    ranges.append(layout.retired_configuration)
     ranges.extend(map_switching_layout.AddressRange(
         hook.address, hook.address + hook.width, f"hook.{hook.key}"
     ) for hook in layout.hooks)
@@ -111,6 +112,8 @@ def _build_expected(layout, base, blobs, configuration):
     for unit in layout.assembly_units:
         data[unit.span.start : unit.span.end] = blobs[unit.key]
     data[layout.configuration.start : layout.configuration.end] = configuration
+    retired = layout.retired_configuration
+    data[retired.start : retired.end] = bytes([0xFF]) * retired.size
     for hook in layout.hooks:
         data[hook.address : hook.address + hook.width] = (
             hook.replacement.to_bytes(hook.width, layout.byte_order)

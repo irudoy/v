@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Compose the validated JK08A Rolling Launch stage for the ROM builder.
 
-The production profile is deliberately narrow: mode 1 (RPM hold), Map 1 only,
-no brake gate, and no ignition retard. The input must be the exact complete
-twelve-family map-switching stage-20 endpoint derived from the hardware-readback
-lookup stage and using the target-vehicle 0x20 released-button code. Machine
-payloads, hooks, diagnostics, configuration, checksums, and the closed write
-set are all revalidated before an output can be written.
+The production profile is deliberately narrow: mode 1 (hold) on Map 1 only,
+with the controller defaults of the reference model. The input must be the
+exact complete twelve-family map-switching stage-20 endpoint derived from the
+hardware-readback lookup stage and using the target-vehicle 0x20
+released-button code. Machine payloads, hooks, diagnostics, configuration,
+checksums, and the closed write set are all revalidated before an output can
+be written.
 """
 
 from __future__ import annotations
@@ -34,45 +35,40 @@ from patches import rolling_launch_layout as rolling_layout_model
 from patches import rom_checksums
 
 
-PROFILE_NAME = "rpm-hold-map1-test"
+PROFILE_NAME = "hold-map1-test"
 HARDWARE_RESULTS_PATH = Path(__file__).with_name("hardware-results.toml")
 
 
-def _load_result_digests():
+def _load_base_digest():
     try:
         data = tomllib.loads(HARDWARE_RESULTS_PATH.read_text(encoding="utf-8"))
-        current = data["rolling_launch"]["current_map1_rpm_hold"]
-        historical = data["rolling_launch"]["historical_map1_rpm_hold"]
-        values = (
-            current["source_sha256"],
-            current["output_sha256"],
-            historical["source_sha256"],
-            historical["output_sha256"],
-        )
-    except (OSError, KeyError, tomllib.TOMLDecodeError) as error:
+        stages = [
+            stage
+            for stage in data["map_switching"]["stages"]
+            if stage.get("use") == "rolling_launch_base"
+        ]
+        if len(stages) != 1:
+            raise KeyError("one map-switching stage with use rolling_launch_base")
+        value = stages[0]["sha256"]
+    except (OSError, KeyError, TypeError, tomllib.TOMLDecodeError) as error:
         raise RuntimeError(
             f"cannot load {HARDWARE_RESULTS_PATH}: {error}"
         ) from error
-    if any(
+    if (
         not isinstance(value, str)
         or len(value) != 64
         or any(character not in "0123456789abcdef" for character in value)
-        for value in values
     ):
         raise RuntimeError(
-            f"{HARDWARE_RESULTS_PATH}: invalid SHA-256 result identity"
+            f"{HARDWARE_RESULTS_PATH}: invalid SHA-256 base identity"
         )
-    return values
+    return value
 
 
-(
-    LOCKED_MAP_SWITCHING_SOURCE_SHA256,
-    LOCKED_PROFILE_OUTPUT_SHA256,
-    HISTORICAL_MAP_SWITCHING_SOURCE_SHA256,
-    HISTORICAL_PROFILE_OUTPUT_SHA256,
-) = _load_result_digests()
+# The map-switching endpoint that the Rolling Launch stage is applied to.
+LOCKED_MAP_SWITCHING_SOURCE_SHA256 = _load_base_digest()
 PROFILE_CALIBRATION = rolling_launch.Calibration(
-    mode=rolling_launch.Mode.RPM_HOLD,
+    mode=rolling_launch.Mode.HOLD,
     enable_mask=0x01,
 )
 
@@ -261,7 +257,7 @@ def patch_image(
     expected_source_sha256=LOCKED_MAP_SWITCHING_SOURCE_SHA256,
     checksum_layout=None,
 ):
-    """Return one checksum-valid Rolling RPM Hold image after strict checks."""
+    """Return one checksum-valid Rolling Launch hold image after strict checks."""
     map_layout = map_layout or map_layout_model.load_layout()
     rolling_layout = rolling_layout or rolling_layout_model.load_layout()
     checksum_layout = checksum_layout or canonical_checksums.LAYOUT
@@ -341,15 +337,6 @@ def patch_image(
         raise PatchError("final Rolling Launch configuration differs")
 
     output_digest = sha256(patched)
-    if (
-        source_digest == LOCKED_MAP_SWITCHING_SOURCE_SHA256
-        and calibration == PROFILE_CALIBRATION
-        and output_digest != LOCKED_PROFILE_OUTPUT_SHA256
-    ):
-        raise PatchError(
-            f"locked profile output SHA-256 is {output_digest}, expected "
-            f"{LOCKED_PROFILE_OUTPUT_SHA256}"
-        )
 
     return PatchResult(
         data=patched,

@@ -447,7 +447,7 @@
           "fields": [
             {
               "dashboard": {
-                "description": "Reason code of the Rolling Launch runtime. In IDLE it names the first activation gate that fails, such as MAP DISABLED on a map without Rolling Launch or BUTTON INVALID while CANCEL is not held. ACTIVE reads NONE, and COOLDOWN keeps the reason that ended the run, such as BUTTON RELEASED, TIMEOUT, or MAP REQUEST.",
+                "description": "Reason code of the Rolling Launch runtime. In IDLE it names the first activation gate that fails, such as MAP DISABLED on a map without Rolling Launch or BUTTON INVALID while CANCEL is not held. ACTIVE reads NONE, and COOLDOWN keeps the reason that ended the run, such as SPEED BELOW WINDOW, SPEED FRAME STALE, or TIMEOUT.",
                 "digits": 0,
                 "group": "Context",
                 "label": "Rolling Launch reason",
@@ -455,7 +455,7 @@
                 "panel": "Temperatures and context"
               },
               "name": "rolling_launch_abort_reason",
-              "scale": "enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 RESERVED_13, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED",
+              "scale": "enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 SPEED_FRAME_STALE, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED, 19 SPEED_HIGH, 20 SPEED_ABOVE_WINDOW, 21 SPEED_BELOW_WINDOW",
               "signed": false,
               "values": [
                 {
@@ -511,7 +511,7 @@
                   "value": 12
                 },
                 {
-                  "name": "RESERVED_13",
+                  "name": "SPEED_FRAME_STALE",
                   "value": 13
                 },
                 {
@@ -533,6 +533,18 @@
                 {
                   "name": "MODE_CHANGED",
                   "value": 18
+                },
+                {
+                  "name": "SPEED_HIGH",
+                  "value": 19
+                },
+                {
+                  "name": "SPEED_ABOVE_WINDOW",
+                  "value": 20
+                },
+                {
+                  "name": "SPEED_BELOW_WINDOW",
+                  "value": 21
                 }
               ],
               "width": 1
@@ -948,7 +960,7 @@
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Final ignition timing coordinate in degrees before TDC. A software command, not a measured spark angle. During a Rolling Launch late override it is the upstream stock coordinate, and APC command carries the effective value.",
+            "description": "Final ignition timing coordinate in degrees before TDC. A software command, not a measured spark angle. During the late override of a historical Rolling Launch endpoint it is the upstream stock coordinate, and APC command carries the effective value.",
             "digits": 0,
             "feed": {
               "format": "0",
@@ -976,7 +988,7 @@
             "offset": 110.0
           },
           "dashboard": {
-            "description": "Effective ignition timing command in degrees before TDC, as J1979 PID 0x0E reports it: 110 minus the APC byte. It follows Rolling Launch and the stock modes that move the command away from the timing coordinate. A software command, not a measured spark angle.",
+            "description": "Effective ignition timing command in degrees before TDC, as J1979 PID 0x0E reports it: 110 minus the APC byte. It follows the late override of a historical Rolling Launch endpoint and the stock modes that move the command away from the timing coordinate. A software command, not a measured spark angle.",
             "digits": 0,
             "group": "Ignition",
             "label": "APC command",
@@ -1169,7 +1181,7 @@
         },
         {
           "dashboard": {
-            "description": "Phase of the Rolling Launch runtime: IDLE while it evaluates the activation gates, ACTIVE while it owns the launch fuel cut and the optional ignition retard, and COOLDOWN after a run ends, until the buttons stay released for the rearm period.",
+            "description": "Phase of the Rolling Launch runtime: IDLE while it evaluates the activation gates, ACTIVE while it runs the speed-hold controller and owns the RPM-ceiling fuel cut, and COOLDOWN after a run ends, until the buttons stay released for the rearm period.",
             "digits": 0,
             "group": "Context",
             "label": "Rolling Launch phase",
