@@ -1760,6 +1760,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xE4C" flags="0x0">
+    <title>End of Injection Angle - Base</title>
+    <description>Exact 1ND3B. Address 0x16540; 1 rows x 8 columns; uint16; map confidence code. Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC. Exact 1ND3B target-native table at 0x16540 bound to accessor 0x7f4e0 through literal 0x7fa04. Writer 0007f4e0 loads the curve from literal 0007fa04 for the calls at 0007f91a and 0007f95c to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6. It adds byte fffea7ee, and on the second call also byte fffea2ad, before the clamp, and stores the result to fffe89a2.</description>
+    <CATEGORYMEM index="0" category="9" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x16550" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x16540" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xB2EA" flags="0x0">
     <title>VVEL Duration Characteristic [stored count]</title>
     <description>Exact 1ND3B. Address 0x16090; 1 rows x 16 columns; uint16; map confidence code. Monotonic duration characteristic of the VVEL duration correction FUN_0005751E: looked up by its first duration argument x512, clamped to 0..100.0, over the axis 0x00017612 and scaled by 2^-18. FUN_0005751E subtracts from the result a 16x16 lookup of 0x0000CDC8 over the axes 0x000158D2 and 0x00017632, indexed by the margin of its second over its third argument and by the same duration index. Exact 1ND3B target-native table at 0x16090 bound to accessor 0x5751e through literal 0x576f0. Engineering conversion is unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18. Origin: on JK78C 0x00015AA2, the float literal 2^-18 at 0x56090. Recorded code interpretation: Read by FUN_0005751E through the literal-pool word 0x000576F0, loaded at 0x0005758C. FUN_0005751E differs from JK78C FUN_00055E78: it clamps the lookup duration to 0..100.0, keeps the 2^-18 scale, and subtracts the correction surface 0x0000CDC8; JK78C FUN_00055E78 instead passes the scaled value to the ratio corrections FUN_00055F2C and FUN_00055FF2. Besides FUN_0005751E, the code graph records only 0x0005B998 as a reader of the axis 0x00017612, so no inverse lookup over this curve is bound on the layout. Stock bytes are identical to JK78C 0x00015AA2. 1ND3B shares the 1ND0A code layout and its stock bytes at this address. Editor values are stored counts; no engineering conversion is established.</description>
@@ -1798,6 +1840,48 @@
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6CCE" flags="0x0">
+    <title>End of Injection Angle - Conditional</title>
+    <description>Exact 1ND3B. Address 0x16560; 1 rows x 8 columns; uint16; map confidence code. Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC. Exact 1ND3B target-native table at 0x16560 bound to accessor 0x7f4e0 through literal 0x7f9d0. Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at 0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6, and stores twice the clamped value to fffe89a2.</description>
+    <CATEGORYMEM index="0" category="9" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x16550" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x16560" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

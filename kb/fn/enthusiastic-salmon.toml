@@ -88,6 +88,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000841b4"
+name = "flying-crow"
+level = "code"
+note = """
+Writer 000841b4 clamps the selected end-of-injection term at 209 counts and \
+stores twice it to fffe8946, as JK08A 00056bd0 stores ffff192e. It reads the \
+base curve 000164e4 and the conditional curve 00016504 through the \
+explicit-axis leaf 0002aeac on axis 000164f4 and engine-speed word \
+fffe819e."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000841b4"
+
+[[symbol]]
+layout = "1nd"
+address = "0007f4e0"
+name = "transparent-sturgeon"
+level = "code"
+note = """
+Writer 0007f4e0 clamps the selected end-of-injection term at 209 counts and \
+stores twice it to fffe89a2, as JK08A 00056bd0 stores ffff192e. It reads the \
+base curve 00016540 and the conditional curve 00016560 through the \
+explicit-axis wrapper 00028910 on axis 00016550 and engine-speed word \
+fffe81b6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f4e0"
+
+[[symbol]]
 layout = "7mfk"
 address = "00056bd0"
 name = "enthusiastic-salmon"
@@ -224,6 +258,45 @@ key = "Connected injection calculation and raw scheduling"
 kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
+
+[[symbol]]
+layout = "jk00c"
+address = "00058ae4"
+name = "resilient-nuthatch"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058c3c"
+to = "7mfk:00056d34"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "00058ae0"
+name = "free-auk"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058c38"
+to = "7mfk:00056d34"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk78c"
+address = "000730cc"
+name = "quartz-labrador"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007323c"
+to = "7mfk:00056d34"
+count = 1
+value = 13
 
 [[link]]
 type = "depends"

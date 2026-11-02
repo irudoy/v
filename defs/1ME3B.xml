@@ -1614,6 +1614,26 @@
       </table>
     </table>
 
+    <!-- 0x164E4  8 uint16  map [code]
+         accessor 0x841B4; r4 operand: reviewed-target
+         scaling x*4-590 deg after intake TDC [code]; axis 0x164F4 rpm [code]
+         Exact 1ME3B target-native table at 0x164e4 bound to accessor 0x841b4 through literal
+         0x846d4, accessor 0x841b4 through literal 0x84910. Writer 000841b4 loads the curve from
+         literals 000846d4 and 00084910 for the calls at 00084662 and 000846f0 to leaf 0002aeac
+         on axis 000164f4 and engine-speed word fffe819e. It adds byte fffea8dc, and on the
+         first call also byte fffea363, before the clamp, and stores the result to fffe8946.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Base" category="Fuelling//Injection"
+           storagetype="uint16" storageaddress="0x164E4" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x164F4" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
+                 fineincrement="12.5" coarseincrement="50"/>
+      </table>
+    </table>
+
     <!-- 0x15F54  16 uint16  map [code]
          accessor 0x5B38E; r4 operand: reviewed-target
          scaling x Stored count; axis 0x176D6 raw
@@ -1639,6 +1659,25 @@
              storageaddress="0x176D6" sizex="16" endian="big">
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x16504  8 uint16  map [code]
+         accessor 0x841B4; r4 operand: reviewed-target
+         scaling x*4-590 deg after intake TDC [code]; axis 0x164F4 rpm [code]
+         Exact 1ME3B target-native table at 0x16504 bound to accessor 0x841b4 through literal
+         0x84920. Writer 000841b4 loads the curve from literal 00084920 for the call at 00084710
+         to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e, and stores twice the
+         clamped value to fffe8946.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Conditional" category="Fuelling//Injection"
+           storagetype="uint16" storageaddress="0x16504" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x164F4" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
+                 fineincrement="12.5" coarseincrement="50"/>
       </table>
     </table>
 

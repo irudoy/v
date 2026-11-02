@@ -628,6 +628,52 @@ semantics = "Start-up duration 0xFFFFA194 used by modes 2 and 11: the curve by t
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup selector do not establish the ordinate unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_00056AB4 at callsite 0x56B7E through the 16-point uint16 wrapper 0x28320; the literal pool at 0x56CB8 follows FUN_00056BAA. The axis 0x00017204 = 10..160 is -40..110 degC."
 
 [[target.JK78C.table]]
+id = "injection_end_angle_base"
+address = 0x00015F22
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x00073518, accessor = 0x000730CC }]
+axis_x = 0x00015F32
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+note = "Writer 000730cc loads the curve from literal 00073518 for the calls at 0007335e and 000733a2 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac. It adds byte ffff35d3, and on the second call also byte ffff310f, before the clamp."
+
+[[target.JK78C.table]]
+id = "injection_end_angle_conditional"
+address = 0x00015F42
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29d0b685918134b883931c22fa682d1360f5d6ad13c3bac4f90b4e9f747035ca"
+pointer_bindings = [{ site = 0x000732F4, accessor = 0x000730CC }]
+axis_x = 0x00015F32
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+note = "Writer 000730cc loads the curve from literal 000732f4 for the call at 000731c0 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set."
+
+[[target.JK78C.table]]
 id = "vvel_duration_hot_intake_idle_floor"
 address = 0x0001600A
 width = 8
@@ -1198,6 +1244,25 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, defs/VQ37.command-count-scales.md:5-10, defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse lookup, identical pair bytes or a later command-domain mean multiplied by 1/512 does not establish 1/512 physical degree per coordinate count. No independent angular decoder or hardware reference appears in the finite sources. Recorded code and catalog interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion; the same block serves as the value array when the task converts a command word back to an angle. FUN_0004D3CE loads it into GBR from 0x4D58C."
+
+[[target.JK78C.axis]]
+id = "injection_end_angle_axis"
+address = 0x00015F32
+length = 8
+storagetype = "uint16"
+values_sha256 = "c9bf9241070c61b85b1bb024d5d9bf3f2b05dd6e1ad9146a65727d1116f4888f"
+pointer_bindings = [{ site = 0x000732F8, accessor = 0x000730CC }, { site = 0x0007351C, accessor = 0x000730CC }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 000730cc loads the axis from literals 000732f8 and 0007351c and passes engine-speed word ffff11ac directly to wrapper 000282f4. Stored points 52, 56, 160, 224, 416, 480, 544 and 560 give 650, 700, 2000, 2800, 5200, 6000, 6800 and 7000 RPM."
 
 [[target.JK78C.axis]]
 id = "vvel_duration_hot_intake_idle_floor_axis"
@@ -2370,6 +2435,52 @@ semantics = "Start-up duration used by modes 2 and 11: the curve by the selected
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup selector do not establish the ordinate unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32."
 
 [[target.1ND0A.table]]
+id = "injection_end_angle_base"
+address = 0x00016540
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x0007FA04, accessor = 0x0007F4E0 }]
+axis_x = 0x00016550
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+note = "Writer 0007f4e0 loads the curve from literal 0007fa04 for the calls at 0007f91a and 0007f95c to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6. It adds byte fffea7ee, and on the second call also byte fffea2ad, before the clamp, and stores the result to fffe89a2."
+
+[[target.1ND0A.table]]
+id = "injection_end_angle_conditional"
+address = 0x00016560
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29d0b685918134b883931c22fa682d1360f5d6ad13c3bac4f90b4e9f747035ca"
+pointer_bindings = [{ site = 0x0007F9D0, accessor = 0x0007F4E0 }]
+axis_x = 0x00016550
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+note = "Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at 0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6, and stores twice the clamped value to fffe89a2."
+
+[[target.1ND0A.table]]
 id = "vvel_shaft_angle_monitor_floor_a"
 address = 0x00016698
 width = 8
@@ -2932,6 +3043,25 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, defs/VQ37.command-count-scales.md:5-10, defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse lookup, identical pair bytes or a later command-domain mean multiplied by 1/512 does not establish 1/512 physical degree per coordinate count. No independent angular decoder or hardware reference appears in the finite sources. Recorded code and catalog interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion, also the value array of the reverse lookup; stock bytes are identical to JK78C 0x000156DC."
+
+[[target.1ND0A.axis]]
+id = "injection_end_angle_axis"
+address = 0x00016550
+length = 8
+storagetype = "uint16"
+values_sha256 = "36910feb6698795c96e670a483b87885b0553a333cac1201ab811dc2a5b529b0"
+pointer_bindings = [{ site = 0x0007F9CC, accessor = 0x0007F4E0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 0007f4e0 loads the axis from literal 0007f9cc and passes engine-speed word fffe81b6 directly to wrapper 00028910. 1ND0A stores 46 and 48 counts, 575 and 600 RPM, as its first two points where 1ND3B stores 52 and 56 as JK78C; the other points equal those of JK78C."
 
 [[target.1ND0A.axis]]
 id = "vvel_duration_hot_intake_idle_axis_y"
@@ -4059,6 +4189,52 @@ semantics = "Start-up duration used by modes 2 and 11: the curve by the selected
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup selector do not establish the ordinate unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "injection_end_angle_base"
+address = 0x00016540
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x0007FA04, accessor = 0x0007F4E0 }]
+axis_x = 0x00016550
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+note = "Writer 0007f4e0 loads the curve from literal 0007fa04 for the calls at 0007f91a and 0007f95c to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6. It adds byte fffea7ee, and on the second call also byte fffea2ad, before the clamp, and stores the result to fffe89a2."
+
+[[target.1ND3B.table]]
+id = "injection_end_angle_conditional"
+address = 0x00016560
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29d0b685918134b883931c22fa682d1360f5d6ad13c3bac4f90b4e9f747035ca"
+pointer_bindings = [{ site = 0x0007F9D0, accessor = 0x0007F4E0 }]
+axis_x = 0x00016550
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+note = "Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at 0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6, and stores twice the clamped value to fffe89a2."
+
+[[target.1ND3B.table]]
 id = "vvel_shaft_angle_monitor_floor_a"
 address = 0x00016698
 width = 8
@@ -4621,6 +4797,25 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, defs/VQ37.command-count-scales.md:5-10, defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse lookup, identical pair bytes or a later command-domain mean multiplied by 1/512 does not establish 1/512 physical degree per coordinate count. No independent angular decoder or hardware reference appears in the finite sources. Recorded code and catalog interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion, also the value array of the reverse lookup; stock bytes are identical to JK78C 0x000156DC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "injection_end_angle_axis"
+address = 0x00016550
+length = 8
+storagetype = "uint16"
+values_sha256 = "c9bf9241070c61b85b1bb024d5d9bf3f2b05dd6e1ad9146a65727d1116f4888f"
+pointer_bindings = [{ site = 0x0007F9CC, accessor = 0x0007F4E0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 0007f4e0 loads the axis from literal 0007f9cc and passes engine-speed word fffe81b6 directly to wrapper 00028910. 1ND0A stores 46 and 48 counts, 575 and 600 RPM, as its first two points where 1ND3B stores 52 and 56 as JK78C; the other points equal those of JK78C."
 
 [[target.1ND3B.axis]]
 id = "vvel_duration_hot_intake_idle_axis_y"
@@ -5791,6 +5986,52 @@ semantics = "Start-up duration of the mode 2 and mode 11 pairs: the curve by a t
 note = "Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, vvel_duration_startup_axis/axis. The selected-temperature axis proof and startup selector do not establish the ordinate unit. The returned table quantity is distinct from its axis-coordinate quantity and from the paired command-word domain. Recorded code and catalog interpretation: Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf 0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to pairs 1 and 10 of its output. With the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled by 0.05, where the weight w moves by ROM16[0x9474] / 32768 per pass within 0..1; JK78C ramps between two ROM words instead. Stock bytes are identical to JK78C 0x00015E32."
 
 [[target.1ME3B.table]]
+id = "injection_end_angle_base"
+address = 0x000164E4
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x000846D4, accessor = 0x000841B4 }, { site = 0x00084910, accessor = 0x000841B4 }]
+axis_x = 0x000164F4
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+note = "Writer 000841b4 loads the curve from literals 000846d4 and 00084910 for the calls at 00084662 and 000846f0 to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e. It adds byte fffea8dc, and on the first call also byte fffea363, before the clamp, and stores the result to fffe8946."
+
+[[target.1ME3B.table]]
+id = "injection_end_angle_conditional"
+address = 0x00016504
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29d0b685918134b883931c22fa682d1360f5d6ad13c3bac4f90b4e9f747035ca"
+pointer_bindings = [{ site = 0x00084920, accessor = 0x000841B4 }]
+axis_x = 0x000164F4
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+note = "Writer 000841b4 loads the curve from literal 00084920 for the call at 00084710 to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e, and stores twice the clamped value to fffe8946."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_hot_intake_idle_floor"
 address = 0x000165DC
 width = 8
@@ -6414,6 +6655,25 @@ fine = 0.05
 coarse = 0.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x/512 deg; proposed editor-grid inverse x*512. Origin: the retained layout interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, defs/VQ37.command-count-scales.md:5-10, defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse lookup, identical pair bytes or a later command-domain mean multiplied by 1/512 does not establish 1/512 physical degree per coordinate count. No independent angular decoder or hardware reference appears in the finite sources. Recorded code and catalog interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion, also the value array of the reverse lookup; stock bytes are identical to JK78C 0x000156DC."
+
+[[target.1ME3B.axis]]
+id = "injection_end_angle_axis"
+address = 0x000164F4
+length = 8
+storagetype = "uint16"
+values_sha256 = "36910feb6698795c96e670a483b87885b0553a333cac1201ab811dc2a5b529b0"
+pointer_bindings = [{ site = 0x000846D0, accessor = 0x000841B4 }, { site = 0x0008490C, accessor = 0x000841B4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 000841b4 loads the axis from literals 000846d0 and 0008490c and passes engine-speed word fffe819e directly to leaf 0002aeac. Its points equal those of 1ND0A: 46 and 48 counts, 575 and 600 RPM, followed by the JK78C points from 160."
 
 [[target.1ME3B.axis]]
 id = "vvel_duration_hot_intake_idle_floor_axis"

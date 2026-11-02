@@ -1302,10 +1302,12 @@ curve `00015F42` through wrapper `000282F4` on explicit word axis
 cells and an implicit engine-speed axis. Both writers cap the selected
 cell-derived result at 209 and double it before publishing their EOI word;
 the target event geometry above supports the same cell conversion
-`x*4-590` degrees after intake TDC. Target editor publication requires the
-reviewed word storage and explicit axis. The canonical-address projection
-currently copies canonical geometry and editor settings, so those two
-target curves retain a publication gap under issue #111.
+`x*4-590` degrees after intake TDC. The native definition owners publish
+both curves with their word storage, the explicit axis in RPM/12.5 counts
+and that conversion on JK78C, 1ND (`00016540`, `00016560`, axis
+`00016550`) and 1ME3B (`000164E4`, `00016504`, axis `000164F4`); the
+canonical-address projection leaves the byte curves unsupported there. The
+JK00C and JK00D word curves remain unpublished under #139.
 
 Additional target-native candidates remain in the subsystem review:
 `00013780`, `00013800` and `00013AE8` in reader `00040958`;
@@ -1366,9 +1368,9 @@ input or absolute scale of the complete term is inherited.
 Editor-visible canonical homologs retain the canonical presentation, with
 the target bindings and qualification of their axes. Hidden canonical
 homologs remain KB facts. The native surfaces use stored-count views in
-both editor formats. The EOI storage-and-axis projection remains under
-#111; the unqualified native candidates remain unresolved under #129, and
-request-component axis `000119B2` remains unresolved.
+both editor formats, and the native EOI curves use the reviewed angle
+conversion. The unqualified native candidates remain unresolved under #129,
+and request-component axis `000119B2` remains unresolved.
 
 ## Hardware validation priorities
 

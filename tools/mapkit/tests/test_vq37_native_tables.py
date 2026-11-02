@@ -137,6 +137,13 @@ CVTC_AXIS_ROLES = {
     "intake_cvtc_settle_count_axis",
     "intake_cvtc_target_limit_axis",
 }
+# The end-of-injection writer reads word curves on an explicit engine-speed
+# axis where JK08A reads byte curves on an implicit axis.
+INJECTION_TABLE_ROLES = {
+    "injection_end_angle_base",
+    "injection_end_angle_conditional",
+}
+INJECTION_AXIS_ROLES = {"injection_end_angle_axis"}
 ROLES = (
     SELECTOR_ROLES
     | FUEL_TABLE_ROLES
@@ -147,6 +154,8 @@ ROLES = (
     | IGNITION_STATE_AXIS_ROLES
     | CVTC_TABLE_ROLES
     | CVTC_AXIS_ROLES
+    | INJECTION_TABLE_ROLES
+    | INJECTION_AXIS_ROLES
 )
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
@@ -225,11 +234,11 @@ def test_registry_declares_every_role_on_every_target():
 
         assert tables <= (
             SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
-            | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES
+            | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES | INJECTION_TABLE_ROLES
         )
         assert axes <= (
             FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
-            | CVTC_AXIS_ROLES
+            | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES
         )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
@@ -469,6 +478,59 @@ def test_apply_target_describes_a_displaced_base_literal():
     assert "through literal 0x56678 + 0x10" in floor["note"]
     assert "through literal 0x56678 + 0xd0" in rpm_axis["note"]
     assert rpm_axis["values"] == [128, 192, 256, 320, 384, 448, 512, 640]
+
+
+# The base curve, the conditional curve, their axis and the writer of each
+# target; 1ND3B shares the 1ND0A layout.
+END_OF_INJECTION = {
+    "JK78C": (0x15F22, 0x15F42, 0x15F32, 0x730CC),
+    "1ND0A": (0x16540, 0x16560, 0x16550, 0x7F4E0),
+    "1ND3B": (0x16540, 0x16560, 0x16550, 0x7F4E0),
+    "1ME3B": (0x164E4, 0x16504, 0x164F4, 0x841B4),
+}
+
+
+@pytest.mark.parametrize("rom", sorted(END_OF_INJECTION))
+def test_apply_target_publishes_the_end_of_injection_word_curves(rom):
+    base, conditional, axis, writer = END_OF_INJECTION[rom]
+    target = vq37_native_tables.load_registry()[rom]
+    image = romkit.load(rom)
+    maps, axes, overrides = vq37_native_tables.apply_target(
+        rom, {}, _projected_axes(target), {"table": {}}, image
+    )
+    words = [
+        int.from_bytes(image.data[address : address + 2], "big")
+        for address in range(axis, axis + 16, 2)
+    ]
+
+    for address in (base, conditional):
+        key = f"{address:08x}"
+        model = maps[key]
+
+        assert (model["storagetype"], model["width"], model["dims"]) == ("uint16", 8, 1)
+        assert model["axis_x"] == [f"{axis:08x}"]
+        assert model["accessors"] == [f"{writer:08x}"]
+        assert model["scale_expr"] == "x*4-590"
+        assert overrides["table"][key]["category"] == "Fuelling / Injection"
+    assert axes[f"{axis:08x}"]["values"] == words
+    assert axes[f"{axis:08x}"]["scale_expr"] == "x*12.5"
+
+
+def test_apply_target_rejects_a_byte_projection_of_an_end_of_injection_curve():
+    # An address-only relocation of the JK08A byte curve 00012302 would place
+    # a byte table on the word curve of the native registry.
+    rom = "JK78C"
+    target = vq37_native_tables.load_registry()[rom]
+    image = romkit.load(rom)
+    occupied = {"00015f22": {"storagetype": "uint8", "width": 8, "dims": 1}}
+
+    with pytest.raises(
+        vq37_native_tables.NativeTableError,
+        match="native table 00015f22 collides with the projection",
+    ):
+        vq37_native_tables.apply_target(
+            rom, occupied, _projected_axes(target), {"table": {}}, image
+        )
 
 
 def test_apply_target_rejects_an_unprojected_axis():

@@ -1,0 +1,124 @@
+summary = """
+Conditionally selected end-of-injection angle over the engine-speed axis \
+00015f32: eight uint16 cells that writer 000730cc reads through wrapper \
+000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, \
+209) from the interpolated value y without correction bytes, the delay in 2 \
+crank degrees per count from the reference tooth of the scheduled channel to \
+the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees \
+after the following intake TDC, as a cell of JK08A 0001230a does; the stock \
+cells 133..175 give 58 degrees before to 110 degrees after intake TDC."""
+level = "code"
+home = "jk78c"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "deg after intake TDC"
+scale = "x*4-590"
+to_raw = "(x+590)/4"
+scale_level = "code"
+
+[editor]
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+
+[[symbol]]
+layout = "1me3b"
+address = "00016504"
+level = "code"
+note = """
+Writer 000841b4 loads the curve from literal 00084920 for the call at \
+00084710 to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e, \
+and stores twice the clamped value to fffe8946."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084920"
+
+[[symbol]]
+layout = "1nd"
+address = "00016560"
+level = "code"
+note = """
+Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at \
+0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word \
+fffe81b6, and stores twice the clamped value to fffe89a2."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f9d0"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015f42"
+level = "code"
+note = """
+Writer 000730cc loads the curve from literal 000732f4 for the call at \
+000731c0 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac \
+while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000732f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk78c:000733cc"
+note = "The writer stores 2*min(y, 209) to the end-of-injection word ffff192a."
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK08A.fuel.md"
+note = """
+Homologous targets: the end-of-injection word of JK78C, 1ND and 1ME3B has \
+the JK08A coordinate raw*2-590 degrees after intake TDC."""
+
+[[link]]
+type = "axis"
+to = "injection_end_angle_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000731c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f824"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084710"
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000732f4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f9d0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084920"
