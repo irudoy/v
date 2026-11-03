@@ -23,16 +23,16 @@ The authoritative implementation sources are:
 
 The canonical JK08A runtime is software-verified. In hold mode the spark-cut
 actuator under "Speed-hold cut actuator" consumes the torque fraction, and the
-RPM ceiling request remains the hard limit. The spark cut has no vehicle
-evidence; the vehicle session confirms it together with the static claims
-under "Ignition output hardware".
+RPM ceiling request remains the hard limit. The vehicle evidence of the hold,
+the spark cut included, is under "Vehicle evidence of the hold".
 
 The target-vehicle evidence below comes from exact local combined images of
 the registered historical endpoint `schema-3-fuel-shadow-hold`, which held RPM
 through the fuel-cut shadow of the selected map. It qualifies button decoding,
 dashboard states, repeated rearm, and the full software fuel-inhibit mask. The
 vehicle-speed capture, the controller, the coordinator wrapper, the ceiling
-request, and the spark cut have no vehicle evidence. Physical spark timing and electrical
+request, and the spark cut are outside that endpoint; their vehicle evidence
+is under "Vehicle evidence of the hold". Physical spark timing and electrical
 injector output remain unmeasured. Concrete profiles, derived images, and
 active tune identities remain local and unversioned.
 
@@ -347,6 +347,36 @@ steering-switch code `0xFFFF36D8`; the delay between the two codes is not
 established. The figures are software quantities; spark angle at the
 crankshaft and electrical injector output remain outside the measurement.
 
+### Vehicle evidence of the hold
+
+`hardware-results.toml` records the 2026-11-03 session of the v2 hold image
+on Map 3 under `rolling_launch.v2_hold_vehicle_2026_11_03`: stationary holds
+in neutral and moving holds in second and third gear, each capture with a
+dashboard recording and a TRC. Every hold passes the hold audit: the published
+torque fraction follows the model, the cut counter lies inside the cuts that
+the fractions owe, and no fuel mask or cut appears outside `ACTIVE`. At
+standstill the fraction settles at the proportional value of a zero error,
+the all-cylinder fuel cut latches near the ceiling and releases at the
+hysteresis, and engine speeds below `min_rpm_native` refuse activation.
+
+The spark cut acts on the engine. With the fuel mask clear, the APC command
+at its stock value, and no transmission reduction request, the veto is the
+only active torque actuator: at wide-open throttle the vehicle stops
+accelerating inside a hold and accelerates at once after the release, and in
+neutral at an unchanged throttle the engine speed settles below the speed it
+reaches after the release. The front A/F sensor reads lean inside the holds
+at unchanged open-loop fueling, and in closed loop the short-term trim rises
+to its cap. The holds produce no exhaust pops: the unburnt charge leaves at
+stock timing. The operator reports no DTC in the ECU or the TCM after the
+session, so the misfire-monitor blanking holds through the cut.
+
+With `integral_gain` 0 the speed error settles within about 1 s at the
+proportional equilibrium, a small positive offset, without drift. The speed
+word departs from frame `0x280` inside a hold; its comparison with frame
+`0x284`, the release-to-torque time, and the `0x176` ratio through the holds
+are open (issue #103). Spark angle at the crankshaft and the electrical
+output at the coil terminals remain outside the measurement.
+
 ## Modes
 
 | Mode | Torque fraction | Ignition events | Fuel cut |
@@ -576,7 +606,9 @@ between the PULS pin and the terminal are not established. Neither the
 service manual nor the JK08A DTC inventory defines an ignition-circuit DTC
 (P0351..P0356), so the misfire monitor is the only stock detector of a
 withheld spark. CONSULT POWER BALANCE cuts injectors, not sparks, so it does
-not exercise this path. The vehicle session confirms these static claims.
+not exercise this path. The session under "Vehicle evidence of the hold"
+confirms the combustion loss of the vetoed events; the electrical level at
+the ECM terminals remains unmeasured.
 
 ### Torque paths outside the ignition cut
 
