@@ -176,6 +176,15 @@ class WindowLayoutTest(unittest.TestCase):
                     field.outer_width(app.PANEL_VALUE_WIDTH),
                 )
 
+    def test_a_fitted_panel_requests_less_than_its_width(self):
+        for panel in self.panels():
+            for width in range(app.PANEL_MIN_WIDTH, 420):
+                panel.fit(width)
+                panel.update_idletasks()
+                self.assertLessEqual(
+                    panel.winfo_reqwidth(), width - app.PANEL_FIT_SLACK, width
+                )
+
     def test_values_give_way_before_the_labels(self):
         for panel in self.panels():
             panel.fit(600)
@@ -183,7 +192,7 @@ class WindowLayoutTest(unittest.TestCase):
             field = panel.fields[0]
             floor = field.outer_width(app.PANEL_VALUE_MIN_WIDTH)
             chrome = 2 * (1 + app.PANEL_PAD + app.PANEL_GAP)
-            panel.fit(chrome + widest + floor)
+            panel.fit(chrome + widest + floor + app.PANEL_FIT_SLACK)
             for label, full in panel.labels:
                 self.assertEqual(label.cget("text"), full)
             for field in panel.fields:

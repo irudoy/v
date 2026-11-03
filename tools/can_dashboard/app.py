@@ -214,6 +214,12 @@ PANEL_VALUE_WIDTH = 150
 PANEL_VALUE_MIN_WIDTH = 104
 PANEL_PAD = 10
 PANEL_GAP = 6
+# The uniform panel grid shares the width evenly and hands the remaining
+# pixels to some of its columns. A panel that fits itself to such a pixel
+# requests more than the even share, the grid takes the pixel back, and the
+# next fit asks for it again, so the layout never settles. A fit therefore
+# keeps the request of a panel this many pixels inside the width it receives.
+PANEL_FIT_SLACK = 1
 FOOTNOTE = (
     "* Candidate transform. Timing is a software "
     "command; injection is a compensated command, not a measured electrical "
@@ -591,7 +597,7 @@ class DataPanel(tk.Frame):
             return
         self._fitted = width
         border = int(self.cget("highlightthickness"))
-        available = width - 2 * (border + PANEL_PAD + PANEL_GAP)
+        available = width - PANEL_FIT_SLACK - 2 * (border + PANEL_PAD + PANEL_GAP)
         measure = self._label_font.measure
         first, _full = self.labels[0]
         chrome = first.winfo_reqwidth() - measure(first.cget("text"))
