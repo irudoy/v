@@ -16,6 +16,25 @@ require_tk()
 from tools.can_dashboard import app
 
 
+class CloseSignalTest(unittest.TestCase):
+    def test_close_signals_close_the_window_from_the_main_loop(self):
+        saved = {
+            number: app.signal.getsignal(number) for number in app.CLOSE_SIGNALS
+        }
+        for number, handler in saved.items():
+            self.addCleanup(app.signal.signal, number, handler)
+        root = types.SimpleNamespace(after_idle=mock.Mock())
+        dashboard = types.SimpleNamespace(close=mock.Mock())
+        app.install_close_signals(root, dashboard)
+        for number in app.CLOSE_SIGNALS:
+            app.signal.getsignal(number)(number, None)
+        self.assertEqual(
+            root.after_idle.call_args_list,
+            [mock.call(dashboard.close)] * len(app.CLOSE_SIGNALS),
+        )
+        dashboard.close.assert_not_called()
+
+
 class CallbackTimerTest(unittest.TestCase):
     def dashboard(self):
         dashboard = object.__new__(app.DashboardApp)

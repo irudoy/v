@@ -10,6 +10,7 @@ import json
 import math
 from pathlib import Path
 import queue
+import signal
 import sys
 import threading
 import time
@@ -2648,6 +2649,24 @@ class DashboardApp:
             pass
 
 
+# Tk on macOS ends the process from its own handler of these signals and then
+# runs the Python <Destroy> bindings of the windows without a thread state,
+# which aborts the interpreter. The Python handlers take the signals instead
+# and close the window from the main loop, which saves an open recording as
+# the close button does.
+CLOSE_SIGNALS = (signal.SIGINT, signal.SIGTERM)
+
+
+def install_close_signals(root, dashboard):
+    """Close the dashboard from the main loop on SIGINT and SIGTERM."""
+
+    def handler(_number, _frame):
+        root.after_idle(dashboard.close)
+
+    for number in CLOSE_SIGNALS:
+        signal.signal(number, handler)
+
+
 def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -2817,6 +2836,7 @@ def main(argv=None):
         args.can_id,
     )
     dashboard = DashboardApp(root, args)
+    install_close_signals(root, dashboard)
     if args.smoke_test:
         root.withdraw()
         root.after(1500, root.quit)
