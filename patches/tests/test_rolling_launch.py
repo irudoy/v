@@ -9,6 +9,8 @@ from patches import rolling_launch as rl
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = ROOT / "tools" / "sh-elf-run" / "rolling_launch_harness.c"
 CONTROLLER_ROW = re.compile(r'\{"(ctrl-[a-z-]+)",([-0-9a-fx, ]+)\}')
+TRIM_ROW = re.compile(r'\{"((?:trim|gain)-[a-z0-9-]+)",([-0-9, ]+)\}')
+ADAPTER_ROW = re.compile(r'\{"(adapter-[a-z-]+)",([-0-9a-fxU, ]+)\}')
 
 
 class RollingLaunchTest(unittest.TestCase):
@@ -65,8 +67,16 @@ class RollingLaunchTest(unittest.TestCase):
             {"window_top": 0x100},
             {"u_rate_limit": 0},
             {"u_rate_limit": 1001},
-            {"integral_gain": -1},
-            {"integral_gain": 0x8000},
+            {"reserved": 1},
+            {"slots": (rl.Slot(integral_gain=-1),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(integral_gain=0x8000),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(max_trim=rl.TRIM_MAX + 1, trim_efficiency=300),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(floor_command=0x100),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(max_trim=20, trim_efficiency=0),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(max_trim=20, trim_efficiency=1001),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(trim_efficiency=999),) * rl.SLOT_COUNT},
+            {"slots": (rl.Slot(),) * (rl.SLOT_COUNT - 1)},
+            {"slot_end_marker": 0},
             {"integrator_limit": 1001},
             {"abort_above": 0},
             {"abort_below": 0},
@@ -97,7 +107,14 @@ class RollingLaunchTest(unittest.TestCase):
             window_width=0xFF,
             window_top=0xFF,
             u_rate_limit=rl.U_ONE,
-            integral_gain=0x7FFF,
+            slots=(
+                rl.Slot(
+                    integral_gain=0x7FFF,
+                    max_trim=rl.TRIM_MAX,
+                    floor_command=0xFF,
+                    trim_efficiency=1,
+                ),
+            ) * rl.SLOT_COUNT,
             integrator_limit=rl.U_ONE,
             rpm_ceiling_offset_native=0xFFFF,
             rpm_ceiling_hysteresis_native=0xFF,
@@ -279,14 +296,157 @@ class RollingLaunchTest(unittest.TestCase):
                 )
 
     def test_the_integrator_freezes_on_a_saturated_sum_and_stays_bounded(self):
-        gain = dataclasses.replace(self.calibration, integral_gain=2)
-        self.assertEqual(rl.update_integrator(0, 0, 30, gain), 0)
-        self.assertEqual(rl.update_integrator(0, 1000, -30, gain), 0)
-        self.assertEqual(rl.update_integrator(0, 500, 5, gain), -10)
-        self.assertEqual(rl.update_integrator(0, 500, -5, gain), 10)
-        bounded = dataclasses.replace(gain, integrator_limit=1)
-        self.assertEqual(rl.update_integrator(15, 500, -5, bounded), 16)
-        self.assertEqual(rl.update_integrator(-15, 500, 5, bounded), -16)
+        cal = self.calibration
+        self.assertEqual(rl.update_integrator(0, 0, 30, cal, 2), 0)
+        self.assertEqual(rl.update_integrator(0, 1000, -30, cal, 2), 0)
+        self.assertEqual(rl.update_integrator(0, 500, 5, cal, 2), -10)
+        self.assertEqual(rl.update_integrator(0, 500, -5, cal, 2), 10)
+        bounded = dataclasses.replace(cal, integrator_limit=1)
+        self.assertEqual(rl.update_integrator(15, 500, -5, bounded, 2), 16)
+        self.assertEqual(rl.update_integrator(-15, 500, 5, bounded, 2), -16)
+
+    def test_the_integrator_uses_the_gain_of_the_activation_map(self):
+        slots = tuple(
+            rl.Slot(integral_gain=index + 1) for index in range(rl.SLOT_COUNT)
+        )
+        calibration = dataclasses.replace(self.calibration, slots=slots)
+        for index in range(rl.SLOT_COUNT):
+            state = rl.RuntimeState(
+                phase=rl.Phase.ACTIVE,
+                active_index_snapshot=index,
+                target_speed=600,
+                torque_fraction=500,
+            )
+            inputs = dataclasses.replace(self.inputs, speed=605)
+            result = rl._publish_active(state, rl.Flag(0), inputs, calibration)
+            self.assertEqual(result.integrator, -5 * (index + 1))
+
+    def test_the_cut_fraction_compensates_the_trim_efficiency(self):
+        for u, e, expected in (
+            (0, 1000, 1000), (500, 1000, 500), (1000, 1000, 0),
+            (0, 824, 1000), (412, 824, 500), (824, 824, 0),
+            (900, 824, 0), (1000, 1, 0), (0, 1, 1000), (1, 3, 667),
+        ):
+            with self.subTest(u=u, e=e):
+                self.assertEqual(rl.cut_fraction(u, e), expected)
+        self.assertEqual(rl.trim_efficiency(0), rl.U_ONE)
+        self.assertEqual(rl.trim_efficiency(45), 824)
+        self.assertEqual(rl.trim_efficiency(0xFF), 3)
+        with self.assertRaises(ValueError):
+            rl.trim_efficiency(0x100)
+
+    def test_the_ignition_command_retards_to_the_floor_and_never_advances(self):
+        slot = rl.Slot(max_trim=20, floor_command=120, trim_efficiency=824)
+        slots = (rl.Slot(),) * 3 + (slot, rl.Slot())
+        calibration = dataclasses.replace(self.calibration, slots=slots)
+        hold = rl.RuntimeState(
+            phase=rl.Phase.ACTIVE,
+            active_index_snapshot=3,
+            active_mode_snapshot=rl.Mode.HOLD,
+        )
+        for stock, expected in (
+            (80, 100), (100, 120), (110, 120), (120, 120), (130, 130),
+            (0x1FF, 0xFF),
+        ):
+            with self.subTest(stock=stock):
+                self.assertEqual(
+                    rl.ignition_command(hold, stock, calibration, False),
+                    expected,
+                )
+        for state, fallback in (
+            (rl.RuntimeState(), False),
+            (dataclasses.replace(hold, active_mode_snapshot=rl.Mode.OBSERVE), False),
+            (dataclasses.replace(hold, phase=rl.Phase.COOLDOWN), False),
+            (dataclasses.replace(hold, active_index_snapshot=0), False),
+            (hold, True),
+        ):
+            with self.subTest(state=state, fallback=fallback):
+                self.assertEqual(
+                    rl.ignition_command(state, 80, calibration, fallback), 80
+                )
+
+    def test_a_schema_4_record_maps_to_uniform_slots(self):
+        head = bytearray(self.calibration.to_bytes()[: rl.LEGACY_CONFIG_SIZE])
+        head[2] = rl.LEGACY_SCHEMA_VERSION
+        head[0x16:0x18] = (3).to_bytes(2, "big")
+        calibration = rl.Calibration.from_legacy_bytes(bytes(head))
+        self.assertEqual(calibration.slots, (rl.Slot(integral_gain=3),) * rl.SLOT_COUNT)
+        self.assertEqual(calibration.reserved, 0)
+        self.assertEqual(calibration.to_bytes()[3:0x16], bytes(head[3:0x16]))
+        for corrupt in (bytes(head[:-1]), bytes(head[:2]) + b"\x05" + bytes(head[3:])):
+            with self.assertRaises(ValueError):
+                rl.Calibration.from_legacy_bytes(corrupt)
+
+    def test_harness_trim_table_matches_the_model(self):
+        rows = TRIM_ROW.findall(HARNESS.read_text(encoding="utf-8"))
+        self.assertEqual(len(rows), 11)
+        for name, values in rows:
+            (index, gain, efficiency, speed, fraction, next_integrator,
+             command, next_fraction, next_cut) = (
+                int(item, 0) for item in values.split(","))
+            with self.subTest(case=name):
+                slot = rl.Slot(
+                    integral_gain=gain,
+                    max_trim=0 if efficiency == rl.U_ONE else 20,
+                    floor_command=120,
+                    trim_efficiency=efficiency,
+                )
+                calibration = dataclasses.replace(
+                    self.calibration,
+                    window_width=40,
+                    window_top=20,
+                    slots=tuple(
+                        slot if item == index else rl.Slot()
+                        for item in range(rl.SLOT_COUNT)
+                    ),
+                )
+                self.assertTrue(calibration.is_valid())
+                state = rl.RuntimeState(
+                    phase=rl.Phase.ACTIVE,
+                    active_index_snapshot=index,
+                    active_mode_snapshot=rl.Mode.HOLD,
+                    captured_rpm_native=300,
+                    target_speed=500,
+                    torque_fraction=fraction,
+                )
+                inputs = dataclasses.replace(
+                    self.inputs, speed=speed, rpm_native=300
+                )
+                result = rl._publish_active(
+                    state, rl.Flag(0x0FFF), inputs, calibration
+                )
+                self.assertEqual(result.integrator, next_integrator)
+                self.assertEqual(result.torque_command, command)
+                self.assertEqual(result.torque_fraction, next_fraction)
+                self.assertEqual(result.cut_fraction, next_cut)
+
+    def test_harness_adapter_table_matches_the_model(self):
+        rows = ADAPTER_ROW.findall(HARNESS.read_text(encoding="utf-8"))
+        self.assertEqual(len(rows), 16)
+        slots = (rl.Slot(),) * 3 + (
+            rl.Slot(max_trim=20, floor_command=120, trim_efficiency=824),
+            rl.Slot(max_trim=20, floor_command=255, trim_efficiency=824),
+        )
+        calibration = dataclasses.replace(self.calibration, slots=slots)
+        for name, values in rows:
+            phase, mode, index, apc, stock, expected = (
+                int(item.rstrip("U"), 0) for item in values.split(","))
+            with self.subTest(case=name):
+                if index < rl.SLOT_COUNT:
+                    state = rl.RuntimeState(
+                        phase=phase,
+                        active_index_snapshot=index,
+                        active_mode_snapshot=mode,
+                    )
+                    low = rl.ignition_command(
+                        state, stock, calibration, bool(apc & 0x40)
+                    )
+                else:
+                    low = stock & 0xFF
+                # The adapter replaces r4 only with a later command.
+                self.assertEqual(
+                    expected, stock if low == stock & 0xFF else low
+                )
 
     def test_harness_controller_table_matches_the_model(self):
         rows = CONTROLLER_ROW.findall(HARNESS.read_text(encoding="utf-8"))
@@ -300,7 +460,7 @@ class RollingLaunchTest(unittest.TestCase):
                 calibration = dataclasses.replace(
                     self.calibration,
                     mode=mode,
-                    integral_gain=gain,
+                    slots=(rl.Slot(integral_gain=gain),) * rl.SLOT_COUNT,
                     integrator_limit=limit,
                 )
                 state = rl.RuntimeState(
@@ -538,6 +698,7 @@ class SparkCutActuatorTest(unittest.TestCase):
         phase=rl.Phase.ACTIVE,
         active_mode_snapshot=rl.Mode.HOLD,
         torque_fraction=500,
+        cut_fraction=500,
     )
 
     def reset(self):
@@ -562,7 +723,7 @@ class SparkCutActuatorTest(unittest.TestCase):
         period = 6 * rl.SPARK_CYLINDER_COUNT
         for first in range(1, rl.SPARK_CYLINDER_COUNT + 1):
             for u in range(rl.U_ONE + 1):
-                runtime = dataclasses.replace(self.HOLD, torque_fraction=u)
+                runtime = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE - u)
                 _cut, vetoes = self.run_events(runtime, 6 * period, first=first)
                 ideal = period * (rl.U_ONE - u) / rl.U_ONE
                 for start in range(len(vetoes) - period + 1):
@@ -608,13 +769,13 @@ class SparkCutActuatorTest(unittest.TestCase):
         self.assertEqual(result.state.accumulators[:4], cut.accumulators[:4])
 
     def test_veto_sets_only_bit_7(self):
-        full = dataclasses.replace(self.HOLD, torque_fraction=0)
+        full = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE)
         cut = self.reset()
         for seed in (0x00, 0x40, 0x7F, 0x80, 0xC0):
             result = rl.spark_event(full, cut, rl.SparkEvent(veto_byte=seed))
             self.assertEqual(result.veto_byte, seed | 0x80)
             self.assertEqual(result.state.cut_count, 1)
-        none = dataclasses.replace(self.HOLD, torque_fraction=rl.U_ONE)
+        none = dataclasses.replace(self.HOLD, cut_fraction=0)
         _cut, vetoes = self.run_events(none, 72)
         self.assertFalse(any(vetoes))
 
@@ -624,7 +785,7 @@ class SparkCutActuatorTest(unittest.TestCase):
             rl.RuntimeState(),
             dataclasses.replace(self.HOLD, active_mode_snapshot=rl.Mode.OBSERVE),
             dataclasses.replace(self.HOLD, phase=rl.Phase.COOLDOWN),
-            dataclasses.replace(self.HOLD, torque_fraction=rl.U_ONE + 1),
+            dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE + 1),
         ):
             result = rl.spark_event(runtime, cut, rl.SparkEvent())
             self.assertFalse(result.vetoed)
@@ -635,7 +796,7 @@ class SparkCutActuatorTest(unittest.TestCase):
         self.assertEqual(result.state.accumulators, rl.SPARK_CYLINDER_OFFSETS)
 
     def test_leaving_active_sets_no_further_veto(self):
-        full = dataclasses.replace(self.HOLD, torque_fraction=0)
+        full = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE)
         cut, vetoes = self.run_events(full, 6)
         self.assertTrue(all(vetoes))
         released = dataclasses.replace(full, phase=rl.Phase.COOLDOWN)

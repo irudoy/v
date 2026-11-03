@@ -14,11 +14,12 @@
 //             of a thousandth of a cut
 //
 // A match without 0xFFFF8517.bit7 is a forced timeout match and passes
-// through unchanged. In an ACTIVE hold with u <= 1000, a spark is eligible
+// through unchanged. In an ACTIVE hold with a cut fraction c <= 1000 in
+// state +0x1A, which the trim unit derives from u, a spark is eligible
 // with the sync bit 0xFFFF8501.bit7, without the P0335 APC fallback
 // 0xFFFF24C9.bit6, with the dwell angle 0xFFFF237A at most 110 degrees, and
 // with a cylinder number of 1..6. An ineligible spark leaves every
-// accumulator unchanged. An eligible spark adds 6 * (1000 - u) to the
+// accumulator unchanged. An eligible spark adds 6 * c to the
 // accumulator of its cylinder; a sum of 6000 subtracts 6000 and sets the
 // dwell-start veto 0xFFFF8511.bit7 with interrupts masked. Outside an ACTIVE
 // hold, and for an out-of-range accumulator, the accumulators return to
@@ -97,7 +98,7 @@ rl_spark_latch_done:
 ldc r7,sr
 tst r2,r2
 bt rl_spark_reset
-mov.w @(0xe,r5),r0
+mov.w @(0x1a,r5),r0
 extu.w r0,r1
 mov.w @(rl_spark_u_one,pc),r3
 cmp/hi r3,r1
@@ -130,8 +131,7 @@ extu.w r7,r7
 mov.w @(rl_spark_cut_one,pc),r3
 cmp/hs r3,r7
 bt rl_spark_reset
-mov.w @(rl_spark_u_one,pc),r2
-sub r1,r2
+mov r1,r2
 shll r2
 mov r2,r1
 shll r2

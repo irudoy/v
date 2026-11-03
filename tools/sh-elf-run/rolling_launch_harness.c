@@ -17,8 +17,8 @@
    owns the rest. */
 #define RL_ENGINE_STATE_SIZE 28U
 #define RL_STATE_SIZE 44U
-#define RL_CONFIG 0x000d6040U
-#define RL_CONFIG_SIZE 40U
+#define RL_CONFIG 0x000d6220U
+#define RL_CONFIG_SIZE 72U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
 /* The ASCD task keeps the MAIN switch state in bit 7 of this flag byte; the
@@ -139,7 +139,12 @@
 #define CFG_MIN_PEDAL 14U
 #define CFG_OFFSET 16U
 #define CFG_RATE 20U
-#define CFG_GAIN 22U
+#define CFG_RESERVED 22U
+#define CFG_SLOT 0x28U
+#define CFG_SLOT_SIZE 6U
+/* The integral gain of the map 1 slot, which every activation snapshot of
+   map index 0 reads. */
+#define CFG_GAIN CFG_SLOT
 #define CFG_LIMIT 24U
 #define CFG_TIMEOUT 30U
 #define CFG_REARM 32U
@@ -158,6 +163,7 @@
 #define ST_REQUEST 20U
 #define ST_COMMAND 22U
 #define ST_LATCH 24U
+#define ST_CUT 26U
 #define ST_QUIET 28U
 #define ST_CUTS 29U
 #define ST_ACCUMULATORS 32U
@@ -169,16 +175,23 @@ extern void spark_entry_sr_handler(void);
 
 static size_t case_count;
 
-/* Schema 4 with short run and rearm periods: speeds 20..120 km/h, 160 native
-   RPM, window 4.0 km/h with top 2.0 km/h, rate 50, no integral gain,
-   integrator limit 500, abort window +15.0/-10.0 km/h, ceiling offset 80,
-   timeout 4, rearm 3, speed-frame age limit 10, and ceiling hysteresis 8. */
+/* Schema 5 with short run and rearm periods: speeds 20..120 km/h, 160 native
+   RPM, window 4.0 km/h with top 2.0 km/h, rate 50, integrator limit 500,
+   abort window +15.0/-10.0 km/h, ceiling offset 80, timeout 4, rearm 3,
+   speed-frame age limit 10, ceiling hysteresis 8, and five map slots
+   without integral gain or trim. */
 static const uint8_t valid_configuration[RL_CONFIG_SIZE] = {
-    0x52, 0x4c, 0x04, 0x00, 0x01, 0x00, 0x00, 0xff,
+    0x52, 0x4c, 0x05, 0x00, 0x01, 0x00, 0x00, 0xff,
     0x00, 0xc8, 0x04, 0xb0, 0x00, 0xa0, 0x00, 0x01,
     0x00, 0x00, 0x28, 0x14, 0x00, 0x32, 0x00, 0x00,
     0x01, 0xf4, 0x96, 0x64, 0x00, 0x50, 0x00, 0x04,
     0x00, 0x03, 0x0a, 0x08, 0xad, 0xb3, 0xa5, 0x5a,
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+    0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+    0xa5, 0x5a,
 };
 
 static const uint8_t payload_seed[8] = {
@@ -818,7 +831,7 @@ struct config_case {
 
 static const struct config_case config_cases[] = {
     {"config-magic", 0, 2, 0},
-    {"config-schema", 2, 1, 3},
+    {"config-schema", 2, 1, 4},
     {"config-mode", 3, 1, 2},
     {"config-enable-mask", 4, 1, 0x20},
     {"config-options-low", 5, 1, 1},
@@ -833,7 +846,7 @@ static const struct config_case config_cases[] = {
     {"config-width-zero", 18, 1, 0},
     {"config-rate-zero", 20, 2, 0},
     {"config-rate-range", 20, 2, 1001},
-    {"config-gain-negative", 22, 2, 0x8000},
+    {"config-reserved", 22, 2, 1},
     {"config-limit-range", 24, 2, 1001},
     {"config-ceiling-zero", 28, 2, 0},
     {"config-timeout-zero", 30, 2, 0},
@@ -846,6 +859,12 @@ static const struct config_case config_cases[] = {
     {"config-hysteresis-above-offset", 35, 1, 81},
     {"config-inverse", 36, 2, 0},
     {"config-end", 38, 2, 0},
+    {"config-slot-gain-negative", 0x34, 2, 0x8000},
+    {"config-slot-trim-range", 0x2a, 1, 41},
+    {"config-slot-efficiency-zero", 0x32, 2, 0},
+    {"config-slot-efficiency-range", 0x44, 2, 1001},
+    {"config-slot-untrimmed-efficiency", 0x3e, 2, 999},
+    {"config-slot-end", 0x46, 2, 0},
 };
 
 static void apply_config_value(const struct config_case *test)
@@ -863,7 +882,7 @@ static void apply_config_value(const struct config_case *test)
 static int run_config_cases(void)
 {
     volatile uint8_t *config;
-    size_t index;
+    size_t index, slot;
 
     for (index = 0; index < ARRAY_SIZE(config_cases); ++index) {
         const struct config_case *test = &config_cases[index];
@@ -887,7 +906,14 @@ static int run_config_cases(void)
     config[18] = 0xff;
     config[19] = 0xff;
     write_u16(config + CFG_RATE, 1000);
-    write_u16(config + CFG_GAIN, 0x7fff);
+    for (slot = 0; slot < 5U; ++slot) {
+        volatile uint8_t *entry = config + CFG_SLOT + CFG_SLOT_SIZE * slot;
+
+        write_u16(entry, 0x7fff);
+        entry[2] = 40;
+        entry[3] = 0xff;
+        write_u16(entry + 4, 1);
+    }
     write_u16(config + CFG_LIMIT, 1000);
     write_u16(config + 28, 0xffff);
     write_u16(config + CFG_TIMEOUT, 0x7fff);
@@ -999,8 +1025,11 @@ static int run_controller_case(const struct controller_case *test)
     write_u16(state + ST_INTEGRATOR, (uint16_t)test->integrator);
     write_u16(state + ST_COMMAND, 0x5a5a);
     write_u16(state + ST_LATCH, test->latch);
+    write_u16(state + ST_CUT, 0x5a5a);
     for (byte = 0; byte < sizeof(expected_state); ++byte)
         expected_state[byte] = state[byte];
+    write_u16(expected_state + ST_CUT,
+              (uint16_t)(TORQUE_ONE - test->next_fraction));
     write_u16(expected_state + ST_FLAGS, test->flags);
     write_u16(expected_state + ST_FRACTION, test->next_fraction);
     write_u16(expected_state + ST_ERROR, (uint16_t)test->error);
@@ -1034,6 +1063,111 @@ static int run_controller_case(const struct controller_case *test)
             || !verify_buffers(test->name, buffers, ARRAY_SIZE(buffers)))
         return 0;
     return verify_state_guards(test->name);
+}
+
+/* Controller passes through the trim unit with one map slot set: the slot
+   of the activation snapshot supplies the integral gain and the trim
+   efficiency of the cut fraction. Expected values come from the reference
+   model. */
+struct trim_case {
+    const char *name;
+    uint8_t map;
+    uint16_t gain;
+    uint16_t efficiency;
+    uint16_t speed;
+    uint16_t fraction;
+    int16_t next_integrator;
+    uint16_t command;
+    uint16_t next_fraction;
+    uint16_t next_cut;
+};
+
+/* The target is 500, so the proportional fraction is (520 - speed) * 25. */
+static const struct trim_case trim_cases[] = {
+    {"trim-untrimmed", 0, 0, 1000, 500, 500, 0, 500, 500, 500},
+    {"trim-divide", 3, 0, 824, 500, 500, 0, 500, 500, 394},
+    {"trim-saturate", 3, 0, 824, 484, 900, 0, 900, 900, 0},
+    {"trim-exact", 1, 0, 500, 500, 500, 0, 500, 500, 0},
+    {"trim-below-exact", 1, 0, 500, 501, 475, 0, 475, 475, 50},
+    {"trim-zero-fraction", 3, 0, 824, 520, 0, 0, 0, 0, 1000},
+    {"trim-least-efficiency-zero", 2, 0, 1, 520, 0, 0, 0, 0, 1000},
+    {"trim-least-efficiency", 2, 0, 1, 519, 25, 0, 25, 25, 0},
+    {"trim-full-fraction", 0, 0, 1000, 480, 1000, 0, 1000, 1000, 0},
+    {"trim-map-5", 4, 0, 300, 516, 100, 0, 100, 100, 667},
+    {"gain-map-3", 2, 3, 1000, 504, 399, -12, 399, 399, 601},
+};
+
+static int run_trim_case(const struct trim_case *test)
+{
+    struct preserved_buffer buffers[] = {PRESERVED_BUFFERS};
+    volatile uint8_t *state = ram_pointer(RL_STATE);
+    volatile uint8_t *configuration = rom_pointer(RL_CONFIG);
+    volatile uint8_t *slot =
+        configuration + CFG_SLOT + CFG_SLOT_SIZE * (size_t)test->map;
+    uint8_t expected_state[RL_STATE_SIZE];
+    uint8_t expected_configuration[RL_CONFIG_SIZE];
+    uint32_t sp_before, sp_after, observed_r4;
+    size_t byte;
+
+    count_case();
+    reset_case(MODE_HOLD, 0x01);
+    write_u16(slot, test->gain);
+    slot[2] = test->efficiency == TORQUE_ONE ? 0 : 20;
+    slot[3] = 120;
+    write_u16(slot + 4, test->efficiency);
+    write_u16(ram_pointer(SPEED), test->speed);
+    state[0] = PHASE_ACTIVE;
+    state[4] = test->map;
+    state[5] = MODE_HOLD;
+    write_u16(state + ST_FLAGS, FLAGS_GATES);
+    write_u16(state + ST_RUN, 2);
+    write_u16(state + ST_CAPTURED, 300);
+    write_u16(state + ST_TARGET, 500);
+    write_u16(state + ST_FRACTION, test->fraction);
+    write_u16(state + ST_ERROR, 0x5a5a);
+    write_u16(state + ST_COMMAND, 0x5a5a);
+    write_u16(state + ST_CUT, 0x5a5a);
+    for (byte = 0; byte < sizeof(expected_state); ++byte)
+        expected_state[byte] = state[byte];
+    write_u16(expected_state + ST_FLAGS, FLAGS_HOLD_ACTIVE);
+    write_u16(expected_state + ST_FRACTION, test->next_fraction);
+    write_u16(expected_state + ST_ERROR, (uint16_t)(test->speed - 500U));
+    write_u16(expected_state + ST_INTEGRATOR,
+              (uint16_t)test->next_integrator);
+    write_u16(expected_state + ST_COMMAND, test->command);
+    write_u16(expected_state + ST_CUT, test->next_cut);
+    for (byte = 0; byte < sizeof(expected_configuration); ++byte)
+        expected_configuration[byte] = configuration[byte];
+    capture_buffers(buffers, ARRAY_SIZE(buffers));
+
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
+    observed_r4 = invoke_r4(SPEED_CONTROLLER, 0);
+    __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
+    if (sp_after != sp_before)
+        return fail_value(test->name, "stack_pointer", sp_after, sp_before);
+    /* The trim unit returns through the ceiling unit with the record in
+       r4. */
+    if (observed_r4 != RL_CONFIG)
+        return fail_value(
+            test->name, "configuration_r4", observed_r4, RL_CONFIG);
+    if (!fail_bytes(test->name, "complete_state", state, expected_state,
+                    sizeof(expected_state))
+            || !fail_bytes(test->name, "configuration", configuration,
+                           expected_configuration,
+                           sizeof(expected_configuration))
+            || !verify_buffers(test->name, buffers, ARRAY_SIZE(buffers)))
+        return 0;
+    return verify_state_guards(test->name);
+}
+
+static int run_trim_cases(void)
+{
+    size_t index;
+
+    for (index = 0; index < ARRAY_SIZE(trim_cases); ++index)
+        if (!run_trim_case(&trim_cases[index]))
+            return 0;
+    return 1;
 }
 
 static int run_controller_cases(void)
@@ -1085,6 +1219,9 @@ static int verify_active_state(
             name, "command", read_u16(state + ST_COMMAND), command);
     if (read_u16(state + ST_LATCH) != 0)
         return fail_value(name, "latch", read_u16(state + ST_LATCH), 0);
+    if (read_u16(state + ST_CUT) != TORQUE_ONE - fraction)
+        return fail_value(name, "cut_fraction", read_u16(state + ST_CUT),
+                          TORQUE_ONE - fraction);
     if (!verify_request(name, 0) || !verify_fuel_untouched(name))
         return 0;
     return verify_state_guards(name);
@@ -1106,6 +1243,7 @@ static int run_activation_cases(void)
     write_u16(state + ST_REQUEST, FUEL_CUT_REQUEST_ALL);
     write_u16(state + ST_COMMAND, 0x5a5a);
     write_u16(state + ST_LATCH, 1);
+    write_u16(state + ST_CUT, 0x5a5a);
     run_engine();
     if (!verify_active_state(
             "activate-observe", MODE_OBSERVE, 300, 500, 950, 0, 500,
@@ -1474,13 +1612,46 @@ static int run_cooldown_cases(void)
     return verify_request("cooldown-stale-request", 0);
 }
 
-/* The adapter passes the stock command to the stock consumer stub in every
-   phase and changes no Rolling Launch state. */
-static int invoke_adapter(
-    const char *name, uint8_t phase, uint8_t mode, uint8_t stock)
+/* The adapter retards the command of the primary ignition consumer by the
+   trim of the slot of an ACTIVE hold, never past the floor command and
+   never earlier than stock, and otherwise passes the stock argument. The
+   stock consumer stub returns the r4 that it receives. Map 4 has trim 20
+   and floor 120, map 5 trim 20 and floor 255, and the others no trim.
+   Expected values come from the reference model. */
+struct adapter_case {
+    const char *name;
+    uint8_t phase;
+    uint8_t mode;
+    uint8_t map;
+    uint8_t apc_mode;
+    uint32_t stock;
+    uint32_t expected;
+};
+
+static const struct adapter_case adapter_cases[] = {
+    {"adapter-idle", 0, 0, 3, 0x00, 0x0000006eU, 0x0000006eU},
+    {"adapter-active-observe", 1, 0, 3, 0x00, 0x00000050U, 0x00000050U},
+    {"adapter-cooldown", 2, 1, 3, 0x00, 0x000000ffU, 0x000000ffU},
+    {"adapter-fallback", 1, 1, 3, 0x40, 0x00000050U, 0x00000050U},
+    {"adapter-fallback-other-bits", 1, 1, 3, 0xbf, 0x00000050U, 0x00000064U},
+    {"adapter-map-invalid", 1, 1, 5, 0x00, 0x00000050U, 0x00000050U},
+    {"adapter-map-wide", 1, 1, 255, 0x00, 0x00000050U, 0x00000050U},
+    {"adapter-untrimmed", 1, 1, 0, 0x00, 0x00000050U, 0x00000050U},
+    {"adapter-trim", 1, 1, 3, 0x00, 0x00000050U, 0x00000064U},
+    {"adapter-floor", 1, 1, 3, 0x00, 0x0000006eU, 0x00000078U},
+    {"adapter-floor-exact", 1, 1, 3, 0x00, 0x00000064U, 0x00000078U},
+    {"adapter-at-floor", 1, 1, 3, 0x00, 0x00000078U, 0x00000078U},
+    {"adapter-later-than-floor", 1, 1, 3, 0x00, 0x00000082U, 0x00000082U},
+    {"adapter-high-bits", 1, 1, 3, 0x00, 0x12345650U, 0x00000064U},
+    {"adapter-high-bits-stock", 1, 1, 3, 0x00, 0x123456ffU, 0x123456ffU},
+    {"adapter-byte-ceiling", 1, 1, 4, 0x00, 0x000000faU, 0x000000ffU},
+};
+
+static int invoke_adapter(const struct adapter_case *test)
 {
     struct preserved_buffer buffers[] = {PRESERVED_BUFFERS};
     volatile uint8_t *state = ram_pointer(RL_STATE);
+    volatile uint8_t *configuration = rom_pointer(RL_CONFIG);
     uint8_t expected_state[RL_STATE_SIZE];
     uint8_t expected_configuration[RL_CONFIG_SIZE];
     uint32_t sp_before, sp_after, gbr_before, gbr_after, returned;
@@ -1488,45 +1659,55 @@ static int invoke_adapter(
 
     count_case();
     reset_case(MODE_HOLD, 0x01);
+    configuration[CFG_SLOT + 3U * CFG_SLOT_SIZE + 2U] = 20;
+    configuration[CFG_SLOT + 3U * CFG_SLOT_SIZE + 3U] = 120;
+    write_u16(configuration + CFG_SLOT + 3U * CFG_SLOT_SIZE + 4U, 824);
+    configuration[CFG_SLOT + 4U * CFG_SLOT_SIZE + 2U] = 20;
+    configuration[CFG_SLOT + 4U * CFG_SLOT_SIZE + 3U] = 255;
+    write_u16(configuration + CFG_SLOT + 4U * CFG_SLOT_SIZE + 4U, 824);
     fill_bytes(state, RL_STATE_SIZE, 0x5a);
-    state[0] = phase;
-    state[4] = 0;
-    state[5] = mode;
+    state[0] = test->phase;
+    state[4] = test->map;
+    state[5] = test->mode;
     write_u16(state + ST_FRACTION, 500);
-    write_u16(state + ST_REQUEST, phase == PHASE_ACTIVE
+    write_u16(state + ST_REQUEST, test->phase == PHASE_ACTIVE
         ? FUEL_CUT_REQUEST_ALL : 0);
+    ram_pointer(APC_MODE_SNAPSHOT)[0] = test->apc_mode;
     ram_pointer(IGNITION_OUTPUT)[0] = 0x6e;
     for (byte = 0; byte < sizeof(expected_state); ++byte)
         expected_state[byte] = state[byte];
     for (byte = 0; byte < sizeof(expected_configuration); ++byte)
-        expected_configuration[byte] = rom_pointer(RL_CONFIG)[byte];
+        expected_configuration[byte] = configuration[byte];
     capture_buffers(buffers, ARRAY_SIZE(buffers));
     __asm__ volatile ("mov r15,%0" : "=r" (sp_before) : : "memory");
     __asm__ volatile ("stc gbr,%0" : "=r" (gbr_before) : : "memory");
-    returned = invoke_r4(IGNITION_ADAPTER, stock);
+    returned = invoke_r4(IGNITION_ADAPTER, test->stock);
     __asm__ volatile ("mov r15,%0" : "=r" (sp_after) : : "memory");
     __asm__ volatile ("stc gbr,%0" : "=r" (gbr_after) : : "memory");
     if (sp_after != sp_before)
-        return fail_value(name, "stack_pointer", sp_after, sp_before);
+        return fail_value(test->name, "stack_pointer", sp_after, sp_before);
     if (gbr_after != gbr_before)
-        return fail_value(name, "gbr", gbr_after, gbr_before);
-    if (returned != stock)
-        return fail_value(name, "stock_r4", returned, stock);
-    if (!fail_bytes(name, "complete_state", state, expected_state,
+        return fail_value(test->name, "gbr", gbr_after, gbr_before);
+    if (returned != test->expected)
+        return fail_value(test->name, "consumer_r4", returned, test->expected);
+    if (!fail_bytes(test->name, "complete_state", state, expected_state,
                     sizeof(expected_state))
-            || !fail_bytes(name, "configuration", rom_pointer(RL_CONFIG),
+            || !fail_bytes(test->name, "configuration", configuration,
                            expected_configuration,
                            sizeof(expected_configuration))
-            || !verify_buffers(name, buffers, ARRAY_SIZE(buffers)))
+            || !verify_buffers(test->name, buffers, ARRAY_SIZE(buffers)))
         return 0;
-    return verify_state_guards(name);
+    return verify_state_guards(test->name);
 }
 
 static int run_adapter_cases(void)
 {
-    return invoke_adapter("adapter-idle", PHASE_IDLE, MODE_OBSERVE, 110)
-        && invoke_adapter("adapter-active-hold", PHASE_ACTIVE, MODE_HOLD, 0)
-        && invoke_adapter("adapter-cooldown", PHASE_COOLDOWN, MODE_HOLD, 0xff);
+    size_t index;
+
+    for (index = 0; index < ARRAY_SIZE(adapter_cases); ++index)
+        if (!invoke_adapter(&adapter_cases[index]))
+            return 0;
+    return 1;
 }
 
 
@@ -1889,7 +2070,7 @@ static void spark_reference(struct spark_expect *out)
     uint8_t cylinder = ram_pointer(EVENT_CYLINDER)[0];
     int active = phase == PHASE_ACTIVE;
     int hold = active && state[5] == MODE_HOLD;
-    uint16_t fraction = read_u16(state + ST_FRACTION);
+    uint16_t cut = read_u16(state + ST_CUT);
     uint16_t accumulator;
     size_t index;
 
@@ -1910,7 +2091,7 @@ static void spark_reference(struct spark_expect *out)
                && out->state[ST_QUIET] >= MISFIRE_RELEASE_EVENTS) {
         out->latch = 0;
     }
-    if (!hold || fraction > TORQUE_ONE) {
+    if (!hold || cut > TORQUE_ONE) {
         spark_reset(out->state);
         return;
     }
@@ -1925,7 +2106,7 @@ static void spark_reference(struct spark_expect *out)
         spark_reset(out->state);
         return;
     }
-    accumulator = (uint16_t)(accumulator + 6U * (TORQUE_ONE - fraction));
+    accumulator = (uint16_t)(accumulator + 6U * cut);
     if (accumulator >= SPARK_CUT_ONE) {
         accumulator = (uint16_t)(accumulator - SPARK_CUT_ONE);
         out->veto |= 0x80U;
@@ -1935,7 +2116,10 @@ static void spark_reference(struct spark_expect *out)
 }
 
 /* Inputs of an eligible match of event cylinder 1 in an ACTIVE hold, with
-   the accumulators at their offsets and foreign bits in the veto byte. */
+   the accumulators at their offsets and foreign bits in the veto byte. The
+   cut fraction is 1000 - fraction for an untrimmed slot, and a fraction
+   above 1000 stands for an invalid cut fraction; the torque fraction holds
+   a value above 1000, which the actuator does not read. */
 static void reset_spark_case(uint8_t phase, uint8_t mode, uint16_t fraction)
 {
     volatile uint8_t *state = ram_pointer(RL_STATE);
@@ -1944,7 +2128,9 @@ static void reset_spark_case(uint8_t phase, uint8_t mode, uint16_t fraction)
     reset_case(mode, 0x01);
     state[0] = phase;
     state[5] = mode;
-    write_u16(state + ST_FRACTION, fraction);
+    write_u16(state + ST_FRACTION, 0x7777);
+    write_u16(state + ST_CUT, fraction > TORQUE_ONE
+        ? fraction : (uint16_t)(TORQUE_ONE - fraction));
     state[ST_QUIET] = 0x40;
     state[ST_CUTS] = 0x10;
     spark_reset(offsets);
@@ -2294,6 +2480,8 @@ int main(void)
         return 1;
     if (!run_controller_cases())
         return 1;
+    if (!run_trim_cases())
+        return 1;
     if (!run_activation_cases())
         return 1;
     if (!run_hold_cases())
@@ -2312,14 +2500,14 @@ int main(void)
         return 1;
     if (!run_spark_cases())
         return 1;
-    if (case_count != 197U)
-        return fail_value("summary", "case_count", case_count, 197);
+    if (case_count != 227U)
+        return fail_value("summary", "case_count", case_count, 227);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=13 gates=39 config=32 controller=24 activation=6 "
-        "hold=9 active=15 cooldown=6 adapter=3 wrappers=6 fuel_cut=14 "
-        "feedback=8 spark=22 entries=10\n",
+        "structural=13 gates=39 config=38 controller=24 trim=11 "
+        "activation=6 hold=9 active=15 cooldown=6 adapter=16 wrappers=6 "
+        "fuel_cut=14 feedback=8 spark=22 entries=12\n",
         (unsigned long)case_count);
     return 0;
 }

@@ -31,7 +31,6 @@ COMMON_TABLES = {
     "Rolling Launch Speed Window Width": "Rolling Launch / Speed Hold",
     "Rolling Launch Speed Window Top": "Rolling Launch / Speed Hold",
     "Rolling Launch Torque Fraction Rate Limit": "Rolling Launch / Speed Hold",
-    "Rolling Launch Integral Gain": "Rolling Launch / Speed Hold",
     "Rolling Launch Integrator Limit": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
@@ -381,7 +380,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 61)
-        self.assertEqual(len(tables), 117)
+        self.assertEqual(len(tables), 116)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -417,7 +416,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertTrue(all(
             flags[f"Map {slot} - Rolling Launch Enable"]
             .find("./EMBEDDEDDATA")
-            .get("mmedaddress") == "0xD6044"
+            .get("mmedaddress") == "0xD6224"
             for slot in range(1, 6)
         ))
         self.assertNotIn(
@@ -612,7 +611,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                     self.assertEqual(int(entry.get("datasize"), 16), len(patchdata))
                     runtime_controls = {
                         "Rolling Launch Require Accelerator Pedal": (
-                            0xD604E,
+                            0xD622E,
                             b"\x00\x01",
                             b"\x00\x00",
                         ),

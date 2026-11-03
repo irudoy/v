@@ -133,6 +133,8 @@ class Sample:
     cut_counter: int | None = None
     # The configuration byte of the dynamic page.
     configuration: int | None = None
+    # The selected map index of the rotating context, 0 for Map 1.
+    map_index: int | None = None
 
 
 @dataclass(frozen=True)
@@ -226,6 +228,7 @@ def _sample(tick: int, value, rpm_raw: int, page: DynamicPage) -> Sample:
             for name, attribute in HOLD_SOURCES.items()
         },
         configuration=selector,
+        map_index=_optional_int(value("active_map_index")),
     )
 
 
@@ -379,7 +382,13 @@ class HoldRun:
     error in km/h*10, which stays narrow while the speed word follows the
     frame. `cuts` and `owed` are None outside hold mode, for a run without
     the snapshots before and after it, and when a fraction of the run or a
-    cut counter of those snapshots is unknown.
+    cut counter of those snapshots is unknown. The owed cuts follow the cut
+    fraction of the trim efficiency of the map slot.
+    `floor_ticks` counts the hold snapshots whose stock APC command plus
+    the trim lies past the floor command, so the applied retard is smaller
+    than the trim, the fired events deliver more than the stored
+    efficiency, and the actuator cuts more events than the delivered
+    torque needs; the speed loop absorbs the difference.
     """
 
     start_tick: int
@@ -391,6 +400,7 @@ class HoldRun:
     ceiling_ticks: int
     cuts: int | None
     owed: tuple[float, float] | None
+    floor_ticks: int = 0
 
     @property
     def cuts_inside(self) -> bool | None:
@@ -400,15 +410,46 @@ class HoldRun:
 
 
 def read_calibration(image: Path) -> rolling_launch.Calibration:
-    """Read the Rolling Launch configuration record of a flashed image."""
-    span = load_layout().configuration
+    """Read the Rolling Launch configuration record of a flashed image: the
+    current record, or the schema 4 record of an earlier image, which
+    holds one integral gain for every map and no trim."""
+    layout = load_layout()
+    span = layout.configuration
+    legacy = layout.retired_configuration_for(rolling_launch.LEGACY_SCHEMA_VERSION)
     data = Path(image).read_bytes()
-    if len(data) < span.end:
+    if len(data) < max(span.end, legacy.end):
         raise ValueError(f"{image}: image ends before the configuration record")
     calibration = rolling_launch.Calibration.from_bytes(data[span.start : span.end])
-    if not calibration.is_valid():
-        raise ValueError(f"{image}: the Rolling Launch configuration is invalid")
-    return calibration
+    if calibration.is_valid():
+        return calibration
+    try:
+        return rolling_launch.Calibration.from_legacy_bytes(
+            data[legacy.start : legacy.end]
+        )
+    except ValueError:
+        raise ValueError(
+            f"{image}: the Rolling Launch configuration is invalid"
+        ) from None
+
+
+def run_slot(samples, start, end, calibration) -> rolling_launch.Slot:
+    """The map slot of an ACTIVE run: the slot of the selected map that the
+    context refresh reports within the run and the snapshots before it."""
+    slots = set(calibration.slots)
+    if len(slots) == 1:
+        return calibration.slots[0]
+    first = max(0, start - CONTEXT_REFRESH_SNAPSHOTS)
+    indices = {
+        sample.map_index
+        for sample in samples[first : end + 1]
+        if sample.map_index is not None
+    }
+    if len(indices) != 1 or not 0 <= min(indices) < rolling_launch.SLOT_COUNT:
+        raise ValueError(
+            f"tick {samples[start].tick}: the capture lacks one selected map"
+            " for the run of a configuration with per-map slots"
+        )
+    return calibration.slot(indices.pop())
 
 
 def _predecessor(samples, index):
@@ -417,7 +458,7 @@ def _predecessor(samples, index):
     return None
 
 
-def _replay(samples, start, end, calibration):
+def _replay(samples, start, end, calibration, slot):
     """Replay the controller through one ACTIVE run.
 
     Return the failures, the count of checked fractions, and the bounds of
@@ -447,7 +488,8 @@ def _replay(samples, start, end, calibration):
                     error, calibration
                 )
                 integrator = rolling_launch.update_integrator(
-                    integrator, proportional, error, calibration
+                    integrator, proportional, error, calibration,
+                    slot.integral_gain,
                 )
                 command = min(
                     max(
@@ -501,7 +543,7 @@ def _abort_reason(samples, end):
     return None
 
 
-def _owed_cuts(samples, start, end, bounds):
+def _owed_cuts(samples, start, end, bounds, efficiency):
     """The bounds of the cuts owed from the IDLE snapshot before the run
     through the snapshot after it, or None without both of them or with a
     fraction of the run unknown."""
@@ -522,11 +564,14 @@ def _owed_cuts(samples, start, end, bounds):
         # update of the tick that ends the run it is COOLDOWN; both cut nothing.
         if index in (start, end + 1):
             fractions.append((unit, unit))
+        # The cut fraction falls as the torque fraction rises.
         low += sample.rpm_low * EVENTS_PER_COUNT_TICK * min(
-            unit - fraction for _low, fraction in fractions
+            rolling_launch.cut_fraction(fraction, efficiency)
+            for _low, fraction in fractions
         )
         high += sample.rpm_high * EVENTS_PER_COUNT_TICK * max(
-            unit - fraction for fraction, _high in fractions
+            rolling_launch.cut_fraction(fraction, efficiency)
+            for fraction, _high in fractions
         )
     return max(0.0, low / unit + CUTS_BELOW), high / unit + CUTS_ABOVE
 
@@ -576,15 +621,24 @@ def _run(samples, start, end, calibration):
                 f"tick {sample.tick}: the capture lacks the Rolling Launch"
                 " hold fields"
             )
-    failures, law_ticks, bounds = _replay(samples, start, end, calibration)
+    slot = run_slot(samples, start, end, calibration)
+    failures, law_ticks, bounds = _replay(samples, start, end, calibration, slot)
     targets = [
         sample.speed_kmh * 10 - sample.speed_error
         for sample in run
         if sample.speed_kmh is not None and sample.speed_error is not None
     ]
     cuts = owed = None
+    floor_ticks = 0
     if calibration.mode == rolling_launch.Mode.HOLD:
-        owed = _owed_cuts(samples, start, end, bounds)
+        if slot.max_trim:
+            floor_ticks = sum(
+                sample.apc_command_raw + slot.max_trim > slot.floor_command
+                for sample in run
+            )
+        owed = _owed_cuts(
+            samples, start, end, bounds, slot.trim_efficiency
+        )
         if owed is not None:
             counters = [
                 sample.cut_counter for sample in samples[start - 1 : end + 2]
@@ -610,6 +664,7 @@ def _run(samples, start, end, calibration):
         ),
         cuts=cuts,
         owed=owed,
+        floor_ticks=floor_ticks,
     )
 
 
@@ -655,6 +710,7 @@ def main(argv: list[str] | None = None) -> int:
                 f" failed_ticks={len({tick for tick, _ in run.failures})}"
                 f" target={target}"
                 f" ceiling_ticks={run.ceiling_ticks} cuts={cuts}"
+                f" floor_ticks={run.floor_ticks}"
             )
             for tick, failure in run.failures:
                 print(f"    tick {tick}: {failure}")

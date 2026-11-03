@@ -38,6 +38,9 @@ class RollingEndpointSignature:
     unit_sha256: tuple[tuple[str, str], ...]
     hook_values: tuple[tuple[str, int], ...]
     carries_current_telemetry: bool = False
+    # The Rolling Launch DIDs that the endpoint publishes; None names the
+    # nine DIDs of every endpoint before the RPM ceiling.
+    published_dids: frozenset[int] | None = None
 
 
 PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
@@ -88,6 +91,21 @@ ERASED_RPM_CEILING_SHA256 = (
 ERASED_SPARK_CUT_SHA256 = (
     "a8aa961e3bbac0826d6d3fabce5dee4889e5c218e4b1216908e66bc53264d89a"
 )
+# Every historical endpoint leaves the trim span 0xD6268..0xD6320 erased:
+# 184 bytes of 0xFF.
+ERASED_TRIM_SHA256 = (
+    "ba151f705f188cd9fcab95d6d24c0da135a4f334778b139684f38b8b4fbe728f"
+)
+# The hooks of the schema 4 endpoint, which installs every current hook.
+SPARK_CUT_ROLLING_HOOK_VALUES = (
+    ("displaced_periodic_task", 0x000D3860),
+    ("selector_arbitration", 0x000D3880),
+    ("startup_state_clear", 0x000D38A0),
+    ("primary_ignition_command", 0x000D3EA0),
+    ("feedback_arbitration", 0x000D41E0),
+    ("fuel_cut_coordinator", 0x000D6000),
+    ("spark_handler", 0x000D60C0),
+)
 # The speed-controller span 0xD40C0..0xD41E0 joins the former ignition
 # controller span 0xD40C0..0xD4140 and the former threshold-helper span
 # 0xD4140..0xD41E0, so each historical digest covers both former units.
@@ -112,6 +130,11 @@ BOUNDED_SPEED_CONTROLLER_SHA256 = (
 HISTORICAL_ROLLING_DIDS = frozenset(
     {0x1211, 0x1212, 0x1213, 0x1216, 0x1217, 0x1224, 0x1227, 0x1228, 0x1229}
 )
+# Every Rolling Launch DID of the current layout.
+CURRENT_ROLLING_DIDS = frozenset({
+    0x1211, 0x1212, 0x1213, 0x1216, 0x1217, 0x1224, 0x1227, 0x1228,
+    0x1229, 0x121D, 0x121E, 0x121F, 0x1231, 0x1232,
+})
 # Mode names of configuration schemas 1 to 3.
 HISTORICAL_MODE_NAMES = ("observe", "rpm_hold", "rpm_hold_retard")
 # Wrapper and engine bytes of every endpoint that holds RPM through the
@@ -144,6 +167,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -166,6 +190,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -188,6 +213,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -210,6 +236,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
@@ -239,6 +266,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -256,6 +284,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -275,6 +304,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", ERASED_FUEL_CUT_WRAPPER_SHA256),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=FUEL_SHADOW_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
@@ -294,9 +324,31 @@ HISTORICAL_ROLLING_ENDPOINTS = (
             ("fuel_cut_wrapper", "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"),
             ("rpm_ceiling", ERASED_RPM_CEILING_SHA256),
             ("spark_cut", ERASED_SPARK_CUT_SHA256),
+            ("trim", ERASED_TRIM_SHA256),
         ),
         hook_values=FUEL_CUT_WRAPPER_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
+    ),
+    # The speed hold with the spark-cut actuator and one integral gain: the
+    # 40-byte schema 4 record at 0xD6040 and every current hook and DID.
+    RollingEndpointSignature(
+        key="schema-4-uniform-gain",
+        roms=runtime_targets.EXACT_ROMS,
+        configuration_schema_version=4,
+        unit_sha256=(
+            ("wrappers", "11232a674dcb39fcbe03354e2e6e3ae91e23bed27706c6b48db6e52ce95b3cf8"),
+            ("engine", "7108080044c54a4eded9313657ce39af4729f5924beb3baa2380322274dd5e76"),
+            ("ignition_adapter", "66b1f07d71af484080746829ccb0f8a2a3b6513b6e4f1a87b1dc38c3c3d44c8a"),
+            ("speed_controller", "52d1a9ef8a671b731ff5c8fa3c86ae42a9ccf2d898e9a8d286e567dfb9793ef8"),
+            ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+            ("fuel_cut_wrapper", "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"),
+            ("rpm_ceiling", "5de36173709c7fd3880724eb9f13474f1b515ba725869205a7f48eeeb4c2c2dd"),
+            ("spark_cut", "94127a113032ff40012973e8ddd3bb368bf36029ba806460b328848c2ef19743"),
+            ("trim", ERASED_TRIM_SHA256),
+        ),
+        hook_values=SPARK_CUT_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+        published_dids=CURRENT_ROLLING_DIDS,
     ),
 )
 TELEMETRY_LOWER_ROLLING_STATES = frozenset(
@@ -389,6 +441,12 @@ def historical_configuration_fields(configuration, schema_version):
 
 
 def historical_configuration_is_valid(configuration, schema_version):
+    if schema_version == rolling_launch.LEGACY_SCHEMA_VERSION:
+        try:
+            rolling_launch.Calibration.from_legacy_bytes(bytes(configuration))
+        except (TypeError, ValueError, struct.error):
+            return False
+        return True
     if schema_version not in HISTORICAL_SCHEMA_FORMATS:
         raise EndpointError(
             "internal historical Rolling Launch schema is unsupported"
@@ -447,13 +505,27 @@ def historical_configuration_is_valid(configuration, schema_version):
 
 def configuration_record(source, layout, state):
     """Return the Rolling Launch record of an endpoint state: the current
-    record, or the 32-byte record of a historical endpoint in the retired
-    configuration span."""
-    span = (
-        layout.configuration if state == "current"
-        else layout.retired_configuration
-    )
+    record, or the record of a historical endpoint in the retired span of
+    its schema."""
+    if state == "current":
+        span = layout.configuration
+    else:
+        span = layout.retired_configuration_for(
+            historical_endpoint(state).configuration_schema_version
+        )
     return bytes(source[span.start : span.end])
+
+
+def historical_endpoint(key):
+    """Return the registered historical Rolling Launch endpoint of a key."""
+    for endpoint in HISTORICAL_ROLLING_ENDPOINTS:
+        if endpoint.key == key:
+            return endpoint
+    raise EndpointError(f"unknown historical Rolling Launch endpoint {key!r}")
+
+
+def _erased(source, span):
+    return source[span.start : span.end] == bytes([0xFF]) * span.size
 
 
 def _endpoint_binding(endpoint, layout):
@@ -524,7 +596,6 @@ def require_coherent_rolling_endpoint(
         for item in layout.diagnostics
     }
     configuration = configuration_record(source, layout, "current")
-    retired_configuration = configuration_record(source, layout, "historical")
 
     claimed_erased = all(
         source[span.start : span.end] == bytes([0xFF]) * span.size
@@ -549,8 +620,8 @@ def require_coherent_rolling_endpoint(
         current_units = all(
             unit_bytes[unit.key] == payloads[unit.key]
             for unit in layout.assembly_units
-        ) and retired_configuration == bytes([0xFF]) * len(
-            retired_configuration
+        ) and all(
+            _erased(source, span) for span in layout.retired_configuration_spans
         )
         try:
             current_configuration = rolling_launch.Calibration.from_bytes(
@@ -561,12 +632,7 @@ def require_coherent_rolling_endpoint(
         if current_units and current_configuration:
             return "current"
 
-    dids_historical = all(
-        did_values[item.did]
-        == (item.target if item.did in HISTORICAL_ROLLING_DIDS else item.stock)
-        for item in layout.diagnostics
-    )
-    if dids_historical and configuration == bytes([0xFF]) * len(configuration):
+    if configuration == bytes([0xFF]) * len(configuration):
         actual_hashes = {
             key: sha256(value) for key, value in unit_bytes.items()
         }
@@ -574,11 +640,28 @@ def require_coherent_rolling_endpoint(
             expected_hashes, expected_hooks = _endpoint_binding(
                 endpoint, layout
             )
+            published = (
+                HISTORICAL_ROLLING_DIDS if endpoint.published_dids is None
+                else endpoint.published_dids
+            )
+            record_span = layout.retired_configuration_for(
+                endpoint.configuration_schema_version
+            )
             if (
                 actual_hashes == expected_hashes
                 and hook_values == expected_hooks
+                and all(
+                    did_values[item.did]
+                    == (item.target if item.did in published else item.stock)
+                    for item in layout.diagnostics
+                )
+                and all(
+                    _erased(source, span)
+                    for span in layout.retired_configuration_spans
+                    if span != record_span
+                )
                 and historical_configuration_is_valid(
-                    retired_configuration,
+                    source[record_span.start : record_span.end],
                     endpoint.configuration_schema_version,
                 )
             ):

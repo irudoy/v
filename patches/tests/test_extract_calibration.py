@@ -248,7 +248,7 @@ def test_schema_1_record_is_reported_and_only_calibration_is_written(tmp_path, c
     historical[layout.configuration.start : layout.configuration.end] = (
         bytes([0xFF]) * layout.configuration.size
     )
-    retired = layout.retired_configuration
+    retired = layout.retired_configuration_for(3)
     historical[retired.start : retired.end] = bytes.fromhex(
         "524c0101050000ff010000a00001001000"
         "04012c0064737373737300adb3a55a"

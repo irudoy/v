@@ -178,7 +178,7 @@ from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
 `selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
 `speed_controller`, `rpm_ceiling`, `feedback_arbiter`, `ignition_adapter`,
-and `spark_cut` with the same host PC observer. Typed instruction statements define this scope; pools and fill
+`spark_cut`, `slot_validator`, and `trim` with the same host PC observer. Typed instruction statements define this scope; pools and fill
 bytes do not count as instructions. Exact composed instructions and control
 literals survive the declared fixture translations and match the final ELF
 and invoke code. Each wrapper invocation retains its originating invoke frame
@@ -204,11 +204,16 @@ The speed controller accepts an originating invoke call or the exact bound
 engine call window on an active engine frame. Its R3 load binds the composed
 control pool of the stock unsigned divider `0x00021CE0` before execution.
 Each divider call returns before the native RTS of the controller reaches the
-original continuation. Its R0 load binds the pool word of the RPM ceiling
-unit, the only controller call besides the divider. The ceiling unit is a leaf
-reached only through that call, and each of its two native RTS returns to the
-controller continuation. Both outcomes of every controller and ceiling branch
-and their delay slots must execute. The stock divider body receives no
+original continuation. Its R0 load binds the pool word of the trim unit, the
+only controller call besides the divider. The trim unit calls the divider
+through its R2 literal load and tail-jumps through its R0 literal load to the
+RPM ceiling unit; it has no RTS of its own. The ceiling unit is a leaf
+reached only through that tail, and each of its two native RTS returns to
+the controller continuation. The engine configuration check tail-jumps
+through its single R0 literal load to the slot validator, a leaf whose two
+native RTS return to the BSR continuation of the check. Both outcomes of
+every controller, trim, validator and ceiling branch and their delay slots
+must execute. The stock divider body receives no
 instruction-coverage qualification. The engine body is in the measured scope.
 
 Controller rows of the canonical harness take their expected outputs from the
@@ -218,7 +223,11 @@ width and quotient, the integrator freeze on both saturated sums,
 accumulation, both integrator limits, the RPM ceiling at, above and across the
 16-bit range of its 32-bit sum, the latch held above and released at the
 hysteresis restore point, the unlatched band, observe release of a set latch,
-and the stock cut bit. The complete state,
+and the stock cut bit. Controller rows also require the cut fraction of an
+untrimmed slot. Trim rows take the cut fraction from the model for unit and
+partial efficiencies, both quotient clamps and the integral gain of each
+map slot. Configuration rows reject every out-of-range slot field, a trim
+without its efficiency, and a corrupt slot end marker. The complete state,
 configuration, selector, shadows, runtime words, named input/output buffers,
 stack pointer and GBR must otherwise remain intact. The observed R4 retains
 the configuration-pointer role exposed by `invoke_r4`; it is not a C
@@ -257,12 +266,15 @@ phase, the first match after leaving ACTIVE, and two aligned 36-match periods
 for sixteen fractions with their period and per-cylinder bounds. The stub does
 not qualify the stock handler body.
 
-The ignition adapter is a single literal tail to the stock consumer
-`0x0002A892` with every argument register unchanged. Its entry, literal load
-and pool bind to the composed image before execution, and the tail reaches the
-declared RTS/NOP stub of the consumer, which returns to the original invoke
-continuation. Adapter cases check the unchanged command, the complete state,
-concrete buffers, configuration, SP and GBR.
+The ignition adapter ends in a single literal tail to the stock consumer
+`0x0002A892`. Its entry, literal load and pool bind to the composed image
+before execution, and the tail reaches the declared RTS/NOP stub of the
+consumer, which returns to the original invoke continuation. Adapter rows
+take the command from the model: the stock command outside an ACTIVE hold,
+with the APC fallback bit, for an invalid map snapshot and for a zero trim,
+the trimmed command, the floor clip and a stock command past the floor. They
+check the command, the argument registers other than `r0..r4`, the complete
+state, concrete buffers, configuration, SP and GBR.
 
 A controller negative build moves the integrator input of the lower-limit row
 so that the step ends exactly on the limit, preserving its semantic

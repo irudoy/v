@@ -386,11 +386,53 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(profile.calibration.mode, rolling_launch.Mode.HOLD)
         self.assertEqual(profile.calibration.enable_mask, 0x05)
         self.assertEqual(profile.calibration.target_speed_offset, -20)
-        self.assertEqual(profile.calibration.integral_gain, 3)
+        self.assertEqual(
+            profile.calibration.slots,
+            (rolling_launch.Slot(integral_gain=3),) * rolling_launch.SLOT_COUNT,
+        )
         result = build_rom.build_image(self.stock, profile=profile)
         self.assertEqual(
             result.configuration, profile.calibration.to_bytes()
         )
+
+    def test_profile_slots_take_per_map_values_and_the_stock_trim_efficiency(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "profile.toml"
+            path.write_text(
+                profile_text(
+                    integral_gain="[0, 2, 4, 2, 0]",
+                    max_trim="[0, 0, 0, 20, 7]",
+                    floor_command="120",
+                ),
+                encoding="utf-8",
+            )
+            profile = build_rom.load_profile(path)
+        self.assertEqual(
+            [slot.integral_gain for slot in profile.calibration.slots],
+            [0, 2, 4, 2, 0],
+        )
+        result = build_rom.build_image(self.stock, profile=profile)
+        stored = rolling_launch.Calibration.from_bytes(result.configuration)
+        # F(20) = 45 on the axis; F(7) lies between F(6) = 4 and F(9) = 9.
+        self.assertEqual(
+            [slot.trim_efficiency for slot in stored.slots],
+            [1000, 1000, 1000, 824, 980],
+        )
+        self.assertEqual(
+            [slot.floor_command for slot in stored.slots], [120] * 5
+        )
+        text = build_rom.profile_text("slots", "JK08A", stored)
+        self.assertIn("integral_gain = [0, 2, 4, 2, 0]", text)
+        self.assertIn("max_trim = [0, 0, 0, 20, 7]", text)
+        self.assertIn("floor_command = 120", text)
+        with self.assertRaises(build_rom.BuildError):
+            build_rom.trim_table_value(self.stock, rolling_launch.TRIM_MAX + 1)
+        for values in ({"integral_gain": "[1, 2]"}, {"max_trim": "41"}):
+            with self.subTest(values=values), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "profile.toml"
+                path.write_text(profile_text(**values), encoding="utf-8")
+                with self.assertRaises(build_rom.BuildError):
+                    build_rom.load_profile(path)
 
     def test_profile_can_enable_configurable_can_telemetry(self):
         telemetry_values = {

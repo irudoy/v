@@ -136,6 +136,29 @@ def require_hold_actuator(target, extraction):
     )
 
 
+def require_trim_efficiency(data, extraction):
+    """Refuse a record whose trim efficiency differs from F of the image."""
+    calibration = extraction.rolling
+    if calibration is None:
+        return
+    try:
+        expected = build_rom.resolve_trim_efficiency(calibration, data)
+    except build_rom.BuildError as error:
+        raise PreflashError(str(error)) from error
+    maps = [
+        str(index + 1)
+        for index, (stored, derived) in enumerate(
+            zip(calibration.slots, expected.slots)
+        )
+        if stored != derived
+    ]
+    if maps:
+        raise PreflashError(
+            "Rolling Launch trim efficiency of map "
+            f"{', '.join(maps)} differs from the F table of the image"
+        )
+
+
 def check_image(data, rom):
     """Return the report of an image that rebuilds byte for byte at HEAD."""
     data = bytes(data)
@@ -155,6 +178,7 @@ def check_image(data, rom):
         )
     target = runtime_targets.load_runtime_target(rom)
     require_hold_actuator(target, extraction)
+    require_trim_efficiency(data, extraction)
     rebuilt, runtime = _rebuild(target.stock_image.data, target, extraction)
     if rebuilt != data:
         offset = next(

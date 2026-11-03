@@ -40,7 +40,6 @@ COMMON_TABLES = {
     "Rolling Launch Speed Window Width": "Rolling Launch / Speed Hold",
     "Rolling Launch Speed Window Top": "Rolling Launch / Speed Hold",
     "Rolling Launch Torque Fraction Rate Limit": "Rolling Launch / Speed Hold",
-    "Rolling Launch Integral Gain": "Rolling Launch / Speed Hold",
     "Rolling Launch Integrator Limit": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
@@ -618,7 +617,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(len(switches), 1)
         switch = switches[0]
         self.assertEqual(switch.get("name"), "Rolling Launch Enable by Map")
-        self.assertEqual(switch.get("storageaddress"), "0xD6044")
+        self.assertEqual(switch.get("storageaddress"), "0xD6224")
         self.assertEqual(
             [
                 (bit.get("name"), bit.get("position"))
@@ -640,21 +639,20 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             table.get("name"): table for table in rom.findall("./table")
         }
         expected = {
-            "Rolling Launch Minimum Coolant Temperature": "0xD6046",
-            "Rolling Launch Minimum Vehicle Speed": "0xD6048",
-            "Rolling Launch Maximum Vehicle Speed": "0xD604A",
-            "Rolling Launch Minimum Engine Speed": "0xD604C",
-            "Rolling Launch Require Accelerator Pedal": "0xD604E",
-            "Rolling Launch Speed Window Width": "0xD6052",
-            "Rolling Launch Speed Window Top": "0xD6053",
-            "Rolling Launch Torque Fraction Rate Limit": "0xD6054",
-            "Rolling Launch Integral Gain": "0xD6056",
-            "Rolling Launch Integrator Limit": "0xD6058",
-            "Rolling Launch Abort Above Target": "0xD605A",
-            "Rolling Launch Abort Below Target": "0xD605B",
-            "Rolling Launch RPM Ceiling Offset": "0xD605C",
-            "Rolling Launch Speed Frame Age Limit": "0xD6062",
-            "Rolling Launch RPM Ceiling Hysteresis": "0xD6063",
+            "Rolling Launch Minimum Coolant Temperature": "0xD6226",
+            "Rolling Launch Minimum Vehicle Speed": "0xD6228",
+            "Rolling Launch Maximum Vehicle Speed": "0xD622A",
+            "Rolling Launch Minimum Engine Speed": "0xD622C",
+            "Rolling Launch Require Accelerator Pedal": "0xD622E",
+            "Rolling Launch Speed Window Width": "0xD6232",
+            "Rolling Launch Speed Window Top": "0xD6233",
+            "Rolling Launch Torque Fraction Rate Limit": "0xD6234",
+            "Rolling Launch Integrator Limit": "0xD6238",
+            "Rolling Launch Abort Above Target": "0xD623A",
+            "Rolling Launch Abort Below Target": "0xD623B",
+            "Rolling Launch RPM Ceiling Offset": "0xD623C",
+            "Rolling Launch Speed Frame Age Limit": "0xD6242",
+            "Rolling Launch RPM Ceiling Hysteresis": "0xD6243",
         }
         for name, address in expected.items():
             with self.subTest(name=name):

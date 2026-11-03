@@ -17,7 +17,8 @@
 //             ORs into the stock coordinator result; cleared on every entry
 //   +0x16 u16 torque command before the rate limit, thousandths
 //   +0x18 u16 RPM ceiling latch: 0 released, 1 latched
-//   +0x1A u16 reserved, zero
+//   +0x1A u16 cut fraction c = 1000 - min(1000, 1000 * u / e) of the trim
+//             unit, thousandths; cleared at activation
 //
 // One tick is one exact periodic scheduler pass: 204800/Pphi seconds. Passive
 // target-CAN timing establishes Pphi=20 MHz and a 10.24 ms target period.
@@ -94,7 +95,7 @@ mov #0x0,r0
 mov.w r0,@(0x6,r5)
 mov.w r0,@(0x8,r5)
 mov.w r0,@(0x12,r5)
-mov.w r0,@(0x18,r5)
+mov.l r0,@(0x18,r5)
 mov.l @(rl_rpm_address,pc),r1
 mov.w @r1,r0
 mov.w r0,@(0xA,r5)
@@ -343,7 +344,7 @@ rl_state_address:
 rl_selector_address:
 .long 0xFFFF5D00
 rl_config_address:
-.long 0x000D6040
+.long 0x000D6220
 rl_rpm_address:
 .long 0xFFFF11BC
 rl_speed_address:
@@ -681,7 +682,7 @@ rl_gate_selector_address:
 rl_gate_map_enable_masks:
 .long 0x000D3D48
 rl_gate_config_address:
-.long 0x000D6040
+.long 0x000D6220
 rl_gate_ascd_address:
 .long 0xFFFF41AE
 rl_gate_button_address:
@@ -711,7 +712,7 @@ extu.w r1,r1
 cmp/eq r1,r0
 bf rl_config_invalid
 mov.b @(0x2,r3),r0
-cmp/eq 0x4,r0
+cmp/eq 0x5,r0
 bf rl_config_invalid
 mov.b @(0x3,r3),r0
 mov #0x2,r1
@@ -778,7 +779,7 @@ bt rl_config_invalid
 cmp/hi r1,r0
 bt rl_config_invalid
 mov.w @(0x16,r3),r0
-cmp/pz r0
+tst r0,r0
 bf rl_config_invalid
 mov.w @(0x18,r3),r0
 extu.w r0,r0
@@ -834,8 +835,8 @@ mov.w @(rl_helper_config_end_marker,pc),r1
 extu.w r1,r1
 cmp/eq r1,r0
 bf rl_config_invalid
-mov #0x1,r0
-rts
+mov.l @(rl_helper_slot_validator,pc),r0
+jmp @r0
 nop
 rl_config_invalid:
 mov #0x0,r0
@@ -844,7 +845,7 @@ nop
 
 .org 0x000D3E58
 rl_helper_config_address:
-.long 0x000D6040
+.long 0x000D6220
 rl_helper_config_magic:
 .word 0x524C
 rl_helper_config_magic_inverse:
@@ -855,3 +856,6 @@ rl_helper_u16_8000:
 .word 0x8000
 rl_helper_u_one:
 .word 1000
+.org 0x000D3E68
+rl_helper_slot_validator:
+.long 0x000D6268

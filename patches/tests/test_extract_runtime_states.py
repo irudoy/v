@@ -7,6 +7,8 @@ partial state.
 
 from dataclasses import replace
 from functools import lru_cache
+from pathlib import Path
+import tomllib
 from unittest import mock
 
 import pytest
@@ -297,10 +299,10 @@ def edited_runtime(rom, *, rolling=False, telemetry=False):
     edited = bytearray(built(rom))
     if rolling:
         start = target(rom).rolling_layout.configuration.start
-        # Editor fields in the current 40-byte Rolling Launch record.
+        # Editor fields in the current 72-byte Rolling Launch record.
         edited[start + 4] = 0x02  # Map 1 disabled, Map 2 enabled.
         edited[start + 8 : start + 10] = (0).to_bytes(2, "big")  # No speed floor.
-        edited[start + 22 : start + 24] = (3).to_bytes(2, "big")  # Integral gain.
+        edited[start + 0x2E : start + 0x30] = (3).to_bytes(2, "big")  # Map 2 Ki.
         edited[start + 30 : start + 32] = (301).to_bytes(2, "big")  # Run timeout.
     if telemetry:
         layout = target(rom).telemetry_layout
@@ -328,13 +330,15 @@ def edited_record():
 
 
 def without_spark_cut(rom, data):
-    """Return ``data`` with the spark-cut unit erased, the stock vector of the
-    GR11A spark handler, and stock pointers in the DID slots that only the
-    current runtime publishes, as in every runtime before the hold actuator."""
+    """Return ``data`` with the spark-cut and trim units erased, the stock
+    vector of the GR11A spark handler, and stock pointers in the DID slots
+    that only the later runtimes publish, as in every runtime before the
+    hold actuator."""
     layout = target(rom).rolling_layout
     source = bytearray(data)
-    spark = layout.assembly_unit_by_key["spark_cut"].span
-    source[spark.start : spark.end] = bytes([0xFF]) * spark.size
+    for key in ("spark_cut", "trim"):
+        span = layout.assembly_unit_by_key[key].span
+        source[span.start : span.end] = bytes([0xFF]) * span.size
     hook = layout.hook_by_key["spark_handler"]
     source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
         hook.width, layout.byte_order
@@ -365,7 +369,7 @@ def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROL
         source[unit.span.start : unit.span.end] = blob
     current = layout.configuration
     source[current.start : current.end] = bytes([0xFF]) * current.size
-    retired = layout.retired_configuration
+    retired = layout.retired_configuration_for(3)
     source[retired.start : retired.end] = record
     return source
 
@@ -497,7 +501,7 @@ def test_records_in_both_spans_are_refused(part):
         source[current.start : current.end] = built("JK08A")[current.start : current.end]
     else:
         source = bytearray(built("JK08A"))
-        retired = layout.retired_configuration
+        retired = layout.retired_configuration_for(3)
         source[retired.start : retired.end] = SCHEMA_3_RECORD
     with pytest.raises(
         extract_calibration.ExtractionError,
@@ -665,7 +669,7 @@ def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
 def test_previous_guarded_controller_hybrid_and_malformed_endpoint_are_refused(part):
     layout = target("JK08A").rolling_layout
     address = (
-        layout.retired_configuration.start if part == "configuration"
+        layout.retired_configuration_for(3).start if part == "configuration"
         else layout.assembly_unit_by_key[part].span.start
     )
     source = bytearray(previous_current_image())
@@ -699,7 +703,7 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
     if component == "rolling_launch":
         assert extraction.rolling.enable_mask == 0x02
         assert extraction.rolling.min_speed == 0
-        assert extraction.rolling.integral_gain == 3
+        assert extraction.rolling.slots[1].integral_gain == 3
         assert extraction.rolling.run_timeout_ticks == 301
         assert extraction.telemetry == profile.telemetry
     else:
@@ -745,6 +749,51 @@ def test_speed_hold_runtime_without_the_ceiling_latch_is_refused(part):
         preflash.check_image(data, "JK08A")
 
 
+SCHEMA_4_FIXTURE = Path(__file__).parent / "data" / "rolling-launch-schema-4.toml"
+
+
+def schema_4_image(gain):
+    """Return a build of the `schema-4-uniform-gain` endpoint with one
+    integral gain for every map."""
+    with SCHEMA_4_FIXTURE.open("rb") as source:
+        fixture = tomllib.load(source)
+    layout = target("JK08A").rolling_layout
+    data = bytearray(built("JK08A"))
+    for key, payload in fixture["units"].items():
+        span = layout.assembly_unit_by_key[key].span
+        payload = bytes.fromhex("".join(payload.split()))
+        assert len(payload) == span.size
+        data[span.start : span.end] = payload
+    for span in (layout.assembly_unit_by_key["trim"].span, layout.configuration):
+        data[span.start : span.end] = bytes([0xFF]) * span.size
+    record = bytearray.fromhex(fixture["configuration"])
+    record[0x16:0x18] = gain.to_bytes(2, "big")
+    legacy = layout.retired_configuration_for(rolling_launch.LEGACY_SCHEMA_VERSION)
+    data[legacy.start : legacy.end] = record
+    return closed("JK08A", data)
+
+
+def test_schema_4_endpoint_maps_its_gain_to_every_map_slot():
+    extraction = extract(schema_4_image(3))
+    assert state(extraction)["rolling_launch"] == "schema-4-uniform-gain"
+    assert state(extraction)["can_telemetry"] == "current"
+    assert not extraction.unexpressed
+    assert extraction.rolling.slots == (
+        (rolling_launch.Slot(integral_gain=3),) * rolling_launch.SLOT_COUNT
+    )
+
+
+@pytest.mark.parametrize("part", ("trim", "engine"))
+def test_schema_4_endpoint_hybrid_is_refused(part):
+    layout = target("JK08A").rolling_layout
+    source = bytearray(schema_4_image(3))
+    source[layout.assembly_unit_by_key[part].span.start] ^= 1
+    with pytest.raises(
+        extract_calibration.ExtractionError, match="partial or unknown Rolling Launch"
+    ):
+        extract(source)
+
+
 def test_ceiling_latch_runtime_without_the_spark_cut_is_refused():
     layout = target("JK08A").rolling_layout
     data = without_spark_cut("JK08A", built("JK08A"))
@@ -784,7 +833,7 @@ def _rolling_cases():
     # A zero speed-window width is outside the record contract.
     invalid_configuration[layout.configuration.start + 18] = 0
     mixed_schema = bytearray(base)
-    retired = layout.retired_configuration
+    retired = layout.retired_configuration_for(3)
     mixed_schema[retired.start : retired.end] = SCHEMA_1_RECORD
     return {
         "unknown-payload": unknown_payload,

@@ -69,7 +69,8 @@ commit path, clears the runtime state, and enters a safe cooldown.
 
 Activation requires every gate to pass in this order:
 
-1. The 40-byte configuration record is structurally valid.
+1. The 72-byte configuration record and its five map slots are
+   structurally valid.
 2. The active map index is within Maps 1 through 5.
 3. Rolling Launch is enabled for the active map.
 4. Selector phase, count, and elapsed time are idle.
@@ -382,7 +383,7 @@ output at the coil terminals remain outside the measurement.
 | Mode | Torque fraction | Ignition events | Fuel cut |
 | --- | --- | --- | --- |
 | `observe` | computed and published | unchanged | unchanged |
-| `hold` | computed and published | dwell of a fraction `1 - u` of eligible events withheld | all-cylinder request latched above the RPM ceiling |
+| `hold` | computed and published | dwell of a fraction `q` of eligible events withheld; fired events carry the trim of the map slot | all-cylinder request latched above the RPM ceiling |
 
 ## Speed-hold controller
 
@@ -392,11 +393,13 @@ Activation captures the vehicle speed and native RPM of the activation tick:
 target = clamp(speed + target_offset, 0, 0xFFFF)
 ```
 
-Speeds are km/h*10. The torque fraction `u` and the command are thousandths
-of full torque; the integrator holds sixteenths of one thousandth. Activation
-sets `u = 1000` and empties the integrator. On the activation tick and on
-every `ACTIVE` tick that passes its gates and the run timer, the controller
-computes:
+Speeds are km/h*10. The torque fraction `u`, the command, and the cut
+fraction `q` are thousandths; the integrator holds sixteenths of one
+thousandth. Activation sets `u = 1000`, `q = 0`, and empties the
+integrator. `integral_gain`, `max_trim` (`z`), and `trim_efficiency`
+(`eff`) belong to the slot of the map snapshot of the activation. On the
+activation tick and on every `ACTIVE` tick that passes its gates and the
+run timer, the controller computes:
 
 ```text
 e = speed - target
@@ -407,15 +410,31 @@ step = 0 if (u_p + I // 16 <= 0 and step < 0)
 I = clamp(I + step, -16 * integrator_limit, 16 * integrator_limit)
 command = clamp(u_p + I // 16, 0, 1000)
 u = clamp(command, u - rate_limit, u + rate_limit)
+q = 1000 - min(1000, 1000 * u // eff)
 ```
 
 The proportional fraction is full torque while `e <= window_top - window_width`,
 zero while `e >= window_top`, and linear between. The integrator falls
 while the speed is above the target, rises while it is below, and freezes
 while its step would deepen a saturated sum. The stock unsigned divider
-`0x00021CE0` forms the quotient. The state record publishes `e`, `I`, the
-command, and `u`. The controller runs only on ticks whose speed error lies
-inside the abort window `-abort_below <= e <= abort_above`.
+`0x00021CE0` forms both quotients. The state record publishes `e`, `I`, the
+command, `u`, and `q`. The controller runs only on ticks whose speed error
+lies inside the abort window `-abort_below <= e <= abort_above`.
+
+The fired events of a trimmed slot deliver the fraction `eff` of their
+torque, so the cut fraction compensates: the delivered torque
+`(1 - q) * eff` equals `u` while `u <= eff`, and every event fires at
+`u >= eff`. A slot without trim stores `eff = 1000`, and `q = 1000 - u`.
+The builder derives `eff` from the stock spark-efficiency pair
+`0x00011D24`/`0x0001199E`:
+
+```text
+eff = (256 - F(z)) * 1000 // 256
+```
+
+`F` interpolates the 16-point table linearly with a truncated result
+(`F(20) = 45`, `eff = 824`). `make preflash` refuses an image whose stored
+efficiency differs from the value of the stock pair.
 
 ## Fuel-cut request
 
@@ -454,10 +473,26 @@ observe the stock result between the coordinator store and the merge.
 
 ## Primary ignition command
 
-The primary ignition-command hook at `0x0004E198` stays on the Rolling Launch
-layer. Its adapter tail-jumps to the stock consumer `0x0002A892` with every
-argument register unchanged, so the APC command keeps its stock value in
-every phase and mode.
+The adapter at the primary ignition-command hook `0x0004E198` applies the
+retard trim of the map slot and tail-jumps to the stock consumer
+`0x0002A892`:
+
+```text
+command = max(stock, min(stock + z, floor_command))
+```
+
+The APC command counts retard, and the timing is `110 - command` degrees,
+so `floor_command` 120 limits the trim to 10 degrees ATDC. The adapter
+keeps the stock command outside an `ACTIVE` hold, while the P0335 APC
+fallback `0xFFFF24C9.bit6` is set, and for a map snapshot outside Maps 1
+through 5; it never advances the timing. It changes `r0..r4` only, and
+every other argument register reaches the stock consumer unchanged.
+
+The stored efficiency assumes the full trim. When the floor clips the
+trim (`stock + z > floor_command`), the applied retard is smaller than `z`,
+the fired events deliver more than `eff`, and the cut withholds more events
+than the delivered torque needs. The speed loop absorbs the difference, and
+the hold audit reports the clipped ticks of every run.
 
 ## Speed-hold cut actuator
 
@@ -542,7 +577,7 @@ level 8, saves `r0..r7` and `SR`, and restores them before it branches to
 handler receives the machine state of its entry. It runs without loops.
 
 A `GR11A` match without `0xFFFF8517.bit7` is a forced timeout match and passes
-through unchanged. In an `ACTIVE` hold with `u <= 1000`, a spark is eligible
+through unchanged. In an `ACTIVE` hold with `q <= 1000`, a spark is eligible
 with the sync bit `0xFFFF8501.bit7`, without the P0335 APC fallback
 `0xFFFF24C9.bit6`, with the dwell angle `0xFFFF237A` at most 110 degrees, and
 with an event cylinder `0xFFFF13C9` of 1..6. The veto at the match of event
@@ -553,22 +588,22 @@ Six accumulators, one per event cylinder, count sixths of a thousandth of a
 cut:
 
 ```text
-acc[c] = acc[c] + 6 * (1000 - u)
+acc[c] = acc[c] + 6 * q
 cut    = acc[c] >= 6000
 acc[c] = acc[c] - 6000 if cut
 ```
 
-Outside an `ACTIVE` hold, for `u > 1000`, and at an eligible match whose
+Outside an `ACTIVE` hold, for `q > 1000`, and at an eligible match whose
 accumulator holds 6000 or more, every accumulator returns to its offset
 `1000 * k + 250`, with `k = (0, 2, 4, 1, 3, 5)` for event cylinders 1..6. The
 offsets differ by exact sixths in firing order, so over whole engine cycles
-the cuts total those of one accumulator. For every `u` and every start
+the cuts total those of one accumulator. For every `q` and every start
 cylinder the cuts of an aligned 36-event period are within one of
-`36 * (1 - u)`, those of any 36 consecutive eligible events within three,
+`36 * q / 1000`, those of any 36 consecutive eligible events within three,
 and those of every cylinder within one of the mean. The bound of 36
 consecutive events holds with a margin of 0.016 events (2.984 at
-`u = 444`), so a change of the offsets requires the full sweep over every
-`u` and every start cylinder again. A single accumulator would cut the same cylinders whenever `1 - u` is a
+`q = 556`), so a change of the offsets requires the full sweep over every
+`q` and every start cylinder again. A single accumulator would cut the same cylinders whenever `q` is a
 multiple of 1/6. An ineligible match leaves every accumulator unchanged, so
 the cut fraction applies to eligible events.
 
@@ -681,12 +716,13 @@ interrupts masked, so neither interleaves with the stock writer.
 
 ## Configuration
 
-The strict 40-byte schema-4 record contains:
+The strict 72-byte schema-5 record has a 40-byte head and five 6-byte map
+slots at `+0x28`. The head contains:
 
 | Field | Contract |
 | --- | --- |
 | magic, inverse, end marker | fixed integrity sentinels |
-| schema | version 4 |
+| schema | version 5 |
 | mode | observe or hold |
 | enable mask | one bit per map, unused bits clear |
 | options | zero |
@@ -698,7 +734,7 @@ The strict 40-byte schema-4 record contains:
 | window width | nonzero byte, km/h*10 |
 | window top | byte, km/h*10 |
 | rate limit | 1..1000 thousandths per tick |
-| integral gain | 0..0x7FFF |
+| reserved word `+0x16` | zero |
 | integrator limit | 0..1000 thousandths |
 | abort above/below | nonzero bytes, km/h*10 |
 | RPM ceiling offset | nonzero native value |
@@ -706,20 +742,32 @@ The strict 40-byte schema-4 record contains:
 | speed-frame age limit | 1..254 counts of the stock receive age |
 | RPM ceiling hysteresis | byte at `+0x23`, 1..255 native, at most the ceiling offset |
 
+Slot `n` at `+0x28 + 6 * n` belongs to Map `n + 1`, and the end marker
+`0xA55A` follows the last slot at `+0x46`:
+
+| Slot field | Contract |
+| --- | --- |
+| integral gain | signed word, 0..0x7FFF |
+| max trim | byte, 0..40 APC command counts |
+| floor command | byte, the latest APC command of the trim |
+| trim efficiency | word, 1..1000 thousandths; 1000 when the trim is zero |
+
 The built-in production profile is `hold-map1-test`: Map 1 enabled, `hold`
 mode, and the controller defaults of the reference model. The layout declares
 the spark-cut hold actuator (`hold_actuator = true`); `make preflash` refuses
 an image that enables a map in `hold` mode while that field is false. The
 relocated targets take the built-in `observe` profile with no enabled maps,
 and their images receive no Rolling Launch bytes. A strict local TOML profile
-can select either mode, any map mask, and every controller field. Every field
-is mandatory, unknown fields are rejected, and enabled maps use one-based
-numbers. See `rom-builder.md` for the profile schema and build invocation.
+can select either mode, any map mask, every controller field, and the slot
+fields as a scalar or a list of five values. Every head field is mandatory,
+unknown fields are rejected, and enabled maps use one-based numbers. The
+builder writes the trim efficiency of each slot from the stock
+spark-efficiency pair. See `rom-builder.md` for the profile schema and build invocation.
 
 RomRaider and XDF expose the per-map enable bits, the pedal requirement as a
 switch, and independent calibration tables for the unsigned activation and
 controller fields. The signed target offset, the coolant maximum, and the run
-and rearm periods stay in the build profile. Raw aggregate records remain
+and rearm periods and the map slots stay in the build profile. Raw aggregate records remain
 implementation data, not a tuning interface. Generated definitions are
 projections of the live JK08A source annotations and layouts.
 
@@ -731,25 +779,31 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | --- | ---: | --- |
 | `0x000D3860..0x000D38E4` | 132 | periodic, selector-arbiter, and startup wrappers |
 | `0x000D38E4..0x000D3EA0` | 1,468 | state engine, gates, and configuration check |
-| `0x000D3EA0..0x000D3F60` | 192 | primary ignition-command pass-through |
+| `0x000D3EA0..0x000D3F60` | 192 | primary ignition-command trim adapter |
 | `0x000D3F60..0x000D3F80` | 32 | retired configuration span, erased |
 | `0x000D40C0..0x000D41E0` | 288 | speed-hold controller |
 | `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
 | `0x000D6000..0x000D6040` | 64 | fuel-cut coordinator wrapper |
-| `0x000D6040..0x000D6068` | 40 | configuration record |
+| `0x000D6040..0x000D6068` | 40 | retired schema-4 configuration span, erased |
 | `0x000D6068..0x000D60C0` | 88 | RPM ceiling latch |
 | `0x000D60C0..0x000D6220` | 352 | spark-cut actuator |
+| `0x000D6220..0x000D6268` | 72 | configuration record |
+| `0x000D6268..0x000D62B8` | 80 | map-slot validator |
+| `0x000D62B8..0x000D6320` | 104 | trim cut-fraction unit |
 | `0xFFFF5D40..0xFFFF5D6C` | 44 | runtime state |
 
-Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`. The span stays
-claimed and erased inside the Rolling Launch write set, so the registered
-historical endpoints keep extracting their record from it. The Map Switching
+Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`, and schema 4 a
+40-byte record with one integral gain for every map at `0x000D6040`. Both
+spans stay claimed and erased inside the Rolling Launch write set, so the
+registered historical endpoints keep extracting their records from them.
+Extraction maps a schema-4 record to five slots with its gain and no trim. The Map Switching
 map copies at `0x000D3F80` leave no room to grow the record in place.
 
-Every registered historical endpoint leaves the RPM ceiling span
-`0x000D6068..0x000D60C0` and the spark-cut span `0x000D60C0..0x000D6220`
-erased and the `GR11A` table entry at the stock handler, and its signature
-binds those bytes.
+Every registered historical endpoint leaves the slot-validator and trim span
+`0x000D6268..0x000D6320` erased. The endpoints before schema 4 also leave
+the RPM ceiling span `0x000D6068..0x000D60C0` and the spark-cut span
+`0x000D60C0..0x000D6220` erased and the `GR11A` table entry at the stock
+handler. Every signature binds those bytes.
 The speed-hold runtime without the ceiling latch, whose state has 24 bytes, is
 not a registered endpoint: the builder and `make preflash` classify its images
 as an unknown Rolling Launch state and refuse them.
@@ -780,8 +834,8 @@ Allocation and hook bytes are authoritative only in
 The canonical 44-byte state records phase, abort reason, flags, map/mode
 snapshots, run and rearm timers, captured RPM, target speed, the torque
 fraction after the rate limit, the speed error, the integrator, the fuel-cut
-request, the command before the rate limit, and the RPM ceiling latch; bytes
-`+0x1A..+0x1C` are reserved and zero. The spark-cut actuator owns
+request, the command before the rate limit, the RPM ceiling latch, and the
+cut fraction `q` at `+0x1A`. The spark-cut actuator owns
 `+0x1C..+0x2C`: the quiet-event count, the cut counter, a reserved zero word,
 and the six accumulators. Corrupt-state recovery clears the first 28 bytes,
 and the startup wrapper clears all 44. An `ACTIVE` state with a latch other
@@ -834,9 +888,9 @@ The composition and assembly modules require the exact base composition and
 bind every byte to the declared layout and payload manifests.
 
 The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` for active state and
-`0x000D6000..0x000D6220` for the fuel-cut wrapper, the configuration record,
-the RPM ceiling latch, and the spark-cut actuator. The cross-runtime ledger
-assigns `0x000D6220..0x000D6800` and
+`0x000D6000..0x000D6320` for the fuel-cut wrapper, the RPM ceiling latch,
+the spark-cut actuator, the configuration record, the slot validator, and
+the trim unit. The cross-runtime ledger assigns `0x000D6320..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
 `runtime-reservations.md`.
@@ -851,7 +905,8 @@ The implementation inventory is:
 | `rolling-launch-speed-controller.s` | speed-hold controller |
 | `rolling-launch-rpm-ceiling.s` | RPM ceiling latch and request |
 | `rolling-launch-spark-cut.s` | spark-cut actuator and misfire latch |
-| `rolling-launch-ignition-adapter.s` | primary ignition-command pass-through |
+| `rolling-launch-ignition-adapter.s` | primary ignition-command trim adapter |
+| `rolling-launch-trim.s` | map-slot validator and trim cut fraction |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
 | `rolling-launch-fuel-cut-wrapper.s` | fuel-cut coordinator wrapper |
 | `rolling_launch.py` | independent fail-closed model |
@@ -875,12 +930,15 @@ A candidate is software-valid only when all applicable checks pass:
 3. Assembly sources reproduce the exact injected bytes.
 4. The independent model covers every gate, phase transition, abort reason,
    corrupt-state recovery, map isolation, rearm boundary, controller bound,
-   the ceiling latch with its hysteresis, and the cut selection, eligibility,
-   resets, and misfire latch of the spark-cut actuator.
+   the map slots, the trim cut fraction and ignition command, the ceiling
+   latch with its hysteresis, and the cut selection, eligibility, resets,
+   and misfire latch of the spark-cut actuator.
 5. The GNU SH fixture independently executes the same current payload bytes
    across all changed entries, branches, delay slots, call/return paths, and
    boundary cases, with controller expectations taken from the reference
-   model. The spark wrapper runs through `TRAPA` and the composed `GR11A`
+   model, including the slot validator, the trim unit against a table of
+   model cut fractions, and the ignition adapter against a table of model
+   commands. The spark wrapper runs through `TRAPA` and the composed `GR11A`
    table entry against a C reference of the cut selection, which checks every
    register, `SR` at the stock handler entry, and the per-period cut
    bounds.

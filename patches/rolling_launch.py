@@ -5,7 +5,8 @@ The model is intentionally independent from the SH-2E implementation. It
 defines fail-closed calibration validation, gate ordering, the vehicle-speed
 capture, the windowed torque-fraction controller, the latched RPM ceiling
 request and its merge into the stock cylinder mask, cooldown/rearm
-behavior, and the spark-handler cut actuator with its misfire-monitor latch.
+behavior, the per-map ignition trim with its cut compensation, and the
+spark-handler cut actuator with its misfire-monitor latch.
 It never reads or writes a ROM image.
 """
 
@@ -19,10 +20,19 @@ import struct
 CONFIG_MAGIC = 0x524C
 CONFIG_MAGIC_INVERSE = CONFIG_MAGIC ^ 0xFFFF
 CONFIG_END_MARKER = 0xA55A
-CONFIG_SCHEMA_VERSION = 4
-CONFIG_SIZE = 40
-CONFIG_FORMAT = ">H6B4HhBB3H2B3H2B2H"
+CONFIG_SCHEMA_VERSION = 5
+# The record holds a 40-byte head, five 6-byte map slots, and an end marker.
+CONFIG_HEAD_FORMAT = ">H6B4HhBB3H2B3H2B2H"
+SLOT_FORMAT = ">hBBH"
 SLOT_COUNT = 5
+SLOT_OFFSET = 0x28
+CONFIG_FORMAT = CONFIG_HEAD_FORMAT + SLOT_FORMAT[1:] * SLOT_COUNT + "H"
+CONFIG_SIZE = struct.calcsize(CONFIG_FORMAT)
+# The schema 4 record is the head alone with the integral gain at +0x16.
+LEGACY_SCHEMA_VERSION = 4
+LEGACY_CONFIG_SIZE = struct.calcsize(CONFIG_HEAD_FORMAT)
+# The largest ignition trim: the end of the stock torque-efficiency axis.
+TRIM_MAX = 40
 # The engine owns the first 28 bytes of the state record, which end with the
 # RPM ceiling latch word and a reserved word. The spark-handler wrapper alone
 # writes the 16 actuator bytes that follow.
@@ -120,6 +130,38 @@ def _clamp(value, low, high):
 
 
 @dataclass(frozen=True)
+class Slot:
+    """Per-map hold settings.
+
+    max_trim is the ignition trim z in APC command degrees, floor_command the
+    latest command that the trim may reach, and trim_efficiency the torque
+    efficiency e(z) of the trim in thousandths, from the stock table F of the
+    map: e = (256 - F(z)) * 1000 // 256. A zero trim requires e = 1000.
+    """
+
+    integral_gain: int = 0
+    max_trim: int = 0
+    floor_command: int = 0
+    trim_efficiency: int = 1000
+
+    def is_valid(self):
+        return all((
+            0 <= self.integral_gain <= 0x7FFF,
+            0 <= self.max_trim <= TRIM_MAX,
+            0 <= self.floor_command <= 0xFF,
+            0 < self.trim_efficiency <= U_ONE,
+            self.max_trim != 0 or self.trim_efficiency == U_ONE,
+        ))
+
+
+def trim_efficiency(table_value):
+    """Return e in thousandths for a stock F value of 0..255."""
+    if not 0 <= table_value <= 0xFF:
+        raise ValueError("F value lies outside one byte")
+    return (256 - table_value) * U_ONE // 256
+
+
+@dataclass(frozen=True)
 class Calibration:
     mode: Mode = Mode.OBSERVE
     enable_mask: int = 0
@@ -134,7 +176,7 @@ class Calibration:
     window_width: int = 40
     window_top: int = 20
     u_rate_limit: int = 50
-    integral_gain: int = 0
+    reserved: int = 0
     integrator_limit: int = 500
     abort_above: int = 150
     abort_below: int = 100
@@ -147,6 +189,11 @@ class Calibration:
     schema_version: int = CONFIG_SCHEMA_VERSION
     magic_inverse: int = CONFIG_MAGIC_INVERSE
     end_marker: int = CONFIG_END_MARKER
+    slots: tuple[Slot, ...] = (Slot(),) * SLOT_COUNT
+    slot_end_marker: int = CONFIG_END_MARKER
+
+    def slot(self, index):
+        return self.slots[index]
 
     def is_valid(self):
         try:
@@ -173,7 +220,7 @@ class Calibration:
             0 < self.window_width <= 0xFF,
             0 <= self.window_top <= 0xFF,
             0 < self.u_rate_limit <= U_ONE,
-            0 <= self.integral_gain <= 0x7FFF,
+            self.reserved == 0,
             0 <= self.integrator_limit <= U_ONE,
             0 < self.rpm_ceiling_offset_native <= 0xFFFF,
             0 < self.run_timeout_ticks <= 0x7FFF,
@@ -184,6 +231,12 @@ class Calibration:
             <= self.rpm_ceiling_offset_native,
             self.magic_inverse == CONFIG_MAGIC_INVERSE,
             self.end_marker == CONFIG_END_MARKER,
+            len(self.slots) == SLOT_COUNT,
+            all(
+                isinstance(slot, Slot) and slot.is_valid()
+                for slot in self.slots
+            ),
+            self.slot_end_marker == CONFIG_END_MARKER,
         ))
 
     def enabled_for(self, index):
@@ -209,7 +262,7 @@ class Calibration:
             self.window_width,
             self.window_top,
             self.u_rate_limit,
-            self.integral_gain,
+            self.reserved,
             self.integrator_limit,
             self.abort_above,
             self.abort_below,
@@ -220,6 +273,17 @@ class Calibration:
             self.rpm_ceiling_hysteresis_native,
             self.magic_inverse,
             self.end_marker,
+            *(
+                value
+                for slot in self.slots
+                for value in (
+                    slot.integral_gain,
+                    slot.max_trim,
+                    slot.floor_command,
+                    slot.trim_efficiency,
+                )
+            ),
+            self.slot_end_marker,
         )
         if len(data) != CONFIG_SIZE:
             raise AssertionError(f"configuration is {len(data)} bytes")
@@ -232,6 +296,10 @@ class Calibration:
                 f"configuration is {len(data)} bytes, expected {CONFIG_SIZE}"
             )
         values = struct.unpack(CONFIG_FORMAT, data)
+        slots = tuple(
+            Slot(*values[26 + 4 * index : 30 + 4 * index])
+            for index in range(SLOT_COUNT)
+        )
         return cls(
             magic=values[0],
             schema_version=values[1],
@@ -248,7 +316,7 @@ class Calibration:
             window_width=values[12],
             window_top=values[13],
             u_rate_limit=values[14],
-            integral_gain=values[15],
+            reserved=values[15],
             integrator_limit=values[16],
             abort_above=values[17],
             abort_below=values[18],
@@ -259,7 +327,37 @@ class Calibration:
             rpm_ceiling_hysteresis_native=values[23],
             magic_inverse=values[24],
             end_marker=values[25],
+            slots=slots,
+            slot_end_marker=values[-1],
         )
+
+    @classmethod
+    def from_legacy_bytes(cls, data):
+        """Return the schema 5 equivalent of a valid schema 4 record.
+
+        Every slot takes the single integral gain of the record and no trim.
+        """
+        if len(data) != LEGACY_CONFIG_SIZE:
+            raise ValueError(
+                f"schema 4 configuration is {len(data)} bytes, expected "
+                f"{LEGACY_CONFIG_SIZE}"
+            )
+        values = struct.unpack(CONFIG_HEAD_FORMAT, data)
+        if values[1] != LEGACY_SCHEMA_VERSION:
+            raise ValueError("configuration is not schema 4")
+        slot = Slot(integral_gain=values[15])
+        head = bytearray(data)
+        head[2] = CONFIG_SCHEMA_VERSION
+        head[0x16:0x18] = bytes(2)
+        calibration = cls.from_bytes(
+            bytes(head)
+            + bytes(SLOT_COUNT * struct.calcsize(SLOT_FORMAT))
+            + CONFIG_END_MARKER.to_bytes(2, "big")
+        )
+        calibration = replace(calibration, slots=(slot,) * SLOT_COUNT)
+        if not calibration.is_valid():
+            raise ValueError("schema 4 configuration is invalid")
+        return calibration
 
 
 @dataclass(frozen=True)
@@ -299,6 +397,7 @@ class RuntimeState:
     fuel_cut_request: int = 0
     torque_command: int = 0
     ceiling_latch: int = 0
+    cut_fraction: int = 0
 
 
 @dataclass(frozen=True)
@@ -416,13 +515,14 @@ def proportional_fraction(error, calibration):
     return numerator * U_ONE // calibration.window_width
 
 
-def update_integrator(integrator, proportional, error, calibration):
+def update_integrator(integrator, proportional, error, calibration, gain):
     """Advance the integrator unless the step deepens a saturated sum.
 
     The integrator falls while the speed is above target and rises while it
-    is below. The result is always bounded by the configured limit.
+    is below, at the integral gain of the map slot. The result is always
+    bounded by the configured limit.
     """
-    step = -(calibration.integral_gain * error)
+    step = -(gain * error)
     total = proportional + (integrator >> INTEGRATOR_SHIFT)
     if (total <= 0 and step < 0) or (total >= U_ONE and step > 0):
         step = 0
@@ -452,12 +552,47 @@ def ceiling_latch(state, rpm_native, calibration):
     return 0
 
 
+def cut_fraction(torque_fraction, efficiency):
+    """Return c = 1000 - min(1000, 1000 * u / e), the share of events that
+    the spark-cut actuator withholds so that the fired events, each at the
+    trim efficiency e, deliver the torque fraction u."""
+    if efficiency == U_ONE:
+        return U_ONE - torque_fraction
+    return U_ONE - min(U_ONE, U_ONE * torque_fraction // efficiency)
+
+
+def ignition_command(state, stock_command, calibration, apc_fallback):
+    """Return the APC command of the primary ignition consumer.
+
+    During an ACTIVE hold of a map slot with a trim, the command retards by
+    the trim and never past the floor command: max(stock, min(stock + z,
+    floor)). The adapter never advances the stock command and passes it
+    through outside an ACTIVE hold and during the P0335 APC fallback.
+    """
+    stock_command &= 0xFF
+    if (
+        state.phase != Phase.ACTIVE
+        or state.active_mode_snapshot != Mode.HOLD
+        or apc_fallback
+        or not 0 <= state.active_index_snapshot < SLOT_COUNT
+    ):
+        return stock_command
+    slot = calibration.slot(state.active_index_snapshot)
+    return max(
+        stock_command,
+        min(stock_command + slot.max_trim, slot.floor_command),
+    )
+
+
 def _publish_active(state, flags, inputs, calibration):
-    """Run the controller, publish the ACTIVE flags and the ceiling request."""
+    """Run the controller, publish the ACTIVE flags, the cut fraction, and
+    the ceiling request."""
     error = inputs.speed - state.target_speed
     proportional = proportional_fraction(error, calibration)
+    slot = calibration.slot(state.active_index_snapshot)
     integrator = update_integrator(
-        state.integrator, proportional, error, calibration
+        state.integrator, proportional, error, calibration,
+        slot.integral_gain,
     )
     command = _clamp(
         proportional + (integrator >> INTEGRATOR_SHIFT), 0, U_ONE
@@ -486,6 +621,7 @@ def _publish_active(state, flags, inputs, calibration):
         torque_fraction=fraction,
         fuel_cut_request=request,
         ceiling_latch=latch,
+        cut_fraction=cut_fraction(fraction, slot.trim_efficiency),
     )
 
 
@@ -556,6 +692,7 @@ def _state_is_structurally_valid(state):
         state.torque_fraction,
         state.fuel_cut_request,
         state.torque_command,
+        state.cut_fraction,
     )):
         return False
     if not all(-0x8000 <= value <= 0x7FFF for value in (
@@ -653,6 +790,7 @@ def step(state, inputs, calibration):
             torque_fraction=U_ONE,
             integrator=0,
             ceiling_latch=0,
+            cut_fraction=0,
         )
         return StepResult(_publish_active(active, flags, inputs, calibration))
 
@@ -687,7 +825,8 @@ def step(state, inputs, calibration):
 # cylinder 1..6 (0xFFFF13C9). The veto at the match of cylinder c withholds
 # the dwell of its successor ROM8[0x22680 + c], a bijection, so the balance
 # per event cylinder is the balance per cut cylinder. The accumulators count
-# sixths of a thousandth: each eligible event adds 6 * (1000 - u), and a sum
+# sixths of a thousandth: each eligible event adds six times the cut
+# fraction of the trim unit, which is 1000 - u without a trim, and a sum
 # of 6000 is one cut. The offsets 1000 * k + 250 follow the firing order with
 # k = (0, 2, 4, 1, 3, 5). Since the six offsets differ by exact sixths, the
 # total over whole engine cycles equals that of one accumulator, and every
@@ -748,8 +887,8 @@ def spark_event(runtime, cut, event):
 
     A match without the armed spark bit is a timeout-forced match and changes
     nothing. A spark resets the quiet-event count while ACTIVE and counts it
-    up otherwise. Outside an ACTIVE hold, and for an invalid fraction, the
-    accumulators return to their offsets. An ineligible event leaves every
+    up otherwise. Outside an ACTIVE hold, and for a cut fraction above 1000,
+    the accumulators return to their offsets. An ineligible event leaves every
     accumulator unchanged; an out-of-range accumulator of an eligible event
     resets them all.
     """
@@ -769,7 +908,7 @@ def spark_event(runtime, cut, event):
         latch = 0
     cut = replace(cut, quiet_events=quiet)
     reset = replace(cut, accumulators=SPARK_CYLINDER_OFFSETS)
-    if not hold or runtime.torque_fraction > U_ONE:
+    if not hold or runtime.cut_fraction > U_ONE:
         return SparkResult(reset, event.veto_byte, latch)
     if (
         not event.synchronized
@@ -781,7 +920,7 @@ def spark_event(runtime, cut, event):
     index = event.cylinder - 1
     if cut.accumulators[index] >= SPARK_CUT_ONE:
         return SparkResult(reset, event.veto_byte, latch)
-    accumulator = cut.accumulators[index] + 6 * (U_ONE - runtime.torque_fraction)
+    accumulator = cut.accumulators[index] + 6 * runtime.cut_fraction
     veto_byte = event.veto_byte
     cut_count = cut.cut_count
     if accumulator >= SPARK_CUT_ONE:

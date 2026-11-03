@@ -4,7 +4,8 @@
 # a verification fixture only: checksum fields are not recalculated and no
 # output-file operation is exposed.
 #
-# The retired configuration span held the 32-byte record of schema 1 to 3. It
+# Each retired configuration span held the record of earlier schemas: the
+# 32-byte record of schema 1 to 3 and the 40-byte record of schema 4. Each
 # stays claimed and erased, so extraction can read the record of a historical
 # image.
 #
@@ -16,17 +17,25 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "a37b33e2ccbf935d92002f9bcbed84cfc5e7b0569356ee4860659c8346748211"
+expected_composition_sha256 = "0f70f8c04ae6d8f5d1b3e75da576ef3f32eb425e4c4d8654610dec971c47ca9d"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
 claimed_rom_end = 0x000D3F80
-configuration_address = 0x000D6040
-configuration_size = 40
-retired_configuration_address = 0x000D3F60
-retired_configuration_size = 32
+configuration_address = 0x000D6220
+configuration_size = 72
 hold_actuator = true
-default_configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a"
+default_configuration = "524c0500000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a0000000003e80000000003e80000000003e80000000003e80000000003e8a55a"
+
+[[retired_configuration]]
+address = 0x000D3F60
+size = 32
+schema_versions = [1, 2, 3]
+
+[[retired_configuration]]
+address = 0x000D6040
+size = 40
+schema_versions = [4]
 
 [[claimed_rom_extension]]
 start = 0x000D40C0
@@ -34,7 +43,7 @@ end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
-end = 0x000D6220
+end = 0x000D6320
 
 [scheduler]
 table_address = 0x0002196C
@@ -112,6 +121,18 @@ start = 0x000D60C0
 end = 0x000D6220
 entry = 0x000D60C0
 
+[[code_region]]
+key = "slot_validator"
+start = 0x000D6268
+end = 0x000D62B8
+entry = 0x000D6268
+
+[[code_region]]
+key = "trim"
+start = 0x000D62B8
+end = 0x000D6320
+entry = 0x000D62B8
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -131,9 +152,9 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "7108080044c54a4eded9313657ce39af4729f5924beb3baa2380322274dd5e76"
+expected_sha256 = "3c5a576220a3ca2695ee0d4655044f2e5373a56cf01a5539e121242e666df399"
 instruction_count = 654
-data_bytes = 99
+data_bytes = 103
 code_regions = ["engine"]
 
 [[assembly_unit]]
@@ -143,9 +164,9 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "66b1f07d71af484080746829ccb0f8a2a3b6513b6e4f1a87b1dc38c3c3d44c8a"
-instruction_count = 3
-data_bytes = 4
+expected_sha256 = "da55e2ccb8801d14dba33e4d7ea17e2a13eb1b2f4fe229ef62caffbe2770d1f6"
+instruction_count = 38
+data_bytes = 16
 code_regions = ["ignition_adapter"]
 
 [[assembly_unit]]
@@ -155,8 +176,8 @@ start = 0x000D40C0
 end = 0x000D41E0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "52d1a9ef8a671b731ff5c8fa3c86ae42a9ccf2d898e9a8d286e567dfb9793ef8"
-instruction_count = 113
+expected_sha256 = "7e08454cb05803d5c18ee4d69a501bc43bde0ae8b60164a97cdfd4d83cacecb5"
+instruction_count = 121
 data_bytes = 26
 code_regions = ["speed_controller"]
 
@@ -203,10 +224,22 @@ start = 0x000D60C0
 end = 0x000D6220
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "94127a113032ff40012973e8ddd3bb368bf36029ba806460b328848c2ef19743"
-instruction_count = 148
+expected_sha256 = "30e69c6ac042bc21354fbf0f83a6ce7231bb58aab75fd5d654076e7f44ad181e"
+instruction_count = 147
 data_bytes = 48
 code_regions = ["spark_cut"]
+
+[[assembly_unit]]
+key = "trim"
+source = "rolling-launch-trim.s"
+start = 0x000D6268
+end = 0x000D6320
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "e01b86a6a7aea6d8f359e1c92caf342466faf821b714998de49659c33e3d823d"
+instruction_count = 71
+data_bytes = 14
+code_regions = ["slot_validator", "trim"]
 
 [[hook]]
 key = "displaced_periodic_task"

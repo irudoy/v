@@ -480,7 +480,9 @@ target_speed_offset = 0
 window_width = 40
 window_top = 20
 u_rate_limit = 50
-integral_gain = 0
+integral_gain = [0, 0, 4, 0, 0]
+max_trim = [0, 0, 20, 0, 0]
+floor_command = [0, 0, 120, 0, 0]
 integrator_limit = 500
 abort_above = 150
 abort_below = 100
@@ -505,8 +507,13 @@ make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin \
 ```
 
 The accepted mode names are `observe` and `hold`. `enabled_maps` uses one-based
-map numbers. Every field is mandatory, unknown fields are rejected, and the
-resulting 40-byte configuration must pass the independent fail-closed model.
+map numbers. `integral_gain`, `max_trim`, and `floor_command` are map-slot
+fields: a scalar sets all five maps, and a list of five values sets Maps 1
+through 5 in order. `max_trim` and `floor_command` are optional and default
+to 0; every other field is mandatory. Unknown fields are rejected. The
+builder writes the trim efficiency of each slot from the stock
+spark-efficiency pair, and the resulting 72-byte configuration must pass the
+independent fail-closed model.
 `rom` may name the complete
 applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, `sh7059_1nd`, or
 `sh7059_1me3b` series, or bind the profile to one exact member. A profile for

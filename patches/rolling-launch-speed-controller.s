@@ -4,10 +4,12 @@
 // pass that passed all gates and the run timer, so the speed error lies inside
 // the abort window. With e = speed - target in km/h*10, the controller forms
 // u_p = clamp((W_top - e) * 1000 / W, 0, 1000) and steps the integrator by
-// -(Ki * e) unless the step deepens a saturated sum u_p + integrator / 16. The
-// integrator stays within 16 * limit. The command clamp(u_p + integrator / 16,
-// 0, 1000) moves u by at most the configured rate per pass. The RPM ceiling
-// unit at 0xD6068 then adds the hold flag, the ceiling latch, and the request.
+// -(Ki * e), with the Ki of the slot of the activation map, unless the step
+// deepens a saturated sum u_p + integrator / 16. The integrator stays within
+// 16 * limit. The command clamp(u_p + integrator / 16, 0, 1000) moves u by at
+// most the configured rate per pass. The trim unit at 0xD62B8 then stores the
+// cut fraction and tail-jumps to the RPM ceiling unit at 0xD6068, which adds
+// the hold flag, the ceiling latch, and the request.
 // The stock unsigned divider at 0x21CE0 receives r0=divisor and r1=dividend
 // and preserves r2 through r7.
 
@@ -48,9 +50,18 @@ jsr @r3
 nop
 mov r0,r6
 
-// Integrator step, frozen while it deepens a saturated sum.
+// Integrator step at the Ki of the map slot, frozen while it deepens a
+// saturated sum.
 rl_spd_integrator:
-mov.w @(0x16,r4),r0
+mov.b @(0x4,r5),r0
+extu.b r0,r0
+mov r0,r1
+shll r1
+shll2 r0
+add r1,r0
+add r4,r0
+add 0x28,r0
+mov.w @r0,r0
 muls.w r0,r2
 sts macl,r1
 neg r1,r1
@@ -128,7 +139,8 @@ rl_spd_rate_lower:
 mov r2,r0
 mov.w r0,@(0xE,r5)
 
-// Publish ACTIVE; the RPM ceiling unit adds hold, the latch, and the request.
+// Publish ACTIVE; the trim unit stores the cut fraction and the RPM ceiling
+// unit adds hold, the latch, and the request.
 mov.b @(0x2,r5),r0
 or 0x10,r0
 mov r0,r3
@@ -148,17 +160,17 @@ lds.l @r15+,pr
 rts
 nop
 
-.org 0x000D41A4
+.org 0x000D41C0
 rl_spd_state_address:
 .long 0xFFFF5D40
 rl_spd_config_address:
-.long 0x000D6040
+.long 0x000D6220
 rl_spd_speed_address:
 .long 0xFFFF113C
 rl_spd_unsigned_divide:
 .long 0x00021CE0
 rl_spd_ceiling_entry:
-.long 0x000D6068
+.long 0x000D62B8
 rl_spd_fuel_cut_status:
 .long 0xFFFF2497
 rl_spd_u_one:

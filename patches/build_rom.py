@@ -72,7 +72,6 @@ ROLLING_INTEGER_KEYS = (
     "window_width",
     "window_top",
     "u_rate_limit",
-    "integral_gain",
     "integrator_limit",
     "abort_above",
     "abort_below",
@@ -82,9 +81,18 @@ ROLLING_INTEGER_KEYS = (
     "speed_frame_age_limit",
     "rpm_ceiling_hysteresis_native",
 )
+# Per-map settings: one integer for every map, or an array of one integer per
+# map. The integral gain is required; a missing trim or floor is 0.
+ROLLING_SLOT_KEYS = ("integral_gain", "max_trim", "floor_command")
+ROLLING_OPTIONAL_KEYS = frozenset(("max_trim", "floor_command"))
 ROLLING_PROFILE_KEYS = frozenset(
-    ("mode", "enabled_maps", *ROLLING_INTEGER_KEYS)
+    ("mode", "enabled_maps", *ROLLING_INTEGER_KEYS, *ROLLING_SLOT_KEYS)
 )
+# The stock torque-efficiency curve F of the exact layout: 16 u8 values over
+# the u8 retard axis 0..40, with e(z) = 1 - F(z) / 256.
+TRIM_TABLE_ADDRESS = 0x00011D24
+TRIM_AXIS_ADDRESS = 0x0001199E
+TRIM_POINTS = 16
 MODE_NAMES = {
     "observe": rolling_launch.Mode.OBSERVE,
     "hold": rolling_launch.Mode.HOLD,
@@ -250,6 +258,58 @@ def _require_exact_keys(table, expected, context):
         )
 
 
+def trim_table_value(image, trim):
+    """Return F(trim), linear between the axis points and truncated."""
+    axis = image[TRIM_AXIS_ADDRESS : TRIM_AXIS_ADDRESS + TRIM_POINTS]
+    table = image[TRIM_TABLE_ADDRESS : TRIM_TABLE_ADDRESS + TRIM_POINTS]
+    if (
+        len(axis) != TRIM_POINTS
+        or len(table) != TRIM_POINTS
+        or axis[0] != 0
+        or axis[-1] < rolling_launch.TRIM_MAX
+        or any(left >= right for left, right in zip(axis, axis[1:]))
+    ):
+        raise BuildError("trim efficiency axis is not 0..40 and increasing")
+    if not 0 <= trim <= axis[-1]:
+        raise BuildError(f"trim {trim} lies outside the efficiency axis")
+    for index in range(TRIM_POINTS - 1):
+        low, high = axis[index], axis[index + 1]
+        if low <= trim <= high:
+            return table[index] + (
+                (table[index + 1] - table[index]) * (trim - low) // (high - low)
+            )
+    raise AssertionError("axis search is exhaustive")
+
+
+def resolve_trim_efficiency(calibration, image):
+    """Return the calibration with the efficiency of every slot taken from F
+    of the image: 1000 for a slot without trim."""
+    slots = tuple(
+        replace(
+            slot,
+            trim_efficiency=(
+                rolling_launch.U_ONE if slot.max_trim == 0
+                else rolling_launch.trim_efficiency(
+                    trim_table_value(image, slot.max_trim)
+                )
+            ),
+        )
+        for slot in calibration.slots
+    )
+    return replace(calibration, slots=slots)
+
+
+def _slot_values(values, key, path):
+    value = values.get(key, 0)
+    if isinstance(value, list):
+        if len(value) != rolling_launch.SLOT_COUNT:
+            raise BuildError(
+                f"{path}: {key} must hold {rolling_launch.SLOT_COUNT} values"
+            )
+        return tuple(_require_integer(item, key) for item in value)
+    return (_require_integer(value, key),) * rolling_launch.SLOT_COUNT
+
+
 def _require_integer(value, context):
     if type(value) is not int:
         raise BuildError(f"{context}: expected an integer")
@@ -328,6 +388,10 @@ def parse_profile(raw_bytes, path):
         raise BuildError(f"{path}: name must be a non-empty string")
 
     values = raw["rolling_launch"]
+    if isinstance(values, dict):
+        values = {
+            key: values.get(key, 0) for key in ROLLING_OPTIONAL_KEYS
+        } | values
     _require_exact_keys(
         values, ROLLING_PROFILE_KEYS, f"{path} [rolling_launch]"
     )
@@ -349,9 +413,22 @@ def parse_profile(raw_bytes, path):
         raise BuildError(f"{path}: enabled_maps values must be in 1..5")
     enable_mask = sum(1 << (item - 1) for item in enabled_maps)
 
+    slot_values = {
+        key: _slot_values(values, key, path) for key in ROLLING_SLOT_KEYS
+    }
+    # The builder takes the trim efficiency from F of the stock image.
+    slots = tuple(
+        rolling_launch.Slot(
+            integral_gain=slot_values["integral_gain"][index],
+            max_trim=slot_values["max_trim"][index],
+            floor_command=slot_values["floor_command"][index],
+        )
+        for index in range(rolling_launch.SLOT_COUNT)
+    )
     calibration = rolling_launch.Calibration(
         mode=MODE_NAMES[mode_name],
         enable_mask=enable_mask,
+        slots=slots,
         **{
             key: _require_integer(values[key], key)
             for key in ROLLING_INTEGER_KEYS
@@ -436,6 +513,12 @@ def profile_text(name, rom, calibration, telemetry=None):
         f"{key} = {getattr(calibration, key)}"
         for key in ROLLING_INTEGER_KEYS
     ]
+    for key in ROLLING_SLOT_KEYS:
+        items = [getattr(slot, key) for slot in calibration.slots]
+        if key in ROLLING_OPTIONAL_KEYS and not any(items):
+            continue
+        value = items[0] if len(set(items)) == 1 else json.dumps(items)
+        lines.append(f"{key} = {value}")
     if telemetry is not None:
         lines += [
             "",
@@ -613,6 +696,13 @@ def build_image(
         or not profile.telemetry.is_valid()
     ):
         raise BuildError("profile CAN telemetry configuration is invalid")
+    if target.rolling_layout is not None:
+        profile = replace(
+            profile,
+            calibration=resolve_trim_efficiency(profile.calibration, source),
+        )
+        if not profile.calibration.is_valid():
+            raise BuildError("Rolling Launch calibration is invalid")
     if target.rolling_layout is None and (
         profile.calibration.mode != rolling_launch.Mode.OBSERVE
         or profile.calibration.enable_mask != 0

@@ -60,6 +60,8 @@ SOURCE_LABELS = {
     "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
     "rpm_ceiling": "rolling_launch_rpm_ceiling",
     "spark_cut": "rolling_launch_spark_cut",
+    "slot_validator": "rolling_launch_slot_validator",
+    "trim": "rolling_launch_trim",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -190,9 +192,13 @@ def _validate_engine_abi(parsed):
         raise ValueError("engine writes the fuel-cut shadow")
     if texts.count("mov #0x7,r2") != 1:
         raise ValueError("corrupt-state clear size differs")
-    if texts.count("mov.w r0,@(0x18,r5)") != 2:
+    if (
+        texts.count("mov.w r0,@(0x18,r5)") != 1
+        or texts.count("mov.l r0,@(0x18,r5)") != 1
+    ):
         raise ValueError(
-            "engine must release the ceiling latch on activation and abort"
+            "engine must release the ceiling latch on abort and clear the "
+            "latch and the cut fraction on activation"
         )
     if texts.count("mov.w r0,@(0x14,r5)") != 1 or "mov #0x3f,r0" in texts:
         raise ValueError("engine publishes the fuel-cut request outside the controller")
@@ -213,6 +219,13 @@ def _validate_engine_abi(parsed):
     ]
     if not _contains(validator, speed_bound):
         raise ValueError("configuration validation rejects a disabled minimum speed")
+    slot_tail = [
+        "mov.l @(rl_helper_slot_validator,pc),r0",
+        "jmp @r0",
+        "nop",
+    ]
+    if texts.count("jmp @r0") != 1 or not _contains(texts, slot_tail):
+        raise ValueError("configuration validation does not end in the slot validator")
     controller_call = [
         "mov.l @(rl_controller_entry,pc),r0",
         "jsr @r0",
@@ -256,8 +269,28 @@ def _contains(texts, sequence):
 
 def _validate_ignition_abi(parsed):
     texts = _texts(parsed)
-    if texts != ["mov.l @(rl_ign_stock_consumer,pc),r0", "jmp @r0", "nop"]:
-        raise ValueError("ignition adapter must be one stock tail jump")
+    tail = ["mov.l @(rl_ign_stock_consumer,pc),r0", "jmp @r0", "nop"]
+    if texts[-3:] != tail or texts.count("jmp @r0") != 1 or any(
+        text.startswith(("jsr", "bsr", "rts", "sts.l pr", "lds.l"))
+        for text in texts
+    ):
+        raise ValueError("ignition adapter must leave through one stock tail jump")
+    if any(
+        text.startswith(("mov.b r", "mov.w r", "mov.l r")) for text in texts
+    ):
+        raise ValueError("ignition adapter stores memory")
+    if texts.count("mov r0,r4") != 1 or texts.index("mov r0,r4") != len(texts) - 4:
+        raise ValueError("ignition adapter replaces the command outside its last step")
+    gates = ["mov.b @r1,r0", "cmp/eq 0x1,r0", "bf rl_ign_stock"]
+    fallback = ["mov.b @r2,r0", "tst 0x40,r0", "bf rl_ign_stock"]
+    retard_only = ["cmp/hi r1,r0", "bf rl_ign_stock", "mov r0,r4"]
+    if not all(_contains(texts, item) for item in (gates, fallback, retard_only)):
+        raise ValueError("ignition adapter gates differ")
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    if not registers <= {"r0", "r1", "r2", "r3", "r4"}:
+        raise ValueError("ignition adapter changes r5..r7")
 
 
 def _validate_speed_controller_abi(parsed):
@@ -273,13 +306,20 @@ def _validate_speed_controller_abi(parsed):
     ]
     if texts.count("jsr @r3") != 1 or not _contains(texts, divider_call):
         raise ValueError("speed controller divider call differs")
-    ceiling_call = [
+    trim_call = [
         "mov.l @(rl_spd_ceiling_entry,pc),r0",
         "jsr @r0",
         "nop",
     ]
-    if texts.count("jsr @r0") != 1 or not _contains(texts, ceiling_call):
-        raise ValueError("speed controller RPM ceiling call differs")
+    if texts.count("jsr @r0") != 1 or not _contains(texts, trim_call):
+        raise ValueError("speed controller trim call differs")
+    slot_gain = [
+        "mov.b @(0x4,r5),r0", "extu.b r0,r0", "mov r0,r1", "shll r1",
+        "shll2 r0", "add r1,r0", "add r4,r0", "add 0x28,r0",
+        "mov.w @r0,r0", "muls.w r0,r2",
+    ]
+    if not _contains(texts, slot_gain):
+        raise ValueError("speed controller does not read the slot gain")
     if texts.count("mulu.w r0,r1") != 1 or texts.count("muls.w r0,r2") != 1:
         raise ValueError("speed controller arithmetic differs")
     stores = sorted(
@@ -365,6 +405,8 @@ def _validate_spark_cut_abi(parsed):
     ])
     if stores != expected:
         raise ValueError("spark wrapper store contract differs")
+    if texts.count("mov.w @(0x1a,r5),r0") != 1 or "mov.w @(0xe,r5),r0" in texts:
+        raise ValueError("spark wrapper does not consume the cut fraction")
     # Each stock-RAM store runs after a mask-15 LDC and before the SR restore.
     for target, restore in (
         ("mov.b r0,@r3", "ldc r7,sr"), ("mov.b r0,@r6", "ldc r3,sr"),
@@ -390,6 +432,69 @@ def _validate_spark_cut_abi(parsed):
     allowed = {f"r{number}" for number in range(8)} | {"r15", "sr"}
     if not registers <= allowed:
         raise ValueError("spark wrapper uses an undeclared register")
+
+
+def _validate_trim_abi(parsed):
+    labels = parsed.labels
+    statements = _instructions(parsed)
+
+    def region(start, end):
+        return [
+            item.text.lower() for item in statements
+            if labels[start] <= item.address < labels[end]
+        ]
+
+    validator = region("rolling_launch_slot_validator", "rl_slot_u_one")
+    trim = region("rolling_launch_trim", "rl_trim_unsigned_divide")
+    if len(validator) + len(trim) != len(statements):
+        raise ValueError("trim unit holds code outside its regions")
+    if any(
+        text.startswith((
+            "jsr", "bsr", "jmp", "sts.l pr", "lds.l",
+            "mov.b r", "mov.w r", "mov.l r",
+        ))
+        for text in validator
+    ):
+        raise ValueError("slot validator must be a leaf without stores")
+    if validator.count("rts") != 2 or validator[-6:] != [
+        "mov #0x1,r0", "rts", "nop", "mov #0x0,r0", "rts", "nop",
+    ]:
+        raise ValueError("slot validator returns differ")
+    divider_call = [
+        "mov r7,r0",
+        "mov.l @(rl_trim_unsigned_divide,pc),r2",
+        "jsr @r2",
+        "nop",
+    ]
+    tail = [
+        "lds.l @r15+,pr",
+        "mov.l @(rl_trim_ceiling_entry,pc),r0",
+        "jmp @r0",
+        "nop",
+    ]
+    if (
+        trim[:1] != ["sts.l pr,@-r15"]
+        or trim[-4:] != tail
+        or trim.count("jsr @r2") != 1
+        or not _contains(trim, divider_call)
+        or any(text.startswith(("rts", "bsr")) for text in trim)
+    ):
+        raise ValueError("trim unit call or tail differs")
+    stores = [
+        text for text in trim
+        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
+    ]
+    if stores != ["mov.w r0,@(0x1a,r5)"]:
+        raise ValueError("trim unit store contract differs")
+    for name, texts, allowed in (
+        ("slot validator", validator, {"r0", "r1", "r2", "r3", "r4"}),
+        ("trim unit", trim, {"r0", "r1", "r2", "r4", "r5", "r7", "r15", "pr", "macl"}),
+    ):
+        registers = set()
+        for text in texts:
+            registers.update(common.REGISTER_RE.findall(text))
+        if not registers <= allowed:
+            raise ValueError(f"{name} uses an undeclared register")
 
 
 def _validate_feedback_arbiter_abi(parsed):
@@ -487,7 +592,7 @@ def _expected_long_literals():
         "engine": {
             "rl_state_address": 0xFFFF5D40,
             "rl_selector_address": 0xFFFF5D00,
-            "rl_config_address": 0x000D6040,
+            "rl_config_address": 0x000D6220,
             "rl_rpm_address": 0xFFFF11BC,
             "rl_speed_address": 0xFFFF113C,
             "rl_limiter_commit": 0x000D3660,
@@ -496,7 +601,7 @@ def _expected_long_literals():
             "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
             "rl_gate_map_enable_masks": 0x000D3D48,
-            "rl_gate_config_address": 0x000D6040,
+            "rl_gate_config_address": 0x000D6220,
             "rl_gate_ascd_address": 0xFFFF41AE,
             "rl_gate_button_address": 0xFFFF2A85,
             "rl_gate_speed_address": 0xFFFF113C,
@@ -504,17 +609,21 @@ def _expected_long_literals():
             "rl_gate_rpm_address": 0xFFFF11BC,
             "rl_gate_pedal_address": 0xFFFF2672,
             "rl_gate_coolant_address": 0xFFFF1077,
-            "rl_helper_config_address": 0x000D6040,
+            "rl_helper_config_address": 0x000D6220,
+            "rl_helper_slot_validator": 0x000D6268,
         },
         "ignition_adapter": {
+            "rl_ign_state_address": 0xFFFF5D40,
+            "rl_ign_apc_mode_address": 0xFFFF24C9,
+            "rl_ign_slot_table": 0x000D6248,
             "rl_ign_stock_consumer": 0x0002A892,
         },
         "speed_controller": {
             "rl_spd_state_address": 0xFFFF5D40,
-            "rl_spd_config_address": 0x000D6040,
+            "rl_spd_config_address": 0x000D6220,
             "rl_spd_speed_address": 0xFFFF113C,
             "rl_spd_unsigned_divide": 0x00021CE0,
-            "rl_spd_ceiling_entry": 0x000D6068,
+            "rl_spd_ceiling_entry": 0x000D62B8,
             "rl_spd_fuel_cut_status": 0xFFFF2497,
         },
         "feedback_arbiter": {
@@ -540,6 +649,10 @@ def _expected_long_literals():
             "rl_spark_dwell_address": 0xFFFF237A,
             "rl_spark_cylinder_address": 0xFFFF13C9,
             "rl_spark_stock_handler": 0x0002AB24,
+        },
+        "trim": {
+            "rl_trim_unsigned_divide": 0x00021CE0,
+            "rl_trim_ceiling_entry": 0x000D6068,
         },
     }
 
@@ -604,6 +717,8 @@ def validate_assembly_sources(layout=None):
             _validate_rpm_ceiling_abi(parsed)
         elif unit.key == "spark_cut":
             _validate_spark_cut_abi(parsed)
+        elif unit.key == "trim":
+            _validate_trim_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

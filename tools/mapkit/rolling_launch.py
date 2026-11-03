@@ -140,18 +140,6 @@ CONTROLS = (
         "0.0", 0.1, 1,
     ),
     Control(
-        "integral_gain", 0x16, "uint16",
-        "Integral gain of the Rolling Launch speed controller",
-        "raw", "x", "x",
-        "Each pass steps the integrator by -(gain * e) sixteenths of one "
-        "thousandth, with e in km/h*10, unless the step deepens a saturated "
-        "command. Zero disables integral action; the value must not exceed "
-        "32767.",
-        "Rolling Launch Integral Gain",
-        "Rolling Launch / Speed Hold", 900130, "Integral gain",
-        "0", 1, 10,
-    ),
-    Control(
         "integrator_limit", 0x18, "uint16",
         "Magnitude limit of the Rolling Launch speed integrator",
         "%", "x/10", "x*10",

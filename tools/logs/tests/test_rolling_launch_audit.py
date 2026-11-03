@@ -2,6 +2,7 @@ import contextlib
 from dataclasses import replace
 import io
 from pathlib import Path
+import tempfile
 import unittest
 from unittest import mock
 
@@ -14,16 +15,17 @@ CALIBRATION = replace(
     model.Calibration(),
     mode=model.Mode.HOLD,
     enable_mask=0x01,
-    integral_gain=3,
+    slots=(model.Slot(integral_gain=3),) * model.SLOT_COUNT,
 )
 # Native RPM counts of 12.5 RPM: 4000 RPM.
 RPM = 320
 SPEEDS = (500, 505, 512, 520, 526, 530, 528, 522, 515, 510, 506, 503, 500, 498)
 
 
-def inputs(speed, button=model.BUTTON_CANCEL):
+def inputs(speed, button=model.BUTTON_CANCEL, active_index=0):
     return model.Inputs(
         button=button,
+        active_index=active_index,
         speed=speed,
         rpm_native=RPM,
         pedal=100,
@@ -31,7 +33,10 @@ def inputs(speed, button=model.BUTTON_CANCEL):
     )
 
 
-def simulate(speeds, *, idle_before=2, released_after=6):
+def simulate(
+    speeds, *, idle_before=2, released_after=6, calibration=CALIBRATION,
+    active_index=0,
+):
     """Snapshots of the model with the spark actuator between ticks.
 
     The events of the interval before a snapshot see the state of the
@@ -40,9 +45,13 @@ def simulate(speeds, *, idle_before=2, released_after=6):
     state = model.RuntimeState()
     cut = model.SparkCutState(accumulators=model.SPARK_CYLINDER_OFFSETS)
     schedule = (
-        [inputs(speeds[0], model.BUTTON_RELEASED)] * idle_before
-        + [inputs(speed) for speed in speeds]
-        + [inputs(speeds[-1], model.BUTTON_RELEASED)] * released_after
+        [inputs(speeds[0], model.BUTTON_RELEASED, active_index)] * idle_before
+        + [
+            inputs(speed, active_index=active_index)
+            for speed in speeds
+        ]
+        + [inputs(speeds[-1], model.BUTTON_RELEASED, active_index)]
+        * released_after
     )
     samples = []
     pending = 0.0
@@ -54,8 +63,11 @@ def simulate(speeds, *, idle_before=2, released_after=6):
             event = model.SparkEvent(cylinder=cylinder % 6 + 1)
             cut = model.spark_event(state, cut, event).state
             cylinder += 1
-        state = model.step(state, step_inputs, CALIBRATION).state
-        samples.append(sample(tick, step_inputs.speed, state, cut))
+        state = model.step(state, step_inputs, calibration).state
+        samples.append(replace(
+            sample(tick, step_inputs.speed, state, cut),
+            map_index=step_inputs.active_index,
+        ))
     return samples
 
 
@@ -304,6 +316,90 @@ class HoldAuditTest(unittest.TestCase):
                     self.assertEqual(
                         audit.main(["--image", "image.bin", "hold.mlg"]), status
                     )
+
+    def test_the_run_uses_the_slot_of_the_selected_map(self):
+        trimmed = model.Slot(
+            integral_gain=2, max_trim=20, floor_command=120,
+            trim_efficiency=824,
+        )
+        calibration = replace(
+            CALIBRATION,
+            enable_mask=0x08,
+            slots=(model.Slot(integral_gain=3),) * 3
+            + (trimmed, model.Slot(integral_gain=3)),
+        )
+        samples = simulate(SPEEDS, calibration=calibration, active_index=3)
+        (run,) = audit.audit_hold(samples, calibration)
+        self.assertEqual(run.failures, ())
+        self.assertGreater(run.law_ticks, 0)
+        self.assertTrue(run.cuts_inside)
+        # A stock command of 90 plus the trim stays below the floor of 120.
+        self.assertEqual(run.floor_ticks, 0)
+
+        # The replay with the gain of Map 1 disagrees with the integrator.
+        (wrong,) = audit.audit_hold(
+            [replace(s, map_index=0) for s in samples], calibration
+        )
+        self.assertNotEqual(wrong.failures, ())
+
+        with self.assertRaisesRegex(ValueError, "one selected map"):
+            audit.audit_hold(
+                [replace(s, map_index=None) for s in samples], calibration
+            )
+
+    def test_floor_ticks_count_the_clipped_trim(self):
+        trimmed = model.Slot(
+            integral_gain=3, max_trim=20, floor_command=120,
+            trim_efficiency=824,
+        )
+        calibration = replace(
+            CALIBRATION, slots=(trimmed,) * model.SLOT_COUNT
+        )
+        samples = simulate(SPEEDS, calibration=calibration)
+        active = sum(s.phase == model.Phase.ACTIVE for s in samples)
+        clipped = [replace(s, apc_command_raw=105) for s in samples]
+        (run,) = audit.audit_hold(clipped, calibration)
+        self.assertEqual(run.floor_ticks, active)
+        # A stock command whose full trim reaches the floor is not clipped.
+        (run,) = audit.audit_hold(
+            [replace(s, apc_command_raw=100) for s in samples], calibration
+        )
+        self.assertEqual(run.floor_ticks, 0)
+
+    def test_the_owed_cuts_follow_the_trim_efficiency(self):
+        samples = simulate(SPEEDS)
+        (stock,) = audit.audit_hold(samples, CALIBRATION)
+        trimmed = replace(
+            CALIBRATION,
+            slots=(model.Slot(
+                integral_gain=3, max_trim=20, floor_command=120,
+                trim_efficiency=824,
+            ),) * model.SLOT_COUNT,
+        )
+        (run,) = audit.audit_hold(samples, trimmed)
+        self.assertLess(run.owed[1], stock.owed[1])
+
+    def test_a_schema_4_image_reads_one_gain_for_every_map(self):
+        layout = audit.load_layout()
+        span = layout.configuration
+        legacy = layout.retired_configuration_for(model.LEGACY_SCHEMA_VERSION)
+        head = bytearray(CALIBRATION.to_bytes()[: model.LEGACY_CONFIG_SIZE])
+        head[2] = model.LEGACY_SCHEMA_VERSION
+        head[0x16:0x18] = (3).to_bytes(2, "big")
+        image = bytearray(b"\xff" * max(span.end, legacy.end))
+        image[legacy.start : legacy.end] = head
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "image.bin"
+            path.write_bytes(image)
+            self.assertEqual(audit.read_calibration(path), CALIBRATION)
+            image[span.start : span.end] = CALIBRATION.to_bytes()
+            image[legacy.start : legacy.end] = b"\xff" * len(head)
+            path.write_bytes(image)
+            self.assertEqual(audit.read_calibration(path), CALIBRATION)
+            image[span.start : span.end] = b"\xff" * (span.end - span.start)
+            path.write_bytes(image)
+            with self.assertRaisesRegex(ValueError, "configuration is invalid"):
+                audit.read_calibration(path)
 
     def test_cut_bounds_follow_the_accumulator_offsets(self):
         self.assertAlmostEqual(audit.CUTS_BELOW, 2.75 - 6 - 1)

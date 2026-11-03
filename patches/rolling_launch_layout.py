@@ -25,8 +25,8 @@ from patches import rolling_launch as contract
 
 
 DEFAULT_MANIFEST = Path(__file__).with_name("rolling-launch-layout.toml")
-# The record size of configuration schemas 1 to 3.
-RETIRED_CONFIG_SIZE = 32
+# The record size of each retired configuration schema.
+RETIRED_CONFIG_SIZES = {1: 32, 2: 32, 3: 32, 4: contract.LEGACY_CONFIG_SIZE}
 
 
 @dataclass(frozen=True)
@@ -44,6 +44,12 @@ class RamLayout:
     proven_free: common.AddressRange
     base_reservation: common.AddressRange
     state: common.AddressRange
+
+
+@dataclass(frozen=True)
+class RetiredConfiguration:
+    span: common.AddressRange
+    schema_versions: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -68,7 +74,7 @@ class Layout:
     claimed_rom: common.AddressRange
     claimed_rom_extensions: tuple[common.AddressRange, ...]
     configuration: common.AddressRange
-    retired_configuration: common.AddressRange
+    retired_configurations: tuple[RetiredConfiguration, ...]
     default_configuration: bytes
     hold_actuator: bool
     scheduler: SchedulerLayout
@@ -116,6 +122,19 @@ class Layout:
         return {
             key: dict(values) for key, values in self.source_literals
         }
+
+    def retired_configuration_for(self, schema_version):
+        """Return the span that holds a retired schema's record."""
+        for item in self.retired_configurations:
+            if schema_version in item.schema_versions:
+                return item.span
+        raise ValueError(
+            f"no retired span holds configuration schema {schema_version}"
+        )
+
+    @property
+    def retired_configuration_spans(self):
+        return tuple(item.span for item in self.retired_configurations)
 
     @property
     def claimed_rom_ranges(self):
@@ -167,8 +186,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "claimed_rom_extension",
             "configuration_address",
             "configuration_size",
-            "retired_configuration_address",
-            "retired_configuration_size",
+            "retired_configuration",
             "default_configuration",
             "hold_actuator",
             "scheduler",
@@ -299,6 +317,22 @@ def load_layout(path=DEFAULT_MANIFEST):
             f"claimed_rom_extension[{index}]",
         ))
 
+    retired_configurations = []
+    for index, item in enumerate(raw["retired_configuration"]):
+        _require_keys(
+            item,
+            ("address", "size", "schema_versions"),
+            f"retired_configuration[{index}]",
+        )
+        retired_configurations.append(RetiredConfiguration(
+            span=common.AddressRange(
+                item["address"],
+                item["address"] + item["size"],
+                f"retired_configuration[{index}]",
+            ),
+            schema_versions=tuple(item["schema_versions"]),
+        ))
+
     try:
         default_configuration = bytes.fromhex(raw["default_configuration"])
     except (TypeError, ValueError) as error:
@@ -323,12 +357,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             raw["configuration_address"] + raw["configuration_size"],
             "configuration",
         ),
-        retired_configuration=common.AddressRange(
-            raw["retired_configuration_address"],
-            raw["retired_configuration_address"]
-            + raw["retired_configuration_size"],
-            "retired_configuration",
-        ),
+        retired_configurations=tuple(retired_configurations),
         default_configuration=default_configuration,
         hold_actuator=raw["hold_actuator"],
         scheduler=scheduler,
@@ -381,12 +410,28 @@ def validate_structure(layout):
         raise ValueError("configuration lies outside claimed ROM")
     if layout.configuration.size != contract.CONFIG_SIZE:
         raise ValueError("configuration size differs from the runtime contract")
-    if not any(
-        span.contains(layout.retired_configuration) for span in claimed_ranges
-    ) or layout.retired_configuration.overlaps(layout.configuration):
-        raise ValueError("retired configuration lies outside claimed ROM")
-    if layout.retired_configuration.size != RETIRED_CONFIG_SIZE:
-        raise ValueError("retired configuration size differs")
+    schemas = [
+        version
+        for item in layout.retired_configurations
+        for version in item.schema_versions
+    ]
+    if sorted(schemas) != list(range(1, contract.CONFIG_SCHEMA_VERSION)):
+        raise ValueError("retired configuration schemas differ")
+    records = sorted(
+        layout.retired_configuration_spans + (layout.configuration,),
+        key=lambda item: (item.start, item.end),
+    )
+    for left, right in zip(records, records[1:]):
+        if left.overlaps(right):
+            raise ValueError("configuration records overlap")
+    for item in layout.retired_configurations:
+        if not any(span.contains(item.span) for span in claimed_ranges):
+            raise ValueError("retired configuration lies outside claimed ROM")
+        if any(
+            RETIRED_CONFIG_SIZES[version] != item.span.size
+            for version in item.schema_versions
+        ):
+            raise ValueError("retired configuration size differs")
     if layout.default_configuration != contract.Calibration().to_bytes():
         raise ValueError("default configuration differs from the reference model")
     calibration = contract.Calibration.from_bytes(layout.default_configuration)
@@ -482,7 +527,8 @@ def validate_structure(layout):
     if owned != set(code):
         raise ValueError("not every code region has one assembly owner")
     occupied_spans = sorted(
-        unit_spans + [layout.configuration, layout.retired_configuration],
+        unit_spans
+        + [layout.configuration, *layout.retired_configuration_spans],
         key=lambda item: (item.start, item.end),
     )
     occupied_groups = []
@@ -567,7 +613,7 @@ def validate_structure(layout):
         for unit in layout.assembly_units
     ]
     writes.append(layout.configuration)
-    writes.append(layout.retired_configuration)
+    writes.extend(layout.retired_configuration_spans)
     writes.extend(common.AddressRange(
         hook.address, hook.address + hook.width, f"hook.{hook.key}"
     ) for hook in layout.hooks)

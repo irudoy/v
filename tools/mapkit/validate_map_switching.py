@@ -155,30 +155,29 @@ def validate():
             "runtime does not expose 70 slot-specific editor views"
         )
     launch = projection.rolling_launch
-    if launch.enable_mask_address != "000d6044":
+    if launch.enable_mask_address != "000d6224":
         raise ValueError("Rolling Launch enable mask address differs")
-    if launch.pedal_requirement_address != "000d604e":
+    if launch.pedal_requirement_address != "000d622e":
         raise ValueError("Rolling Launch pedal_requirement_address differs")
     expected_controls = {
-        "coolant_min": ("Rolling Launch Minimum Coolant Temperature", 0xD6046),
-        "min_speed": ("Rolling Launch Minimum Vehicle Speed", 0xD6048),
-        "max_speed": ("Rolling Launch Maximum Vehicle Speed", 0xD604A),
-        "min_rpm_native": ("Rolling Launch Minimum Engine Speed", 0xD604C),
-        "window_width": ("Rolling Launch Speed Window Width", 0xD6052),
-        "window_top": ("Rolling Launch Speed Window Top", 0xD6053),
-        "u_rate_limit": ("Rolling Launch Torque Fraction Rate Limit", 0xD6054),
-        "integral_gain": ("Rolling Launch Integral Gain", 0xD6056),
-        "integrator_limit": ("Rolling Launch Integrator Limit", 0xD6058),
-        "abort_above": ("Rolling Launch Abort Above Target", 0xD605A),
-        "abort_below": ("Rolling Launch Abort Below Target", 0xD605B),
+        "coolant_min": ("Rolling Launch Minimum Coolant Temperature", 0xD6226),
+        "min_speed": ("Rolling Launch Minimum Vehicle Speed", 0xD6228),
+        "max_speed": ("Rolling Launch Maximum Vehicle Speed", 0xD622A),
+        "min_rpm_native": ("Rolling Launch Minimum Engine Speed", 0xD622C),
+        "window_width": ("Rolling Launch Speed Window Width", 0xD6232),
+        "window_top": ("Rolling Launch Speed Window Top", 0xD6233),
+        "u_rate_limit": ("Rolling Launch Torque Fraction Rate Limit", 0xD6234),
+        "integrator_limit": ("Rolling Launch Integrator Limit", 0xD6238),
+        "abort_above": ("Rolling Launch Abort Above Target", 0xD623A),
+        "abort_below": ("Rolling Launch Abort Below Target", 0xD623B),
         "rpm_ceiling_offset_native": (
-            "Rolling Launch RPM Ceiling Offset", 0xD605C,
+            "Rolling Launch RPM Ceiling Offset", 0xD623C,
         ),
         "speed_frame_age_limit": (
-            "Rolling Launch Speed Frame Age Limit", 0xD6062,
+            "Rolling Launch Speed Frame Age Limit", 0xD6242,
         ),
         "rpm_ceiling_hysteresis_native": (
-            "Rolling Launch RPM Ceiling Hysteresis", 0xD6063,
+            "Rolling Launch RPM Ceiling Hysteresis", 0xD6243,
         ),
     }
     if dict(launch.control_addresses) != {
@@ -206,7 +205,7 @@ def validate():
             raise ValueError(f"TunerPro projection lacks {name}")
     if "Rolling Launch Require Accelerator Pedal" not in romraider_model:
         raise ValueError("RomRaider projection lacks the pedal switch")
-    if 'storageaddress="0xD604E"' not in romraider_model:
+    if 'storageaddress="0xD622E"' not in romraider_model:
         raise ValueError("RomRaider pedal-switch address differs")
     if "Rolling Launch Require Accelerator Pedal" not in xdf:
         raise ValueError("TunerPro projection lacks the pedal switch")
