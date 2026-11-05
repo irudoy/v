@@ -373,10 +373,29 @@ session, so the misfire-monitor blanking holds through the cut.
 
 With `integral_gain` 0 the speed error settles within about 1 s at the
 proportional equilibrium, a small positive offset, without drift. The speed
-word departs from frame `0x280` inside a hold; its comparison with frame
-`0x284`, the release-to-torque time, and the `0x176` ratio through the holds
-are open (issue #103). Spark angle at the crankshaft and the electrical
-output at the coil terminals remain outside the measurement.
+source selected by the image is frame `0x284`, both inside and outside a
+hold. Its big-endian bytes 4 and 5, divided by ten into 0.1 km/h counts,
+admit one constant target when the published error is subtracted through
+each road hold covered by the TRC; frame `0x280` does not. The MLG has no
+direct channel for `0xFFFF113C`, so the hold error and ROM selection establish
+this result, while its value outside holds is not directly measured. Both
+bus speeds keep their relative offset outside holds as well.
+
+The raw CAN join matches TRC and MLG by telemetry tick and snapshot contents,
+including a tick wrap before the stationary MLG starts. It covers the road
+hold at MLG t=98.657 s; the first two road holds precede the retained TRC.
+The `0x176` output/turbine ratio remains around the stable-gear median of
+each road hold, with no change of gear, and reads zero in neutral. The
+hardware record owns the per-hold figures.
+
+The first `0x180` frame after a released `0x239` code bounds the sampling
+delay alone. Its estimated torque equals the parallel `0x160` word through
+the holds: neither estimate accounts for the added spark veto. `0x174`
+words A and B are TCM requests. These words cannot time restoration of full
+physical torque, and cut-counter updates continue after release in several
+holds. The one-engine-cycle release bound, M-mode acceptance, and integral
+gain selection remain open in issue #103. Spark angle at the crankshaft and
+the electrical output at the coil terminals remain outside the measurement.
 
 ## Modes
 

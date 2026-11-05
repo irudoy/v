@@ -545,6 +545,44 @@ produces. A law failure, a cut count outside its bounds, a run without a
 checked fraction, or a capture without an `ACTIVE` run makes the exit
 status 1.
 
+The same reader joins raw bus evidence to the holds of an MLG recording:
+
+```bash
+python3 tools/logs/rolling_launch_audit.py \
+  --image tmp/rl-v2/build-103/rl-103.bin \
+  --reference-mlg tmp/2026-11-03_22-01-12_vq-can-telemetry-v10.1.1.mlg \
+  --bus-json tmp/rl-2-bus-audit.json tmp/rl-2.trc
+```
+
+The join matches the 16-bit telemetry tick and verifies the overlapping
+snapshot contents. It handles a tick wrap before the MLG begins and reports
+holds missing from a truncated TRC. Repeated ticks that make the join
+ambiguous, or matching ticks with different contents, refuse the join.
+
+- Release is the first `0x239` transition from CANCEL `0x02` to released
+  `0x20` through a hold or within one second after it. Times are milliseconds
+  from the TRC header's start, including the offset of a truncated trace.
+- The next `0x180` frame gives a frame delay and its equivalent in four-stroke
+  engine cycles, `delay_ms * RPM / 120000`. This is a sampling figure, not
+  physical torque recovery. The ECU estimate in `0x180` and its parallel
+  estimate in `0x160` do not account for the added spark veto. Equality of
+  those words through a cut cannot establish full shaft torque. `0x174`
+  words A and B are requests from the TCM, not actual torque. The report
+  leaves physical recovery unmeasured and reports the last observed cut
+  counter change after release separately; rotated phase context does not
+  time the abort.
+- The `0x176` output/turbine ratio is reported over each hold and compared
+  with stable-gear medians using the field decoder and selection of
+  `tcm_shift_audit.py`. Neutral ratios do not identify a driving gear.
+- Speed frames `0x284` and `0x280` use big-endian bytes 4 and 5. The selected
+  JK08A receiver maps `0xFFFF` to zero and divides by ten into 0.1 km/h
+  counts. Subtracting the published speed error must admit one constant
+  target throughout a hold. The last two preceding frames, at most 40 ms
+  old, bracket the asynchronous sampling. This tests source compatibility
+  without fitting a target. It does not supply a direct speed-word
+  measurement outside the hold. The report also compares the two bus
+  speeds inside and outside holds and measures the frame periods.
+
 ## JK08A engine-torque scale audit
 
 `torque_scale_audit.py` bounds the physical scale of the JK08A raw torque

@@ -755,7 +755,20 @@ neutral_steady_throttle_holds = [13, 14]
 neutral_steady_throttle_rpm_inside = [[2371.875, 2496.875], [3268.75, 3365.625]]
 neutral_steady_throttle_rpm_after_1s = [2771.875, 3778.125]
 result = "all 28 holds enter ACTIVE on Map 3 and pass the hold audit: every published fraction follows the model, every cut count lies inside the bounds that the fractions owe, and no fuel mask or cut appears outside ACTIVE; at standstill u steps from 950 to 500 at the rate limit and stays at 500, the all-cylinder cut latches near the captured RPM plus 1000 and releases near 100 RPM below it, and engine speeds below 2000 RPM refuse activation; on the road the speed error stays between -1.4 and +2.9 km/h, and the button releases eleven holds and RPM_LOW one"
-evidence_boundary = "RPM comes from the stock frame, so the ceiling offsets are bounded by the frame sampling and are not a latch replay; most road snapshots carry configuration 2, whose fractions are checked against two-tick bounds; the speed word is not compared with frame 0x284, the release-to-torque time and the per-hold 0x176 ratio are not derived, and the capture does not measure spark angle at the crankshaft or electrical injector output"
+evidence_boundary = "RPM comes from the stock frame, so the ceiling offsets are bounded by the frame sampling and are not a latch replay; most road snapshots carry configuration 2, whose fractions are checked against two-tick bounds; the speed word is reconstructed through the hold error and ROM selection rather than logged directly; neither 0x180 nor 0x160 estimates the added spark veto, so physical torque recovery and the one-engine-cycle release bound remain unmeasured; the capture does not measure spark angle at the crankshaft or electrical injector output"
+bus_alignment_basis = "TRC and MLG snapshots join by the 16-bit telemetry tick with equal RPM, phase, page configuration, speed error, torque fraction, cut counter, pedal and fuel mask; the stationary TRC starts before the tick wrap preceding the MLG"
+bus_release_time_basis = "milliseconds from the start in each TRC header, including the retained trace offset; first 0x239 transition from CANCEL 0x02 to released 0x20 through a hold or within one second after it"
+bus_time_resolution_ms = 0.1
+bus_torque_basis = "0x180 actual word is byte 2 and byte 3 high nibble; 0x160 parallel actual is byte 1 low nibble and byte 2; both are ECU estimates, and 0x174 words A and B are TCM requests; none measures restoration of physical torque after the added spark veto"
+bus_cycle_basis = "four-stroke engine cycles = delay_ms * RPM / 120000; the next 0x180 frame delay is sampling latency, not torque recovery"
+bus_release_rpm_basis = "RPM from the last 0x180 frame at or before the released 0x239 frame; its age is recorded per hold"
+bus_physical_torque_recovery = "unobservable_in_the_recorded_torque_words"
+bus_cut_counter_basis = "last first-page timestamp with a cut-counter increment after release, not an actuator-event timestamp; the rotated phase field cannot time the abort"
+speed_decoder = "0x284 bytes 4 and 5 form a big-endian uint16; 0xFFFF maps to zero and every other value divides by ten with truncation into 0.1 km/h counts; 0x280 uses the same wire bytes for the meter speed"
+speed_source_rom_options = [{ address = 0x8349, value = 0x3B }, { address = 0x834F, value = 2 }, { address = 0x89C0, value = 0 }]
+speed_source_selected_can_id = 0x284
+speed_word_directly_logged = false
+speed_source_basis = "the image selects 0x284 independently of the hold state; subtracting the published speed error from the last two preceding 0x284 frames, no older than 40 ms, admits exactly one constant target in every covered road hold, whereas 0x280 admits none; outside holds the ROM selection and the bus-speed comparison are available, but no direct RAM speed sample is recorded"
 
 [[rolling_launch.v2_hold_vehicle_2026_11_03.captures]]
 stage = "stationary_neutral"
@@ -784,6 +797,27 @@ ceiling_release_offset_rpm = [25.0, 28.125, 87.5, 31.25, 37.5, 12.5]
 refused_cancel_rpm_range = [618.75, 1962.5]
 refused_cancel_reasons = ["BUTTON_INVALID", "RPM_LOW"]
 sweep_max_rpm = 6025.0
+
+bus_covered_holds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+bus_uncovered_holds = []
+bus_matching_snapshot_count = 29078
+bus_release_ms = [95782.6, 104449.5, 117358.9, 123444.0, 143052.9, 219690.9, 232373.8, 238684.4, 241901.2, 244606.1, 255014.0, 289683.9, 295093.4, 302038.8, 308840.6, 314331.9]
+bus_next_torque_frame_ms = [8.7, 9.5, 9.3, 9.4, 9.3, 8.8, 9.1, 9.4, 9.5, 9.4, 9.4, 8.9, 8.4, 9.2, 9.6, 9.4]
+bus_release_rpm = [3806.25, 3746.875, 3037.5, 4143.75, 3875.0, 3200.0, 3612.5, 3940.625, 3921.875, 4368.75, 3209.375, 3053.125, 2387.5, 3300.0, 3331.25, 3481.25]
+bus_next_torque_frame_cycles = [0.275953, 0.296628, 0.235406, 0.324594, 0.300313, 0.234667, 0.273948, 0.308682, 0.310482, 0.342219, 0.251401, 0.22644, 0.167125, 0.253, 0.2665, 0.272698]
+bus_release_rpm_age_ms = [1.3, 0.6, 0.8, 0.7, 0.7, 1.2, 1.0, 0.9, 0.7, 0.7, 0.6, 0.9, 1.8, 0.9, 0.6, 0.6]
+bus_174_word_a_min_median_max = [[4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094]]
+bus_174_word_b_min_median_max = [[1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820]]
+bus_actual_word_min_median_max = [[712, 1055, 1124], [710, 1030.0, 1140], [725, 999.5, 1152], [712, 1105, 1258], [720, 1160, 1251], [934, 1026, 1040], [723, 990, 1239], [780, 1056, 1070], [1012, 1067.5, 1078], [699, 1039.0, 1045], [726, 1126.0, 1197], [878, 939.0, 942], [865, 878, 882], [867, 870.0, 885], [746, 796.0, 851], [712, 989.0, 996]]
+bus_parallel_pairs = [59, 74, 138, 107, 105, 73, 123, 55, 46, 76, 70, 90, 135, 90, 70, 128]
+bus_parallel_equal = [59, 74, 138, 107, 105, 73, 123, 55, 46, 76, 70, 90, 135, 90, 70, 128]
+bus_176_ratio_min_median_max = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
+bus_176_current_gears = [[10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10], [10]]
+bus_post_release_cut_counter_holds = [1, 2, 5, 6, 8, 11, 12, 13, 14, 15, 16]
+bus_last_cut_counter_update_after_release_ms = [4.4, 5.0, 87.0, 45.2, 35.8, 46.3, 66.0, 24.6, 35.4, 6.3, 36.0]
+bus_button_period_median_ms = 20.5
+bus_actual_period_median_ms = 10.2
+bus_speed_period_median_ms = 20.0
 
 [[rolling_launch.v2_hold_vehicle_2026_11_03.captures]]
 stage = "road"
@@ -816,6 +850,36 @@ settled_error_mean = [7.1, 6.5, -0.5, 11.6, 9.5, 9.0]
 settled_speed_slope_kmh_s = [-0.59, -0.19, -0.27, 0.0, -0.46, -0.02]
 settled_basis = "the second half of each hold of at least 1.1 s; with integral_gain 0 the speed stops rising within about 1 s and the error stays at the proportional equilibrium, +0.65 to +1.16 km/h in second gear at full pedal, without drift over the 3.2 s hold; holds shorter than 0.9 s still accelerate"
 
+bus_covered_holds = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+bus_uncovered_holds = [1, 2]
+bus_matching_snapshot_count = 29884
+bus_release_ms = [128173.1, 146057.8, 238807.0, 305431.1, 329187.8, 346082.5, 348908.4, 351119.8, 360172.3, 370922.3]
+bus_next_torque_frame_ms = [9.7, 9.3, 9.7, 9.4, 9.6, 9.3, 9.7, 9.5, 9.3, 9.9]
+bus_release_rpm = [4950.0, 2678.125, 3378.125, 2550.0, 3209.375, 2815.625, 3781.25, 4656.25, 4453.125, 4212.5]
+bus_next_torque_frame_cycles = [0.400125, 0.207555, 0.273065, 0.19975, 0.25675, 0.218211, 0.305651, 0.36862, 0.345117, 0.347531]
+bus_release_rpm_age_ms = [0.7, 1.1, 0.6, 0.8, 0.6, 0.9, 0.7, 0.6, 0.8, 0.8]
+bus_174_word_a_min_median_max = [[4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094], [4094, 4094, 4094]]
+bus_174_word_b_min_median_max = [[1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1136, 1204, 1268], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820], [1820, 1820, 1820]]
+bus_actual_word_min_median_max = [[1268, 1278, 1290], [1214, 1222.0, 1231], [1219, 1228.0, 1248], [1071, 1146.0, 1174], [1092, 1167, 1212], [1181, 1224, 1237], [1230, 1240, 1263], [1264, 1276, 1288], [918, 1270, 1280], [1242, 1252.0, 1263]]
+bus_parallel_pairs = [85, 130, 80, 44, 65, 315, 135, 75, 175, 80]
+bus_parallel_equal = [85, 130, 80, 44, 65, 315, 135, 75, 175, 80]
+bus_176_ratio_min_median_max = [[0.418156, 0.425231, 0.43091], [0.65, 0.654106, 0.657697], [0.422949, 0.425152, 0.427236], [0.647396, 0.654121, 0.656422], [0.421548, 0.425023, 0.429318], [0.419831, 0.4251, 0.430786], [0.417161, 0.425167, 0.432575], [0.421053, 0.425058, 0.429631], [0.420082, 0.425114, 0.431234], [0.420611, 0.42524, 0.430655]]
+bus_176_current_gears = [[2], [3], [2], [3], [2], [2], [2], [2], [2], [2]]
+bus_post_release_cut_counter_holds = [3, 4, 5, 7, 8, 9, 10, 11, 12]
+bus_last_cut_counter_update_after_release_ms = [66.4, 55.6, 35.9, 25.8, 25.1, 76.5, 66.6, 75.6, 76.5]
+bus_button_period_median_ms = 20.4
+bus_actual_period_median_ms = 10.2
+bus_speed_period_median_ms = 20.0
+bus_176_reference_gears = [1, 2, 3]
+bus_176_reference_medians = [0.260208, 0.425062, 0.654119]
+bus_284_target_raw = [620, 515, 424, 374, 423, 357, 485, 608, 594, 552]
+bus_284_target_samples = [43, 65, 40, 22, 32, 157, 67, 38, 87, 40]
+bus_280_target_compatible = [false, false, false, false, false, false, false, false, false, false]
+bus_284_over_280_inside_min_median_max = [0.932971, 0.956081, 0.979495]
+bus_284_over_280_outside_min_median_max = [0.936275, 0.95614, 0.992163]
+bus_284_over_280_sample_counts = [605, 12986]
+bus_coverage_basis = "hold 3 at MLG t=98.657 s is covered: ticks 32945..33030 and their contents match the TRC at 127368.8..128239.5 ms; holds 1 and 2 precede the retained trace"
+
 [rolling_launch.v2_hold_vehicle_2026_11_03.term_status]
 preflash = "pass"
 stationary_activation = "pass"
@@ -833,9 +897,10 @@ speed_frame_age = "pass"
 dwell_limit = "pass"
 dtc_readout = "pass"
 run_timeout = "untested"
-speed_word_source = "unresolved"
-release_to_torque = "unresolved"
-speed_ratio_through_holds = "unresolved"
+speed_word_source = "pass_hold_error_and_rom_selection"
+release_to_torque = "unobservable_in_recorded_torque_words"
+one_engine_cycle_release = "not_demonstrated"
+speed_ratio_through_holds = "pass_trc_covered_holds"
 integral_gain_derivation = "partially_covered"
 physical_outputs = "outside_measurement"
 

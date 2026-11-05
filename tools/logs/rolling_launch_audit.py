@@ -31,16 +31,20 @@ another instant of the cycle, so every RPM bound spans the frames recorded
 with the snapshot and with the next one, widened by `STOCK_RPM_MARGIN` counts.
 
 A TRC adds frame times: the first and last page of every snapshot group and
-the context frames of 0x239 and 0x551.
+the context frames of 0x239 and 0x551, plus the raw torque, transmission,
+and speed frames for the optional bus join.
 """
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, replace
+import bisect
+from dataclasses import dataclass, field, replace
 import hashlib
+import json
 import math
 from pathlib import Path
+import statistics
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,6 +63,7 @@ from tools.logs import can_telemetry
 from tools.logs import mlg_relation_audit
 from tools.logs import mlg_retime
 from tools.logs import peak_trc_audit
+from tools.logs import tcm_shift_audit
 
 # The coordinate of a snapshot lies between the stock frames recorded with it
 # and with the next snapshot apart from the update jitter that registry entry
@@ -106,6 +111,7 @@ CUTS_ABOVE = _OFFSET_CUTS + 1
 # snapshots, so the abort reason of the snapshot this far after the abort
 # tick was captured after it.
 CONTEXT_REFRESH_SNAPSHOTS = 5
+BUS_IDS = {0x160, 0x174, 0x176, 0x177, 0x180, 0x280, 0x284, 0x421}
 
 
 @dataclass(frozen=True)
@@ -173,12 +179,14 @@ class TraceTiming:
 
     The page times align with the verified snapshots; the context frames hold
     byte 3 of every 0x239 frame and byte 5 of every 0x551 frame.
+    `bus_frames` retains standard data frames by ID for the raw bus audit.
     """
 
     first_page_ms: tuple[float, ...]
     last_page_ms: tuple[float, ...]
     button_frames: tuple[tuple[float, int], ...]
     dashboard_frames: tuple[tuple[float, int], ...]
+    bus_frames: dict[int, tuple[tuple[float, bytes], ...]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -313,11 +321,14 @@ def read_trc(
     last_pages = []
     buttons = []
     dashboard = []
+    bus = {can_id: [] for can_id in BUS_IDS}
     group_start = None
     run = None
     for frame in trace.frames:
         timestamp = frame.offset_ms / 1000.0
         standard = not frame.extended and not frame.remote
+        if standard and frame.can_id in bus:
+            bus[frame.can_id].append((frame.offset_ms, bytes(frame.data)))
         if standard and frame.can_id == can_id and len(frame.data) == 8:
             # The low nibble of byte 0 is the page index of a group.
             if not frame.data[0] & 0x0F:
@@ -360,7 +371,8 @@ def read_trc(
         first_pages.append(group_start)
         last_pages.append(frame.offset_ms)
     timing = TraceTiming(
-        tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard)
+        tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard),
+        {can_id: tuple(frames) for can_id, frames in bus.items()},
     )
     return Capture(path, digest, tuple(_stock_speed_bounds(samples)), timing)
 
@@ -677,6 +689,263 @@ def _reason_name(reason):
         return str(reason)
 
 
+def decode_speed_word(data: bytes) -> int:
+    """JK08A 0x284/0x280 bytes 4..5 in native 0.1 km/h counts.
+
+    The selected receiver divides the big-endian word by ten, truncating,
+    and maps the invalid wire word 0xFFFF to zero (kb 7mfk:000c4506).
+    """
+    if len(data) < 6:
+        raise ValueError("speed frame needs bytes 4 and 5")
+    word = int.from_bytes(data[4:6], "big")
+    return 0 if word == 0xFFFF else word // 10
+
+
+class _BusIndex:
+    def __init__(self, frames):
+        self.frames = frames
+        self.times = [time for time, _ in frames]
+
+    def before(self, time, age_ms=25):
+        index = bisect.bisect_right(self.times, time) - 1
+        if index < 0 or time - self.times[index] > age_ms:
+            return None
+        return self.frames[index]
+
+    def between(self, start, end):
+        return self.frames[
+            bisect.bisect_left(self.times, start):bisect.bisect_left(self.times, end)
+        ]
+
+
+def _range(values):
+    return [min(values), statistics.median(values), max(values)] if values else None
+
+
+def _tcm_groups(bus):
+    """Use the existing TCM field decoder on complete back-to-back groups."""
+    result = []
+    for time, speed in bus[0x176].frames:
+        gear = bus[0x174].before(time, tcm_shift_audit.TCM_GROUP_MS)
+        index = bisect.bisect_left(bus[0x177].times, time)
+        if gear is None or index == len(bus[0x177].frames):
+            continue  # A trace can start or end inside a group.
+        phase_time, phase = bus[0x177].frames[index]
+        if phase_time - gear[0] >= tcm_shift_audit.TCM_GROUP_MS:
+            raise ValueError("late 0x177 in TCM group")
+        if min(len(gear[1]), len(speed), len(phase)) < 6:
+            raise ValueError("short TCM group")
+        selector = bus[0x421].before(time, 100)
+        result.append(tcm_shift_audit.TcmFrame(
+            time / 1000, gear[1], speed, phase,
+            selector[1][0] if selector and selector[1] else None,
+        ))
+    return result
+
+
+def _reference_ticks(capture, reference):
+    """Join one producer run by tick modulo 65536 and verify its contents.
+
+    A TRC can start before a wrap that precedes the MLG. Each capture must
+    contain at most one occurrence of each 16-bit tick; otherwise the join
+    is ambiguous. Matching ticks of distinct producer runs are refused.
+    """
+    indexes = {}
+    for index, sample in enumerate(capture.samples):
+        tick = sample.tick & 0xFFFF
+        if tick in indexes:
+            raise ValueError("ambiguous repeated tick in TRC/MLG join")
+        indexes[tick] = index
+    seen = set()
+    matched = 0
+    signature = (
+        "rpm_raw", "phase", "configuration", "speed_error", "torque_fraction",
+        "cut_counter", "app1_raw", "fuel_inhibit_mask",
+    )
+    for sample in reference.samples:
+        tick = sample.tick & 0xFFFF
+        if tick in seen:
+            raise ValueError("ambiguous repeated tick in MLG reference")
+        seen.add(tick)
+        if tick in indexes:
+            matched += 1
+            other = capture.samples[indexes[tick]]
+            if any(getattr(sample, key) != getattr(other, key) for key in signature):
+                raise ValueError(f"tick {tick}: TRC and MLG snapshots differ")
+    if not matched:
+        raise ValueError("TRC and MLG have no matching snapshots")
+    return indexes
+
+
+def _speed_targets(samples, times, bus):
+    """Intersect possible constant targets using the last two speed frames.
+
+    RAM and the asynchronous CAN page do not share a sampling instant. The
+    two preceding speed frames (at most 40 ms old) bracket that uncertainty.
+    No target value is fitted or taken from the meter. An empty intersection
+    disproves a candidate source; a nonempty one is only compatibility.
+    """
+    result = {}
+    for can_id in (0x280, 0x284):
+        intervals = []
+        common = None
+        for sample, time in zip(samples, times):
+            if sample.speed_error is None:
+                continue
+            index = bisect.bisect_right(bus[can_id].times, time)
+            words = [
+                decode_speed_word(data) - sample.speed_error
+                for frame_time, data in bus[can_id].frames[max(0, index - 2):index]
+                if time - frame_time <= 40
+            ]
+            if words:
+                intervals.append((min(words), max(words)))
+                candidates = set(words)
+                common = candidates if common is None else common & candidates
+        low = max((a for a, _ in intervals), default=None)
+        high = min((b for _, b in intervals), default=None)
+        result[f"0x{can_id:03X}"] = {
+            "samples": len(intervals),
+            "target_intersection_raw": [low, high] if intervals else None,
+            "target_candidates_raw": sorted(common) if common is not None else None,
+            "compatible": bool(common) if common is not None else None,
+        }
+    return result
+
+
+def audit_bus(capture, runs, *, reference=None):
+    """Join holds to raw CAN frames without calling an estimate shaft torque.
+
+    0x180 contains the ECU torque estimate and 0x160 its parallel estimate.
+    Neither includes the added spark veto. Equality, including equality
+    inside a hold, cannot time restoration of physical torque. Report the
+    first subsequent estimate frame and its cycle equivalent separately.
+    0x174 words A/B are TCM requests, not actual-torque observations.
+    """
+    if capture.timing is None:
+        raise ValueError("bus join requires a TRC")
+    reference = capture if reference is None else reference
+    indexes = _reference_ticks(capture, reference)
+    bus = {
+        can_id: _BusIndex(capture.timing.bus_frames.get(can_id, ()))
+        for can_id in BUS_IDS
+    }
+    tcm = _tcm_groups(bus)
+    gear_ratios = {}
+    for gear in tcm_shift_audit.RE5R05A_RATIOS:
+        ratios = [
+            frame.output_speed / frame.turbine_speed for frame in tcm
+            if frame.current == frame.target == gear
+            and frame.shift_code == tcm_shift_audit.IDLE_SHIFT_CODE
+            and frame.selector in (
+                *tcm_shift_audit.DRIVE_SELECTORS, *tcm_shift_audit.MANUAL_SELECTORS
+            )
+            and frame.turbine_speed >= tcm_shift_audit.RATIO_MIN_TURBINE
+            and frame.output_speed >= tcm_shift_audit.RATIO_MIN_OUTPUT
+        ]
+        if ratios:
+            gear_ratios[str(gear)] = statistics.median(ratios)
+    buttons = capture.timing.button_frames
+    releases = [
+        time for (_, previous), (time, button) in zip(buttons, buttons[1:])
+        if previous == rolling_launch.BUTTON_CANCEL
+        and button == rolling_launch.BUTTON_RELEASED
+    ]
+    holds = []
+    active_windows = []
+    for number, run in enumerate(runs, 1):
+        row = {"hold": number, "start_tick": run.start_tick,
+               "abort_reason": _reason_name(run.abort_reason), "covered": False}
+        holds.append(row)
+        ticks = range(run.start_tick, run.end_tick + 2)
+        joined = [indexes.get(tick & 0xFFFF) for tick in ticks]
+        if None in joined or any(b != a + 1 for a, b in zip(joined, joined[1:])):
+            continue
+        start_index, end_index = joined[0], joined[-1]
+        times = capture.timing.first_page_ms[start_index:end_index + 1]
+        start, end = times[0], times[-1]
+        active_windows.append((start, end))
+        release = next((t for t in releases if start <= t <= end + 1000), None)
+        row.update(covered=True, start_ms=start, end_ms=end, release_ms=release)
+        frames = [f for f in tcm if start <= f.seconds * 1000 < end]
+        ratios = [f.output_speed / f.turbine_speed for f in frames if f.turbine_speed]
+        gears = sorted({f.current for f in frames})
+        row["gears"] = gears
+        row["ratio_min_median_max"] = _range(ratios)
+        row["ratio_reference_median"] = (
+            gear_ratios.get(str(gears[0])) if len(gears) == 1 else None
+        )
+        row["tcm_word_a_range"] = _range([f.word_a for f in frames])
+        row["tcm_word_b_range"] = _range([f.word_b for f in frames])
+        row["speed_sources"] = _speed_targets(
+            capture.samples[start_index:end_index], times[:-1], bus
+        )
+        equal = compared = 0
+        actual = []
+        for time, data in bus[0x180].between(start, end):
+            parallel = bus[0x160].before(time, 2)
+            if len(data) < 5:
+                raise ValueError("short 0x180 torque frame")
+            word = data[2] << 4 | data[3] >> 4
+            actual.append(word)
+            if parallel and len(parallel[1]) >= 3:
+                other = (parallel[1][1] & 15) << 8 | parallel[1][2]
+                if 0xFFF not in (word, other):
+                    compared += 1
+                    equal += word == other
+        row.update(actual_word_range=_range(actual),
+                   parallel_pairs=compared, parallel_equal=equal,
+                   torque_recovery_ms=None, torque_recovery_cycles=None,
+                   torque_recovery_status="spark_veto_not_in_torque_estimate")
+        if release is None:
+            continue
+        next_frames = bus[0x180].between(release, release + 25)
+        previous_frame = bus[0x180].before(release)
+        if next_frames and previous_frame:
+            time, _ = next_frames[0]
+            rpm = int.from_bytes(previous_frame[1][:2], "big") / 8
+            delay = time - release
+            row.update(next_torque_frame_ms=delay, release_rpm=rpm,
+                       release_rpm_age_ms=release - previous_frame[0],
+                       next_torque_frame_cycles=delay * rpm / 120000)
+        changes = [
+            capture.timing.first_page_ms[index] - release
+            for index in range(start_index + 1, min(end_index + 3, len(capture.samples)))
+            if capture.samples[index].cut_counter is not None
+            and capture.samples[index - 1].cut_counter is not None
+            and capture.samples[index].cut_counter != capture.samples[index - 1].cut_counter
+            and capture.timing.first_page_ms[index] >= release
+        ]
+        row["last_cut_counter_update_after_release_ms"] = max(changes, default=None)
+    frame_speeds = {"inside": [], "outside": []}
+    for time, data in bus[0x280].frames:
+        other = bus[0x284].before(time)
+        if other is None:
+            continue
+        meter, ecu = decode_speed_word(data), decode_speed_word(other[1])
+        if meter < 100:  # Moving samples, at least 10 km/h.
+            continue
+        key = "inside" if any(a <= time < b for a, b in active_windows) else "outside"
+        frame_speeds[key].append(ecu / meter)
+    return {
+        "trace": capture.path.name, "sha256": capture.sha256,
+        "reference": reference.path.name,
+        "frame_period_ms": {
+            f"0x{can_id:03X}": statistics.median(b - a for a, b in zip(times, times[1:]))
+            for can_id, times in (
+                (0x239, [t for t, _ in buttons]),
+                *((can_id, bus[can_id].times) for can_id in (0x180, 0x280, 0x284)),
+            ) if len(times) > 1
+        },
+        "gear_ratio_medians": gear_ratios,
+        "speed_284_over_280": {
+            key: {"samples": len(values), "min_median_max": _range(values)}
+            for key, values in frame_speeds.items()
+        },
+        "holds": holds,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -684,7 +953,14 @@ def main(argv: list[str] | None = None) -> int:
         help="flashed image whose Rolling Launch configuration ran",
     )
     parser.add_argument("captures", type=Path, nargs="+")
+    parser.add_argument("--bus-json", type=Path, help="write the raw CAN join of one TRC")
+    parser.add_argument("--reference-mlg", type=Path,
+                        help="join the TRC by tick to all holds of this MLG")
     args = parser.parse_args(argv)
+    if (args.bus_json or args.reference_mlg) and len(args.captures) != 1:
+        parser.error("the bus join requires exactly one TRC")
+    if args.reference_mlg and not args.bus_json:
+        parser.error("--reference-mlg requires --bus-json")
     calibration = read_calibration(args.image)
     failed = False
     for path in args.captures:
@@ -719,6 +995,15 @@ def main(argv: list[str] | None = None) -> int:
                 or run.cuts_inside is False
                 or not run.law_ticks
             )
+        if args.bus_json:
+            reference = read_mlg(args.reference_mlg) if args.reference_mlg else capture
+            reference_runs = audit_hold(reference.samples, calibration)
+            failed |= not reference_runs or any(
+                run.failures or run.cuts_inside is False or not run.law_ticks
+                for run in reference_runs
+            )
+            result = audit_bus(capture, reference_runs, reference=reference)
+            args.bus_json.write_text(json.dumps(result, indent=2) + "\n")
     return 1 if failed else 0
 
 

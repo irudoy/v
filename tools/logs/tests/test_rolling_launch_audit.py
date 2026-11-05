@@ -3,6 +3,7 @@ from dataclasses import replace
 import io
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -405,6 +406,146 @@ class HoldAuditTest(unittest.TestCase):
         self.assertAlmostEqual(audit.CUTS_BELOW, 2.75 - 6 - 1)
         self.assertAlmostEqual(audit.CUTS_ABOVE, 2.75 + 1)
         self.assertAlmostEqual(audit.EVENTS_PER_COUNT_TICK, 0.0064)
+
+
+class BusJoinTest(unittest.TestCase):
+    @staticmethod
+    def capture(samples=None):
+        samples = tuple(simulate(SPEEDS) if samples is None else samples)
+        times = tuple(sample.tick * 10.0 for sample in samples)
+        # 0x180 and 0x160 agree even while the independent spark veto acts.
+        bus = {
+            0x180: tuple((t + 5, bytes.fromhex("7d004b04b0000000")) for t in times),
+            0x160: tuple((t + 4.8, bytes.fromhex("4b04b000000000")) for t in times),
+        }
+        release = (2 + len(SPEEDS)) * 10.0
+        timing = audit.TraceTiming(
+            times, tuple(t + 3 for t in times),
+            ((0, model.BUTTON_RELEASED), (10, model.BUTTON_CANCEL),
+             (release, model.BUTTON_RELEASED)), (), bus,
+        )
+        return audit.Capture(Path("test.trc"), "0" * 64, samples, timing)
+
+    def test_speed_decoder_truncates_big_endian_and_handles_invalid_word(self):
+        self.assertEqual(audit.decode_speed_word(bytes.fromhex("00000000138d")), 500)
+        self.assertEqual(audit.decode_speed_word(bytes.fromhex("00000000ffff")), 0)
+        with self.assertRaisesRegex(ValueError, "bytes 4 and 5"):
+            audit.decode_speed_word(b"\x00" * 5)
+
+    def test_trc_reader_keeps_standard_bus_frames_without_telemetry(self):
+        frames = (
+            audit.peak_trc_audit.Frame(1, 10, "Rx", 0x284, b"\x00" * 8),
+            audit.peak_trc_audit.Frame(2, 11, "Rx", 0x284, b"\x01" * 8,
+                                      is_extended=True),
+            audit.peak_trc_audit.Frame(3, 12, "Rx", 0x284, b"", remote=True),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bus.trc"
+            path.write_bytes(b"")
+            with mock.patch.object(audit.peak_trc_audit, "load_trace",
+                                   return_value=SimpleNamespace(frames=frames)):
+                capture = audit.read_trc(path)
+        self.assertEqual(capture.timing.bus_frames[0x284], ((10, b"\x00" * 8),))
+
+    def test_equal_estimates_do_not_establish_physical_torque_recovery(self):
+        capture = self.capture()
+        runs = audit.audit_hold(capture.samples, CALIBRATION)
+        (row,) = audit.audit_bus(capture, runs)["holds"]
+        self.assertTrue(row["covered"])
+        self.assertGreater(row["parallel_pairs"], 0)
+        self.assertEqual(row["parallel_equal"], row["parallel_pairs"])
+        self.assertIsNone(row["torque_recovery_ms"])
+        self.assertIsNone(row["torque_recovery_cycles"])
+        self.assertEqual(row["release_rpm"], 4000)
+        self.assertEqual(row["next_torque_frame_ms"], 5)
+        self.assertAlmostEqual(row["next_torque_frame_cycles"], 1 / 6)
+
+    def test_reference_join_survives_a_tick_wrap_before_the_mlg_starts(self):
+        reference = self.capture()
+        wrapped = replace(reference, samples=tuple(
+            replace(s, tick=s.tick + 65536) for s in reference.samples
+        ))
+        runs = audit.audit_hold(reference.samples, CALIBRATION)
+        (row,) = audit.audit_bus(wrapped, runs, reference=reference)["holds"]
+        self.assertTrue(row["covered"])
+        self.assertEqual(row["start_ms"], 20)
+
+    def test_hold_ratio_uses_the_same_stable_gear_reference_as_tcm_audit(self):
+        capture = self.capture()
+        bus = dict(capture.timing.bus_frames)
+        times = capture.timing.first_page_ms
+        speed = (850).to_bytes(2, "big") + (2000).to_bytes(2, "big") + b"\x00" * 4
+        selector = next(iter(audit.tcm_shift_audit.DRIVE_SELECTORS))
+        bus.update({
+            0x174: tuple((t + 0.2, bytes.fromhex("ffffff2200000000")) for t in times),
+            0x176: tuple((t + 0.4, speed) for t in times),
+            0x177: tuple((t + 0.6, bytes.fromhex("0000010000780000")) for t in times),
+            0x421: tuple((t, bytes([selector])) for t in times),
+        })
+        capture = replace(capture, timing=replace(capture.timing, bus_frames=bus))
+        runs = audit.audit_hold(capture.samples, CALIBRATION)
+        result = audit.audit_bus(capture, runs)
+        self.assertEqual(result["gear_ratio_medians"], {"2": 0.425})
+        (row,) = result["holds"]
+        self.assertEqual(row["gears"], [2])
+        self.assertEqual(row["ratio_min_median_max"], [0.425] * 3)
+        self.assertEqual(row["ratio_reference_median"], 0.425)
+
+    def test_reference_join_reports_a_hold_missing_from_a_truncated_trace(self):
+        reference = self.capture()
+        truncated = self.capture(reference.samples[5:])
+        runs = audit.audit_hold(reference.samples, CALIBRATION)
+        (row,) = audit.audit_bus(truncated, runs, reference=reference)["holds"]
+        self.assertFalse(row["covered"])
+        self.assertNotIn("release_ms", row)
+
+    def test_reference_join_refuses_another_run_or_ambiguous_ticks(self):
+        reference = self.capture()
+        different = replace(reference, samples=(
+            replace(reference.samples[0], rpm_raw=99), *reference.samples[1:]
+        ))
+        with self.assertRaisesRegex(ValueError, "snapshots differ"):
+            audit.audit_bus(different, (), reference=reference)
+        ambiguous = replace(reference, samples=(
+            *reference.samples, replace(reference.samples[0], tick=65536)
+        ))
+        with self.assertRaisesRegex(ValueError, "ambiguous repeated tick"):
+            audit.audit_bus(ambiguous, (), reference=reference)
+        unrelated = replace(reference, samples=tuple(
+            replace(s, tick=s.tick + 1000) for s in reference.samples
+        ))
+        with self.assertRaisesRegex(ValueError, "no matching snapshots"):
+            audit.audit_bus(unrelated, (), reference=reference)
+
+    def test_speed_error_selects_the_constant_target_of_284(self):
+        samples = [replace(s, speed_error=e) for s, e in zip(
+            simulate(SPEEDS), (0, 10, 20)
+        )]
+        def speed(word):
+            return b"\x00" * 4 + word.to_bytes(2, "big")
+        bus = {
+            0x284: audit._BusIndex([(0, speed(5000)), (20, speed(5100)),
+                                   (40, speed(5200))]),
+            0x280: audit._BusIndex([(0, speed(6000)), (20, speed(6000)),
+                                   (40, speed(6000))]),
+        }
+        result = audit._speed_targets(samples, (1, 21, 41), bus)
+        self.assertEqual(result["0x284"]["target_intersection_raw"], [500, 500])
+        self.assertEqual(result["0x284"]["target_candidates_raw"], [500])
+        self.assertTrue(result["0x284"]["compatible"])
+        self.assertFalse(result["0x280"]["compatible"])
+        stale = audit._speed_targets(samples, (101, 121, 141), bus)
+        self.assertIsNone(stale["0x284"]["compatible"])
+
+    def test_source_needs_a_common_discrete_word_not_only_overlapping_ranges(self):
+        samples = [replace(s, speed_error=0) for s in simulate(SPEEDS)[:3]]
+        frames = [(time, b"\x00" * 4 + word.to_bytes(2, "big"))
+                  for time, word in [(0, 1000), (10, 3000), (20, 2000), (30, 1000)]]
+        bus = {can_id: audit._BusIndex(frames) for can_id in (0x280, 0x284)}
+        result = audit._speed_targets(samples, (11, 21, 31), bus)["0x284"]
+        self.assertEqual(result["target_intersection_raw"], [200, 200])
+        self.assertEqual(result["target_candidates_raw"], [])
+        self.assertFalse(result["compatible"])
 
 
 if __name__ == "__main__":
