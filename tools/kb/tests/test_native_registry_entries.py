@@ -35,6 +35,17 @@ def test_native_projection_renders_the_static_axes_of_a_2d_table(tmp_path, monke
         "static_axis_x_name", "static_axis_x", "static_axis_y_name", "static_axis_y"]
 
 
+def test_native_projection_renders_reviewed_constant_content(tmp_path, monkeypatch):
+    document = _document(tmp_path, monkeypatch, Meaning("tbl", name="constant_probe", props={
+        "home": "jk78c", "storage": "uint8", "cols": 1, "rows": 1,
+        "editor": {"name": "Probe", "constant_content": True}}))
+
+    rendered = native.render_tables(document)
+    assert "\nconstant_content = true\n" in rendered
+    [entry] = tomllib.loads(rendered)["target"]["JK78C"]["table"]
+    assert entry["constant_content"] is True
+
+
 def test_native_axis_entry_leaves_out_the_summary_of_its_meaning(tmp_path, monkeypatch):
     document = _document(tmp_path, monkeypatch, Meaning("axis", name="axis_probe", props={
         "home": "jk78c", "storage": "uint8", "points": 2, "quantity": "raw",

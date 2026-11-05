@@ -45,6 +45,7 @@ OPTIONAL_TABLE_FIELDS = SCALE_FIELDS | frozenset({
     "axis_x",
     "axis_y",
     "mask",
+    "constant_content",
     "static_axis_name",
     "static_axis",
     "static_axis_x_name",
@@ -111,6 +112,7 @@ class NativeTable:
     static_axis_y_name: str
     static_axis_y: tuple[int | str, ...]
     mask: str
+    constant_content: bool
     semantics: str
     note: str
 
@@ -369,6 +371,9 @@ def _parse_table(row, context):
         raise NativeTableError(f"{context}: no axis is declared")
     storagetype = _storagetype(row["storagetype"], f"{context}.storagetype")
     mask = _mask(row.get("mask"), storagetype, f"{context}.mask")
+    constant_content = row.get("constant_content", False)
+    if constant_content is not True and "constant_content" in row:
+        raise NativeTableError(f"{context}.constant_content must be true when present")
     return NativeTable(
         identifier=identifier,
         address=_address(row["address"], f"{context}.address"),
@@ -394,6 +399,7 @@ def _parse_table(row, context):
         static_axis_y_name=static_y_name,
         static_axis_y=static_y,
         mask=mask,
+        constant_content=constant_content,
         semantics=_text(row["semantics"], f"{context}.semantics"),
         note=_text(row["note"], f"{context}.note"),
     )
@@ -616,7 +622,10 @@ def _describe_bindings(rom, entity, address, bindings, note):
     )
 
 
-def _verify_block(rom, image, key, address, length, storagetype, expected_sha256):
+def _verify_block(rom, image, key, address, length, storagetype, expected_sha256,
+                  constant_content=False):
+    """Return the stock values of an entity. An all-ones block is erased flash
+    unless the entry states constant_content as a reviewed calibration value."""
     element = romkit.ELEM[storagetype]
     end = address + length * element
     if end > len(image.data):
@@ -625,7 +634,7 @@ def _verify_block(rom, image, key, address, length, storagetype, expected_sha256
     if hashlib.sha256(block).hexdigest() != expected_sha256:
         raise NativeTableError(f"{rom}: native entity {key} values differ")
     values = image.values(key, length, storagetype)
-    if romkit.erased(values, storagetype):
+    if romkit.erased(values, storagetype) and not constant_content:
         raise NativeTableError(f"{rom}: native entity {key} is erased")
     return values
 
@@ -719,7 +728,7 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
         names.add(presentation["name"])
         _verify_block(
             rom, image, key, table.address, table.width * table.height,
-            table.storagetype, table.values_sha256,
+            table.storagetype, table.values_sha256, table.constant_content,
         )
         _verify_bindings(rom, image, table.address, table.pointer_bindings)
         for axis in table.axis_x + table.axis_y:

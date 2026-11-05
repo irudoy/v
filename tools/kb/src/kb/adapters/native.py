@@ -78,9 +78,9 @@ TABLES = Path("defs/vq37-native-tables.toml")
 FUEL_CUT = Path("defs/vq37-native-fuel-cut.toml")
 SCHEMA_VERSIONS = {TABLES: 4, FUEL_CUT: 1}
 KINDS = {"table": "tbl", "axis": "axis"}
-EDITOR = ("name", "category", "order", "format", "fine", "coarse", "mask", "static_axis",
-          "static_axis_name", "static_axis_x", "static_axis_x_name", "static_axis_y",
-          "static_axis_y_name")
+EDITOR = ("name", "category", "order", "format", "fine", "coarse", "mask", "constant_content",
+          "static_axis", "static_axis_name", "static_axis_x", "static_axis_x_name",
+          "static_axis_y", "static_axis_y_name")
 # Symbol keys and the entry keys that state them.
 GEOMETRY = {"tbl": (("cols", "width"), ("rows", "height")),
             "axis": (("points", "length"), ("quantity", "kind"))}
@@ -459,7 +459,8 @@ def relate(b, root):
 
 # Keys of the entries and targets in the order of their files.
 TABLE_ORDER = ("id", "address", "width", "height", "storagetype", "values_sha256",
-               "pointer_bindings", "axis_x", "axis_y", "mask", "name", "category", "order",
+               "pointer_bindings", "axis_x", "axis_y", "mask", "constant_content", "name",
+               "category", "order",
                "format", "fine", "coarse", "units", "confidence", "scale_conf", "scale_expr",
                "to_byte", "static_axis_name", "static_axis", "static_axis_x_name",
                "static_axis_x", "static_axis_y_name", "static_axis_y", "semantics", "note")
@@ -540,12 +541,14 @@ def _string(text):
 
 
 def _plain(value):
-    """A string, a number, or an array of them."""
+    """A string, a boolean, a number, or an array of them."""
     if isinstance(value, str):
         return _string(value)
+    if isinstance(value, bool):
+        return "true" if value else "false"
     if isinstance(value, list):
         return "[" + ", ".join(_plain(item) for item in value) + "]"
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if not isinstance(value, (int, float)):
         raise repo.KbError(f"no rendering of {value!r}", code=3)
     return repr(value)
 

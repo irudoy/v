@@ -729,7 +729,7 @@ describe, so a rename or a move carries them:
 
 | Table | On | Keys |
 |---|---|---|
-| `[editor]` | `tbl`, `axis`, `const` | `name`, `category`, `order`, `emit`, `format`, `fine`, `coarse`, `mask`, `static_axis`, `static_axis_name`, `static_axis_operand`, `static_axis_x`, `static_axis_x_name`, `static_axis_y`, `static_axis_y_name` |
+| `[editor]` | `tbl`, `axis`, `const` | `name`, `category`, `order`, `emit`, `format`, `fine`, `coarse`, `mask`, `constant_content`, `static_axis`, `static_axis_name`, `static_axis_operand`, `static_axis_x`, `static_axis_x_name`, `static_axis_y`, `static_axis_y_name` |
 | `[[editor.view]]` | `tbl`, `const` | A masked view: `name`, `category`, `mask`, `unit`, `scale`, `to_raw`, `format`, `fine`, `coarse` |
 | `[logparam]` | `ram`, `reg` | RomRaider logger parameter: `id`, `unit`, `scale`, `static_axis_name` |
 | `[[diagnostic]]` | any meaning | Diagnostic binding: `id`, `kind`, `label`, `key`, `claim` (an inline table of `label` and `id`), `applicability`, `scope` (image or layout ids), `priority`, `level`, `note`, and `[[diagnostic.evidence]]` |
@@ -739,7 +739,10 @@ describe, so a rename or a move carries them:
 
 `editor.name` is the name the editors show; it is not the name of the
 meaning. `editor.static_axis_operand` is a reference to the `ram` or `reg`
-meaning whose value the static axis labels. The generators of the editor definitions, the RomRaider files, and
+meaning whose value the static axis labels. `editor.constant_content = true`
+marks a native VQ37 table whose stock cells may all hold one bits as a
+reviewed calibration value; the native table registry rejects such a block
+of an unmarked table as erased flash. The generators of the editor definitions, the RomRaider files, and
 the diagnostic bindings read these tables.
 
 Ledger selectors reproduce column presence and row order without owning a

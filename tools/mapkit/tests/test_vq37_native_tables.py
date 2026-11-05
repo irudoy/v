@@ -476,6 +476,29 @@ def test_registry_rejects_an_invalid_static_axis(width, height, labels, message)
         vq37_native_tables._parse_table(_table_row(width, height, **labels), "probe")
 
 
+def test_registry_accepts_an_all_ones_block_only_as_reviewed_constant_content():
+    # The stock JK78C input byte gate threshold holds 0xFF.
+    image = romkit.load("JK78C")
+    digest = hashlib.sha256(image.data[0x8935:0x8936]).hexdigest()
+    arguments = ("JK78C", image, "00008935", 0x8935, 1, "uint8", digest)
+
+    with pytest.raises(vq37_native_tables.NativeTableError, match="00008935 is erased"):
+        vq37_native_tables._verify_block(*arguments)
+    assert list(vq37_native_tables._verify_block(*arguments, True)) == [0xFF]
+
+
+def test_registry_reads_constant_content_as_a_true_flag():
+    row = _table_row(1, 1, static_axis_name="Constant", static_axis=["probe"])
+    assert vq37_native_tables._parse_table(row, "probe").constant_content is False
+    marked = vq37_native_tables._parse_table({**row, "constant_content": True}, "probe")
+    assert marked.constant_content is True
+
+    with pytest.raises(
+        vq37_native_tables.NativeTableError, match="constant_content must be true"
+    ):
+        vq37_native_tables._parse_table({**row, "constant_content": False}, "probe")
+
+
 def test_apply_target_publishes_every_registered_table_and_axis():
     for rom in TARGETS:
         target = vq37_native_tables.load_registry()[rom]
