@@ -684,8 +684,8 @@ earlier hold delays only that ready mark, at `q = 0`. A second publication that 
 the complete hold with the law output 1000, so `q = 0`; the control publisher
 takes that ready mark and commits `q` of its law, which leaves the records of
 a publication after the pass. At
-high engine speed the crank-tooth interrupt runs more than once in an engine
-pass, so both outcomes occur. Neither publishes a nonzero `q` before the
+high engine speed the crank-tooth interrupt can run more than once in an engine
+pass, so both outcomes are reachable. Neither publishes a nonzero `q` before the
 control publisher commits the law of the pass. The input sample precedes every transition. A sampled change that alters the
 wire views fails the check and occurs only on a pass that aborts or outside
 `ACTIVE`; other sampled fields are coupled to no control field, so a
