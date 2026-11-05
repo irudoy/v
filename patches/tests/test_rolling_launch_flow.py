@@ -97,10 +97,37 @@ def test_historical_engine_defects_fail_the_check(layout, entries, old, new, mes
     # A call into another unit names the address of an entry label.
     ("spark_cut", "bsr 0x000D6780\n", "bsr 0x000D6782\n",
      r"rolling-launch-spark-cut\.s:\d+: 0x000d6782 is no label"),
+    # RTS takes its return address from PR before its slot restores PR.
+    ("wrappers", "mov.l @(rolling_launch_engine_entry,pc),r0\njsr @r0\nnop\n"
+     "lds.l @r15+,pr\nrts\nnop\n",
+     "mov.l @(rolling_launch_engine_entry,pc),r0\njsr @r0\nnop\nrts\nlds.l @r15+,pr\n",
+     "rolling_launch_periodic_wrapper returns without its entry PR"),
+    # BSR and JSR write the continuation to PR before their slot saves PR.
+    ("engine", "rl_window:\nsts.l pr,@-r15\nmov #-0x41,r1\nand r1,r11\nmov r4,r7\n"
+     "sub r6,r7\nmov.w @(0x1a,r10),r0\nextu.w r0,r0\nshlr8 r0\ncmp/ge r7,r0\n"
+     "mov #0x40,r1\nmov #0x14,r2\nbsr rl_gate_valid_pass_t\nnop\n",
+     "rl_window:\nmov #-0x41,r1\nand r1,r11\nmov r4,r7\n"
+     "sub r6,r7\nmov.w @(0x1a,r10),r0\nextu.w r0,r0\nshlr8 r0\ncmp/ge r7,r0\n"
+     "mov #0x40,r1\nmov #0x14,r2\nbsr rl_gate_valid_pass_t\nsts.l pr,@-r15\n",
+     "rl_window returns without its entry PR"),
+    ("wrappers", "rolling_launch_periodic_wrapper:\nsts.l pr,@-r15\n"
+     "mov.l @(rolling_launch_periodic_stock,pc),r0\njsr @r0\nnop\n",
+     "rolling_launch_periodic_wrapper:\n"
+     "mov.l @(rolling_launch_periodic_stock,pc),r0\njsr @r0\nsts.l pr,@-r15\n",
+     "rolling_launch_periodic_wrapper returns without its entry PR"),
 ))
 def test_flow_check_refuses_a_changed_source(layout, entries, key, old, new, message):
     with pytest.raises(flow.FlowError, match=message):
         flow.validate_flow(_parsed(layout, key, old, new), entries)
+
+
+# A tail callee returns to PR after the slot of JMP, so a restore in that
+# slot keeps the entry PR, as does a restore before RTS.
+def test_flow_check_accepts_a_restore_in_the_slot_of_a_tail_jump(layout, entries):
+    old = ("lds.l @r15+,pr\nmov.l @(rl_rpm_control_publisher,pc),r0\njmp @r0\nnop\n")
+    new = ("mov.l @(rl_rpm_control_publisher,pc),r0\njmp @r0\nlds.l @r15+,pr\n")
+    result = flow.validate_flow(_parsed(layout, "rpm", old, new), entries)
+    assert "rolling_launch_rpm_controller" in result
 
 
 @pytest.mark.parametrize("old,new,message", (

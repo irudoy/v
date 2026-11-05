@@ -14,8 +14,10 @@ of every stock or Map Switching target: the registers it reads, the
 registers whose exit value differs from the entry value, the outputs, and
 the mnemonics whose T reaches a consumer by intent. The check requires:
 
-- every return with an empty stack and the entry PR, and every tail jump
-  likewise;
+- every return with an empty stack after its slot and the entry PR at the
+  RTS, which takes its return address before the slot, and every tail jump
+  with an empty stack and the entry PR after its slot; BSR and JSR write
+  the continuation to PR before their slot;
 - computed reads and writes equal to the declaration, outputs among the
   writes, and the T of the caller read exactly when the declaration names
   it;
@@ -101,6 +103,7 @@ class Node:
     target: object = None  # label address of bt, bf, bra and bsr; register of jsr and jmp
     successors: tuple = ()
     mnemonic: str = ""
+    slot: int | None = None  # index of the first delay-slot step
 
 
 def _operands(text):
@@ -335,6 +338,7 @@ class Program:
                 raise FlowError(f"{where}: a transfer sits in the delay slot")
             self.slots.add(slot.address)
             node.steps = steps + slot_steps
+            node.slot = len(steps)
         if mnemonic in ("bt", "bf", "bra", "bsr"):
             label = operands[0]
             if label in self.labels:
@@ -458,15 +462,27 @@ class Analysis:
         return state.put(**regs)
 
     def _transfer(self, node, state):
-        """The state after one node, its call or tail targets, and their conventions."""
-        # The target register precedes the delay slot.
+        """The states of one node, its call or tail targets, and their conventions.
+
+        Return the state at the transfer, after the node, and after its call.
+        A delayed branch performs its register transfer before its slot and
+        branches after it: JSR and JMP take their target, and RTS its return
+        address from PR, before the slot, and BSR and JSR write the
+        continuation to PR before the slot.
+        """
         targets = self.targets(node, state) if node.kind in ("call", "tail") else ()
-        for step in node.steps:
+        control = None
+        for position, step in enumerate(node.steps):
+            if position == node.slot:
+                control = state
+                if node.kind == "call":
+                    state = state.put(pr=None)
             state = _apply_step(step, state, node)
+        control = state if control is None else control
         conventions = [self.convention(target, node.where) for target in targets]
-        if node.kind == "call":
-            return state, self._call_effect(node, state, targets, conventions), targets, conventions
-        return state, state, targets, conventions
+        after = (self._call_effect(node, state, targets, conventions)
+                 if node.kind == "call" else state)
+        return control, state, after, targets, conventions
 
     def _forward(self, entry):
         program = self.program
@@ -477,7 +493,7 @@ class Analysis:
             node = program.nodes.get(address)
             if node is None:
                 raise FlowError(f"{self.name(entry)} reaches no instruction at {address:#010x}")
-            _before, state, _targets, _conventions = self._transfer(node, states[address])
+            *_states, state, _targets, _conventions = self._transfer(node, states[address])
             if node.kind in ("exit", "tail"):
                 continue
             for successor in node.successors:
@@ -492,11 +508,11 @@ class Analysis:
         exits, tails, calls, consumers = [], [], [], []
         for address in sorted(states):
             node = program.nodes[address]
-            before, _after, targets, conventions = self._transfer(node, states[address])
+            control, before, _after, targets, conventions = self._transfer(node, states[address])
             if node.kind == "branch":
                 consumers.append((node, states[address].get("t"), "branch"))
             if node.kind == "exit":
-                exits.append((node, before))
+                exits.append((node, before, control))
             for target, convention in zip(targets, conventions):
                 group = calls if node.kind == "call" else tails
                 group.append((node, before, target, convention))
@@ -511,10 +527,15 @@ class Analysis:
         """The convention that the forward pass computes, with declared reads and outputs."""
         name = self.name(entry)
         writes = set()
-        for node, state, *rest in [*exits, *tails]:
+        # RTS returns to PR at the transfer; a tail callee returns to PR after
+        # the slot of JMP.
+        returns = [(node, state, control, frozenset()) for node, state, control in exits]
+        returns += [(node, state, state, convention.writes)
+                    for node, state, _target, convention in tails]
+        for node, state, control, callee_writes in returns:
             if state.stack:
                 raise FlowError(f"{node.where}: {name} leaves {len(state.stack)} stack words")
-            if state.get("pr") != ("entry", "pr"):
+            if control.get("pr") != ("entry", "pr"):
                 raise FlowError(f"{node.where}: {name} returns without its entry PR")
             for register in REGISTERS:
                 value = state.get(register)
@@ -523,8 +544,7 @@ class Analysis:
                         writes.add("t")
                 elif value != ("entry", register):
                     writes.add(register)
-            if rest:
-                writes |= rest[1].writes
+            writes |= callee_writes
         declared = self.conventions.get(entry)
         if declared is None:
             raise FlowError(f"{name} has no declared convention")
@@ -733,7 +753,7 @@ def _check_function(analysis, entry, computed):
 def _t_consumers(analysis, function, convention):
     for item in function["consumers"]:
         yield item
-    for node, state in function["exits"]:
+    for node, state, _control in function["exits"]:
         if "t" in convention.outputs:
             yield node, state.get("t"), "T output"
     for node, state, target, callee in function["tails"]:
