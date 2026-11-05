@@ -33,6 +33,10 @@ FUEL_PATH_WORDS = (
     (0x00022914, 0xFFFF5D54),
     (0x00022960, 0xFFFF5D58),
 )
+# The flashed endpoints redirect the GR11A spark vector to their spark cut;
+# the current runtime keeps the stock handler there.
+SPARK_VECTOR_WORD = (0x000202E4, 0x000D60C0)
+RESTORED_ENDPOINT_WORDS = FUEL_PATH_WORDS + (SPARK_VECTOR_WORD,)
 
 
 @lru_cache(maxsize=None)
@@ -94,14 +98,14 @@ def absent_state(source):
 
 
 def test_map_only_image_has_an_absent_rolling_layer():
-    assert {address for address, _ in FUEL_PATH_WORDS} == {
+    assert {address for address, _ in RESTORED_ENDPOINT_WORDS} == {
         item.address for item in target("JK08A").rolling_layout.restored_words
     }
     assert absent_state(map_only_image()) == "absent"
 
 
-@pytest.mark.parametrize("address,value", FUEL_PATH_WORDS)
-def test_absent_rolling_layer_refuses_each_leftover_fuel_path_word(address, value):
+@pytest.mark.parametrize("address,value", RESTORED_ENDPOINT_WORDS)
+def test_absent_rolling_layer_refuses_each_leftover_endpoint_word(address, value):
     data = bytearray(map_only_image())
     data[address : address + 4] = value.to_bytes(4, "big")
     with pytest.raises(

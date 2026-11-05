@@ -267,7 +267,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.result.instruction_count,
             self.rolling_layout.assembled_instruction_count,
         )
-        self.assertEqual(self.result.code_entry_count, 15)
+        self.assertEqual(self.result.code_entry_count, 16)
         self.assertEqual(
             self.result.diagnostic_count,
             len(self.rolling_layout.diagnostics),
