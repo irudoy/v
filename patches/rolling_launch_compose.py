@@ -279,6 +279,8 @@ def compose(
         layout,
         layout.default_configuration if configuration is None else configuration,
     )
+    # The default composition holds the default record and E of the base.
+    default = configuration == layout.default_configuration and efficiency is None
     efficiency = _validate_efficiency(
         layout, efficiency_table(base) if efficiency is None else efficiency
     )
@@ -288,7 +290,7 @@ def compose(
     )
     output_sha256 = hashlib.sha256(data).hexdigest()
     if (
-        configuration == layout.default_configuration
+        default
         and layout.expected_composition_sha256 != "0" * 64
         and output_sha256 != layout.expected_composition_sha256
     ):
@@ -333,6 +335,8 @@ def validate_composed(
         layout,
         layout.default_configuration if configuration is None else configuration,
     )
+    # The default composition holds the default record and E of the base.
+    default = configuration == layout.default_configuration and efficiency is None
     efficiency = _validate_efficiency(
         layout, efficiency_table(base) if efficiency is None else efficiency
     )
@@ -342,7 +346,7 @@ def validate_composed(
     )
     output_sha256 = hashlib.sha256(composed).hexdigest()
     if (
-        configuration == layout.default_configuration
+        default
         and layout.expected_composition_sha256 != "0" * 64
         and output_sha256 != layout.expected_composition_sha256
     ):

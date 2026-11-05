@@ -233,9 +233,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 4318)
-        self.assertEqual(self.result.permitted_write_bytes, 4318)
-        self.assertEqual(self.result.changed_bytes, 3453)
+        self.assertEqual(sum(item.size for item in ranges), 4788)
+        self.assertEqual(self.result.permitted_write_bytes, 4788)
+        self.assertEqual(self.result.changed_bytes, 3535)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -273,6 +273,10 @@ class RollingLaunchCompositionTest(unittest.TestCase):
             for index, (left, right) in enumerate(zip(self.result.data, custom.data))
             if left != right
         ))
+        rolling_launch_compose.validate_composed(
+            layout=self.layout, base=self.base, composed=custom.data,
+            blobs=self.blobs, efficiency=table,
+        )
         with self.assertRaisesRegex(ValueError, "composed byte"):
             rolling_launch_compose.validate_composed(
                 layout=self.layout, base=self.base, composed=custom.data,

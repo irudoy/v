@@ -122,15 +122,19 @@ def test_runtime_registry_covers_all_supported_families():
 
 
 @pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
-def test_runtime_targets_load_without_schema6_executable_payloads(rom):
+def test_only_exact_targets_carry_the_schema6_executable_payloads(rom):
     target = runtime_targets.load_runtime_target(rom)
     assert target.rom == rom
-    assert not target.rolling_payloads
     if rom in runtime_targets.EXACT_ROMS:
-        assert target.rolling_layout is not None
-        assert not target.rolling_layout.payloads_ready
+        layout = target.rolling_layout
+        assert layout is not None
+        assert layout.payloads_ready
+        assert set(target.rolling_payloads) == set(
+            layout.assembly_unit_by_key
+        )
     else:
         assert target.rolling_layout is None
+        assert not target.rolling_payloads
 
 
 @pytest.mark.parametrize("rom", runtime_targets.RELOCATED_8MFK_ROMS)
