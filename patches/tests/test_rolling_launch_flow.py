@@ -94,6 +94,9 @@ def test_historical_engine_defects_fail_the_check(layout, entries, old, new, mes
      "bsr rl_window\nnop\nbt rl_gate_rpm\nnop",
      r"T of a call at rolling-launch-engine\.s:\d+ reaches the branch of "
      r"rolling_launch_engine"),
+    # A call into another unit names the address of an entry label.
+    ("spark_cut", "bsr 0x000D6780\n", "bsr 0x000D6782\n",
+     r"rolling-launch-spark-cut\.s:\d+: 0x000d6782 is no label"),
 ))
 def test_flow_check_refuses_a_changed_source(layout, entries, key, old, new, message):
     with pytest.raises(flow.FlowError, match=message):
@@ -107,8 +110,9 @@ def test_flow_check_refuses_a_changed_source(layout, entries, key, old, new, mes
     ('label = "rl_window"\nreads = ["r4", "r6", "r10", "r11", "r12", "r13"]',
      'label = "rl_window"\nreads = ["r4", "r6", "r10", "r11", "r12", "r13", "t"]',
      "rl_window: declares a T input that reaches no consumer"),
-    ('[[external]]\naddress = 0x0002AB24\nname = "stock GR11A spark handler"\n', "",
-     "stock GR11A spark handler|0x0002ab24 has no declared convention"),
+    ('[[external]]\naddress = 0x00021CE0\nname = "stock unsigned divider"\n'
+     'reads = ["r0", "r1"]\nwrites = ["r0", "r1", "t"]\noutputs = ["r0"]\n', "",
+     "stock unsigned divider|0x00021ce0 has no declared convention"),
     ('[[continuation]]', '[[external]]\naddress = 0x00000100\nname = "unused"\n\n'
      '[[continuation]]', "declared conventions reach no call or entry: unused"),
 ))

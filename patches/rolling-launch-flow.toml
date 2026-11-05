@@ -129,8 +129,19 @@ outputs = ["r0"]
 label = "rolling_launch_feedback_arbiter"
 writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
 
+# The dwell-arming actuator replaces the countdown-divider call and leaves
+# through the stock divider, so it has the convention of that divider.
 [[function]]
 label = "rolling_launch_spark_cut"
+reads = ["r0", "r1"]
+writes = ["r0", "r1", "t"]
+outputs = ["r0"]
+
+[[function]]
+label = "rolling_launch_spark_events"
+reads = ["r5"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r7", "t"]
+outputs = ["r2", "r4"]
 
 [[function]]
 label = "rolling_launch_state_check"
@@ -207,8 +218,3 @@ address = 0x0002A892
 name = "stock primary ignition consumer"
 reads = ["r4", "r5", "r6", "r7"]
 writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
-
-# An interrupt handler preserves every register for the interrupted code.
-[[external]]
-address = 0x0002AB24
-name = "stock GR11A spark handler"

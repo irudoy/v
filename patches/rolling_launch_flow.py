@@ -337,9 +337,15 @@ class Program:
             node.steps = steps + slot_steps
         if mnemonic in ("bt", "bf", "bra", "bsr"):
             label = operands[0]
-            if label not in self.labels:
+            if label in self.labels:
+                node.target = self.labels[label]
+            elif (mnemonic == "bsr" and NUMBER.fullmatch(label)
+                  and int(label, 0) in self.label_addresses):
+                # Each unit assembles alone, so a call into another unit
+                # names the address of its entry label.
+                node.target = int(label, 0)
+            else:
                 raise FlowError(f"{where}: {label} is no label")
-            node.target = self.labels[label]
         follow = statement.address + 2
         if mnemonic in ("bt", "bf"):
             node.kind, node.successors = "branch", (follow, node.target)
