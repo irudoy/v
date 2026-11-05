@@ -1,4 +1,5 @@
 from dataclasses import replace
+import hashlib
 from pathlib import Path
 import tomllib
 
@@ -6,6 +7,8 @@ import pytest
 
 from patches import extract_calibration
 from patches import rolling_launch as rl
+from patches import rolling_launch_assembly
+from patches import rolling_launch_compose
 from patches import rolling_launch_layout as storage
 from patches import runtime_endpoints
 
@@ -74,6 +77,48 @@ def test_ready_flag_cannot_qualify_unowned_executable_budgets(layout):
     with pytest.raises(ValueError, match="assembly owner"):
         storage.validate_structure(replace(layout, payloads_ready=True,
                                            expected_composition_sha256="0"*64))
+
+
+def test_pending_payloads_do_not_read_a_manifest(layout, tmp_path):
+    assert rolling_launch_assembly.load_payloads(layout, tmp_path / "absent.toml") == {}
+    assert rolling_launch_assembly.load_payloads(layout) == {}
+
+
+def test_pending_composition_refuses_before_using_payloads(layout):
+    with pytest.raises(ValueError, match="schema 6 executable payloads are not assembled and qualified"):
+        rolling_launch_compose.compose(layout=layout, base=bytes(0x100000))
+
+
+@pytest.mark.parametrize("damage,message", (
+    (None, None),
+    ("missing", "payload set differs"),
+    ("extra", "payload set differs"),
+    ("hash", "blob SHA-256"),
+    ("size", "blob has"),
+))
+def test_ready_payloads_require_the_exact_unit_set_and_bytes(layout, tmp_path, damage, message):
+    unit = layout.assembly_units[0]
+    blob = bytes(unit.span.size)
+    unit = replace(unit, expected_sha256=hashlib.sha256(blob).hexdigest())
+    ready = replace(layout, payloads_ready=True, assembly_units=(unit,))
+    units = {unit.key: blob.hex()}
+    if damage == "missing":
+        units.clear()
+    elif damage == "extra":
+        units["unexpected"] = blob.hex()
+    elif damage == "hash":
+        units[unit.key] = (b"\x01" + blob[1:]).hex()
+    elif damage == "size":
+        units[unit.key] = blob[1:].hex()
+    path = tmp_path / "payloads.toml"
+    path.write_text("schema_version = 1\n[units]\n" + "".join(
+        f'{key} = "{value}"\n' for key, value in units.items()
+    ))
+    if message is None:
+        assert rolling_launch_assembly.load_payloads(ready, path) == {unit.key: blob}
+    else:
+        with pytest.raises(ValueError, match=message):
+            rolling_launch_assembly.load_payloads(ready, path)
 
 
 def test_reservation_checks_reject_real_future_overlap(layout, tmp_path):

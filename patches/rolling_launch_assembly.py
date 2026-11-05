@@ -82,8 +82,10 @@ IMMEDIATE_R0_ONLY = re.compile(
 
 
 def load_payloads(layout=None, path=DEFAULT_PAYLOADS):
-    """Load and SHA-validate every tracked Ghidra assembly span."""
+    """Load SHA-validated executable spans only for a ready layout."""
     layout = layout or layout_model.load_layout()
+    if not layout.payloads_ready:
+        return {}
     path = Path(path)
     with path.open("rb") as source:
         raw = tomllib.load(source)

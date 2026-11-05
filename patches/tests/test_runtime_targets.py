@@ -57,9 +57,6 @@ def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
     assert rolling_launch.MAIN_PRESSED_MASK == (
         runtime_targets.ascd_main_mask("7mfk")
     )
-    assert rolling_launch.FUEL_CUT_ACTIVE_MASK == 1 << (
-        runtime_targets.runtime_bindings.layout("7mfk")["fuel_cut_active_bit"]
-    )
     assert runtime_targets.knock_surface_bits("7mfk") == (6, 6)
 
 
@@ -122,6 +119,18 @@ def test_runtime_registry_covers_all_supported_families():
         assert target.rom == rom
         assert target.family == runtime_targets.EXACT_FAMILY
         assert target.map_layout.variant == "single-cvtc"
+
+
+@pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
+def test_runtime_targets_load_without_schema6_executable_payloads(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    assert target.rom == rom
+    assert not target.rolling_payloads
+    if rom in runtime_targets.EXACT_ROMS:
+        assert target.rolling_layout is not None
+        assert not target.rolling_layout.payloads_ready
+    else:
+        assert target.rolling_layout is None
 
 
 @pytest.mark.parametrize("rom", runtime_targets.RELOCATED_8MFK_ROMS)

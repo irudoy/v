@@ -105,9 +105,15 @@ def load_ledger(path=DEFAULT_MANIFEST):
 
 
 def _require_owner_set(items, context):
-    owners = [item.owner for item in items]
-    if len(owners) != len(set(owners)) or set(owners) != OWNERS:
-        raise ValueError(f"{context}: each runtime must have one reservation")
+    if {item.owner for item in items} != OWNERS:
+        raise ValueError(f"{context}: every runtime must have reservations")
+
+
+def _owner_spans(items, owner):
+    return sorted(
+        (item.span.start, item.span.end)
+        for item in items if item.owner == owner
+    )
 
 
 def _require_disjoint(items, context):
@@ -141,15 +147,14 @@ def validate_ledger(ledger):
     map_layout = map_switching_layout.load_layout()
     launch_layout = rolling_launch_layout.load_layout()
     telemetry_layout = can_telemetry_layout.load_layout()
-    active_by_owner = {item.owner: item.span for item in ledger.active_ram}
     expected_active = {
-        "map_switching": map_layout.ram.reservation,
-        "rolling_launch": launch_layout.ram.state,
-        "can_telemetry": telemetry_layout.ram.active,
+        "map_switching": (map_layout.ram.reservation,),
+        "rolling_launch": launch_layout.ram.active_spans,
+        "can_telemetry": (telemetry_layout.ram.active,),
     }
-    for owner, expected in expected_active.items():
-        actual = active_by_owner[owner]
-        if (actual.start, actual.end) != (expected.start, expected.end):
+    for owner, spans in expected_active.items():
+        expected = sorted((span.start, span.end) for span in spans)
+        if _owner_spans(ledger.active_ram, owner) != expected:
             raise ValueError(f"{owner}: active RAM differs from its layout")
 
     if (
@@ -161,15 +166,10 @@ def validate_ledger(ledger):
         if not ledger.ram_proven_free.contains(item.span):
             raise ValueError(f"{item.owner}: RAM lies outside the free range")
 
-    future_rom_by_owner = {
-        item.owner: item.span for item in ledger.future_rom
-    }
-    if (
-        future_rom_by_owner["can_telemetry"].start
-        != telemetry_layout.reserved_rom.start
-        or future_rom_by_owner["can_telemetry"].end
-        != telemetry_layout.reserved_rom.end
-    ):
+    if _owner_spans(ledger.future_rom, "can_telemetry") != [(
+        telemetry_layout.reserved_rom.start,
+        telemetry_layout.reserved_rom.end,
+    )]:
         raise ValueError("CAN telemetry ROM reserve differs from its layout")
     free_by_owner = {
         "map_switching": map_layout.free_rom,
@@ -189,6 +189,10 @@ def validate_ledger(ledger):
         if checksum_offsets & set(range(item.span.start, item.span.end)):
             raise ValueError(f"{item.owner}: ROM reserve overlaps a checksum")
 
+    # An ABI-only layout has no qualified complete composition to inspect.
+    # Its ownership, bounds, write sets, and checksum exclusions remain checked.
+    if not launch_layout.payloads_ready:
+        return
     composition = can_telemetry_compose.compose().data
     for item in ledger.future_rom:
         actual = composition[item.span.start : item.span.end]
