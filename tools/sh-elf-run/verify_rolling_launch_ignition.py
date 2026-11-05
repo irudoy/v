@@ -245,7 +245,7 @@ def require_private_trace(trace, fixture, parsed, keys):
     records = base.read_pc_trace(trace)
     words = {item.address: int.from_bytes(fixture[item.address:item.address + 2], "big")
              for key in keys for item in parsed[key].statements if item.kind == "instruction"}
-    executed, branches, delayed = set(), {}, set()
+    executed, branches, delayed, direct, calls, returns, external_calls = set(), {}, set(), {}, set(), set(), set()
     for key in keys:
         for item in parsed[key].statements:
             if item.kind != "instruction":
@@ -253,9 +253,18 @@ def require_private_trace(trace, fixture, parsed, keys):
             mnemonic = instructions._mnemonic(item)
             if mnemonic in {"bt", "bf"}:
                 branches[item.address] = {item.address + 2, instructions._source_target(parsed[key], item)}
-            if mnemonic in {"bsr", "jsr", "jmp", "rts"}:
+            if mnemonic in {"bra", "bsr", "jsr", "jmp", "rts"}:
                 delayed.add(item.address)
+            if mnemonic in {"bra", "bsr"}:
+                direct[item.address] = instructions._source_target(parsed[key], item)
+            if mnemonic == "bsr":
+                calls.add(item.address)
+            if mnemonic == "rts":
+                returns.add(item.address)
+            if mnemonic == "jsr":
+                external_calls.add(item.address)
     observed = {pc: set() for pc in branches}
+    frames = []
     for index, (pc, word, delay) in enumerate(records):
         if words.get(pc) != word:
             raise base.VerificationError(f"ignition trace has unbound instruction {pc:#x}")
@@ -264,6 +273,17 @@ def require_private_trace(trace, fixture, parsed, keys):
             observed[pc].add(records[index + 1][0])
         if pc in delayed and (index + 1 >= len(records) or records[index + 1][0::2] != (pc + 2, 1)):
             raise base.VerificationError(f"ignition trace lacks delay slot at {pc:#x}")
+        if pc in direct and (index + 2 >= len(records) or records[index + 2][0] != direct[pc]):
+            raise base.VerificationError(f"ignition trace has a different direct target at {pc:#x}")
+        if pc in calls:
+            frames.append(pc + 4)
+        if pc in returns and (not frames or index + 2 >= len(records)
+                              or records[index + 2][0] != frames.pop()):
+            raise base.VerificationError(f"ignition trace has an unmatched return at {pc:#x}")
+        if pc in external_calls and (index + 2 >= len(records) or records[index + 2][0] != pc + 4):
+            raise base.VerificationError(f"ignition trace lacks its external call return at {pc:#x}")
+    if frames:
+        raise base.VerificationError("ignition trace has an unreturned private call")
     if executed != set(words):
         missing = ",".join(hex(pc) for pc in sorted(set(words) - executed))
         raise base.VerificationError(f"ignition trace has unexecuted instructions: {missing}")
@@ -506,45 +526,8 @@ def verify_kernel():
         base.run_command([base.RUN, coverage], env=environment, timeout=180)
         if coverage.read_bytes() != before:
             raise base.VerificationError("ignition coverage ELF changes during execution")
-        records = base.read_pc_trace(trace)
-        words = {item.address: int.from_bytes(fixture[item.address:item.address + 2], "big")
-                 for key in KERNEL_UNITS for item in parsed[key].statements if item.kind == "instruction"}
-        executed = set()
-        for pc, word, delay in records:
-            if pc not in words or words[pc] != word:
-                raise base.VerificationError(f"ignition kernel trace has unbound instruction {pc:#x}")
-            executed.add(pc)
-        if executed != set(words):
-            missing = ",".join(hex(pc) for pc in sorted(set(words) - executed))
-            raise base.VerificationError(f"ignition kernel has unexecuted instructions: {missing}")
-        branches = {}
-        delayed = set()
-        for key in KERNEL_UNITS:
-            for item in parsed[key].statements:
-                if item.kind != "instruction":
-                    continue
-                mnemonic = instructions._mnemonic(item)
-                if mnemonic in {"bt", "bf"}:
-                    branches[item.address] = {
-                        item.address + 2, instructions._source_target(parsed[key], item),
-                    }
-                if mnemonic in {"bsr", "jmp", "rts"}:
-                    delayed.add(item.address)
-        observed = {pc: set() for pc in branches}
-        for index, (pc, word, delay) in enumerate(records):
-            if pc in branches and index + 1 < len(records):
-                observed[pc].add(records[index + 1][0])
-            if pc in delayed and (
-                    index + 1 >= len(records)
-                    or records[index + 1][0::2] != (pc + 2, 1)):
-                raise base.VerificationError(f"ignition kernel lacks its delay slot at {pc:#x}")
-        for pc, required in branches.items():
-            if observed[pc] != required:
-                raise base.VerificationError(
-                    f"ignition kernel branch outcomes differ at {pc:#x}: "
-                    f"observed={sorted(observed[pc])} required={sorted(required)}")
-        kernel_marker = (result.stdout.strip() + f" instructions={len(executed)} "
-                         f"branch_outcomes={2 * len(branches)} delays={len(delayed)} storage_negative=PASS")
+        metrics = require_private_trace(trace, fixture, parsed, KERNEL_UNITS)
+        kernel_marker = result.stdout.strip() + f" {metrics} storage_negative=PASS"
         print(kernel_marker, flush=True)
         builders = verify_builders(directory, fixture, invoke, layout, parsed)
         return builders
