@@ -203,14 +203,25 @@ def _active_ram(path=RESERVATIONS):
 
 
 def _runtime_state_spans(path=RESERVATIONS):
-    """Return the active RAM spans of the runtimes a state field may read."""
+    """Return every active RAM span of the runtimes a state field may read.
+
+    A runtime may own several disjoint spans, such as the Rolling Launch
+    state record and its extension; every runtime owns at least one.
+    """
+    allocations = _active_ram(path)
     spans = tuple(
         (start, end)
-        for owner, start, end in _active_ram(path)
+        for owner, start, end in allocations
         if owner in RUNTIME_STATE_OWNERS
     )
-    if len(spans) != len(RUNTIME_STATE_OWNERS):
-        raise ValueError(f"{Path(path).name}: runtime state spans differ")
+    missing = sorted(
+        set(RUNTIME_STATE_OWNERS) - {owner for owner, _start, _end in allocations}
+    )
+    if missing:
+        raise ValueError(
+            f"{Path(path).name}: no active runtime state span of "
+            + ", ".join(missing)
+        )
     return spans
 
 

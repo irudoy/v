@@ -522,5 +522,63 @@ class CanTelemetryContractTest(unittest.TestCase):
         )
 
 
+class RuntimeStateSpanTest(unittest.TestCase):
+    ROWS = (
+        ("map_switching", 0xFFFF5D00, 0xFFFF5D3C),
+        ("rolling_launch", 0xFFFF5D40, 0xFFFF5D6C),
+        ("rolling_launch", 0xFFFF6100, 0xFFFF6120),
+        ("can_telemetry", 0xFFFF5E00, 0xFFFF5F90),
+    )
+
+    @staticmethod
+    def ledger(directory, rows):
+        path = Path(directory) / "reservations.toml"
+        path.write_text(
+            "".join(
+                f'[[active_ram]]\nowner = "{owner}"\n'
+                f"start = 0x{start:08X}\nend = 0x{end:08X}\n\n"
+                for owner, start, end in rows
+            ),
+            encoding="utf-8",
+        )
+        return path
+
+    def test_a_runtime_may_own_several_state_spans(self):
+        with tempfile.TemporaryDirectory() as directory:
+            spans = can_telemetry_profile._runtime_state_spans(
+                self.ledger(directory, self.ROWS)
+            )
+            self.assertEqual(spans, tuple(
+                (start, end) for owner, start, end in self.ROWS
+                if owner in can_telemetry_profile.RUNTIME_STATE_OWNERS
+            ))
+            for owner in can_telemetry_profile.RUNTIME_STATE_OWNERS:
+                with self.subTest(missing=owner):
+                    path = self.ledger(
+                        directory, [row for row in self.ROWS if row[0] != owner]
+                    )
+                    with self.assertRaisesRegex(
+                        ValueError, f"no active runtime state span of {owner}"
+                    ):
+                        can_telemetry_profile._runtime_state_spans(path)
+
+    def test_a_state_field_reads_the_rolling_launch_extension(self):
+        spans = can_telemetry_profile._runtime_state_spans()
+        self.assertIn((0xFFFF6100, 0xFFFF6120), spans)
+        raw = {
+            "name": "extension_probe", "width": 2, "source": 0xFFFF6116,
+            "kind": "runtime_state", "signed": False, "scale": "raw count",
+        }
+        field = can_telemetry_profile._parse_field(
+            raw, context="probe", page_field=False, runtime_spans=spans
+        )
+        self.assertEqual(field.source, 0xFFFF6116)
+        with self.assertRaisesRegex(ValueError, "outside the active runtime RAM"):
+            can_telemetry_profile._parse_field(
+                {**raw, "source": 0xFFFF611F}, context="probe",
+                page_field=False, runtime_spans=spans,
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
