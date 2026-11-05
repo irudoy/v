@@ -587,11 +587,41 @@ snapshot, and a run keeps one kind:
 A q derived from configuration 3 is not a published q; configurations 4 and
 6 publish it.
 
+The dwell-start veto check reconstructs, for every `ACTIVE` snapshot of a
+hold-mode run, the order of the spark of cylinder n and the reset arming of
+cylinder n + 1, which reads the veto of a requested cut. The spark lies at
+the primary command after tooth 7, and the reset edge `120 - dwell` degrees
+after the command of reset builder `0x0004E080`. Scheduler `0x0002ACBA` arms
+it one decade early, on the tooth that normalizer `0x00028DC8` places across
+the gap. The margin is the arming angle less the primary command: a positive
+margin is on time, zero is coincident, and a negative margin arms the dwell
+before the veto. The facts and their sources are beside the constants of
+`rolling_launch_audit.py`.
+
+- The current runtime takes the geometry from configuration 5, whose group 0
+  carries the dwell and group 1 the engine speed and the stock and effective
+  commands. Each snapshot pairs with each snapshot of the configuration one
+  tick away and takes the smallest margin; a snapshot without a pair is
+  missing. The geometry assumes the shared command of #150: the effective
+  command reaches both schedulers.
+- A historical endpoint takes the dwell from group 0 of configurations 1 and
+  2 and the stock command from the final timing; the primary command adds
+  the trim of the map slot up to its floor, and the reset builder reads the
+  stock command. The cut requests of each class follow the counter, and the
+  requests up to the first inactive snapshot follow the last `ACTIVE` one.
+
+Each run reports its coverage, the `ACTIVE` snapshots of a veto
+configuration against all `ACTIVE` snapshots, the snapshots of each class,
+and the smallest margin with its engine speed, dwell, and commands. The
+check of the current runtime passes when every covered snapshot is on time.
+
 The replay steps the controller once per snapshot, so the audit refuses a
 capture whose snapshots do not step by one tick, which a tick divisor above 1
 produces. A law failure, a requested-cut count outside its bounds, a run
 without a checked snapshot, or a capture without an `ACTIVE` run makes the
-exit status 1.
+exit status 1. For the current runtime in hold mode, so does a coincident,
+late, or missing veto snapshot, or a capture without an `ACTIVE` snapshot of
+configuration 5. The veto check of a historical endpoint is informational.
 
 The same reader joins raw bus evidence to the holds of an MLG recording:
 

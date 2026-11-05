@@ -73,8 +73,11 @@ RPM_CALIBRATION = replace(MODEL_CALIBRATION, slots=(RPM_SLOT,) * model.SLOT_COUN
 RPMS = (320, 310, 302, 299, 290, 281, 268, 275, 288, 297, 301, 305)
 # The schema 6 views of every snapshot, and the historical slots.
 VIEWS = audit.CURRENT_VIEWS + (
-    "integrator", "speed_error", "torque_fraction", "cut_requests",
+    "integrator", "speed_error", "torque_fraction", "cut_requests", "dwell",
 )
+# A dwell of 88 degrees, whose reset arming follows the spark of every
+# command of the simulated runs.
+DWELL = 88
 
 
 def inputs(speed, button=model.BUTTON_CANCEL, active_index=0, rpm=RPM):
@@ -94,7 +97,7 @@ def inputs(speed, button=model.BUTTON_CANCEL, active_index=0, rpm=RPM):
 def simulate(
     speeds, *, rpms=None, idle_before=2, released_after=6,
     calibration=MODEL_CALIBRATION, table=TABLE, active_index=0,
-    stock_command=90,
+    stock_command=90, dwell=DWELL,
 ):
     """Snapshots of the model with the spark actuator and the ignition
     adapter between ticks.
@@ -127,11 +130,11 @@ def simulate(
             cylinder += 1
         state = model.ignition_step(state, stock_command, calibration, table)
         state = model.step(state, step_inputs, calibration, table).state
-        samples.append(sample(tick, step_inputs, state, cut))
+        samples.append(sample(tick, step_inputs, state, cut, dwell))
     return samples
 
 
-def sample(tick, step_inputs, state, cut):
+def sample(tick, step_inputs, state, cut, dwell=DWELL):
     rpm = step_inputs.rpm_native
     return audit.Sample(
         tick=tick,
@@ -168,6 +171,7 @@ def sample(tick, step_inputs, state, cut):
         effective_command=state.effective_command,
         accepted_button=state.accepted_button,
         speed_age=state.speed_age,
+        dwell=dwell,
         map_index=step_inputs.active_index,
     )
 
@@ -185,9 +189,9 @@ def configure(samples, *groups, offset=0):
     return result
 
 
-LAUNCH_LAW = ((1, {"speed_error", "torque_fraction", "cut_requests"}),)
+LAUNCH_LAW = ((1, {"speed_error", "torque_fraction", "cut_requests", "dwell"}),)
 LAUNCH_LAW_INTEGRATOR = (
-    (2, {"speed_error", "torque_fraction", "cut_requests"}),
+    (2, {"speed_error", "torque_fraction", "cut_requests", "dwell"}),
     (0x82, {"integrator", "cut_requests"}),
 )
 RL6_LAW = ((3, {"control_error", "law_output", "cut_requests", "mode_trim"}),)
@@ -196,7 +200,7 @@ RL6_ACTUATION = (
     (0x84, {"cut_fraction", "law_output", "efficiency"}),
 )
 RL6_INPUTS = (
-    (5, {"speed_sample", "selected_target", "status"}),
+    (5, {"speed_sample", "selected_target", "status", "dwell"}),
     (0x85, {"rpm_sample", "stock_command", "effective_command",
             "accepted_button", "speed_age"}),
 )
@@ -282,9 +286,9 @@ class HoldAuditTest(unittest.TestCase):
         }
         expected = {
             0: set(),
-            1: {"speed_error", "torque_fraction", "cut_requests"},
-            2: {"speed_error", "torque_fraction", "cut_requests"},
-            0x82: {"integrator", "cut_requests"},
+            1: LAUNCH_LAW[0][1],
+            2: LAUNCH_LAW_INTEGRATOR[0][1],
+            0x82: LAUNCH_LAW_INTEGRATOR[1][1],
             3: RL6_LAW[0][1],
             4: RL6_ACTUATION[0][1],
             0x84: RL6_ACTUATION[1][1],
@@ -409,7 +413,12 @@ class HoldAuditTest(unittest.TestCase):
             "model run": (simulate(SPEEDS), HISTORICAL, 0),
             "no fraction checked": (launch_law(simulate(SPEEDS))[2:], HISTORICAL, 1),
             "no ACTIVE run": (simulate(SPEEDS)[:2], HISTORICAL, 1),
-            "current runtime": (configure(simulate(SPEEDS), *RL6_LAW), CALIBRATION, 0),
+            "current runtime": (configure(simulate(SPEEDS), *RL6_INPUTS), CALIBRATION, 0),
+            # A hold-mode capture of the current runtime without the inputs
+            # configuration leaves the veto unchecked.
+            "current runtime without the veto geometry": (
+                configure(simulate(SPEEDS), *RL6_LAW), CALIBRATION, 1,
+            ),
         }
         for name, (samples, calibration, status) in cases.items():
             with self.subTest(name):
@@ -742,6 +751,165 @@ class CurrentRunTest(unittest.TestCase):
         samples = launch_law(speed_run())
         with self.assertRaisesRegex(ValueError, "hold fields"):
             audit.audit_hold(samples, SPEED_SETTINGS)
+
+
+def active_indices(samples):
+    return [i for i, s in enumerate(samples) if s.phase == model.Phase.ACTIVE]
+
+
+def run_main(samples, calibration):
+    capture = audit.Capture(Path("hold.mlg"), "0" * 64, tuple(samples))
+    with (
+        mock.patch.object(audit, "read_calibration", return_value=calibration),
+        mock.patch.object(audit, "read_capture", return_value=capture),
+        contextlib.redirect_stdout(io.StringIO()) as output,
+    ):
+        status = audit.main(["--image", "image.bin", "hold.mlg"])
+    return status, output.getvalue()
+
+
+class VetoTest(unittest.TestCase):
+    """The reset arming of cylinder n + 1 against the spark of cylinder n."""
+
+    def test_the_reset_arming_lies_one_decade_before_its_edge(self):
+        for command in range(40, 140):
+            with self.subTest(command=command):
+                arming = audit.reset_arming(command)
+                self.assertEqual(arming, 10 * (command // 10 - 1))
+                self.assertTrue(10 <= command - arming <= 19)
+
+    def test_the_tooth_gap_moves_the_arming_earlier(self):
+        cases = {
+            0: 0, 15: 0, 20: 0, 39: 0,
+            140: 120, 150: 120, 159: 120, 160: 150, 170: 160, 255: 240,
+        }
+        for command, arming in cases.items():
+            with self.subTest(command=command):
+                self.assertEqual(audit.reset_arming(command), arming)
+        for command in (-1, 256):
+            with self.subTest(command=command), self.assertRaises(ValueError):
+                audit.reset_arming(command)
+
+    def test_the_margin_orders_the_flashed_and_the_shared_command(self):
+        # The flashed adapter of #101 passes the stock command 81 to the
+        # reset builder while the spark moves to 101.
+        self.assertEqual(audit.veto_margin(81, 81, 88), 19)
+        self.assertEqual(audit.veto_margin(101, 81, 88), -1)
+        self.assertEqual(audit.veto_margin(101, 81, 94), -11)
+        # The shared command moves the reset edge with the spark.
+        self.assertEqual(audit.veto_margin(101, 101, 88), 19)
+        # The gap arms the reset of command 120 at dwell 90 on the tooth 7
+        # of the next event, coincident with the spark.
+        self.assertEqual(audit.veto_margin(120, 120, 90), 0)
+        self.assertEqual(audit.veto_margin(119, 119, 90), 1)
+        # Under the shared command 110 a dwell above 110 arms first.
+        self.assertEqual(audit.veto_margin(110, 110, 110), 0)
+        self.assertEqual(audit.veto_margin(110, 110, 111), -10)
+
+    def test_the_inputs_configuration_checks_every_snapshot(self):
+        for name, (simulation, settings, _kind) in KINDS.items():
+            with self.subTest(name):
+                samples = configure(simulation(), *RL6_INPUTS)
+                (run,) = audit.audit_hold(samples, settings)
+                veto = run.veto
+                active = run.end_tick - run.start_tick + 1
+                self.assertTrue(veto.shared_command)
+                self.assertEqual((veto.active_ticks, veto.covered_ticks), (active, active))
+                self.assertEqual(veto.on_time, active)
+                self.assertTrue(veto.passed)
+                self.assertIsNone(veto.requests)
+                self.assertEqual(veto.minimum.dwell, DWELL)
+        (run,) = audit.audit_hold(configure(speed_run(), *RL6_INPUTS), SPEED_SETTINGS)
+        # The trim of 20 takes the stock command 90 to 110: the reset edge
+        # 142 arms on the tooth at 120, ten degrees after the spark.
+        point = run.veto.minimum
+        self.assertEqual((point.margin, point.primary, point.stock), (10, 110, 90))
+        self.assertEqual(point.rpm_raw, RPM)
+
+    def test_a_dwell_one_tick_away_pairs_with_both_groups(self):
+        samples = configure(speed_run(), *RL6_INPUTS)
+        active = active_indices(samples)
+        group0 = next(i for i in active[2:-2] if samples[i].dwell is not None)
+        late = changed(samples, group0, dwell=112)
+        (run,) = audit.audit_hold(late, SPEED_SETTINGS)
+        self.assertEqual(run.veto.late, 3)
+        self.assertFalse(run.veto.passed)
+        self.assertEqual(run.veto.minimum.margin, -10)
+        coincident = [replace(s, dwell=105) if s.dwell is not None else s for s in samples]
+        (run,) = audit.audit_hold(coincident, SPEED_SETTINGS)
+        self.assertEqual(run.veto.coincident, run.veto.covered_ticks)
+        self.assertFalse(run.veto.passed)
+
+    def test_a_snapshot_without_its_geometry_is_missing(self):
+        samples = configure(speed_run(), *RL6_INPUTS)
+        active = active_indices(samples)
+        group1 = next(i for i in active[2:-2] if samples[i].effective_command is not None)
+        (run,) = audit.audit_hold(changed(samples, group1, effective_command=None), SPEED_SETTINGS)
+        self.assertEqual(run.veto.missing, 1)
+        self.assertFalse(run.veto.passed)
+
+    def test_coverage_counts_the_snapshots_of_the_inputs_configuration(self):
+        simulated = speed_run()
+        active = active_indices(simulated)
+        middle = active[len(active) // 2]
+        samples = (
+            configure(simulated, *RL6_LAW)[:middle]
+            + configure(simulated, *RL6_INPUTS)[middle:]
+        )
+        (run,) = audit.audit_hold(samples, SPEED_SETTINGS)
+        self.assertEqual(run.veto.covered_ticks, active[-1] - middle + 1)
+        self.assertEqual(run.veto.active_ticks, len(active))
+        self.assertTrue(run.veto.passed)
+        (run,) = audit.audit_hold(configure(simulated, *RL6_LAW), SPEED_SETTINGS)
+        self.assertEqual(run.veto.covered_ticks, 0)
+        self.assertIsNone(run.veto.passed)
+
+    def test_observe_mode_has_no_veto(self):
+        observe = current_calibration(
+            replace(TRIM_CALIBRATION, mode=model.Mode.OBSERVE), TRIM_TABLE
+        )
+        samples = configure(
+            simulate(SPEEDS, calibration=replace(TRIM_CALIBRATION, mode=model.Mode.OBSERVE),
+                     table=TRIM_TABLE),
+            *RL6_INPUTS,
+        )
+        (run,) = audit.audit_hold(samples, observe)
+        self.assertIsNone(run.veto)
+
+    def test_a_historical_endpoint_resets_from_the_stock_command(self):
+        trimmed = historical_calibration(
+            slots=(audit.HoldSlot(3, 20, 120, 824),) * model.SLOT_COUNT
+        )
+        cases = {"on_time": 60, "coincident": 88, "late": 94}
+        for name, dwell in cases.items():
+            for configuration in (launch_law, launch_law_integrator):
+                with self.subTest(name, configuration=configuration.__name__):
+                    samples = configuration(simulate(SPEEDS, dwell=dwell))
+                    (run,) = audit.audit_hold(samples, trimmed)
+                    veto = run.veto
+                    self.assertFalse(veto.shared_command)
+                    self.assertEqual(getattr(veto, name), veto.covered_ticks)
+                    self.assertEqual(veto.covered_ticks, veto.active_ticks)
+                    self.assertEqual(veto.minimum.stock, 90)
+                    self.assertEqual(veto.minimum.primary, 110)
+                    self.assertEqual(sum(veto.requests.values()), run.requested_cuts)
+                    self.assertEqual(veto.requests[name], run.requested_cuts)
+
+    def test_only_the_current_veto_gates_the_audit(self):
+        status, output = run_main(configure(speed_run(), *RL6_INPUTS), SPEED_SETTINGS)
+        self.assertEqual(status, 0, output)
+        self.assertIn("veto=PASS", output)
+        late = [replace(s, dwell=112) for s in configure(speed_run(), *RL6_INPUTS)]
+        status, output = run_main(late, SPEED_SETTINGS)
+        self.assertEqual(status, 1)
+        self.assertIn("veto=FAIL", output)
+        status, output = run_main(configure(speed_run(), *RL6_LAW), SPEED_SETTINGS)
+        self.assertEqual(status, 1)
+        self.assertIn("veto=UNCHECKED", output)
+        # The stock reset command of a historical endpoint is reported alone.
+        status, output = run_main(launch_law(simulate(SPEEDS, dwell=112)), HISTORICAL)
+        self.assertEqual(status, 0, output)
+        self.assertIn("veto=FAIL (historical stock reset command, informational)", output)
 
 
 # The endpoints of the flashed hold images: one integral gain for every map,

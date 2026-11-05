@@ -59,7 +59,14 @@ and 6 publish it.
 
 The counter counts the cut requests of the spark actuator, not withheld
 sparks: a requested cut whose dwell arming precedes the dwell-start veto
-still fires.
+still fires. The veto check of a hold-mode run reconstructs the margin of
+the reset arming of cylinder n + 1 after the spark of cylinder n for every
+ACTIVE snapshot of configuration 5 of the current runtime, or of the
+launch-law configurations of a historical endpoint; see `veto_check`. The
+geometry of the current runtime assumes the shared command of #150. A late,
+coincident, or missing snapshot fails the current runtime, and so does a
+hold-mode capture without a snapshot of configuration 5; the check of a
+historical endpoint is informational.
 
 The stock APC command of a snapshot is `110 - final_timing_raw` modulo 256,
 the command before the ignition trim of the map slot.
@@ -150,6 +157,7 @@ HOLD_SOURCES = {
     "rolling_launch_effective_command_raw": "effective_command",
     "rolling_launch_accepted_button_raw": "accepted_button",
     "rolling_launch_speed_age_raw": "speed_age",
+    "ignition_dwell_angle_raw": "dwell",
 }
 # The sample attributes of the schema 6 views of the current runtime.
 CURRENT_VIEWS = (
@@ -176,9 +184,11 @@ STATUS_READY_BIT = 7
 # The inactive snapshots after an accepted release whose cut-request
 # counter the release audit compares.
 RELEASE_SNAPSHOTS = 5
+# Engine speed of one native count.
+RPM_PER_COUNT = 12.5
 # Spark events per tick and native RPM count: three events per revolution,
 # 12.5 RPM per count, and 10.24 ms per tick.
-EVENTS_PER_COUNT_TICK = 3 * 12.5 / 60 * 0.01024
+EVENTS_PER_COUNT_TICK = 3 * RPM_PER_COUNT / 60 * 0.01024
 # The six accumulators start a run at offsets that sum to 2.75 cuts, and each
 # truncates less than one cut, so a run that owes E cuts makes more than
 # E - 3.25 and at most E + 2.75. One event of phase uncertainty at each end of
@@ -193,6 +203,41 @@ CUTS_ABOVE = _OFFSET_CUTS + 1
 # tick was captured after it.
 CONTEXT_REFRESH_SNAPSHOTS = 5
 BUS_IDS = {0x160, 0x174, 0x176, 0x177, 0x180, 0x280, 0x284, 0x421}
+
+# Geometry of the dwell-start veto. Angles are crank degrees after tooth 7 of
+# the event of cylinder n, and a command is such an angle.
+# Tooth 7 is 110 degrees before compression TDC and starts every 120-degree
+# event; the plate carries ten teeth per event, at 30, 40, ..., 120 degrees
+# after it (defs/JK08A.fuel.md, Reference tooth and cylinder order).
+EVENT_DEGREES = 120
+EVENT_TEETH = 10
+FIRST_TOOTH_DEGREES = 30
+TOOTH_PITCH_DEGREES = 10
+# The command of an advance is 110 - advance, so command 120 is 10 degrees
+# after TDC (defs/JK08A.ignition-output.md, Crank reference and output edges).
+# Builder 0x0004E080 places the GR11B reset edge, the dwell start of the
+# successor cylinder n + 1, `120 - 0xFFFF237A` degrees after the command that
+# 0xFFFF2022 holds (defs/JK08A.ignition-output.md, Secondary compare and
+# overflow proof).
+RESET_OFFSET_BASE = 120
+# Normal scheduler 0x0002ACBA splits the reset command by ten at 0x0002AE24 and
+# removes one decade at 0x0002AE34..0x0002AE3E, which adds ten degrees to the
+# remainder: the reset compare is armed at a tooth 10..19 degrees before its
+# edge. The arming reads the veto: the countdowns of tooth handler 0x00028EA2
+# at 0x00029480..0x000295B6 and the immediate path at 0x0002AEDA..0x0002AEF2
+# enable the POPCR reset action only while 0xFFFF8511 bit 7 is clear, and a
+# later veto cannot withdraw an enabled action. Normalizer 0x00028DC8 at
+# 0x0002AF14 converts the remaining 10-degree steps into tooth events across
+# the gap: steps 1 and 2 arm on tooth 7 itself, 3..12 on event `steps - 2`, 13
+# and 14 on event 10, and 15..24 on event `steps - 4` (defs/JK08A.fuel.md,
+# Reference tooth and cylinder order).
+NORMALIZED_GAP_STEPS = {1: 0, 2: 0, 13: 10, 14: 10}
+# The configurations whose snapshots carry the veto geometry: the inputs
+# configuration of the current runtime, and the launch-law configurations of
+# a historical endpoint, whose commands come from the final timing.
+CURRENT_VETO_CONFIGURATIONS = frozenset((5,))
+HISTORICAL_VETO_CONFIGURATIONS = frozenset((1, 2))
+CONFIGURATION_ID_MASK = 0x7F
 
 
 @dataclass(frozen=True)
@@ -233,6 +278,8 @@ class Sample:
     effective_command: int | None = None
     accepted_button: int | None = None
     speed_age: int | None = None
+    # The coil dwell angle 0xFFFF237A in crank degrees.
+    dwell: int | None = None
     # The configuration byte of the dynamic page.
     configuration: int | None = None
     # The selected map index of the rotating context, 0 for Map 1.
@@ -481,6 +528,58 @@ def read_capture(path: Path, **options) -> Capture:
 
 
 @dataclass(frozen=True)
+class VetoPoint:
+    """The veto geometry of one snapshot: the margin in crank degrees of the
+    reset arming of cylinder n + 1 after the spark of cylinder n, and the
+    engine speed in counts of 12.5 RPM, the dwell, and the primary and stock
+    commands that give it."""
+
+    tick: int
+    margin: int
+    rpm_raw: int
+    dwell: int
+    primary: int
+    stock: int
+
+
+@dataclass(frozen=True)
+class VetoCheck:
+    """The dwell-start veto of the ACTIVE snapshots of one run.
+
+    A requested cut sets the veto at the spark of cylinder n, and the reset
+    arming of cylinder n + 1 reads it, so a cut is withheld only when that
+    arming follows the spark. `active_ticks` counts the ACTIVE snapshots of
+    the run and `covered_ticks` those of a veto configuration; each covered
+    snapshot is on time, coincident, late, or missing, without a command or a
+    dwell of its own or of a snapshot one tick away. `requests` counts the cut
+    requests of each class, or is None when a snapshot lacks the counter;
+    the requests up to the first inactive snapshot follow the last ACTIVE
+    one. `minimum` is the snapshot with the smallest margin.
+    `shared_command` states that the effective command reaches both
+    schedulers, which the current runtime requires; a historical endpoint
+    passes the stock command to the reset builder.
+    """
+
+    active_ticks: int
+    covered_ticks: int
+    on_time: int
+    coincident: int
+    late: int
+    missing: int
+    requests: dict | None
+    minimum: VetoPoint | None
+    shared_command: bool
+
+    @property
+    def passed(self) -> bool | None:
+        """None without a covered snapshot; otherwise every covered
+        snapshot arms the reset after the spark."""
+        if not self.covered_ticks:
+            return None
+        return not (self.late or self.coincident or self.missing)
+
+
+@dataclass(frozen=True)
 class HoldRun:
     """One ACTIVE run of contiguous snapshots and its audit results.
 
@@ -501,7 +600,7 @@ class HoldRun:
     whose trim the floor command clips, so the applied retard is smaller
     than the trim of the slot. `release_cuts` counts the cut requests after
     the snapshot that shows the accepted release of the run, or is None
-    without it.
+    without it. `veto` is the dwell-start veto check of a hold-mode run.
     """
 
     start_tick: int
@@ -517,6 +616,7 @@ class HoldRun:
     actuation_ticks: int = 0
     input_ticks: int = 0
     release_cuts: int | None = None
+    veto: VetoCheck | None = None
 
     @property
     def requested_cuts_inside(self) -> bool | None:
@@ -569,6 +669,32 @@ class HoldCalibration:
 def stock_apc_command(final_timing_raw: int) -> int:
     """The stock APC command of a final-timing byte, before the trim."""
     return (mlg_relation_audit.APC_COMMAND_BASE - final_timing_raw) & 0xFF
+
+
+def reset_arming(command: int) -> int:
+    """The angle of the tooth whose handler arms the GR11B compare of a
+    reset command: one decade removed, the remaining 10-degree steps
+    normalized into tooth events across the gap. Zero tooth events arm on
+    tooth 7 itself, the earliest instant of the event."""
+    if not 0 <= command <= 0xFF:
+        raise ValueError(f"reset command {command} is outside the byte range")
+    steps = max(command // TOOTH_PITCH_DEGREES - 1, 0)
+    events = NORMALIZED_GAP_STEPS.get(steps)
+    if events is None:
+        events = steps - 2 if 3 <= steps <= 12 else max(steps - 4, 0)
+    cycles, tooth = divmod(events, EVENT_TEETH)
+    return cycles * EVENT_DEGREES + (
+        FIRST_TOOTH_DEGREES + (tooth - 1) * TOOTH_PITCH_DEGREES if tooth else 0
+    )
+
+
+def veto_margin(primary: int, secondary: int, dwell: int) -> int:
+    """Crank degrees from the spark of cylinder n at the primary command to
+    the reset arming of cylinder n + 1, whose edge lies `120 - dwell`
+    degrees after the secondary command. A positive margin lets the veto of
+    the spark reach the arming; zero leaves the order to the interrupt
+    service, and a negative margin arms the dwell before the veto."""
+    return reset_arming(secondary + RESET_OFFSET_BASE - dwell) - primary
 
 
 def endpoint_calibration(record: bytes, state: str, table: bytes | None = None) -> HoldCalibration:
@@ -697,6 +823,129 @@ def _predecessor(samples, index):
     if index and samples[index - 1].tick == samples[index].tick - 1:
         return samples[index - 1]
     return None
+
+
+def veto_check(samples, start, end, calibration) -> VetoCheck | None:
+    """Check the dwell-start veto of every ACTIVE snapshot of a hold-mode
+    run of a veto configuration; None outside hold mode.
+
+    Configuration 5 of the current runtime carries the dwell in group 0 and
+    the engine speed and the stock and effective commands in group 1, so a
+    snapshot pairs with each snapshot of the configuration one tick away
+    and takes the smallest margin. The launch-law configurations of a
+    historical endpoint carry the dwell in group 0; the stock command is the
+    final timing of every snapshot, and the primary command adds the trim of
+    the map slot up to its floor.
+    """
+    if not calibration.hold:
+        return None
+    current = calibration.table is not None
+    configurations = (
+        CURRENT_VETO_CONFIGURATIONS if current else HISTORICAL_VETO_CONFIGURATIONS
+    )
+    slot = None if current else run_slot(samples, start, end, calibration)
+
+    def covered(sample):
+        return (
+            sample.configuration is not None
+            and sample.configuration & CONFIGURATION_ID_MASK in configurations
+        )
+
+    def commands(sample):
+        """(primary, secondary, stock, RPM) of a snapshot, or None."""
+        if current:
+            values = (sample.effective_command, sample.stock_command, sample.rpm_sample)
+            if None in values:
+                return None
+            effective, stock, rpm = values
+            # The geometry assumes the shared command of #150: the effective
+            # command reaches the primary scheduler and, through 0xFFFF2022,
+            # reset builder 0x0004E080. The pass rule is re-checked against
+            # the delivery constraints that the #150 fix proves.
+            return effective, effective, stock, rpm
+        stock = stock_apc_command(sample.final_timing_raw)
+        primary = (
+            max(stock, min(stock + slot.max_trim, slot.floor_command))
+            if slot.max_trim else stock
+        )
+        # The adapter of a historical endpoint changes the primary command
+        # alone; the reset builder reads the stock byte at 0xFFFF2022.
+        return primary, stock, stock, sample.rpm_raw
+
+    def neighbours(index):
+        for other in (index - 1, index + 1):
+            if (
+                0 <= other < len(samples)
+                and abs(samples[other].tick - samples[index].tick) == 1
+                and covered(samples[other])
+            ):
+                yield samples[other]
+
+    classes = {}
+    counts = dict.fromkeys(("on_time", "coincident", "late", "missing"), 0)
+    minimum = None
+    for index in range(start, end + 1):
+        sample = samples[index]
+        if not covered(sample):
+            continue
+        own = commands(sample)
+        pairs = []
+        if own is not None and sample.dwell is not None:
+            pairs.append((own, sample.dwell))
+        else:
+            for other in neighbours(index):
+                if own is not None and other.dwell is not None:
+                    pairs.append((own, other.dwell))
+                elif own is None and sample.dwell is not None:
+                    found = commands(other)
+                    if found is not None:
+                        pairs.append((found, sample.dwell))
+        points = []
+        for (primary, secondary, stock, rpm), dwell in pairs:
+            try:
+                margin = veto_margin(primary, secondary, dwell)
+            except ValueError:
+                continue
+            points.append(VetoPoint(sample.tick, margin, rpm, dwell, primary, stock))
+        if not points:
+            classes[index] = "missing"
+            counts["missing"] += 1
+            continue
+        point = min(points, key=lambda item: item.margin)
+        name = (
+            "late" if point.margin < 0
+            else "coincident" if point.margin == 0 else "on_time"
+        )
+        classes[index] = name
+        counts[name] += 1
+        if minimum is None or point.margin < minimum.margin:
+            minimum = point
+    requests = None
+    if start > 0 and end + 1 < len(samples):
+        counters = [sample.cut_requests for sample in samples[start - 1 : end + 2]]
+        if None not in counters:
+            requests = dict.fromkeys((*counts, "unchecked"), 0)
+            deltas = [
+                (after - before) & 0xFF
+                for before, after in zip(counters, counters[1:])
+            ]
+            # The requests up to the first inactive snapshot follow the
+            # geometry of the last ACTIVE one.
+            exit_delta = deltas.pop()
+            deltas[-1] += exit_delta
+            for index, delta in zip(range(start, end + 1), deltas):
+                requests[classes.get(index, "unchecked")] += delta
+    return VetoCheck(
+        active_ticks=end - start + 1,
+        covered_ticks=sum(covered(sample) for sample in samples[start : end + 1]),
+        on_time=counts["on_time"],
+        coincident=counts["coincident"],
+        late=counts["late"],
+        missing=counts["missing"],
+        requests=requests,
+        minimum=minimum,
+        shared_command=current,
+    )
 
 
 def _replay(samples, start, end, calibration, slot, *, error="speed_error",
@@ -910,6 +1159,7 @@ def _run(samples, start, end, calibration):
         owed=owed,
         floor_ticks=floor_ticks,
         kind=rolling_launch.RegulatorKind.SPEED,
+        veto=veto_check(samples, start, end, calibration),
     )
 
 
@@ -1169,6 +1419,7 @@ def _current_run(samples, start, end, calibration):
         actuation_ticks=actuation_ticks,
         input_ticks=input_ticks,
         release_cuts=release_cuts,
+        veto=veto_check(samples, start, end, calibration),
     )
 
 
@@ -1561,6 +1812,30 @@ def audit_bus(capture, runs, *, reference=None):
     }
 
 
+def _veto_summary(veto: VetoCheck) -> str:
+    """One line of the veto check of a run."""
+    status = {None: "UNCHECKED", True: "PASS", False: "FAIL"}[veto.passed]
+    if not veto.shared_command:
+        status += " (historical stock reset command, informational)"
+    text = (
+        f"veto={status} coverage={veto.covered_ticks}/{veto.active_ticks}"
+        f" on_time={veto.on_time} coincident={veto.coincident}"
+        f" late={veto.late} missing={veto.missing}"
+    )
+    if veto.requests is not None:
+        text += " requests=" + ",".join(
+            f"{name}:{count}" for name, count in veto.requests.items()
+        )
+    point = veto.minimum
+    if point is not None:
+        text += (
+            f" min_margin={point.margin} at tick {point.tick}"
+            f" rpm={point.rpm_raw * RPM_PER_COUNT:.1f} dwell={point.dwell}"
+            f" command={point.primary} stock={point.stock}"
+        )
+    return text
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -1612,11 +1887,23 @@ def main(argv: list[str] | None = None) -> int:
             )
             for tick, failure in run.failures:
                 print(f"    tick {tick}: {failure}")
+            if run.veto is not None:
+                print(f"    {_veto_summary(run.veto)}")
             failed |= (
                 bool(run.failures)
                 or run.requested_cuts_inside is False
                 or not run.checked_ticks
             )
+        # The veto of the current runtime gates the capture: a late,
+        # coincident, or missing snapshot fails, and so does a hold-mode
+        # capture without a snapshot of configuration 5. The stock reset
+        # command of a historical endpoint makes its check informational.
+        checks = [run.veto for run in runs if run.veto is not None]
+        if checks and checks[0].shared_command:
+            unchecked = not any(check.covered_ticks for check in checks)
+            if unchecked:
+                print("  veto=UNCHECKED: no ACTIVE snapshot of configuration 5")
+            failed |= unchecked or any(check.passed is False for check in checks)
         if args.bus_json:
             reference = read_mlg(args.reference_mlg) if args.reference_mlg else capture
             reference_runs = audit_hold(reference.samples, calibration)
