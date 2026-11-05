@@ -1201,7 +1201,10 @@ A candidate is software-valid only when all applicable checks pass:
    preserved registers, SP, GBR and SR after every call. Its trace covers
    every instruction, both outcomes of every branch, every delay slot, every
    call with its return, and every literal target of each register transfer,
-   and three negative row sets fail coverage at exactly their omitted paths.
+   and three negative row sets leave exactly the obligations of their
+   omitted paths unmet: the periodic wrapper, and the integrator lower-limit
+   outcome of the speed controller and the cooldown validity outcome of the
+   engine, each with the block that only it reaches.
    Interrupt rows run the ignition publisher from an injected interrupt at
    every interleaving with the loads and stores of steady `ACTIVE` passes of
    both kinds, of an activation of each kind, of an abort and of

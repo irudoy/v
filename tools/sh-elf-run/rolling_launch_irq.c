@@ -25,8 +25,7 @@
 #define RL_STATE_SIZE 44U
 #define RL_EXTENSION 0xffff6100U
 #define RL_EXTENSION_SIZE 32U
-#define RL_CONFIG 0x000d6320U
-#define RL_TABLE 0x000d6390U
+/* RL_CONFIG and RL_TABLE come from verify_rolling_launch.harness_definitions. */
 
 #define SPEED 0xffff113cU
 #define RPM 0xffff11bcU

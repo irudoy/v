@@ -321,12 +321,14 @@ def error_pair_end(records, regulator):
     raise InterruptError("the RPM regulator lowers no mask")
 
 
-def run_interrupt_rows(fixture, build_dir, *, engine, regulator, invoke_object, rom_object):
+def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, invoke_object,
+                       rom_object):
     """Build the interrupt harness, run its passes and every injected publication.
 
     ``regulator`` spans the RPM controller, its fraction and the control
     publisher. A publication of the RPM activation accepted inside it after
     the error pair and before the publisher mask is publication B.
+    ``definitions`` are the compiler definitions of the layout addresses.
     """
     scenarios = rolling_launch_rows.interrupt_scenarios()
     include = build_dir / "rows-irq"
@@ -339,7 +341,7 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, invoke_object, 
     elf = build_dir / "rolling-launch-irq.elf"
     base_verifier.run_command([
         base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
-        f"-I{include}", f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
+        *definitions, f"-I{include}", f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
         "-Wl,--section-start=.rom=0", "-o", elf, TOOL_DIR / "rolling_launch_irq.c",
         handler_object, invoke_object, rom_object,
     ], timeout=120)

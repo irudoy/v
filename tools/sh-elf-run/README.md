@@ -198,14 +198,20 @@ fraction at its soft-width boundaries. Five fixed cases run the startup
 wrapper and the selector arbiter in each phase, and eight cases run the
 feedback arbiter.
 
-Each row writes its configuration record at `0x000D6320` and its efficiency
-table at `0x000D6390` into the simulator ROM image, which changes no
-instruction byte, and its base record, extension and inputs into test RAM.
+Each row writes its configuration record and its efficiency table into the
+simulator ROM image at the addresses of the Rolling Launch layout,
+`0x000D6320` and `0x000D6390`, which changes no instruction byte, and its
+base record, extension and inputs into test RAM. The feedback cases also
+write the two phase counts of the Map Switching feedback engine, one pulse
+each, at its layout address `0x000D3848`. The verifier passes these three
+layout addresses to the compiler, and the harnesses define no copy of them.
 The harness fills the rest of the 64 KiB test RAM with a pattern and, after
 the call, compares all of it with the expected image: the output records of
 the row, the map 1 limiter commit of a corrupt-state recovery, the
-diagnostic status mirror of the map selector host, and no other byte. The
-configuration and the table must stay unchanged.
+diagnostic status mirror `0xFFFF2A84` of the map selector host, and no other
+byte. Every selector case seeds the mirror with `0xA5`; the IDLE case starts
+the SET gesture, and the host mirrors map 1 as a clear bit 7, `0x25`. The
+configuration, the table and the phase counts must stay unchanged.
 
 `invoke_rolling.s` is a simulator-only call helper. `invoke_regs` loads
 `r1..r14` and the T, S, I, Q and M bits of SR from a register array, calls
@@ -237,10 +243,14 @@ helper may call only the harness entries, and an RTE fails the trace.
 Three negative row sets keep the semantic PASS marker and remove one covered
 path each: the periodic row calls the engine directly, the lower-limit
 integrator row of the speed controller stays above the limit, and the
-cooldown rows with an invalid configuration or table are omitted. Coverage
-must fail at exactly the periodic entry, the omitted outcome of the
-integrator lower-limit branch and the omitted outcome of the cooldown
-validity branch.
+cooldown rows with an invalid configuration or table are omitted. The
+verifier collects every unmet obligation of each variant. The periodic
+variant must leave exactly the obligations of the periodic wrapper unmet,
+its entry first; the controller and engine variants must leave exactly the
+omitted outcome of the integrator lower-limit branch and of the cooldown
+validity branch unmet, together with the obligations of the block that only
+this outcome reaches: from the fall-through to the next label, or through
+the delay slot of the next unconditional transfer.
 
 The interrupt rows inject the crank-tooth publication into engine passes
 through the optional interrupt hook. `rolling_launch_rows.interrupt_scenarios`

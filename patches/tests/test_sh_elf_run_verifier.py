@@ -1688,6 +1688,28 @@ class RollingCoverageTest(unittest.TestCase):
                 self.cover(records, image, model)
             self.assertEqual(str(caught.exception), message)
 
+    def test_gaps_name_every_unmet_obligation(self):
+        image, parsed, regions = self.fixture()
+        model = self.model(image, parsed, regions)
+        taken, fall = self.runs(image)
+        gaps = ROLLING_VERIFIER.coverage_gaps(taken, image, model, self.INVOKES,
+                                              frozenset({0x100}))
+        self.assertEqual(gaps, [
+            "uncovered branch 0x00000102->0x00000106",
+            "uncovered instruction 0x00000106", "uncovered instruction 0x00000108",
+            "uncovered delay slot 0x00000108"])
+        self.assertEqual(ROLLING_VERIFIER.coverage_gaps(
+            taken + fall, image, model, self.INVOKES, frozenset({0x100})), [])
+        # Without its trace a span leaves exactly its obligations unmet.
+        everything = [ROLLING_VERIFIER.gap_message(*item)
+                      for item in ROLLING_VERIFIER.coverage_obligations(model)]
+        self.assertEqual(ROLLING_VERIFIER.coverage_gaps(
+            [], image, model, self.INVOKES, frozenset({0x100})), everything)
+        self.assertEqual(everything[0], "uncovered entry 0x00000100")
+        self.assertEqual(
+            [item[1] for item in ROLLING_VERIFIER.coverage_obligations(model, (0x106, 0x10A))],
+            [0x106, 0x108, 0x108])
+
     def test_foreign_execution_fails(self):
         image, parsed, regions = self.fixture()
         model = self.model(image, parsed, regions)
@@ -1756,16 +1778,26 @@ class RollingCoverageTest(unittest.TestCase):
                     ROLLING_VERIFIER.VerificationError, "unbound register transfer at 0x0000010c"):
                 ROLLING_VERIFIER._transfer_targets(changed, row, image)
 
-    def test_negative_edges_name_one_source_instruction(self):
+    def test_omitted_path_is_the_edge_and_the_block_only_it_reaches(self):
+        image, parsed, regions = self.fixture()
+        model = self.model(image, parsed, regions)
+        taken, _fall = self.runs(image)
+        # The fall-through of the delayed branch ends after the delay slot of
+        # its return; the label of the call joins the other path.
+        self.assertEqual(ROLLING_VERIFIER.omitted_path(parsed, "bf/s call", model),
+                         ROLLING_VERIFIER.coverage_gaps(taken, image, model, self.INVOKES,
+                                                        frozenset({0x100})))
+        with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "not a branch outcome"):
+            ROLLING_VERIFIER.omitted_path(parsed, "tst r4,r4", model)
         layout = rolling_launch_layout.load_layout()
-        parsed = rolling_launch_assembly.validate_assembly_sources(layout)
+        sources = rolling_launch_assembly.validate_assembly_sources(layout)
         for unit, text in (("speed_controller", ROLLING_ROWS.CONTROLLER_NEGATIVE_EDGE),
                            ("engine", ROLLING_ROWS.ENGINE_NEGATIVE_EDGE)):
             with self.subTest(text=text):
-                source, target = ROLLING_VERIFIER._bound_edge(parsed[unit], text).split("->")
-                self.assertEqual(int(target, 16), int(source, 16) + 2)
+                self.assertEqual(sum(row.kind == "instruction" and row.text == text
+                                     for row in sources[unit].statements), 1)
         with self.assertRaisesRegex(ROLLING_VERIFIER.VerificationError, "is not unique"):
-            ROLLING_VERIFIER._bound_edge(parsed["engine"], "nop")
+            ROLLING_VERIFIER.omitted_path(sources["engine"], "nop", model)
 
 
 class RollingLaunchRowsTest(unittest.TestCase):
@@ -1773,15 +1805,17 @@ class RollingLaunchRowsTest(unittest.TestCase):
 
     def test_each_variant_removes_only_its_path(self):
         positive = ROLLING_ROWS.build()
-        names = [row.name for row in positive.engine]
+        reference = {row.name: row for row in positive.engine}
+        self.assertEqual(len(reference), len(positive.engine))
         for variant in ROLLING_ROWS.VARIANTS[1:]:
             rows = ROLLING_ROWS.build(variant)
-            changed = {row.name for row in rows.engine} ^ set(names)
-            different = {row.name for row, other in zip(rows.engine, positive.engine)
-                         if row != other}
+            engine = {row.name: row for row in rows.engine}
+            changed = engine.keys() ^ reference.keys()
+            different = {name for name in engine.keys() & reference.keys()
+                         if engine[name] != reference[name]}
             with self.subTest(variant=variant):
                 if variant == "engine":
-                    self.assertEqual(changed, {"cool-config", "cool-table"})
+                    self.assertEqual((changed, different), ({"cool-config", "cool-table"}, set()))
                 else:
                     edited = {"periodic": "speed-periodic",
                               "controller": "ctrl-integrator-lower"}[variant]
@@ -1789,6 +1823,18 @@ class RollingLaunchRowsTest(unittest.TestCase):
                 self.assertEqual(
                     (rows.ignition, rows.control, rows.fraction),
                     (positive.ignition, positive.control, positive.fraction))
+
+    def test_harness_rom_addresses_come_from_the_layouts(self):
+        rolling = rolling_launch_layout.load_layout()
+        base = layout_model.load_layout()
+        self.assertEqual(ROLLING_VERIFIER.harness_definitions(rolling, base), (
+            f"-DRL_CONFIG={rolling.configuration.start:#010x}U",
+            f"-DRL_TABLE={rolling.efficiency.start:#010x}U",
+            f"-DFEEDBACK_COUNTS={base.feedback.phase_counts_address:#010x}U"))
+        for name in ("rolling_launch_harness.c", "rolling_launch_irq.c"):
+            source = (ROOT / "tools/sh-elf-run" / name).read_text(encoding="utf-8")
+            with self.subTest(harness=name):
+                self.assertNotRegex(source, r"#define (RL_CONFIG|RL_TABLE|FEEDBACK_COUNTS) ")
 
     def test_rendered_header_carries_every_row(self):
         rows = ROLLING_ROWS.build()

@@ -294,8 +294,37 @@ def coverage_model(fixture, parsed_by_unit, regions):
     return model
 
 
-def require_coverage(records, fixture, model, invoke_words, harness_entries):
-    """Walk one PC trace against the static model and require full coverage."""
+GAP_MESSAGES = {
+    "entry": "uncovered entry {pc:#010x}",
+    "branch": "uncovered branch {pc:#010x}->{target:#010x}",
+    "instruction": "uncovered instruction {pc:#010x}",
+    "slot": "uncovered delay slot {pc:#010x}",
+    "transfer": "uncovered register transfer {pc:#010x}->{target:#010x}",
+    "call": "uncovered call return {pc:#010x}",
+}
+
+
+def gap_message(kind, pc, target=None):
+    return GAP_MESSAGES[kind].format(pc=pc, target=target)
+
+
+def coverage_obligations(model, span=None):
+    """Every coverage obligation of the static model as (kind, pc, target), in
+    reporting order, or only those whose instruction lies in ``span``."""
+    items = ([("entry", pc, None) for pc in sorted(model["entries"])]
+             + [("branch", pc, target) for pc, target in sorted(model["outcomes"])]
+             + [("instruction", pc, None) for pc in sorted(model["instructions"])]
+             + [("slot", pc, None) for pc in sorted(model["slots"])]
+             + [("transfer", pc, target)
+                for pc, (_kind, targets) in sorted(model["transfers"].items())
+                for target in sorted(targets)]
+             + [("call", pc, None) for pc in sorted(model["calls"])])
+    return [item for item in items if span is None or span[0] <= item[1] < span[1]]
+
+
+def coverage_gaps(records, fixture, model, invoke_words, harness_entries):
+    """Walk one PC trace against the static model and return the message of
+    every unmet obligation. Execution outside the model raises."""
     instructions = model["instructions"]
     spans = model["spans"]
 
@@ -358,31 +387,59 @@ def require_coverage(records, fixture, model, invoke_words, harness_entries):
             raise VerificationError(f"exception return without an exception at {pc:#010x}")
     if frames:
         raise VerificationError("trace ends inside a call")
-    for missing in sorted(model["entries"] - seen):
-        raise VerificationError(f"uncovered entry {missing:#010x}")
-    for pc, target in sorted(model["outcomes"] - outcomes):
-        raise VerificationError(f"uncovered branch {pc:#010x}->{target:#010x}")
-    for missing in sorted(instructions.keys() - seen):
-        raise VerificationError(f"uncovered instruction {missing:#010x}")
-    for missing in sorted(model["slots"] - slots):
-        raise VerificationError(f"uncovered delay slot {missing:#010x}")
-    required = {(pc, target) for pc, (_kind, targets) in model["transfers"].items()
-                for target in targets}
-    for pc, target in sorted(required - taken):
-        raise VerificationError(f"uncovered register transfer {pc:#010x}->{target:#010x}")
-    for missing in sorted(model["calls"] - returned):
-        raise VerificationError(f"uncovered call return {missing:#010x}")
-    return dict(entries=len(model["entries"]), instructions=len(instructions),
+    met = ({("entry", pc, None) for pc in seen} | {("instruction", pc, None) for pc in seen}
+           | {("branch", pc, target) for pc, target in outcomes}
+           | {("slot", pc, None) for pc in slots}
+           | {("transfer", pc, target) for pc, target in taken}
+           | {("call", pc, None) for pc in returned})
+    return [gap_message(*item) for item in coverage_obligations(model) if item not in met]
+
+
+def require_coverage(records, fixture, model, invoke_words, harness_entries):
+    """Walk one PC trace against the static model and require full coverage."""
+    gaps = coverage_gaps(records, fixture, model, invoke_words, harness_entries)
+    if gaps:
+        raise VerificationError(gaps[0])
+    return dict(entries=len(model["entries"]), instructions=len(model["instructions"]),
                 outcomes=len(model["outcomes"]), delay_slots=len(model["slots"]),
-                call_return_paths=len(model["calls"]), register_transfers=len(required))
+                call_return_paths=len(model["calls"]),
+                register_transfers=sum(len(targets) for _kind, targets
+                                       in model["transfers"].values()))
 
 
-def _bound_edge(parsed, text, delayed=False):
-    """Return the uncovered-branch message of one unique source edge."""
-    rows = [row for row in parsed.statements if row.kind == "instruction" and row.text == text]
-    if len(rows) != 1:
+UNCONDITIONAL_TRANSFERS = frozenset({"bra", "braf", "jmp", "rts", "rte"})
+
+
+def omitted_path(parsed, text, model):
+    """Gap messages of the fall-through edge of one unique source branch and of
+    the block that only this edge reaches.
+
+    The block starts at the fall-through and ends at the next label, where
+    other paths join, or after the delay slot of the next unconditional
+    transfer.
+    """
+    rows = [row for row in parsed.statements if row.kind == "instruction"]
+    matches = [index for index, row in enumerate(rows) if row.text == text]
+    if len(matches) != 1:
         raise VerificationError(f"negative edge {text!r} is not unique")
-    return f"{rows[0].address:#010x}->{rows[0].address + (4 if delayed else 2):#010x}"
+    branch = rows[matches[0]]
+    start = branch.address + (4 if branch.text.split()[0].endswith("/s") else 2)
+    labels = set(parsed.labels.values())
+    end, transfer = start, False
+    for row in rows[matches[0] + 1:]:
+        if row.address < start:
+            continue
+        if row.address != end or row.address in labels:
+            break
+        end = row.address + row.size
+        if transfer:
+            break
+        transfer = row.text.split()[0] in UNCONDITIONAL_TRANSFERS
+    if (branch.address, start) not in model["outcomes"]:
+        raise VerificationError(f"negative edge {text!r} is not a branch outcome")
+    edge = ("branch", branch.address, start)
+    return [gap_message(*item) for item in coverage_obligations(model)
+            if item == edge or start <= item[1] < end]
 
 
 def harness_cases(rows):
@@ -391,10 +448,20 @@ def harness_cases(rows):
             + rolling_launch_rows.FEEDBACK_CASES)
 
 
+def harness_definitions(rolling_layout, base_layout):
+    """Compiler definitions of the ROM areas that the harnesses load: the
+    Rolling Launch configuration and efficiency table and the Map Switching
+    feedback phase counts."""
+    return (f"-DRL_CONFIG={rolling_layout.configuration.start:#010x}U",
+            f"-DRL_TABLE={rolling_layout.efficiency.start:#010x}U",
+            f"-DFEEDBACK_COUNTS={base_layout.feedback.phase_counts_address:#010x}U")
+
+
 def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, composed_image,
-                                  rolling_layout):
+                                  rolling_layout, base_layout):
     """Run the model rows, measure coverage and run the negative variants."""
     regions = rolling_layout.code_region_by_key
+    definitions = harness_definitions(rolling_layout, base_layout)
     model = coverage_model(fixture, parsed_by_unit, regions)
     for pc in model["instructions"]:
         if fixture[pc:pc + 2] != composed_image[pc:pc + 2]:
@@ -429,7 +496,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         elf = build_dir / f"rolling-launch-{name}.elf"
         base_verifier.run_command([
             base_verifier.GCC, "-m2e", "-mb", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
-            f"-I{include}", f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
+            *definitions, f"-I{include}", f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0", "-o", elf, source_path, invoke_object, rom_object,
         ], timeout=120)
         try:
@@ -473,15 +540,22 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     interrupts = rolling_launch_interrupts.run_interrupt_rows(
         fixture, build_dir, engine=regions["engine"].entry,
         regulator=(regions["rpm_controller"].span.start, regions["control_publisher"].span.end),
-        invoke_object=invoke_object, rom_object=rom_object)
+        definitions=definitions, invoke_object=invoke_object, rom_object=rom_object)
 
+    # The periodic variant leaves every obligation of the periodic wrapper
+    # unmet, its entry first; each other variant leaves exactly its omitted
+    # edge and the block that only the edge reaches.
+    periodic = regions["periodic_wrapper"].span
     negatives = (
-        ("periodic", f"uncovered entry {regions['periodic_wrapper'].entry:#010x}"),
-        ("controller", "uncovered branch " + _bound_edge(
-            parsed_by_unit["speed_controller"], rolling_launch_rows.CONTROLLER_NEGATIVE_EDGE)),
-        ("engine", "uncovered branch " + _bound_edge(
-            parsed_by_unit["engine"], rolling_launch_rows.ENGINE_NEGATIVE_EDGE)),
+        ("periodic", [gap_message(*item) for item in coverage_obligations(
+            model, (periodic.start, periodic.end))]),
+        ("controller", omitted_path(parsed_by_unit["speed_controller"],
+                                    rolling_launch_rows.CONTROLLER_NEGATIVE_EDGE, model)),
+        ("engine", omitted_path(parsed_by_unit["engine"],
+                                rolling_launch_rows.ENGINE_NEGATIVE_EDGE, model)),
     )
+    if negatives[0][1][0] != f"uncovered entry {regions['periodic_wrapper'].entry:#010x}":
+        raise VerificationError("the periodic wrapper entry is not its first obligation")
     lines = [result.stdout.strip(),
              "VQ_SH_ELF_ROLLING_COVERAGE status=PASS scope=JK08A:" + ",".join(COVERAGE_REGIONS)
              + " " + " ".join(f"{key}={value}" for key, value in covered.items()),
@@ -492,15 +566,16 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         if marker(negative_rows) not in negative.stdout.splitlines():
             raise VerificationError(f"{variant} variant does not keep the semantic PASS marker"
                                     + (f"\n{negative.stdout.rstrip()}" if negative.stdout else ""))
-        try:
-            require_coverage(records, fixture, model, invoke_words, harness_entries)
-        except VerificationError as error:
-            if str(error) != expected:
-                raise VerificationError(
-                    f"{variant} variant fails outside its omitted path: {error}") from error
-        else:
+        gaps = coverage_gaps(records, fixture, model, invoke_words, harness_entries)
+        if not gaps:
             raise VerificationError(f"coverage accepts the {variant} variant")
-        lines.append(f"VQ_SH_ELF_ROLLING_NEGATIVE status=PASS variant={variant} {expected}")
+        if gaps != expected:
+            extra = [gap for gap in gaps if gap not in expected]
+            missing = [gap for gap in expected if gap not in gaps]
+            raise VerificationError(f"{variant} variant leaves gaps outside its omitted path: "
+                                    f"extra {extra}, missing {missing}")
+        lines.append(f"VQ_SH_ELF_ROLLING_NEGATIVE status=PASS variant={variant} "
+                     f"gaps={len(gaps)} {gaps[0]}")
     if source_path.read_text(encoding="utf-8") != source:
         raise VerificationError("Rolling Launch harness source changes during verification")
     return "\n".join(lines), rows
@@ -523,7 +598,7 @@ def verify(verbose=False, check_toolchain=True):
             composition, parsed, base_layout, rolling_layout)
         dynamic_marker, dynamic_rows = build_and_run_dynamic_harness(
             fixture, build_dir, parsed_by_unit=parsed, composed_image=composition.data,
-            rolling_layout=rolling_layout)
+            rolling_layout=rolling_layout, base_layout=base_layout)
 
     print(dynamic_marker)
     print(

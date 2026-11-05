@@ -30,9 +30,9 @@
 #define RL_STATE_SIZE 44U
 #define RL_EXTENSION 0xffff6100U
 #define RL_EXTENSION_SIZE 32U
-#define RL_CONFIG 0x000d6320U
+/* RL_CONFIG, RL_TABLE and FEEDBACK_COUNTS come from the layouts through the
+   compiler definitions of verify_rolling_launch.harness_definitions. */
 #define RL_CONFIG_SIZE 102U
-#define RL_TABLE 0x000d6390U
 #define RL_TABLE_SIZE 82U
 
 #define SPEED 0xffff113cU
@@ -54,7 +54,6 @@
 #define FUEL_STOCK_TAIL 0x00009356U
 #define THROTTLE_STOCK_CLUSTER 0x00009424U
 #define THROTTLE_POINTER_TABLE 0x000d35ccU
-#define FEEDBACK_COUNTS 0x000d3848U
 
 #define PERIODIC_WRAPPER 0x000d3860U
 #define SELECTOR_ARBITER 0x000d3880U
