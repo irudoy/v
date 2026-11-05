@@ -515,7 +515,7 @@ alone does not establish a payload meaning.
 
 The sources are [`../../defs/JK08A.can.md`](../../defs/JK08A.can.md), the KB
 meanings `can_174_transmission_payload_decoder/fn`, `nimble-zebra/fn` and
-`vivid-macaque/ram`, and the decoders in
+`can_vehicle_speed/ram`, and the decoders in
 [`../logs/tcm_shift_audit.py`](../logs/tcm_shift_audit.py),
 [`../logs/torque_scale_audit.py`](../logs/torque_scale_audit.py) and
 [`../logs/rolling_launch_audit.py`](../logs/rolling_launch_audit.py).
