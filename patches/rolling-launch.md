@@ -652,16 +652,20 @@ The integrator and the controller command have no field that the check
 couples to them, and they are stored outside the masked groups.
 
 Transitions keep store orders instead of masks. Activation stores the phase
-first, the mode after the map, and the trim of the run last, so the adapter
-computes `P = S` until the hold is complete, and the ready mark stays clear
-throughout. An abort stores the phase first. `COOLDOWN` and `IDLE` records
-carry no ready mark, and corrupt-state recovery clears the phase before the
-extension. No mixed state inside activation, an abort, the return from
-`COOLDOWN` to `IDLE`, or corrupt-state recovery passes the check as an
-`ACTIVE` ready record: a publication inside them fails the check and
-publishes the stock command, which is the correct command there, and the
-masked wire views at the end of the pass make the record consistent. The
-input sample precedes every transition. A sampled change that alters the
+first, the mode after the map, the law output 1000 before the kind, and the
+trim of the run last, so the adapter computes `P = S` until the hold is
+complete. The law output 1000 gives `q = 0` for both kinds. An abort stores
+the phase first. `COOLDOWN` and `IDLE` records carry no ready mark, and
+corrupt-state recovery clears the phase before the extension. No mixed state
+inside an abort, the return from `COOLDOWN` to `IDLE`, or corrupt-state
+recovery passes the check as an `ACTIVE` ready record: a publication inside
+them fails the check and publishes the stock command, which is the correct
+command there. A publication inside activation either fails the check and
+publishes the stock command, or passes it with the law output 1000: it may
+set the ready mark and publishes `q = 0`, and the control publisher of the
+pass then publishes `q` of the new law with that ready mark, as the next
+publication would. The masked wire views at the end of the pass make the
+record consistent. The input sample precedes every transition. A sampled change that alters the
 wire views fails the check and occurs only on a pass that aborts or outside
 `ACTIVE`; other sampled fields are coupled to no control field, so a
 publication between the sample and the first store of an abort acts as if it

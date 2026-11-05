@@ -989,9 +989,9 @@ def _validate_publication_atomicity(parsed_by_unit):
     controller error pairs, the law output with the torque fraction, the
     command tuple, e, q and the views, and the exit views. The integrator and
     the controller command have no coupled field. Transitions keep a store
-    order instead: activation stores the phase first, the mode after the map
-    and the latched trim last, and an abort leaves ACTIVE with its first
-    store.
+    order instead: activation stores the phase first, the mode after the map,
+    the law output 1000 before the kind and the latched trim last, and an
+    abort leaves ACTIVE with its first store.
     """
     regions = (
         ("speed_controller", "rolling_launch_speed_controller", None, False,
@@ -1024,6 +1024,11 @@ def _validate_publication_atomicity(parsed_by_unit):
             "activation must store the phase first, the mode after the map and "
             "the latched trim last"
         )
+    law = _region(engine, "rl_activate", "rl_active_post")
+    kind = law.index("mov.b r0,@r9") if law.count("mov.b r0,@r9") == 1 else -1
+    if kind < 4 or law[kind - 5:kind - 1] != [
+            "mov #0x7d,r0", "shll2 r0", "shll r0", "mov.w r0,@(0x16,r9)"]:
+        raise ValueError("activation must store the law output 1000 before the kind")
     abort = _stores_in_order(_region(engine, "rl_abort", "rl_corrupt_state"))
     if abort[:1] != ["mov.b r0,@r8"] or not {
             "mov.w r0,@(0x1a,r8)", "mov.b r0,@(0xb,r9)"} <= set(abort):

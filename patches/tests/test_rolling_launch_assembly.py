@@ -60,6 +60,15 @@ def test_tracked_sources_pass_every_abi_check(layout):
     ("engine", "rl_abort:\nmov #0x2,r0\nmov.b r0,@r8\nmov r2,r0\nmov.b r0,@(0x1,r8)",
      "rl_abort:\nmov r2,r0\nmov.b r0,@(0x1,r8)\nmov #0x2,r0\nmov.b r0,@r8",
      "abort must leave ACTIVE with its first store"),
+    ("engine", "mov #0x1,r0\nmov.b r0,@r8\nmov r5,r0\nmov.b r0,@(0x4,r8)",
+     "mov r5,r0\nmov.b r0,@(0x4,r8)\nmov #0x1,r0\nmov.b r0,@r8",
+     "phase first"),
+    ("engine", "mov #0x0,r0\nmov.w r0,@(0x14,r8)\nmov.b @(0x3,r1),r0\nrl_activate_trim:\n"
+     "mov r0,r2\nmov #0x1e,r0\nmov.b r2,@(r0,r8)\n",
+     "mov.b @(0x3,r1),r0\nrl_activate_trim:\nmov r0,r2\nmov #0x1e,r0\nmov.b r2,@(r0,r8)\n"
+     "mov #0x0,r0\nmov.w r0,@(0x14,r8)\n", "latched trim last"),
+    ("engine", "mov.w r0,@(0x16,r9)\nmov r14,r0\nmov.b r0,@r9",
+     "mov r14,r0\nmov.b r0,@r9\nmov.w r0,@(0x16,r9)", "law output 1000 before the kind"),
 ))
 def test_abi_checks_reject_a_changed_contract(layout, key, old, new, message):
     with pytest.raises(ValueError, match=message):

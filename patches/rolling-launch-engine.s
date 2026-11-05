@@ -475,7 +475,9 @@ nop
 
 // Activation latches the map, mode, kind, captured RPM, target and the trim
 // of the kind. The controller starts with zero errors and integrator, q = 0,
-// ready = 0 and, in SPEED, full torque.
+// ready = 0 and, in SPEED, full torque. The law output 1000 gives q = 0 for
+// both kinds and precedes the kind, so a publication inside activation
+// publishes q = 0.
 rl_activate:
 mov r5,r0
 shll2 r0
@@ -490,6 +492,10 @@ mov r5,r0
 mov.b r0,@(0x4,r8)
 mov.b @(0x3,r10),r0
 mov.b r0,@(0x5,r8)
+mov #0x7d,r0
+shll2 r0
+shll r0
+mov.w r0,@(0x16,r9)
 mov r14,r0
 mov.b r0,@r9
 mov.w @(0x4,r9),r0
@@ -508,8 +514,7 @@ mov.w @(0x6,r1),r0
 mov.w r0,@(0x14,r8)
 mov.w r0,@(0x1c,r9)
 mov #0x0,r0
-mov.w r0,@(0xc,r8)
-mov.w r0,@(0xe,r8)
+mov.l r0,@(0xc,r8)
 mov.b @(0x2,r1),r0
 bra rl_activate_trim
 nop
@@ -517,9 +522,7 @@ rl_activate_speed:
 mov r6,r0
 mov.w r0,@(0xc,r8)
 mov.w r0,@(0x1c,r9)
-mov #0x7d,r0
-shll2 r0
-shll r0
+mov.w @(0x16,r9),r0
 mov.w r0,@(0xe,r8)
 mov #0x0,r0
 mov.w r0,@(0x14,r8)
