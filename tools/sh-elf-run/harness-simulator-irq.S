@@ -26,6 +26,24 @@ irq_probe:
     stc gbr,r6
     mov.l .Lvalue,r1
     mov.l .Lfirst,r0
+#if PROBE_CASE == 34
+    trapa #0x40
+    .global irq_outer_continuation
+irq_outer_continuation:
+    mov.l .Louter_resumed,r1
+    mov #1,r0
+    mov.l r0,@r1
+    bra .Lfinish
+    nop
+    .global _irq_trap_handler
+_irq_trap_handler:
+    /* Match an ISR that opens its interrupt mask after GNU TRAPA entry. */
+    mov.l .Lequal_sr,r0
+    ldc r0,sr
+    nop
+    mov.l .Lvalue,r1
+    mov.l .Lfirst,r0
+#endif
 #if PROBE_CASE == 7
 #ifndef IRQ_INHIBIT
 #error IRQ_INHIBIT is required for the register-inhibit matrix
@@ -170,7 +188,12 @@ irq_resume:
     stc sr,r0
     mov.l .Lafter_sr,r2
     mov.l r0,@r2
-#if PROBE_CASE == 5
+#if PROBE_CASE == 34
+    .global irq_outer_rte
+irq_outer_rte:
+    rte
+    nop
+#elif PROBE_CASE == 5
     dt r3
     mov.l .Lfirst,r0
     bf .Lloop
@@ -204,6 +227,7 @@ irq_resume:
 .Lvectors: .long _irq_vectors
 .Lrte_sp: .long _irq_rte_sp
 .Literations: .long _irq_iterations
+.Louter_resumed: .long _irq_outer_resumed
     .size irq_probe,.-irq_probe
 
     .align 2
@@ -221,6 +245,11 @@ _irq_handler:
 irq_handler:
     mov.l r0,@-r15
     mov.l r1,@-r15
+#if PROBE_CASE == 35
+    trapa #0x40
+    .global irq_inner_continuation
+irq_inner_continuation:
+#endif
     mov.l @(8,r15),r0
     mov.l .Lsaved_pc,r1
     mov.l r0,@r1
@@ -250,10 +279,17 @@ irq_handler:
     mov.l @r1,r0
     add #1,r0
     mov.l r0,@r1
+#if PROBE_CASE == 36
+    mov.l .Lexit_handler,r2
+    jsr @r2
+    nop
+#endif
     mov.l @r15+,r1
     mov.l @r15+,r0
     rte
-#if PROBE_CASE == 33
+#if PROBE_CASE == 37
+    .word 0xD304
+#elif PROBE_CASE == 33
     mov.l r15,@r1
 #else
     nop
@@ -270,6 +306,21 @@ irq_handler:
 .Lread_iterations: .long _irq_iterations
 .Lseen_iterations: .long _irq_seen_iterations
 .Lhits: .long _irq_hits
+.Lexit_handler: .long _irq_exit_handler
     .size irq_handler,.-irq_handler
+#if PROBE_CASE != 34
+    .global _irq_trap_handler
+_irq_trap_handler:
+    mov.l .Ltrap_hits,r0
+    mov.l @r0,r1
+    add #1,r1
+    mov.l r1,@r0
+    .global irq_inner_rte
+irq_inner_rte:
+    rte
+    nop
+    .align 2
+.Ltrap_hits: .long _irq_trap_hits
+#endif
     .global irq_handler_end
 irq_handler_end:

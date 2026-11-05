@@ -1,6 +1,6 @@
 --- a/sim/sh/interp.c
 +++ b/sim/sh/interp.c
-@@ -794,4 +794,236 @@
+@@ -794,4 +794,256 @@
  #define SIGN32(x)	(SEXT32 (x) >> 31)
 
 +/* Optional, one-shot SH-2E interrupt injection at instruction boundaries.
@@ -8,7 +8,9 @@
 +static struct
 +{
 +  int enabled, pending, delivered, inhibit, branch_waiting, in_handler;
++  int returning, returned;
 +  unsigned int pc, level, vector, current_pc, current_opcode, branch_pc;
++  unsigned int outer_ssr, outer_spc;
 +  unsigned long long count, seen;
 +  FILE *report;
 +} vq_sh_irq;
@@ -44,6 +46,9 @@
 +    return;
 +  if (!vq_sh_irq.delivered
 +      && fprintf (vq_sh_irq.report, "status=PENDING\n") < 0)
++    vq_sh_irq_error ("report_write");
++  if (vq_sh_irq.delivered && !vq_sh_irq.returned
++      && fprintf (vq_sh_irq.report, "status=UNRETURNED\n") < 0)
 +    vq_sh_irq_error ("report_write");
 +  if (fclose (vq_sh_irq.report) != 0)
 +    vq_sh_irq_error ("report_close");
@@ -98,7 +103,7 @@
 +  return opcode == 0x000b || opcode == 0x002b;
 +}
 +
-+/* SH7059/SH7058S Hardware Manual 6.6, table 6.10, and 8.3.3:
++/* SH7059/SH7058S Hardware Manual 6.6, table 6.10:
 +   the instruction following one of these executes before pending acceptance.
 +   The FPU instructions of tables 2.18 and 2.19 also inhibit acceptance. */
 +static int
@@ -158,6 +163,16 @@
 +{
 +  if (saved_state.asregs.exception)
 +    return;
++  if (vq_sh_irq.returning)
++    {
++      /* The original RTE decoder and its slot have consumed this pair.
++         Preserve a surrounding GNU exception's independent return state. */
++      SSR = vq_sh_irq.outer_ssr;
++      SPC = vq_sh_irq.outer_spc;
++      vq_sh_irq.returning = 0;
++      vq_sh_irq.in_handler = 0;
++      vq_sh_irq.returned = 1;
++    }
 +  if (vq_sh_irq.branch_waiting)
 +    {
 +      vq_sh_irq_count (vq_sh_irq.branch_pc);
@@ -201,6 +216,8 @@
 +    return 0;
 +  if ((*handler & 1) || *handler >= (unsigned int) saved_state.asregs.msize - 1)
 +    vq_sh_irq_error ("invalid_handler");
++  vq_sh_irq.outer_ssr = SSR;
++  vq_sh_irq.outer_spc = SPC;
 +  vq_sh_irq.pending = 0;
 +  vq_sh_irq.delivered = 1;
 +  vq_sh_irq.in_handler = 1;
@@ -231,20 +248,23 @@
 +  SPC = pc;
 +  SSR = sr;
 +  saved_state.asregs.regs[15] = sp + 8;
-+  vq_sh_irq.in_handler = 0;
++  vq_sh_irq.returning = 1;
++  if (fprintf (vq_sh_irq.report, "returned=%08x sp=%08x\n", pc, sp + 8) < 0
++      || fflush (vq_sh_irq.report) != 0)
++    vq_sh_irq_error ("report_write");
 +}
 +
 +
  /* convert pointer from target to host value.  */
  #define PT2H(x) ((x) + memory)
-@@ -807,4 +1039,6 @@
+@@ -807,4 +1059,6 @@
  do { \
    iword = RIAT (TEMPPC); \
 +  if (vq_sh_irq.enabled) \
 +    vq_sh_irq_delay_slot ((unsigned int) PH2T (TEMPPC), iword); \
    vq_sh_pc_trace_observe ((unsigned int) PH2T (TEMPPC), iword, 1); \
    in_delay_slot = 1; \
-@@ -1906,7 +2140,29 @@
+@@ -1906,7 +2160,30 @@
    while (insn_ptr < saved_state.asregs.insn_end)
      {
 -      register unsigned int iword = RIAT (insn_ptr);
@@ -265,7 +285,8 @@
 +            break;
 +        }
 +      iword = RIAT (insn_ptr);
-+      if (vq_sh_irq.enabled && vq_sh_irq.in_handler && iword == 0x002b)
++      if (vq_sh_irq.enabled && vq_sh_irq.in_handler && !SR_BL
++          && iword == 0x002b)
 +        {
 +          vq_sh_irq_prepare_rte (memory, maskl);
 +          if (saved_state.asregs.exception)
@@ -276,24 +297,24 @@
 +        vq_sh_irq_begin ((unsigned int) PH2T (insn_ptr), iword);
        vq_sh_pc_trace_observe ((unsigned int) PH2T (insn_ptr), iword, 0);
 
-@@ -1918,4 +2174,6 @@
+@@ -1918,4 +2195,6 @@
  #include "code.c"
 
 +      if (vq_sh_irq.enabled)
 +        vq_sh_irq_completed ();
 
        in_delay_slot = 0;
-@@ -2399,4 +2657,9 @@
+@@ -2399,4 +2678,9 @@
        *sigrc = saved_state.asregs.exception;
      }
-+  /* A requested, undelivered injection cannot qualify a successful run.
++  /* An undelivered or unreturned injection cannot qualify a successful run.
 +     Preserve an existing target failure or signal. */
-+  if (vq_sh_irq.enabled && !vq_sh_irq.delivered
++  if (vq_sh_irq.enabled && (!vq_sh_irq.delivered || !vq_sh_irq.returned)
 +      && *reason == sim_exited && *sigrc == 0)
 +    *sigrc = 125;
  }
 
-@@ -2547,4 +2810,5 @@
+@@ -2547,4 +2831,5 @@
 
    vq_sh_pc_trace_init ();
 +  vq_sh_irq_init ();

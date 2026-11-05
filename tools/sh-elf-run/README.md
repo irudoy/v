@@ -417,10 +417,11 @@ The [SH7059/SH7058S Hardware Manual](../../refs/renesas-sh7059-sh7058s-hardware-
 section 6.6, table 6.10, prohibits acceptance between a delayed branch and its
 slot, and immediately after `LDC`, `LDC.L`, `STC`, `STC.L`, `LDS`, `LDS.L`,
 `STS` and `STS.L`. The FPU instructions in its tables 2.18 and 2.19 also
-inhibit acceptance. Section 8.3.3 confirms that the following instruction
-executes before a deferred interrupt is accepted. Consecutive inhibiting
-instructions extend this deferral. For `ldc ...,sr; nop; resume:`, a pending
-request is accepted at `resume`, even when the LDC lowers the mask.
+inhibit acceptance. Section 6.6 accepts an interrupt when an instruction
+that permits acceptance is decoded. The instruction following an inhibiting
+instruction therefore executes before deferred acceptance. Consecutive
+inhibiting instructions extend this deferral. For `ldc ...,sr; nop; resume:`,
+a pending request is accepted at `resume`, even when the LDC lowers the mask.
 
 At acceptance, the hook writes SR at `SP-4`, the return PC at `SP-8`, sets
 SP to `SP-8`, and sets `SR.I` to the requested level. It reads the handler
@@ -431,27 +432,36 @@ stop the run. The handler runs
 from its original instruction address; no target opcode is replaced.
 
 GNU's RTE decoder uses the SH-4 SSR/SPC return registers. For the RTE ending
-this hook's injected exception, the hook reads PC and SR from the current
-SH-2E stack frame, advances SP by eight bytes, and supplies those return
-registers to the unchanged decoder. RTE and its delay slot execute normally;
+this hook's injected exception, with GNU's BL bit clear, the hook reads PC
+and SR from the current SH-2E stack frame, advances SP by eight bytes, and
+supplies those return registers to the unchanged decoder. RTE and its delay slot execute normally;
 a probe verifies that the slot observes the restored stack pointer.
-This adaptation is confined to the injected exception; it does not qualify
-other simulator exception paths. The hook supplies no peripheral behavior,
-INTC arbitration, nested interrupts or cycle timing. Each fixture declares
-its stack, vector and harness storage separately from executable storage.
+At entry the hook saves the surrounding GNU SSR/SPC pair and restores it
+after the injected RTE and its slot complete. An ordinary GNU TRAPA inside
+the handler sets BL, so its RTE uses GNU's decoder without consuming the
+injected frame. Probes cover both an injected IRQ inside a GNU TRAPA ISR
+that opens its interrupt mask and a GNU TRAPA inside the injected handler.
+This compatibility does not qualify SH-2E TRAPA semantics or other simulator
+exception paths. The hook supplies no peripheral behavior,
+INTC arbitration, nested maskable IRQ requests or cycle timing. Each fixture
+declares its stack, vector and harness storage separately from executable storage.
 
-An accepted request writes one report line with hexadecimal values:
+An accepted and returned request writes two report lines with hexadecimal values:
 
 ```text
 triggered=00001200 accepted=00001202 handler=00001400 sr=00000000
+returned=00001202 sp=00017ff0
 ```
 
 `triggered` is the configured instruction address; `accepted` is the return
 PC placed in the frame, which can differ from the instruction immediately
-following the trigger. An undelivered request, including an execution count
-that is never reached, writes `status=PENDING`. It changes an otherwise
-successful runner exit to 125 and retains an existing target failure or
-signal. Partial or invalid requests refuse execution with exit code 125;
+following the trigger. The `returned` row records the frame consumed and
+the restored SP before GNU executes RTE. Successful completion of RTE and
+its slot is required separately: a delivered request without that completion
+adds `status=UNRETURNED`. An undelivered request, including an execution count
+that is never reached, writes `status=PENDING`. Either status changes an
+otherwise successful runner exit to 125 and retains an existing target
+failure or signal. Partial or invalid requests refuse execution with exit code 125;
 report I/O errors fail the run with that code. The ordinary PC trace remains
 an ordered record of the instructions that execute, including the handler,
 RTE and its delay slot.
@@ -459,6 +469,7 @@ RTE and its delay slot.
 The mandatory `simulator_irq` stage runs the compiled C and assembly probes
 before patch execution. It checks the unset default, repeated executions,
 priority masking, inhibit chains, delayed branches, the saved frame, RTE,
+both GNU TRAPA nesting orders, exit without return, a fault in the RTE slot,
 vector lookup at acceptance, undelivered requests and invalid settings.
 Disabled and enabled runs consume the same ELF bytes. Requests are confined
 to child processes; the probe uses ordinary flat memory without enabling a

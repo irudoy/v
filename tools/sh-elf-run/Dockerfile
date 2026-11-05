@@ -62,7 +62,7 @@ RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
         | sha256sum -c - \
     && patch --batch --fuzz=0 -p1 < /tmp/irq-injection.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
-        '2479b8d1d05412639e4de3da55eec27faea0372ed48b03a0a8f4383594ab1abe' \
+        '42260c7a4e98c4c453127ad9ed7611cc5bcaa8834922f305d814ad7516e66b95' \
         | sha256sum -c - \
     && cd /opt/build \
     && /opt/src/gdb-16.3/configure \
