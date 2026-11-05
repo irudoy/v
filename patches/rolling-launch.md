@@ -622,14 +622,16 @@ publishes `q = 0` in the tick that detects it; the stock command returns at
 the next call of the adapter.
 
 The adapter passes `S` and `P` to the ignition publisher at `0x000D6540`,
-which runs the record check first. It publishes the stock command, `P = S`
-with `a = 0`, `E[0]`, no ready mark, and `q = 0`, when the record fails the
-check, `CONFIG_VALID` is clear, `a` lies outside 0..40, or a ready hold has
-`a` above the trim of the run. Only an engine pass with a valid configuration
-and efficiency table sets `CONFIG_VALID`, so the publisher does not repeat the
-configuration check on every ignition event. The publisher returns the
-command that the adapter applies: `P` with a published trim and `S` on the
-stock path, so the applied command always matches the publication.
+which runs the record check first. It publishes `P` with the ready mark only
+for an `ACTIVE` hold with `CONFIG_VALID`, without the P0335 APC fallback, and
+with `a` in 0..40 and within the trim of the run. Any other input publishes
+the stock command, `P = S` with `a = 0`, `E[0]`, no ready mark, and `q = 0`,
+whatever `P` the adapter passes. Only an engine pass with a valid
+configuration and efficiency table sets `CONFIG_VALID`, so the publisher does
+not repeat the configuration check on every ignition event. The publisher
+returns the command that the adapter applies: `P` with a published trim and
+`S` on the stock path, so the applied command always matches the
+publication.
 
 The engine runs in the periodic scheduler with interrupts enabled, and the
 ignition publisher runs from the crank-tooth interrupt between any two engine

@@ -26,9 +26,10 @@
 //      and stored with interrupts masked.
 // The validator at 0xD6680 returns 0 for an invalid configuration, and for a
 // valid one bit0 and bit1 for a valid efficiency table; r12 keeps the result,
-// which is positive exactly for a valid configuration. The RPM controller at 0xD6400 and the speed
-// controller at 0xD40C0 receive r4=configuration and r5=base state and end in
-// the control publisher, which commits their law output together with q.
+// which is positive exactly for a valid configuration. The RPM controller at
+// 0xD6400 and the speed controller at 0xD40C0 receive r4=configuration and
+// r5=base state and end in the control publisher, which commits their law
+// output together with q.
 
 .org 0x000D38E4
 rolling_launch_engine:
@@ -766,8 +767,9 @@ nop
 
 
 // Head check of the configuration in r10: r7 = 1 for a valid head, else 0.
-// The validator at 0xD6680 then checks the slots of a valid head and the
-// efficiency table and returns r0 bit0 = configuration, bit1 = table.
+// The validator at 0xD6680 then checks the slots of a valid head and, after
+// five valid slots, the efficiency table. It returns r0 = 0 for an invalid
+// configuration, and bit0 and bit1 for a valid table otherwise.
 rl_validate_config:
 mov #0x0,r7
 mov.w @r10,r0

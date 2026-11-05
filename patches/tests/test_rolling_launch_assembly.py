@@ -77,6 +77,11 @@ def test_tracked_sources_pass_every_abi_check(layout):
      "mov #0x40,r1\nshll r1\n", "changes T between a gate comparison"),
     ("slot_validator", "tst r7,r7\nbt rl_val_return", "tst r7,r7\nbt rl_val_table",
      "reject an invalid head"),
+    ("actuation", "tst 0x40,r0\nbf rl_act_ignition_stock",
+     "tst 0x40,r0\nbf rl_act_ignition_publish", "publishes P without ready"),
+    ("actuation", "cmp/eq 0x1,r0\nbf rl_act_ignition_stock\nbra rl_act_ignition_ready",
+     "cmp/eq 0x1,r0\nbf rl_act_ignition_publish\nbra rl_act_ignition_ready",
+     "publishes P without ready"),
     ("slot_validator", "cmp/hs r1,r0\nbt rl_val_return\nadd 0xc,r2",
      "cmp/hs r1,r0\nbt rl_val_table\nadd 0xc,r2", "branches to the table check"),
 ))

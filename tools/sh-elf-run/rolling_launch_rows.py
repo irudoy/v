@@ -223,7 +223,10 @@ class Rows:
         """Run the publisher with wide commands; contract rows take P from the model.
 
         Bits 8..31 of S hold ``high`` and those of P hold its complement. The
-        APC byte selects the fallback through bit 6 alone.
+        APC byte selects the fallback through bit 6 alone. The publisher
+        returns P only with the ready mark of the model and S otherwise; a
+        row whose P differs from the model command expects the stock
+        publication.
         """
         base, extension = records
         table = TABLE
@@ -255,7 +258,8 @@ class Rows:
         self.ignition.append(PublisherRow(
             self._name(name), self.config(CALIBRATION.to_bytes(), table.to_bytes()),
             apc, 0, stock_wide, effective_wide, base, extension,
-            base_out, extension_out, effective_wide if publish else stock_wide))
+            base_out, extension_out,
+            effective_wide if publish and result.actuation_ready else stock_wide))
         return result
 
     def control_row(self, name, state, law):
@@ -610,6 +614,11 @@ def build(variant=None):
     rows.ignition_row("ign-trim-latched", records(speed_hold), 20, 31, contract=False)
     rows.ignition_row("ign-trim-range", records(held), 20, 61, contract=False)
     rows.ignition_row("ign-trim-negative", records(speed_hold), 20, 19, contract=False)
+    # A trim within the latched trim outside a ready hold: the publisher
+    # applies S, whatever P the adapter passes.
+    rows.ignition_row("ign-apc-trim", records(speed_hold), 20, 30, apc=0x40, contract=False)
+    rows.ignition_row("ign-idle-trim", records(held), 20, 25, contract=False)
+    rows.ignition_row("ign-observe-trim", records(observe_speed), 20, 25, contract=False)
     rows.ignition_row("ign-config-valid", records(replace(
         speed_hold, flags=speed_hold.flags & ~model.Flag.CONFIG_VALID)), 20, 30, contract=False)
     rows.ignition_row("ign-corrupt", mutate(speed_hold, "base", 0x00, "B", 3), 20, 30,

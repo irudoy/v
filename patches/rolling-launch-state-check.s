@@ -23,8 +23,8 @@
 .org 0x000D7000
 // Structural check: T=1 when the base and extension records decode as a
 // schema 6 model state with consistent wire views and a zero reserved byte.
-// It changes r0..r3, r6, r7 and T and preserves r4, r5, r8..r15, PR and the
-// remaining SR bits.
+// It changes r0..r3, r6, r7, MACL and T and preserves r4, r5, r8..r15, PR
+// and the remaining SR bits.
 rolling_launch_state_check:
 stc sr,r0
 mov.l r0,@-r15

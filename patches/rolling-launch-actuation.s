@@ -9,14 +9,13 @@
 //
 // The ignition publisher at 0xD6540 runs from the crank-tooth interrupt with
 // r4=wide stock command S and r5=wide effective command P from the ignition
-// adapter, and returns in r5 the command to apply. A record that fails the
-// structural check, a base record without CONFIG_VALID, or an applied trim
-// a = P - S outside 0..40, or above the latched trim while ready, publishes
-// the stock command and returns r5 = S: P = S, a = 0, e = 1000, ready = 0
-// and q = 0. Only an engine pass with a valid configuration and efficiency
-// table sets CONFIG_VALID, and every ACTIVE record comes from such a pass.
-// Otherwise it returns r5 = P and publishes ready = ACTIVE hold without the
-// APC fallback 0xFFFF24C9 bit 6.
+// adapter, and returns in r5 the command to apply. An ACTIVE hold record
+// with CONFIG_VALID, without the APC fallback 0xFFFF24C9 bit 6 and with an
+// applied trim a = P - S in 0..40 and within the latched trim returns r5 = P
+// and publishes ready = 1. Any other input publishes the stock command and
+// returns r5 = S: P = S, a = 0, e = 1000, ready = 0 and q = 0. Only an engine
+// pass with a valid configuration and efficiency table sets CONFIG_VALID,
+// and every ACTIVE record comes from such a pass.
 //
 // The common body at 0xD6580 receives r1=a, r2=ready, r6=(S<<8)|P and the SR
 // of the caller on the stack. It computes e = 1000 for a = 0 and E[a]
@@ -87,7 +86,7 @@ bt rl_act_ignition_stock
 mov #0x0,r2
 mov.b @r3,r0
 cmp/eq 0x1,r0
-bf rl_act_ignition_publish
+bf rl_act_ignition_stock
 bra rl_act_ignition_ready
 nop
 
@@ -147,16 +146,17 @@ ldc r0,sr
 rts
 nop
 
-// Ignition publisher, continued: ready in ACTIVE hold without the APC
-// fallback, and then an applied trim within the latched trim.
+// Ignition publisher, continued: P is published only with ready, in an
+// ACTIVE hold without the APC fallback and with an applied trim within the
+// latched trim.
 rl_act_ignition_ready:
 mov.b @(0x5,r3),r0
 cmp/eq 0x1,r0
-bf rl_act_ignition_publish
+bf rl_act_ignition_stock
 mov.l @(rl_act_apc_mode_address,pc),r0
 mov.b @r0,r0
 tst 0x40,r0
-bf rl_act_ignition_publish
+bf rl_act_ignition_stock
 mov #0x1e,r0
 mov.b @(r0,r3),r0
 cmp/hs r1,r0

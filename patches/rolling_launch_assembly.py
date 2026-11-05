@@ -799,15 +799,25 @@ def _validate_actuation_abi(parsed):
         "mov.l @(rl_act_apc_mode_address,pc),r0",
         "mov.b @r0,r0",
         "tst 0x40,r0",
-        "bf rl_act_ignition_publish",
+        "bf rl_act_ignition_stock",
     ]
+    # P reaches the body only after ready = 1: no branch enters the publish
+    # path, so the phase, mode, fallback and trim checks all lead to stock.
     latched = [
         "mov #0x1e,r0",
         "mov.b @(r0,r3),r0",
         "cmp/hs r1,r0",
         "bf rl_act_ignition_stock",
         "mov #0x1,r2",
+        "shll8 r6",
+        "extu.b r5,r0",
+        "or r0,r6",
+        "bra rolling_launch_actuation",
+        "nop",
     ]
+    if any(text.split()[-1] == "rl_act_ignition_publish"
+           for text in ignition + ready if text[0] == "b"):
+        raise ValueError("ignition publisher publishes P without ready")
     # The stock path returns the stock command as the command to apply.
     stock = [
         "mov r4,r5",
