@@ -154,7 +154,9 @@ schema, or match one registered historical endpoint. An endpoint places its
 unit fingerprints, hook values, DID slots and record by its own addresses and
 validates the record against the frozen contract of its schema; every other
 offset of the current Rolling Launch layout and of the other registered
-Rolling Launch and CAN telemetry endpoints of the ROM must hold stock bytes.
+Rolling Launch and CAN telemetry endpoints of the ROM must hold the bytes below
+the Rolling Launch layer: stock bytes, and the Map Switching replacement at the
+hook words that both layers share.
 Extraction and `UPGRADE` admit the writes of the registered endpoints of the selected ROM. A current telemetry layer is accepted only above the current Rolling
 Launch endpoint or above a registered complete endpoint explicitly marked
 compatible with that telemetry contract. The previous guarded ignition
