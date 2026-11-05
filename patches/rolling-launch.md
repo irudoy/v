@@ -1038,8 +1038,9 @@ the applied trim with the kind and the ready mark, and the kind with the input
 bits, the CANCEL and released codes, and the ready mark.
 
 The startup wrapper clears both allocations. Corrupt-state recovery clears
-the engine part `+0x00..+0x1C` of the record, the trim of the run, and the
-extension. Both then store `E[0] = 1000` and its wire view. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
+the engine part `+0x00..+0x1C` of the record, the trim of the run, the
+reserved byte, and the extension. Both then store `E[0] = 1000` and its wire
+view. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
 `q` of 0..1000, a ready mark of 0 or 1, a trim of 0..40, zero reserved
 fields, and zero fields of the unused regulator; with the ready mark set, the
 applied trim does not exceed the trim of the run and `q` equals the actuation

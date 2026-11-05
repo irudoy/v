@@ -27,6 +27,8 @@ def test_tracked_sources_pass_every_abi_check(layout):
     ("wrappers", "mov #0x8,r2", "mov #0x7,r2", "startup wrapper must clear"),
     ("engine", "mov r8,r1\nmov #0x0,r0\nmov #0x7,r2",
      "mov r8,r1\nmov #0x0,r0\nmov #0x6,r2", "corrupt-state recovery"),
+    ("engine", "mov #0x1e,r0\nmov.w r2,@(r0,r8)", "mov #0x1e,r0\nmov.b r2,@(r0,r8)",
+     "corrupt-state recovery"),
     ("engine", "tst 0x2,r0\nbf rl_gate_table_valid",
      "tst 0x1,r0\nbf rl_gate_table_valid", "keeps CONFIG_VALID"),
     ("speed_controller", "add 0x28,r0", "add 0x2a,r0", "slot gain"),

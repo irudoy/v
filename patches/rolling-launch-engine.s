@@ -5,9 +5,10 @@
 // in r9 and the configuration at 0xD6320 in r10 and restores r8..r14 and PR.
 // The pass order follows the schema 6 model:
 //   1. A record that the model does not decode as a valid state restores
-//      map 1 through the limiter commit, clears base 0x00..0x1B, base 0x1E
-//      and the extension, and enters COOLDOWN with reason 16. The quiet and
-//      cut counters at base 0x1C/0x1D and the six accumulators remain.
+//      map 1 through the limiter commit, clears base 0x00..0x1B, the trim and
+//      reserved byte at 0x1E/0x1F and the extension, and enters COOLDOWN with
+//      reason 16. The quiet and cut counters at base 0x1C/0x1D and the six
+//      accumulators remain.
 //   2. The input sample stores the RPM and speed words, the CANCEL capture,
 //      the accepted button and the frame age, and input_status:
 //      bit0 raw speed word 0xFFFF3B3D/3E is not FFFF, bit1 frame age within
@@ -630,7 +631,7 @@ add 0x4,r1
 dt r2
 bf rl_corrupt_clear_base
 mov #0x1e,r0
-mov.b r2,@(r0,r8)
+mov.w r2,@(r0,r8)
 mov r9,r1
 mov #0x0,r0
 mov #0x8,r2

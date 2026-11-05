@@ -306,8 +306,8 @@ def _validate_engine_abi(parsed):
             "engine must call the record check, the limiter commit, one "
             "controller and the wire views"
         )
-    # Map 1 first, then base 0x00..0x1B and 0x1E and the extension, e = 1000,
-    # and COOLDOWN with reason 16.
+    # Map 1 first, then base 0x00..0x1B, the trim and reserved byte at 0x1E/0x1F
+    # and the extension, e = 1000, and COOLDOWN with reason 16.
     corrupt = [
         "mov #0x0,r4",
         "mov.l @(rl_limiter_commit,pc),r0",
@@ -321,7 +321,7 @@ def _validate_engine_abi(parsed):
         "dt r2",
         "bf rl_corrupt_clear_base",
         "mov #0x1e,r0",
-        "mov.b r2,@(r0,r8)",
+        "mov.w r2,@(r0,r8)",
         "mov r9,r1",
         "mov #0x0,r0",
         "mov #0x8,r2",
