@@ -8,7 +8,9 @@ record, erased regions, and runtime base records. The remaining window bytes
 are calibration. The alternate map copies (Map 2 through Map 5) lie inside the
 map write set and also carry calibration, so they are calibration ranges as
 well. Rolling Launch and CAN telemetry configuration records are builder
-write sets; their settings travel in a build profile, not as calibration.
+write sets; their settings travel in a build profile, not as calibration. The
+Rolling Launch efficiency table is a builder write set as well: the builder
+derives it from the F table, which is calibration.
 """
 
 from __future__ import annotations
@@ -70,6 +72,7 @@ def write_offsets(target):
         ranges += rolling_launch_compose.composition_write_ranges(
             target.rolling_layout
         )
+        ranges += (target.rolling_layout.efficiency,)
     ranges += can_telemetry_compose.composition_write_ranges(
         target.telemetry_layout
     )

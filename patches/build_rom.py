@@ -9,7 +9,11 @@ retains its own calibration, identity, capabilities, and checksum layout.
 
 The default input is byte-identical to the registered stock image of the
 selected ROM. ``--upgrade`` validates an existing image, extracts its calibration
-and expressed runtime settings, and transfers them over a fresh stock build.
+and expressed runtime settings, and transfers them over a fresh stock build. The
+Rolling Launch settings of a historical endpoint have no current form: such an
+image upgrades with an explicit ``--profile`` or with
+``--disable-rolling-launch``. The builder derives the Rolling Launch
+efficiency table from the F table of the image it writes.
 The separate ``extract_calibration.py`` and ``apply_calibration.py`` commands
 expose those transfer stages for an explicit local workflow.
 """
@@ -52,8 +56,8 @@ AUTO_ROM = "auto"
 ROM_SERIES = "sh7058_7mfkavn86"
 CANONICAL_ROM = "JK08A"
 SUPPORTED_ROMS = runtime_targets.SUPPORTED_ROMS
-PROFILE_SCHEMA_VERSION = 3
-MANIFEST_SCHEMA_VERSION = 4
+PROFILE_SCHEMA_VERSION = 4
+MANIFEST_SCHEMA_VERSION = 5
 TOOL_NAME = "patches/build_rom.py"
 OBSERVE_PROFILE_NAME = "observe"
 
@@ -75,19 +79,30 @@ ROLLING_INTEGER_KEYS = (
     "integrator_limit",
     "abort_above",
     "abort_below",
-    "rpm_ceiling_offset_native",
     "run_timeout_ticks",
     "rearm_ticks",
     "speed_frame_age_limit",
-    "rpm_ceiling_hysteresis_native",
 )
 # Per-map settings: one integer for every map, or an array of one integer per
-# map. The integral gain is required; a missing trim or floor is 0.
-ROLLING_SLOT_KEYS = ("integral_gain", "max_trim", "floor_command")
-ROLLING_OPTIONAL_KEYS = frozenset(("max_trim", "floor_command"))
+# map. The launch fields and the integral gain are required; a missing trim of
+# either mode or a missing timing floor is 0.
+ROLLING_SLOT_KEYS = (
+    "launch_rpm_native",
+    "launch_speed_threshold",
+    "launch_soft_width_native",
+    "integral_gain",
+    "max_trim_rpm",
+    "max_trim_speed",
+    "floor_command",
+)
+ROLLING_OPTIONAL_KEYS = frozenset(
+    ("max_trim_rpm", "max_trim_speed", "floor_command")
+)
 ROLLING_PROFILE_KEYS = frozenset(
     ("mode", "enabled_maps", *ROLLING_INTEGER_KEYS, *ROLLING_SLOT_KEYS)
 )
+# A single trim no longer names the mode it applies to.
+AMBIGUOUS_ROLLING_KEYS = frozenset(("max_trim",))
 # The stock torque-efficiency curve F of the exact layout: 16 u8 values over
 # the u8 retard axis 0..40, with e(z) = 1 - F(z) / 256.
 TRIM_TABLE_ADDRESS = 0x00011D24
@@ -151,6 +166,7 @@ class BuildResult:
     telemetry_code_entry_count: int
     diagnostic_count: int
     calibration_transfer: dict | None = None
+    rolling_efficiency: bytes = b""
 
 
 def sha256(data):
@@ -281,22 +297,29 @@ def trim_table_value(image, trim):
     raise AssertionError("axis search is exhaustive")
 
 
-def resolve_trim_efficiency(calibration, image):
-    """Return the calibration with the efficiency of every slot taken from F
-    of the image: 1000 for a slot without trim."""
-    slots = tuple(
-        replace(
-            slot,
-            trim_efficiency=(
-                rolling_launch.U_ONE if slot.max_trim == 0
-                else rolling_launch.trim_efficiency(
-                    trim_table_value(image, slot.max_trim)
-                )
-            ),
-        )
-        for slot in calibration.slots
-    )
-    return replace(calibration, slots=slots)
+def efficiency_table(image):
+    """Return the derived efficiency table E of ``image``: E[0] = 1000 and
+    E[z] = (256 - F(z)) * 1000 // 256 for every applied trim z = 1..40."""
+    table = rolling_launch.EfficiencyTable((
+        rolling_launch.U_ONE,
+        *(
+            rolling_launch.trim_efficiency(trim_table_value(image, trim))
+            for trim in range(1, rolling_launch.TRIM_MAX + 1)
+        ),
+    ))
+    if not table.is_valid():
+        raise BuildError("derived trim efficiency table is invalid")
+    return table
+
+
+def write_efficiency_table(data, layout, image=None):
+    """Write E derived from F of ``image`` (default ``data``) into the
+    efficiency span of ``layout`` and return the written offsets."""
+    span = layout.efficiency
+    data[span.start : span.end] = efficiency_table(
+        data if image is None else image
+    ).to_bytes()
+    return frozenset(range(span.start, span.end))
 
 
 def _slot_values(values, key, path):
@@ -317,26 +340,13 @@ def _require_integer(value, context):
 
 
 def builtin_profile(rom=ROM_SERIES):
-    """Return the conservative profile permitted by the target family."""
-    observe_only = str(rom).lower() in {
-        runtime_targets.RELOCATED_8MFK_FAMILY,
-        runtime_targets.SH7059_1ND_FAMILY,
-        runtime_targets.SH7059_1ME3B_FAMILY,
-        runtime_targets.SH7058_JK78C_FAMILY,
-    } or str(rom).upper() in runtime_targets.RELOCATED_ROMS
-    calibration = (
-        rolling_launch.Calibration()
-        if observe_only
-        else apply_rolling_launch.PROFILE_CALIBRATION
-    )
+    """Return the built-in profile: observe mode with every map disabled.
+    It is a valid disabled record of every family, not a hardware test
+    profile."""
     return Profile(
-        name=(
-            OBSERVE_PROFILE_NAME
-            if observe_only
-            else apply_rolling_launch.PROFILE_NAME
-        ),
+        name=OBSERVE_PROFILE_NAME,
         rom=rom,
-        calibration=calibration,
+        calibration=rolling_launch.Calibration(),
         telemetry=can_telemetry.default_configuration(),
         source="builtin",
         sha256=None,
@@ -376,7 +386,9 @@ def parse_profile(raw_bytes, path):
     ):
         raise BuildError(
             f"{path}: unsupported profile schema "
-            f"{raw['schema_version']!r}"
+            f"{raw['schema_version']!r}; schema {PROFILE_SCHEMA_VERSION} "
+            "states the launch RPM, speed threshold and soft width of every "
+            "map and has no automatic conversion"
         )
     rom = raw["rom"]
     if not isinstance(rom, str) or not rom.strip():
@@ -389,6 +401,12 @@ def parse_profile(raw_bytes, path):
 
     values = raw["rolling_launch"]
     if isinstance(values, dict):
+        ambiguous = sorted(AMBIGUOUS_ROLLING_KEYS & set(values))
+        if ambiguous:
+            raise BuildError(
+                f"{path}: {', '.join(ambiguous)} is ambiguous; set "
+                "max_trim_rpm and max_trim_speed"
+            )
         values = {
             key: values.get(key, 0) for key in ROLLING_OPTIONAL_KEYS
         } | values
@@ -416,12 +434,9 @@ def parse_profile(raw_bytes, path):
     slot_values = {
         key: _slot_values(values, key, path) for key in ROLLING_SLOT_KEYS
     }
-    # The builder takes the trim efficiency from F of the stock image.
     slots = tuple(
         rolling_launch.Slot(
-            integral_gain=slot_values["integral_gain"][index],
-            max_trim=slot_values["max_trim"][index],
-            floor_command=slot_values["floor_command"][index],
+            **{key: slot_values[key][index] for key in ROLLING_SLOT_KEYS}
         )
         for index in range(rolling_launch.SLOT_COUNT)
     )
@@ -435,7 +450,15 @@ def parse_profile(raw_bytes, path):
         },
     )
     if not calibration.is_valid():
-        raise BuildError(f"{path}: Rolling Launch calibration is invalid")
+        invalid = [
+            str(index + 1)
+            for index, slot in enumerate(slots)
+            if not slot.is_valid(calibration.min_rpm_native)
+        ]
+        detail = f" in map {', '.join(invalid)}" if invalid else ""
+        raise BuildError(
+            f"{path}: Rolling Launch calibration is invalid{detail}"
+        )
     configuration = calibration.to_bytes()
     if rolling_launch.Calibration.from_bytes(configuration) != calibration:
         raise BuildError(
@@ -544,7 +567,9 @@ def _component_ranges(map_layout, launch_layout, telemetry_layout=None):
         + (
             ()
             if launch_layout is None
+            # The builder also writes the efficiency table derived from F.
             else rolling_launch_compose.composition_write_ranges(launch_layout)
+            + (launch_layout.efficiency,)
         )
         + can_telemetry_compose.composition_write_ranges(telemetry_layout)
     )
@@ -696,13 +721,11 @@ def build_image(
         or not profile.telemetry.is_valid()
     ):
         raise BuildError("profile CAN telemetry configuration is invalid")
-    if target.rolling_layout is not None:
-        profile = replace(
-            profile,
-            calibration=resolve_trim_efficiency(profile.calibration, source),
-        )
-        if not profile.calibration.is_valid():
-            raise BuildError("Rolling Launch calibration is invalid")
+    if (
+        target.rolling_layout is not None
+        and not profile.calibration.is_valid()
+    ):
+        raise BuildError("Rolling Launch calibration is invalid")
     if target.rolling_layout is None and (
         profile.calibration.mode != rolling_launch.Mode.OBSERVE
         or profile.calibration.enable_mask != 0
@@ -733,10 +756,15 @@ def build_image(
         map_stage = map_result.data
 
         launch_result = None
+        efficiency = b""
         if launch_layout is not None:
+            # A build starts from the stock image, whose F derives E; a
+            # calibration transfer derives E again from the transferred F.
+            efficiency = efficiency_table(source)
             launch_result = apply_rolling_launch.patch_image(
                 map_stage,
                 calibration=profile.calibration,
+                efficiency=efficiency,
                 map_layout=map_layout,
                 rolling_layout=launch_layout,
                 map_payloads=map_payloads,
@@ -815,30 +843,70 @@ def build_image(
         diagnostic_count=(
             0 if launch_result is None else launch_result.diagnostic_count
         ),
+        rolling_efficiency=(
+            b"" if launch_layout is None else efficiency.to_bytes()
+        ),
     )
 
 
-def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>"):
-    """Compose the current runtime while preserving an existing calibration."""
+def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>", profile=None):
+    """Compose the current runtime while preserving an existing calibration.
+
+    Without ``profile`` the input must carry Rolling Launch settings that the
+    current profile schema expresses. A ``profile`` states the Rolling Launch
+    settings explicitly, as the settings of a historical endpoint have no
+    current form; the CAN telemetry settings always come from the input."""
     from patches import apply_calibration, extract_calibration, runtime_endpoints
 
     source = bytes(source)
+    explicit = profile is not None
     try:
         extraction = extract_calibration.extract(source, rom=rom, source_name=source_name)
-        if extraction.unexpressed or extraction.rolling is None:
-            raise BuildError("upgrade requires an existing runtime with expressible Rolling Launch settings")
         selected = extraction.calibration.rom
+        states = dict(extraction.calibration.source)
+        if states["map_switching"] == extract_calibration.ABSENT:
+            raise BuildError(
+                "upgrade requires an existing runtime; build the stock image "
+                "and apply its calibration instead"
+            )
+        if not explicit:
+            if extraction.unexpressed or extraction.rolling is None:
+                endpoint = states["rolling_launch"]
+                raise BuildError(
+                    f"Rolling Launch settings of endpoint {endpoint!r} have no "
+                    f"profile schema {PROFILE_SCHEMA_VERSION} form; upgrade "
+                    "with an explicit profile or with Rolling Launch disabled"
+                )
+            calibration = replace(
+                extraction.rolling,
+                mode=rolling_launch.Mode(extraction.rolling.mode),
+                options=rolling_launch.Option(extraction.rolling.options),
+            )
+            name, scope, origin, digest = (
+                "Preserved input settings", selected, source_name, None
+            )
+        else:
+            if not isinstance(profile, Profile):
+                raise BuildError("profile must be a build_rom.Profile")
+            calibration = profile.calibration
+            # The build refuses a profile of another ROM scope.
+            name, scope, origin, digest = (
+                profile.name, profile.rom, profile.source, profile.sha256
+            )
         target = runtime_targets.load_runtime_target(selected)
-        profile = Profile(name="Preserved input settings", rom=selected,
-                          calibration=replace(extraction.rolling,
-                              mode=rolling_launch.Mode(extraction.rolling.mode),
-                              options=rolling_launch.Option(extraction.rolling.options)),
+        profile = Profile(name=name, rom=scope, calibration=calibration,
                           telemetry=extraction.telemetry or can_telemetry.default_configuration(),
-                          source=source_name, sha256=None)
+                          source=origin, sha256=digest)
         fresh = build_image(target.stock_image.data, rom=selected, profile=profile,
                             source_name=f"{selected} stock")
-        application = apply_calibration.apply(fresh.data, extraction.calibration)
-        if any(state != "matched" for _, state in application.settings):
+        application = apply_calibration.apply(
+            fresh.data, extraction.calibration, replace_settings=explicit
+        )
+        if any(
+            state != "matched"
+            and not (explicit and component == "rolling_launch")
+            for component, state in application.settings
+        ):
             raise BuildError("upgrade settings do not match the extracted source")
         # The fresh build replaces a historical endpoint, whose writes may lie
         # outside the current component write sets.
@@ -876,14 +944,20 @@ def _checksum_dict(values):
     return {name: value for name, value in values.items()}
 
 
-def _runtime_configuration_data(launch_data, telemetry_data, mailbox_record):
+def _runtime_configuration_data(
+    launch_data, telemetry_data, mailbox_record, efficiency=b""
+):
     launch = None
     if launch_data:
         calibration = rolling_launch.Calibration.from_bytes(launch_data)
         settings = asdict(calibration) if calibration.is_valid() else None
         if settings is not None:
             settings["mode"] = rolling_launch.Mode(calibration.mode).name
-        launch = {"configuration_hex": launch_data.hex(), "settings": settings}
+        launch = {
+            "configuration_hex": launch_data.hex(),
+            "efficiency_hex": efficiency.hex(),
+            "settings": settings,
+        }
     telemetry = None
     if telemetry_data:
         telemetry = {
@@ -945,6 +1019,7 @@ def manifest_data(result, input_path, output_path):
                 result.configuration,
                 result.telemetry_configuration,
                 result.telemetry_mailbox_record,
+                result.rolling_efficiency,
             ),
         },
         "audit": {
@@ -1032,16 +1107,22 @@ def main(argv=None):
         help="build and verify in memory without writing artifacts",
     )
     parser.add_argument("--upgrade", action="store_true",
-                        help="preserve calibration and runtime settings from a registered existing image")
+                        help="preserve calibration and runtime settings from a registered existing image; "
+                             "--profile replaces its Rolling Launch settings")
+    parser.add_argument("--disable-rolling-launch", action="store_true",
+                        help="with --upgrade, build the built-in observe profile with every map disabled")
     args = parser.parse_args(argv)
+    if args.disable_rolling_launch and (not args.upgrade or args.profile):
+        parser.error("--disable-rolling-launch takes --upgrade and no --profile")
 
     try:
         source = args.input.read_bytes()
         profile = load_profile(args.profile) if args.profile else None
+        if args.disable_rolling_launch:
+            selected, _detection = select_rom(source, args.rom)
+            profile = builtin_profile(_series_context(selected).key)
         if args.upgrade:
-            if profile is not None:
-                raise BuildError("--upgrade preserves input settings and takes no --profile")
-            result = upgrade_image(source, rom=args.rom, source_name=str(args.input))
+            result = upgrade_image(source, rom=args.rom, source_name=str(args.input), profile=profile)
         else:
             result = build_image(source, rom=args.rom, profile=profile, source_name=str(args.input))
     except (OSError, BuildError) as error:

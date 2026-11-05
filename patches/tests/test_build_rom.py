@@ -46,19 +46,22 @@ def profile_text(*, telemetry=None, **overrides):
         "window_top": "20",
         "u_rate_limit": "50",
         "integral_gain": "3",
+        "launch_rpm_native": "400",
+        "launch_speed_threshold": "50",
+        "launch_soft_width_native": "16",
         "integrator_limit": "500",
         "abort_above": "150",
         "abort_below": "100",
-        "rpm_ceiling_offset_native": "80",
-        "rpm_ceiling_hysteresis_native": "8",
         "run_timeout_ticks": "781",
         "rearm_ticks": "98",
         "speed_frame_age_limit": "10",
     }
     values.update(overrides)
-    body = "\n".join(f"{key} = {value}" for key, value in values.items())
+    body = "\n".join(
+        f"{key} = {value}" for key, value in values.items() if value is not None
+    )
     result = (
-        "schema_version = 3\n"
+        "schema_version = 4\n"
         'rom = "JK08A"\n'
         'name = "hold-test"\n\n'
         "[rolling_launch]\n"
@@ -69,6 +72,171 @@ def profile_text(*, telemetry=None, **overrides):
             f"{key} = {value}" for key, value in telemetry.items()
         ) + "\n"
     return result
+
+
+def parse(text):
+    return build_rom.parse_profile(text.encode("utf-8"), "profile.toml")
+
+
+def hold_slot(**fields):
+    values = dict(
+        integral_gain=3,
+        launch_rpm_native=400,
+        launch_speed_threshold=50,
+        launch_soft_width_native=16,
+    )
+    values.update(fields)
+    return rolling_launch.Slot(**values)
+
+
+class ProfileSchemaTest(unittest.TestCase):
+    """Profile schema 4 and the derived efficiency table, without a build."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.stock = STOCK.read_bytes()
+
+    def test_slot_keys_take_scalars_or_per_map_values(self):
+        profile = parse(profile_text(
+            launch_rpm_native="[400, 480, 560, 640, 720]",
+            launch_speed_threshold="[50, 0x7FFF, 1, 65535, 50]",
+            launch_soft_width_native="[0, 16, 32, 0, 559]",
+            integral_gain="[0, 2, 4, 2, 0]",
+            max_trim_rpm="[0, 10, 20, 30, 40]",
+            max_trim_speed="[40, 0, 7, 20, 0]",
+            floor_command="[120, 110, 0, 120, 60]",
+        ))
+        slots = profile.calibration.slots
+        self.assertEqual(
+            [slot.launch_rpm_native for slot in slots], [400, 480, 560, 640, 720]
+        )
+        self.assertEqual(
+            [slot.launch_speed_threshold for slot in slots],
+            [50, 0x7FFF, 1, 65535, 50],
+        )
+        self.assertEqual(
+            [slot.launch_soft_width_native for slot in slots], [0, 16, 32, 0, 559]
+        )
+        self.assertEqual(
+            [slot.max_trim_rpm for slot in slots], [0, 10, 20, 30, 40]
+        )
+        self.assertEqual(
+            [slot.max_trim_speed for slot in slots], [40, 0, 7, 20, 0]
+        )
+        self.assertEqual(
+            [slot.floor_command for slot in slots], [120, 110, 0, 120, 60]
+        )
+        self.assertEqual({slot.reserved_05 for slot in slots}, {0})
+        text = build_rom.profile_text("slots", "JK08A", profile.calibration)
+        self.assertIn("launch_soft_width_native = [0, 16, 32, 0, 559]", text)
+        self.assertIn("max_trim_rpm = [0, 10, 20, 30, 40]", text)
+        self.assertIn("max_trim_speed = [40, 0, 7, 20, 0]", text)
+        self.assertNotIn("max_trim =", text)
+        self.assertEqual(parse(text).calibration, profile.calibration)
+
+    def test_optional_trims_and_floor_default_to_zero(self):
+        profile = parse(profile_text())
+        self.assertEqual(
+            profile.calibration.slots, (hold_slot(),) * rolling_launch.SLOT_COUNT
+        )
+        for key in ("launch_rpm_native", "launch_speed_threshold",
+                    "launch_soft_width_native", "integral_gain"):
+            with self.subTest(missing=key):
+                with self.assertRaisesRegex(build_rom.BuildError, "fields differ"):
+                    parse(profile_text(**{key: None}))
+
+    def test_ambiguous_retired_and_old_schema_keys_are_refused(self):
+        with self.assertRaisesRegex(build_rom.BuildError, "max_trim is ambiguous"):
+            parse(profile_text(max_trim="20"))
+        for key in ("rpm_ceiling_offset_native", "rpm_ceiling_hysteresis_native",
+                    "trim_efficiency", "reserved_05"):
+            with self.subTest(key=key):
+                with self.assertRaisesRegex(build_rom.BuildError, "fields differ"):
+                    parse(profile_text(**{key: "8"}))
+        old = profile_text().replace("schema_version = 4", "schema_version = 3")
+        with self.assertRaisesRegex(
+            build_rom.BuildError, "unsupported profile schema 3"
+        ):
+            parse(old)
+
+    def test_invalid_slot_values_name_the_map(self):
+        cases = {
+            # The launch RPM must lie above the minimum engine speed.
+            "launch_rpm_native": ("[400, 160, 400, 400, 400]", "map 2"),
+            # The soft-width zone must stay above the minimum engine speed.
+            "launch_soft_width_native": ("[0, 0, 240, 0, 0]", "map 3"),
+            "launch_speed_threshold": ("[50, 50, 50, 0, 50]", "map 4"),
+            "floor_command": ("[120, 120, 120, 120, 121]", "map 5"),
+            "max_trim_rpm": ("[41, 0, 0, 0, 0]", "map 1"),
+            "max_trim_speed": ("[0, 41, 0, 0, 0]", "map 2"),
+        }
+        for key, (value, maps) in cases.items():
+            with self.subTest(key=key):
+                with self.assertRaisesRegex(
+                    build_rom.BuildError, f"calibration is invalid in {maps}"
+                ):
+                    parse(profile_text(**{key: value}))
+        for value in ("[1, 2]", "true", "[400, 400, 400, 400, 400.0]"):
+            with self.subTest(value=value):
+                with self.assertRaises(build_rom.BuildError):
+                    parse(profile_text(launch_rpm_native=value))
+
+    def test_builtin_profile_is_the_disabled_observe_record_of_every_family(self):
+        for rom in (build_rom.ROM_SERIES, *(
+            runtime_targets.load_runtime_target(item).family
+            for item in runtime_targets.RELOCATED_ROMS
+        )):
+            with self.subTest(rom=rom):
+                profile = build_rom.builtin_profile(rom)
+                self.assertEqual(profile.name, build_rom.OBSERVE_PROFILE_NAME)
+                self.assertEqual(profile.calibration, rolling_launch.Calibration())
+                self.assertTrue(profile.calibration.is_valid())
+                self.assertEqual(profile.calibration.enable_mask, 0)
+                self.assertEqual(
+                    profile.calibration.mode, rolling_launch.Mode.OBSERVE
+                )
+
+    def test_efficiency_table_derives_from_the_f_curve_of_the_image(self):
+        axis = self.stock[
+            build_rom.TRIM_AXIS_ADDRESS :
+            build_rom.TRIM_AXIS_ADDRESS + build_rom.TRIM_POINTS
+        ]
+        values = self.stock[
+            build_rom.TRIM_TABLE_ADDRESS :
+            build_rom.TRIM_TABLE_ADDRESS + build_rom.TRIM_POINTS
+        ]
+        table = build_rom.efficiency_table(self.stock)
+        self.assertEqual(
+            table, rolling_launch.EfficiencyTable.from_curve(tuple(axis), tuple(values))
+        )
+        # F(20) = 45 on the axis; F(7) lies between F(6) = 4 and F(9) = 9.
+        self.assertEqual(table.at(0), 1000)
+        self.assertEqual(table.at(20), 824)
+        self.assertEqual(table.at(7), 980)
+
+        tuned = bytearray(self.stock)
+        index = list(axis).index(20)
+        tuned[build_rom.TRIM_TABLE_ADDRESS + index] += 1
+        self.assertEqual(build_rom.efficiency_table(tuned).at(20), 820)
+
+        layout = rolling_launch_layout.load_layout()
+        data = bytearray(self.stock)
+        written = build_rom.write_efficiency_table(data, layout, tuned)
+        span = layout.efficiency
+        self.assertEqual(written, frozenset(range(span.start, span.end)))
+        self.assertEqual(
+            bytes(data[span.start : span.end]),
+            build_rom.efficiency_table(tuned).to_bytes(),
+        )
+        self.assertEqual(
+            [offset for offset, pair in enumerate(zip(self.stock, data)) if pair[0] != pair[1]],
+            [offset for offset in sorted(written) if self.stock[offset] != data[offset]],
+        )
+
+        broken = bytearray(self.stock)
+        broken[build_rom.TRIM_AXIS_ADDRESS + 1] = 0
+        with self.assertRaisesRegex(build_rom.BuildError, "axis"):
+            build_rom.efficiency_table(broken)
 
 
 @pytest.mark.slow
@@ -281,9 +449,7 @@ class BuildRomTest(unittest.TestCase):
             with self.subTest(rom=rom):
                 profile = replace(
                     build_rom.builtin_profile(family),
-                    calibration=(
-                        build_rom.apply_rolling_launch.PROFILE_CALIBRATION
-                    ),
+                    calibration=parse(profile_text()).calibration,
                 )
                 source = self.family_images[rom].data
                 with self.assertRaisesRegex(
@@ -387,52 +553,27 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(profile.calibration.enable_mask, 0x05)
         self.assertEqual(profile.calibration.target_speed_offset, -20)
         self.assertEqual(
-            profile.calibration.slots,
-            (rolling_launch.Slot(integral_gain=3),) * rolling_launch.SLOT_COUNT,
+            profile.calibration.slots, (hold_slot(),) * rolling_launch.SLOT_COUNT
         )
         result = build_rom.build_image(self.stock, profile=profile)
         self.assertEqual(
             result.configuration, profile.calibration.to_bytes()
         )
 
-    def test_profile_slots_take_per_map_values_and_the_stock_trim_efficiency(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "profile.toml"
-            path.write_text(
-                profile_text(
-                    integral_gain="[0, 2, 4, 2, 0]",
-                    max_trim="[0, 0, 0, 20, 7]",
-                    floor_command="120",
-                ),
-                encoding="utf-8",
-            )
-            profile = build_rom.load_profile(path)
-        self.assertEqual(
-            [slot.integral_gain for slot in profile.calibration.slots],
-            [0, 2, 4, 2, 0],
-        )
+    def test_build_writes_the_record_and_the_efficiency_table_of_the_source(self):
+        profile = parse(profile_text(
+            max_trim_rpm="[0, 0, 0, 20, 7]",
+            max_trim_speed="[7, 20, 0, 0, 0]",
+            floor_command="120",
+        ))
         result = build_rom.build_image(self.stock, profile=profile)
-        stored = rolling_launch.Calibration.from_bytes(result.configuration)
-        # F(20) = 45 on the axis; F(7) lies between F(6) = 4 and F(9) = 9.
-        self.assertEqual(
-            [slot.trim_efficiency for slot in stored.slots],
-            [1000, 1000, 1000, 824, 980],
-        )
-        self.assertEqual(
-            [slot.floor_command for slot in stored.slots], [120] * 5
-        )
-        text = build_rom.profile_text("slots", "JK08A", stored)
-        self.assertIn("integral_gain = [0, 2, 4, 2, 0]", text)
-        self.assertIn("max_trim = [0, 0, 0, 20, 7]", text)
-        self.assertIn("floor_command = 120", text)
-        with self.assertRaises(build_rom.BuildError):
-            build_rom.trim_table_value(self.stock, rolling_launch.TRIM_MAX + 1)
-        for values in ({"integral_gain": "[1, 2]"}, {"max_trim": "41"}):
-            with self.subTest(values=values), tempfile.TemporaryDirectory() as directory:
-                path = Path(directory) / "profile.toml"
-                path.write_text(profile_text(**values), encoding="utf-8")
-                with self.assertRaises(build_rom.BuildError):
-                    build_rom.load_profile(path)
+        self.assertEqual(result.configuration, profile.calibration.to_bytes())
+        span = rolling_launch_layout.load_layout().efficiency
+        expected = build_rom.efficiency_table(self.stock).to_bytes()
+        self.assertEqual(result.data[span.start : span.end], expected)
+        self.assertEqual(result.rolling_efficiency, expected)
+        # The observe build derives the same table: E depends on F only.
+        self.assertEqual(self.base_result.rolling_efficiency, expected)
 
     def test_profile_can_enable_configurable_can_telemetry(self):
         telemetry_values = {
@@ -553,14 +694,19 @@ class BuildArtifactsTest(unittest.TestCase):
             self.assertEqual(output_path.read_bytes(), self.base_result.data)
             manifest_path = Path(f"{output_path}.manifest.json")
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            self.assertEqual(manifest["schema_version"], 4)
+            self.assertEqual(manifest["schema_version"], 5)
             self.assertEqual(manifest["series"], build_rom.ROM_SERIES)
             self.assertEqual(manifest["rom"], "JK08A")
             self.assertEqual(
                 set(manifest["input"]), {"path", "sha256", "checksums"}
             )
-            self.assertEqual(manifest["output"]["configuration"]["rolling_launch"]
-                             ["configuration_hex"], self.base_result.configuration.hex())
+            launch = manifest["output"]["configuration"]["rolling_launch"]
+            self.assertEqual(
+                launch["configuration_hex"], self.base_result.configuration.hex()
+            )
+            self.assertEqual(
+                launch["efficiency_hex"], self.base_result.rolling_efficiency.hex()
+            )
             self.assertEqual(
                 manifest["output"]["hardware_status"], "UNTESTED"
             )

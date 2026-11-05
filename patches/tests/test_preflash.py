@@ -109,7 +109,9 @@ def test_observe_or_disabled_hold_qualifies_without_a_hold_actuator(
 
 def trimmed_map_4():
     slots = (rolling_launch.Slot(integral_gain=2),) * 3 + (
-        rolling_launch.Slot(integral_gain=2, max_trim=20, floor_command=120),
+        rolling_launch.Slot(
+            integral_gain=2, max_trim_rpm=20, max_trim_speed=20, floor_command=120
+        ),
         rolling_launch.Slot(),
     )
     return built_with(
@@ -125,17 +127,33 @@ def test_trimmed_slot_qualifies_with_the_efficiency_of_the_image():
 @pytest.mark.parametrize("field", ("efficiency", "table"))
 def test_trim_efficiency_that_differs_from_the_image_is_refused(field):
     if field == "efficiency":
-        # The low byte of the efficiency word of the Map 4 slot.
-        record = target("JK08A").rolling_layout.configuration.start
-        edit = (record + rolling_launch.SLOT_OFFSET + 3 * 6 + 5, 0x01)
+        # The low byte of E[20] in the efficiency table.
+        edit = (target("JK08A").rolling_layout.efficiency.start + 2 * 20 + 1, 0x01)
     else:
         # The F point of a trim of 20 APC counts.
         edit = (build_rom.TRIM_TABLE_ADDRESS + 7, 0x01)
     data = edited("JK08A", trimmed_map_4(), [edit])
-    with pytest.raises(
-        preflash.PreflashError, match="trim efficiency of map 4 differs"
-    ):
+    with pytest.raises(preflash.PreflashError, match="refresh_rolling_launch.py"):
         preflash.check_image(data, "JK08A")
+
+
+def test_efficiency_check_compares_the_whole_table_with_f():
+    data = trimmed_map_4()
+    extraction = SimpleNamespace(rolling=rolling_launch.Calibration())
+    preflash.require_trim_efficiency(data, target("JK08A"), extraction)
+    span = target("JK08A").rolling_layout.efficiency
+    for word in (0, 1, 40):
+        stale = bytearray(data)
+        stale[span.start + 2 * word + 1] ^= 0x01
+        with pytest.raises(
+            preflash.PreflashError,
+            match="trim efficiency table differs from the F table",
+        ):
+            preflash.require_trim_efficiency(bytes(stale), target("JK08A"), extraction)
+    # An image without Rolling Launch settings carries no table to compare.
+    preflash.require_trim_efficiency(
+        bytes(stale), target("JK08A"), SimpleNamespace(rolling=None)
+    )
 
 
 def test_misfire_calibration_equal_to_the_marker_is_refused():

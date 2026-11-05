@@ -142,3 +142,13 @@ def test_containing_returns_the_range_or_none():
     assert ranges.containing(first.end - 1) == first
     assert ranges.containing(map_switching_layout.COMPATIBLE_IDENTITY_START) is None
     assert ranges.containing(calibration_ranges.WINDOW_END) is None
+
+
+@pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
+def test_the_efficiency_table_is_a_builder_write_and_not_calibration(rom):
+    layout = target(rom).rolling_layout
+    ranges = calibration_ranges.load(rom)
+    table = set(range(layout.efficiency.start, layout.efficiency.end))
+    assert table <= ranges.write_offsets
+    assert table.isdisjoint(ranges.offsets())
+    assert ranges.containing(layout.efficiency.start) is None

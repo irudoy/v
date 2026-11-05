@@ -7,9 +7,9 @@ the command rebuilds that image in memory and compares every byte. Each
 configuration record that the calibration file binds must hold the extracted
 settings unless ``--replace-settings`` explicitly replaces them, so a transfer
 cannot fall back to the built-in profile unnoticed. The command writes the
-calibration elements, derives the Rolling Launch efficiency words from the
+calibration elements, derives the Rolling Launch efficiency table from the
 resulting F table, and recalculates every checksum. It requires every difference
-from the build to lie in calibration ranges, derived efficiency words or
+from the build to lie in calibration ranges, the derived efficiency table or
 checksum fields, and the output to remain a valid extraction input.
 
 One successful run creates the ROM and its SHA-256, MD5, and JSON manifest
@@ -198,18 +198,15 @@ def apply(source, calibration, *, replace_settings=False, source_name="<memory>"
     data = bytearray(source)
     for element in calibration.elements:
         data[element.address : element.end] = element.data
-    efficiency_offsets = set()
+    efficiency_offsets = frozenset()
     if target.rolling_layout is not None:
-        span = target.rolling_layout.configuration
-        rolling = rolling_launch.Calibration.from_bytes(records["rolling_launch"])
+        # The transferred F table derives the efficiency table.
         try:
-            resolved = build_rom.resolve_trim_efficiency(rolling, data).to_bytes()
+            efficiency_offsets = build_rom.write_efficiency_table(
+                data, target.rolling_layout
+            )
         except build_rom.BuildError as error:
             raise ApplicationError(str(error)) from error
-        for index in range(rolling_launch.SLOT_COUNT):
-            relative = rolling_launch.SLOT_OFFSET + index * 6 + 4
-            data[span.start + relative:span.start + relative + 2] = resolved[relative:relative + 2]
-            efficiency_offsets.update((span.start + relative, span.start + relative + 1))
     data = bytes(rom_checksums.recalculate(data, target.checksum_layout))
     try:
         output_checksums = rom_checksums.require_valid(

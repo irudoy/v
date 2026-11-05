@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Derive Rolling Launch slot efficiencies after calibration-editor changes.
+"""Derive the Rolling Launch efficiency table after calibration-editor changes.
 
-Only the derived efficiency words and checksum fields are rewritten. The
-result must pass the preflash image rebuild check; commit and CI qualification
-remain the responsibility of make preflash. The input is never overwritten.
+The input must carry a current schema 6 Rolling Launch record. The command
+rewrites the whole efficiency table from the F table of the image and the
+checksum fields, and nothing else. The result must pass the preflash image
+rebuild check; commit and CI qualification remain the responsibility of make
+preflash. The input is never overwritten.
 """
 
 from __future__ import annotations
@@ -39,15 +41,20 @@ def refresh(source):
         if target.rolling_layout is None:
             raise RefreshError(f"{rom} has no Rolling Launch configuration")
         span = target.rolling_layout.configuration
-        calibration = rolling_launch.Calibration.from_bytes(source[span.start:span.end])
-        resolved = build_rom.resolve_trim_efficiency(calibration, source)
-        if not resolved.is_valid():
-            raise RefreshError("Rolling Launch settings are invalid after deriving efficiency")
-        encoded = resolved.to_bytes()
+        record = source[span.start:span.end]
+        calibration = rolling_launch.Calibration.from_bytes(record)
+        if (
+            calibration.schema_version != rolling_launch.CONFIG_SCHEMA_VERSION
+            or not calibration.is_valid()
+            or calibration.to_bytes() != record
+        ):
+            raise RefreshError(
+                "image carries no valid current schema "
+                f"{rolling_launch.CONFIG_SCHEMA_VERSION} Rolling Launch record; "
+                "refresh normalizes current images only"
+            )
         data = bytearray(source)
-        for index in range(rolling_launch.SLOT_COUNT):
-            relative = rolling_launch.SLOT_OFFSET + index * 6 + 4
-            data[span.start + relative:span.start + relative + 2] = encoded[relative:relative + 2]
+        build_rom.write_efficiency_table(data, target.rolling_layout)
         data = bytes(rom_checksums.recalculate(data, target.checksum_layout))
         # Reject unknown payloads, partial runtimes, illegal calibration writes,
         # and an image that a stock build plus calibration cannot reproduce.

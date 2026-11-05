@@ -15,7 +15,9 @@ build profile with the Rolling Launch and CAN telemetry settings of the
 source. A source without runtime settings yields the calibration file only.
 A historical Rolling Launch record that the profile schema cannot express is
 reported with its fields; the command then writes the calibration file only
-and exits with status 3.
+and exits with status 3. The Rolling Launch efficiency table derives from F
+and is neither a setting nor calibration: the calibration carries F, and a
+build or an application derives the table again.
 """
 
 from __future__ import annotations
@@ -186,13 +188,8 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         record, rolling, unexpressed = _rolling_settings(
             source, target.rolling_layout, rolling_state
         )
-        if rolling is not None:
-            # Bind logical settings in the current record format with
-            # stock-derived efficiencies, which a build of the extracted
-            # profile reproduces for a current or expressible historical
-            # record. A tuned F table travels as calibration bytes, not as a
-            # second setting.
-            record = build_rom.resolve_trim_efficiency(rolling, stock).to_bytes()
+        # A current record holds logical settings only; a historical record
+        # binds its exact bytes, which no current build reproduces.
         settings.append(("rolling_launch", sha256(record)))
     telemetry = None
     if telemetry_state != ABSENT:
@@ -241,10 +238,7 @@ def profile_bytes(extraction, name):
     )
     profile = build_rom.parse_profile(text.encode("utf-8"), name)
     telemetry = extraction.telemetry or can_telemetry.default_configuration()
-    stock = runtime_targets.load_runtime_target(extraction.calibration.rom).stock_image.data
-    expected = build_rom.resolve_trim_efficiency(extraction.rolling, stock)
-    actual = build_rom.resolve_trim_efficiency(profile.calibration, stock)
-    if actual != expected or profile.telemetry != telemetry:
+    if profile.calibration != extraction.rolling or profile.telemetry != telemetry:
         raise ExtractionError("extracted profile does not round trip")
     return text.encode("utf-8")
 

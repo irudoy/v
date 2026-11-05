@@ -137,27 +137,21 @@ def require_hold_actuator(target, extraction):
     )
 
 
-def require_trim_efficiency(data, extraction):
-    """Refuse a record whose trim efficiency differs from F of the image."""
-    calibration = extraction.rolling
-    if calibration is None:
+def require_trim_efficiency(data, target, extraction):
+    """Refuse an efficiency table that differs from F of the image."""
+    layout = target.rolling_layout
+    if extraction.rolling is None or layout is None:
         return
     try:
-        expected = build_rom.resolve_trim_efficiency(calibration, data)
+        expected = build_rom.efficiency_table(data).to_bytes()
     except build_rom.BuildError as error:
         raise PreflashError(str(error)) from error
-    maps = [
-        str(index + 1)
-        for index, (stored, derived) in enumerate(
-            zip(calibration.slots, expected.slots)
-        )
-        if stored != derived
-    ]
-    if maps:
+    span = layout.efficiency
+    if data[span.start:span.end] != expected:
         raise PreflashError(
-            "Rolling Launch trim efficiency of map "
-            f"{', '.join(maps)} differs from the F table of the image; run "
-            "uv run python patches/refresh_rolling_launch.py INPUT --output OUTPUT"
+            "Rolling Launch trim efficiency table differs from the F table of "
+            "the image; run uv run python patches/refresh_rolling_launch.py "
+            "INPUT --output OUTPUT"
         )
 
 
@@ -183,7 +177,7 @@ def check_image(data, rom):
         )
     target = runtime_targets.load_runtime_target(rom)
     require_hold_actuator(target, extraction)
-    require_trim_efficiency(data, extraction)
+    require_trim_efficiency(data, target, extraction)
     rebuilt, runtime = _rebuild(target.stock_image.data, target, extraction)
     if rebuilt != data:
         offset = next(
