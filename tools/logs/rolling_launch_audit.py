@@ -51,9 +51,10 @@ accumulators before a run they lie in (owed - 3.25, owed + 2.75].
 Configuration 5 checks the speed-input bits, the accepted CANCEL, the speed
 frame age, a speed sample in the decoded range, one target per run, the RPM
 target of the map slot, the speed target of the CANCEL capture plus the
-offset where the capture shows that edge, the RPM sample between the stock
-frames, and the shared command: the effective command is the stock command
-or the stock command with the trim, clipped by the floor. A TRC checks the
+offset where the capture shows that edge or brackets it by the snapshots
+around it, the RPM sample between the stock frames, and the shared command:
+the effective command is the stock command or the stock command with the
+trim, clipped by the floor. A TRC checks the
 speed samples against its 0x284 frames. Configuration 6 adds the release:
 the first snapshot that shows the accepted RELEASED and every inactive
 snapshot after it up to the next run or a gap have no cut fraction, and the
@@ -607,11 +608,13 @@ class HoldRun:
     than the trim of the slot. `release_cuts` counts the cut requests from
     the snapshot that shows the accepted release of the run to the next run
     or a gap, or is None without that snapshot or its counter. `veto` is the
-    dwell-start veto check of a hold-mode run. `target_checked` is None without a published target, True when the
-    target follows the map slot or the accepted CANCEL capture, and False
-    when the capture lacks that evidence. `speed_source_ticks` counts the
-    speed samples checked against the 0x284 frames of a TRC, or is None
-    without them.
+    dwell-start veto check of a hold-mode run. `target_check` is None
+    without a published target, "checked" when the target follows the map
+    slot or the speed sample of the accepted CANCEL edge, "bracketed" when
+    it lies between the speed samples of the snapshots around an edge
+    without its own, and "unchecked" when the capture lacks that evidence.
+    `speed_source_ticks` counts the speed samples checked against the 0x284
+    frames of a TRC, or is None without them.
     """
 
     start_tick: int
@@ -628,7 +631,7 @@ class HoldRun:
     input_ticks: int = 0
     release_cuts: int | None = None
     veto: VetoCheck | None = None
-    target_checked: bool | None = None
+    target_check: str | None = None
     speed_source_ticks: int | None = None
 
     @property
@@ -1325,11 +1328,33 @@ def _accepted_cancel(sample):
 
 
 def _cancel_capture(samples, start):
-    """The speed sample of the accepted CANCEL edge before the run at
-    `start`, or None when the snapshots do not show that edge and its speed.
+    """The bounds of the speed captured at the accepted CANCEL edge before
+    the run at `start`, and "checked" or "bracketed", or None.
 
     The engine pass that first accepts CANCEL in IDLE captures the speed it
-    samples, and the snapshot of that pass publishes both."""
+    samples, and the snapshot of that pass publishes both where it carries
+    the speed sample. A snapshot of that edge without it is bracketed by the
+    speed samples of the contiguous snapshots before and after it. The
+    result is None when the snapshots do not show the edge or those
+    samples."""
+    edge = _cancel_edge(samples, start)
+    if edge is None:
+        return None
+    captured = samples[edge].speed_sample
+    if captured is not None:
+        return captured, captured, "checked"
+    after = edge + 1
+    if after >= len(samples) or not _contiguous(samples, edge, after):
+        return None
+    around = (samples[edge - 1].speed_sample, samples[after].speed_sample)
+    if None in around:
+        return None
+    return min(around), max(around), "bracketed"
+
+
+def _cancel_edge(samples, start):
+    """The index of the snapshot that first shows the accepted CANCEL after
+    IDLE before the run at `start`, or None."""
     edge = start
     if _accepted_cancel(samples[edge]) is not True:
         return None
@@ -1345,7 +1370,7 @@ def _cancel_capture(samples, start):
         edge = before
     if samples[edge - 1].phase != rolling_launch.Phase.IDLE:
         return None
-    return samples[edge].speed_sample
+    return edge
 
 
 def _speed_sources(samples, start, end, calibration, timing, failures):
@@ -1493,23 +1518,26 @@ def _current_run(samples, start, end, calibration, timing=None):
         input_ticks += checked
     if len(targets) > 1:
         failures.append((samples[start].tick, "the target changes in the run"))
-    target_checked = None
+    target_check = None
     if targets:
         # The RPM target follows the map slot snapshot by snapshot above.
-        target_checked = rpm
+        target_check = "checked" if rpm else "unchecked"
         capture = (
             _cancel_capture(samples, start)
             if kind == rolling_launch.RegulatorKind.SPEED else None
         )
         if capture is not None and calibration.target_speed_offset is not None:
-            target_checked = True
+            low, high, target_check = capture
             offset = calibration.target_speed_offset
-            expected = max(0, min(capture + offset, 0xFFFF))
-            for target in sorted(targets - {expected}):
-                failures.append((
-                    samples[start].tick,
-                    f"SPEED target {target}, CANCEL capture {capture} plus offset {offset}",
-                ))
+            bounds = [max(0, min(speed + offset, 0xFFFF)) for speed in (low, high)]
+            captured = str(low) if low == high else f"{low}..{high}"
+            for target in sorted(targets):
+                if not bounds[0] <= target <= bounds[1]:
+                    failures.append((
+                        samples[start].tick,
+                        f"SPEED target {target}, CANCEL capture {captured}"
+                        f" plus offset {offset}",
+                    ))
     speed_source_ticks = _speed_sources(samples, start, end, calibration, timing, failures)
     speeds = [
         sample.speed_kmh * 10 - sample.control_error
@@ -1538,7 +1566,7 @@ def _current_run(samples, start, end, calibration, timing=None):
         input_ticks=input_ticks,
         release_cuts=release_cuts,
         veto=veto_check(samples, start, end, calibration),
-        target_checked=target_checked,
+        target_check=target_check,
         speed_source_ticks=speed_source_ticks,
     )
 
@@ -1992,7 +2020,7 @@ def main(argv: list[str] | None = None) -> int:
                 requested = f"{run.requested_cuts} owed ({low:.2f}, {high:.2f}]"
             kind = "unknown" if run.kind is None else rolling_launch.RegulatorKind(run.kind).name
             release = "n/a" if run.release_cuts is None else str(run.release_cuts)
-            target_check = {None: "n/a", False: "unchecked", True: "checked"}[run.target_checked]
+            target_check = run.target_check or "n/a"
             sources = "n/a" if run.speed_source_ticks is None else str(run.speed_source_ticks)
             print(
                 f"  ticks {run.start_tick}..{run.end_tick}"

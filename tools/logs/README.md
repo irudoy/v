@@ -581,11 +581,14 @@ snapshot, and a run keeps one kind:
   command is the stock command, or the stock command with the trim clipped
   by the floor. The speed target equals the speed sample of the snapshot
   that first shows the accepted CANCEL after `IDLE` plus the target speed
-  offset of the endpoint; a capture without that snapshot or its speed
-  sample reports the target `unchecked`. A TRC also checks every speed
-  sample against the `0x284` frames of the frame age limit and two ticks
-  before its group: the sample equals the word over ten of a frame whose
-  word is not `0xFFFF`.
+  offset of the endpoint (`selected_target=checked`). An edge snapshot of
+  group 1, which carries no speed sample, brackets the target between the
+  speed samples of the contiguous group-0 snapshots before and after it
+  plus the offset (`bracketed`). A capture without the edge, a neighbour,
+  or across a gap reports the target `unchecked`. A TRC also checks every
+  speed sample against the `0x284` frames of the frame age limit and two
+  ticks before its group: the sample equals the word over ten of a frame
+  whose word is not `0xFFFF`.
 - Configuration 6 (`rl6_release`) adds q without the ready bit and the
   release: the snapshot that shows the accepted RELEASED after a run and
   every inactive snapshot after it up to the next run or a gap publish a

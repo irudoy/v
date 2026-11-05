@@ -797,33 +797,67 @@ class CurrentRunTest(unittest.TestCase):
                 self.assertEqual(settings.target_speed_offset, target_offset)
                 (run,) = audit.audit_hold(samples, settings)
                 self.assertEqual(run.failures, ())
-                self.assertIs(run.target_checked, True)
+                self.assertEqual(run.target_check, "checked")
         samples = configure(speed_run(), *RL6_INPUTS)
         edge = active_indices(samples)[0]
         self.assertEqual(samples[edge].speed_sample, SPEEDS[0])
-        constant = [
-            replace(s, selected_target=12345) if s.selected_target is not None
-            and s.phase == model.Phase.ACTIVE else s
-            for s in samples
-        ]
-        (run,) = audit.audit_hold(constant, SPEED_SETTINGS)
-        self.assertIs(run.target_checked, True)
+        (run,) = audit.audit_hold(with_target(samples, 12345), SPEED_SETTINGS)
+        self.assertEqual(run.target_check, "checked")
         self.assertTrue(any("SPEED target 12345" in failure for _tick, failure in run.failures))
-        self.assertEqual(run_main(constant, SPEED_SETTINGS)[0], 1)
-        # The snapshot of the edge carries no speed sample in group 1.
-        shifted = configure(speed_run(), *RL6_INPUTS, offset=1)
-        self.assertIsNone(shifted[edge].speed_sample)
-        (run,) = audit.audit_hold(shifted, SPEED_SETTINGS)
-        self.assertEqual(run.failures, ())
-        self.assertIs(run.target_checked, False)
+        self.assertEqual(run_main(with_target(samples, 12345), SPEED_SETTINGS)[0], 1)
         # A run without its CANCEL edge leaves the target unchecked.
         (run,) = audit.audit_hold(samples[edge:], SPEED_SETTINGS)
-        self.assertIs(run.target_checked, False)
+        self.assertEqual(run.target_check, "unchecked")
+
+    def test_an_edge_of_group_1_brackets_the_speed_target(self):
+        # The edge snapshot carries no speed sample in group 1; the group-0
+        # snapshots around it sample SPEEDS[0] before and SPEEDS[1] after.
+        samples = configure(speed_run(), *RL6_INPUTS, offset=1)
+        edge = active_indices(samples)[0]
+        self.assertIsNone(samples[edge].speed_sample)
+        self.assertEqual(
+            (samples[edge - 1].speed_sample, samples[edge + 1].speed_sample),
+            SPEEDS[:2],
+        )
+        (run,) = audit.audit_hold(samples, SPEED_SETTINGS)
+        self.assertEqual(run.failures, ())
+        self.assertEqual(run.target_check, "bracketed")
+        for target in SPEEDS[0], (SPEEDS[0] + SPEEDS[1]) // 2, SPEEDS[1]:
+            with self.subTest(inside=target):
+                (run,) = audit.audit_hold(with_target(samples, target), SPEED_SETTINGS)
+                self.assertEqual(run.failures, ())
+                self.assertEqual(run.target_check, "bracketed")
+        for target in SPEEDS[0] - 1, SPEEDS[1] + 1:
+            with self.subTest(outside=target):
+                tampered = with_target(samples, target)
+                (run,) = audit.audit_hold(tampered, SPEED_SETTINGS)
+                self.assertEqual(run.target_check, "bracketed")
+                self.assertIn(samples[edge].tick, failed_ticks(run))
+                self.assertEqual(run_main(tampered, SPEED_SETTINGS)[0], 1)
+        # The offset shifts the bracket.
+        calibration = replace(TRIM_CALIBRATION, target_speed_offset=-15)
+        settings = current_calibration(calibration, TRIM_TABLE)
+        (run,) = audit.audit_hold(with_target(samples, SPEEDS[1] - 15), settings)
+        self.assertEqual(run.failures, ())
+        (run,) = audit.audit_hold(with_target(samples, SPEEDS[1]), settings)
+        self.assertNotEqual(run.failures, ())
+        # A missing neighbour or a gap leaves the target unchecked.
+        missing = changed(with_target(samples, 12345), edge - 1, speed_sample=None)
+        (run,) = audit.audit_hold(missing, SPEED_SETTINGS)
+        self.assertEqual(run.failures, ())
+        self.assertEqual(run.target_check, "unchecked")
+        # The gap after the edge splits the run: the edge snapshot of group 1
+        # publishes no target, and the run after the gap has no edge.
+        gap = with_target(samples, 12345)
+        del gap[edge + 1]
+        runs = audit.audit_hold(gap, SPEED_SETTINGS)
+        self.assertEqual([run.target_check for run in runs], [None, "unchecked"])
+        self.assertTrue(all(run.failures == () for run in runs))
 
     def test_an_rpm_target_off_the_map_slot_fails(self):
         samples = configure(rpm_run(), *RL6_INPUTS)
         (run,) = audit.audit_hold(samples, RPM_SETTINGS)
-        self.assertIs(run.target_checked, True)
+        self.assertEqual(run.target_check, "checked")
         tampered = [
             replace(s, selected_target=RPM_SLOT.launch_rpm_native + 5)
             if s.selected_target is not None and s.phase == model.Phase.ACTIVE else s
@@ -890,6 +924,16 @@ class CurrentRunTest(unittest.TestCase):
 
 def active_indices(samples):
     return [i for i, s in enumerate(samples) if s.phase == model.Phase.ACTIVE]
+
+
+def with_target(samples, target):
+    """The snapshots with one target in every ACTIVE snapshot that carries
+    it."""
+    return [
+        replace(s, selected_target=target)
+        if s.selected_target is not None and s.phase == model.Phase.ACTIVE else s
+        for s in samples
+    ]
 
 
 def run_main(samples, calibration):
