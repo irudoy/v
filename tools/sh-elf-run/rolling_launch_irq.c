@@ -52,7 +52,7 @@ extern void irq_rolling_handler(void);
 void irq_rolling_publish(void);
 
 volatile uint32_t irq_vectors[256] __attribute__((aligned(1024)));
-volatile uint32_t irq_rolling_returned;
+volatile uint32_t irq_rolling_returned, irq_rolling_frame;
 static volatile uint32_t irq_hits, irq_r4, irq_r5, irq_sr, irq_saved;
 static uint8_t seen[RL_STATE_SIZE + RL_EXTENSION_SIZE];
 static uint8_t published[RL_STATE_SIZE + RL_EXTENSION_SIZE];
@@ -162,7 +162,7 @@ static int run_scenario(const struct irq_scenario *scenario)
     load_inputs(&scenario->in);
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
     irq_hits = irq_r4 = irq_r5 = irq_sr = irq_saved = 0;
-    irq_rolling_returned = 0;
+    irq_rolling_returned = irq_rolling_frame = 0;
     for (index = 0; index < sizeof(seen); ++index)
         seen[index] = published[index] = 0;
     for (index = 1; index < 15U; ++index)
@@ -178,9 +178,10 @@ static int run_scenario(const struct irq_scenario *scenario)
         if (regs[index] != distinct(index))
             preserved = 0;
     read_records(final);
-    printf("VQ_SH_ELF_ROLLING_IRQ case=%s hits=%lu returned=%08lx preserved=%d sp=%d gbr=%d "
-           "sr=%08lx irq_preserved=%lu irq_r4=%08lx irq_r5=%08lx irq_sr=%08lx",
+    printf("VQ_SH_ELF_ROLLING_IRQ case=%s hits=%lu returned=%08lx frame=%08lx preserved=%d "
+           "sp=%d gbr=%d sr=%08lx irq_preserved=%lu irq_r4=%08lx irq_r5=%08lx irq_sr=%08lx",
            scenario->name, (unsigned long)irq_hits, (unsigned long)irq_rolling_returned,
+           (unsigned long)irq_rolling_frame,
            preserved, sp_after == sp_before, gbr_after == gbr_before,
            (unsigned long)(regs[15] & SR_I_S), (unsigned long)irq_saved,
            (unsigned long)irq_r4, (unsigned long)irq_r5, (unsigned long)(irq_sr & SR_I_S));

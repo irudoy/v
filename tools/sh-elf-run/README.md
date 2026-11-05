@@ -264,15 +264,18 @@ the points after its first instruction and after each of its loads and
 stores. One run requests vector 80 at level 8 after every store that a pass
 executes, inside and between its masked groups, and one more after the first
 of the other instructions that share each further acceptance point. The
-simulator-only handler `irq_rolling.s` saves
-`r0..r7`, PR, MACH, MACL and GBR, runs the ignition publisher at SR.I = 8 with
-the wide S and P of the scenario, restores them, stores a return marker and
-returns with RTE. The verifier derives the acceptance point from the trace:
-the first later boundary at SR.I below 8 that follows no delay slot and no
-LDC, STC, LDS or STS. An executed `ldc r0,sr` after `or #0xf0,r0` masks, and
-every other LDC to SR restores the level of the pass. The report must name
-that point and the handler, so a request inside a masked group is accepted
-only after the instruction that follows the LDC that lowers the mask.
+simulator-only handler `irq_rolling.s` records its entry SP, the address of
+the interrupt frame, saves `r0..r7`, PR, MACH, MACL and GBR, runs the
+ignition publisher at SR.I = 8 with the wide S and P of the scenario,
+restores them, stores a return marker and returns with RTE. The verifier
+derives the acceptance point from the trace: the first later boundary at
+SR.I below 8 that follows no delay slot and no LDC, STC, LDS or STS. An
+executed `ldc r0,sr` after `or #0xf0,r0` masks, and every other LDC to SR
+restores the level of the pass. The report must hold one entry row that
+names that point and the handler, so a request inside a masked group is
+accepted only after the instruction that follows the LDC that lowers the
+mask, and one return row that resumes at that point with SP eight bytes
+above the recorded frame. A PENDING or UNRETURNED report fails the run.
 
 Each injected run must return through the handler with `r8..r14`, SP, GBR
 and SR preserved, leave the output of every other pass unchanged, store the

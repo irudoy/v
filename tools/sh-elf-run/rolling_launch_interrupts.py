@@ -16,8 +16,10 @@ each other acceptance point. Each injected run then requires:
 
 - acceptance at that point, so a request inside a masked group is accepted
   only after the instruction that follows the LDC that lowers the mask;
-- a returned handler, preserved r8..r14, stack pointer, GBR and SR, and
-  unchanged observations of every other pass;
+- a report return row that resumes at the acceptance point with the frame
+  of the handler popped, the return marker of the handler, preserved
+  r8..r14, stack pointer, GBR and SR, and unchanged observations of every
+  other pass;
 - the model publication of the observed record pair, and final records of a
   publication before or after the pass;
 - in a steady ACTIVE pass, a ready publication of P at every boundary;
@@ -58,13 +60,16 @@ PREFIX = "VQ_SH_ELF_ROLLING_IRQ "
 DONE = "VQ_SH_ELF_ROLLING_IRQ status=DONE scenarios={count}"
 LINE = re.compile(
     r"VQ_SH_ELF_ROLLING_IRQ case=(?P<case>\S+) hits=(?P<hits>\d+) returned=(?P<returned>[0-9a-f]{8})"
-    r" preserved=(?P<preserved>[01]) sp=(?P<sp>[01]) gbr=(?P<gbr>[01]) sr=(?P<sr>[0-9a-f]{8})"
+    r" frame=(?P<frame>[0-9a-f]{8}) preserved=(?P<preserved>[01]) sp=(?P<sp>[01]) gbr=(?P<gbr>[01]) sr=(?P<sr>[0-9a-f]{8})"
     r" irq_preserved=(?P<irq_preserved>[01]) irq_r4=(?P<irq_r4>[0-9a-f]{8})"
     r" irq_r5=(?P<irq_r5>[0-9a-f]{8}) irq_sr=(?P<irq_sr>[0-9a-f]{8})"
     r" seen=(?P<seen>[0-9a-f]{152}) published=(?P<published>[0-9a-f]{152})"
     r" final=(?P<final>[0-9a-f]{152})")
 REPORT = re.compile(r"triggered=([0-9a-f]{8}) accepted=([0-9a-f]{8}) handler=([0-9a-f]{8})"
                     r" sr=([0-9a-f]{8})")
+RETURN = re.compile(r"returned=([0-9a-f]{8}) sp=([0-9a-f]{8})")
+# The RTE of the handler pops the SR and PC words of the interrupt frame.
+FRAME_SIZE = 8
 SPLIT = model.STATE_SIZE
 # Fields that a pass stores before the phase of its transition: the sample of
 # every pass, and the gate flags and abort reason of an IDLE pass.
@@ -214,7 +219,8 @@ def _fields(records):
 
 def check_disabled(row, scenario):
     """An uninterrupted pass leaves the model records and observes nothing."""
-    if (row["hits"] != "0" or int(row["returned"], 16) or row["preserved"] != "1"
+    if (row["hits"] != "0" or int(row["returned"], 16) or int(row["frame"], 16)
+            or row["preserved"] != "1"
             or row["sp"] != "1" or row["gbr"] != "1" or int(row["sr"], 16) & 0xF2):
         raise InterruptError(f"{scenario.name}: uninterrupted pass differs: {row}")
     expected = rolling_launch_rows.engine_pass((scenario.base, scenario.extension),
@@ -380,15 +386,23 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, in
             "VQ_SH_IRQ_LEVEL": str(LEVEL), "VQ_SH_IRQ_VECTOR": str(VECTOR),
             "VQ_SH_IRQ_REPORT": str(report)})
         lines = report.read_text(encoding="ascii").splitlines()
-        match = REPORT.fullmatch(lines[0]) if len(lines) == 1 else None
-        if match is None:
-            raise InterruptError(f"{item.pc:#010x} #{item.count}: malformed report {lines}")
+        match = REPORT.fullmatch(lines[0]) if len(lines) == 2 else None
+        returned = RETURN.fullmatch(lines[1]) if match else None
+        if returned is None:
+            raise InterruptError(f"{item.pc:#010x} #{item.count}: the report lacks one entry "
+                                 f"and one return row: {lines}")
         triggered, accepted, entered, saved_sr = (int(value, 16) for value in match.groups())
         if (triggered, accepted, entered) != (item.pc, item.accepted, handler) or saved_sr & SR_I:
             raise InterruptError(
                 f"{item.pc:#010x} #{item.count}: accepted {accepted:#010x} "
                 f"handler {entered:#010x} sr {saved_sr:#010x}, expected {item.accepted:#010x}")
         rows = parse(result.stdout, scenarios)
+        resumed, sp = (int(value, 16) for value in returned.groups())
+        frame = int(rows[item.scenario]["frame"], 16)
+        if resumed != item.accepted or sp != frame + FRAME_SIZE:
+            raise InterruptError(
+                f"{item.pc:#010x} #{item.count}: returns to {resumed:#010x} with sp {sp:#010x}, "
+                f"expected {item.accepted:#010x} and {frame + FRAME_SIZE:#010x}")
         for index, (row, scenario) in enumerate(zip(rows, scenarios)):
             if index != item.scenario:
                 if row != baseline[index]:

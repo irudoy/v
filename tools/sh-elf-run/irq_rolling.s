@@ -1,9 +1,10 @@
     ! Simulator-only interrupt handler of the Rolling Launch interrupt rows.
     !
     ! The simulator interrupt hook enters it with SR and the return PC on
-    ! the stack of the interrupted engine pass. It saves r0..r7, PR, MACH,
-    ! MACL and GBR, calls irq_rolling_publish, restores them, stores the
-    ! return marker and returns with RTE.
+    ! the stack of the interrupted engine pass. It records its entry SP, the
+    ! address of that frame, saves r0..r7, PR, MACH, MACL and GBR, calls
+    ! irq_rolling_publish, restores them, stores the return marker and
+    ! returns with RTE.
     .text
     .balign 2
     .global _irq_rolling_handler
@@ -11,6 +12,10 @@
 _irq_rolling_handler:
     mov.l r0,@-r15
     mov.l r1,@-r15
+    mov r15,r0
+    add #8,r0
+    mov.l irq_rolling_frame_address,r1
+    mov.l r0,@r1
     mov.l r2,@-r15
     mov.l r3,@-r15
     mov.l r4,@-r15
@@ -48,4 +53,6 @@ irq_rolling_returned_address:
     .long _irq_rolling_returned
 irq_rolling_returned_value:
     .long 0x52455445
+irq_rolling_frame_address:
+    .long _irq_rolling_frame
     .size _irq_rolling_handler,.-_irq_rolling_handler
