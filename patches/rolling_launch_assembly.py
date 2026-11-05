@@ -57,12 +57,31 @@ SOURCE_LABELS = {
     "ignition_adapter": "rolling_launch_ignition_adapter",
     "speed_controller": "rolling_launch_speed_controller",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
-    "fuel_cut_wrapper": "rolling_launch_fuel_cut_wrapper",
-    "rpm_ceiling": "rolling_launch_rpm_ceiling",
     "spark_cut": "rolling_launch_spark_cut",
     "slot_validator": "rolling_launch_slot_validator",
-    "trim": "rolling_launch_trim",
+    "rpm_controller": "rolling_launch_rpm_controller",
+    "rpm_fraction": "rolling_launch_rpm_fraction",
+    "control_publisher": "rolling_launch_control_publisher",
+    "ignition_publisher": "rolling_launch_ignition_publisher",
+    "actuation": "rolling_launch_actuation",
+    "state_check": "rolling_launch_state_check",
 }
+# Literals that name an entry or a table of another unit. Each value must
+# equal the address of the label in the assembled source of that unit.
+INTERNAL_ENTRIES = (
+    ("wrappers", "rolling_launch_engine_entry", "engine", "rolling_launch_engine"),
+    ("engine", "rl_state_check_entry", "state_check", "rolling_launch_state_check"),
+    ("engine", "rl_load_views_entry", "state_check", "rolling_launch_load_views"),
+    ("engine", "rl_slot_validator_entry", "slot_validator", "rolling_launch_slot_validator"),
+    ("engine", "rl_speed_controller_entry", "speed_controller", "rolling_launch_speed_controller"),
+    ("engine", "rl_rpm_controller_entry", "rpm", "rolling_launch_rpm_controller"),
+    ("speed_controller", "rl_spd_control_publisher", "actuation", "rolling_launch_control_publisher"),
+    ("rpm", "rl_rpm_control_publisher", "actuation", "rolling_launch_control_publisher"),
+    ("actuation", "rl_act_state_check", "state_check", "rolling_launch_state_check"),
+    ("actuation", "rl_act_views", "state_check", "rolling_launch_views"),
+    ("state_check", "rl_sc_q_entry", "actuation", "rolling_launch_q"),
+    ("state_check", "rl_sc_byte_limits", "state_check", "rl_sc_byte_limit_table"),
+)
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
     r"^mov\.(?P<width>[bw])\s+@\((?P<disp>[^,]+),r\d+\),"
@@ -155,6 +174,49 @@ def _validate_16_bit_source_forms(parsed):
                 f"{parsed.path}:{statement.line_number}: immediate form "
                 "requires r0 on SH-2E"
             )
+        # GNU as relaxes an out-of-reach BT/BF into a longer sequence, which
+        # moves every later address away from the parsed layout.
+        if mnemonic in ("bt", "bf"):
+            target = parsed.labels[statement.text.split()[1]]
+            if not -256 <= target - (statement.address + 4) <= 254:
+                raise ValueError(
+                    f"{parsed.path}:{statement.line_number}: {mnemonic} "
+                    "target lies beyond the 8-bit branch reach"
+                )
+
+
+def _stores(texts):
+    return sorted(
+        text for text in texts
+        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
+        and not text.endswith(",@-r15")
+    )
+
+
+def _registers(texts):
+    registers = set()
+    for text in texts:
+        registers.update(common.REGISTER_RE.findall(text))
+    return registers
+
+
+def _writes(texts, *registers):
+    """True when an instruction other than a compare or test targets a register."""
+    targets = tuple(f",{name}" for name in registers)
+    return any(
+        text.endswith(targets) and not text.startswith(("cmp/", "tst "))
+        for text in texts
+    )
+
+
+def _region(parsed, start, end=None):
+    """Instruction texts from label start up to label end or the unit end."""
+    low = parsed.labels[start]
+    high = parsed.labels[end] if end is not None else None
+    return [
+        item.text.lower() for item in _instructions(parsed)
+        if low <= item.address and (high is None or item.address < high)
+    ]
 
 
 def _validate_wrapper_abi(parsed):
@@ -164,102 +226,176 @@ def _validate_wrapper_abi(parsed):
     if texts[7:10] != ["lds.l @r15+,pr", "rts", "nop"]:
         raise ValueError("periodic wrapper does not restore PR")
     jsr = [index for index, text in enumerate(texts) if text == "jsr @r0"]
-    if jsr != [2, 5, 29] or any(texts[index + 1] != "nop" for index in jsr):
+    if jsr != [2, 5, 38] or any(texts[index + 1] != "nop" for index in jsr):
         raise ValueError("wrapper JSR/NOP call order differs")
     if texts.count("jmp @r0") != 2:
         raise ValueError("selector arbiter needs two tail jumps")
-    if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
-        raise ValueError("startup state clear loop differs")
-    if texts.count("mov #0xb,r2") != 1:
-        raise ValueError("startup state clear size differs")
+    startup = [
+        "sts.l pr,@-r15",
+        "mov.l @(rolling_launch_state_address_startup,pc),r1",
+        "mov #0x0,r0",
+        "mov #0xb,r2",
+        "mov.l r0,@r1",
+        "add 0x4,r1",
+        "dt r2",
+        "bf rolling_launch_startup_clear_state",
+        "mov.l @(rolling_launch_extension_address_startup,pc),r1",
+        "mov #0x8,r2",
+        "mov.l r0,@r1",
+        "add 0x4,r1",
+        "dt r2",
+        "bf rolling_launch_startup_clear_extension",
+        "mov.l @(rolling_launch_default_efficiency,pc),r0",
+        "add -0x14,r1",
+        "mov.l r0,@r1",
+        "mov.l @(rolling_launch_base_startup,pc),r0",
+        "jsr @r0",
+        "nop",
+        "lds.l @r15+,pr",
+        "rts",
+        "nop",
+    ]
+    if _region(parsed, "rolling_launch_startup_wrapper") != startup:
+        raise ValueError(
+            "startup wrapper must clear the base state and the extension and "
+            "store the default efficiency before the base startup"
+        )
 
 
 def _validate_engine_abi(parsed):
     texts = _texts(parsed)
-    if texts[:4] != [
+    saves = [f"mov.l r{number},@-r15" for number in range(8, 15)]
+    prologue = [
         "sts.l pr,@-r15",
-        "mov.l @(rl_state_address,pc),r5",
+        *saves,
+        "mov.l @(rl_state_address,pc),r8",
+        "mov.l @(rl_extension_address,pc),r9",
+        "mov.l @(rl_config_address,pc),r10",
+        "mov.l @(rl_state_check_entry,pc),r0",
+        "jsr @r0",
+        "nop",
+        "bt rl_state_valid",
+        "bra rl_corrupt_state",
+        "nop",
+        "bsr rl_validate_config",
+        "nop",
+        "mov r0,r12",
+    ]
+    if texts[:len(prologue)] != prologue:
+        raise ValueError(
+            "engine must check the record and the configuration before the pass"
+        )
+    restores = [f"mov.l @r15+,r{number}" for number in range(14, 7, -1)]
+    exit_sequence = [
+        "mov r9,r7",
+        "mov.l @(rl_load_views_entry,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov.l r3,@(0xc,r9)",
+        "mov r1,r0",
+        "mov.w r0,@(0x1e,r9)",
+        *restores,
+        "lds.l @r15+,pr",
+        "rts",
+        "nop",
+    ]
+    if _region(parsed, "rl_engine_exit")[:len(exit_sequence)] != exit_sequence:
+        raise ValueError("engine exit does not store the wire views")
+    if texts.count("jsr @r0") != 4:
+        raise ValueError(
+            "engine must call the record check, the limiter commit, one "
+            "controller and the wire views"
+        )
+    # Map 1 first, then base 0x00..0x1B and 0x1E and the extension, e = 1000,
+    # and COOLDOWN with reason 16.
+    corrupt = [
+        "mov #0x0,r4",
+        "mov.l @(rl_limiter_commit,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov r8,r1",
         "mov #0x0,r0",
-        "mov.w r0,@(0x14,r5)",
-    ]:
-        raise ValueError("engine does not clear the fuel-cut request on entry")
-    if texts.count("lds.l @r15+,pr") != 2:
-        raise ValueError("engine and gate helper must each restore PR")
-    if texts.count("jsr @r0") != 2:
-        raise ValueError(
-            "engine must have one corrupt-state limiter commit and one "
-            "controller call"
-        )
-    if texts.count("stc sr,r7") or texts.count("ldc r7,sr"):
-        raise ValueError("engine writes the fuel-cut shadow")
-    if texts.count("mov #0x7,r2") != 1:
-        raise ValueError("corrupt-state clear size differs")
-    if (
-        texts.count("mov.w r0,@(0x18,r5)") != 1
-        or texts.count("mov.l r0,@(0x18,r5)") != 1
-    ):
-        raise ValueError(
-            "engine must release the ceiling latch on abort and clear the "
-            "latch and the cut fraction on activation"
-        )
-    if texts.count("mov.w r0,@(0x14,r5)") != 1 or "mov #0x3f,r0" in texts:
-        raise ValueError("engine publishes the fuel-cut request outside the controller")
-    if texts.count("mov.w r0,@(0x16,r5)") or texts.count("mov.w r0,@(0x10,r5)"):
-        raise ValueError("engine writes a controller output field")
-    validator = [
-        item.text.lower()
-        for item in _instructions(parsed)
-        if parsed.labels["rl_validate_config"]
-        <= item.address
-        < parsed.labels["rl_helper_config_address"]
+        "mov #0x7,r2",
+        "mov.l r0,@r1",
+        "add 0x4,r1",
+        "dt r2",
+        "bf rl_corrupt_clear_base",
+        "mov #0x1e,r0",
+        "mov.b r2,@(r0,r8)",
+        "mov r9,r1",
+        "mov #0x0,r0",
+        "mov #0x8,r2",
+        "mov.l r0,@r1",
+        "add 0x4,r1",
+        "dt r2",
+        "bf rl_corrupt_clear_extension",
+        "mov #0x7d,r0",
+        "shll2 r0",
+        "shll r0",
+        "mov.w r0,@(0xc,r9)",
+        "mov #0x2,r0",
+        "mov.b r0,@r8",
+        "mov #0x10,r0",
+        "mov.b r0,@(0x1,r8)",
     ]
-    speed_bound = [
-        "mov.w @(0x8,r3),r0",
-        "extu.w r0,r2",
-        "tst r2,r2",
-        "bt rl_config_speed_ordered",
-    ]
-    if not _contains(validator, speed_bound):
-        raise ValueError("configuration validation rejects a disabled minimum speed")
+    if _region(parsed, "rl_corrupt_state", "rl_engine_exit") != corrupt:
+        raise ValueError("corrupt-state recovery differs")
     slot_tail = [
-        "mov.l @(rl_helper_slot_validator,pc),r0",
+        "mov.l @(rl_slot_validator_entry,pc),r0",
         "jmp @r0",
         "nop",
     ]
     if texts.count("jmp @r0") != 1 or not _contains(texts, slot_tail):
         raise ValueError("configuration validation does not end in the slot validator")
     controller_call = [
-        "mov.l @(rl_controller_entry,pc),r0",
+        "mov r10,r4",
+        "mov r8,r5",
+        "mov r14,r0",
+        "cmp/eq 0x1,r0",
+        "mov.l @(rl_speed_controller_entry,pc),r0",
+        "bf rl_publish_controller",
+        "mov.l @(rl_rpm_controller_entry,pc),r0",
         "jsr @r0",
         "nop",
     ]
     if not _contains(texts, controller_call):
         raise ValueError("engine controller call differs")
-    age_gate = [
-        "mov.l @(rl_gate_speed_age_address,pc),r4",
-        "mov.b @r4,r2",
-        "extu.b r2,r2",
+    table_override = [
+        "mov r12,r0",
+        "tst 0x2,r0",
+        "bf rl_gate_table_valid",
+        "mov #-0x2,r0",
+        "and r0,r11",
+        "mov #0x1,r13",
     ]
-    if not _contains(texts, age_gate) or texts.count("mov #0xd,r0") != 1:
-        raise ValueError("engine speed-frame age gate differs")
+    if not _contains(texts, table_override):
+        raise ValueError("an invalid efficiency table keeps CONFIG_VALID")
+    rearm = ["mov r12,r0", "cmp/eq 0x3,r0", "bt rl_cooldown_valid"]
+    if not _contains(texts, rearm):
+        raise ValueError("COOLDOWN rearms without a valid configuration and table")
+    if any(text.startswith(("stc ", "ldc ")) for text in texts):
+        raise ValueError("engine masks interrupts outside the publishers")
+    destination = re.compile(r"@(?:\([^)]*,r[89]\)|r[189]|-r15)$")
+    if any(not destination.search(text) for text in _stores(texts)):
+        raise ValueError("engine stores outside the base state and the extension")
+    if texts.count("mov.l r0,@r1") != 2:
+        raise ValueError("engine stores through r1 outside its clear loops")
     required = {
-        "rl_idle",
-        "rl_active",
-        "rl_cooldown",
+        "rl_state_valid",
         "rl_corrupt_state",
-        "rl_evaluate_gates",
         "rl_validate_config",
-        "rl_run_controller",
-        "rl_gate_speed_frame",
-        "rl_gate_speed_window",
+        "rl_gate_inputs",
+        "rl_activate",
+        "rl_active_post",
+        "rl_publish_active",
+        "rl_abort",
+        "rl_engine_exit",
+        "rl_window",
+        "rl_gate_valid",
+        "rl_gate_fail",
     }
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
-    mask_pointer = common._long_literals(parsed).get(
-        "rl_gate_map_enable_masks"
-    )
-    if mask_pointer != parsed.labels.get("rl_gate_map_enable_mask_bytes"):
-        raise ValueError("map-enable mask literal does not point to its table")
 
 
 def _contains(texts, sequence):
@@ -293,86 +429,6 @@ def _validate_ignition_abi(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
     if not registers <= {"r0", "r1", "r2", "r3", "r4"}:
         raise ValueError("ignition adapter changes r5..r7")
-
-
-def _validate_speed_controller_abi(parsed):
-    texts = _texts(parsed)
-    if texts[:1] != ["sts.l pr,@-r15"]:
-        raise ValueError("speed controller does not save PR")
-    if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
-        raise ValueError("speed controller does not restore PR")
-    divider_call = [
-        "mov.l @(rl_spd_unsigned_divide,pc),r3",
-        "jsr @r3",
-        "nop",
-    ]
-    if texts.count("jsr @r3") != 1 or not _contains(texts, divider_call):
-        raise ValueError("speed controller divider call differs")
-    trim_call = [
-        "mov.l @(rl_spd_ceiling_entry,pc),r0",
-        "jsr @r0",
-        "nop",
-    ]
-    if texts.count("jsr @r0") != 1 or not _contains(texts, trim_call):
-        raise ValueError("speed controller trim call differs")
-    slot_gain = [
-        "mov.b @(0x4,r5),r0", "extu.b r0,r0", "mov r0,r1", "shll r1",
-        "shll2 r0", "add r1,r0", "add r4,r0", "add 0x28,r0",
-        "mov.w @r0,r0", "muls.w r0,r2",
-    ]
-    if not _contains(texts, slot_gain):
-        raise ValueError("speed controller does not read the slot gain")
-    if texts.count("mulu.w r0,r1") != 1 or texts.count("muls.w r0,r2") != 1:
-        raise ValueError("speed controller arithmetic differs")
-    stores = sorted(
-        text for text in texts
-        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
-    )
-    expected = sorted([
-        "mov.w r0,@(0x10,r5)",
-        "mov.w r0,@(0x12,r5)",
-        "mov.w r0,@(0x16,r5)",
-        "mov.w r0,@(0xe,r5)",
-        "mov.b r0,@(0x2,r5)",
-    ])
-    if stores != expected or texts.count("mov #0x3f,r0"):
-        raise ValueError("speed controller store contract differs")
-    registers = set()
-    for statement in _instructions(parsed):
-        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
-    if not registers <= allowed:
-        raise ValueError("speed controller clobbers an undeclared register")
-
-
-def _validate_rpm_ceiling_abi(parsed):
-    texts = _texts(parsed)
-    if texts[:3] != ["mov.b @(0x5,r5),r0", "cmp/eq 0x1,r0", "bf rl_ceil_release"]:
-        raise ValueError("RPM ceiling does not release the latch outside hold")
-    if texts.count("rts") != 2 or any(
-        text.startswith(("jsr", "bsr", "jmp", "sts.l pr", "lds.l"))
-        for text in texts
-    ):
-        raise ValueError("RPM ceiling must be a leaf with two returns")
-    stores = sorted(
-        text for text in texts
-        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
-    )
-    expected = sorted([
-        "mov.w r0,@(0x14,r5)",
-        "mov.w r0,@(0x18,r5)",
-        "mov.w r0,@(0x18,r5)",
-    ])
-    if stores != expected or texts.count("mov #0x3f,r0") != 1:
-        raise ValueError("RPM ceiling store contract differs")
-    if {"rl_ceil_latch", "rl_ceil_release"} - set(parsed.labels):
-        raise ValueError("RPM ceiling label set is incomplete")
-    registers = set()
-    for statement in _instructions(parsed):
-        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r7"}
-    if not registers <= allowed:
-        raise ValueError("RPM ceiling clobbers an undeclared register")
 
 
 def _validate_spark_cut_abi(parsed):
@@ -436,69 +492,6 @@ def _validate_spark_cut_abi(parsed):
         raise ValueError("spark wrapper uses an undeclared register")
 
 
-def _validate_trim_abi(parsed):
-    labels = parsed.labels
-    statements = _instructions(parsed)
-
-    def region(start, end):
-        return [
-            item.text.lower() for item in statements
-            if labels[start] <= item.address < labels[end]
-        ]
-
-    validator = region("rolling_launch_slot_validator", "rl_slot_u_one")
-    trim = region("rolling_launch_trim", "rl_trim_unsigned_divide")
-    if len(validator) + len(trim) != len(statements):
-        raise ValueError("trim unit holds code outside its regions")
-    if any(
-        text.startswith((
-            "jsr", "bsr", "jmp", "sts.l pr", "lds.l",
-            "mov.b r", "mov.w r", "mov.l r",
-        ))
-        for text in validator
-    ):
-        raise ValueError("slot validator must be a leaf without stores")
-    if validator.count("rts") != 2 or validator[-6:] != [
-        "mov #0x1,r0", "rts", "nop", "mov #0x0,r0", "rts", "nop",
-    ]:
-        raise ValueError("slot validator returns differ")
-    divider_call = [
-        "mov r7,r0",
-        "mov.l @(rl_trim_unsigned_divide,pc),r2",
-        "jsr @r2",
-        "nop",
-    ]
-    tail = [
-        "lds.l @r15+,pr",
-        "mov.l @(rl_trim_ceiling_entry,pc),r0",
-        "jmp @r0",
-        "nop",
-    ]
-    if (
-        trim[:1] != ["sts.l pr,@-r15"]
-        or trim[-4:] != tail
-        or trim.count("jsr @r2") != 1
-        or not _contains(trim, divider_call)
-        or any(text.startswith(("rts", "bsr")) for text in trim)
-    ):
-        raise ValueError("trim unit call or tail differs")
-    stores = [
-        text for text in trim
-        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
-    ]
-    if stores != ["mov.w r0,@(0x1a,r5)"]:
-        raise ValueError("trim unit store contract differs")
-    for name, texts, allowed in (
-        ("slot validator", validator, {"r0", "r1", "r2", "r3", "r4"}),
-        ("trim unit", trim, {"r0", "r1", "r2", "r4", "r5", "r7", "r15", "pr", "macl"}),
-    ):
-        registers = set()
-        for text in texts:
-            registers.update(common.REGISTER_RE.findall(text))
-        if not registers <= allowed:
-            raise ValueError(f"{name} uses an undeclared register")
-
-
 def _validate_feedback_arbiter_abi(parsed):
     texts = _texts(parsed)
     prefix = [
@@ -549,35 +542,344 @@ def _validate_feedback_arbiter_abi(parsed):
         raise ValueError("feedback arbiter clobbers an undeclared register")
 
 
-def _validate_fuel_cut_wrapper_abi(parsed):
+def _validate_speed_controller_abi(parsed):
     texts = _texts(parsed)
-    expected = [
+    if texts[:1] != ["sts.l pr,@-r15"]:
+        raise ValueError("speed controller does not save PR")
+    tail = [
+        "lds.l @r15+,pr",
+        "mov.l @(rl_spd_control_publisher,pc),r0",
+        "jmp @r0",
+        "nop",
+    ]
+    if texts[-4:] != tail or texts.count("jmp @r0") != 1:
+        raise ValueError("speed controller does not end in the control publisher")
+    divider_call = [
+        "mov.l @(rl_spd_unsigned_divide,pc),r3",
+        "jsr @r3",
+        "nop",
+    ]
+    if (
+        texts.count("jsr @r3") != 1
+        or not _contains(texts, divider_call)
+        or any(text.startswith(("jsr @r0", "bsr", "rts")) for text in texts)
+    ):
+        raise ValueError("speed controller divider call differs")
+    slot_gain = [
+        "mov.b @(0x4,r5),r0", "extu.b r0,r0", "shll2 r0", "mov r0,r1",
+        "shll r1", "add r1,r0", "add r4,r0", "add 0x28,r0",
+        "mov.w @r0,r0", "muls.w r0,r2",
+    ]
+    if not _contains(texts, slot_gain):
+        raise ValueError("speed controller does not read the slot gain")
+    if texts.count("mulu.w r0,r1") != 1 or texts.count("muls.w r0,r2") != 1:
+        raise ValueError("speed controller arithmetic differs")
+    expected = sorted([
+        "mov.w r0,@(0x10,r5)",
+        "mov.w r0,@(0x2,r7)",
+        "mov.w r0,@(0x12,r5)",
+        "mov.w r0,@(0x16,r5)",
+        "mov.w r0,@(0xe,r5)",
+        "mov.w r0,@(0x16,r7)",
+    ])
+    if _stores(texts) != expected:
+        raise ValueError("speed controller store contract differs")
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
+    if not _registers(texts) <= allowed or _writes(texts, "r4", "r5"):
+        raise ValueError("speed controller clobbers an undeclared register")
+
+
+def _validate_rpm_abi(parsed):
+    controller = _region(
+        parsed, "rolling_launch_rpm_controller", "rolling_launch_rpm_fraction"
+    )
+    fraction = _region(parsed, "rolling_launch_rpm_fraction")
+    tail = [
+        "lds.l @r15+,pr",
+        "mov.l @(rl_rpm_control_publisher,pc),r0",
+        "jmp @r0",
+        "nop",
+    ]
+    if controller[:1] != ["sts.l pr,@-r15"] or controller[-4:] != tail:
+        raise ValueError("RPM controller does not end in the control publisher")
+    width = ["add r4,r1", "add 0x28,r1", "mov.w @(0xa,r1),r0"]
+    call = [
+        "mov.l r4,@-r15",
+        "mov.l r5,@-r15",
+        "extu.w r0,r5",
+        "mov r6,r4",
+        "bsr rolling_launch_rpm_fraction",
+        "nop",
+        "mov.l @r15+,r5",
+        "mov.l @r15+,r4",
+    ]
+    if not _contains(controller, width + call):
+        raise ValueError("RPM controller fraction call differs")
+    if _stores(controller) != sorted([
+        "mov.w r0,@(0x18,r5)",
+        "mov.w r0,@(0x2,r7)",
+        "mov.w r0,@(0x16,r7)",
+    ]):
+        raise ValueError("RPM controller store contract differs")
+    divider_call = [
         "sts.l pr,@-r15",
-        "mov.l @(rl_fuel_stock_coordinator,pc),r0",
+        "mov r4,r1",
+        "neg r1,r1",
+        "mulu.w r0,r1",
+        "sts macl,r1",
+        "mov r5,r0",
+        "mov.l @(rl_rpm_unsigned_divide,pc),r2",
+        "jsr @r2",
+        "nop",
+        "lds.l @r15+,pr",
+    ]
+    if (
+        fraction[:3] != ["mov #0x0,r0", "cmp/pz r4", "bt rl_rpm_fraction_return"]
+        or fraction[-2:] != ["rts", "nop"]
+        or fraction.count("rts") != 1
+        or fraction.count("jsr @r2") != 1
+        or not _contains(fraction, divider_call)
+        or _stores(fraction)
+    ):
+        raise ValueError("RPM fraction must be a store-free divider leaf")
+    if not _registers(fraction) <= {"r0", "r1", "r2", "r4", "r5", "r15", "pr", "macl"}:
+        raise ValueError("RPM fraction uses an undeclared register")
+    if _writes(fraction, "r4", "r5"):
+        raise ValueError("RPM fraction changes its arguments")
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
+    if not _registers(controller) <= allowed:
+        raise ValueError("RPM controller clobbers an undeclared register")
+
+
+def _validate_actuation_abi(parsed):
+    control = _region(
+        parsed, "rolling_launch_control_publisher", "rolling_launch_ignition_publisher"
+    )
+    ignition = _region(
+        parsed, "rolling_launch_ignition_publisher", "rolling_launch_actuation"
+    )
+    body = _region(parsed, "rolling_launch_actuation", "rl_act_ignition_ready")
+    ready = _region(parsed, "rl_act_ignition_ready", "rolling_launch_q")
+    q = _region(parsed, "rolling_launch_q")
+    control_ready = [
+        "mov.b @r5,r0",
+        "cmp/eq 0x1,r0",
+        "bf rl_act_control_idle",
+        "mov.b @(0x5,r5),r0",
+        "cmp/eq 0x1,r0",
+        "bt rl_act_control_publish",
+        "mov #0x0,r2",
+        "bra rolling_launch_actuation",
+        "nop",
+    ]
+    if control[-len(control_ready):] != control_ready or _stores(control):
+        raise ValueError("control publisher must pass ready only in ACTIVE hold")
+    ignition_prefix = [
+        "sts.l pr,@-r15",
+        "mov.l @(rl_act_state_check,pc),r0",
         "jsr @r0",
         "nop",
-        "mov.l r0,@-r15",
-        "mov.l @(rl_fuel_state_address,pc),r1",
-        "mov.w @(0x14,r1),r0",
+        "lds.l @r15+,pr",
+        "bf rl_act_ignition_stock",
+        "mov.l @(rl_act_state_address,pc),r3",
+        "mov.w @(0x2,r3),r0",
+        "tst 0x1,r0",
+        "bt rl_act_ignition_stock",
+    ]
+    trim_bound = ["mov #0x28,r0", "cmp/hi r0,r1", "bt rl_act_ignition_stock"]
+    if (
+        ignition[:len(ignition_prefix)] != ignition_prefix
+        or not _contains(ignition, trim_bound)
+        or _stores(ignition)
+    ):
+        raise ValueError(
+            "ignition publisher must check the record, CONFIG_VALID and the "
+            "trim bound before publishing"
+        )
+    fallback = [
+        "mov.l @(rl_act_apc_mode_address,pc),r0",
+        "mov.b @r0,r0",
+        "tst 0x40,r0",
+        "bf rl_act_ignition_publish",
+    ]
+    latched = [
+        "mov #0x1e,r0",
+        "mov.b @(r0,r3),r0",
+        "cmp/hs r1,r0",
+        "bf rl_act_ignition_stock",
+        "mov #0x1,r2",
+    ]
+    stock = [
+        "extu.b r4,r6",
+        "mov r6,r0",
+        "shll8 r6",
+        "or r0,r6",
+        "mov #0x0,r1",
+        "mov #0x0,r2",
+        "bra rolling_launch_actuation",
+        "nop",
+    ]
+    if (
+        not _contains(ready, fallback)
+        or not _contains(ready, latched)
+        or ready[-len(stock):] != stock
+        or _stores(ready)
+    ):
+        raise ValueError("ignition ready or stock publication differs")
+    for name, texts in (
+        ("control publisher", control),
+        ("ignition publisher", ignition + ready),
+    ):
+        if _writes(texts, "r4", "r5"):
+            raise ValueError(f"{name} changes its arguments")
+    if (
+        body[:3] != ["mov.l r4,@-r15", "mov.l r5,@-r15", "sts.l pr,@-r15"]
+        or body[-5:] != [
+            "lds.l @r15+,pr", "mov.l @r15+,r5", "mov.l @r15+,r4", "rts", "nop",
+        ]
+    ):
+        raise ValueError("actuation body does not preserve r4, r5 and PR")
+    commit = [
+        "mov.l @(rl_act_views,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov.l @(rl_act_state_address,pc),r4",
+        "stc sr,r2",
+        "mov r2,r0",
+        "or 0xf0,r0",
+        "ldc r0,sr",
+        "mov.l r6,@(0x8,r7)",
+        "mov.l r3,@(0xc,r7)",
+        "mov r1,r0",
+        "mov.w r0,@(0x1e,r7)",
+        "mov r5,r0",
+        "mov.w r0,@(0x1a,r4)",
+        "ldc r2,sr",
+    ]
+    if not _contains(body, commit) or body.count("ldc r0,sr") != 1:
+        raise ValueError("actuation must publish with interrupts masked and q last")
+    if _stores(body) != sorted([
+        "mov.l r6,@(0x8,r7)",
+        "mov.l r3,@(0xc,r7)",
+        "mov.w r0,@(0x1e,r7)",
+        "mov.w r0,@(0x1a,r4)",
+    ]):
+        raise ValueError("actuation store contract differs")
+    if body.count("bsr rolling_launch_q") != 1:
+        raise ValueError("actuation q call differs")
+    divider_call = [
+        "mov.l @(rl_act_unsigned_divide,pc),r2",
+        "jsr @r2",
+        "nop",
+    ]
+    if (
+        q[:3] != ["mov r1,r0", "cmp/eq 0x1,r0", "bt rl_q_rpm"]
+        or q.count("jsr @r2") != 1
+        or not _contains(q, divider_call)
+        or q.count("rts") != 2
+        or _stores(q)
+        or not _registers(q) <= {"r0", "r1", "r2", "r3", "r15", "pr", "macl"}
+        or _writes(q, "r3")
+    ):
+        raise ValueError("q must be a store-free leaf of r1..r3")
+    texts = _texts(parsed)
+    if texts.count("jsr @r0") != 2 or texts.count("jmp @r0"):
+        raise ValueError("actuation calls differ")
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "sr", "macl"}
+    if not _registers(texts) <= allowed:
+        raise ValueError("actuation uses an undeclared register")
+
+
+def _validate_slot_validator_abi(parsed):
+    texts = _texts(parsed)
+    if texts[:3] != [
+        "mov.l @(rl_val_config_address,pc),r3", "tst r7,r7", "bt rl_val_table",
+    ]:
+        raise ValueError("slot validator does not skip the slots of an invalid head")
+    if texts[-3:] != ["mov r7,r0", "rts", "nop"] or texts.count("rts") != 1:
+        raise ValueError("slot validator return differs")
+    if any(
+        text.startswith(("jsr", "bsr", "jmp", "sts.l", "lds.l"))
+        for text in texts
+    ) or _stores(texts):
+        raise ValueError("slot validator must be a leaf without stores")
+    required = ["mov #0x5,r5", "mov #0x1,r7", "mov #0x28,r5", "add 0x2,r7"]
+    if any(texts.count(text) != 1 for text in required):
+        raise ValueError("slot validator slot or table bounds differ")
+    if not _registers(texts) <= {f"r{number}" for number in range(8)}:
+        raise ValueError("slot validator uses an undeclared register")
+
+
+def _validate_state_check_abi(parsed):
+    texts = _texts(parsed)
+    check = _region(
+        parsed, "rolling_launch_state_check", "rolling_launch_load_views"
+    )
+    views = _region(parsed, "rolling_launch_load_views")
+    if check[:3] != [
+        "sts.l pr,@-r15",
+        "mov.l @(rl_sc_state_address,pc),r6",
+        "mov.l @(rl_sc_extension_address,pc),r7",
+    ]:
+        raise ValueError("record check does not load the base state and the extension")
+    q_call = ["mov.l @(rl_sc_q_entry,pc),r0", "jsr @r0", "nop"]
+    compare = [
+        "bsr rolling_launch_load_views",
+        "nop",
+        "mov.l @(0xc,r7),r0",
+        "cmp/eq r0,r3",
+        "bf rl_check_fail",
+        "mov.w @(0x1e,r7),r0",
         "extu.w r0,r0",
-        "tst r0,r0",
-        "bt rl_fuel_return",
-        "mov #-0x40,r1",
-        "tst r1,r0",
-        "bf rl_fuel_return",
-        "mov.l @(rl_fuel_final_mask_address,pc),r1",
-        "mov.b @r1,r2",
-        "or r2,r0",
-        "mov.b r0,@r1",
-        "mov.l @r15+,r0",
+        "cmp/eq r0,r1",
         "lds.l @r15+,pr",
         "rts",
         "nop",
     ]
-    if texts != expected:
-        raise ValueError("fuel-cut wrapper instruction contract differs")
-    if parsed.labels.get("rl_fuel_return") != _instructions(parsed)[17].address:
-        raise ValueError("fuel-cut wrapper return label differs")
+    fail = ["mov #0x1,r0", "tst r0,r0", "lds.l @r15+,pr", "rts", "nop"]
+    if (
+        check.count("jsr @r0") != 1
+        or not _contains(check, q_call)
+        or not _contains(check, compare)
+        or check[-len(fail):] != fail
+        or check.count("rts") != 2
+        or texts.count("bsr rolling_launch_load_views") != 1
+    ):
+        raise ValueError("record check calls or returns differ")
+    loads = [
+        "mov.b @(0xa,r7),r0",
+        "extu.b r0,r1",
+        "mov.b @(0xb,r7),r0",
+        "extu.b r0,r2",
+        "mov.w @(0xc,r7),r0",
+        "extu.w r0,r3",
+    ]
+    if (
+        views[:len(loads)] != loads
+        or parsed.labels["rolling_launch_views"]
+        != parsed.labels["rolling_launch_load_views"] + 2 * len(loads)
+        or views[-2:] != ["rts", "nop"]
+        or views.count("rts") != 1
+        or any(text.startswith(("jsr", "bsr", "jmp", "sts", "lds")) for text in views)
+        or not _registers(views) <= {"r0", "r1", "r2", "r3", "r7"}
+    ):
+        raise ValueError("wire views must be a leaf of r0..r3 and the extension")
+    if _stores(texts):
+        raise ValueError("record check and wire views must not store")
+    if _writes(texts, "r4", "r5") or not _registers(texts) <= (
+        {f"r{number}" for number in range(8)} | {"r15", "pr"}
+    ):
+        raise ValueError("record check changes a preserved register")
+
+
+def _validate_internal_entries(parsed_by_unit):
+    """Check that entry literals name the labels of their target units."""
+    for unit, literal, target, label in INTERNAL_ENTRIES:
+        if unit not in parsed_by_unit or target not in parsed_by_unit:
+            continue
+        value = common._long_literals(parsed_by_unit[unit]).get(literal)
+        if value != parsed_by_unit[target].labels.get(label):
+            raise ValueError(f"{unit}: {literal} does not name {target}:{label}")
 
 
 def _expected_long_literals():
@@ -589,30 +891,31 @@ def _expected_long_literals():
             "rolling_launch_stock_ascd_host": 0x000D09D8,
             "rolling_launch_map_selector_host": 0x000D2108,
             "rolling_launch_state_address_startup": 0xFFFF5D40,
+            "rolling_launch_extension_address_startup": 0xFFFF6100,
+            "rolling_launch_default_efficiency": 0x03E803E8,
             "rolling_launch_base_startup": 0x000D22A0,
         },
         "engine": {
             "rl_state_address": 0xFFFF5D40,
-            "rl_selector_address": 0xFFFF5D00,
-            "rl_config_address": 0x000D6220,
-            "rl_rpm_address": 0xFFFF11BC,
+            "rl_extension_address": 0xFFFF6100,
+            "rl_config_address": 0x000D6320,
+            "rl_state_check_entry": 0x000D7000,
             "rl_speed_address": 0xFFFF113C,
-            "rl_limiter_commit": 0x000D3660,
+            "rl_rpm_address": 0xFFFF11BC,
+            "rl_speed_raw_address": 0xFFFF3B3D,
+            "rl_speed_age_address": 0xFFFF3B38,
+            "rl_hcan_address": 0xFFFF4195,
+            "rl_port_address": 0xFFFF4185,
             "rl_button_address": 0xFFFF2A85,
-            "rl_controller_entry": 0x000D40C0,
-            "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
-            "rl_gate_map_enable_masks": 0x000D3D48,
-            "rl_gate_config_address": 0x000D6220,
-            "rl_gate_ascd_address": 0xFFFF41AE,
-            "rl_gate_button_address": 0xFFFF2A85,
-            "rl_gate_speed_address": 0xFFFF113C,
-            "rl_gate_speed_age_address": 0xFFFF3B38,
-            "rl_gate_rpm_address": 0xFFFF11BC,
-            "rl_gate_pedal_address": 0xFFFF2672,
-            "rl_gate_coolant_address": 0xFFFF1077,
-            "rl_helper_config_address": 0x000D6220,
-            "rl_helper_slot_validator": 0x000D6268,
+            "rl_ascd_address": 0xFFFF41AE,
+            "rl_pedal_address": 0xFFFF2672,
+            "rl_coolant_address": 0xFFFF1077,
+            "rl_speed_controller_entry": 0x000D40C0,
+            "rl_rpm_controller_entry": 0x000D6400,
+            "rl_limiter_commit": 0x000D3660,
+            "rl_load_views_entry": 0x000D7172,
+            "rl_slot_validator_entry": 0x000D6680,
         },
         "ignition_adapter": {
             "rl_ign_state_address": 0xFFFF5D40,
@@ -621,26 +924,16 @@ def _expected_long_literals():
             "rl_ign_stock_consumer": 0x0002A892,
         },
         "speed_controller": {
-            "rl_spd_state_address": 0xFFFF5D40,
-            "rl_spd_config_address": 0x000D6220,
             "rl_spd_speed_address": 0xFFFF113C,
+            "rl_spd_extension_address": 0xFFFF6100,
             "rl_spd_unsigned_divide": 0x00021CE0,
-            "rl_spd_ceiling_entry": 0x000D62B8,
-            "rl_spd_fuel_cut_status": 0xFFFF2497,
+            "rl_spd_control_publisher": 0x000D6500,
         },
         "feedback_arbiter": {
             "rl_feedback_base_wrapper": 0x000D35E0,
             "rl_feedback_selector_state": 0xFFFF5D00,
             "rl_feedback_state": 0xFFFF5D40,
             "rl_feedback_status_byte": 0xFFFF3ADA,
-        },
-        "fuel_cut_wrapper": {
-            "rl_fuel_stock_coordinator": 0x0004ED88,
-            "rl_fuel_state_address": 0xFFFF5D40,
-            "rl_fuel_final_mask_address": 0xFFFF22E0,
-        },
-        "rpm_ceiling": {
-            "rl_ceil_rpm_address": 0xFFFF11BC,
         },
         "spark_cut": {
             "rl_spark_veto_address": 0xFFFF8511,
@@ -652,9 +945,30 @@ def _expected_long_literals():
             "rl_spark_cylinder_address": 0xFFFF13C9,
             "rl_spark_stock_handler": 0x0002AB24,
         },
-        "trim": {
-            "rl_trim_unsigned_divide": 0x00021CE0,
-            "rl_trim_ceiling_entry": 0x000D6068,
+        "rpm": {
+            "rl_rpm_input_address": 0xFFFF11BC,
+            "rl_rpm_extension_address": 0xFFFF6100,
+            "rl_rpm_control_publisher": 0x000D6500,
+            "rl_rpm_unsigned_divide": 0x00021CE0,
+        },
+        "actuation": {
+            "rl_act_extension_address": 0xFFFF6100,
+            "rl_act_state_address": 0xFFFF5D40,
+            "rl_act_efficiency_address": 0x000D6390,
+            "rl_act_unsigned_divide": 0x00021CE0,
+            "rl_act_state_check": 0x000D7000,
+            "rl_act_views": 0x000D717E,
+            "rl_act_apc_mode_address": 0xFFFF24C9,
+        },
+        "slot_validator": {
+            "rl_val_config_address": 0x000D6320,
+            "rl_val_efficiency_address": 0x000D6390,
+        },
+        "state_check": {
+            "rl_sc_state_address": 0xFFFF5D40,
+            "rl_sc_extension_address": 0xFFFF6100,
+            "rl_sc_byte_limits": 0x000D71D6,
+            "rl_sc_q_entry": 0x000D6618,
         },
     }
 
@@ -713,16 +1027,19 @@ def validate_assembly_sources(layout=None):
             _validate_speed_controller_abi(parsed)
         elif unit.key == "feedback_arbiter":
             _validate_feedback_arbiter_abi(parsed)
-        elif unit.key == "fuel_cut_wrapper":
-            _validate_fuel_cut_wrapper_abi(parsed)
-        elif unit.key == "rpm_ceiling":
-            _validate_rpm_ceiling_abi(parsed)
         elif unit.key == "spark_cut":
             _validate_spark_cut_abi(parsed)
-        elif unit.key == "trim":
-            _validate_trim_abi(parsed)
+        elif unit.key == "rpm":
+            _validate_rpm_abi(parsed)
+        elif unit.key == "actuation":
+            _validate_actuation_abi(parsed)
+        elif unit.key == "slot_validator":
+            _validate_slot_validator_abi(parsed)
+        elif unit.key == "state_check":
+            _validate_state_check_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
+    _validate_internal_entries(parsed_by_unit)
     return parsed_by_unit
 
 

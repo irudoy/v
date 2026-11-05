@@ -1,861 +1,879 @@
-// Fail-closed Rolling Launch state machine for exact JK08A.
+// Fail-closed schema 6 Rolling Launch state machine for exact JK08A.
 //
-// State layout at 0xFFFF5D40:
-//   +0x00 u8  phase: 0 IDLE, 1 ACTIVE, 2 COOLDOWN
-//   +0x01 u8  abort reason
-//   +0x02 u16 gate and output flags
-//   +0x04 u8  active map index snapshot
-//   +0x05 u8  active mode snapshot
-//   +0x06 u16 run ticks
-//   +0x08 u16 rearm ticks
-//   +0x0A u16 captured native RPM
-//   +0x0C u16 target vehicle speed, km/h*10
-//   +0x0E u16 torque fraction u after the rate limit, thousandths
-//   +0x10 s16 speed error against the target, km/h*10
-//   +0x12 s16 speed integrator, sixteenths of one thousandth
-//   +0x14 u16 fuel-cut request: the cylinder mask that the fuel-cut wrapper
-//             ORs into the stock coordinator result; cleared on every entry
-//   +0x16 u16 torque command before the rate limit, thousandths
-//   +0x18 u16 RPM ceiling latch: 0 released, 1 latched
-//   +0x1A u16 cut fraction c = 1000 - min(1000, 1000 * u / e) of the trim
-//             unit, thousandths; cleared at activation
-//
-// One tick is one exact periodic scheduler pass: 204800/Pphi seconds. Passive
-// target-CAN timing establishes Pphi=20 MHz and a 10.24 ms target period.
-// The default calibration enables no map slot. Modes are 0 observe and 1
-// hold. Hold latches the all-cylinder request 0x003F when RPM exceeds the
-// captured RPM plus the ceiling offset and releases it at or below that sum
-// minus the hysteresis. No mode writes the fuel-cut shadow of the selected
-// map.
+// The engine runs once per exact periodic scheduler pass, 204800/Pphi seconds.
+// It keeps the base state at 0xFFFF5D40 in r8, the extension at 0xFFFF6100
+// in r9 and the configuration at 0xD6320 in r10 and restores r8..r14 and PR.
+// The pass order follows the schema 6 model:
+//   1. A record that the model does not decode as a valid state restores
+//      map 1 through the limiter commit, clears base 0x00..0x1B, base 0x1E
+//      and the extension, and enters COOLDOWN with reason 16. The quiet and
+//      cut counters at base 0x1C/0x1D and the six accumulators remain.
+//   2. The input sample stores the RPM and speed words, the CANCEL capture,
+//      the accepted button and the frame age, and input_status:
+//      bit0 raw speed word 0xFFFF3B3D/3E is not FFFF, bit1 frame age within
+//      the limit of a valid configuration, bit2 HCAN1 initialized and PL4
+//      ready, bit3 RPM at most 32767, bit4 CANCEL capture valid.
+//   3. COOLDOWN rearms on a released button. IDLE and ACTIVE publish every
+//      satisfied gate and the first failure by priority. IDLE activates RPM
+//      below the map speed threshold and SPEED at or above it; ACTIVE keeps
+//      the latched regulator, map, mode and trim.
+//   4. Every pass ends with the wire views of the extension.
+// The validator at 0xD6680 returns bit0 for a valid configuration and bit1
+// for a valid efficiency table. The RPM controller at 0xD6400 and the speed
+// controller at 0xD40C0 receive r4=configuration and r5=base state and end in
+// the control publisher.
 
 .org 0x000D38E4
 rolling_launch_engine:
 sts.l pr,@-r15
-mov.l @(rl_state_address,pc),r5
-mov #0x0,r0
-mov.w r0,@(0x14,r5)
-mov.b @r5,r0
-cmp/eq 0x0,r0
-bt rl_dispatch_idle
-cmp/eq 0x1,r0
-bt rl_dispatch_active
-cmp/eq 0x2,r0
-bt rl_dispatch_cooldown
-bra rl_corrupt_state
-nop
-rl_dispatch_idle:
-bra rl_idle
-nop
-rl_dispatch_active:
-bra rl_active
-nop
-rl_dispatch_cooldown:
-bra rl_cooldown
-nop
-
-// IDLE structural invariants prevent a partially initialized state from
-// activating. Historical capture and controller diagnostic fields may remain.
-rl_idle:
-mov.b @(0x4,r5),r0
-mov #0x5,r1
-cmp/hs r1,r0
-bt rl_idle_corrupt
-mov.b @(0x5,r5),r0
-tst r0,r0
-bf rl_idle_corrupt
-mov.w @(0x6,r5),r0
-extu.w r0,r0
-tst r0,r0
-bf rl_idle_corrupt
-mov.w @(0x8,r5),r0
-extu.w r0,r0
-tst r0,r0
-bf rl_idle_corrupt
-bsr rl_evaluate_gates
-nop
-tst r0,r0
-bt rl_idle_activate
-bra rl_engine_return
-nop
-rl_idle_corrupt:
-bra rl_corrupt_state
-nop
-rl_idle_activate:
-
-// Capture the map, mode, native RPM, and target speed. The controller starts
-// from full torque, an empty integrator, and a released ceiling latch.
-mov.l @(rl_state_address,pc),r5
-mov.l @(rl_selector_address,pc),r4
-mov.b @r4,r0
-mov.b r0,@(0x4,r5)
-mov.l @(rl_config_address,pc),r4
-mov.b @(0x3,r4),r0
-mov.b r0,@(0x5,r5)
-mov #0x0,r0
-mov.w r0,@(0x6,r5)
-mov.w r0,@(0x8,r5)
-mov.w r0,@(0x12,r5)
-mov.l r0,@(0x18,r5)
-mov.l @(rl_rpm_address,pc),r1
-mov.w @r1,r0
-mov.w r0,@(0xA,r5)
-mov.l @(rl_speed_address,pc),r1
-mov.w @r1,r2
-extu.w r2,r2
-mov.w @(0x10,r4),r0
-add r0,r2
-cmp/pz r2
-bt rl_target_not_negative
-mov #0x0,r2
-rl_target_not_negative:
-mov #-0x1,r3
-extu.w r3,r3
-cmp/hs r2,r3
-bt rl_target_not_saturated
-mov r3,r2
-rl_target_not_saturated:
-mov r2,r0
-mov.w r0,@(0xC,r5)
-mov.w @(rl_u_one,pc),r0
-mov.w r0,@(0xE,r5)
-mov #0x1,r0
-mov.b r0,@r5
-bra rl_run_controller
-nop
-
-// ACTIVE validates the captured arbitration state, the torque fraction, and
-// the ceiling latch before checking runtime gates. Map or mode changes take priority over all
-// input-gate reasons.
-rl_active:
-mov.b @(0x4,r5),r0
-mov #0x5,r1
-cmp/hs r1,r0
-bt rl_active_corrupt
-mov.b @(0x5,r5),r0
-mov #0x2,r1
-cmp/hs r1,r0
-bt rl_active_corrupt
-mov.w @(0x8,r5),r0
-extu.w r0,r0
-tst r0,r0
-bf rl_active_corrupt
-mov.w @(0xE,r5),r0
-extu.w r0,r0
-mov.w @(rl_u_one,pc),r1
-cmp/hi r1,r0
-bt rl_active_corrupt
-mov.w @(0x18,r5),r0
-mov #0x1,r1
-cmp/hi r1,r0
-bf rl_active_state_valid
-rl_active_corrupt:
-bra rl_corrupt_state
-nop
-rl_active_state_valid:
-bsr rl_evaluate_gates
-nop
-mov.l @(rl_state_address,pc),r5
-mov.l @(rl_selector_address,pc),r4
-mov.b @r4,r2
-mov.b @(0x4,r5),r0
-cmp/eq r0,r2
-bt rl_active_check_mode
-mov #0x11,r0
-mov.b r0,@(0x1,r5)
-bra rl_abort_active
-nop
-rl_active_check_mode:
-mov.l @(rl_config_address,pc),r4
-mov.b @(0x3,r4),r0
-mov r0,r2
-mov.b @(0x5,r5),r0
-cmp/eq r0,r2
-bt rl_active_check_reason
-mov #0x12,r0
-mov.b r0,@(0x1,r5)
-bra rl_abort_active
-nop
-rl_active_check_reason:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bt rl_active_timer
-mov.l @(rl_button_address,pc),r4
-mov.b @r4,r0
-cmp/eq 0x8,r0
-bf rl_active_check_release
-mov #0xF,r0
-mov.b r0,@(0x1,r5)
-bra rl_abort_active
-nop
-rl_active_check_release:
-cmp/eq 0x20,r0
-bf rl_abort_active
-mov #0x7,r0
-mov.b r0,@(0x1,r5)
-bra rl_abort_active
-nop
-
-rl_active_timer:
-mov.w @(0x6,r5),r0
-mov r0,r2
-extu.w r2,r2
-add 0x1,r2
-extu.w r2,r2
-mov.l @(rl_config_address,pc),r4
-mov.w @(0x1E,r4),r0
-mov r0,r3
-extu.w r3,r3
-cmp/hs r3,r2
-bf rl_active_store_timer
-mov #0xE,r0
-mov.b r0,@(0x1,r5)
-mov.b @(0x2,r5),r0
-and 0xF7,r0
-mov.b r0,@(0x2,r5)
-bra rl_abort_active
-nop
-rl_active_store_timer:
-mov r2,r0
-mov.w r0,@(0x6,r5)
-rl_run_controller:
-mov.l @(rl_controller_entry,pc),r0
+mov.l r8,@-r15
+mov.l r9,@-r15
+mov.l r10,@-r15
+mov.l r11,@-r15
+mov.l r12,@-r15
+mov.l r13,@-r15
+mov.l r14,@-r15
+mov.l @(rl_state_address,pc),r8
+mov.l @(rl_extension_address,pc),r9
+mov.l @(rl_config_address,pc),r10
+mov.l @(rl_state_check_entry,pc),r0
 jsr @r0
 nop
-bra rl_engine_return
+bt rl_state_valid
+bra rl_corrupt_state
 nop
-
-// Leave ACTIVE through COOLDOWN. This tick has already cleared the request,
-// and the abort releases the ceiling latch. The controller fields remain as
-// diagnostics until the next activation.
-rl_abort_active:
-mov.l @(rl_state_address,pc),r5
-mov #0x0,r0
-mov.w r0,@(0x8,r5)
-mov.w r0,@(0x18,r5)
-mov.b @(0x2,r5),r0
-and 0x0F,r0
-mov.b r0,@(0x2,r5)
-mov #0x2,r0
-mov.b r0,@r5
-bra rl_engine_return
-nop
-
-// COOLDOWN keeps selector input blocked. Rearm advances only while every
-// calibration integrity check passes and the stable button code is released.
-rl_cooldown:
-mov.b @(0x4,r5),r0
-mov #0x5,r1
-cmp/hs r1,r0
-bt rl_corrupt_state
-mov.b @(0x5,r5),r0
-mov #0x2,r1
-cmp/hs r1,r0
-bt rl_corrupt_state
-mov.w @(0x8,r5),r0
-extu.w r0,r0
-mov.w @(rl_u16_8000,pc),r1
-extu.w r1,r1
-cmp/hs r1,r0
-bt rl_corrupt_state
+rl_state_valid:
 bsr rl_validate_config
 nop
-tst r0,r0
-bt rl_cooldown_config_invalid
-mov.l @(rl_button_address,pc),r4
-mov.b @r4,r0
-cmp/eq 0x20,r0
-bf rl_cooldown_reset_rearm
-mov.l @(rl_state_address,pc),r5
-mov.w @(0x8,r5),r0
-mov r0,r2
-extu.w r2,r2
-add 0x1,r2
-extu.w r2,r2
-mov.l @(rl_config_address,pc),r4
-mov r4,r1
-add 0x20,r1
+mov r0,r12
+
+// Input sample: r4 = speed word, r3 = button, r7 = frame age, r6 = status.
+mov.l @(rl_speed_address,pc),r1
 mov.w @r1,r0
-mov r0,r3
-extu.w r3,r3
-cmp/hs r3,r2
+mov.w r0,@(0x6,r9)
+extu.w r0,r4
+mov.l @(rl_rpm_address,pc),r1
+mov.w @r1,r0
+mov.w r0,@(0x4,r9)
+mov #0x0,r6
+cmp/pz r0
+bf rl_sample_raw
+mov #0x8,r6
+rl_sample_raw:
+// The raw word is unaligned; both bytes FF mark an invalid speed.
+mov.l @(rl_speed_raw_address,pc),r1
+mov.b @r1+,r0
+mov.b @r1,r2
+and r2,r0
+cmp/eq -0x1,r0
+bt rl_sample_age
+add 0x1,r6
+rl_sample_age:
+mov.l @(rl_speed_age_address,pc),r1
+mov.b @r1,r0
+extu.b r0,r7
+mov r12,r0
+tst 0x1,r0
+bt rl_sample_source
+mov #0x22,r0
+mov.b @(r0,r10),r0
+extu.b r0,r0
+cmp/hs r7,r0
+bf rl_sample_source
+add 0x2,r6
+rl_sample_source:
+mov.l @(rl_hcan_address,pc),r1
+mov.b @r1,r0
+tst 0x1,r0
+bt rl_sample_button
+mov.l @(rl_port_address,pc),r1
+mov.b @r1,r0
+tst 0x80,r0
+bt rl_sample_button
+add 0x4,r6
+rl_sample_button:
+// An accepted CANCEL edge in IDLE captures a usable speed once; any other
+// button code clears the capture.
+mov.l @(rl_button_address,pc),r1
+mov.b @r1,r0
+extu.b r0,r3
+cmp/eq 0x2,r0
+bf rl_sample_no_capture
+mov.b @r8,r0
+tst r0,r0
+bf rl_sample_keep_capture
+mov #0x14,r0
+mov.b @(r0,r9),r0
+cmp/eq 0x2,r0
+bt rl_sample_keep_capture
+mov r6,r0
+and 0x7,r0
+cmp/eq 0x7,r0
+bf rl_sample_no_capture
+add 0x10,r6
+mov r4,r0
+bra rl_sample_store
+nop
+rl_sample_keep_capture:
+mov.b @(0x1,r9),r0
+and 0x10,r0
+or r0,r6
+mov.w @(0x1a,r9),r0
+bra rl_sample_store
+nop
+rl_sample_no_capture:
+mov #0x0,r0
+rl_sample_store:
+mov.w r0,@(0x1a,r9)
+mov r6,r0
+mov.b r0,@(0x1,r9)
+mov r3,r0
+shll8 r0
+or r7,r0
+mov.w r0,@(0x14,r9)
+
+mov.b @r8,r0
+cmp/eq 0x2,r0
+bf rl_gate_inputs
+
+// COOLDOWN rearms only with a valid configuration and table and a released
+// button.
+mov r12,r0
+cmp/eq 0x3,r0
+bt rl_cooldown_valid
+mov #0x1,r0
+mov.b r0,@(0x1,r8)
+mov #0x0,r0
+mov.w r0,@(0x2,r8)
+bra rl_cooldown_store_rearm
+nop
+rl_cooldown_valid:
+mov r3,r0
+cmp/eq 0x20,r0
+mov #0x0,r0
+bf rl_cooldown_store_rearm
+mov.w @(0x8,r8),r0
+add 0x1,r0
+mov r0,r1
+mov #0x20,r0
+mov.w @(r0,r10),r0
+cmp/hs r0,r1
+mov r1,r0
 bf rl_cooldown_store_rearm
 mov #0x0,r0
-mov.b r0,@r5
-mov.b r0,@(0x2,r5)
-mov.b r0,@(0x3,r5)
-mov.b r0,@(0x5,r5)
-mov.w r0,@(0x6,r5)
-mov.w r0,@(0x8,r5)
-bra rl_engine_return
-nop
+mov.b r0,@r8
+mov.w r0,@(0x2,r8)
+mov.b r0,@(0x5,r8)
+mov.w r0,@(0x6,r8)
+mov.b r0,@r9
+mov #0x0,r2
+mov #0x1e,r0
+mov.b r2,@(r0,r8)
+mov #0x0,r0
 rl_cooldown_store_rearm:
-mov r2,r0
-mov.w r0,@(0x8,r5)
-bra rl_engine_return
-nop
-rl_cooldown_reset_rearm:
-mov.l @(rl_state_address,pc),r5
-mov #0x0,r0
-mov.w r0,@(0x8,r5)
-bra rl_engine_return
-nop
-rl_cooldown_config_invalid:
-mov.l @(rl_state_address,pc),r5
-mov #0x1,r0
-mov.b r0,@(0x1,r5)
-mov #0x0,r0
-mov.b r0,@(0x2,r5)
-mov.b r0,@(0x3,r5)
-mov.w r0,@(0x8,r5)
-bra rl_engine_return
+mov.w r0,@(0x8,r8)
+bra rl_engine_exit
 nop
 
-// Invalid state always restores map 1, clears all Rolling Launch RAM, and
-// enters COOLDOWN with a persistent STATE_CORRUPT reason.
+.align 4
+rl_state_address:
+.long 0xFFFF5D40
+rl_extension_address:
+.long 0xFFFF6100
+rl_config_address:
+.long 0x000D6320
+rl_state_check_entry:
+.long 0x000D7000
+rl_speed_address:
+.long 0xFFFF113C
+rl_rpm_address:
+.long 0xFFFF11BC
+rl_speed_raw_address:
+.long 0xFFFF3B3D
+rl_speed_age_address:
+.long 0xFFFF3B38
+rl_hcan_address:
+.long 0xFFFF4195
+rl_port_address:
+.long 0xFFFF4185
+rl_button_address:
+.long 0xFFFF2A85
+
+// r5 = selector map index, r6 = speed target, r14 = regulator kind. IDLE
+// derives the kind from the map threshold and the target from the CANCEL
+// capture plus the offset; ACTIVE keeps both.
+rl_gate_inputs:
+mov.l @(rl_gate_selector_address,pc),r1
+mov.b @r1,r0
+extu.b r0,r5
+mov.b @r8,r0
+tst r0,r0
+bf rl_active_kind
+mov #0x0,r14
+mov #0x0,r6
+mov r12,r0
+tst 0x1,r0
+bt rl_kind_ready
+mov.w @(0x1a,r9),r0
+extu.w r0,r6
+mov.w @(0x10,r10),r0
+add r0,r6
+cmp/pz r6
+bt rl_target_not_negative
+mov #0x0,r6
+rl_target_not_negative:
+mov #-0x1,r0
+extu.w r0,r0
+cmp/hi r0,r6
+bf rl_target_ready
+mov r0,r6
+rl_target_ready:
+mov #0x4,r0
+cmp/hi r0,r5
+bt rl_kind_ready
+mov r5,r0
+shll2 r0
+mov r0,r1
+shll r1
+add r0,r1
+add r10,r1
+add 0x28,r1
+mov.w @(0x8,r1),r0
+extu.w r0,r0
+mov #0x1,r14
+cmp/hs r0,r4
+bf rl_kind_ready
+mov #0x2,r14
+bra rl_kind_ready
+nop
+rl_active_kind:
+mov.b @r9,r0
+extu.b r0,r14
+mov.w @(0xc,r8),r0
+extu.w r0,r6
+rl_kind_ready:
+
+// Gates in model priority. r11 = flags, r13 = first failure.
+mov #0x0,r11
+mov #0x0,r13
+mov r12,r0
+tst 0x1,r0
+mov #0x1,r1
+mov #0x1,r2
+bsr rl_gate_fail_t
+nop
+mov #0x4,r0
+cmp/hi r0,r5
+mov #0x0,r1
+mov #0x2,r2
+bsr rl_gate_fail_t
+nop
+mov.b @(0x4,r10),r0
+mov r5,r1
+mov #0x4,r2
+cmp/hi r2,r1
+bt rl_gate_map_call
+tst r1,r1
+bt rl_gate_map_bit
+rl_gate_map_shift:
+shlr r0
+dt r1
+bf rl_gate_map_shift
+rl_gate_map_bit:
+tst 0x1,r0
+rl_gate_map_call:
+mov #0x2,r1
+mov #0x3,r2
+bsr rl_gate_valid_fail_t
+nop
+mov.l @(rl_gate_selector_address,pc),r7
+mov.b @(0x1,r7),r0
+mov r0,r2
+mov.b @(0x2,r7),r0
+or r0,r2
+mov.b @(0x3,r7),r0
+or r0,r2
+tst r2,r2
+mov #0x4,r1
+mov #0x4,r2
+bsr rl_gate_pass_t
+nop
+mov.l @(0x4,r7),r0
+tst r0,r0
+mov #0x8,r1
+mov #0x5,r2
+bsr rl_gate_pass_t
+nop
+mov.l @(rl_ascd_address,pc),r1
+mov.b @r1,r0
+tst 0x80,r0
+mov #0x10,r1
+mov #0x6,r2
+bsr rl_gate_pass_t
+nop
+mov r3,r0
+cmp/eq 0x2,r0
+mov #0x20,r1
+mov #0x8,r2
+bsr rl_gate_pass_t
+nop
+// Speed source ready, speed value, frame age and CANCEL capture come from
+// the sampled input_status, which the gate helper leaves in r0.
+mov.b @(0x1,r9),r0
+tst 0x4,r0
+mov #0x0,r1
+mov #0x17,r2
+bsr rl_gate_fail_t
+nop
+tst 0x1,r0
+mov #0x16,r2
+bsr rl_gate_fail_t
+nop
+tst 0x2,r0
+mov #0xd,r2
+bsr rl_gate_fail_t
+nop
+tst 0x10,r0
+mov #0x19,r2
+bsr rl_gate_fail_t
+nop
+and 0x7,r0
+cmp/eq 0x7,r0
+bf rl_gate_speed
+mov #0x4,r1
+shll8 r1
+or r1,r11
+
+// RPM regulation needs no speed range; IDLE checks the activation range and
+// ACTIVE SPEED the error window.
+rl_gate_speed:
+mov r14,r0
+cmp/eq 0x1,r0
+bf rl_gate_speed_value
+mov #0x40,r1
+or r1,r11
+bra rl_gate_rpm
+nop
+rl_gate_speed_value:
+mov.b @r8,r0
+cmp/eq 0x1,r0
+bf rl_gate_speed_range
+bsr rl_window
+nop
+bra rl_gate_rpm
+nop
+rl_gate_speed_range:
+mov.w @(0x8,r10),r0
+extu.w r0,r0
+tst r0,r0
+bt rl_gate_speed_low
+cmp/hs r0,r4
+rl_gate_speed_low:
+mov #0x40,r1
+mov #0x9,r2
+bsr rl_gate_valid_pass_t
+nop
+mov.w @(0xa,r10),r0
+extu.w r0,r0
+tst r0,r0
+bt rl_gate_speed_high
+cmp/hs r4,r0
+bt rl_gate_speed_high
+mov #-0x41,r1
+and r1,r11
+rl_gate_speed_high:
+mov #0x0,r1
+mov #0x13,r2
+bsr rl_gate_valid_pass_t
+nop
+
+rl_gate_rpm:
+mov.b @(0x1,r9),r0
+tst 0x8,r0
+mov #0x0,r1
+mov #0x18,r2
+bsr rl_gate_fail_t
+nop
+mov.w @(0x4,r9),r0
+mov r0,r7
+mov.w @(0xc,r10),r0
+cmp/ge r0,r7
+mov #0x40,r1
+shll r1
+mov #0xa,r2
+bsr rl_gate_valid_pass_t
+nop
+mov.l @(rl_pedal_address,pc),r7
+mov.w @r7,r0
+extu.w r0,r7
+mov.w @(0xe,r10),r0
+extu.w r0,r0
+cmp/hs r0,r7
+mov #0x1,r1
+shll8 r1
+mov #0xb,r2
+bsr rl_gate_valid_pass_t
+nop
+mov.l @(rl_coolant_address,pc),r7
+mov.b @r7,r0
+extu.b r0,r7
+mov.b @(0x6,r10),r0
+extu.b r0,r0
+cmp/hs r0,r7
+bf rl_gate_coolant
+mov.b @(0x7,r10),r0
+extu.b r0,r0
+cmp/hs r7,r0
+rl_gate_coolant:
+mov #0x2,r1
+shll8 r1
+mov #0xc,r2
+bsr rl_gate_valid_pass_t
+nop
+mov #0x8,r1
+shll8 r1
+mov #0x1,r2
+bsr rl_gate_valid
+nop
+// An invalid efficiency table withdraws CONFIG_VALID and reports reason 1.
+mov r12,r0
+tst 0x2,r0
+bf rl_gate_table_valid
+mov #-0x2,r0
+and r0,r11
+mov #0x1,r13
+rl_gate_table_valid:
+
+mov.b @r8,r0
+tst r0,r0
+bf rl_active_post
+
+// IDLE publishes the gates. A SPEED activation also needs the current error
+// inside the abort window.
+tst r13,r13
+bf rl_idle_store
+mov r14,r0
+cmp/eq 0x2,r0
+bf rl_idle_store
+bsr rl_window
+nop
+rl_idle_store:
+mov r11,r0
+mov.w r0,@(0x2,r8)
+mov r13,r0
+mov.b r0,@(0x1,r8)
+tst r0,r0
+bt rl_activate
+bra rl_engine_exit
+nop
+
+// Activation latches the map, mode, kind, captured RPM, target and the trim
+// of the kind. The controller starts with zero errors and integrator, q = 0,
+// ready = 0 and, in SPEED, full torque.
+rl_activate:
+mov r5,r0
+shll2 r0
+mov r0,r1
+shll r1
+add r0,r1
+add r10,r1
+add 0x28,r1
+mov #0x1,r0
+mov.b r0,@r8
+mov r5,r0
+mov.b r0,@(0x4,r8)
+mov.b @(0x3,r10),r0
+mov.b r0,@(0x5,r8)
+mov r14,r0
+mov.b r0,@r9
+mov.w @(0x4,r9),r0
+mov.w r0,@(0xa,r8)
+mov #0x0,r0
+mov.w r0,@(0x6,r8)
+mov.w r0,@(0x8,r8)
+mov.l r0,@(0x10,r8)
+mov.w r0,@(0x16,r8)
+mov.l r0,@(0x18,r8)
+mov.b r0,@(0xb,r9)
+mov r14,r0
+cmp/eq 0x1,r0
+bf rl_activate_speed
+mov.w @(0x6,r1),r0
+mov.w r0,@(0x14,r8)
+mov.w r0,@(0x1c,r9)
+mov #0x0,r0
+mov.w r0,@(0xc,r8)
+mov.w r0,@(0xe,r8)
+mov.b @(0x2,r1),r0
+bra rl_activate_trim
+nop
+rl_activate_speed:
+mov r6,r0
+mov.w r0,@(0xc,r8)
+mov.w r0,@(0x1c,r9)
+mov #0x7d,r0
+shll2 r0
+shll r0
+mov.w r0,@(0xe,r8)
+mov #0x0,r0
+mov.w r0,@(0x14,r8)
+mov.b @(0x3,r1),r0
+rl_activate_trim:
+mov r0,r2
+mov #0x1e,r0
+mov.b r2,@(r0,r8)
+bra rl_publish_active
+nop
+
+// ACTIVE: a map or mode change has priority over the gate reasons. SET
+// requests a map and RELEASED ends the hold.
+rl_active_post:
+mov.b @(0x4,r8),r0
+extu.b r0,r0
+cmp/eq r5,r0
+mov #0x11,r2
+bf rl_abort
+mov.b @(0x3,r10),r0
+mov r0,r1
+mov.b @(0x5,r8),r0
+cmp/eq r1,r0
+mov #0x12,r2
+bf rl_abort
+mov r13,r2
+tst r13,r13
+bt rl_active_timer
+mov r3,r0
+cmp/eq 0x8,r0
+bf rl_active_release
+mov #0xf,r2
+rl_active_release:
+cmp/eq 0x20,r0
+bf rl_abort
+mov #0x7,r2
+bra rl_abort
+nop
+rl_active_timer:
+mov.w @(0x6,r8),r0
+add 0x1,r0
+mov r0,r1
+mov.w @(0x1e,r10),r0
+cmp/hs r0,r1
+bf rl_active_continue
+mov #0x8,r0
+shll8 r0
+not r0,r0
+and r0,r11
+mov #0xe,r2
+bra rl_abort
+nop
+rl_active_continue:
+mov r1,r0
+mov.w r0,@(0x6,r8)
+mov #0x0,r0
+mov.b r0,@(0x1,r8)
+
+// Publish ACTIVE and HOLD, then run the latched regulator. Each controller
+// ends in the control publisher, which computes q and the wire views.
+rl_publish_active:
+mov #0x10,r0
+shll8 r0
+or r0,r11
+mov.b @(0x5,r8),r0
+cmp/eq 0x1,r0
+bf rl_publish_flags
+mov #0x40,r0
+shll8 r0
+or r0,r11
+rl_publish_flags:
+mov r11,r0
+mov.w r0,@(0x2,r8)
+mov r10,r4
+mov r8,r5
+mov r14,r0
+cmp/eq 0x1,r0
+mov.l @(rl_speed_controller_entry,pc),r0
+bf rl_publish_controller
+mov.l @(rl_rpm_controller_entry,pc),r0
+rl_publish_controller:
+jsr @r0
+nop
+bra rl_engine_exit
+nop
+
+// Leave ACTIVE through COOLDOWN with r2 as the reason: q and ready drop at
+// once and the regulator, trims and controller fields remain as diagnostics.
+rl_abort:
+mov r2,r0
+mov.b r0,@(0x1,r8)
+mov #0x2,r0
+mov.b r0,@r8
+mov r11,r0
+mov.w r0,@(0x2,r8)
+mov #0x0,r0
+mov.w r0,@(0x8,r8)
+mov.w r0,@(0x1a,r8)
+mov.b r0,@(0xb,r9)
+bra rl_engine_exit
+nop
+
 rl_corrupt_state:
 mov #0x0,r4
 mov.l @(rl_limiter_commit,pc),r0
 jsr @r0
 nop
-mov.l @(rl_state_address,pc),r5
-mov r5,r1
+mov r8,r1
 mov #0x0,r0
 mov #0x7,r2
-rl_corrupt_clear_loop:
+rl_corrupt_clear_base:
 mov.l r0,@r1
 add 0x4,r1
 dt r2
-bf rl_corrupt_clear_loop
-mov #0x2,r0
-mov.b r0,@r5
-mov #0x10,r0
-mov.b r0,@(0x1,r5)
-
-rl_engine_return:
-lds.l @r15+,pr
-rts
-nop
-
-// Core-local literal pool. SH PC-relative loads are forward-only, so each
-// independently sized code section owns the exact addresses it consumes.
-.org 0x000D3AE8
-rl_state_address:
-.long 0xFFFF5D40
-rl_selector_address:
-.long 0xFFFF5D00
-rl_config_address:
-.long 0x000D6220
-rl_rpm_address:
-.long 0xFFFF11BC
-rl_speed_address:
-.long 0xFFFF113C
-rl_limiter_commit:
-.long 0x000D3660
-rl_button_address:
-.long 0xFFFF2A85
-rl_controller_entry:
-.long 0x000D40C0
-rl_u16_8000:
-.word 0x8000
-rl_u_one:
-.word 1000
-
-// Evaluate every gate and publish all satisfied bits. The first failure is
-// retained by priority in abort_reason. r0 returns that reason. IDLE checks
-// the activation speed range; ACTIVE checks the speed-error window.
-.org 0x000D3B0C
-rl_evaluate_gates:
-sts.l pr,@-r15
-mov.l @(rl_gate_state_address,pc),r5
+bf rl_corrupt_clear_base
+mov #0x1e,r0
+mov.b r2,@(r0,r8)
+mov r9,r1
 mov #0x0,r0
-mov.b r0,@(0x1,r5)
-mov.b r0,@(0x2,r5)
-mov.b r0,@(0x3,r5)
-bsr rl_validate_config
-nop
-mov r0,r7
-tst r0,r0
-bt rl_gate_config_fail
-mov.b @(0x3,r5),r0
-or 0x01,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_map_index
-nop
-rl_gate_config_fail:
-mov #0x1,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_map_index:
-mov.l @(rl_gate_selector_address,pc),r4
-mov.b @r4,r2
-extu.b r2,r2
-mov #0x5,r1
-cmp/hs r1,r2
-bf rl_gate_map_index_valid
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_selector
-mov #0x2,r0
-mov.b r0,@(0x1,r5)
-bra rl_gate_selector
-nop
-rl_gate_map_index_valid:
-tst r7,r7
-bt rl_gate_map_disabled
-mov r2,r0
-mov.l @(rl_gate_map_enable_masks,pc),r1
-mov.b @(r0,r1),r2
-mov.l @(rl_gate_config_address,pc),r1
-mov.b @(0x4,r1),r0
-and r2,r0
-tst r0,r0
-bt rl_gate_map_disabled
-mov.b @(0x3,r5),r0
-or 0x02,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_selector
-nop
-rl_gate_map_disabled:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_selector
-mov #0x3,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_selector:
-mov.l @(rl_gate_selector_address,pc),r4
-mov.b @(0x1,r4),r0
-mov r0,r3
-mov.b @(0x2,r4),r0
-or r0,r3
-mov.b @(0x3,r4),r0
-or r3,r0
-tst r0,r0
-bf rl_gate_selector_fail
-mov.b @(0x3,r5),r0
-or 0x04,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_feedback
-nop
-rl_gate_selector_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_feedback
-mov #0x4,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_feedback:
-mov r4,r1
+mov #0x8,r2
+rl_corrupt_clear_extension:
+mov.l r0,@r1
 add 0x4,r1
-mov.l @r1,r0
-tst r0,r0
-bf rl_gate_feedback_fail
-mov.b @(0x3,r5),r0
-or 0x08,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_ascd
-nop
-rl_gate_feedback_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_ascd
-mov #0x5,r0
-mov.b r0,@(0x1,r5)
+dt r2
+bf rl_corrupt_clear_extension
+mov #0x7d,r0
+shll2 r0
+shll r0
+mov.w r0,@(0xc,r9)
+mov #0x2,r0
+mov.b r0,@r8
+mov #0x10,r0
+mov.b r0,@(0x1,r8)
 
-rl_gate_ascd:
-mov.l @(rl_gate_ascd_address,pc),r4
-mov.b @r4,r0
-tst 0x80,r0
-bf rl_gate_ascd_fail
-mov.b @(0x3,r5),r0
-or 0x10,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_button
+rl_engine_exit:
+mov r9,r7
+mov.l @(rl_load_views_entry,pc),r0
+jsr @r0
 nop
-rl_gate_ascd_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_button
-mov #0x6,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_button:
-mov.l @(rl_gate_button_address,pc),r4
-mov.b @r4,r0
-cmp/eq 0x2,r0
-bf rl_gate_button_fail
-mov.b @(0x3,r5),r0
-or 0x20,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_speed_frame
-nop
-rl_gate_button_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_speed_frame
-mov #0x8,r0
-mov.b r0,@(0x1,r5)
-
-// The stock receive age of the vehicle-speed record 13 advances once per
-// 10.24 ms tick without a processed 0x284 frame and saturates at 255.
-rl_gate_speed_frame:
-tst r7,r7
-bt rl_gate_speed_frame_fail
-mov.l @(rl_gate_speed_age_address,pc),r4
-mov.b @r4,r2
-extu.b r2,r2
-mov.l @(rl_gate_config_address,pc),r4
-mov r4,r1
-add 0x22,r1
-mov.b @r1,r0
-extu.b r0,r0
-cmp/hs r2,r0
-bf rl_gate_speed_frame_fail
-mov.b @(0x2,r5),r0
-or 0x04,r0
-mov.b r0,@(0x2,r5)
-bra rl_gate_speed
-nop
-rl_gate_speed_frame_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_speed
-mov #0xD,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_speed:
-tst r7,r7
-bt rl_gate_speed_low
-mov.l @(rl_gate_speed_address,pc),r4
-mov.w @r4,r2
-extu.w r2,r2
-mov.l @(rl_gate_config_address,pc),r4
-mov.b @r5,r0
-cmp/eq 0x1,r0
-bt rl_gate_speed_window
-// A zero activation bound disables that side of the range.
-mov.w @(0x8,r4),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_gate_speed_max
-cmp/hs r0,r2
-bf rl_gate_speed_low
-rl_gate_speed_max:
-mov.w @(0xA,r4),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_gate_speed_pass
-cmp/hs r2,r0
-bt rl_gate_speed_pass
-mov #0x13,r3
-bra rl_gate_speed_fail
-nop
-rl_gate_speed_window:
-mov.w @(0xC,r5),r0
-extu.w r0,r0
-sub r0,r2
-mov r4,r1
-add 0x1A,r1
-mov.b @r1,r0
-extu.b r0,r0
-cmp/gt r0,r2
-bf rl_gate_speed_below
-mov #0x14,r3
-bra rl_gate_speed_fail
-nop
-rl_gate_speed_below:
-mov.b @(0x1,r1),r0
-extu.b r0,r0
-neg r0,r0
-cmp/ge r0,r2
-bt rl_gate_speed_pass
-mov #0x15,r3
-bra rl_gate_speed_fail
-nop
-rl_gate_speed_low:
-mov #0x9,r3
-rl_gate_speed_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_rpm
-mov r3,r0
-mov.b r0,@(0x1,r5)
-bra rl_gate_rpm
-nop
-rl_gate_speed_pass:
-mov.b @(0x3,r5),r0
-or 0x40,r0
-mov.b r0,@(0x3,r5)
-
-rl_gate_rpm:
-tst r7,r7
-bt rl_gate_rpm_fail
-mov.l @(rl_gate_rpm_address,pc),r4
-mov.w @r4,r2
-extu.w r2,r2
-mov.l @(rl_gate_config_address,pc),r4
-mov.w @(0xC,r4),r0
-extu.w r0,r0
-cmp/hs r0,r2
-bf rl_gate_rpm_fail
-mov.b @(0x3,r5),r0
-or 0x80,r0
-mov.b r0,@(0x3,r5)
-bra rl_gate_pedal
-nop
-rl_gate_rpm_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_pedal
-mov #0xA,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_pedal:
-tst r7,r7
-bt rl_gate_pedal_fail
-mov.l @(rl_gate_pedal_address,pc),r4
-mov.w @r4,r2
-extu.w r2,r2
-mov.l @(rl_gate_config_address,pc),r4
-mov.w @(0xE,r4),r0
-extu.w r0,r0
-cmp/hs r0,r2
-bf rl_gate_pedal_fail
-mov.b @(0x2,r5),r0
-or 0x01,r0
-mov.b r0,@(0x2,r5)
-bra rl_gate_coolant
-nop
-rl_gate_pedal_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_coolant
-mov #0xB,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_coolant:
-tst r7,r7
-bt rl_gate_coolant_fail
-mov.l @(rl_gate_coolant_address,pc),r4
-mov.b @r4,r2
-extu.b r2,r2
-mov.l @(rl_gate_config_address,pc),r4
-mov.b @(0x6,r4),r0
-extu.b r0,r0
-cmp/hs r0,r2
-bf rl_gate_coolant_fail
-mov.b @(0x7,r4),r0
-extu.b r0,r0
-cmp/hs r2,r0
-bf rl_gate_coolant_fail
-mov.b @(0x2,r5),r0
-or 0x02,r0
-mov.b r0,@(0x2,r5)
-bra rl_gate_timer
-nop
-rl_gate_coolant_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
-bf rl_gate_timer
-mov #0xC,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_timer:
-tst r7,r7
-bt rl_gate_return
-mov.b @(0x2,r5),r0
-or 0x08,r0
-mov.b r0,@(0x2,r5)
-rl_gate_return:
-mov.b @(0x1,r5),r0
-extu.b r0,r0
+mov.l r3,@(0xc,r9)
+mov r1,r0
+mov.w r0,@(0x1e,r9)
+mov.l @r15+,r14
+mov.l @r15+,r13
+mov.l @r15+,r12
+mov.l @r15+,r11
+mov.l @r15+,r10
+mov.l @r15+,r9
+mov.l @r15+,r8
 lds.l @r15+,pr
 rts
 nop
 
-// Gate-local literal pool.
-.org 0x000D3D1C
-rl_gate_state_address:
-.long 0xFFFF5D40
+.align 4
 rl_gate_selector_address:
 .long 0xFFFF5D00
-rl_gate_map_enable_masks:
-.long 0x000D3D48
-rl_gate_config_address:
-.long 0x000D6220
-rl_gate_ascd_address:
+rl_ascd_address:
 .long 0xFFFF41AE
-rl_gate_button_address:
-.long 0xFFFF2A85
-rl_gate_speed_address:
-.long 0xFFFF113C
-rl_gate_speed_age_address:
-.long 0xFFFF3B38
-rl_gate_rpm_address:
-.long 0xFFFF11BC
-rl_gate_pedal_address:
+rl_pedal_address:
 .long 0xFFFF2672
-rl_gate_coolant_address:
+rl_coolant_address:
 .long 0xFFFF1077
-rl_gate_map_enable_mask_bytes:
-.byte 0x01,0x02,0x04,0x08,0x10
+rl_speed_controller_entry:
+.long 0x000D40C0
+rl_rpm_controller_entry:
+.long 0x000D6400
+rl_limiter_commit:
+.long 0x000D3660
+rl_load_views_entry:
+.long 0x000D7172
 
-// Full configuration validation is independent of current state and inputs.
-// It uses only r0..r4 so callers may retain r5..r7.
-.org 0x000D3D50
-rl_validate_config:
-mov.l @(rl_helper_config_address,pc),r3
-mov.w @r3,r0
-extu.w r0,r0
-mov.w @(rl_helper_config_magic,pc),r1
-extu.w r1,r1
-cmp/eq r1,r0
-bf rl_config_invalid
-mov.b @(0x2,r3),r0
-cmp/eq 0x5,r0
-bf rl_config_invalid
-mov.b @(0x3,r3),r0
-mov #0x2,r1
-cmp/hs r1,r0
-bt rl_config_invalid
-mov.b @(0x4,r3),r0
-and 0xE0,r0
-tst r0,r0
-bf rl_config_invalid
-mov.b @(0x5,r3),r0
-tst r0,r0
-bf rl_config_invalid
-mov.b @(0x6,r3),r0
-mov r0,r2
-extu.b r2,r2
-mov.b @(0x7,r3),r0
-extu.b r0,r0
-cmp/hs r2,r0
-bf rl_config_invalid
-// Two enabled activation speed bounds must be ordered.
-mov.w @(0x8,r3),r0
-extu.w r0,r2
-tst r2,r2
-bt rl_config_speed_ordered
-mov.w @(0xA,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_speed_ordered
-cmp/hs r2,r0
-bf rl_config_invalid
-rl_config_speed_ordered:
-mov.w @(0xC,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-// The signed target offset lies strictly inside both abort windows.
-mov r3,r4
-add 0x1A,r4
-mov.b @r4+,r0
-extu.b r0,r1
-tst r1,r1
-bt rl_config_invalid
-mov.b @r4,r0
-extu.b r0,r2
-tst r2,r2
-bt rl_config_invalid
-mov.w @(0x10,r3),r0
-add r0,r1
-cmp/pl r1
-bf rl_config_invalid
-sub r0,r2
-cmp/pl r2
-bf rl_config_invalid
-mov r3,r4
-add 0x12,r4
-mov.b @r4,r0
-tst r0,r0
-bt rl_config_invalid
-mov.w @(rl_helper_u_one,pc),r1
-mov.w @(0x14,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-cmp/hi r1,r0
-bt rl_config_invalid
-mov.w @(0x16,r3),r0
-tst r0,r0
-bf rl_config_invalid
-mov.w @(0x18,r3),r0
-extu.w r0,r0
-cmp/hi r1,r0
-bt rl_config_invalid
-mov.w @(0x1C,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-mov.w @(rl_helper_u16_8000,pc),r1
-extu.w r1,r1
-mov.w @(0x1E,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-cmp/hs r1,r0
-bt rl_config_invalid
-mov r3,r4
-add 0x20,r4
-mov.w @r4+,r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-cmp/hs r1,r0
-bt rl_config_invalid
-// The stock receive age saturates at 255, so 255 never expires.
-mov.b @r4+,r0
-extu.b r0,r0
-tst r0,r0
-bt rl_config_invalid
-mov #-0x1,r1
-extu.b r1,r1
-cmp/eq r1,r0
-bt rl_config_invalid
-// The ceiling hysteresis is nonzero and does not exceed the ceiling offset.
-mov.b @r4+,r0
-extu.b r0,r2
-tst r2,r2
-bt rl_config_invalid
-mov.w @(0x1C,r3),r0
-extu.w r0,r0
-cmp/hs r2,r0
-bf rl_config_invalid
-mov.w @r4+,r0
-extu.w r0,r0
-mov.w @(rl_helper_config_magic_inverse,pc),r1
-extu.w r1,r1
-cmp/eq r1,r0
-bf rl_config_invalid
-mov.w @r4,r0
-extu.w r0,r0
-mov.w @(rl_helper_config_end_marker,pc),r1
-extu.w r1,r1
-cmp/eq r1,r0
-bf rl_config_invalid
-mov.l @(rl_helper_slot_validator,pc),r0
-jmp @r0
+// Gate helper: r1 = flag bits, r2 = reason. A pass ORs r1 into r11; a
+// failure stores r2 in r13 unless an earlier gate failed. The valid entries
+// also fail for an invalid configuration. Only r3 and T change.
+rl_gate_valid_pass_t:
+bf rl_gate_fail
+rl_gate_valid:
+mov r12,r3
+shlr r3
+rl_gate_pass_t:
+bf rl_gate_fail
+rl_gate_pass:
+or r1,r11
+rts
 nop
-rl_config_invalid:
-mov #0x0,r0
+rl_gate_valid_fail_t:
+bf rl_gate_valid
+rl_gate_fail_t:
+bf rl_gate_pass
+rl_gate_fail:
+tst r13,r13
+bf rl_gate_return
+mov r2,r13
+rl_gate_return:
 rts
 nop
 
-.org 0x000D3E58
-rl_helper_config_address:
-.long 0x000D6220
-rl_helper_config_magic:
+// SPEED error window against r6 for the speed in r4: ABOVE first, then
+// BELOW. SPEED_OK holds only when both pass.
+rl_window:
+sts.l pr,@-r15
+mov #-0x41,r1
+and r1,r11
+mov r4,r7
+sub r6,r7
+mov.w @(0x1a,r10),r0
+extu.w r0,r0
+shlr8 r0
+cmp/ge r7,r0
+mov #0x40,r1
+mov #0x14,r2
+bsr rl_gate_valid_pass_t
+nop
+mov.w @(0x1a,r10),r0
+extu.b r0,r0
+neg r0,r0
+cmp/ge r0,r7
+bt rl_window_below
+mov #-0x41,r1
+and r1,r11
+rl_window_below:
+mov #0x0,r1
+mov #0x15,r2
+bsr rl_gate_valid_pass_t
+nop
+lds.l @r15+,pr
+rts
+nop
+
+
+// Head check of the configuration in r10: r7 = 1 for a valid head, else 0.
+// The validator at 0xD6680 then checks the slots of a valid head and the
+// efficiency table and returns r0 bit0 = configuration, bit1 = table.
+rl_validate_config:
+mov #0x0,r7
+mov.w @r10,r0
+mov.w @(rl_head_magic,pc),r1
+cmp/eq r1,r0
+bf rl_head_done
+mov.b @(0x2,r10),r0
+cmp/eq 0x6,r0
+bf rl_head_done
+mov.b @(0x3,r10),r0
+mov #0x1,r1
+cmp/hi r1,r0
+bt rl_head_done
+mov.b @(0x4,r10),r0
+tst 0xe0,r0
+bf rl_head_done
+mov.b @(0x5,r10),r0
+tst r0,r0
+bf rl_head_done
+mov.b @(0x6,r10),r0
+extu.b r0,r1
+mov.b @(0x7,r10),r0
+extu.b r0,r0
+cmp/hs r1,r0
+bf rl_head_done
+// Two enabled activation speed bounds are ordered.
+mov.w @(0x8,r10),r0
+extu.w r0,r1
+tst r1,r1
+bt rl_head_speed_ordered
+mov.w @(0xa,r10),r0
+extu.w r0,r0
+tst r0,r0
+bt rl_head_speed_ordered
+cmp/hs r1,r0
+bf rl_head_done
+rl_head_speed_ordered:
+// Minimum RPM 1..32766.
+mov.w @(0xc,r10),r0
+add -0x1,r0
+mov.w @(rl_head_rpm_span,pc),r1
+cmp/hs r1,r0
+bt rl_head_done
+// The target offset lies strictly inside both nonzero abort limits.
+mov.w @(0x1a,r10),r0
+extu.b r0,r2
+tst r2,r2
+bt rl_head_done
+extu.w r0,r1
+shlr8 r1
+tst r1,r1
+bt rl_head_done
+mov.w @(0x10,r10),r0
+add r0,r1
+cmp/pl r1
+bf rl_head_done
+sub r0,r2
+cmp/pl r2
+bf rl_head_done
+// Window width nonzero; u rate 1..1000; reserved word zero; integrator
+// limit at most 1000; reserved bytes 0x1C/0x1D zero.
+mov.w @(0x12,r10),r0
+shlr8 r0
+tst 0xff,r0
+bt rl_head_done
+mov.w @(rl_head_u_one,pc),r1
+mov.w @(0x14,r10),r0
+extu.w r0,r0
+add -0x1,r0
+cmp/hs r1,r0
+bt rl_head_done
+mov.w @(0x16,r10),r0
+tst r0,r0
+bf rl_head_done
+mov.w @(0x18,r10),r0
+extu.w r0,r0
+cmp/hi r1,r0
+bt rl_head_done
+mov.w @(0x1c,r10),r0
+tst r0,r0
+bf rl_head_done
+// Run timeout and rearm 1..32767; frame age limit 1..254 and reserved byte
+// 0x23 zero; inverse magic, head marker and end marker.
+mov.w @(0x1e,r10),r0
+cmp/pl r0
+bf rl_head_done
+mov r10,r2
+add 0x20,r2
+mov.w @r2,r0
+cmp/pl r0
+bf rl_head_done
+mov.b @(0x3,r2),r0
+tst r0,r0
+bf rl_head_done
+mov.b @(0x2,r2),r0
+tst r0,r0
+bt rl_head_done
+cmp/eq -0x1,r0
+bt rl_head_done
+mov.w @(0x4,r2),r0
+mov.w @(rl_head_magic_inverse,pc),r1
+cmp/eq r1,r0
+bf rl_head_done
+mov.w @(rl_head_marker,pc),r1
+mov.w @(0x6,r2),r0
+cmp/eq r1,r0
+bf rl_head_done
+mov #0x64,r0
+mov.w @(r0,r10),r0
+cmp/eq r1,r0
+bf rl_head_done
+mov #0x1,r7
+rl_head_done:
+mov.l @(rl_slot_validator_entry,pc),r0
+jmp @r0
+nop
+
+.align 4
+rl_slot_validator_entry:
+.long 0x000D6680
+rl_head_magic:
 .word 0x524C
-rl_helper_config_magic_inverse:
+rl_head_magic_inverse:
 .word 0xADB3
-rl_helper_config_end_marker:
+rl_head_marker:
 .word 0xA55A
-rl_helper_u16_8000:
-.word 0x8000
-rl_helper_u_one:
+rl_head_u_one:
 .word 1000
-.org 0x000D3E68
-rl_helper_slot_validator:
-.long 0x000D6268
+rl_head_rpm_span:
+.word 32766

@@ -621,6 +621,14 @@ applies the first command of the run, and the P0335 fallback clears it again. An
 publishes `q = 0` in the tick that detects it; the stock command returns at
 the next call of the adapter.
 
+The adapter passes `S` and `P` to the ignition publisher at `0x000D6540`,
+which runs the record check first. It publishes the stock command, `P = S`
+with `a = 0`, `E[0]`, no ready mark, and `q = 0`, when the record fails the
+check, `CONFIG_VALID` is clear, `a` lies outside 0..40, or a ready hold has
+`a` above the trim of the run. Only an engine pass with a valid configuration
+and efficiency table sets `CONFIG_VALID`, so the publisher does not repeat the
+configuration check on every ignition event.
+
 ## Spark-cut actuator
 
 In hold mode a wrapper of the `GR11A` spark handler consumes the cut fraction
@@ -956,6 +964,7 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | `0x000D6540..0x000D6580` | 64 | ignition publisher of the actuation |
 | `0x000D6580..0x000D6680` | 256 | common actuation body |
 | `0x000D6680..0x000D6780` | 256 | slot and efficiency-table validator |
+| `0x000D7000..0x000D7200` | 512 | record check and wire views |
 | `0xFFFF5D40..0xFFFF5D6C` | 44 | runtime state |
 | `0xFFFF6100..0xFFFF6120` | 32 | runtime state extension |
 
@@ -1030,7 +1039,7 @@ bits, the CANCEL and released codes, and the ready mark.
 
 The startup wrapper clears both allocations. Corrupt-state recovery clears
 the engine part `+0x00..+0x1C` of the record, the trim of the run, and the
-extension. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
+extension. Both then store `E[0] = 1000` and its wire view. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
 `q` of 0..1000, a ready mark of 0 or 1, a trim of 0..40, zero reserved
 fields, and zero fields of the unused regulator; with the ready mark set, the
 applied trim does not exceed the trim of the run and `q` equals the actuation
@@ -1089,8 +1098,9 @@ states `payloads_ready = false`, the layout loader accepts the ABI alone and
 the builder refuses composition.
 
 The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` and
-`0xFFFF6100..0xFFFF6120` for active state and `0x000D6000..0x000D6780` for its
-claimed ROM extension. The cross-runtime ledger assigns
+`0xFFFF6100..0xFFFF6120` for active state and `0x000D40C0..0x000D4280`,
+`0x000D6000..0x000D6780`, and `0x000D7000..0x000D7200` for its claimed ROM
+extensions. The cross-runtime ledger assigns
 `0x000D6780..0x000D6800`, `0xFFFF6120..0xFFFF6160`, and
 `0xFFFF6160..0xFFFF6200` exclusively to future Rolling Launch revisions; the
 first RAM span is the scratch budget of the veto delivery. These reserves are
@@ -1108,7 +1118,10 @@ The implementation inventory is:
 | `rolling-launch-speed-controller.s` | SPEED regulator |
 | `rolling-launch-spark-cut.s` | spark-cut actuator and misfire latch |
 | `rolling-launch-ignition-adapter.s` | primary ignition-command adapter |
-| `rolling-launch-trim.s` | map-slot validator and trim cut fraction |
+| `rolling-launch-rpm.s` | RPM regulator and firing fraction |
+| `rolling-launch-actuation.s` | control and ignition publishers, actuation body, and `q` |
+| `rolling-launch-validator.s` | map-slot and efficiency-table validator |
+| `rolling-launch-state-check.s` | record check and wire views |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
 | `rolling_launch.py` | independent fail-closed model |
 | `rolling_launch_layout.py` | structural validation |
