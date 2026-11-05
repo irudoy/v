@@ -17,7 +17,8 @@ the mnemonics whose T reaches a consumer by intent. The check requires:
 - every return with an empty stack after its slot and the entry PR at the
   RTS, which takes its return address before the slot, and every tail jump
   with an empty stack and the entry PR after its slot; BSR and JSR write
-  the continuation to PR before their slot;
+  the continuation to PR before their slot, and PR still holds it after the
+  slot, where the callee receives it;
 - computed reads and writes equal to the declaration, outputs among the
   writes, and the T of the caller read exactly when the declaration names
   it;
@@ -232,7 +233,8 @@ def semantics(text):
 
 
 # Values of the forward pass: ("entry", register), ("const", frozenset),
-# ("srsave", sr value, T producers), or None for an unknown value.
+# ("srsave", sr value, T producers), ("continuation", call address) for the
+# PR that a call writes before its slot, or None for an unknown value.
 def _join_value(left, right):
     if left == right:
         return left
@@ -468,17 +470,22 @@ class Analysis:
         A delayed branch performs its register transfer before its slot and
         branches after it: JSR and JMP take their target, and RTS its return
         address from PR, before the slot, and BSR and JSR write the
-        continuation to PR before the slot.
+        continuation to PR before the slot. The callee receives PR after the
+        slot and returns to it, so the slot of a call keeps the continuation.
         """
         targets = self.targets(node, state) if node.kind in ("call", "tail") else ()
+        continuation = ("continuation", node.address)
         control = None
         for position, step in enumerate(node.steps):
             if position == node.slot:
                 control = state
                 if node.kind == "call":
-                    state = state.put(pr=None)
+                    state = state.put(pr=continuation)
             state = _apply_step(step, state, node)
         control = state if control is None else control
+        if node.kind == "call" and state.get("pr") != continuation:
+            raise FlowError(f"{node.where}: the slot of {node.text} replaces the "
+                            "continuation in PR")
         conventions = [self.convention(target, node.where) for target in targets]
         after = (self._call_effect(node, state, targets, conventions)
                  if node.kind == "call" else state)

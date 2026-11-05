@@ -115,6 +115,15 @@ def test_historical_engine_defects_fail_the_check(layout, entries, old, new, mes
      "rolling_launch_periodic_wrapper:\n"
      "mov.l @(rolling_launch_periodic_stock,pc),r0\njsr @r0\nsts.l pr,@-r15\n",
      "rolling_launch_periodic_wrapper returns without its entry PR"),
+    # The callee receives PR after the slot of its call and returns to it.
+    ("wrappers", "mov.l @(rolling_launch_engine_entry,pc),r0\njsr @r0\nnop\n",
+     "mov.l @(rolling_launch_engine_entry,pc),r0\njsr @r0\nlds r0,pr\n",
+     r"rolling-launch-wrappers\.s:\d+: the slot of jsr @r0 replaces the "
+     r"continuation in PR"),
+    ("engine", "bsr rl_window\nnop\nbra rl_gate_rpm\nnop",
+     "sts.l pr,@-r15\nbsr rl_window\nlds.l @r15+,pr\nbra rl_gate_rpm\nnop",
+     r"rolling-launch-engine\.s:\d+: the slot of bsr rl_window replaces the "
+     r"continuation in PR"),
 ))
 def test_flow_check_refuses_a_changed_source(layout, entries, key, old, new, message):
     with pytest.raises(flow.FlowError, match=message):
