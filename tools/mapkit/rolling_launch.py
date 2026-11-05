@@ -1,19 +1,18 @@
 """Definition projection for the exact-family Rolling Launch configuration.
 
-The runtime stores its activation gates, vehicle-speed hold controller, RPM
-ceiling, speed-frame age limit, pedal requirement, and one enable bit per map
-in a validated 40-byte record. This module projects the unsigned fields into a
-target-specific RomRaider and TunerPro model backed by the canonical JK08A
-executable layout. The signed target-speed offset, the coolant maximum, and
-the run and rearm periods stay in the build profile, because the editor
-projections carry unsigned storage only. It does not write definitions or ROM
-images.
+The runtime stores its head controls and five map slots in a validated schema-5
+record. This module projects the head and logical slot fields into paired
+editor models backed by the canonical executable layout. The derived slot
+efficiency stays hidden and is refreshed from F after editing. The signed
+target-speed offset, coolant maximum, and run and rearm periods stay in the
+build profile. This module does not write definitions or ROM images.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+import struct
 
 from patches import rolling_launch as contract
 from patches import rolling_launch_layout
@@ -192,6 +191,41 @@ CONTROLS = (
     ),
 )
 
+TRIM_REFRESH_TOOL = "patches/refresh_rolling_launch.py"
+
+
+def _slot_controls():
+    controls = []
+    for index in range(contract.SLOT_COUNT):
+        offset = contract.SLOT_OFFSET + index * struct.calcsize(contract.SLOT_FORMAT)
+        category = f"Rolling Launch / Map {index + 1}"
+        fields = (
+            ("integral_gain", 0, "uint16", "Integral Gain", "raw", "x", "x",
+             "Integral gain Ki, 0..32767. Each active pass adds -Ki * speed "
+             "error to the Q4 integrator before its limit and anti-windup gates."),
+            ("max_trim", 2, "uint8", "Maximum Trim", "deg", "x", "x",
+             "Maximum retard trim, 0..40 degrees. After editing this value or "
+             "the F table, refresh the hidden efficiency with " + TRIM_REFRESH_TOOL +
+             " as documented in patches/rolling-launch.md. The command uses F "
+             "of the edited image; preflash rejects an inconsistent efficiency."),
+            ("floor_command", 3, "uint8", "Timing Floor", "deg ATDC", "x-110", "x+110",
+             "Latest ignition command of the trim. Timing is 110 - command "
+             "degrees BTDC, so the editor shows command - 110 degrees ATDC. "
+             "Negative ATDC values are before TDC. Ignored when trim is zero."),
+        )
+        for order, (key, relative, storage, label, units, expr, inverse, note) in enumerate(fields):
+            controls.append(Control(
+                f"map_{index + 1}_{key}", offset + relative, storage,
+                f"Map {index + 1} Rolling Launch {label.lower()}", units, expr, inverse,
+                note, f"Rolling Launch Map {index + 1} {label}", category,
+                900300 + index * 10 + order, label, "0", 1, 5,
+            ))
+    return tuple(controls)
+
+
+SLOT_CONTROLS = _slot_controls()
+ALL_CONTROLS = CONTROLS + SLOT_CONTROLS
+
 
 @dataclass(frozen=True)
 class DefinitionProjection:
@@ -366,7 +400,7 @@ def _configuration_tables(configuration_address):
                 coarse=control.coarse,
             ),
         )
-        for control in CONTROLS
+        for control in ALL_CONTROLS
     )
 
 
@@ -443,7 +477,7 @@ def project_definition_model(maps, overrides, layout=None, target_rom=None):
         pedal_requirement_address=address_key(pedal_requirement_address),
         control_addresses=tuple(
             (control.key, address_key(configuration_address + control.offset))
-            for control in CONTROLS
+            for control in ALL_CONTROLS
         ),
         table_count=len(tables),
         masked_view_count=0,
@@ -486,10 +520,10 @@ def validate_projection(
             raise ValueError(f"Rolling Launch {field} differs")
     if projection.control_addresses != tuple(
         (control.key, address_key(configuration_address + control.offset))
-        for control in CONTROLS
+        for control in ALL_CONTROLS
     ):
         raise ValueError("Rolling Launch control addresses differ")
-    if projection.table_count != len(CONTROLS):
+    if projection.table_count != len(ALL_CONTROLS):
         raise ValueError(
             "Rolling Launch projection must contain one table per control"
         )

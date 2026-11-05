@@ -191,6 +191,10 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         record, rolling, unexpressed = _rolling_settings(
             source, target.rolling_layout, rolling_state
         )
+        if rolling_state == "current":
+            # Bind logical settings with stock-derived efficiencies. A tuned
+            # F table travels as calibration bytes, not as a second setting.
+            record = build_rom.resolve_trim_efficiency(rolling, stock).to_bytes()
         settings.append(("rolling_launch", sha256(record)))
     telemetry = None
     if telemetry_state != ABSENT:
@@ -239,7 +243,10 @@ def profile_bytes(extraction, name):
     )
     profile = build_rom.parse_profile(text.encode("utf-8"), name)
     telemetry = extraction.telemetry or can_telemetry.default_configuration()
-    if profile.calibration != extraction.rolling or profile.telemetry != telemetry:
+    stock = runtime_targets.load_runtime_target(extraction.calibration.rom).stock_image.data
+    expected = build_rom.resolve_trim_efficiency(extraction.rolling, stock)
+    actual = build_rom.resolve_trim_efficiency(profile.calibration, stock)
+    if actual != expected or profile.telemetry != telemetry:
         raise ExtractionError("extracted profile does not round trip")
     return text.encode("utf-8")
 

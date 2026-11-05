@@ -47,6 +47,12 @@ COMMON_TABLES = {
     "Rolling Launch RPM Ceiling Hysteresis": "Rolling Launch / RPM Ceiling",
 }
 
+COMMON_TABLES.update({
+    f"Rolling Launch Map {slot} {label}": f"Rolling Launch / Map {slot}"
+    for slot in range(1, 6)
+    for label in ("Integral Gain", "Maximum Trim", "Timing Floor")
+})
+
 DEFAULT_VISIBLE_TABLES = {
     "Accelerator Pedal High-State Hysteresis":
         "Electronic Throttle Control / Accelerator Pedal / Thresholds",

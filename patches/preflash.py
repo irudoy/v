@@ -54,6 +54,7 @@ TESTS = (
     "patches/tests/test_rom_checksums.py",
     "patches/tests/test_runtime_endpoints.py",
     "patches/tests/test_runtime_targets.py",
+    "patches/tests/test_refresh_rolling_launch.py",
     "patches/tests/test_telemetry_can_ids.py",
 )
 
@@ -155,7 +156,8 @@ def require_trim_efficiency(data, extraction):
     if maps:
         raise PreflashError(
             "Rolling Launch trim efficiency of map "
-            f"{', '.join(maps)} differs from the F table of the image"
+            f"{', '.join(maps)} differs from the F table of the image; run "
+            "uv run python patches/refresh_rolling_launch.py INPUT --output OUTPUT"
         )
 
 
@@ -171,7 +173,10 @@ def check_image(data, rom):
     try:
         extraction = extract_calibration.extract(data, rom=rom, source_name="image")
     except extract_calibration.ExtractionError as error:
-        raise PreflashError(str(error)) from error
+        raise PreflashError(
+            f"{error}; for editor changes to Rolling Launch, run "
+            "uv run python patches/refresh_rolling_launch.py INPUT --output OUTPUT"
+        ) from error
     if extraction.unexpressed:
         raise PreflashError(
             "image carries runtime settings that the current profile cannot express"

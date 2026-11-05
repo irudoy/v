@@ -74,7 +74,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(projection.configuration_address, "000d6220")
         self.assertEqual(projection.enable_mask_address, "000d6224")
         self.assertEqual(projection.pedal_requirement_address, "000d622e")
-        self.assertEqual(dict(projection.control_addresses), {
+        expected = {
             "coolant_min": "000d6226",
             "min_speed": "000d6228",
             "max_speed": "000d622a",
@@ -88,13 +88,19 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             "abort_below": "000d623b",
             "rpm_ceiling_offset_native": "000d623c",
             "rpm_ceiling_hysteresis_native": "000d6243",
+        }
+        expected.update({
+            f"map_{index + 1}_{key}": f"{0xD6248 + index * 6 + relative:08x}"
+            for index in range(5)
+            for key, relative in (("integral_gain", 0), ("max_trim", 2), ("floor_command", 3))
         })
-        self.assertEqual(projection.table_count, 13)
+        self.assertEqual(dict(projection.control_addresses), expected)
+        self.assertEqual(projection.table_count, 28)
         self.assertEqual(projection.masked_view_count, 0)
         self.assertEqual(projection.switch_count, 1)
         self.assertEqual(projection.bitwise_switch_count, 1)
         self.assertEqual(projection.enable_bit_count, 5)
-        self.assertEqual(projection.editor_view_count, 15)
+        self.assertEqual(projection.editor_view_count, 30)
 
     def test_controls_match_the_record_layout(self):
         projection = self.project()
@@ -337,6 +343,57 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                     rolling_launch.project_definition_model(
                         maps, self.overrides, self.layout
                     )
+
+
+    def test_map_slot_views_have_exact_width_units_and_reversible_timing_floor(self):
+        projection = self.project()
+        self.assertEqual(len(rolling_launch.SLOT_CONTROLS), 15)
+        for index in range(5):
+            for key, relative, storage, units, expression, inverse in (
+                ("integral_gain", 0, "uint16", "raw", "x", "x"),
+                ("max_trim", 2, "uint8", "deg", "x", "x"),
+                ("floor_command", 3, "uint8", "deg ATDC", "x-110", "x+110"),
+            ):
+                address = f"{0xD6248 + index * 6 + relative:08x}"
+                self.assertEqual(projection.address(f"map_{index + 1}_{key}"), address)
+                model = projection.maps[address]
+                self.assertEqual((model["storagetype"], model["units"], model["scale_expr"], model["to_byte"]),
+                                 (storage, units, expression, inverse))
+                if key == "max_trim":
+                    self.assertIn("refresh_rolling_launch.py", model["note"])
+            efficiency = f"{0xD6248 + index * 6 + 4:08x}"
+            self.assertNotIn(efficiency, projection.maps)
+        for command, atdc in ((0, -110), (110, 0), (120, 10), (255, 145)):
+            floor = projection.maps[projection.address("map_1_floor_command")]
+            self.assertEqual(eval(floor["scale_expr"], {"__builtins__": {}}, {"x": command}), atdc)
+            self.assertEqual(eval(floor["to_byte"], {"__builtins__": {}}, {"x": atdc}), command)
+
+    def test_both_formats_render_every_slot_and_hide_derived_efficiency(self):
+        projection = self.project()
+        models = [projection.maps[projection.address(control.key)]
+                  for control in rolling_launch.SLOT_CONTROLS]
+        xml = ET.fromstring("<rom>" + "\n".join(
+            line for model in models
+            for line in emit_def.table_xml(model, projection.overrides, self.axes, "JK08A")
+        ) + "</rom>")
+        xdf, stats = tunerpro.render(
+            "JK08A", bytearray([0xFF] * 0x100000), models, self.axes,
+            projection.overrides, {}, [], [],
+        )
+        root = ET.fromstring(xdf)
+        self.assertEqual(stats["calibration_tables"], 15)
+        for index in range(5):
+            for label, relative, bits in (("Integral Gain", 0, 16), ("Maximum Trim", 2, 8), ("Timing Floor", 3, 8)):
+                name = f"Rolling Launch Map {index + 1} {label}"
+                address = f"0x{0xD6248 + index * 6 + relative:X}"
+                table = next(t for t in xml.findall("table") if t.get("name") == name)
+                self.assertEqual(table.get("storageaddress"), address)
+                table = next(t for t in root.findall("XDFTABLE") if t.findtext("title") == name)
+                data = table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA")
+                self.assertEqual(data.get("mmedaddress"), address)
+                self.assertEqual(data.get("mmedelementsizebits"), str(bits))
+                if label == "Timing Floor":
+                    self.assertEqual(table.find("./XDFAXIS[@id='z']/MATH").get("equation"), "X-110")
 
 
 if __name__ == "__main__":

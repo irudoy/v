@@ -161,9 +161,15 @@ SHA-256 of its registered stock image, records the SHA-256 and runtime states
 of the source, and lists each contiguous run of calibration bytes that differs
 from a fresh stock build: the stock bytes for the window and the Map 1 bytes
 for each Map 2 through Map 5 slot. No run crosses a range boundary. Its
-`[settings]` table holds the SHA-256 of each Rolling Launch and CAN telemetry
-configuration record of the source; it is a check, not a second source. The
-historical telemetry wire identity is omitted from that settings binding;
+`[settings]` table binds configuration settings by SHA-256; it is a check,
+not a second source. CAN telemetry uses the configuration record bytes. The
+current Rolling Launch binding uses efficiencies derived from the registered
+stock F table as a normal form. The logical slot settings remain bound when a
+calibrated F table changes its derived efficiency; the F bytes travel as
+calibration elements. Application derives the efficiency words again after
+writing those elements and admits only those words as additional runtime
+writes. The stored efficiency is not a build-profile input.
+The historical telemetry wire identity is omitted from that settings binding;
 its enabled state, CAN ID, and divisor transfer through the current profile
 format. The
 extracted profile carries the settings in the strict profile format below and
@@ -180,8 +186,9 @@ the extracted settings, so a transfer cannot fall back to the built-in profile
 unnoticed; `REPLACE_SETTINGS=1` (`--replace-settings`) replaces them
 explicitly. The command writes the calibration elements, recalculates every
 checksum, requires every difference from the build to lie inside the
-calibration ranges or the checksum fields, and requires the output to remain
-an extraction input. It creates the ROM with SHA-256, MD5, and JSON manifest
+calibration ranges, derived efficiency words or checksum fields, and requires
+the output to remain an extraction input. It creates the ROM with SHA-256,
+MD5, and JSON manifest
 sidecars under the same publication rules as the builder. Its manifest binds
 the input, the calibration file and the result of its settings check, and the
 output, which is marked `hardware_status=UNTESTED`.
@@ -526,6 +533,38 @@ Speeds and the window and abort fields are km/h*10; `min_speed = 0` and
 fractions are thousandths of full torque, the timers count runtime ticks, and
 `rolling-launch.md` states the controller and the contract of every field.
 Concrete profiles remain local and are not versioned.
+
+### Editor changes to map slots
+
+RomRaider and TunerPro expose each map's integral gain, maximum retard trim in
+degrees, and timing floor in degrees ATDC. The floor display is
+`floor_command - 110`; a negative ATDC value is before TDC. The unsigned stored
+gain has the runtime's signed-positive limit of 32767. Trim is limited to
+0..40 degrees. The derived efficiency is hidden from the editors.
+
+After editing map-slot fields or the F table, normalize the image into a new file:
+
+```bash
+uv run python patches/refresh_rolling_launch.py tmp/edited.bin \
+  --output tmp/ready.bin
+make preflash INPUT=tmp/ready.bin ROM=JK08A
+```
+
+The command rewrites only the slot efficiency words from F of the edited image
+and the checksum fields. It rejects invalid independent settings, unknown or
+partial runtimes, illegal calibration changes, and a result that does not
+rebuild byte for byte. It never replaces the input. The image remains
+`UNTESTED`; the clean-commit, exact-commit CI and executable checks of preflash
+remain mandatory. A direct editor save with a stale efficiency is refused by
+preflash with the normalization command. The same normalization is required
+when a nonzero trim becomes zero, restoring efficiency 1000.
+
+An efficiency field beside the trim would require a manual coupled edit. A
+fixed list of F-table nodes would lose its relationship to a calibrated F
+table. Deriving the hidden value from the actual image keeps those pairs
+consistent without trusting the editor to compute them. Calibration extraction
+and `rom-calibrate` preserve all logical map-slot settings and rederive the
+efficiencies after F-table calibration bytes are applied.
 
 Rolling Launch and CAN telemetry settings edited in a built image through an
 editor travel in the extracted profile of the calibration transfer. Application

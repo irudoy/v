@@ -180,6 +180,18 @@ def validate():
             "Rolling Launch RPM Ceiling Hysteresis", 0xD6243,
         ),
     }
+    expected_controls.update({
+        f"map_{index + 1}_{key}": (
+            f"Rolling Launch Map {index + 1} {label}",
+            0xD6248 + index * 6 + relative,
+        )
+        for index in range(5)
+        for key, label, relative in (
+            ("integral_gain", "Integral Gain", 0),
+            ("max_trim", "Maximum Trim", 2),
+            ("floor_command", "Timing Floor", 3),
+        )
+    })
     if dict(launch.control_addresses) != {
         key: f"{address:08x}" for key, (_name, address) in expected_controls.items()
     }:

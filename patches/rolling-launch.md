@@ -476,7 +476,22 @@ eff = (256 - F(z)) * 1000 // 256
 
 `F` interpolates the 16-point table linearly with a truncated result
 (`F(20) = 45`, `eff = 824`). `make preflash` refuses an image whose stored
-efficiency differs from the value of the stock pair.
+efficiency differs from the pair in that image and names the command that
+rederives the hidden value after editor changes:
+
+```bash
+uv run python patches/refresh_rolling_launch.py tmp/edited.bin \
+  --output tmp/ready.bin
+```
+
+The command changes only the efficiency words and checksums, then requires a
+byte-identical stock rebuild with the image's calibration. Independent invalid
+settings and unknown or partial runtimes are refused. `make preflash` still
+requires a clean commit, its green Verify run and executable qualification.
+The efficiency stays hidden in the editors: a manual paired field can diverge
+from the trim, and a fixed list of F nodes becomes stale when F is calibrated.
+Deriving it from the actual image avoids both inconsistencies. Calibration
+transfer derives the words after applying the F-table bytes as well.
 
 ## Fuel-cut request
 
@@ -817,8 +832,15 @@ spark-efficiency pair. See `rom-builder.md` for the profile schema and build inv
 
 RomRaider and XDF expose the per-map enable bits, the pedal requirement as a
 switch, and independent calibration tables for the unsigned activation and
-controller fields. The signed target offset, the coolant maximum, and the run
-and rearm periods and the map slots stay in the build profile. Raw aggregate records remain
+controller fields. Each map slot exposes Ki at `+0`, maximum trim at `+2` in
+degrees, and the timing floor at `+3` in degrees ATDC. Its display is
+`floor_command - 110`, with inverse `ATDC + 110`; negative values are before
+TDC. The gain is limited to 0..32767, and the trim to 0..40. The derived word at
+`+4` is hidden and must be refreshed after changing the trim or F, including
+when a trim is disabled. Slot addresses derive from the configuration address
+of the runtime layout and the schema-5 slot offset and stride.
+The signed target offset, coolant maximum, and run and rearm periods stay in
+the build profile. Raw aggregate records remain
 implementation data, not a tuning interface. Generated definitions are
 projections of the live JK08A source annotations and layouts.
 

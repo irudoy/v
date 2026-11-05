@@ -4002,5 +4002,230 @@
         <data>RPM ceiling hysteresis</data>
       </table>
     </table>
+
+    <!-- 0xD6248  1 uint16  map [code]
+         scaling x raw [code]
+         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
+         integrator before its limit and anti-windup gates.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 1 Integral Gain" category="Rolling Launch//Map 1"
+           storagetype="uint16" storageaddress="0xD6248" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral Gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD624A  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
+         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
+         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
+         inconsistent efficiency.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 1 Maximum Trim" category="Rolling Launch//Map 1"
+           storagetype="uint8" storageaddress="0xD624A" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD624B  1 uint8  map [code]
+         scaling x-110 deg ATDC [code]
+         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
+         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
+         when trim is zero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 1 Timing Floor" category="Rolling Launch//Map 1"
+           storagetype="uint8" storageaddress="0xD624B" sizex="1" endian="big">
+      <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Timing Floor</data>
+      </table>
+    </table>
+
+    <!-- 0xD624E  1 uint16  map [code]
+         scaling x raw [code]
+         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
+         integrator before its limit and anti-windup gates.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Integral Gain" category="Rolling Launch//Map 2"
+           storagetype="uint16" storageaddress="0xD624E" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral Gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD6250  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
+         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
+         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
+         inconsistent efficiency.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Maximum Trim" category="Rolling Launch//Map 2"
+           storagetype="uint8" storageaddress="0xD6250" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6251  1 uint8  map [code]
+         scaling x-110 deg ATDC [code]
+         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
+         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
+         when trim is zero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Timing Floor" category="Rolling Launch//Map 2"
+           storagetype="uint8" storageaddress="0xD6251" sizex="1" endian="big">
+      <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Timing Floor</data>
+      </table>
+    </table>
+
+    <!-- 0xD6254  1 uint16  map [code]
+         scaling x raw [code]
+         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
+         integrator before its limit and anti-windup gates.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Integral Gain" category="Rolling Launch//Map 3"
+           storagetype="uint16" storageaddress="0xD6254" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral Gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD6256  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
+         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
+         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
+         inconsistent efficiency.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Maximum Trim" category="Rolling Launch//Map 3"
+           storagetype="uint8" storageaddress="0xD6256" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6257  1 uint8  map [code]
+         scaling x-110 deg ATDC [code]
+         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
+         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
+         when trim is zero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Timing Floor" category="Rolling Launch//Map 3"
+           storagetype="uint8" storageaddress="0xD6257" sizex="1" endian="big">
+      <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Timing Floor</data>
+      </table>
+    </table>
+
+    <!-- 0xD625A  1 uint16  map [code]
+         scaling x raw [code]
+         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
+         integrator before its limit and anti-windup gates.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Integral Gain" category="Rolling Launch//Map 4"
+           storagetype="uint16" storageaddress="0xD625A" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral Gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD625C  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
+         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
+         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
+         inconsistent efficiency.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Maximum Trim" category="Rolling Launch//Map 4"
+           storagetype="uint8" storageaddress="0xD625C" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD625D  1 uint8  map [code]
+         scaling x-110 deg ATDC [code]
+         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
+         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
+         when trim is zero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Timing Floor" category="Rolling Launch//Map 4"
+           storagetype="uint8" storageaddress="0xD625D" sizex="1" endian="big">
+      <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Timing Floor</data>
+      </table>
+    </table>
+
+    <!-- 0xD6260  1 uint16  map [code]
+         scaling x raw [code]
+         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
+         integrator before its limit and anti-windup gates.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Integral Gain" category="Rolling Launch//Map 5"
+           storagetype="uint16" storageaddress="0xD6260" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Integral Gain</data>
+      </table>
+    </table>
+
+    <!-- 0xD6262  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
+         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
+         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
+         inconsistent efficiency.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Maximum Trim" category="Rolling Launch//Map 5"
+           storagetype="uint8" storageaddress="0xD6262" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6263  1 uint8  map [code]
+         scaling x-110 deg ATDC [code]
+         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
+         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
+         when trim is zero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Timing Floor" category="Rolling Launch//Map 5"
+           storagetype="uint8" storageaddress="0xD6263" sizex="1" endian="big">
+      <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Timing Floor</data>
+      </table>
+    </table>
   </rom>
 </roms>

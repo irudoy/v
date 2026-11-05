@@ -29,12 +29,17 @@
     <CATEGORY index="0x12" name="Logging / CAN Telemetry" />
     <CATEGORY index="0x13" name="NATS / Immobilizer" />
     <CATEGORY index="0x14" name="Rolling Launch / Activation" />
-    <CATEGORY index="0x15" name="Rolling Launch / Map Enable" />
-    <CATEGORY index="0x16" name="Rolling Launch / RPM Ceiling" />
-    <CATEGORY index="0x17" name="Rolling Launch / Speed Hold" />
-    <CATEGORY index="0x18" name="Torque Model / Engine Torque" />
-    <CATEGORY index="0x19" name="Variable Valve Timing / Exhaust Cam" />
-    <CATEGORY index="0x1A" name="Variable Valve Timing / Intake Cam" />
+    <CATEGORY index="0x15" name="Rolling Launch / Map 1" />
+    <CATEGORY index="0x16" name="Rolling Launch / Map 2" />
+    <CATEGORY index="0x17" name="Rolling Launch / Map 3" />
+    <CATEGORY index="0x18" name="Rolling Launch / Map 4" />
+    <CATEGORY index="0x19" name="Rolling Launch / Map 5" />
+    <CATEGORY index="0x1A" name="Rolling Launch / Map Enable" />
+    <CATEGORY index="0x1B" name="Rolling Launch / RPM Ceiling" />
+    <CATEGORY index="0x1C" name="Rolling Launch / Speed Hold" />
+    <CATEGORY index="0x1D" name="Torque Model / Engine Torque" />
+    <CATEGORY index="0x1E" name="Variable Valve Timing / Exhaust Cam" />
+    <CATEGORY index="0x1F" name="Variable Valve Timing / Intake Cam" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0x3B07" flags="0x0">
     <title>Developer Immobilizer</title>
@@ -538,35 +543,35 @@
   <XDFFLAG uniqueid="0xBFFA" flags="0x0">
     <title>Map 1 - Rolling Launch Enable</title>
     <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 1 - Rolling Launch Enable at bit 0.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="27" />
     <EMBEDDEDDATA mmedaddress="0xD6224" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x01</mask>
   </XDFFLAG>
   <XDFFLAG uniqueid="0x8F6C" flags="0x0">
     <title>Map 2 - Rolling Launch Enable</title>
     <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 2 - Rolling Launch Enable at bit 1.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="27" />
     <EMBEDDEDDATA mmedaddress="0xD6224" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x02</mask>
   </XDFFLAG>
   <XDFFLAG uniqueid="0xDED6" flags="0x0">
     <title>Map 3 - Rolling Launch Enable</title>
     <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 3 - Rolling Launch Enable at bit 2.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="27" />
     <EMBEDDEDDATA mmedaddress="0xD6224" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x04</mask>
   </XDFFLAG>
   <XDFFLAG uniqueid="0xEE40" flags="0x0">
     <title>Map 4 - Rolling Launch Enable</title>
     <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 4 - Rolling Launch Enable at bit 3.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="27" />
     <EMBEDDEDDATA mmedaddress="0xD6224" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x08</mask>
   </XDFFLAG>
   <XDFFLAG uniqueid="0x7BE3" flags="0x0">
     <title>Map 5 - Rolling Launch Enable</title>
     <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise. This flag controls Map 5 - Rolling Launch Enable at bit 4.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="27" />
     <EMBEDDEDDATA mmedaddress="0xD6224" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x10</mask>
   </XDFFLAG>
@@ -616,7 +621,7 @@
   <XDFTABLE uniqueid="0x229B" flags="0x0">
     <title>Intake CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and a load coordinate selected as uint8(ffff102c) with ffff2468.bit3 clear or 255 with that bit set (the stock 00008615 bit 0 is set), optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. One count is 0.5 crank degrees: channel-1A capture handlers 0002a5cc and 0002a36a form the intake edge phases ffff22cc/ffff22cd as 20*ffff13b2 + floor(20*interval/ffff22bc) minus 60 or 20 through signed divider 00021bbc, where ffff22bc is 10 crank degrees; FUN 000bd9f0 publishes the actual bytes ffff2442/ffff2443 as 128 + rest edge - edge phase, and FUN 0004d2a6 subtracts them from common target ffff2326 in the same raw units. The 2026-09-17 dashboard recordings keep both actual intake bytes within two counts of a target unchanged for 100 records in 95 to 100 percent of 13,202 to 43,264 samples per bank. The Cylinder Filling physical name and the crank-wheel origin of the absolute angle remain open. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="32" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F1E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -700,7 +705,7 @@
   <XDFTABLE uniqueid="0xF738" flags="0x0">
     <title>Exhaust CVTC Target - Cold</title>
     <description>Exact JK03A. Address 0xB2FA; 8 rows x 8 columns; uint8; map confidence code. Cold/fallback exhaust-CVTC target surface. FUN 000bfdc0 writes its centered uint8 result to ffff1c5f; FUN 000bfe88 selects or blends it with warm/main result ffff1c5d and conditions the result into exhaust target ffff2327. The code path proves the exhaust-target subsystem and centered representation. The conversion follows from monitor 0008f168, which compares target ffff2327 in raw units with the actual bytes ffff2324/ffff2325 that FUN 000bfc2e writes in counts of 0.5 crank degrees relative to the learned rest edge. The precise cold/fallback operating-mode name remains a homologous candidate. Stock cells are all 128, so this surface requests neutral exhaust timing wherever selected. Result disposition: consumer. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12EA2" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -742,7 +747,7 @@
   <XDFTABLE uniqueid="0x48AC" flags="0x0">
     <title>Intake CVTC Target - Cold</title>
     <description>Exact JK03A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The target-vehicle capture stays above the warm threshold. The cold-start replays in JK03A.cvtc.md validate this surface through the coolant blend and by direct lookup in the cold band of the moving cold start; the stationary cold band follows idle source byte ffff1553. The output conversion (x-128)*0.5 crank degrees follows the intake edge-phase unit shared with 0000b43a: the cold target enters the same ffff2326 path that FUN 0004d2a6 compares with actual bytes ffff2442/ffff2443. The Cylinder Filling physical name remains a source-derived candidate. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="32" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12EAA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -784,7 +789,7 @@
   <XDFTABLE uniqueid="0x49B0" flags="0x0">
     <title>Exhaust CVTC Target Correction - High-Detonation State</title>
     <description>Exact JK03A. Address 0xAB4A; 4 rows x 4 columns; uint8; map confidence code. Conditional subtractive correction of the warm/main exhaust-CVTC target. When ffff2466 bit 6 is set, ffff1c5d = clamp_u8(out_b33a - out_ab4a + 128); otherwise ffff1c5d = out_b33a. Raw 128 is zero correction. Code proves centered subtractive arithmetic and the exact 4x4 lookup. The correction is subtracted from the 0000b33a output in the same centered raw units before coolant selection, so it shares the exhaust-target conversion of 0.5 crank degrees per count relative to the learned rest edge, which monitor 0008f168 fixes by comparing target ffff2327 with the actual bytes ffff2324/ffff2325 of FUN 000bfc2e. The subsystem identity follows from the downstream ffff2327 binding to exhaust-target DID 0x1166 and exhaust-VTC control and DTC consumers. The homologous HR A2L uses the same 0.5 degCA per centered count for cam-timing maps. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F8E" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -826,7 +831,7 @@
   <XDFTABLE uniqueid="0x78F1" flags="0x0">
     <title>Intake CVTC Target Correction - High-Detonation State</title>
     <description>Exact JK03A. Address 0xAB5A; 4 rows x 4 columns; uint8; map confidence code. Conditional intake-cam target correction. When ffff2466.bit6 is set, FUN 000bda64 calculates clamp_u8(output_0000b43a - output_0000ab5a + 128); when the bit is clear, it bypasses this map. The corrected target is written to ffff1c5c and enters the intake CVTC target path. Code proves the conditional intake-cam correction path and centered raw arithmetic. The target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has no dynamic validation. The correction is subtracted from the 0000b43a output count for count, so it carries the intake edge-phase unit of 0.5 crank degrees per count. The high-detonation meaning of the selector and the Cylinder Filling axis name remain catalog candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="27" />
+    <CATEGORYMEM index="0" category="32" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F92" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -925,7 +930,7 @@
   <XDFTABLE uniqueid="0x4D8D" flags="0x0">
     <title>Exhaust CVTC Target - Standstill Override</title>
     <description>Exact JK03A. Address 0x8E36; 1 rows x 1 columns; uint8; map confidence code. Standstill exhaust-VTC override target. While ffff246c bit 1 is set (operational enable, engine speed between ROM8[0x8e3b] and ROM8[0x8e3a], coarse vehicle speed at or below ROM8[0x8e3c], P/N position switch ON in ffff244f bit 2) and latch ffff2478 bit 4 is clear, FUN 000bfe88 writes clamp_u8(ROM8[0x8e36]+128) to ffff137e at 000c01f4 in place of the coolant-selected map byte; the demand flag, both bank enables, and the duty controller then follow it. Once both banks have tracked the target within ROM8[0x8e16]=6 counts for 0.512 s the latch sets and the byte returns to 128 until the operational enable falls. The stroke is the actuation of the exhaust valve timing control learning, whose tail in the same function captures the integrator of error stage 000c1152 on a clean bank release. Raw 0 commands the neutral byte 128, which still replaces the map byte and can set the latch; the stroke is removed through ROM8[0x8e3b]=255. Stock value 40 is +20 degCA of exhaust retard. The byte is added to the 128 center in the same raw units as surface 0000b33a and target ffff2327, so it carries the code-proven 0.5 crank degrees per count of the actual bytes that monitor 0008f168 compares with the target. It is single-copy and not a Map Switching family, so a change applies to every map slot. The 2026-09-17 captures of a Map 3 image with neutral surfaces show the override as eight excursions to raw 168 starting as the engine passed 1800 RPM at rest.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -967,7 +972,7 @@
   <XDFTABLE uniqueid="0xD860" flags="0x0">
     <title>Exhaust CVTC Standstill Override - RPM Floor</title>
     <description>Exact JK03A. Address 0x8E3B; 1 rows x 1 columns; uint8; map confidence code. Engine-speed floor of the standstill exhaust-VTC override. FUN 000bfe88 sets ffff24ab bit 0 at 000bfee4 when engine-speed byte ffff11ae reaches this value and clears it when the byte plus hysteresis ROM8[0x86e1]=4 falls below it. Stock value 36 is 1800 RPM with release below 1600 RPM. The flag is one input of override predicate ffff246c bit 1 and has no other consumer, so raw 255 keeps the predicate clear at every reachable engine speed and removes the override stroke, its latch ffff2478 bit 4, and the opportunity it gives the exhaust valve timing control learning. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -1009,7 +1014,7 @@
   <XDFTABLE uniqueid="0x89DA" flags="0x0">
     <title>Exhaust CVTC Standstill Override - RPM Ceiling</title>
     <description>Exact JK03A. Address 0x8E3A; 1 rows x 1 columns; uint8; map confidence code. Engine-speed ceiling of the standstill exhaust-VTC override. Hysteresis comparator 000259d0 sets ffff24ab bit 1 while engine-speed byte ffff11ae is at or below this value and clears it above the value plus ROM8[0x86e1]=4; FUN 000bfe88 stores the flag at 000bff14. Stock value 80 is 4000 RPM with release above 4200 RPM. The flag is one input of override predicate ffff246c bit 1. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -1051,7 +1056,7 @@
   <XDFTABLE uniqueid="0xE8F6" flags="0x0">
     <title>Exhaust CVTC Standstill Override - Speed Threshold</title>
     <description>Exact JK03A. Address 0x8E3C; 1 rows x 1 columns; uint8; map confidence code. Vehicle-speed threshold of the standstill exhaust-VTC override. Hysteresis comparator 000259d0 sets ffff24ac bit 7 while coarse vehicle-speed byte ffff110e is at or below this value and clears it above the value plus ROM8[0x86e8]=1; FUN 000bfe88 stores the flag at 000bff4e. Stock value 2 with release above 3 counts of coarse vehicle-speed byte ffff110e, whose km/h value per count is not established; the 2026-09-17 captures release the override between 8 and 9 km/h of the dashboard speed channel. The flag is one input of override predicate ffff246c bit 1.</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -4063,7 +4068,7 @@
   <XDFTABLE uniqueid="0x83D2" flags="0x0">
     <title>Engine Torque Surface</title>
     <description>Exact JK03A. Address 0x10B8E; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="30" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -4120,7 +4125,7 @@
   <XDFTABLE uniqueid="0x6284" flags="0x0">
     <title>Engine Torque Base Term vs RPM</title>
     <description>Exact JK03A. Address 0x154A0; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK03A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="30" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14ABA" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM</units>
@@ -4162,7 +4167,7 @@
   <XDFTABLE uniqueid="0x1E2" flags="0x0">
     <title>Engine Torque Correction Coefficient vs RPM</title>
     <description>Exact JK03A. Address 0x14C1A; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="25" />
+    <CATEGORYMEM index="0" category="30" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x14ABA" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM</units>
@@ -4204,7 +4209,7 @@
   <XDFTABLE uniqueid="0x341E" flags="0x0">
     <title>Map 1 - Exhaust CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xB33A; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 1 uses the canonical stock storage. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the 120-degree event interval), and monitor 0008f168 forms the tracking gap clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so the target and this surface are (raw-128)*0.5 crank degrees relative to the learned rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge remains open. Result disposition: writes. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -8964,7 +8969,7 @@
   <XDFTABLE uniqueid="0x5823" flags="0x0">
     <title>Map 2 - Exhaust CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xD2D00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 2 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the 120-degree event interval), and monitor 0008f168 forms the tracking gap clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so the target and this surface are (raw-128)*0.5 crank degrees relative to the learned rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge remains open. Result disposition: writes. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -13724,7 +13729,7 @@
   <XDFTABLE uniqueid="0x3214" flags="0x0">
     <title>Map 3 - Exhaust CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xD2E00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 3 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the 120-degree event interval), and monitor 0008f168 forms the tracking gap clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so the target and this surface are (raw-128)*0.5 crank degrees relative to the learned rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge remains open. Result disposition: writes. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -18484,7 +18489,7 @@
   <XDFTABLE uniqueid="0x8C4D" flags="0x0">
     <title>Map 4 - Exhaust CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xD2F00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 4 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the 120-degree event interval), and monitor 0008f168 forms the tracking gap clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so the target and this surface are (raw-128)*0.5 crank degrees relative to the learned rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge remains open. Result disposition: writes. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -23244,7 +23249,7 @@
   <XDFTABLE uniqueid="0xB92A" flags="0x0">
     <title>Map 5 - Exhaust CVTC Target - Main</title>
     <description>Exact JK03A. Address 0xD3000; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 5 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over the 120-degree event interval), and monitor 0008f168 forms the tracking gap clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so the target and this surface are (raw-128)*0.5 crank degrees relative to the learned rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge remains open. Result disposition: writes. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="26" />
+    <CATEGORYMEM index="0" category="31" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -28214,7 +28219,7 @@
   <XDFTABLE uniqueid="0xAF99" flags="0x0">
     <title>Rolling Launch Speed Window Width</title>
     <description>Exact JK03A. Address 0xD6232; 1 rows x 1 columns; uint8; map confidence code. Speed-error width over which the Rolling Launch torque fraction falls from full to zero With e = speed - target, the proportional fraction is clamp((window_top - e) * 1000 / width, 0, 1000) thousandths. The width must be nonzero.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28256,7 +28261,7 @@
   <XDFTABLE uniqueid="0x9F0F" flags="0x0">
     <title>Rolling Launch Speed Window Top</title>
     <description>Exact JK03A. Address 0xD6233; 1 rows x 1 columns; uint8; map confidence code. Speed error at which the Rolling Launch proportional torque fraction reaches zero The proportional fraction is full at e &lt;= window_top - width and zero at e &gt;= window_top.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28298,7 +28303,7 @@
   <XDFTABLE uniqueid="0xAAC" flags="0x0">
     <title>Rolling Launch Torque Fraction Rate Limit</title>
     <description>Exact JK03A. Address 0xD6234; 1 rows x 1 columns; uint16; map confidence code. Largest change of the Rolling Launch torque fraction per scheduler pass The torque fraction moves toward the controller command by at most this many thousandths per 10.24 ms pass; the value must lie in 1..1000.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28340,7 +28345,7 @@
   <XDFTABLE uniqueid="0x4687" flags="0x0">
     <title>Rolling Launch Integrator Limit</title>
     <description>Exact JK03A. Address 0xD6238; 1 rows x 1 columns; uint16; map confidence code. Magnitude limit of the Rolling Launch speed integrator The integrator contribution stays within plus or minus this many thousandths of the torque fraction; the value must not exceed 1000.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28382,7 +28387,7 @@
   <XDFTABLE uniqueid="0xAFD7" flags="0x0">
     <title>Rolling Launch Abort Above Target</title>
     <description>Exact JK03A. Address 0xD623A; 1 rows x 1 columns; uint8; map confidence code. Speed error above the target that ends a Rolling Launch run An ACTIVE pass with e above this nonzero bound aborts with SPEED_ABOVE_WINDOW.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28424,7 +28429,7 @@
   <XDFTABLE uniqueid="0xFE6D" flags="0x0">
     <title>Rolling Launch Abort Below Target</title>
     <description>Exact JK03A. Address 0xD623B; 1 rows x 1 columns; uint8; map confidence code. Speed error below the target that ends a Rolling Launch run An ACTIVE pass with e below the negative of this nonzero bound aborts with SPEED_BELOW_WINDOW.</description>
-    <CATEGORYMEM index="0" category="24" />
+    <CATEGORYMEM index="0" category="29" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28466,7 +28471,7 @@
   <XDFTABLE uniqueid="0xCEFB" flags="0x0">
     <title>Rolling Launch RPM Ceiling Offset</title>
     <description>Exact JK03A. Address 0xD623C; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch RPM ceiling above the captured activation RPM Hold mode latches the all-cylinder fuel-cut request when RPM exceeds the captured RPM plus this nonzero offset.</description>
-    <CATEGORYMEM index="0" category="23" />
+    <CATEGORYMEM index="0" category="28" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28508,7 +28513,7 @@
   <XDFTABLE uniqueid="0x9C8" flags="0x0">
     <title>Rolling Launch RPM Ceiling Hysteresis</title>
     <description>Exact JK03A. Address 0xD6243; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch RPM ceiling hysteresis below the cut threshold A latched ceiling request holds while RPM exceeds the cut threshold minus this hysteresis and releases at or below it. The value must be nonzero and must not exceed the ceiling offset.</description>
-    <CATEGORYMEM index="0" category="23" />
+    <CATEGORYMEM index="0" category="28" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -28543,6 +28548,636 @@
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xD040" flags="0x0">
+    <title>Rolling Launch Map 1 Integral Gain</title>
+    <description>Exact JK03A. Address 0xD6248; 1 rows x 1 columns; uint16; map confidence code. Map 1 Rolling Launch integral gain Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4 integrator before its limit and anti-windup gates.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral Gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6248" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x3910" flags="0x0">
+    <title>Rolling Launch Map 1 Maximum Trim</title>
+    <description>Exact JK03A. Address 0xD624A; 1 rows x 1 columns; uint8; map confidence code. Map 1 Rolling Launch maximum trim Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh the hidden efficiency with patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an inconsistent efficiency.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum Trim" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD624A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x68AA" flags="0x0">
+    <title>Rolling Launch Map 1 Timing Floor</title>
+    <description>Exact JK03A. Address 0xD624B; 1 rows x 1 columns; uint8; map confidence code. Map 1 Rolling Launch timing floor Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored when trim is zero.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Timing Floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD624B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg ATDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-110">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xFD09" flags="0x0">
+    <title>Rolling Launch Map 2 Integral Gain</title>
+    <description>Exact JK03A. Address 0xD624E; 1 rows x 1 columns; uint16; map confidence code. Map 2 Rolling Launch integral gain Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4 integrator before its limit and anti-windup gates.</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral Gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD624E" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6933" flags="0x0">
+    <title>Rolling Launch Map 2 Maximum Trim</title>
+    <description>Exact JK03A. Address 0xD6250; 1 rows x 1 columns; uint8; map confidence code. Map 2 Rolling Launch maximum trim Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh the hidden efficiency with patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an inconsistent efficiency.</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum Trim" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6250" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x59A5" flags="0x0">
+    <title>Rolling Launch Map 2 Timing Floor</title>
+    <description>Exact JK03A. Address 0xD6251; 1 rows x 1 columns; uint8; map confidence code. Map 2 Rolling Launch timing floor Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored when trim is zero.</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Timing Floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6251" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg ATDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-110">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xAD2A" flags="0x0">
+    <title>Rolling Launch Map 3 Integral Gain</title>
+    <description>Exact JK03A. Address 0xD6254; 1 rows x 1 columns; uint16; map confidence code. Map 3 Rolling Launch integral gain Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4 integrator before its limit and anti-windup gates.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral Gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6254" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xCC06" flags="0x0">
+    <title>Rolling Launch Map 3 Maximum Trim</title>
+    <description>Exact JK03A. Address 0xD6256; 1 rows x 1 columns; uint8; map confidence code. Map 3 Rolling Launch maximum trim Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh the hidden efficiency with patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an inconsistent efficiency.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum Trim" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6256" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xFC90" flags="0x0">
+    <title>Rolling Launch Map 3 Timing Floor</title>
+    <description>Exact JK03A. Address 0xD6257; 1 rows x 1 columns; uint8; map confidence code. Map 3 Rolling Launch timing floor Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored when trim is zero.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Timing Floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6257" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg ATDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-110">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x851" flags="0x0">
+    <title>Rolling Launch Map 4 Integral Gain</title>
+    <description>Exact JK03A. Address 0xD625A; 1 rows x 1 columns; uint16; map confidence code. Map 4 Rolling Launch integral gain Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4 integrator before its limit and anti-windup gates.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral Gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD625A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x697D" flags="0x0">
+    <title>Rolling Launch Map 4 Maximum Trim</title>
+    <description>Exact JK03A. Address 0xD625C; 1 rows x 1 columns; uint8; map confidence code. Map 4 Rolling Launch maximum trim Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh the hidden efficiency with patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an inconsistent efficiency.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum Trim" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD625C" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xFCDE" flags="0x0">
+    <title>Rolling Launch Map 4 Timing Floor</title>
+    <description>Exact JK03A. Address 0xD625D; 1 rows x 1 columns; uint8; map confidence code. Map 4 Rolling Launch timing floor Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored when trim is zero.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Timing Floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD625D" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg ATDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-110">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x3AF0" flags="0x0">
+    <title>Rolling Launch Map 5 Integral Gain</title>
+    <description>Exact JK03A. Address 0xD6260; 1 rows x 1 columns; uint16; map confidence code. Map 5 Rolling Launch integral gain Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4 integrator before its limit and anti-windup gates.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Integral Gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6260" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x5BDC" flags="0x0">
+    <title>Rolling Launch Map 5 Maximum Trim</title>
+    <description>Exact JK03A. Address 0xD6262; 1 rows x 1 columns; uint8; map confidence code. Map 5 Rolling Launch maximum trim Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh the hidden efficiency with patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an inconsistent efficiency.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum Trim" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6262" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6B4A" flags="0x0">
+    <title>Rolling Launch Map 5 Timing Floor</title>
+    <description>Exact JK03A. Address 0xD6263; 1 rows x 1 columns; uint8; map confidence code. Map 5 Rolling Launch timing floor Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored when trim is zero.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Timing Floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD6263" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg ATDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-110">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
