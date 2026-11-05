@@ -621,7 +621,7 @@ def validate_structure(layout):
         "startup_state_clear",
         "primary_ignition_command",
         "feedback_arbitration",
-        "spark_handler",
+        "dwell_arming_divider",
     }
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
@@ -631,7 +631,7 @@ def validate_structure(layout):
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
         "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
-        "spark_handler": (0x202E4, 0x2AB24, 0xD60C0),
+        "dwell_arming_divider": (0x296C0, 0x21CE0, 0xD60C0),
     }
     entries = {region.entry for region in layout.code_regions}
     for hook in layout.hooks:
@@ -695,6 +695,7 @@ def validate_structure(layout):
     ) for item in layout.diagnostics)
     expected_restores = {
         "stock_fuel_coordinator": (0x219DC, 0x4ED88),
+        "stock_spark_handler": (0x202E4, 0x2AB24),
         "retired_request_did": (0x22914, 0xFFFFFFFF),
         "retired_ceiling_did": (0x22960, 0xFFFFFFFF),
     }

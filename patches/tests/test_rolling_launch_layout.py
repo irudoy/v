@@ -46,7 +46,10 @@ def test_old_fuel_path_is_absent_but_stock_restorations_are_explicit(layout):
     assert not ({"fuel_cut_wrapper", "rpm_ceiling", "trim"} & set(layout.assembly_unit_by_key))
     assert 0x121E not in layout.diagnostic_by_did and 0x1231 not in layout.diagnostic_by_did
     assert {(item.address, item.value) for item in layout.restored_words} == {
-        (0x219DC, 0x4ED88), (0x22914, 0xFFFFFFFF), (0x22960, 0xFFFFFFFF)}
+        (0x219DC, 0x4ED88), (0x22914, 0xFFFFFFFF), (0x22960, 0xFFFFFFFF),
+        (0x202E4, 0x2AB24)}
+    assert "spark_handler" not in layout.hook_by_key
+    assert layout.hook_by_key["dwell_arming_divider"].address == 0x296C0
     assert layout.retired_configuration_for(5).start == 0xD6220
     assert layout.retired_configuration_for(4).start == 0xD6040
 

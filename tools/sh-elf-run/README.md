@@ -35,6 +35,15 @@ toolchain check and the delay-slot probe run in both scopes. The terminal line
 names the scope as `scope=full` or `scope=rom:<ROM>`. `make preflash` runs this
 scope for the ROM of the image it qualifies.
 
+`run.sh --rolling-ignition` executes the dwell-veto kernel against the stock
+unsigned divider. Its matrix checks eligibility, cylinder masks, accumulator
+boundaries, counter wrapping, quiet events, the misfire latch and the complete
+divider ABI. A PC trace requires every kernel instruction, both outcomes of
+each conditional branch and every delay slot. The alias window is excluded
+from the harness ELF and ROM fixture, with a compiled collision case that
+must fail before simulator entry. The coupled APC scheduling path and vehicle
+acceptance remain separate qualification obligations.
+
 `VQ_SH_ELF_IMAGE` selects the local image tag. `VQ_SH_ELF_SKIP_BUILD=1` reuses
 that tag without building it; the image input check below still applies.
 `VQ_SH_ELF_STOCK_TIMEOUT_SECONDS` retains the supported timeout

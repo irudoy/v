@@ -51,7 +51,7 @@ end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
-end = 0x000D6780
+end = 0x000D67F0
 
 [[claimed_rom_extension]]
 start = 0x000D7000
@@ -154,6 +154,12 @@ end = 0x000D6220
 entry = 0x000D60C0
 
 [[code_region]]
+key = "spark_events"
+start = 0x000D6780
+end = 0x000D67F0
+entry = 0x000D6780
+
+[[code_region]]
 key = "slot_validator"
 start = 0x000D6680
 end = 0x000D6780
@@ -226,9 +232,9 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "da55e2ccb8801d14dba33e4d7ea17e2a13eb1b2f4fe229ef62caffbe2770d1f6"
-instruction_count = 38
-data_bytes = 16
+expected_sha256 = "63e9028033a1433c828aaa54a973b53ad1875effc963d742534285387aa8fda0"
+instruction_count = 62
+data_bytes = 24
 code_regions = ["ignition_adapter"]
 
 [[assembly_unit]]
@@ -262,9 +268,9 @@ start = 0x000D60C0
 end = 0x000D6220
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "30e69c6ac042bc21354fbf0f83a6ce7231bb58aab75fd5d654076e7f44ad181e"
-instruction_count = 147
-data_bytes = 48
+expected_sha256 = "b376e2523cba460bbca7f595da94b23c079ae2877209d99c677513fc8a895ab6"
+instruction_count = 132
+data_bytes = 52
 code_regions = ["spark_cut"]
 
 [[assembly_unit]]
@@ -315,6 +321,18 @@ instruction_count = 235
 data_bytes = 38
 code_regions = ["state_check"]
 
+[[assembly_unit]]
+key = "spark_events"
+source = "rolling-launch-spark-events.s"
+start = 0x000D6780
+end = 0x000D67F0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "ceace232e53d2dd4c62f262b3a9565938ed7e1ba9de2079441d4e254a3c45535"
+instruction_count = 48
+data_bytes = 4
+code_regions = ["spark_events"]
+
 [[hook]]
 key = "displaced_periodic_task"
 address = 0x00021970
@@ -345,7 +363,7 @@ address = 0x0004E198
 width = 4
 stock = 0x0002A892
 replacement = 0x000D3EA0
-purpose = "Keep the primary ignition command consumer on the Rolling Launch layer; the adapter passes every argument to the stock consumer."
+purpose = "Apply the publisher return to the primary scheduler, secondary command builder and diagnostic command byte."
 
 [[hook]]
 key = "feedback_arbitration"
@@ -356,12 +374,12 @@ replacement = 0x000D41E0
 purpose = "Run map-selection pulses first, then publish Rolling Launch dashboard state when map feedback is idle."
 
 [[hook]]
-key = "spark_handler"
-address = 0x000202E4
+key = "dwell_arming_divider"
+address = 0x000296C0
 width = 4
-stock = 0x0002AB24
+stock = 0x00021CE0
 replacement = 0x000D60C0
-purpose = "Enter the GR11A spark interrupt through the cut actuator, which sets the dwell-start veto of selected events and then branches to the stock handler with the interrupted machine state."
+purpose = "Consume one q sample at each armed dwell countdown, set its veto before the stock permission check, and execute the displaced unsigned divider."
 
 [[diagnostic]]
 did = 0x1211
@@ -473,3 +491,8 @@ value = 0xFFFFFFFF
 key = "retired_ceiling_did"
 address = 0x00022960
 value = 0xFFFFFFFF
+
+[[restored_word]]
+key = "stock_spark_handler"
+address = 0x000202E4
+value = 0x0002AB24

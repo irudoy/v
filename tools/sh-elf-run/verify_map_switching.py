@@ -1242,9 +1242,27 @@ def main(argv=None):
         choices=runtime_targets.SUPPORTED_ROMS,
         help="execute only the patch stages that cover this ROM",
     )
+    parser.add_argument(
+        "--rolling-ignition", action="store_true",
+        help="execute the Rolling Launch ignition kernel and its simulator prerequisites",
+    )
     args = parser.parse_args(argv)
+    if args.rolling_ignition and args.rom:
+        parser.error("--rolling-ignition excludes --rom")
     try:
-        verify(verbose=args.verbose, rom=args.rom)
+        if args.rolling_ignition:
+            with stage('toolchain'):
+                require_toolchain_version()
+            with stage('simulator_memory'):
+                verify_simulator_memory()
+            try:
+                import verify_rolling_launch_ignition
+                with stage('rolling_ignition_kernel'):
+                    print(verify_rolling_launch_ignition.verify_kernel())
+            except Exception as error:
+                raise VerificationError(f"Rolling Launch ignition kernel failed: {error}") from error
+        else:
+            verify(verbose=args.verbose, rom=args.rom)
     except (OSError, ValueError, VerificationError) as error:
         traceback.print_exc(file=sys.stderr)
         print(f"VQ_SH_ELF_VERIFY status=FAIL error={error}", file=sys.stderr)

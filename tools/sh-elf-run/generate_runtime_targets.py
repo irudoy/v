@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import replace
+import hashlib
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -57,6 +59,38 @@ def build_rolling():
     rolling_launch_assembly.validate_instruction_semantics(layout, parsed, blobs)
     rolling_launch_compose.compose(layout=layout, blobs=blobs)
     return rolling_launch_assembly.render_payloads(layout, blobs)
+
+
+def update_rolling(layout, layout_text, assemble=None):
+    """Derive Rolling Launch locks and require a strict composed-image check."""
+    assemble = assemble or _assemble
+    rolling_launch_layout.validate_structure(layout)
+    parsed = rolling_launch_assembly.validate_assembly_sources(layout)
+    with tempfile.TemporaryDirectory(prefix="vq-rolling-payloads-") as directory:
+        blobs = assemble(layout, parsed, Path(directory), canonical=True)
+    units = tuple(replace(unit, expected_sha256=hashlib.sha256(blobs[unit.key]).hexdigest())
+                  for unit in layout.assembly_units)
+    updated = replace(layout, assembly_units=units, expected_composition_sha256="0" * 64)
+    rolling_launch_assembly.validate_instruction_semantics(updated, parsed, blobs)
+    composition = rolling_launch_compose.compose(layout=updated, blobs=blobs)
+    updated = replace(updated, expected_composition_sha256=composition.sha256)
+    rolling_launch_compose.compose(layout=updated, blobs=blobs)
+    blocks = layout_text.split("[[assembly_unit]]")
+    changed = []
+    for index, block in enumerate(blocks[1:], 1):
+        key = re.match(r'\s*key = "([^"]+)"', block).group(1)
+        old = layout.assembly_unit_by_key[key].expected_sha256
+        new = updated.assembly_unit_by_key[key].expected_sha256
+        blocks[index] = re.sub(r'expected_sha256 = "[0-9a-f]{64}"',
+                               f'expected_sha256 = "{new}"', block, count=1)
+        if old != new:
+            changed.append((f"{key}.sha256", old, new))
+    rendered = "[[assembly_unit]]".join(blocks)
+    rendered = re.sub(r'expected_composition_sha256 = "[0-9a-f]{64}"',
+                      f'expected_composition_sha256 = "{composition.sha256}"', rendered, count=1)
+    if layout.expected_composition_sha256 != composition.sha256:
+        changed.append(("composition.sha256", layout.expected_composition_sha256, composition.sha256))
+    return rendered, rolling_launch_assembly.render_payloads(updated, blobs), changed
 
 
 def _derive_telemetry(layout, assemble):
@@ -268,25 +302,28 @@ def main(argv=None):
     parser.add_argument(
         "--update", action="store_true",
         help=(
-            "with --telemetry, derive the layout locks from the assembled units "
+            "with --telemetry or --rolling, derive the layout locks from the assembled units "
             "and rewrite them with the manifest"
         ),
     )
     args = parser.parse_args(argv)
     if args.rolling and args.telemetry:
         parser.error("--rolling and --telemetry are mutually exclusive")
-    if args.update and (not args.telemetry or args.check):
-        parser.error("--update requires --telemetry and excludes --check")
+    if args.update and (not (args.telemetry or args.rolling) or args.check):
+        parser.error("--update requires --telemetry or --rolling and excludes --check")
     output = args.output or (
         rolling_launch_assembly.DEFAULT_PAYLOADS if args.rolling
         else can_telemetry_assembly.DEFAULT_PAYLOADS if args.telemetry
         else runtime_targets.DEFAULT_PAYLOADS
     )
     if args.update:
-        layout_path = can_telemetry_layout.DEFAULT_MANIFEST
+        layout_module = rolling_launch_layout if args.rolling else can_telemetry_layout
+        update = update_rolling if args.rolling else update_telemetry
+        family = "rolling" if args.rolling else "telemetry"
+        layout_path = layout_module.DEFAULT_MANIFEST
         try:
-            layout_text, content, changed = update_telemetry(
-                can_telemetry_layout.load_layout(layout_path),
+            layout_text, content, changed = update(
+                layout_module.load_layout(layout_path),
                 layout_path.read_text(encoding="utf-8"),
             )
         except ValueError as error:
@@ -296,7 +333,7 @@ def main(argv=None):
             print(f"lock {field}: {declared} -> {derived}")
         print(
             f"status=PASS output={output} layout={layout_path} "
-            f"family=telemetry changed_locks={len(changed)}"
+            f"family={family} changed_locks={len(changed)}"
         )
         return 0
     if args.rolling:

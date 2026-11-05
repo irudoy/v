@@ -59,6 +59,7 @@ SOURCE_LABELS = {
     "speed_controller": "rolling_launch_speed_controller",
     "feedback_arbiter": "rolling_launch_feedback_arbiter",
     "spark_cut": "rolling_launch_spark_cut",
+    "spark_events": "rolling_launch_spark_events",
     "slot_validator": "rolling_launch_slot_validator",
     "rpm_controller": "rolling_launch_rpm_controller",
     "rpm_fraction": "rolling_launch_rpm_fraction",
@@ -433,89 +434,94 @@ def _contains(texts, sequence):
 
 def _validate_ignition_abi(parsed):
     texts = _texts(parsed)
+    saves = [
+        "sts.l pr,@-r15", "sts.l macl,@-r15",
+        "mov.l r5,@-r15", "mov.l r6,@-r15", "mov.l r7,@-r15",
+        "mov r4,r5",
+    ]
     tail = ["mov.l @(rl_ign_stock_consumer,pc),r0", "jmp @r0", "nop"]
-    if texts[-3:] != tail or texts.count("jmp @r0") != 1 or any(
-        text.startswith(("jsr", "bsr", "rts", "sts.l pr", "lds.l"))
-        for text in texts
-    ):
-        raise ValueError("ignition adapter must leave through one stock tail jump")
-    if any(
-        text.startswith(("mov.b r", "mov.w r", "mov.l r")) for text in texts
-    ):
-        raise ValueError("ignition adapter stores memory")
-    if texts.count("mov r0,r4") != 1 or texts.index("mov r0,r4") != len(texts) - 4:
-        raise ValueError("ignition adapter replaces the command outside its last step")
-    gates = ["mov.b @r1,r0", "cmp/eq 0x1,r0", "bf rl_ign_stock"]
-    fallback = ["mov.b @r2,r0", "tst 0x40,r0", "bf rl_ign_stock"]
-    retard_only = ["cmp/hi r1,r0", "bf rl_ign_stock", "mov r0,r4"]
-    if not all(_contains(texts, item) for item in (gates, fallback, retard_only)):
+    publish_and_apply = [
+        "mov.l @(rl_ign_publisher,pc),r0", "jsr @r0", "nop",
+        "mov r5,r0", "mov.l @(rl_ign_command_address,pc),r1",
+        "mov.b r0,@r1", "mov r5,r4",
+        "mov.l @r15+,r7", "mov.l @r15+,r6", "mov.l @r15+,r5",
+        "lds.l @r15+,macl", "lds.l @r15+,pr", *tail,
+    ]
+    if texts[:len(saves)] != saves or texts[-len(publish_and_apply):] != publish_and_apply:
+        raise ValueError("ignition adapter must apply the publisher return and restore its caller")
+    transfers = [text for text in texts if text.split()[0] in {"jsr", "bsr", "jmp", "rts", "rte"}]
+    if transfers != ["jsr @r0", "jmp @r0"]:
+        raise ValueError("ignition adapter must call one publisher and tail-jump to stock")
+    stores = [text for text in texts if text.startswith(("mov.b r", "mov.w r", "mov.l r"))]
+    if stores != ["mov.l r5,@-r15", "mov.l r6,@-r15", "mov.l r7,@-r15", "mov.b r0,@r1"]:
+        raise ValueError("ignition adapter store contract differs")
+    gates = ["mov.b @r1,r0", "cmp/eq 0x1,r0", "bf rl_ign_publish",
+             "mov.b @(0x5,r1),r0", "cmp/eq 0x1,r0", "bf rl_ign_publish"]
+    fallback = ["mov.b @r2,r0", "tst 0x40,r0", "bf rl_ign_publish"]
+    slot = ["mov.b @(0x4,r1),r0", "extu.b r0,r0", "mov #0x5,r2",
+            "cmp/hs r2,r0", "bt rl_ign_publish", "shll2 r0", "mov r0,r2",
+            "shll r2", "add r2,r0", "mov.l @(rl_ign_slot_table,pc),r2", "add r0,r2"]
+    limits = ["mov.b @(0x4,r2),r0", "extu.b r0,r3", "mov #0x78,r2",
+              "cmp/hi r2,r3", "bt rl_ign_publish", "mov #0x1e,r0",
+              "mov.b @(r0,r1),r0", "extu.b r0,r0", "mov #0x28,r2",
+              "cmp/hi r2,r0", "bt rl_ign_publish"]
+    retard_only = ["extu.b r4,r2", "add r2,r0", "cmp/hi r3,r0",
+                   "bf rl_ign_floor_ready", "mov r3,r0", "cmp/hi r2,r0",
+                   "bf rl_ign_publish", "mov r0,r5"]
+    if not all(_contains(texts, item) for item in (gates, fallback, slot, limits, retard_only)):
         raise ValueError("ignition adapter gates differ")
     registers = set()
     for statement in _instructions(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    if not registers <= {"r0", "r1", "r2", "r3", "r4"}:
-        raise ValueError("ignition adapter changes r5..r7")
+    if not registers <= {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}:
+        raise ValueError("ignition adapter changes an undeclared register")
 
 
 def _validate_spark_cut_abi(parsed):
     texts = _texts(parsed)
-    saves = [f"mov.l r{number},@-r15" for number in range(8)]
-    if texts[:10] != saves + ["stc sr,r0", "mov.l r0,@-r15"]:
-        raise ValueError("spark wrapper does not save r0..r7 and SR")
-    restores = [f"mov.l @r15+,r{number}" for number in range(7, 0, -1)]
-    if texts[-12:] != [
-        "mov.l @r15+,r0", "ldc r0,sr", *restores,
-        "mov.l @(rl_spark_stock_handler,pc),r0", "jmp @r0", "mov.l @r15+,r0",
-    ]:
-        raise ValueError("spark wrapper does not chain with its saved state")
-    if texts.count("jmp @r0") != 1 or any(
-        text.startswith(("jsr", "bsr", "rts", "rte", "sts.l pr", "lds.l"))
-        for text in texts
-    ):
-        raise ValueError("spark wrapper must leave through its stock tail only")
-    stores = sorted(
-        text for text in texts
-        if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
-        and not text.endswith(",@-r15")
-    )
-    expected = sorted([
-        "mov.b r0,@r4", "mov.b r0,@r4",
-        "mov.b r0,@r3", "mov.b r0,@r3",
-        "mov.b r0,@r6",
-        "mov.b r0,@(0x1,r4)",
-        "mov.w r7,@(r0,r4)", "mov.w r7,@(r0,r4)",
-        "mov.w r0,@(0x4,r4)", "mov.w r0,@(0x6,r4)", "mov.w r0,@(0x8,r4)",
-        "mov.w r0,@(0xa,r4)", "mov.w r0,@(0xc,r4)", "mov.w r0,@(0xe,r4)",
-    ])
-    if stores != expected:
-        raise ValueError("spark wrapper store contract differs")
-    if texts.count("mov.w @(0x1a,r5),r0") != 1 or "mov.w @(0xe,r5),r0" in texts:
-        raise ValueError("spark wrapper does not consume the cut fraction")
-    # Each stock-RAM store runs after a mask-15 LDC and before the SR restore.
-    for target, restore in (
-        ("mov.b r0,@r3", "ldc r7,sr"), ("mov.b r0,@r6", "ldc r3,sr"),
-    ):
-        for index, text in enumerate(texts):
-            if text != target:
-                continue
-            masked = max(
-                position for position in range(index)
-                if texts[position].startswith("ldc ")
-            )
-            if (
-                texts[masked - 1 : masked + 1] != ["or 0xf0,r0", "ldc r0,sr"]
-                or restore not in texts[index:]
-                or any(text.startswith("ldc ") for text in texts[masked + 1 : index])
-            ):
-                raise ValueError(
-                    "spark wrapper stores stock RAM outside its masked section"
-                )
+    if "rolling_launch_spark_events" in parsed.labels:
+        if texts[:2] != ["mov r5,r4", "add 0x1c,r4"] or texts[-3:] != ["ldc r7,sr", "rts", "nop"]:
+            raise ValueError("spark events helper entry or return differs")
+        if [text for text in texts if text.split()[0] in {"jsr", "bsr", "jmp", "rts", "rte"}] != ["rts"]:
+            raise ValueError("spark events helper must be a leaf")
+        if sorted(_stores(texts)) != sorted(["mov.b r0,@r4"]*2 + ["mov.b r0,@r3"]*2):
+            raise ValueError("spark events helper stores outside quiet state and the latch")
+        if not _contains(texts, ["stc sr,r7", "mov r7,r0", "or 0xf0,r0", "ldc r0,sr", "mov.b @r3,r0"]):
+            raise ValueError("spark events latch check is not masked")
+        if texts.count("mov.b @r5,r0") != 1 or texts.count("mov.b @(0x5,r5),r0") != 1:
+            raise ValueError("spark events phase and mode read set differs")
+        allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r7", "sr"}
+    else:
+        saves = ["mov.l r0,@-r15", "sts.l pr,@-r15"] + [f"mov.l r{n},@-r15" for n in range(1, 8)]
+        saves += ["stc sr,r0", "mov.l r0,@-r15"]
+        restores = ["mov.l @r15+,r0", "ldc r0,sr"] + [f"mov.l @r15+,r{n}" for n in range(7, 0, -1)]
+        restores += ["lds.l @r15+,pr", "mov.l @(rl_cut_stock_divider,pc),r0", "jmp @r0", "mov.l @r15+,r0"]
+        if texts[:len(saves)] != saves or texts[-len(restores):] != restores:
+            raise ValueError("dwell veto must preserve the divider inputs, caller and SR")
+        transfers = [text for text in texts if text.split()[0] in {"jsr", "bsr", "jmp", "rts", "rte"}]
+        if transfers != ["bsr 0x000d6780", "jmp @r0"]:
+            raise ValueError("dwell veto must call its event helper and tail-jump to the divider")
+        if texts.count("mov.w @(0x1a,r5),r0") != 1 or any(text.startswith("mov.b @(0x1a,r5)") for text in texts):
+            raise ValueError("dwell veto must consume one aligned q word")
+        expected = ["mov.w r7,@(r0,r4)", "mov.l r0,@(0x10,r3)", "mov.w r0,@(0x18,r3)",
+                    "mov.b r0,@r3", "mov.b r0,@(0x1,r4)"]
+        expected += [f"mov.w r0,@(0x{n:x},r4)" for n in range(4, 15, 2)]
+        stores = [text for text in _stores(texts) if not text.endswith(",@-r15")]
+        if sorted(stores) != sorted(expected):
+            raise ValueError("dwell veto actuator/counter store contract differs")
+        commit = _region(parsed, "rl_cut_commit", "rl_cut_unmask")
+        if not _contains(commit, ["stc sr,r6", "mov r6,r0", "or 0xf0,r0", "ldc r0,sr"]):
+            raise ValueError("dwell veto event commit is not masked")
+        if _stores_in_order(commit) != expected[:5] or texts[texts.index("ldc r6,sr")+1:texts.index("ldc r6,sr")+3] != ["bra rl_cut_chain", "nop"]:
+            raise ValueError("dwell veto event commit order differs")
+        if not _contains(texts, ["mov.l @(rl_cut_dwell_mask_address,pc),r3", "mov.b @(0x1,r3),r0", "tst r0,r0", "bf rl_cut_chain", "mov.b @r3,r0"]):
+            raise ValueError("dwell veto must use the armed cylinder and the stock guard")
+        allowed = {f"r{n}" for n in range(8)} | {"r15", "pr", "sr"}
     registers = set()
     for statement in _instructions(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
-    allowed = {f"r{number}" for number in range(8)} | {"r15", "sr"}
     if not registers <= allowed:
-        raise ValueError("spark wrapper uses an undeclared register")
+        raise ValueError("dwell veto changes an undeclared register")
 
 
 def _validate_feedback_arbiter_abi(parsed):
@@ -1107,7 +1113,9 @@ def _expected_long_literals():
         "ignition_adapter": {
             "rl_ign_state_address": 0xFFFF5D40,
             "rl_ign_apc_mode_address": 0xFFFF24C9,
-            "rl_ign_slot_table": 0x000D6248,
+            "rl_ign_slot_table": 0x000D6348,
+            "rl_ign_command_address": 0xFFFF2022,
+            "rl_ign_publisher": 0x000D6540,
             "rl_ign_stock_consumer": 0x0002A892,
         },
         "speed_controller": {
@@ -1123,15 +1131,17 @@ def _expected_long_literals():
             "rl_feedback_status_byte": 0xFFFF3ADA,
         },
         "spark_cut": {
-            "rl_spark_veto_address": 0xFFFF8511,
-            "rl_spark_state_address": 0xFFFF5D40,
-            "rl_spark_misfire_latch_address": 0xFFFF436F,
-            "rl_spark_sync_address": 0xFFFF8501,
-            "rl_spark_apc_mode_address": 0xFFFF24C9,
-            "rl_spark_dwell_address": 0xFFFF237A,
-            "rl_spark_cylinder_address": 0xFFFF13C9,
-            "rl_spark_stock_handler": 0x0002AB24,
+            "rl_cut_state_address": 0xFFFF5D40,
+            "rl_cut_sync_address": 0xFFFF8501,
+            "rl_cut_apc_mode_address": 0xFFFF24C9,
+            "rl_cut_output_state_address": 0xFFFF84EA,
+            "rl_cut_port_state_address": 0xFFFF4185,
+            "rl_cut_veto_address": 0xFFFF8511,
+            "rl_cut_dwell_mask_address": 0xFFFF13D1,
+            "rl_cut_extension_address": 0xFFFF6100,
+            "rl_cut_stock_divider": 0x00021CE0,
         },
+        "spark_events": {"rl_cut_misfire_latch_address": 0xFFFF436F},
         "rpm": {
             "rl_rpm_input_address": 0xFFFF11BC,
             "rl_rpm_extension_address": 0xFFFF6100,
@@ -1202,6 +1212,8 @@ def validate_assembly_sources(layout=None):
             if parsed.labels.get(label) != entry:
                 raise ValueError(f"{unit.key}: {label} entry differs")
         actual_literals = common._long_literals(parsed)
+        if any(0xD6220 <= value < 0xD6268 for value in actual_literals.values()):
+            raise ValueError(f"{unit.key}: literal reads the retired schema-5 configuration")
         if actual_literals != expected_literals[unit.key]:
             raise ValueError(f"{unit.key}: long literal contract differs")
         if unit.key == "wrappers":
@@ -1214,7 +1226,7 @@ def validate_assembly_sources(layout=None):
             _validate_speed_controller_abi(parsed)
         elif unit.key == "feedback_arbiter":
             _validate_feedback_arbiter_abi(parsed)
-        elif unit.key == "spark_cut":
+        elif unit.key in {"spark_cut", "spark_events"}:
             _validate_spark_cut_abi(parsed)
         elif unit.key == "rpm":
             _validate_rpm_abi(parsed)

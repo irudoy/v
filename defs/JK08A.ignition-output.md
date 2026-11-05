@@ -336,20 +336,31 @@ The tooth entry `0x00028EA2` reads `ICR0A` at `0xFFFFF434`. Initializer
 (`IPRC[3:0]`, vector 84). The cam entry `0x0002A2BE` reads `TSR1A` at
 `0xFFFFF45E` and clears its bit 4 with `0x01EF` at `0x0002A2EE`.
 That flag is `IMF1E`, whose interrupt `IMI1E` uses vector 100 and
-`IPRD[3:0]`. The same initializer writes `IPRD = 0xFF8A`, so this source
-uses priority 10 and can preempt a tooth section at mask 8. The register
+`IPRD[3:0]`. The other cam entry, `0x0002A5CC`, clears `IMF1F` with
+`0x01DF` at `0x0002A5FC`; `IMI1F` uses vector 101 in the same priority
+group. The initializer writes `IPRD = 0xFF8A`, so both cam sources use
+priority 10 and can preempt a tooth section at mask 8. They cannot preempt
+each other. The register
 and vector assignments are defined by the SH7058S/SH7059 hardware manual,
 table 7.4 and section 11.2.5.
 
 The cam path reaches the engine-event feeder through the fallback branch
 `0x0002A316..0x0002A31E`, `0x0002A4B2`, `0x0002A51E`, and the call to
 `0x0002B768` at `0x0002A592`. That routine calls `0x000208F8` at
-`0x0002BC80`. This branch requires `0xFFFF24C9.bit6` to be set; with the
-bit clear, the cam path does not run the ignition dispatcher. The mode
-snapshot is copied from `0xFFFF24CE..0xFFFF24D3` to
+`0x0002BC80`. The second cam entry tests bit 6 at
+`0x0002A626..0x0002A62E`, enters `0x0002A782` and calls `0x0002B768` at
+`0x0002A86C`. Both feeder paths require `0xFFFF24C9.bit6` to be set; with
+the bit clear, neither cam path runs the ignition dispatcher. The mode
+snapshot is copied by main-loop function `0x00020DFE` from
+`0xFFFF24CE..0xFFFF24D3` to
 `0xFFFF24C8..0xFFFF24CD` by `0x00022558` at `0x00021348`, after the
-periodic loop raises its mask to 15 at `0x00021300`. The snapshot cannot
-change while the tooth handler is suspended by the cam handler. Thus a
+periodic loop raises its mask to 15 at `0x00021300`. The main loop cannot
+run inside an interrupt handler, so the snapshot stays fixed for the entire
+handler. With bit 6 set, the tooth entry tests it at
+`0x00028EEA..0x00028EF2` and jumps through literal `0x0002902C` to epilogue
+`0x0002A294`, which returns at `0x0002A2BA`, before the only feeder call at
+`0x0002983A`. The tooth path therefore publishes no ignition command in
+fallback mode. Thus a
 normal-mode adapter publication cannot be interrupted by a cam fallback
 publication. When fallback is selected, the adapter and publisher must
 apply the stock command and publish zero cut fraction on every entry.
