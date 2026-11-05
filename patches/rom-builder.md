@@ -143,15 +143,19 @@ by address. The builder write sets must hold no runtime or one complete
 runtime. The CAN telemetry layer must be wholly absent or match a complete
 current or registered historical payload, configuration, mailbox record, and
 hooks. `can-telemetry-history.toml` owns the exact schema-2 components of
-profile 7 of the 7mfk family and of profile 9 of JK08A. After removing a
-validated telemetry layer in memory, the Rolling Launch layer, when supported,
-must be wholly absent, match the exact current payload and configuration
+profile 7 of the 7mfk family and of profile 9 of JK08A. A historical telemetry
+endpoint places its unit payloads, hook words, configuration record, erased
+reserve and mailbox record by its own addresses and decodes the record under
+the frozen contract of its protocol; every part of the current telemetry
+layout outside it must hold the bytes below the telemetry layer. After
+removing a validated telemetry layer in memory, the Rolling Launch layer, when
+supported, must be wholly absent, match the exact current payload and configuration
 schema, or match one registered historical endpoint. An endpoint places its
 unit fingerprints, hook values, DID slots and record by its own addresses and
 validates the record against the frozen contract of its schema; every other
 offset of the current Rolling Launch layout and of the other registered
-endpoints of the ROM must hold stock bytes. Extraction and `UPGRADE` admit the
-writes of the registered endpoints of the selected ROM. A current telemetry layer is accepted only above the current Rolling
+Rolling Launch and CAN telemetry endpoints of the ROM must hold stock bytes.
+Extraction and `UPGRADE` admit the writes of the registered endpoints of the selected ROM. A current telemetry layer is accepted only above the current Rolling
 Launch endpoint or above a registered complete endpoint explicitly marked
 compatible with that telemetry contract. The previous guarded ignition
 controller remains a registered endpoint on every ROM that accepts a complete

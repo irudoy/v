@@ -1,4 +1,4 @@
-schema_version = 1
+schema_version = 2
 
 [[endpoint]]
 key = "schema2-profile7"
@@ -7,6 +7,60 @@ profile_crc16 = 25716
 profile_id = 7
 protocol_version = 2
 roms = ["JK00A", "JK03A", "JK03B", "JK08A"]
+configuration_address = 871936
+reserved_rom_start = 872448
+reserved_rom_end = 876544
+mailbox_record_address = 38846
+mailbox_record_stock = 83886080
+
+[[endpoint.hooks]]
+key = "coherent_snapshot_call"
+address = 163984
+width = 4
+stock = 134654
+value = 868992
+
+[[endpoint.hooks]]
+key = "knock_interval_latch"
+address = 137840
+width = 4
+stock = 300008
+value = 869040
+
+[[endpoint.hooks]]
+key = "knock_margin_latch"
+address = 305600
+width = 4
+stock = 303672
+value = 869888
+
+[[endpoint.hooks]]
+key = "startup_state_clear"
+address = 163112
+width = 4
+stock = 866464
+value = 869104
+
+[[endpoint.hooks]]
+key = "hcan1_sle1_vector"
+address = 132000
+width = 4
+stock = 817428
+value = 870400
+
+[[endpoint.hooks]]
+key = "hcan1_primary_init"
+address = 186364
+width = 4
+stock = 799626
+value = 871952
+
+[[endpoint.hooks]]
+key = "hcan1_recovery_init"
+address = 801552
+width = 4
+stock = 799626
+value = 871952
 
 [[endpoint.units]]
 end = 869184
@@ -50,6 +104,60 @@ profile_crc16 = 24047
 profile_id = 9
 protocol_version = 2
 roms = ["JK08A"]
+configuration_address = 871936
+reserved_rom_start = 872448
+reserved_rom_end = 876544
+mailbox_record_address = 38846
+mailbox_record_stock = 83886080
+
+[[endpoint.hooks]]
+key = "coherent_snapshot_call"
+address = 163984
+width = 4
+stock = 134654
+value = 868992
+
+[[endpoint.hooks]]
+key = "knock_interval_latch"
+address = 137840
+width = 4
+stock = 300008
+value = 869040
+
+[[endpoint.hooks]]
+key = "knock_margin_latch"
+address = 305600
+width = 4
+stock = 303672
+value = 869888
+
+[[endpoint.hooks]]
+key = "startup_state_clear"
+address = 163112
+width = 4
+stock = 866464
+value = 869104
+
+[[endpoint.hooks]]
+key = "hcan1_sle1_vector"
+address = 132000
+width = 4
+stock = 817428
+value = 870400
+
+[[endpoint.hooks]]
+key = "hcan1_primary_init"
+address = 186364
+width = 4
+stock = 799626
+value = 871952
+
+[[endpoint.hooks]]
+key = "hcan1_recovery_init"
+address = 801552
+width = 4
+stock = 799626
+value = 871952
 
 [[endpoint.units]]
 end = 869184

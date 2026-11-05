@@ -5,8 +5,11 @@ historical Rolling Launch endpoint under an optional current or registered
 historical CAN telemetry layer. Each signature names the ROMs it describes, and
 classification considers only the signatures of the selected ROM. A historical
 Rolling Launch signature places its units, hooks, DID slots and record by its
-own addresses, so a change of the current layout leaves its classification
-intact. Partial, unknown, or mixed layers are rejected with a named reason.
+own addresses. A historical CAN telemetry endpoint places its units, hooks,
+record, reserve and mailbox record by its own addresses and decodes the record
+under its frozen protocol. A change of the current layouts or protocol leaves
+both classifications intact. Partial, unknown, or mixed layers are rejected
+with a named reason.
 """
 
 from __future__ import annotations
@@ -1034,15 +1037,14 @@ def require_coherent_telemetry_endpoint(
         lower_hook_values = {
             hook.address: hook.stock for hook in launch_layout.hooks
         }
-    hooks_stock = all(
-        hook_values[hook.key]
-        in ({hook.stock} | (
-            {lower_hook_values[hook.address]}
-            if hook.address in lower_hook_values
-            else set()
-        ))
-        for hook in layout.hooks
-    )
+
+    def hook_is_lower(hook):
+        allowed = {hook.stock}
+        if hook.address in lower_hook_values:
+            allowed.add(lower_hook_values[hook.address])
+        return hook_values[hook.key] in allowed
+
+    hooks_stock = all(hook_is_lower(hook) for hook in layout.hooks)
     hooks_current = all(
         hook_values[hook.key] == hook.replacement for hook in layout.hooks
     )
@@ -1075,16 +1077,38 @@ def require_coherent_telemetry_endpoint(
     )):
         return "current"
 
-    if reserve_erased and hooks_current:
-        for endpoint in can_telemetry_history.endpoints():
-            if (rom or layout.rom) not in endpoint.roms or not endpoint.matches(source, layout):
-                continue
-            try:
-                model = endpoint.configuration(configuration)
-            except (TypeError, ValueError):
-                continue
-            if mailbox_record == model.mailbox_record():
-                return endpoint.key
+    # A historical endpoint matches at its own addresses; every part of the
+    # current layout outside it holds the bytes below the telemetry layer.
+    erased_offsets = {
+        offset
+        for span in (
+            *(unit.span for unit in layout.assembly_units),
+            layout.configuration,
+            layout.reserved_rom,
+        )
+        for offset in range(span.start, span.end)
+    }
+    # Each current hook word and the mailbox record, and whether it holds
+    # the value below the telemetry layer.
+    lower_words = [
+        (hook.address, hook.address + hook.width, hook_is_lower(hook))
+        for hook in layout.hooks
+    ]
+    lower_words.append(
+        (record_start, record_start + 4, mailbox_record == stock_mailbox_record)
+    )
+    for endpoint in can_telemetry_history.endpoints():
+        if (rom or layout.rom) not in endpoint.roms or not endpoint.matches(source):
+            continue
+        own = endpoint.write_offsets()
+        if all(
+            source[offset] == 0xFF for offset in erased_offsets - own
+        ) and all(
+            own.issuperset(range(start, end))
+            or (own.isdisjoint(range(start, end)) and lower)
+            for start, end, lower in lower_words
+        ):
+            return endpoint.key
 
     raise EndpointError(f"{context}: partial or unknown CAN telemetry state")
 
@@ -1092,11 +1116,19 @@ def require_coherent_telemetry_endpoint(
 def strip_telemetry_endpoint(
     source, layout, state, checksum_layout=None
 ):
-    """Restore the exact lower-layer bytes used by endpoint validation."""
+    """Restore the exact lower-layer bytes used by endpoint validation: those
+    of the current layout, or of a historical endpoint at its own
+    addresses."""
     if state == "absent":
         return bytes(source)
-    if state != "current" and can_telemetry_history.endpoint(state) is None:
-        raise EndpointError(f"unsupported CAN telemetry endpoint {state!r}")
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
+    if state != "current":
+        historical = can_telemetry_history.endpoint(state)
+        if historical is None:
+            raise EndpointError(f"unsupported CAN telemetry endpoint {state!r}")
+        return bytes(
+            rom_checksums.recalculate(historical.strip(source), checksum_layout)
+        )
     data = bytearray(source)
     for unit in layout.assembly_units:
         data[unit.span.start : unit.span.end] = (
@@ -1113,7 +1145,6 @@ def strip_telemetry_endpoint(
     data[start : start + 4] = layout.mailbox_record_stock.to_bytes(
         4, layout.byte_order
     )
-    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     return bytes(rom_checksums.recalculate(data, checksum_layout))
 
 
@@ -1218,13 +1249,22 @@ def historical_endpoints(rom):
     )
 
 
-def historical_write_offsets(rom):
-    """Return every offset that a registered historical endpoint of the ROM
-    writes or keeps erased."""
+def _historical_rolling_offsets(rom):
+    """Return every offset that a registered historical Rolling Launch
+    endpoint of the ROM writes or keeps erased."""
     offsets = set()
     for endpoint in historical_endpoints(rom):
         offsets |= endpoint.write_offsets()
     return frozenset(offsets)
+
+
+def historical_write_offsets(rom):
+    """Return every offset that a registered historical Rolling Launch
+    endpoint of the ROM writes or keeps erased, or that a registered
+    historical CAN telemetry endpoint writes."""
+    return _historical_rolling_offsets(rom) | can_telemetry_history.write_offsets(
+        rom
+    )
 
 
 def _current_write_offsets(layout):
@@ -1246,10 +1286,30 @@ def _current_write_offsets(layout):
     return {offset for start, end in spans for offset in range(start, end)}
 
 
-def _require_stock_outside_history(source, target, state, context):
-    """Refuse the bytes of another registered endpoint that lie outside the
-    offsets that the classified state verified: the current composition, or
-    the current layout and the endpoint's own writes."""
+def _telemetry_layout_offsets(layout):
+    """Return the offsets that the current CAN telemetry layout writes or
+    keeps erased."""
+    spans = [(unit.span.start, unit.span.end) for unit in layout.assembly_units]
+    spans += [
+        (span.start, span.end)
+        for span in (layout.configuration, layout.reserved_rom)
+    ]
+    spans.append(
+        (layout.mailbox_record_address, layout.mailbox_record_address + 4)
+    )
+    spans += [
+        (hook.address, hook.address + hook.width) for hook in layout.hooks
+    ]
+    return {offset for start, end in spans for offset in range(start, end)}
+
+
+def _require_stock_outside_history(
+    source, target, state, telemetry_state, context
+):
+    """Refuse the bytes of another registered Rolling Launch or CAN telemetry
+    endpoint that lie outside the offsets that the classified states
+    verified: for each layer the current composition, or the current layout
+    and the endpoint's own writes."""
     layout = target.rolling_layout
     if state == "current":
         covered = _current_write_offsets(layout)
@@ -1257,6 +1317,10 @@ def _require_stock_outside_history(source, target, state, context):
         covered = set(_layout_stock_bytes(layout))
         if state != "absent":
             covered |= historical_endpoint(state).write_offsets()
+    covered |= _telemetry_layout_offsets(target.telemetry_layout)
+    telemetry = can_telemetry_history.endpoint(telemetry_state)
+    if telemetry is not None:
+        covered |= telemetry.write_offsets()
     # Below the Rolling Launch layer a hook word that Map Switching shares
     # holds the Map Switching replacement; every other byte is stock.
     below = bytearray(target.stock_image.data)
@@ -1265,13 +1329,12 @@ def _require_stock_outside_history(source, target, state, context):
         below[hook.address : hook.address + hook.width] = hook.replacement.to_bytes(
             hook.width, map_layout.byte_order
         )
-    if any(
-        source[offset] != below[offset]
-        for offset in historical_write_offsets(target.rom) - covered
+    for layer, offsets in (
+        ("Rolling Launch", _historical_rolling_offsets(target.rom)),
+        ("CAN telemetry", can_telemetry_history.write_offsets(target.rom)),
     ):
-        raise EndpointError(
-            f"{context}: partial or unknown Rolling Launch state"
-        )
+        if any(source[offset] != below[offset] for offset in offsets - covered):
+            raise EndpointError(f"{context}: partial or unknown {layer} state")
 
 
 def classify_runtime(source, target, context):
@@ -1299,7 +1362,7 @@ def classify_runtime(source, target, context):
     )
     if target.rolling_layout is not None:
         _require_stock_outside_history(
-            lower_source, target, rolling_state, context
+            lower_source, target, rolling_state, telemetry_state, context
         )
     if (
         telemetry_state != "absent"

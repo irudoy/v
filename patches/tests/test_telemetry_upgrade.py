@@ -19,8 +19,7 @@ def previous_image():
     endpoint = can_telemetry_history.endpoint("schema2-profile7")
     for unit in endpoint.units:
         data[unit.start:unit.end] = unit.payload
-    layout = target.telemetry_layout
-    data[layout.configuration.start:layout.configuration.end] = profile.telemetry.to_bytes(endpoint.manifest())
+    data[endpoint.configuration_address:endpoint.configuration_end] = endpoint.encode(profile.telemetry)
     family = target.map_layout.families[0]
     data[family.canonical_address] ^= 1
     data[family.copies[1] + 3] ^= 0x11
@@ -60,15 +59,15 @@ def test_upgrade_preserves_all_calibration_and_matches_rolling_settings():
 @pytest.mark.parametrize("damage", ("unit", "profile", "crc", "hook", "mailbox", "reserve"))
 def test_upgrade_rejects_partial_or_unknown_previous_endpoint(damage):
     target = runtime_targets.load_runtime_target("JK08A")
-    layout = target.telemetry_layout
+    endpoint = can_telemetry_history.endpoint("schema2-profile7")
     data = bytearray(previous_image())
     address = {
-        "unit": layout.assembly_units[0].span.start,
-        "profile": layout.configuration.start + 4,
-        "crc": layout.configuration.start + 10,
-        "hook": layout.hooks[0].address,
-        "mailbox": layout.mailbox_record_address,
-        "reserve": layout.reserved_rom.start,
+        "unit": endpoint.units[0].start,
+        "profile": endpoint.configuration_address + 4,
+        "crc": endpoint.configuration_address + 10,
+        "hook": endpoint.hooks[0].address,
+        "mailbox": endpoint.mailbox_record_address,
+        "reserve": endpoint.reserved_rom_start,
     }[damage]
     data[address] ^= 1
     data = bytes(rom_checksums.recalculate(data, target.checksum_layout))

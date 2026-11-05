@@ -8,6 +8,8 @@ import pytest
 
 from patches import build_rom
 from patches import calibration_ranges
+from patches import can_telemetry
+from patches import can_telemetry_history
 from patches import extract_calibration
 from patches import rom_checksums
 from patches import runtime_endpoints
@@ -339,6 +341,133 @@ SCHEMA_5_SLOTS = (
     "0002" "14" "78" "0338",
     "0000" "00" "00" "03e8",
 )
+
+
+# The CAN telemetry endpoint of both flashed images.
+FLASHED_TELEMETRY = "schema2-profile9"
+TELEMETRY_CHANGES = (
+    "unit-span", "configuration-span", "hook-value", "hook-address", "protocol"
+)
+
+
+def changed_telemetry(change, monkeypatch):
+    """Return ``changed_target(fuel_path=False)`` with one change of the
+    current CAN telemetry: the control unit or the configuration record moved
+    into the reserve, a hook word with a new value or at a new address, or a
+    new configuration protocol."""
+    current = changed_target(fuel_path=False)
+    layout = current.telemetry_layout
+    reserve = layout.reserved_rom
+    if change == "unit-span":
+        units = tuple(
+            replace(unit, span=replace(
+                unit.span, start=reserve.start, end=reserve.start + unit.span.size
+            )) if unit.key == "control" else unit
+            for unit in layout.assembly_units
+        )
+        layout = replace(
+            layout,
+            assembly_units=units,
+            reserved_rom=replace(reserve, start=reserve.start + 0x200),
+        )
+    elif change == "configuration-span":
+        size = layout.configuration.size
+        layout = replace(
+            layout,
+            configuration=replace(
+                layout.configuration, start=reserve.start, end=reserve.start + size
+            ),
+            reserved_rom=replace(reserve, start=reserve.start + size),
+        )
+    elif change == "hook-value":
+        layout = replace(layout, hooks=tuple(
+            replace(hook, replacement=hook.replacement + 4)
+            if hook.key == "knock_margin_latch" else hook
+            for hook in layout.hooks
+        ))
+    elif change == "hook-address":
+        stock = current.stock_image.data
+        moved = layout.hook_by_key["hcan1_recovery_init"]
+        address = moved.address + 4
+        assert not runtime_endpoints.historical_write_offsets("JK08A").intersection(
+            range(address, address + moved.width)
+        )
+        moved = replace(moved, address=address, stock=int.from_bytes(
+            stock[address : address + moved.width], layout.byte_order
+        ))
+        layout = replace(layout, hooks=tuple(
+            moved if hook.key == moved.key else hook for hook in layout.hooks
+        ))
+    else:
+        monkeypatch.setattr(can_telemetry, "CONFIG_VERSION", 3)
+        monkeypatch.setattr(can_telemetry, "CONFIG_INTEGRITY", 0x54454C33)
+    return replace(current, telemetry_layout=layout)
+
+
+@pytest.mark.parametrize("change", TELEMETRY_CHANGES)
+@pytest.mark.parametrize("key", FLASHED_ENDPOINTS)
+def test_flashed_telemetry_survives_a_change_of_the_current_telemetry(
+    selected_target, monkeypatch, key, change
+):
+    source = bytearray(endpoint_image(key))
+    family = target("JK08A").map_layout.families[0]
+    source[family.canonical_address] ^= 1
+    source = closed(source)
+    changed = changed_telemetry(change, monkeypatch)
+    selected_target["JK08A"] = changed
+    assert runtime_endpoints.classify_runtime(
+        source, changed, "flashed"
+    ) == runtime_endpoints.Classification(telemetry=FLASHED_TELEMETRY, rolling=key)
+    extraction = extract_calibration.extract(source, rom="JK08A")
+    states = dict(extraction.calibration.source)
+    assert (states["rolling_launch"], states["can_telemetry"]) == (
+        key, FLASHED_TELEMETRY
+    )
+    assert extraction.telemetry == build_rom.builtin_profile("JK08A").telemetry
+
+
+@pytest.mark.parametrize("payload_changed", (False, True))
+def test_hook_value_at_both_addresses_is_refused(monkeypatch, payload_changed):
+    """With the current hook word moved, an image with the hook value at both
+    addresses is refused: as the current endpoint with a leftover word of the
+    historical endpoint, or, when the current payload differs, as the
+    historical endpoint with a current word outside it."""
+    changed = changed_telemetry("hook-address", monkeypatch)
+    if payload_changed:
+        payloads = dict(changed.telemetry_payloads)
+        capture = payloads["capture"]
+        payloads["capture"] = bytes([capture[0] ^ 1]) + capture[1:]
+        changed = replace(changed, telemetry_payloads=payloads)
+    hook = changed.telemetry_layout.hook_by_key["hcan1_recovery_init"]
+    source = bytearray(endpoint_image("schema-5-fixed-trim"))
+    source[hook.address : hook.address + hook.width] = hook.replacement.to_bytes(
+        hook.width, "big"
+    )
+    with pytest.raises(
+        runtime_endpoints.EndpointError, match="partial or unknown CAN telemetry state"
+    ):
+        runtime_endpoints.classify_runtime(closed(source), changed, "mixed")
+
+
+def test_leftover_historical_telemetry_unit_is_refused(monkeypatch):
+    """An image holds no byte of a historical telemetry endpoint outside the
+    telemetry layer that it classifies as."""
+    changed = changed_telemetry("unit-span", monkeypatch)
+    key = "schema-5-fixed-trim"
+    clean = endpoint_image(key, lower=True)
+    assert runtime_endpoints.classify_runtime(
+        clean, changed, "clean"
+    ) == runtime_endpoints.Classification(telemetry="absent", rolling=key)
+    control = next(
+        unit for unit in can_telemetry_history.endpoint(FLASHED_TELEMETRY).units
+        if unit.key == "control"
+    )
+    leftover = bytearray(clean)
+    leftover[control.start : control.end] = control.payload
+    with pytest.raises(
+        runtime_endpoints.EndpointError, match="partial or unknown CAN telemetry state"
+    ):
+        runtime_endpoints.classify_runtime(closed(leftover), changed, "leftover")
 
 
 def schema_5_record(*slots):

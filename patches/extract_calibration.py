@@ -205,14 +205,14 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         settings.append(("rolling_launch", sha256(record)))
     telemetry = None
     if telemetry_state != ABSENT:
-        layout = target.telemetry_layout
-        record = source[layout.configuration.start : layout.configuration.end]
         historical = can_telemetry_history.endpoint(telemetry_state)
         if historical is not None:
             # Transfer logical settings through the current profile format;
             # the historical wire identity is not a calibration setting.
-            telemetry = historical.configuration(record)
+            telemetry = historical.configuration(historical.record(source))
         else:
+            layout = target.telemetry_layout
+            record = source[layout.configuration.start : layout.configuration.end]
             telemetry = can_telemetry.Configuration.from_bytes(record)
             if telemetry.to_bytes() != record:
                 raise ExtractionError(
