@@ -1,0 +1,214 @@
+# Register conventions of the JK08A Rolling Launch functions and of the stock
+# and Map Switching functions that they call. rolling_launch_flow.py checks
+# every function of the Rolling Launch units against its entry here.
+#
+# reads        registers whose entry value the function uses; "t" when it
+#              consumes the T of its caller
+# writes       registers whose exit value can differ from the entry value;
+#              "sr" is the interrupt mask, and "t" the T bit
+# outputs      registers that carry a result to the caller
+# t_producers  mnemonics other than comparisons and tests whose T reaches a
+#              consumer by intent; every declared dt counts a loop and its T
+#              ends the loop
+#
+# A continuation is entered only by a branch from another function and
+# returns for it.
+
+schema_version = 1
+
+[[continuation]]
+label = "rolling_launch_actuation"
+
+[[function]]
+label = "rolling_launch_periodic_wrapper"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[function]]
+label = "rolling_launch_selector_arbiter"
+reads = ["r4", "r5", "r6", "r7"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[function]]
+label = "rolling_launch_startup_wrapper"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+t_producers = ["dt"]
+
+[[function]]
+label = "rolling_launch_engine"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "t"]
+t_producers = ["dt"]
+
+[[function]]
+label = "rl_gate_valid_pass_t"
+reads = ["r1", "r2", "r11", "r12", "r13", "t"]
+writes = ["r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_gate_valid"
+reads = ["r1", "r2", "r11", "r12", "r13"]
+writes = ["r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_gate_pass_t"
+reads = ["r1", "r2", "r11", "r13", "t"]
+writes = ["r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_gate_valid_fail_t"
+reads = ["r1", "r2", "r11", "r12", "r13", "t"]
+writes = ["r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_gate_fail_t"
+reads = ["r1", "r2", "r11", "r13", "t"]
+writes = ["r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_window"
+reads = ["r4", "r6", "r10", "r11", "r12", "r13"]
+writes = ["r0", "r1", "r2", "r7", "r11", "r13", "t"]
+outputs = ["r11", "r13"]
+
+[[function]]
+label = "rl_validate_config"
+reads = ["r10"]
+writes = ["r0", "r1", "r2", "r3", "r5", "r6", "r7", "t"]
+outputs = ["r0"]
+
+[[function]]
+label = "rolling_launch_slot_validator"
+reads = ["r7"]
+writes = ["r0", "r1", "r2", "r3", "r5", "r6", "r7", "t"]
+outputs = ["r0"]
+t_producers = ["dt"]
+
+[[function]]
+label = "rolling_launch_ignition_adapter"
+reads = ["r4", "r5", "r6", "r7"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[function]]
+label = "rolling_launch_speed_controller"
+reads = ["r4", "r5"]
+writes = ["r0", "r1", "r2", "r3", "r6", "r7", "macl", "t"]
+
+[[function]]
+label = "rolling_launch_rpm_controller"
+reads = ["r4", "r5"]
+writes = ["r0", "r1", "r2", "r3", "r6", "r7", "macl", "t"]
+
+[[function]]
+label = "rolling_launch_rpm_fraction"
+reads = ["r4", "r5"]
+writes = ["r0", "r1", "r2", "macl", "t"]
+outputs = ["r0"]
+
+[[function]]
+label = "rolling_launch_control_publisher"
+reads = ["r3", "r5"]
+writes = ["r0", "r1", "r2", "r3", "r6", "r7", "macl"]
+
+[[function]]
+label = "rolling_launch_ignition_publisher"
+reads = ["r4", "r5"]
+writes = ["r0", "r1", "r2", "r3", "r5", "r6", "r7", "macl"]
+outputs = ["r5"]
+
+[[function]]
+label = "rolling_launch_q"
+reads = ["r1", "r2", "r3"]
+writes = ["r0", "r1", "r2", "macl", "t"]
+outputs = ["r0"]
+
+[[function]]
+label = "rolling_launch_feedback_arbiter"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[function]]
+label = "rolling_launch_spark_cut"
+
+[[function]]
+label = "rolling_launch_state_check"
+writes = ["r0", "r1", "r2", "r3", "r6", "r7", "macl", "t"]
+outputs = ["t"]
+t_producers = ["dt"]
+
+[[function]]
+label = "rolling_launch_state_check_masked"
+writes = ["r0", "r1", "r2", "r3", "r6", "r7", "macl", "t"]
+outputs = ["t"]
+t_producers = ["dt"]
+
+[[function]]
+label = "rolling_launch_load_views"
+reads = ["r7"]
+writes = ["r0", "r1", "r2", "r3", "t"]
+outputs = ["r1", "r3"]
+
+[[function]]
+label = "rolling_launch_views"
+reads = ["r1", "r2", "r3", "r7"]
+writes = ["r0", "r1", "r2", "r3", "t"]
+outputs = ["r1", "r3"]
+
+# The stock unsigned divider: r0 = divisor, r1 = dividend, quotient in r0.
+[[external]]
+address = 0x00021CE0
+name = "stock unsigned divider"
+reads = ["r0", "r1"]
+writes = ["r0", "r1", "t"]
+outputs = ["r0"]
+
+# Map Switching limiter commit: r4 = slot index in, normalized index out;
+# it restores the entry SR.
+[[external]]
+address = 0x000D3660
+name = "Map Switching limiter commit"
+reads = ["r4"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "t"]
+outputs = ["r4"]
+
+[[external]]
+address = 0x000A9554
+name = "displaced periodic task"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+# The selector hosts and the ignition consumer receive the arguments of the
+# hooked stock call, which the Rolling Launch wrappers pass through.
+[[external]]
+address = 0x000D09D8
+name = "stock ASCD host"
+reads = ["r4", "r5", "r6", "r7"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[external]]
+address = 0x000D2108
+name = "Map Switching selector host"
+reads = ["r4", "r5", "r6", "r7"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[external]]
+address = 0x000D22A0
+name = "Map Switching startup wrapper"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[external]]
+address = 0x000D35E0
+name = "Map Switching feedback wrapper"
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+[[external]]
+address = 0x0002A892
+name = "stock primary ignition consumer"
+reads = ["r4", "r5", "r6", "r7"]
+writes = ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "macl", "mach", "t"]
+
+# An interrupt handler preserves every register for the interrupted code.
+[[external]]
+address = 0x0002AB24
+name = "stock GR11A spark handler"

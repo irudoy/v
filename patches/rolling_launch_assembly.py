@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_assembly as common
+from patches import rolling_launch_flow as flow_model
 from patches import rolling_launch_layout as layout_model
 
 
@@ -191,35 +192,6 @@ def _stores(texts):
         if text.startswith(("mov.b r", "mov.w r", "mov.l r"))
         and not text.endswith(",@-r15")
     )
-
-
-# Instructions that change T besides the comparisons and tests. The shifts
-# by 2, 8 and 16 keep T.
-_T_WRITERS = (
-    "shll ", "shlr ", "shal ", "shar ", "rotl ", "rotr ", "rotcl ", "rotcr ",
-    "dt ", "addc ", "subc ", "negc ", "addv ", "subv ", "div0s ", "div0u",
-    "div1 ", "sett", "clrt",
-)
-
-
-def _gate_conditions_reach_their_calls(texts):
-    """Every call of a T-reading gate entry sees T of its last comparison.
-
-    A conditional branch on that T may skip instructions that keep T, so both
-    paths reach the call with the same T.
-    """
-    for index, text in enumerate(texts):
-        if not (text.startswith("bsr rl_gate_") and text.endswith("_t")):
-            continue
-        for previous in reversed(texts[:index]):
-            if previous.startswith(("cmp/", "tst ")):
-                break
-            if previous.startswith(_T_WRITERS) or previous.split()[0] in {
-                "bra", "bsr", "jsr", "jmp", "rts",
-            }:
-                raise ValueError(
-                    f"engine changes T between a gate comparison and {text}"
-                )
 
 
 def _registers(texts):
@@ -450,7 +422,6 @@ def _validate_engine_abi(parsed):
     # r3 holds the sampled button through the gate chain.
     if _region(parsed, "rl_gate_valid", "rl_gate_pass_t") != ["cmp/pl r12"]:
         raise ValueError("engine valid gate must only test r12")
-    _gate_conditions_reach_their_calls(texts)
 
 
 def _contains(texts, sequence):
@@ -1258,6 +1229,12 @@ def validate_assembly_sources(layout=None):
     _validate_internal_entries(parsed_by_unit)
     if {"engine", "speed_controller", "rpm", "actuation"} <= set(parsed_by_unit):
         _validate_publication_atomicity(parsed_by_unit)
+    # Register conventions, live registers across calls, and the producers
+    # of every consumed T, over the functions of all units.
+    flow_model.validate_flow(
+        parsed_by_unit,
+        [SOURCE_LABELS[key] for key in layout.code_region_by_key],
+    )
     return parsed_by_unit
 
 

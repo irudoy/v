@@ -74,7 +74,7 @@ def test_tracked_sources_pass_every_abi_check(layout):
     ("engine", "mov #0x40,r1\nshll r1\nmov.w @(0x4,r9),r0\nmov r0,r7\n"
      "mov.w @(0xc,r10),r0\ncmp/ge r0,r7\n",
      "mov.w @(0x4,r9),r0\nmov r0,r7\nmov.w @(0xc,r10),r0\ncmp/ge r0,r7\n"
-     "mov #0x40,r1\nshll r1\n", "changes T between a gate comparison"),
+     "mov #0x40,r1\nshll r1\n", "T of shll at .* reaches the call of rl_gate_valid_pass_t"),
     ("slot_validator", "tst r7,r7\nbt rl_val_return", "tst r7,r7\nbt rl_val_table",
      "reject an invalid head"),
     ("actuation", "tst 0x40,r0\nbf rl_act_ignition_stock",

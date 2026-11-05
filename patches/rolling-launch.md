@@ -1171,6 +1171,8 @@ The implementation inventory is:
 | `rolling_launch.py` | independent fail-closed model |
 | `rolling_launch_layout.py` | structural validation |
 | `rolling_launch_assembly.py` | payload and source-byte validation |
+| `rolling-launch-flow.toml` | register conventions of the units and of their stock and Map Switching callees |
+| `rolling_launch_flow.py` | control-flow and dataflow check of the units |
 | `rolling_launch_compose.py` | pure in-memory composition |
 | `apply_rolling_launch.py` | builder stage: source checks and application |
 | `build_rom.py` | production composition, efficiency table, and checksum closure |
@@ -1187,7 +1189,16 @@ A candidate is software-valid only when all applicable checks pass:
    match the registered target profile.
 2. ROM/RAM ownership, stock anchors, hooks, restored stock words, diagnostic
    pointers, and payload digests match their manifests.
-3. Assembly sources reproduce the exact injected bytes.
+3. Assembly sources reproduce the exact injected bytes. The flow check of
+   the assembly validation builds the control-flow graph of every function
+   of the units and requires the convention that `rolling-launch-flow.toml`
+   declares for it: the registers it reads and writes and its outputs, an
+   empty stack and the entry PR at every return and tail jump, no register
+   live after a call that the callee writes without an output, and the T of
+   every conditional branch, T-reading call and T output from a comparison,
+   a test, a declared producer, a callee T output or the T of the caller,
+   with every comparison and test consumed. The declarations of the stock
+   and Map Switching callees bind their calls.
 4. The independent model covers every gate, phase transition, abort reason,
    corrupt-state recovery, map isolation, rearm boundary, the CANCEL capture,
    the regulator selection, the hard and soft RPM zone, the SPEED controller
