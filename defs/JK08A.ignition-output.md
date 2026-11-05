@@ -445,6 +445,157 @@ The absolute time unit of the timeout is not established here.
   arming of that cylinder. Its `GR11A` match finds the pin high and produces
   no edge, and the next arming enables normally.
 
+## GR11B programming-time budget
+
+The dwell veto adds execution before the stock stores to `GR11B` at
+`0x000294DC` and `0x00029572`. Its software-state exclusion does not establish
+that either store precedes its compare deadline. The bounded GNU fixture
+executes the countdown and output paths, but its scaffold transfers from
+`0x00028ECC` to `0x000292EC`. It excludes the earlier capture processing and
+does not model CPU cycles, peripheral bus arbitration or interrupt arrival
+rates. Its result is **executed functional coverage**, not a measured
+capture-to-compare latency.
+
+### Clock and nominal compare window
+
+The SH7058S/SH7059 hardware manual, sections 5.1 and 5.2, specifies
+`phi = 8 * EXTAL` and `Pphi = 2 * EXTAL`. With the target's established
+`Pphi = 20 MHz`, the CPU clock is `80 MHz`. Initializer `0x000274AC` writes
+`PSCR1 = 1` at `0x000274B4`; initializer `0x0002718A` writes `TCR11 = 5`
+at `0x0002745A`. Under sections 11.2.2 and 11.2.3, these select
+`TCNT11 = Pphi / (2 * 32) = 312500 Hz`, or `3.2 us` per count.
+
+The normal secondary scheduler `0x0002ACBA` adds ten to the byte remainder
+at `0x0002AE34..0x0002AE3E`. Normalizer `0x00028DC8` retains that remainder
+or adds another ten or twenty. The nominal minimum countdown-expiry offset
+is therefore ten crank degrees. At steady speed its ideal duration is
+`60 / (RPM * 36)` seconds:
+
+| Speed | Ideal ten-degree interval | Interval rounded down to TCNT11 counts |
+| ---: | ---: | ---: |
+| 7650 RPM | 217.865 us | 68 counts, 217.6 us |
+| 5000 RPM | 333.333 us | 104 counts, 332.8 us |
+
+The stock active fuel-cut values at `0x0000934E` include 7650 RPM under the
+established `raw * 12.5 RPM` conversion. This is a stock calibration reference,
+not a universal engine-speed limit. The interval calculation assumes the
+stored tooth period represents the upcoming interval. Capture delivery,
+period-filter error and acceleration can reduce the available window.
+
+The tooth stores use the captured reference `0xFFFF158A`, saved at
+`0x00028F22`; they do not read the current `TCNT11` or clamp a late compare.
+The immediate secondary scheduler has a different contract: its
+`0x0002AE90..0x0002AEB6` path checks elapsed time and substitutes
+`TCNT11 + 2` when needed. Section 11.3.1 defines equality compare matching.
+A tooth-path store behind the current counter does not cause immediate
+catch-up. Without another compare write or counter reset, the next equality
+requires a counter wrap, whose full period is `209.7152 ms`. This does not
+establish that a vehicle output remains unchanged for that period; later
+stock writes and recovery can replace the compare.
+
+### Static instruction accounting
+
+The accounting model assigns five CPU states to every executed instruction,
+including delay slots, at 80 MHz: one instruction costs `0.0625 us`.
+These figures are **static control-flow envelopes**, not measured execution
+maxima or hardware WCET. Both branch outcomes are included where predicates
+are unconstrained. The private paths count the helper call, its return and
+the tail jump, and stop before stock divider `0x00021CE0`.
+
+| Private path | Instruction envelope | Model time per call |
+| --- | ---: | ---: |
+| Outside ACTIVE HOLD, including idle latch release and accumulator reset | 75 | 4.6875 us |
+| Admitted arming, including a cut and a zero-to-one latch update | 151 | 9.4375 us |
+| Unconstrained CFG, including mutually inconsistent predicates | 157 | 9.8125 us |
+
+The admitted envelope enumerates the six valid one-hot cylinder masks;
+their index branches cannot all take the longer alternative together.
+An ACTIVE HOLD call with invalid q has a separate 78-instruction reset
+envelope. Before the second `GR11B` store, both countdown slots can call the
+veto. Its cumulative admitted addition is then at most 302 instructions,
+or `18.875 us` in this model; the unconstrained allowance is `19.625 us`.
+
+The stock capture prefix is not executed by this fixture. A deliberately
+loose static allocation counts every listed instruction once, expands each
+six-iteration loop to six copies, and retains mutually exclusive forward
+branches. From entry `0x00028EA2` through the first or second store, it has
+these components:
+
+| Component | First store | Second store |
+| --- | ---: | ---: |
+| Tooth-handler instructions through the store | 681 | 756 |
+| Divider `0x00021BBC`, called at `0x000290B4` | 141 | 141 |
+| `0x00054D3E` with the caller's r4 = 0, excluding its callee | 176 | 176 |
+| Six-channel scheduler `0x0002C13C`, called at `0x000291C6` | 564 | 564 |
+| Optional `0x000571C0`, excluding its six helper calls | 388 | 388 |
+| Stock divider `0x00021CE0`, up to two or three calls | 230 | 345 |
+| Known subtotal, excluding six calls to `0x000221BC` | 2180 | 2370 |
+
+The `0x00054D3E` loop body has four instructions. The bodies at
+`0x0002C16E..0x0002C21C` and `0x000571EE..0x00057262` have 88 and 59
+instructions respectively. Each receives five additional copies above its
+single listed copy. The optional call at `0x00054E78` is selected by
+`ROM8[0x8D92].bit3`, set in stock byte `0x7A`. Its six calls at `0x000571F4`
+enter computed-jump helper `0x000221BC`. Let H be an upper instruction count
+for one complete helper call, including its selected shift tail. That
+computed-target bound remains unreviewed here. The stock allocations are
+therefore `S1 = 2180 + 6 * H` and `S2 = 2370 + 6 * H`, not complete numeric
+prefix bounds. The 64 listed entry instructions before `0x00028F22` are
+included; latency from the hardware capture to handler entry is additional.
+
+### Higher-priority interference
+
+Initializer `0x00028D3C` sets the relevant priorities to
+`IPRD = 0xFF8A`, `IPRF = 0x6F9F` and `IPRG = 0xAFFF`. The following are
+confirmed application sources above the tooth mask of 8:
+
+| Source | Priority | Enable evidence | Handler and static instruction allocation |
+| --- | ---: | --- | --- |
+| IMI1E | 10 | `TIER1A = 0x0030` at `0x00027206`, bit 4 | `0x0002A2BE`, continuation `0x0002A36A`, exit `0x0002A59A`: 220 own instructions plus 141 for `0x00021BBC` |
+| IMI1F | 10 | Same write, bit 5 | `0x0002A5CC`: 325 own instructions plus 141 for `0x00021BBC` |
+| IMI4C | 9 | `TIER3 = 0x018B` at `0x0002727A`, bit 7 | `0x000C2C58`: 143 own instructions plus 141 for `0x00021BBC` |
+| IMI4D | 9 | Same write, bit 8 | `0x000C2D76`, continuation `0x000C2DE0`: 143 own instructions plus 141 for `0x00021BBC` |
+| IMI5A | 10 | `0x0002AF38` enables `TIER3.bit10` while arming timeout A | `0x0002B396`, continuation `0x0002B498`: 155 instructions |
+| IMI5B | 10 | `0x0002AF38` enables `TIER3.bit11` while arming timeout B | `0x0002B4EC`, continuation `0x0002B5F4`: 158 instructions |
+
+The cam allocations apply with the normal-mode snapshot bit 6 clear. They
+exclude the mutually exclusive `0x0002B768` fallback call. These handlers
+have no repeated local loop on the included paths; the allocations include
+all listed forward alternatives and the completed `RTE` delay slot. They
+bound instruction counts per invocation, not total interference. The six
+allocations sum to `106.75 us` in the five-state model if one invocation of
+each is charged. No bound of one invocation per source is established.
+
+This is a confirmed subset, not an exhaustive enabled-source census.
+SCI1, HCAN1, external IRQ/NMI, interval, ADC and DMA enabling and arrival
+conditions are not fully bounded. A nonzero IPR field alone does not prove
+that its peripheral source is enabled. Conversely, semantic exclusion of
+eligibility writers does not limit the CPU time of their handlers. The
+total preemption term remains **unbounded by this analysis**.
+
+### Remaining margin
+
+For store i, let A include capture-to-entry latency and period-estimation
+allowance, P the total preemption time, and W the cumulative private-wrapper
+time. The requested margin is `M = window - A - S / 16 - W - P` in us,
+and its ratio to the wrapper addition is `M / W`.
+
+At 7650 RPM, the admitted-path allocations give
+`M1 = 71.9125 - 0.375 * H - A - P` and
+`M2 = 50.6 - 0.375 * H - A - P` us. At 5000 RPM, replace the constants
+by `187.1125` and `165.8`. These are conditional allocation equations,
+not observed margins. H, A and P remain unresolved, and the deliberately
+loose stock allocation is not an executed maximum. A positive complete
+margin or a tenfold `M / W` factor is not established.
+
+The model also needs a hardware bus-time qualification. Manual table 9.5
+allows 8..11 CPU states for an ATU/APC/PORT byte or word access and 16..19
+for a long access. A uniform five states per instruction cannot serve as
+a hardware upper bound for these peripheral-heavy stock handlers. Capture
+latency, complete prefix execution, enabled-source arrival bounds and
+peripheral access costs remain timing obligations before treating this
+calculation as a deadline proof.
+
 ## Acceptance boundary
 
 Static support for a late retard-only override requires all of these conditions:
