@@ -75,6 +75,24 @@ def test_explicit_settings_replace_the_endpoint_and_keep_calibration(disabled):
         assert after.rolling == rolling_launch.Calibration()
 
 
+def test_manifest_efficiency_is_the_table_of_the_output_image(tmp_path):
+    data = bytearray(historical_image())
+    # The F point of a trim of 20 APC counts; the stock build derives E[20]
+    # from another value.
+    data[build_rom.TRIM_TABLE_ADDRESS + 7] = 46
+    source = bytes(rom_checksums.recalculate(data, target().checksum_layout))
+    result = build_rom.upgrade_image(source, profile=build_rom.builtin_profile())
+    assert efficiency(result.data) == build_rom.efficiency_table(source).to_bytes()
+    assert efficiency(result.data) != build_rom.efficiency_table(
+        target().stock_image.data
+    ).to_bytes()
+    manifest = build_rom.manifest_data(
+        result, tmp_path / "source.bin", tmp_path / "output.bin"
+    )
+    launch = manifest["output"]["configuration"]["rolling_launch"]
+    assert launch["efficiency_hex"] == efficiency(result.data).hex()
+
+
 def test_explicit_profile_of_another_rom_scope_is_refused():
     other = build_rom.builtin_profile(runtime_targets.RELOCATED_8MFK_FAMILY)
     with pytest.raises(build_rom.BuildError, match="does not match selected ROM"):

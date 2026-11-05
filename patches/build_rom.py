@@ -919,7 +919,13 @@ def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>", profile=None)
         checksums = rom_checksums.require_valid(source, target.checksum_layout, source_name)
     except (ValueError, runtime_targets.RuntimeTargetError) as error:
         raise BuildError(str(error)) from error
+    efficiency = fresh.rolling_efficiency
+    if target.rolling_layout is not None:
+        # The application derives E again from the transferred F table.
+        span = target.rolling_layout.efficiency
+        efficiency = bytes(application.data[span.start : span.end])
     return replace(fresh, data=application.data, source_sha256=sha256(source),
+                   rolling_efficiency=efficiency,
                    source_checksums=checksums.stored,
                    output_sha256=sha256(application.data), output_md5=md5(application.data),
                    output_checksums=application.output_checksums,
