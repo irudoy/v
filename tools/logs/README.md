@@ -658,6 +658,62 @@ are reports without thresholds: a missing pair or a capture without an
 `ACTIVE` snapshot of configuration 5 is a coverage gap, which the audit
 prints. The veto check of a historical endpoint is informational.
 
+`--thresholds` adds the acceptance report of a hold session. Every window
+and threshold value comes from that local TOML file, which the session
+confirms before the image; the audit holds no default. All keys are
+mandatory, and unknown keys are refused. The values below show the format
+and are not recommended settings:
+
+```toml
+schema_version = 1
+
+[window]
+steady_after_s = 1.0
+min_steady_s = 1.0
+band_hz = [3.0, 7.0]
+band_min_s = 1.0
+
+[rpm]
+p5_below_soft_rpm = 100
+p95_above_rpm = 200
+peak_above_rpm = 500
+
+[speed]
+mean_error_kmh = 0.5
+speed_spread_kmh = 1.0
+rpm_spread_rpm = 200
+
+[series]
+repeats = 3
+```
+
+The steady window of a run starts `steady_after_s` after its first `ACTIVE`
+snapshot. A window shorter than `min_steady_s` reads `n/a`: the run checks
+entry and exit but no steady dynamics. Over the window the audit reports the
+5th and 95th percentiles and their width of the engine speed, the share of
+snapshots whose trim the floor command clips, and the RMS of the `band_hz`
+component of the engine speed and the vehicle speed. Runs split at a
+missing tick, so a window is tick-contiguous; the band uses the longest
+segment with a value, and a segment shorter than `band_min_s` reads `n/a`.
+A line and a Hann window are removed before the transform.
+
+- The RPM regulator: the peak and the mean of the engine speed less the
+  launch RPM `Nt` of the map slot. The run passes when P5 >= `Nt - W -
+  p5_below_soft_rpm` with the soft width `W` of the slot, P95 <= `Nt +
+  p95_above_rpm`, and the peak <= `Nt + peak_above_rpm`.
+- The speed regulator: the percentiles of the speed and of the speed error,
+  and the mean speed error. The error is the published control error or
+  speed error, otherwise the `0x280` speed less the selected target. The
+  run passes when the absolute mean error <= `mean_error_kmh`, the speed
+  width <= `speed_spread_kmh`, and the engine-speed width <= `rpm_spread_rpm`.
+
+A missing value that a check needs makes the verdict `n/a`. A series is
+the runs of one map and regulator kind of a capture: snapshots carry no gear
+or pedal context, so the map and kind approximate the series of a session
+plan. A series fails when one judged run fails and passes when at least
+`repeats` runs are judged and pass; otherwise it is incomplete. The
+acceptance report leaves the exit status unchanged.
+
 The same reader joins raw bus evidence to the holds of an MLG recording:
 
 ```bash

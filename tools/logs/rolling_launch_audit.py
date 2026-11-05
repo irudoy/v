@@ -90,6 +90,12 @@ with the snapshot and with the next one, widened by `STOCK_RPM_MARGIN` counts.
 A TRC adds frame times: the first and last page of every snapshot group and
 the context frames of 0x239 and 0x551, plus the raw torque, transmission,
 and speed frames for the optional bus join.
+
+With a thresholds file the audit also reports the acceptance metrics of the
+steady window of every run and the verdict of each run and of each series
+of runs of one map and regulator kind; see `run_acceptance`. The file holds
+every window and threshold value, and the report leaves the exit status
+unchanged.
 """
 
 from __future__ import annotations
@@ -103,6 +109,7 @@ import math
 from pathlib import Path
 import statistics
 import sys
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -1064,6 +1071,405 @@ def run_regulation(samples, start, end, kind, target, classified_ticks):
         )
         for name, members in groups.items()
     }
+
+
+THRESHOLD_SCHEMA_VERSION = 1
+THRESHOLD_KEYS = {
+    "window": ("steady_after_s", "min_steady_s", "band_hz", "band_min_s"),
+    "rpm": ("p5_below_soft_rpm", "p95_above_rpm", "peak_above_rpm"),
+    "speed": ("mean_error_kmh", "speed_spread_kmh", "rpm_spread_rpm"),
+    "series": ("repeats",),
+}
+
+
+@dataclass(frozen=True)
+class Thresholds:
+    """The acceptance window and thresholds of a hold session. Every value
+    comes from an explicit file; see `load_thresholds`."""
+
+    steady_after_s: float
+    min_steady_s: float
+    band_hz: tuple[float, float]
+    band_min_s: float
+    p5_below_soft_rpm: float
+    p95_above_rpm: float
+    peak_above_rpm: float
+    mean_error_kmh: float
+    speed_spread_kmh: float
+    rpm_spread_rpm: float
+    repeats: int
+
+
+def _threshold_number(value, context):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{context} is not a number")
+    if not math.isfinite(value) or value < 0:
+        raise ValueError(f"{context} is not a finite value >= 0")
+    return float(value)
+
+
+def load_thresholds(path: Path) -> Thresholds:
+    """Read the strict TOML schema 1 thresholds file of a session."""
+    with Path(path).open("rb") as source:
+        raw = tomllib.load(source)
+    expected = {"schema_version", *THRESHOLD_KEYS}
+    if set(raw) != expected:
+        raise ValueError(
+            f"{path}: thresholds tables differ; missing="
+            f"{sorted(expected - set(raw))}; extra={sorted(set(raw) - expected)}"
+        )
+    if raw["schema_version"] != THRESHOLD_SCHEMA_VERSION:
+        raise ValueError(f"{path}: unsupported thresholds schema {raw['schema_version']!r}")
+    values = {}
+    for table, keys in THRESHOLD_KEYS.items():
+        section = raw[table]
+        if not isinstance(section, dict) or set(section) != set(keys):
+            found = set(section) if isinstance(section, dict) else set()
+            raise ValueError(
+                f"{path}: [{table}] keys differ; missing={sorted(set(keys) - found)};"
+                f" extra={sorted(found - set(keys))}"
+            )
+        for key in keys:
+            values[key] = section[key]
+    band = values["band_hz"]
+    if not isinstance(band, list) or len(band) != 2:
+        raise ValueError(f"{path}: window.band_hz is not a pair of frequencies")
+    low, high = (
+        _threshold_number(item, f"{path}: window.band_hz") for item in band
+    )
+    if not 0 < low < high:
+        raise ValueError(f"{path}: window.band_hz needs 0 < low < high")
+    values["band_hz"] = (low, high)
+    repeats = values["repeats"]
+    if isinstance(repeats, bool) or not isinstance(repeats, int) or repeats < 1:
+        raise ValueError(f"{path}: series.repeats is not an integer >= 1")
+    for key, value in values.items():
+        if key not in ("band_hz", "repeats"):
+            values[key] = _threshold_number(value, f"{path}: {key}")
+    return Thresholds(**values)
+
+
+@dataclass(frozen=True)
+class Spread:
+    """The 5th and 95th percentiles of a quantity."""
+
+    p5: float
+    p95: float
+
+    @property
+    def width(self) -> float:
+        return self.p95 - self.p5
+
+
+def _spread(values) -> Spread | None:
+    if len(values) < 2:
+        return None
+    cuts = statistics.quantiles(values, n=20, method="inclusive")
+    return Spread(cuts[0], cuts[-1])
+
+
+def band_rms(values, period_s, low_hz, high_hz) -> float | None:
+    """The RMS of the DFT bins of `values` from `low_hz` to `high_hz`;
+    None without a bin in the band. A least-squares line is removed and a
+    Hann window bounds the leakage of slower components, and the power is
+    normalized by the energy of the window, so a sine of amplitude a well
+    inside the band reads a / sqrt(2)."""
+    count = len(values)
+    if count < 3:
+        return None
+    mean_x = (count - 1) / 2
+    mean_y = statistics.fmean(values)
+    slope = sum(
+        (index - mean_x) * (value - mean_y) for index, value in enumerate(values)
+    ) / sum((index - mean_x) ** 2 for index in range(count))
+    window = [0.5 - 0.5 * math.cos(2 * math.pi * index / count) for index in range(count)]
+    residual = [
+        (value - mean_y - slope * (index - mean_x)) * window[index]
+        for index, value in enumerate(values)
+    ]
+    power = 0.0
+    bins = 0
+    for k in range(1, count // 2 + 1):
+        frequency = k / (count * period_s)
+        if not low_hz <= frequency <= high_hz:
+            continue
+        bins += 1
+        step = -2 * math.pi * k / count
+        real = sum(value * math.cos(step * index) for index, value in enumerate(residual))
+        imag = sum(value * math.sin(step * index) for index, value in enumerate(residual))
+        power += real * real + imag * imag
+    if not bins:
+        return None
+    return math.sqrt(2 * power / (count * sum(item * item for item in window)))
+
+
+def _longest_segment(samples, value):
+    """The values of the longest tick-contiguous segment where `value`
+    reads a number."""
+    best, current, previous = [], [], None
+    for sample in samples:
+        item = value(sample)
+        if item is None or (previous is not None and sample.tick != previous + 1):
+            current = []
+        if item is not None:
+            current.append(item)
+            if len(current) > len(best):
+                best = list(current)
+        previous = sample.tick
+    return best
+
+
+@dataclass(frozen=True)
+class Acceptance:
+    """The metrics of the steady window of one ACTIVE run and their verdict.
+
+    The window starts `steady_after_s` after the first ACTIVE snapshot.
+    RPM values are in RPM and speed values in km/h. `peak_above` and
+    `mean_error` of the RPM regulator are the maximum and the mean of the
+    engine speed less the launch RPM; `mean_error` of the speed regulator is
+    the mean speed error. `floor_share` is the share of the window whose
+    trim the floor command clips, and the band values are the RMS of the
+    `band_hz` component of the longest contiguous segment. `verdict` is
+    "PASS", "FAIL", or "n/a" when the window or a value that a threshold
+    needs is missing; `reasons` names each failed or missing check."""
+
+    map_index: int | None
+    kind: int | None
+    steady_ticks: int
+    rpm: Spread | None = None
+    peak_above: float | None = None
+    mean_error: float | None = None
+    speed: Spread | None = None
+    speed_error: Spread | None = None
+    floor_share: float | None = None
+    band_rpm: float | None = None
+    band_speed: float | None = None
+    verdict: str = "n/a"
+    reasons: tuple[str, ...] = ()
+
+
+def run_map(samples, start, end):
+    """The selected map index of a run, or None without one."""
+    first = max(0, start - CONTEXT_REFRESH_SNAPSHOTS)
+    indices = {
+        sample.map_index
+        for sample in samples[first : end + 1]
+        if sample.map_index is not None
+    }
+    return indices.pop() if len(indices) == 1 else None
+
+
+def _floor_clipped(sample, slot, calibration, kind):
+    """Whether the floor command clips the trim of a snapshot, or None."""
+    if calibration.table is not None:
+        if sample.mode_trim is None or kind is None:
+            return None
+        trim = (
+            slot.max_trim_rpm if kind == rolling_launch.RegulatorKind.RPM
+            else slot.max_trim_speed
+        )
+        applied = sample.mode_trim & MODE_TRIM_VALUE_MASK
+        return _bit(sample.mode_trim, MODE_TRIM_READY_BIT) and applied < trim
+    if not calibration.hold or not slot.max_trim:
+        return None
+    return (
+        stock_apc_command(sample.final_timing_raw) + slot.max_trim
+        > slot.floor_command
+    )
+
+
+def _speed_error_kmh(sample, target):
+    if sample.control_error is not None:
+        return sample.control_error / 10
+    if sample.speed_error is not None:
+        return sample.speed_error / 10
+    if target is None or sample.speed_kmh is None:
+        return None
+    return sample.speed_kmh - target / 10
+
+
+def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Acceptance:
+    """The Acceptance of the run `start`..`end` of regulator `kind`."""
+    period = BASE_TICK_SECONDS
+    offset = math.ceil(thresholds.steady_after_s / period - 1e-9)
+    first_tick = samples[start].tick + offset
+    window = [sample for sample in samples[start : end + 1] if sample.tick >= first_tick]
+    result = Acceptance(
+        map_index=run_map(samples, start, end), kind=kind, steady_ticks=len(window)
+    )
+    duration = len(window) * period
+    if duration < thresholds.min_steady_s or not window:
+        return replace(result, reasons=(
+            f"steady window {duration:.2f} s is shorter than"
+            f" {thresholds.min_steady_s:.2f} s",
+        ))
+    if kind is None:
+        return replace(result, reasons=("the run has no regulator kind",))
+    slot = run_slot(samples, start, end, calibration)
+    low, high = thresholds.band_hz
+    min_band = math.ceil(thresholds.band_min_s / period - 1e-9)
+    rpm_values = [sample.rpm_raw * RPM_PER_COUNT for sample in window]
+    rpm_segment = _longest_segment(window, lambda s: s.rpm_raw * RPM_PER_COUNT)
+    speed_segment = _longest_segment(window, lambda s: s.speed_kmh)
+    clipped = [
+        value for value in (
+            _floor_clipped(sample, slot, calibration, kind) for sample in window
+        ) if value is not None
+    ]
+    result = replace(
+        result,
+        rpm=_spread(rpm_values),
+        floor_share=sum(clipped) / len(clipped) if clipped else None,
+        band_rpm=(
+            band_rms(rpm_segment, period, low, high)
+            if len(rpm_segment) >= min_band else None
+        ),
+        band_speed=(
+            band_rms(speed_segment, period, low, high)
+            if len(speed_segment) >= min_band else None
+        ),
+    )
+    checks = []
+    if kind == rolling_launch.RegulatorKind.RPM:
+        launch = slot.launch_rpm_native * RPM_PER_COUNT
+        width = slot.launch_soft_width_native * RPM_PER_COUNT
+        result = replace(
+            result,
+            peak_above=max(rpm_values) - launch,
+            mean_error=statistics.fmean(rpm_values) - launch,
+        )
+        if result.rpm is not None:
+            bound = launch - width - thresholds.p5_below_soft_rpm
+            checks.append((
+                result.rpm.p5 >= bound,
+                f"RPM P5 {result.rpm.p5:.0f} below {bound:.0f}",
+            ))
+            bound = launch + thresholds.p95_above_rpm
+            checks.append((
+                result.rpm.p95 <= bound,
+                f"RPM P95 {result.rpm.p95:.0f} above {bound:.0f}",
+            ))
+        else:
+            checks.append((None, "no RPM spread"))
+        bound = launch + thresholds.peak_above_rpm
+        checks.append((
+            max(rpm_values) <= bound,
+            f"RPM peak {max(rpm_values):.0f} above {bound:.0f}",
+        ))
+    else:
+        targets = {
+            sample.selected_target for sample in samples[start : end + 1]
+            if sample.selected_target is not None
+        }
+        target = targets.pop() if len(targets) == 1 else None
+        errors = [
+            value for value in (_speed_error_kmh(s, target) for s in window)
+            if value is not None
+        ]
+        speeds = [sample.speed_kmh for sample in window if sample.speed_kmh is not None]
+        result = replace(
+            result,
+            mean_error=statistics.fmean(errors) if errors else None,
+            speed=_spread(speeds),
+            speed_error=_spread(errors),
+        )
+        if result.mean_error is None:
+            checks.append((None, "no speed error"))
+        else:
+            checks.append((
+                abs(result.mean_error) <= thresholds.mean_error_kmh,
+                f"mean speed error {result.mean_error:+.2f} km/h beyond"
+                f" {thresholds.mean_error_kmh:.2f}",
+            ))
+        if result.speed is None:
+            checks.append((None, "no speed spread"))
+        else:
+            checks.append((
+                result.speed.width <= thresholds.speed_spread_kmh,
+                f"speed spread {result.speed.width:.2f} km/h above"
+                f" {thresholds.speed_spread_kmh:.2f}",
+            ))
+        if result.rpm is None:
+            checks.append((None, "no RPM spread"))
+        else:
+            checks.append((
+                result.rpm.width <= thresholds.rpm_spread_rpm,
+                f"RPM spread {result.rpm.width:.0f} above {thresholds.rpm_spread_rpm:.0f}",
+            ))
+    failed = tuple(reason for passed, reason in checks if passed is False)
+    missing = tuple(reason for passed, reason in checks if passed is None)
+    verdict = "FAIL" if failed else ("n/a" if missing else "PASS")
+    return replace(result, verdict=verdict, reasons=failed + missing)
+
+
+@dataclass(frozen=True)
+class SeriesVerdict:
+    """The verdict of the runs of one map and regulator kind of a capture:
+    "FAIL" when a judged run fails, "PASS" when at least `repeats` runs are
+    judged and pass, and "INCOMPLETE" otherwise."""
+
+    map_index: int | None
+    kind: int | None
+    runs: int
+    judged: int
+    passed: int
+    verdict: str
+
+
+def series_verdicts(acceptances, repeats) -> tuple[SeriesVerdict, ...]:
+    groups = {}
+    for item in acceptances:
+        groups.setdefault((item.map_index, item.kind), []).append(item)
+    result = []
+    for (map_index, kind), items in groups.items():
+        judged = [item for item in items if item.verdict != "n/a"]
+        passed = sum(item.verdict == "PASS" for item in judged)
+        verdict = (
+            "FAIL" if passed < len(judged)
+            else "PASS" if len(judged) >= repeats
+            else "INCOMPLETE"
+        )
+        result.append(SeriesVerdict(map_index, kind, len(items), len(judged), passed, verdict))
+    return tuple(result)
+
+
+def _kind_name(kind):
+    return "unknown" if kind is None else rolling_launch.RegulatorKind(kind).name
+
+
+def _acceptance_summary(item: Acceptance) -> str:
+    """One line of the steady-window metrics and the verdict of a run."""
+
+    def number(value, digits=0, sign=False):
+        if value is None:
+            return "n/a"
+        return f"{value:{'+' if sign else ''}.{digits}f}"
+
+    def spread(value, digits=0):
+        if value is None:
+            return "n/a"
+        return (
+            f"{value.p5:.{digits}f}..{value.p95:.{digits}f}"
+            f" width={value.width:.{digits}f}"
+        )
+
+    share = "n/a" if item.floor_share is None else f"{100 * item.floor_share:.0f}%"
+    parts = [
+        f"acceptance steady_ticks={item.steady_ticks}",
+        f"rpm_p5_p95={spread(item.rpm)}",
+    ]
+    if item.kind == rolling_launch.RegulatorKind.RPM:
+        parts.append(f"peak_above={number(item.peak_above, sign=True)}")
+        parts.append(f"mean_error={number(item.mean_error, sign=True)} rpm")
+    else:
+        parts.append(f"speed_p5_p95={spread(item.speed, 1)}")
+        parts.append(f"error_p5_p95={spread(item.speed_error, 2)}")
+        parts.append(f"mean_error={number(item.mean_error, 2, sign=True)} km/h")
+    parts.append(f"floor_share={share}")
+    parts.append(f"band_rpm={number(item.band_rpm, 1)}")
+    parts.append(f"band_speed={number(item.band_speed, 2)}")
+    parts.append(f"verdict={item.verdict}")
+    return " ".join(parts)
 
 
 def _replay(samples, start, end, calibration, slot, *, error="speed_error",
@@ -2141,12 +2547,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--bus-json", type=Path, help="write the raw CAN join of one TRC")
     parser.add_argument("--reference-mlg", type=Path,
                         help="join the TRC by tick to all holds of this MLG")
+    parser.add_argument("--thresholds", type=Path,
+                        help="TOML acceptance window and thresholds; adds the"
+                             " acceptance report of every run and series")
     args = parser.parse_args(argv)
     if (args.bus_json or args.reference_mlg) and len(args.captures) != 1:
         parser.error("the bus join requires exactly one TRC")
     if args.reference_mlg and not args.bus_json:
         parser.error("--reference-mlg requires --bus-json")
     calibration = read_calibration(args.image)
+    thresholds = load_thresholds(args.thresholds) if args.thresholds else None
     print(f"{args.image.name} rolling_launch={calibration.endpoint}")
     failed = False
     for path in args.captures:
@@ -2156,6 +2566,8 @@ def main(argv: list[str] | None = None) -> int:
         # A capture without a run, or a run without a checked fraction,
         # checks nothing and cannot pass.
         failed |= not runs
+        positions = {sample.tick: index for index, sample in enumerate(capture.samples)}
+        acceptances = []
         for run in runs:
             target = (
                 "none" if run.target_speed is None
@@ -2190,6 +2602,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"    {_veto_summary(run.veto)}")
             if run.regulation is not None:
                 print(f"    {_regulation_summary(run)}")
+            if thresholds is not None:
+                item = run_acceptance(
+                    capture.samples, positions[run.start_tick],
+                    positions[run.end_tick], calibration, run.kind, thresholds,
+                )
+                acceptances.append(item)
+                print(f"    {_acceptance_summary(item)}")
+                for reason in item.reasons:
+                    print(f"      acceptance: {reason}")
             failed |= (
                 bool(run.failures)
                 or run.requested_cuts_inside is False
@@ -2198,6 +2619,14 @@ def main(argv: list[str] | None = None) -> int:
         # The classification of the current runtime is a report: a capture
         # without configuration 5 is a coverage gap. The check of a
         # historical endpoint is informational.
+        for series in series_verdicts(acceptances, thresholds.repeats if thresholds else 0):
+            label = "unknown" if series.map_index is None else str(series.map_index + 1)
+            print(
+                f"  series map={label} kind={_kind_name(series.kind)}"
+                f" runs={series.runs} judged={series.judged}"
+                f" passed={series.passed} verdict={series.verdict}"
+                f" (repeats {thresholds.repeats})"
+            )
         checks = [run.veto for run in runs if run.veto is not None]
         if checks and checks[0].shared_command and not any(
             check.covered_ticks for check in checks
