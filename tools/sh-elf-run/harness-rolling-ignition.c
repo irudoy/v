@@ -1,4 +1,4 @@
-/* Dwell-veto kernel and exact stock-divider ABI observation. */
+/* Exact stock ignition paths, dwell suppression and instruction-boundary IRQs. */
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -59,7 +59,7 @@ static int fail(unsigned row, const char *field, uint32_t actual, uint32_t expec
 
 #ifdef VQ_BUILDERS
 struct command_case {
-    uint32_t stock, command, fallback, publisher, candidate, returned;
+    uint32_t stock, command, fallback, publisher, candidate, returned, ordinary;
     uint8_t configuration[102], before[76], after[76];
 };
 #include "rolling-ignition-cases.h"
@@ -175,6 +175,262 @@ static int builder_row(unsigned row, const struct command_case *test, unsigned p
     return 1;
 }
 
+#ifdef VQ_COUPLED
+volatile uint32_t rolling_irq_observation[13];
+static uint32_t vectors[256] __attribute__((aligned(1024)));
+static unsigned pins, spark_edges[6], dwell_edges[6];
+
+static void pin_registers(void)
+{
+    put16(ram(0xfffff746U), (uint16_t)((pins & 31U) << 8));
+    put16(ram(0xfffff738U), (uint16_t)((pins & 32U) << 10));
+}
+
+static void service(uint32_t handler)
+{
+    uint32_t old_vbr, old_sr, entry_sr, table = (uint32_t)(uintptr_t)vectors;
+    vectors[64] = handler;
+    __asm__ volatile ("stc vbr,%0" : "=r" (old_vbr));
+    __asm__ volatile ("stc sr,%0" : "=r" (old_sr));
+    entry_sr = (old_sr & ~0xf0U) | 0x80U;
+    __asm__ volatile ("ldc %0,vbr" : : "r" (table) : "memory");
+    __asm__ volatile ("ldc %0,sr\n\tnop\n\ttrapa #0x40" : : "r" (entry_sr) : "memory");
+    __asm__ volatile ("ldc %0,sr" : : "r" (old_sr) : "memory");
+    __asm__ volatile ("ldc %0,vbr" : : "r" (old_vbr) : "memory");
+}
+
+static void compare_event(unsigned reset)
+{
+    unsigned i, mask = (u16(ram(0xfffff700U)) >> (reset ? 8 : 0)) & 63U;
+#ifdef VQ_LEGACY_LATE_VETO
+    if (!reset) *ram(0xffff8511U) |= 0x80;
+#endif
+    for (i = 0; i < 6; ++i) if (mask & (1U << i)) {
+        if (reset && (pins & (1U << i))) ++dwell_edges[i];
+        if (!reset && !(pins & (1U << i))) ++spark_edges[i];
+    }
+    if (reset) pins &= ~mask; else pins |= mask;
+    pin_registers();
+    service(reset ? 0x2af38U : 0x2ab24U);
+}
+
+static unsigned tooth_time(unsigned n)
+{
+    /* Phase zero skips the two nominal positions before the first tooth
+       and after every ten physical teeth. One nominal degree is 100 ticks. */
+    return 10000U + 1000U*n + 2000U*((n + 9U)/10U);
+}
+
+static void engine_inputs(unsigned button)
+{
+    put16(ram(0xffff113cU), 500);
+    put16(ram(0xffff11bcU), 280);
+    put16(ram(0xffff3b3dU), 5000);
+    *ram(0xffff3b38U) = 0;
+    *ram(0xffff4195U) = 1;
+    *ram(0xffff4185U) = 0x80;
+    *ram(0xffff2a85U) = (uint8_t)button;
+    *ram(0xffff2672U) = 100;
+    *ram(0xffff1077U) = 150;
+    *ram(0xffff5d00U) = *ram(STATE + 4);
+}
+
+static int release_engine(unsigned row)
+{
+    struct context context;
+    struct observation observation;
+    memset(&context, 0, sizeof(context));
+    engine_inputs(0x20);
+    stock_invoke_ignition_consumer(0xd38e4U, &context, &observation);
+    if (*ram(STATE) != 2 || *ram(STATE + 1) != 7 || u16(ram(STATE + 0x1a)) != 0)
+        return fail(row, "engine CANCEL release", *ram(STATE + 1), 7);
+    return 1;
+}
+
+static int coupled_row(unsigned row, const struct command_case *test, unsigned dwell,
+                       unsigned q, unsigned tooth_first, unsigned release_at)
+{
+    unsigned n, now = 10000, a_done = 0, b_done = 0, expected_cut = q != 0;
+    unsigned expected_q = q, expected_events = 1, released = 0;
+    if (!builder_row(row, test, 0, dwell)) return 0;
+    {
+        struct context context;
+        struct observation observation;
+        unsigned efficiency = u16(ram(EXTENSION + 0xc)), law = 1000U - q;
+        memset(&context, 0, sizeof(context));
+        if (*ram(EXTENSION) == 2) {
+            law = (law*efficiency + 999U)/1000U;
+            q = 1000U - (1000U*law/efficiency);
+        }
+        context.r[3] = law;
+        context.r[4] = 0xd6320U;
+        context.r[5] = STATE;
+        context.entry_sr = 0x80;
+        stock_invoke_ignition_consumer(0xd6500U, &context, &observation);
+        if (u16(ram(STATE + 0x1a)) != q)
+            return fail(row, "coherent control publication", u16(ram(STATE + 0x1a)), q);
+        expected_cut = q != 0;
+        expected_q = q;
+    }
+    memset(spark_edges, 0, sizeof(spark_edges));
+    memset(dwell_edges, 0, sizeof(dwell_edges));
+    pins = 62; /* Cylinder one has an existing dwell; the successor is high. */
+    pin_registers();
+    put16(ram(STATE + 0x22), (uint16_t)(q ? 6000U - 6U*q : 2250U));
+    if (release_at == 1) {
+        if (!release_engine(row)) return 0;
+        released = 1;
+        expected_cut = expected_q = expected_events = 0;
+    }
+    for (n = 1; n < 32 && (!a_done || !b_done); ++n) {
+        unsigned next = tooth_time(n), guard = 0;
+        while (++guard < 8) {
+            unsigned a = !a_done && (*ram(0xffff8517U) & 0x80);
+            unsigned b = !b_done && (*ram(0xffff8518U) & 0x80);
+            unsigned at = u16(ram(0xfffff5c2U)), bt = u16(ram(0xfffff5c4U));
+            unsigned selected = b && (!a || bt < at), deadline = selected ? bt : at;
+            if ((!a && !b) || deadline > next || (tooth_first && deadline == next)) break;
+            if (deadline < now) return fail(row, "compare scheduled in past", deadline, now);
+            now = deadline;
+            put16(ram(0xfffff5c0U), (uint16_t)now);
+            compare_event(selected);
+            if (selected) b_done = 1; else a_done = 1;
+        }
+        if (a_done && b_done) break;
+        now = next;
+        put16(ram(0xffff158aU), (uint16_t)now);
+        put16(ram(0xfffff5c0U), (uint16_t)now);
+        service(0x28ea2U);
+        if (release_at == 2 && !released && u16(ram(EXTENSION + 0x18))) {
+            if (!release_engine(row)) return 0;
+            released = 1;
+        }
+    }
+    if (!a_done || !b_done) return fail(row, "both compares complete", a_done + b_done, 2);
+    if (dwell_edges[1] != !expected_cut)
+        return fail(row, "successor dwell edge", dwell_edges[1], !expected_cut);
+    if (u16(ram(EXTENSION + 0x18)) != expected_events)
+        return fail(row, "one eligible arming", u16(ram(EXTENSION + 0x18)), expected_events);
+    if (u32(ram(EXTENSION + 0x10)) != expected_q)
+        return fail(row, "consumed q", u32(ram(EXTENSION + 0x10)), expected_q);
+    if ((*ram(0xffff8511U) & 0xc0U) != (expected_cut ? 0x40U : 0))
+        return fail(row, "consistent GR11B sequence", *ram(0xffff8511U), expected_cut ? 0x40 : 0);
+    if (release_at == 3 && !release_engine(row)) return 0;
+    {
+        struct context context;
+        struct observation observation;
+        unsigned i;
+        memset(&context, 0, sizeof(context));
+        *ram(0xffff13bdU) = *ram(0xffff13c9U) = 2;
+        /* The next event uses the real primary builder. Its set-arming
+           recovery must preserve the already selected successor cut. */
+        put16(ram(0xffff158aU), (uint16_t)now);
+        stock_invoke_ignition_consumer(0x4df82U, &context, &observation);
+        for (i = 0; i < 32 && u16(ram(0xffff1558U)); ++i) {
+            now += 1000;
+            put16(ram(0xffff158aU), (uint16_t)now);
+            put16(ram(0xfffff5c0U), (uint16_t)now);
+            service(0x28ea2U);
+        }
+        if (u16(ram(0xffff1558U))) return fail(row, "recovery countdown", i, 0);
+        if (expected_cut && (u16(ram(0xfffff700U)) & 0x0200))
+            return fail(row, "tooth recovery re-enables selected cut", 1, 0);
+        compare_event(0);
+        if (spark_edges[1] != !expected_cut)
+            return fail(row, "successor spark edge", spark_edges[1], !expected_cut);
+        /* An immediate primary scheduling call takes the other recovery
+           entry. Both paths see the same retained bit6 interlock. */
+        context.r[4] = 10;
+        pins |= 2;
+        pin_registers();
+        *ram(0xffff13d1U) = 2;
+        stock_invoke_ignition_consumer(0x2a892U, &context, &observation);
+        if (expected_cut && (u16(ram(0xfffff700U)) & 0x0200))
+            return fail(row, "primary recovery re-enables selected cut", 1, 0);
+    }
+    return 1;
+}
+
+#ifdef VQ_ENGINE_IRQ
+static int engine_irq_main(void)
+{
+    const struct command_case *test = command_cases + VQ_IRQ_CASE;
+    struct context context;
+    struct observation observation;
+    uint32_t old_vbr, table = (uint32_t)(uintptr_t)vectors, sp;
+    unsigned i;
+    if (!builder_row(0, test, 0, 90)) return 1;
+    memset(&context, 0, sizeof(context));
+    context.r[3] = 0;
+    context.r[4] = 0xd6320U;
+    context.r[5] = STATE;
+    context.entry_sr = 0x80;
+    stock_invoke_ignition_consumer(0xd6500U, &context, &observation);
+    if (u16(ram(STATE + 0x1a)) != 1000) return 2;
+    put16(ram(STATE + 0x22), 5999);
+    put16(ram(0xffff1558U), 0);
+    put16(ram(0xffff1448U), 1);
+    put16(ram(0xffff144aU), 0);
+    *ram(0xffff13d1U) = 2;
+    *ram(0xffff8511U) = 0;
+    engine_inputs(VQ_IRQ_RELEASE ? 0x20 : 2);
+    for (i = 0; i < 13; ++i) rolling_irq_observation[i] = 0;
+    vectors[84] = 0x28ea2U;
+    __asm__ volatile ("stc vbr,%0" : "=r" (old_vbr));
+    __asm__ volatile ("ldc %0,vbr" : : "r" (table) : "memory");
+    __asm__ volatile ("mov r15,%0" : "=r" (sp));
+    context.entry_sr = 0;
+    stock_invoke_ignition_consumer(0xd38e4U, &context, &observation);
+    __asm__ volatile ("ldc %0,vbr" : : "r" (old_vbr) : "memory");
+    if (memcmp(observation.abi_before, observation.abi_after, 36)
+            || observation.abi_before[10] != observation.abi_after[10]) {
+        fail(0, "interrupted engine preserved ABI", 1, 0);
+        return 1;
+    }
+    if (*ram(STATE) != (VQ_IRQ_RELEASE ? 2 : 1)
+            || u16(ram(STATE + 0x1a)) != (VQ_IRQ_RELEASE ? 0 : 500)) {
+        fail(0, "interrupted engine final q", u16(ram(STATE + 0x1a)), VQ_IRQ_RELEASE ? 0 : 500);
+        return 1;
+    }
+    printf("RL_IGNITION_IRQ status=PASS release=%u final_phase=%u final_q=%u stack=%08lx",
+           VQ_IRQ_RELEASE, *ram(STATE), u16(ram(STATE + 0x1a)), (unsigned long)sp);
+    for (i = 0; i < 13; ++i) printf(" v%u=%08lx", i, (unsigned long)rolling_irq_observation[i]);
+    printf("\n");
+    return 0;
+}
+#endif
+
+int main(void)
+{
+#ifdef VQ_ENGINE_IRQ
+    (void)coupled_row;
+    return engine_irq_main();
+#else
+    unsigned i, d, q, order, release, rows = 0;
+    for (i = 0; i < sizeof(command_cases)/sizeof(command_cases[0]); ++i) {
+        const struct command_case *test = command_cases + i;
+        if (!test->ordinary || test->publisher || test->before[0] != 1 || test->before[5] != 1
+                || test->fallback || test->command < 60 || test->command > 120
+                ) continue;
+#ifdef VQ_LEGACY_LATE_VETO
+        if (test->command == 120)
+            return coupled_row(0, test, 90, 1000, 1, 0) ? 0 : 1;
+#endif
+        for (d = 0; d < sizeof(coupled_dwells)/sizeof(coupled_dwells[0]); ++d) for (q = 0; q <= 1000; q += 500)
+            for (order = 0; order < 2; ++order) for (release = 0; release < 4; ++release) {
+                if (!coupled_row(rows, test, coupled_dwells[d], q, order, release)) {
+                    fprintf(stderr, "coupled_case=%u P=%u d=%u q=%u order=%u release=%u\n",
+                            i, (unsigned)test->command, coupled_dwells[d], q, order, release);
+                    return 1;
+                }
+                ++rows;
+            }
+    }
+    printf("RL_IGNITION_COUPLED status=PASS rows=%u\n", rows);
+    return 0;
+#endif
+}
+#else
 int main(void)
 {
     static const unsigned phases[] = {0, 4, 9};
@@ -200,6 +456,7 @@ int main(void)
     printf("RL_IGNITION_BUILDERS status=PASS rows=%u stock_consumers=primary,secondary model_records=complete\n", rows);
     return 0;
 }
+#endif
 #else
 static int kernel_row(unsigned row, unsigned phase, unsigned mode, unsigned q,
                       unsigned mask, unsigned guard, unsigned seed)

@@ -48,8 +48,43 @@ records and the effective argument for each consumer. A separate adapter trace
 requires every instruction, both conditional outcomes and every delay slot.
 The simulated upstream auxiliary gate selects the final-coordinate source at
 `0x0008C3FA`; that function is outside the reconstructed ignition instructions.
-The coupled compare events, recovery paths, publication interrupts and vehicle
-acceptance remain separate qualification obligations.
+The native pipeline requires this scope as its `rolling_ignition` stage.
+
+The coupled fixture executes the original tooth countdown and set-arming
+recovery, both complete `GR11A`/`GR11B` handlers, and the primary scheduler's
+immediate recovery. Its phase-zero event model advances reference teeth over
+the two omitted nominal positions, applies the selected `POPCR` actions to
+ordinary pin-state memory, and services each compare through its original
+handler. It checks both equal-time service orders, zero/partial/full cut
+fractions, dwell boundaries and CANCEL release before arming, after selection
+and after the dwell compare. A selected cut survives both recovery entries
+and produces no successor dwell or spark edge. The builders also execute
+phases 4 and 9 against the independently supplied consumer argument.
+H9/H32 regression windows use representative stock commands from the hold
+medians and every integer dwell in the reported 86..94 degree interval; these
+rows bound the scheduling defect and do not replay measured coil edges.
+A negative fixture defers the veto until `GR11A` and must fail on the extra
+dwell edge at command 120 and dwell 90.
+
+The tooth fixture preserves its original prologue and epilogue. Declared
+simulator-only jumps at `0x00028ECC` and `0x000295B8` enter the context at
+`0x00108400` and the observation tail at `0x00108500`; the stock instructions
+under test are `0x000292EC..0x000295B8`. Crank decoding and unrelated tooth
+dispatch are excluded. The observation code reads the publication tuple
+before the bounded body and the actuator counters before returning, so an
+engine recovery after return cannot erase the observed event. The fixture
+checks that every ROM difference belongs to these declared exclusions or
+the auxiliary stub.
+
+Instruction-boundary IRQ rows inject the real tooth entry at each executed
+publication store and interrupt-mask change of a steady RPM pass and a
+CANCEL-release pass. Each row requires a coherent consumed q, the correct
+event count and decision, the engine's final q and preserved ABI, the stock
+RTE and its slot, and one completed entry/return report. The declared
+downward stack excludes ELF storage; a compiled collision must refuse before
+execution. These rows enter from the main loop and use one maskable IRQ.
+The event model supplies no cycle timing, peripheral arbitration, electrical
+coil behavior or vehicle acceptance.
 
 `VQ_SH_ELF_IMAGE` selects the local image tag. `VQ_SH_ELF_SKIP_BUILD=1` reuses
 that tag without building it; the image input check below still applies.

@@ -29,6 +29,7 @@ def pipeline(driver, monkeypatch, tmp_path):
     monkeypatch.setattr(driver, 'require_toolchain_version', lambda: ('simulator', 'gcc'))
     monkeypatch.setattr(driver, 'verify_simulator_memory', lambda: None)
     monkeypatch.setattr(driver, 'verify_simulator_irq', lambda: None)
+    monkeypatch.setattr(driver, 'verify_rolling_ignition', lambda: events.append('verify_rolling_ignition'))
     monkeypatch.setattr(driver.layout_model, 'load_layout', lambda: SimpleNamespace(assembly_units=()))
     monkeypatch.setattr(driver.assembly_model, 'validate_assembly_sources', lambda layout: {})
     monkeypatch.setattr(driver, 'assemble_all_units', lambda *args, **kwargs: {})
@@ -71,10 +72,10 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
         ('pipeline', 'simulator_irq'),
         ('pipeline', 'reconstruction_fixture'),
         ('pipeline', 'map_switching'), ('pipeline', 'delay_slot_probe'),
-        ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
+        ('pipeline', 'rolling_launch'), ('pipeline', 'rolling_ignition'), ('pipeline', 'can_telemetry'),
         ('pipeline', 'relocated_runtime_targets'),
     ]
-    assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'throttle_cluster_binding', 'verify_rolling_launch', 'verify_can_telemetry', 'verify_runtime_targets']
+    assert events == ['fuel_cut_binding', 'throttle_scalar_binding', 'throttle_cluster_binding', 'verify_rolling_launch', 'verify_rolling_ignition', 'verify_can_telemetry', 'verify_runtime_targets']
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=full ' in report and 'stock_code_' not in report
 
 
@@ -88,10 +89,26 @@ def test_exact_rom_scope_runs_the_native_stages_only(pipeline, capsys):
     assert driver.main(['--rom', 'JK03B']) == 0
     report = capsys.readouterr().out
     assert _stages(report) == ['toolchain', 'simulator_memory', 'simulator_irq', 'reconstruction_fixture', 'map_switching',
-                               'delay_slot_probe', 'rolling_launch', 'can_telemetry']
+                               'delay_slot_probe', 'rolling_launch', 'rolling_ignition', 'can_telemetry']
     assert 'verify_runtime_targets' not in events
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK03B ' in report
     assert 'runtime_targets=' not in report
+
+
+def test_failed_coupled_ignition_prevents_telemetry_and_target_execution(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+
+    def fail():
+        raise driver.VerificationError('controlled coupled ignition failure')
+
+    monkeypatch.setattr(driver, 'verify_rolling_ignition', fail)
+    assert driver.main([]) == 1
+    assert 'verify_rolling_launch' in events
+    assert not {'verify_can_telemetry', 'verify_runtime_targets'} & set(events)
+    execution = importlib.import_module('execution_report')
+    rows = execution.read(capsys.readouterr().out)
+    assert rows[-1]['start']['name'] == 'rolling_ignition'
+    assert rows[-1]['finish']['status'] == 'failed'
 
 
 def test_relocated_rom_scope_runs_its_target_only(pipeline, monkeypatch, capsys):

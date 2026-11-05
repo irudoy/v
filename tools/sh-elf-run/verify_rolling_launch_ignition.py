@@ -1,12 +1,12 @@
-"""Execute the Rolling Launch dwell-veto kernel with the stock divider."""
+"""Execute coupled Rolling Launch ignition, recovery and publication boundaries."""
 
 from dataclasses import dataclass, replace
 from pathlib import Path
-import os
 import re
 import tempfile
 
 import verify_map_switching as base
+import verify_simulator_irq as irq
 from elf_storage_layout import ELFStorageError, require_separate_storage
 from patches import map_switching_assembly as instructions
 from patches import map_switching_layout
@@ -20,6 +20,7 @@ TOOLS = Path(__file__).resolve().parent
 ALIAS_BASE = 0x01000000
 ALIAS_SIZE = 65536
 KERNEL_UNITS = ("spark_cut", "spark_events")
+COUPLED_DWELLS = (0, 30, 60, *range(86, 95), 100, 110, 119, 120)
 
 
 @dataclass(frozen=True)
@@ -140,6 +141,14 @@ def command_cases(table):
     for candidate in (90, 125, 151):
         add(f"publisher-trim-{candidate}", active, calibration, 100,
             publisher=True, candidate=candidate)
+    # Representative commands from the stock-timing medians of the 2026-11-04
+    # hardware record. The dwell matrix spans its 86..94 degree window; these
+    # states do not replay the capture or claim measured output edges.
+    for name, stock, rpm in (("regression-h9-window", 81, 710),
+                             ("regression-h32-window", 82, 685)):
+        config, state = configured(3, 20, 120, speed=True)
+        add(name, replace(state, law_output=0, torque_fraction=0, rpm_sample_native=rpm),
+            config, stock)
     return tuple(cases)
 
 
@@ -150,10 +159,13 @@ def command_header(cases):
     for case in cases:
         values = (case.stock, case.command, int(case.fallback), int(case.publisher),
                   case.candidate, case.returned)
-        rows.append("{" + ",".join(f"0x{value:08x}U" for value in values) + ","
+        ordinary = int(case.name.startswith(("command-", "regression-")))
+        rows.append("{" + ",".join(f"0x{value:08x}U" for value in (*values, ordinary)) + ","
                     + ",".join(array(data) for data in
                                (case.configuration, case.before, case.after)) + "}")
-    return "static const struct command_case command_cases[] = {\n" + ",\n".join(rows) + "\n};\n"
+    return ("static const struct command_case command_cases[] = {\n" + ",\n".join(rows) + "\n};\n"
+            + "#ifdef VQ_COUPLED\nstatic const unsigned coupled_dwells[] = {"
+            + ",".join(str(value) for value in COUPLED_DWELLS) + "};\n#endif\n")
 
 
 def require_stock_reconstruction(directory):
@@ -195,14 +207,17 @@ def require_storage(elf, fixture):
     require_separate_storage(elf, ((ALIAS_BASE, ALIAS_SIZE),))
 
 
-def compile_harness(directory, rom, invoke, name, defines=()):
+def compile_harness(directory, rom, invoke, name, defines=(), *, collision_address=ALIAS_BASE):
     elf = directory / f"{name}.elf"
     command = [base.GCC, "-m2e", "-mb", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
                f"-I{directory}",
                f"-Wl,-Ttext-segment={base.DRIVER_TEXT_BASE:#x}", "-Wl,--section-start=.rom=0"]
     command.extend(f"-D{value}" for value in defines)
     if "VQ_ALIAS_COLLISION" in defines:
-        command.append(f"-Wl,--section-start=.alias_collision={ALIAS_BASE:#x}")
+        command.append(f"-Wl,--section-start=.alias_collision={collision_address:#x}")
+    if "VQ_COUPLED" in defines:
+        command.extend(["-Wl,--section-start=.tooth_fixture=0x108400",
+                        TOOLS / "rolling_ignition_tooth_fixture.s"])
     command.extend(["-o", elf, TOOLS / "harness-rolling-ignition.c", invoke, rom])
     base.run_command(command, timeout=120)
     return elf
@@ -213,6 +228,16 @@ def require_linked_fixture(elf, fixture):
     base.run_command([base.OBJCOPY, "-O", "binary", "--only-section=.rom", elf, linked])
     if linked.read_bytes() != fixture:
         raise base.VerificationError("linked ignition ROM differs from the composed fixture")
+
+
+def require_fixture_changes(original, fixture, spans):
+    """Confine simulator scaffolding to its declared stock-code exclusions."""
+    allowed = {address for start, end in spans for address in range(start, end)}
+    if len(original) != len(fixture):
+        raise base.VerificationError("ignition fixture changes the ROM extent")
+    changed = {address for address, (left, right) in enumerate(zip(original, fixture)) if left != right}
+    if changed - allowed:
+        raise base.VerificationError("ignition fixture changes an instruction outside its declared scaffolding")
 
 
 def require_private_trace(trace, fixture, parsed, keys):
@@ -257,13 +282,14 @@ def verify_builders(directory, fixture, invoke, layout, parsed):
     # Simulator-only upstream auxiliary gate: select the final-coordinate
     # source. This function is outside the reconstructed ignition paths.
     working[0x8C3FA:0x8C400] = bytes.fromhex("e000000b0009")
+    require_fixture_changes(fixture, working, ((0x8C3FA, 0x8C400),))
     rom = base.build_rom_object(bytes(working), directory)
     elf = compile_harness(directory, rom, invoke, "builders", ("VQ_BUILDERS",))
     require_storage(elf, working)
     require_linked_fixture(elf, working)
     before = elf.read_bytes()
     result = base.run_command([base.RUN, elf],
-                              env={**os.environ, "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)},
+                              env={**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)},
                               timeout=180)
     if elf.read_bytes() != before:
         raise base.VerificationError("ignition builders ELF changes during execution")
@@ -276,7 +302,7 @@ def verify_builders(directory, fixture, invoke, layout, parsed):
     require_linked_fixture(coverage, working)
     trace = directory / "builder.pc-trace"
     unit = layout.assembly_unit_by_key["ignition_adapter"]
-    environment = {**os.environ, "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE),
+    environment = {**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE),
                    "VQ_SH_PC_TRACE_FILE": str(trace), "VQ_SH_PC_TRACE_FORMAT": "v1",
                    "VQ_SH_PC_TRACE_RANGES": f"{unit.span.start:x}:{unit.span.end:x}"}
     before = coverage.read_bytes()
@@ -284,7 +310,151 @@ def verify_builders(directory, fixture, invoke, layout, parsed):
     if coverage.read_bytes() != before:
         raise base.VerificationError("ignition adapter coverage ELF changes during execution")
     metrics = require_private_trace(trace, fixture, parsed, ("ignition_adapter",))
-    return result.stdout.strip() + " adapter_" + metrics
+    print(result.stdout.strip() + " adapter_" + metrics, flush=True)
+    # Fixture-only boundaries outside the stock instructions under test:
+    # select the bounded tooth context after the original prologue and leave
+    # after the two countdown slots through the original interrupt epilogue.
+    working[0x28ECC:0x28ED8] = bytes.fromhex("d001402b0009000900108400")
+    working[0x295B8:0x295C4] = bytes.fromhex("d001402b0009000900108500")
+    require_fixture_changes(fixture, working,
+                            ((0x8C3FA, 0x8C400), (0x28ECC, 0x28ED8), (0x295B8, 0x295C4)))
+    rom = base.build_rom_object(bytes(working), directory)
+    coupled = compile_harness(directory, rom, invoke, "coupled", ("VQ_BUILDERS", "VQ_COUPLED"))
+    require_storage(coupled, working)
+    require_linked_fixture(coupled, working)
+    before = coupled.read_bytes()
+    result = base.run_command([base.RUN, coupled],
+                              env={**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)},
+                              timeout=180)
+    if coupled.read_bytes() != before:
+        raise base.VerificationError("coupled ignition ELF changes during execution")
+    coupled_rows = sum(case.name.startswith(("command-", "regression-"))
+                       and 60 <= case.command <= 120 for case in cases) * len(COUPLED_DWELLS) * 3 * 2 * 4
+    if f"RL_IGNITION_COUPLED status=PASS rows={coupled_rows}" not in result.stdout:
+        raise base.VerificationError("coupled ignition lacks its complete row count")
+    print(result.stdout.strip(), flush=True)
+    late = bytearray(working)
+    late[0x296C0:0x296C4] = (0x21CE0).to_bytes(4, "big")
+    negative_rom = base.build_rom_object(bytes(late), directory)
+    negative = compile_harness(directory, negative_rom, invoke, "late-veto-negative",
+                               ("VQ_BUILDERS", "VQ_COUPLED", "VQ_LEGACY_LATE_VETO"))
+    require_storage(negative, late)
+    require_linked_fixture(negative, late)
+    original_negative = negative.read_bytes()
+    rejected = base.run_command([base.RUN, negative],
+                                env={**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)},
+                                expected_returncode=1, timeout=30)
+    if "successor dwell edge" not in rejected.stderr:
+        raise base.VerificationError("late-veto negative does not fail on its physical dwell edge")
+    if negative.read_bytes() != original_negative:
+        raise base.VerificationError("late-veto negative ELF changes during execution")
+    print("RL_IGNITION_LATE_VETO_NEGATIVE status=PASS P=120 dwell=90 rejected_edge=true", flush=True)
+    # Rebuild the positive ROM object after the negative fixture.
+    rom = base.build_rom_object(bytes(working), directory)
+    return verify_engine_irqs(directory, working, rom, invoke, layout, parsed, cases)
+
+
+def irq_values(output):
+    rows = [line for line in output.splitlines() if line.startswith("RL_IGNITION_IRQ status=PASS ")]
+    if len(rows) != 1:
+        raise base.VerificationError("engine IRQ fixture lacks one terminal")
+    return {key: int(value, 16 if key == "stack" or key.startswith("v") else 10)
+            for item in rows[0].split()[2:] for key, value in (item.split("=", 1),)}
+
+
+def verify_engine_irqs(directory, fixture, rom, invoke, layout, parsed, cases):
+    """Interrupt each executed publication store and interrupt-mask boundary."""
+    case_index = next(i for i, case in enumerate(cases)
+                      if case.stock == 100 and case.command == 120 and case.before[44] == 1)
+    words = {item.address: item for source in parsed.values()
+             for item in source.statements if item.kind == "instruction"}
+    ranges = (f"{min(unit.span.start for unit in layout.assembly_units):x}:"
+              f"{max(unit.span.end for unit in layout.assembly_units):x}")
+    ranges += ",28ea2:28ecc,2a294:2a2be,108400:108600"
+    rows = 0
+    for release in (0, 1):
+        defines = ("VQ_BUILDERS", "VQ_COUPLED", "VQ_ENGINE_IRQ",
+                   f"VQ_IRQ_CASE={case_index}", f"VQ_IRQ_RELEASE={release}")
+        elf = compile_harness(directory, rom, invoke, f"engine-irq-{release}", defines)
+        require_storage(elf, fixture)
+        require_linked_fixture(elf, fixture)
+        trace = directory / f"engine-irq-{release}.trace"
+        environment = {**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE),
+                       "VQ_SH_PC_TRACE_FILE": str(trace), "VQ_SH_PC_TRACE_FORMAT": "v1",
+                       "VQ_SH_PC_TRACE_RANGES": ranges}
+        original = elf.read_bytes()
+        baseline = base.run_command([base.RUN, elf], env=environment, timeout=30)
+        values = irq_values(baseline.stdout)
+        if values["v12"]:
+            raise base.VerificationError("disabled engine IRQ executes a handler")
+        stack = ((values["stack"] - 4096, 4100),)
+        stack_top = values["stack"]
+        require_separate_storage(elf, stack)
+        negative = compile_harness(directory, rom, invoke, f"irq-stack-collision-{release}",
+                                   (*defines, "VQ_ALIAS_COLLISION"),
+                                   collision_address=values["stack"] - 16)
+        try:
+            require_separate_storage(negative, stack)
+        except ELFStorageError:
+            pass
+        else:
+            raise base.VerificationError("IRQ stack collision does not refuse before execution")
+        baseline_trace = base.read_pc_trace(trace)
+        occurrences, requests, started = {}, [], False
+        for pc, word, delay in baseline_trace:
+            occurrences[pc] = occurrences.get(pc, 0) + 1
+            started |= pc == 0xD38E4
+            if pc not in words:
+                continue
+            item = words[pc]
+            if int.from_bytes(fixture[pc:pc + 2], "big") != word:
+                raise base.VerificationError("engine baseline trace has an unbound instruction")
+            destination = item.text.split(",", 1)[-1].strip()
+            store = (item.text.startswith(("mov.b ", "mov.w ", "mov.l "))
+                     and destination.startswith("@") and "r15" not in destination)
+            if started and (store or item.text.startswith("ldc ") and destination == "sr"):
+                requests.append((pc, occurrences[pc]))
+        if not requests:
+            raise base.VerificationError("engine IRQ has no publication boundaries")
+        for pc, count in requests:
+            report = directory / f"irq-{release}-{pc:x}-{count}.report"
+            child = {**environment, **{"VQ_SH_IRQ_" + key: str(value) for key, value in
+                     dict(PC=f"{pc:x}", COUNT=count, LEVEL=8, VECTOR=84, REPORT=report).items()}}
+            result = base.run_command([base.RUN, elf], env=child, timeout=30)
+            values = irq_values(result.stdout)
+            lines = report.read_text().splitlines()
+            if len(lines) != 2 or any("status=" in line for line in lines):
+                raise base.VerificationError("engine IRQ lacks a completed entry and return")
+            entry, returned = ({key: int(value, 16) for item in line.split()
+                                for key, value in (item.split("=", 1),)} for line in lines)
+            if (entry["triggered"] != pc or entry["handler"] != 0x28EA2
+                    or entry["sr"] & 0xf0 or returned != dict(returned=entry["accepted"], sp=values["v11"])):
+                raise base.VerificationError(f"engine IRQ frame differs: {entry}, {returned}, {values}")
+            if not stack_top - 4096 < values["v11"] <= stack_top:
+                raise base.VerificationError("engine IRQ frame escapes its declared stack")
+            active = values["v0"] == 1 and values["v1"] == 1
+            q = values["v2"] if active else 0
+            if active:
+                expected = (1000 - values["v5"] if values["v4"] == 1
+                            else model.cut_fraction(values["v5"], values["v6"]))
+                if values["v3"] != 1 or q != expected:
+                    raise base.VerificationError(f"engine IRQ observes a torn actuation tuple: {values}")
+            if (values["v12"] != 1 or values["v8"] != q or values["v9"] != int(active)
+                    or values["v10"] != int(q != 0)):
+                raise base.VerificationError(f"engine IRQ consumes a different decision: {values}")
+            records = base.read_pc_trace(trace)
+            entered = next(i for i, record in enumerate(records) if record[0] == 0x28EA2)
+            if sum(record[0] == pc for record in records[:entered]) != count:
+                raise base.VerificationError("engine IRQ COUNT differs from its instruction trace")
+            rte = next((i for i, record in enumerate(records)
+                        if record[0] == 0x2A2BA and record[1] == 0x002b), None)
+            if rte is None or records[rte + 1] != (0x2A2BC, 0x0009, 1):
+                raise base.VerificationError("engine IRQ trace lacks the stock RTE and its executed slot")
+            if elf.read_bytes() != original:
+                raise base.VerificationError("engine IRQ ELF changes during execution")
+            rows += 1
+        print(f"RL_IGNITION_IRQ_ACTION status=PASS release={release} boundaries={len(requests)}", flush=True)
+    return f"RL_IGNITION_IRQ_BOUNDARIES status=PASS rows={rows} stack_negative=PASS"
 
 
 def verify_kernel():
@@ -317,7 +487,7 @@ def verify_kernel():
         positive = compile_harness(directory, rom, invoke, "kernel")
         require_storage(positive, fixture)
         require_linked_fixture(positive, fixture)
-        environment = {**os.environ, "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)}
+        environment = {**irq.environment(), "VQ_SH_HIGH_RAM_BASE": hex(ALIAS_BASE)}
         before = positive.read_bytes()
         result = base.run_command([base.RUN, positive], env=environment, timeout=180)
         if positive.read_bytes() != before:

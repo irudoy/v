@@ -683,8 +683,9 @@ ran before the pass.
 In hold mode the dwell-arming wrapper consumes the cut fraction `q` of either
 regulator and selects the events whose dwell it requests to withhold. The
 wrapper executes at the countdown expiry, before the stock permission check.
-The complete stock scheduling path and vehicle acceptance remain open in
-issue #150; `hold_actuator = false` keeps enabled HOLD images outside preflash
+The coupled GNU fixture covers the bounded normal-mode scheduling path.
+Integration qualification and vehicle acceptance remain open in issue #150;
+`hold_actuator = false` keeps enabled HOLD images outside preflash
 qualification. The runtime targets the `7mfk` layout. The stock mechanisms
 are described in `../defs/JK08A.ignition-output.md`, the misfire readiness gate
 in `../defs/JK08A.diagnostics.md`, the inhibit history in
@@ -1159,7 +1160,7 @@ The implementation inventory is:
 | `refresh_rolling_launch.py` | efficiency-table normalization of an edited image |
 | `runtime_endpoints.py` | historical endpoint identities, runtime classification, and record extraction |
 | `../tools/sh-elf-run/verify_rolling_launch.py` | controller verifier integration |
-| `../tools/sh-elf-run/verify_rolling_launch_ignition.py` | dwell-veto GNU kernel gate |
+| `../tools/sh-elf-run/verify_rolling_launch_ignition.py` | coupled ignition, recovery and dwell-veto GNU gate |
 | `hardware-results.toml` | immutable hardware-result registry |
 
 ## Verification gates
@@ -1217,9 +1218,15 @@ A candidate is software-valid only when all applicable checks pass:
 7. The generated definition tables agree with the configuration contract.
 8. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
-The `--rolling-ignition` scope qualifies the veto kernel and its memory
-prerequisites. The coupled ignition path and migration of the legacy verifier
-remain open in issue #150.
+The `--rolling-ignition` scope executes the coupled builders and schedulers,
+the phase-zero tooth-gap sequence, both compare handlers, both recovery
+entries, release boundaries and tooth interrupts inside the periodic engine.
+Its H9/H32 windows bound the recorded scheduling defect; the compare and pin
+events are explicit simulator inputs. The narrow GNU README declares the
+excluded crank decoder and the fixture-only context and observation code.
+The native firmware pipeline requires this scope. Full image integration
+qualification and vehicle acceptance remain open in issue #150, so the
+image is ineligible for hardware testing.
 
 Software verification does not authorize a flash. The CANCEL capture, both
 regulators, the actuation, the spark cut and its veto delivery, corrupt-state

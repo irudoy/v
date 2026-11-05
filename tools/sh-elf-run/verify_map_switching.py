@@ -1103,6 +1103,14 @@ def verify_simulator_irq():
         raise VerificationError(f'simulator IRQ gate failed: {error}') from error
 
 
+def verify_rolling_ignition():
+    import verify_rolling_launch_ignition
+    try:
+        return verify_rolling_launch_ignition.verify_kernel()
+    except Exception as error:
+        raise VerificationError(f"Rolling Launch ignition gate failed: {error}") from error
+
+
 def verify(verbose=False, rom=None):
     """Execute the patch stages of every supported ROM, or of ``rom`` only.
 
@@ -1165,6 +1173,8 @@ def verify(verbose=False, rom=None):
             raise VerificationError(
                 f"Rolling Launch executable gate failed: {error}"
             ) from error
+        with stage('rolling_ignition'):
+            print(verify_rolling_ignition())
         try:
             import verify_can_telemetry
 
@@ -1244,7 +1254,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "--rolling-ignition", action="store_true",
-        help="execute the Rolling Launch ignition kernel and its simulator prerequisites",
+        help="execute the coupled Rolling Launch ignition paths and simulator prerequisites",
     )
     args = parser.parse_args(argv)
     if args.rolling_ignition and args.rom:
@@ -1255,12 +1265,10 @@ def main(argv=None):
                 require_toolchain_version()
             with stage('simulator_memory'):
                 verify_simulator_memory()
-            try:
-                import verify_rolling_launch_ignition
-                with stage('rolling_ignition_kernel'):
-                    print(verify_rolling_launch_ignition.verify_kernel())
-            except Exception as error:
-                raise VerificationError(f"Rolling Launch ignition kernel failed: {error}") from error
+            with stage('simulator_irq'):
+                verify_simulator_irq()
+            with stage('rolling_ignition'):
+                print(verify_rolling_ignition())
         else:
             verify(verbose=args.verbose, rom=args.rom)
     except (OSError, ValueError, VerificationError) as error:

@@ -17,6 +17,7 @@ def test_kernel_scope_runs_its_prerequisites_and_reports_failures(monkeypatch, c
     monkeypatch.setattr(sys, "argv", ["verify", "--rolling-ignition"])
     monkeypatch.setattr(driver, "require_toolchain_version", lambda: order.append("toolchain"))
     monkeypatch.setattr(driver, "verify_simulator_memory", lambda: order.append("memory"))
+    monkeypatch.setattr(driver, "verify_simulator_irq", lambda: order.append("irq"))
 
     def execute():
         order.append("kernel")
@@ -26,10 +27,10 @@ def test_kernel_scope_runs_its_prerequisites_and_reports_failures(monkeypatch, c
 
     monkeypatch.setattr(ignition, "verify_kernel", execute)
     assert driver.main() == int(failure)
-    assert order == ["toolchain", "memory", "kernel"]
+    assert order == ["toolchain", "memory", "irq", "kernel"]
     captured = capsys.readouterr()
     if failure:
-        assert "ignition kernel failed: missing kernel instruction" in captured.err
+        assert "ignition gate failed: missing kernel instruction" in captured.err
     else:
         assert "RL_DWELL_VETO_KERNEL status=PASS" in captured.out
 
@@ -68,3 +69,11 @@ def test_command_vectors_cover_the_shared_command_and_publisher_boundary():
     ready = next(case for case in cases if case.name == "publisher-ready")
     assert ready.returned == ready.candidate
     assert ready.after[44 + 11] == 1
+
+
+def test_undeclared_fixture_changes_refuse_before_execution():
+    original = bytes(8)
+    declared = bytes((0, 0, 1, 0, 0, 0, 0, 0))
+    ignition.require_fixture_changes(original, declared, ((2, 4),))
+    with pytest.raises(driver.VerificationError, match="outside its declared scaffolding"):
+        ignition.require_fixture_changes(original, bytes((0, 1, 1, 0, 0, 0, 0, 0)), ((2, 4),))
