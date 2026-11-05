@@ -41,7 +41,14 @@ boundaries, counter wrapping, quiet events, the misfire latch and the complete
 divider ABI. A PC trace requires every kernel instruction, both outcomes of
 each conditional branch and every delay slot. The alias window is excluded
 from the harness ELF and ROM fixture, with a compiled collision case that
-must fail before simulator entry. The coupled APC scheduling path and vehicle
+must fail before simulator entry. The same scope executes both stock command
+builders, the adapter and publisher, both stock schedulers, the command splitter
+and phase normalizer. Its independent state model supplies complete publication
+records and the effective argument for each consumer. A separate adapter trace
+requires every instruction, both conditional outcomes and every delay slot.
+The simulated upstream auxiliary gate selects the final-coordinate source at
+`0x0008C3FA`; that function is outside the reconstructed ignition instructions.
+The coupled compare events, recovery paths, publication interrupts and vehicle
 acceptance remain separate qualification obligations.
 
 `VQ_SH_ELF_IMAGE` selects the local image tag. `VQ_SH_ELF_SKIP_BUILD=1` reuses

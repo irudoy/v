@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools" / "sh-elf-run"))
 import verify_map_switching as driver
 import verify_rolling_launch_ignition as ignition
+from patches import rolling_launch as model
 
 
 @pytest.mark.parametrize("failure", (False, True))
@@ -46,3 +47,24 @@ def test_rom_fixture_collision_refuses_before_reading_the_elf(monkeypatch):
     with pytest.raises(driver.VerificationError, match="fixture overlaps the alias"):
         ignition.require_storage("unopened.elf", bytes(ignition.ALIAS_BASE + 1))
     assert calls == []
+
+
+def test_command_vectors_cover_the_shared_command_and_publisher_boundary():
+    table = model.EfficiencyTable(tuple(1000 - 10*i for i in range(41)))
+    cases = ignition.command_cases(table)
+    names = {case.name for case in cases}
+    assert {"idle", "cooldown", "observe", "uncached", "fallback-active",
+            "floor-invalid", "map-invalid", "trim-invalid", "mode-invalid",
+            "phase-invalid", "publisher-fallback", "publisher-ready"} <= names
+    assert {case.stock for case in cases if not case.publisher} >= {119, 120, 121, 237}
+    for case in cases:
+        assert len(case.configuration) == 102
+        assert len(case.before) == len(case.after) == 76
+        assert case.after[44 + 8] == case.stock & 255
+        assert case.after[44 + 9] == case.command
+        if case.publisher and case.name != "publisher-ready":
+            assert case.returned == case.stock
+            assert case.after[44 + 11] == 0
+    ready = next(case for case in cases if case.name == "publisher-ready")
+    assert ready.returned == ready.candidate
+    assert ready.after[44 + 11] == 1

@@ -5,8 +5,9 @@
 // 0x000296C0 (call sites 0x000294B2 and 0x0002954A) at interrupt mask 8, writes
 // GR11B and then, at mask 15, enables the dwell of mask 0xFFFF13D1 only while
 // 0xFFFF8511.bit7 is clear. The literal enters this actuator instead. No
-// GR11A or GR11B service runs between the actuator and that enable check, so
-// a veto set here withholds exactly the dwell being armed. The actuator
+// IMI11A or IMI11B service runs between the actuator and that enable check.
+// IMI5A/IMI5B may run but do not write its eligibility inputs. A veto set
+// here withholds exactly the dwell being armed. The actuator
 // preserves r0..r7, PR and the interrupt mask and leaves through the stock
 // divider 0x00021CE0 with its dividend in r1 and divisor in r0, restoring r0
 // in the delay slot of the tail jump. It runs without loops.

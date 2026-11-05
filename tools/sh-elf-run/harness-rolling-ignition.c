@@ -57,6 +57,150 @@ static int fail(unsigned row, const char *field, uint32_t actual, uint32_t expec
     return 0;
 }
 
+#ifdef VQ_BUILDERS
+struct command_case {
+    uint32_t stock, command, fallback, publisher, candidate, returned;
+    uint8_t configuration[102], before[76], after[76];
+};
+#include "rolling-ignition-cases.h"
+
+/* These spans contain ordinary fixture memory, including the explicitly
+   controlled APC register state. Peripheral events are separate steps. */
+struct arena {
+    uint8_t apc[0x1600], flags[0x200], peripheral[0x400], record[76];
+};
+static struct arena initial, primary, secondary, consumer;
+
+static void capture(struct arena *image)
+{
+    memcpy(image->apc, (const void *)ram(0xffff1000U), sizeof(image->apc));
+    memcpy(image->flags, (const void *)ram(0xffff8400U), sizeof(image->flags));
+    memcpy(image->peripheral, (const void *)ram(0xfffff400U), sizeof(image->peripheral));
+    memcpy(image->record, (const void *)ram(STATE), 44);
+    memcpy(image->record + 44, (const void *)ram(EXTENSION), 32);
+}
+
+static void restore(const struct arena *image)
+{
+    memcpy((void *)ram(0xffff1000U), image->apc, sizeof(image->apc));
+    memcpy((void *)ram(0xffff8400U), image->flags, sizeof(image->flags));
+    memcpy((void *)ram(0xfffff400U), image->peripheral, sizeof(image->peripheral));
+    memcpy((void *)ram(STATE), image->record, 44);
+    memcpy((void *)ram(EXTENSION), image->record + 44, 32);
+}
+
+static int records(unsigned row, const struct command_case *test)
+{
+    unsigned i;
+    for (i = 0; i < 76; ++i) {
+        uint8_t actual = i < 44 ? ram(STATE)[i] : ram(EXTENSION)[i - 44];
+        if (actual != test->after[i]) return fail(row, "published record", actual, test->after[i]);
+    }
+    return 1;
+}
+
+static int builder_row(unsigned row, const struct command_case *test, unsigned phase, unsigned dwell)
+{
+    struct context context;
+    struct observation observation;
+    unsigned i, offset = (120U - dwell) & 255U;
+    memset((void *)(uintptr_t)RAM_BASE, 0, 65536);
+    memcpy((void *)(uintptr_t)0xd6320U, test->configuration, 102);
+    memcpy((void *)ram(STATE), test->before, 44);
+    memcpy((void *)ram(EXTENSION), test->before + 44, 32);
+    *ram(0xffff11d4U) = (uint8_t)(110U - (test->stock & 255U));
+    *ram(0xffff24c9U) = test->fallback ? 0x40 : 0;
+    *ram(0xffff13b2U) = (uint8_t)phase;
+    *ram(0xffff13bdU) = 1;
+    *ram(0xffff13c9U) = *ram(0xffff13d3U) = 1;
+    *ram(0xffff13d1U) = 2;
+    *ram(0xffff8501U) = *ram(0xffff84eaU) = *ram(0xffff4185U) = 0x80;
+    *ram(0xffff850eU) = 0x80;
+    *ram(0xffff4195U) = 1;
+    *ram(0xffff237aU) = (uint8_t)dwell;
+    put16(ram(0xffff22bcU), 1000);
+    put16(ram(0xffff11fcU), 12000);
+    put16(ram(0xffff1586U), 10000);
+    put16(ram(0xffff158aU), 10000);
+    put16(ram(0xfffff5c0U), 10000);
+    put16(ram(0xfffff746U), 0x1f00);
+    put16(ram(0xfffff738U), 0x8000);
+    put32(ram(0xfffff430U), 320000);
+    memset(&context, 0, sizeof(context));
+    for (i = 0; i < 15; ++i) context.r[i] = 0x10203040U + i*0x01010101U;
+    context.gbr = 0x12344321U;
+    context.mach = 0x10203040U;
+    context.macl = 0x50607080U;
+    context.entry_sr = 0x80;
+    if (test->publisher) {
+        context.r[4] = test->stock;
+        context.r[5] = test->candidate;
+        stock_invoke_ignition_consumer(0xd6540U, &context, &observation);
+        if (observation.exit[14] != test->returned)
+            return fail(row, "publisher r5", observation.exit[14], test->returned);
+        if (observation.exit[15] != test->stock)
+            return fail(row, "publisher r4", observation.exit[15], test->stock);
+        if (memcmp(observation.abi_before, observation.abi_after, 36))
+            return fail(row, "publisher preserved ABI", 1, 0);
+        return records(row, test);
+    }
+    capture(&initial);
+    stock_invoke_ignition_consumer(0x4df82U, &context, &observation);
+    if (*ram(0xffff2022U) != test->command)
+        return fail(row, "shared command", *ram(0xffff2022U), test->command);
+    if (!records(row, test)) return 0;
+    capture(&primary);
+    restore(&initial);
+    memcpy((void *)ram(STATE), test->after, 44);
+    memcpy((void *)ram(EXTENSION), test->after + 44, 32);
+    *ram(0xffff2022U) = (uint8_t)test->command;
+    context.r[4] = test->command;
+    stock_invoke_ignition_consumer(0x2a892U, &context, &observation);
+    capture(&consumer);
+    if (memcmp(&primary, &consumer, sizeof(primary)))
+        return fail(row, "primary consumer argument", u16(ram(0xffff1558U)),
+                    (uint16_t)((uint16_t)primary.apc[0x558] << 8) | primary.apc[0x559]);
+    restore(&primary);
+    stock_invoke_ignition_consumer(0x4e080U, &context, &observation);
+    if (u32(ram(EXTENSION + 0x10)) != 0)
+        return fail(row, "builder consumes no q", u32(ram(EXTENSION + 0x10)), 0);
+    capture(&secondary);
+    restore(&primary);
+    *ram(0xffff2230U) = (uint8_t)offset;
+    context.r[4] = test->command + offset;
+    stock_invoke_ignition_consumer(0x2acbaU, &context, &observation);
+    capture(&consumer);
+    if (memcmp(&secondary, &consumer, sizeof(secondary)))
+        return fail(row, "secondary consumer argument", context.r[4], test->command + offset);
+    return 1;
+}
+
+int main(void)
+{
+    static const unsigned phases[] = {0, 4, 9};
+    static const unsigned dwells[] = {0, 30, 60, 86, 90, 94, 110, 119, 120, 121};
+    unsigned i, p, d, rows = 0;
+    for (i = 0; i < sizeof(command_cases)/sizeof(command_cases[0]); ++i) {
+        if (command_cases[i].publisher) {
+            if (!builder_row(rows, &command_cases[i], 0, 90)) return 1;
+            ++rows;
+            continue;
+        }
+        for (p = 0; p < 3; ++p) for (d = 0; d < 10; ++d) {
+#ifdef VQ_BUILDER_COVERAGE
+            if (p || d) continue;
+#endif
+            if (!builder_row(rows, &command_cases[i], phases[p], dwells[d])) {
+                fprintf(stderr, "command_case=%u phase=%u dwell=%u\n", i, phases[p], dwells[d]);
+                return 1;
+            }
+            ++rows;
+        }
+    }
+    printf("RL_IGNITION_BUILDERS status=PASS rows=%u stock_consumers=primary,secondary model_records=complete\n", rows);
+    return 0;
+}
+#else
 static int kernel_row(unsigned row, unsigned phase, unsigned mode, unsigned q,
                       unsigned mask, unsigned guard, unsigned seed)
 {
@@ -168,3 +312,4 @@ int main(void)
     printf("RL_DWELL_VETO_KERNEL status=PASS rows=%u divider=stock alias=enabled hardware_ready=false\n", rows);
     return 0;
 }
+#endif

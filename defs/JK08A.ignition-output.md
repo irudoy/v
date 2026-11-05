@@ -367,6 +367,19 @@ apply the stock command and publish zero cut fraction on every entry.
 
 ## Dwell sequence guard and recovery
 
+The divider call and the following masked enable check use stable eligibility
+inputs. The normal tooth path and `0x0002B768` write `0xFFFF13D1`,
+`0xFFFF13D2` and `0xFFFF84EA`; `0x0002B768` runs only in the mutually
+exclusive cam fallback path described above. The tooth path updates its
+cylinder mask after both dwell-arming sections. `IMI11B` runs at level 8 and
+cannot preempt either section. The writer of `0xFFFF4185`, task
+`0x00021834`, runs from `IMI3A` at level 6. The timeout handlers `IMI5A`
+and `IMI5B` run at level 10 and can update compare and output registers,
+but do not write these eligibility inputs or `0xFFFF8511`. The reviewed
+higher-priority handlers provide no other normal-mode writer. This
+exclusion requires the stock interrupt priorities and no additional
+higher-priority writer of the eligibility inputs.
+
 After recomputing `0xFFFF13D1`, handler `0x0002AF38` compares it with the
 successor of its previous value (`0x20` becomes `0x01`, other values shift
 left by one). While `0xFFFF84EA.bit7` is set and `0xFFFF13D2` is zero, a
