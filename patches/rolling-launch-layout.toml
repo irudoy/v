@@ -17,7 +17,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = ""
+expected_composition_sha256 = "340d59779153d5593edc086b35850542d1b1821dd4eadae37cb75bc783d6bc03"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -27,7 +27,7 @@ configuration_size = 102
 efficiency_address = 0x000D6390
 efficiency_size = 82
 hold_actuator = false
-payloads_ready = false
+payloads_ready = true
 default_configuration = "524c0600000000ff00c804b000a00001000028140032000001f496640000030d00620a00adb3a55a00000000000000a10001000000000000000000a10001000000000000000000a10001000000000000000000a10001000000000000000000a100010000a55a"
 
 [[retired_configuration]]
@@ -52,6 +52,10 @@ end = 0x000D4280
 [[claimed_rom_extension]]
 start = 0x000D6000
 end = 0x000D6780
+
+[[claimed_rom_extension]]
+start = 0x000D7000
+end = 0x000D7200
 
 [[erased_rom]]
 start = 0x000D6000
@@ -185,6 +189,12 @@ start = 0x000D6580
 end = 0x000D6680
 entry = 0x000D6580
 
+[[code_region]]
+key = "state_check"
+start = 0x000D7000
+end = 0x000D7200
+entry = 0x000D7000
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -192,9 +202,9 @@ start = 0x000D3860
 end = 0x000D38E4
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "11232a674dcb39fcbe03354e2e6e3ae91e23bed27706c6b48db6e52ce95b3cf8"
-instruction_count = 34
-data_bytes = 28
+expected_sha256 = "48dd55fc21ed0bc7214ce3f6fcc46b4a4a82ddc7f7ae800ef39a7bc87b3657e1"
+instruction_count = 43
+data_bytes = 36
 code_regions = ["periodic_wrapper", "selector_arbiter", "startup_wrapper"]
 
 [[assembly_unit]]
@@ -204,9 +214,9 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "3c5a576220a3ca2695ee0d4655044f2e5373a56cf01a5539e121242e666df399"
-instruction_count = 654
-data_bytes = 103
+expected_sha256 = "8921fa728d40d4ac19b76c9aa0ffb77d466c894350402d2290ba5204900f9c31"
+instruction_count = 681
+data_bytes = 90
 code_regions = ["engine"]
 
 [[assembly_unit]]
@@ -228,9 +238,9 @@ start = 0x000D40C0
 end = 0x000D41E0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "7e08454cb05803d5c18ee4d69a501bc43bde0ae8b60164a97cdfd4d83cacecb5"
-instruction_count = 121
-data_bytes = 26
+expected_sha256 = "3e78ddde9f2f40c7e43edc2a908db7344eef6f6d81be3e05d6afb2e4c2bd6505"
+instruction_count = 109
+data_bytes = 18
 code_regions = ["speed_controller"]
 
 [[assembly_unit]]
@@ -256,6 +266,54 @@ expected_sha256 = "30e69c6ac042bc21354fbf0f83a6ce7231bb58aab75fd5d654076e7f44ad1
 instruction_count = 147
 data_bytes = 48
 code_regions = ["spark_cut"]
+
+[[assembly_unit]]
+key = "rpm"
+source = "rolling-launch-rpm.s"
+start = 0x000D6400
+end = 0x000D6500
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "f9e5925ba93bebcc2bd21a5f096b3476506b663cf61f08ef85f495bdf58ca848"
+instruction_count = 55
+data_bytes = 18
+code_regions = ["rpm_controller", "rpm_fraction"]
+
+[[assembly_unit]]
+key = "actuation"
+source = "rolling-launch-actuation.s"
+start = 0x000D6500
+end = 0x000D6680
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "dad30ecb369d15a56cd655fff46161451ce7f259c86d665863b672153012ac20"
+instruction_count = 138
+data_bytes = 30
+code_regions = ["control_publisher", "ignition_publisher", "actuation"]
+
+[[assembly_unit]]
+key = "slot_validator"
+source = "rolling-launch-validator.s"
+start = 0x000D6680
+end = 0x000D6780
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "7b1130344ebbe4a89b4a4b1261698133871cf9a33bc71a476b472d256fe8a694"
+instruction_count = 61
+data_bytes = 10
+code_regions = ["slot_validator"]
+
+[[assembly_unit]]
+key = "state_check"
+source = "rolling-launch-state-check.s"
+start = 0x000D7000
+end = 0x000D7200
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "f947e741775be244ac9ab07a225dff8481e86fbf7b5f961403796864401773eb"
+instruction_count = 226
+data_bytes = 38
+code_regions = ["state_check"]
 
 [[hook]]
 key = "displaced_periodic_task"

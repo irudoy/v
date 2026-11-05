@@ -205,11 +205,11 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         audit = rolling_launch_assembly.validate_instruction_semantics(
             self.layout, self.parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 1164)
-        self.assertEqual(audit.delayed_transfers, 73)
-        self.assertEqual(audit.pc_relative_references, 97)
-        self.assertEqual(audit.direct_branches, 200)
-        self.assertEqual(audit.indirect_transfers, 28)
+        self.assertEqual(audit.instructions, 1539)
+        self.assertEqual(audit.delayed_transfers, 94)
+        self.assertEqual(audit.pc_relative_references, 92)
+        self.assertEqual(audit.direct_branches, 249)
+        self.assertEqual(audit.indirect_transfers, 36)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):
         blobs = dict(self.blobs)
@@ -233,9 +233,9 @@ class RollingLaunchCompositionTest(unittest.TestCase):
 
     def test_closed_write_set_contains_only_declared_ranges(self):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
-        self.assertEqual(sum(item.size for item in ranges), 3156)
-        self.assertEqual(self.result.permitted_write_bytes, 3156)
-        self.assertEqual(self.result.changed_bytes, 2639)
+        self.assertEqual(sum(item.size for item in ranges), 4318)
+        self.assertEqual(self.result.permitted_write_bytes, 4318)
+        self.assertEqual(self.result.changed_bytes, 3453)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -334,15 +334,15 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_source_counts_equal_manifest_totals(self):
         self.assertEqual(
             sum(item.instruction_count for item in self.layout.assembly_units),
-            1164,
+            1539,
         )
         self.assertEqual(
             sum(item.data_bytes for item in self.layout.assembly_units),
-            267,
+            320,
         )
         self.assertEqual(
             sum(item.instruction_count for item in self.parsed.values()),
-            1164,
+            1539,
         )
 
 

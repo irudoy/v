@@ -18,17 +18,26 @@ def layout():
     return storage.load_layout()
 
 
-def test_schema6_regions_and_state_are_declared_without_executable_qualification(layout):
+def pending(layout):
+    return replace(layout, payloads_ready=False, expected_composition_sha256="")
+
+
+def test_schema6_regions_state_and_payloads_are_declared(layout):
     assert (layout.configuration.start, layout.configuration.size) == (0xD6320, 102)
     assert (layout.efficiency.start, layout.efficiency.size) == (0xD6390, 82)
     assert [(x.start, x.end) for x in layout.ram.active_spans] == [
         (0xFFFF5D40, 0xFFFF5D6C), (0xFFFF6100, 0xFFFF6120)]
-    assert not layout.payloads_ready and not layout.hold_actuator
-    assert layout.expected_composition_sha256 == ""
+    assert layout.payloads_ready and not layout.hold_actuator
+    assert len(layout.expected_composition_sha256) == 64
     assert layout.default_configuration == rl.Calibration().to_bytes()
     assert layout.code_region_by_key["startup_wrapper"].entry == 0xD38A0
+    assert layout.code_region_by_key["state_check"].entry == 0xD7000
+    assert (0xD7000, 0xD7200) in [(x.start, x.end) for x in layout.claimed_rom_ranges]
+    assert {
+        region for unit in layout.assembly_units for region in unit.code_regions
+    } == set(layout.code_region_by_key)
     with pytest.raises(ValueError, match="not assembled"):
-        storage.validate_base_composition(layout, bytes(0x100000))
+        storage.validate_base_composition(pending(layout), bytes(0x100000))
 
 
 def test_old_fuel_path_is_absent_but_stock_restorations_are_explicit(layout):
@@ -51,8 +60,10 @@ def test_speed_inputs_require_the_raw_bytes_and_both_ready_bits(layout):
 
 
 @pytest.mark.parametrize("change,match", [
-    ({"payloads_ready": True}, "SHA-256|hexadecimal|digits"),
-    ({"hold_actuator": True}, "unassembled"),
+    ({"expected_composition_sha256": ""}, "SHA-256|hexadecimal|digits"),
+    ({"payloads_ready": False}, "unassembled"),
+    ({"payloads_ready": False, "expected_composition_sha256": "", "hold_actuator": True},
+     "unassembled"),
     ({"configuration": storage.common.AddressRange(0xD6320, 0xD637D, "bad")}, "size"),
     ({"efficiency": storage.common.AddressRange(0xD6390, 0xD63E0, "bad")}, "size"),
     ({"restored_words": ()}, "restored"),
@@ -74,19 +85,19 @@ def test_extension_cannot_overlap_another_active_or_future_owner(layout):
 
 
 def test_ready_flag_cannot_qualify_unowned_executable_budgets(layout):
+    units = tuple(unit for unit in layout.assembly_units if unit.key != "state_check")
     with pytest.raises(ValueError, match="assembly owner"):
-        storage.validate_structure(replace(layout, payloads_ready=True,
-                                           expected_composition_sha256="0"*64))
+        storage.validate_structure(replace(layout, assembly_units=units))
 
 
 def test_pending_payloads_do_not_read_a_manifest(layout, tmp_path):
-    assert rolling_launch_assembly.load_payloads(layout, tmp_path / "absent.toml") == {}
-    assert rolling_launch_assembly.load_payloads(layout) == {}
+    assert rolling_launch_assembly.load_payloads(pending(layout), tmp_path / "absent.toml") == {}
+    assert set(rolling_launch_assembly.load_payloads(layout)) == set(layout.assembly_unit_by_key)
 
 
 def test_pending_composition_refuses_before_using_payloads(layout):
     with pytest.raises(ValueError, match="schema 6 executable payloads are not assembled and qualified"):
-        rolling_launch_compose.compose(layout=layout, base=bytes(0x100000))
+        rolling_launch_compose.compose(layout=pending(layout), base=bytes(0x100000))
 
 
 @pytest.mark.parametrize("damage,message", (
