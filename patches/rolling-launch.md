@@ -663,8 +663,8 @@ them fails the check and publishes the stock command, which is the correct
 command there. A publication inside activation either fails the check and
 publishes the stock command, or passes it with the law output 1000: it may
 set the ready mark and publishes `q = 0`, and the control publisher of the
-pass then publishes `q` of the new law with that ready mark, as the next
-publication would. The masked wire views at the end of the pass make the
+pass then publishes `q` of the new law with the ready mark stored at that
+point. The masked wire views at the end of the pass make the
 record consistent. The input sample precedes every transition. A sampled change that alters the
 wire views fails the check and occurs only on a pass that aborts or outside
 `ACTIVE`; other sampled fields are coupled to no control field, so a

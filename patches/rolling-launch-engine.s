@@ -24,8 +24,9 @@
 //      the latched regulator, map, mode and trim.
 //   4. Every pass ends with the wire views of the extension, read, computed
 //      and stored with interrupts masked.
-// The validator at 0xD6680 returns bit0 for a valid configuration and bit1
-// for a valid efficiency table. The RPM controller at 0xD6400 and the speed
+// The validator at 0xD6680 returns 0 for an invalid configuration, and for a
+// valid one bit0 and bit1 for a valid efficiency table; r12 keeps the result,
+// which is positive exactly for a valid configuration. The RPM controller at 0xD6400 and the speed
 // controller at 0xD40C0 receive r4=configuration and r5=base state and end in
 // the control publisher, which commits their law output together with q.
 
@@ -400,12 +401,13 @@ mov #0x0,r1
 mov #0x18,r2
 bsr rl_gate_fail_t
 nop
+// SHLL changes T, so the flag bit precedes the comparison.
+mov #0x40,r1
+shll r1
 mov.w @(0x4,r9),r0
 mov r0,r7
 mov.w @(0xc,r10),r0
 cmp/ge r0,r7
-mov #0x40,r1
-shll r1
 mov #0xa,r2
 bsr rl_gate_valid_pass_t
 nop
@@ -706,12 +708,12 @@ rl_load_views_entry:
 
 // Gate helper: r1 = flag bits, r2 = reason. A pass ORs r1 into r11; a
 // failure stores r2 in r13 unless an earlier gate failed. The valid entries
-// also fail for an invalid configuration. Only r3 and T change.
+// also fail for an invalid configuration. Only T changes, so the sampled
+// button stays in r3.
 rl_gate_valid_pass_t:
 bf rl_gate_fail
 rl_gate_valid:
-mov r12,r3
-shlr r3
+cmp/pl r12
 rl_gate_pass_t:
 bf rl_gate_fail
 rl_gate_pass:

@@ -69,6 +69,16 @@ def test_tracked_sources_pass_every_abi_check(layout):
      "mov #0x0,r0\nmov.w r0,@(0x14,r8)\n", "latched trim last"),
     ("engine", "mov.w r0,@(0x16,r9)\nmov r14,r0\nmov.b r0,@r9",
      "mov r14,r0\nmov.b r0,@r9\nmov.w r0,@(0x16,r9)", "law output 1000 before the kind"),
+    ("engine", "rl_gate_valid:\ncmp/pl r12\n", "rl_gate_valid:\nmov r12,r3\n",
+     "valid gate must only test r12"),
+    ("engine", "mov #0x40,r1\nshll r1\nmov.w @(0x4,r9),r0\nmov r0,r7\n"
+     "mov.w @(0xc,r10),r0\ncmp/ge r0,r7\n",
+     "mov.w @(0x4,r9),r0\nmov r0,r7\nmov.w @(0xc,r10),r0\ncmp/ge r0,r7\n"
+     "mov #0x40,r1\nshll r1\n", "changes T between a gate comparison"),
+    ("slot_validator", "tst r7,r7\nbt rl_val_return", "tst r7,r7\nbt rl_val_table",
+     "reject an invalid head"),
+    ("slot_validator", "cmp/hs r1,r0\nbt rl_val_return\nadd 0xc,r2",
+     "cmp/hs r1,r0\nbt rl_val_table\nadd 0xc,r2", "branches to the table check"),
 ))
 def test_abi_checks_reject_a_changed_contract(layout, key, old, new, message):
     with pytest.raises(ValueError, match=message):

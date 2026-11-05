@@ -193,6 +193,35 @@ def _stores(texts):
     )
 
 
+# Instructions that change T besides the comparisons and tests. The shifts
+# by 2, 8 and 16 keep T.
+_T_WRITERS = (
+    "shll ", "shlr ", "shal ", "shar ", "rotl ", "rotr ", "rotcl ", "rotcr ",
+    "dt ", "addc ", "subc ", "negc ", "addv ", "subv ", "div0s ", "div0u",
+    "div1 ", "sett", "clrt",
+)
+
+
+def _gate_conditions_reach_their_calls(texts):
+    """Every call of a T-reading gate entry sees T of its last comparison.
+
+    A conditional branch on that T may skip instructions that keep T, so both
+    paths reach the call with the same T.
+    """
+    for index, text in enumerate(texts):
+        if not (text.startswith("bsr rl_gate_") and text.endswith("_t")):
+            continue
+        for previous in reversed(texts[:index]):
+            if previous.startswith(("cmp/", "tst ")):
+                break
+            if previous.startswith(_T_WRITERS) or previous.split()[0] in {
+                "bra", "bsr", "jsr", "jmp", "rts",
+            }:
+                raise ValueError(
+                    f"engine changes T between a gate comparison and {text}"
+                )
+
+
 def _registers(texts):
     registers = set()
     for text in texts:
@@ -417,6 +446,11 @@ def _validate_engine_abi(parsed):
     }
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
+    # The valid gate tests the validator result without a scratch register:
+    # r3 holds the sampled button through the gate chain.
+    if _region(parsed, "rl_gate_valid", "rl_gate_pass_t") != ["cmp/pl r12"]:
+        raise ValueError("engine valid gate must only test r12")
+    _gate_conditions_reach_their_calls(texts)
 
 
 def _contains(texts, sequence):
@@ -867,9 +901,13 @@ def _validate_actuation_abi(parsed):
 def _validate_slot_validator_abi(parsed):
     texts = _texts(parsed)
     if texts[:3] != [
-        "mov.l @(rl_val_config_address,pc),r3", "tst r7,r7", "bt rl_val_table",
+        "mov.l @(rl_val_config_address,pc),r3", "tst r7,r7", "bt rl_val_return",
     ]:
-        raise ValueError("slot validator does not skip the slots of an invalid head")
+        raise ValueError("slot validator does not reject an invalid head")
+    # The table is checked only after five valid slots, so an invalid record
+    # returns 0 and a valid one a positive result.
+    if any(text.split()[-1] == "rl_val_table" for text in texts if text[0] == "b"):
+        raise ValueError("slot validator branches to the table check")
     if texts[-3:] != ["mov r7,r0", "rts", "nop"] or texts.count("rts") != 1:
         raise ValueError("slot validator return differs")
     if any(
