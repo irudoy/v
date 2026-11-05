@@ -142,12 +142,16 @@ builder write sets, or the checksum fields; any other difference is rejected
 by address. The builder write sets must hold no runtime or one complete
 runtime. The CAN telemetry layer must be wholly absent or match a complete
 current or registered historical payload, configuration, mailbox record, and
-hooks. `can-telemetry-history.toml` owns the exact schema-2 profile-7 components
-of the 7mfk family. After removing a
+hooks. `can-telemetry-history.toml` owns the exact schema-2 components of
+profile 7 of the 7mfk family and of profile 9 of JK08A. After removing a
 validated telemetry layer in memory, the Rolling Launch layer, when supported,
 must be wholly absent, match the exact current payload and configuration
-schema, or match one registered historical unit fingerprint and its schema
-contract. A current telemetry layer is accepted only above the current Rolling
+schema, or match one registered historical endpoint. An endpoint places its
+unit fingerprints, hook values, DID slots and record by its own addresses and
+validates the record against the frozen contract of its schema; every other
+offset of the current Rolling Launch layout and of the other registered
+endpoints of the ROM must hold stock bytes. Extraction and `UPGRADE` admit the
+writes of the registered endpoints of the selected ROM. A current telemetry layer is accepted only above the current Rolling
 Launch endpoint or above a registered complete endpoint explicitly marked
 compatible with that telemetry contract. The previous guarded ignition
 controller remains a registered endpoint on every ROM that accepts a complete
@@ -163,8 +167,10 @@ from a fresh stock build: the stock bytes for the window and the Map 1 bytes
 for each Map 2 through Map 5 slot. No run crosses a range boundary. Its
 `[settings]` table binds configuration settings by SHA-256; it is a check,
 not a second source. CAN telemetry uses the configuration record bytes. The
-current Rolling Launch binding uses efficiencies derived from the registered
-stock F table as a normal form. The logical slot settings remain bound when a
+Rolling Launch binding of a current or expressible historical record is the
+current record of its settings with efficiencies derived from the registered
+stock F table, a normal form that a build of the extracted profile
+reproduces. The logical slot settings remain bound when a
 calibrated F table changes its derived efficiency; the F bytes travel as
 calibration elements. Application derives the efficiency words again after
 writing those elements and admits only those words as additional runtime

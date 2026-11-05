@@ -1,12 +1,18 @@
-# Assembly units of the registered `schema-4-uniform-gain` Rolling Launch
-# endpoint that differ from the current runtime, and the 40-byte schema-4
-# record of its built-in profile. Each unit covers its complete span,
-# including 0xFF fill.
+# Every assembly unit of the registered `schema-4-uniform-gain` Rolling
+# Launch endpoint that is not erased, and the 40-byte schema-4 record of its
+# built-in profile. Each unit covers its complete span, including 0xFF fill.
 
 schema_version = 1
 configuration = "524c0400000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a"
 
 [units]
+wrappers = """
+4f22d019400b0009d018400b00094f26000b0009ffffffffffffffffffffffff
+d113601088008902d012402b0009d012402b0009ffffffffffffffffffffffff
+4f22d10ee000e20b2102710442108bfbd00b400b00094f26000b0009ffffffff
+ffffffffffffffff000a9554000d38e4ffff5d40000d09d8000d2108ffff5d40
+000d22a0
+"""
 engine = """
 4f22d580e000815a6050880089058801890588028905a0e20009a0040009a03d
 0009a09d00098454e10530128910845520088b0d8553600d20088b098554600d
@@ -73,6 +79,22 @@ speed_controller = """
 8452cb106303d00b400b0009d20a6020c8048901e720237b603380524f26000b
 0009ffffffff5d40000d6040ffff113c00021ce0000d6068ffff249703e8ffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+"""
+feedback_arbiter = """
+4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffff000d35e0ffff5d00ffff5d40ffff3ada
+"""
+fuel_cut_wrapper = """
+4f22d00b400b00092f06d10a851a600d20088906e1c020188b03d1076210202b
+210060f64f26000b0009ffffffffffff0004ed88ffff5d40ffff22e0ffffffff
+"""
+rpm_ceiling = """
+845588018b1de740237b8555610d854e600d310cd20d6021620d32168909855c
+2008890e674377236070600c310832168b07e001815ce03f815ae7a0237b000b
+0009e000815c000b0009ffffffff11bcffffffffffffffff
 """
 spark_cut = """
 2f062f162f262f362f462f562f662f7600022f06d6448466c8808979d5436453

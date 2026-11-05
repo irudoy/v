@@ -820,7 +820,7 @@ def build_image(
 
 def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>"):
     """Compose the current runtime while preserving an existing calibration."""
-    from patches import apply_calibration, extract_calibration
+    from patches import apply_calibration, extract_calibration, runtime_endpoints
 
     source = bytes(source)
     try:
@@ -840,10 +840,13 @@ def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>"):
         application = apply_calibration.apply(fresh.data, extraction.calibration)
         if any(state != "matched" for _, state in application.settings):
             raise BuildError("upgrade settings do not match the extracted source")
+        # The fresh build replaces a historical endpoint, whose writes may lie
+        # outside the current component write sets.
         changed, permitted, checksum_changed = _validate_preservation(
             source, application.data,
             _component_offsets(target.map_layout, target.rolling_layout, target.telemetry_layout,
-                               target.checksum_layout),
+                               target.checksum_layout)
+            | runtime_endpoints.historical_write_offsets(selected),
             target.checksum_layout)
         checksums = rom_checksums.require_valid(source, target.checksum_layout, source_name)
     except (ValueError, runtime_targets.RuntimeTargetError) as error:

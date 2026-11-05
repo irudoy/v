@@ -4,9 +4,10 @@
 The input is a registered stock image or an image built from one: the stock
 image with calibration edits, a current builder output, or a registered
 historical runtime endpoint of the selected ROM. Every difference from the
-stock image must lie in the calibration ranges, the builder write sets, or the
-checksum fields, and the builder write sets must hold no runtime or one
-complete runtime. Partial and unknown states are rejected with a named reason.
+stock image must lie in the calibration ranges, the builder write sets, the
+writes of the registered historical endpoints, or the checksum fields, and
+these write sets must hold no runtime or one complete runtime. Partial and
+unknown states are rejected with a named reason.
 
 The command writes a local calibration file and, when the source carries
 Rolling Launch settings that the current profile schema expresses, a local
@@ -146,9 +147,12 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         raise ExtractionError(str(error)) from error
 
     ranges = calibration_ranges.load(selected)
+    # A registered historical endpoint may write outside the current builder
+    # write sets; classification then requires exactly one complete endpoint.
     permitted = (
         ranges.write_offsets
         | ranges.checksum_offsets
+        | runtime_endpoints.historical_write_offsets(selected)
         | frozenset(
             offset for item in ranges.window
             for offset in range(item.start, item.end)
@@ -191,9 +195,12 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         record, rolling, unexpressed = _rolling_settings(
             source, target.rolling_layout, rolling_state
         )
-        if rolling_state == "current":
-            # Bind logical settings with stock-derived efficiencies. A tuned
-            # F table travels as calibration bytes, not as a second setting.
+        if rolling is not None:
+            # Bind logical settings in the current record format with
+            # stock-derived efficiencies, which a build of the extracted
+            # profile reproduces for a current or expressible historical
+            # record. A tuned F table travels as calibration bytes, not as a
+            # second setting.
             record = build_rom.resolve_trim_efficiency(rolling, stock).to_bytes()
         settings.append(("rolling_launch", sha256(record)))
     telemetry = None

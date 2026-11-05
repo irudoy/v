@@ -3,8 +3,10 @@
 An image carries no runtime, the current builder runtime, or a registered
 historical Rolling Launch endpoint under an optional current or registered
 historical CAN telemetry layer. Each signature names the ROMs it describes, and
-classification considers only the signatures of the selected ROM. Partial,
-unknown, or mixed layers are rejected with a named reason.
+classification considers only the signatures of the selected ROM. A historical
+Rolling Launch signature places its units, hooks, DID slots and record by its
+own addresses, so a change of the current layout leaves its classification
+intact. Partial, unknown, or mixed layers are rejected with a named reason.
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ from patches import can_telemetry
 from patches import can_telemetry_history
 from patches import jk08a_checksums as canonical_checksums
 from patches import map_switching_compose
+from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
@@ -31,7 +34,99 @@ def sha256(data):
 
 
 @dataclass(frozen=True)
+class EndpointAddresses:
+    """The ROM placement of one generation of historical runtimes: the span
+    of each unit, the word of each hook, the pointer slot and RAM target of
+    each DID, and the record span of each configuration schema. It is a
+    record of the images that the generation built and does not follow the
+    current layout."""
+
+    unit_spans: tuple[tuple[str, int, int], ...]
+    hook_words: tuple[tuple[str, int, int], ...]
+    did_slots: tuple[tuple[int, int, int], ...]
+    record_spans: tuple[tuple[int, int, int], ...]
+    byte_order: str = "big"
+
+
+# The placement of every registered exact-family endpoint: the unit spans,
+# hook words, DID pointer slots and record spans of the builder through the
+# per-map slot runtime.
+EXACT_ENDPOINT_ADDRESSES = EndpointAddresses(
+    unit_spans=(
+        ("wrappers", 0x000D3860, 0x000D38E4),
+        ("engine", 0x000D38E4, 0x000D3EA0),
+        ("ignition_adapter", 0x000D3EA0, 0x000D3F60),
+        ("speed_controller", 0x000D40C0, 0x000D41E0),
+        ("feedback_arbiter", 0x000D41E0, 0x000D4280),
+        ("fuel_cut_wrapper", 0x000D6000, 0x000D6040),
+        ("rpm_ceiling", 0x000D6068, 0x000D60C0),
+        ("spark_cut", 0x000D60C0, 0x000D6220),
+        ("trim", 0x000D6268, 0x000D6320),
+    ),
+    hook_words=(
+        ("displaced_periodic_task", 0x00021970, 4),
+        ("selector_arbitration", 0x000CE8DC, 4),
+        ("startup_state_clear", 0x00027D28, 4),
+        ("primary_ignition_command", 0x0004E198, 4),
+        ("feedback_arbitration", 0x000C3FA4, 4),
+        ("fuel_cut_coordinator", 0x000219DC, 4),
+        ("spark_handler", 0x000202E4, 4),
+    ),
+    did_slots=(
+        (0x1211, 0x000228E0, 0xFFFF5D40),
+        (0x1212, 0x000228E4, 0xFFFF5D42),
+        (0x1213, 0x000228E8, 0xFFFF5D44),
+        (0x1216, 0x000228F4, 0xFFFF5D46),
+        (0x1217, 0x000228F8, 0xFFFF5D48),
+        (0x1224, 0x0002292C, 0xFFFF5D4A),
+        (0x1227, 0x00022938, 0xFFFF5D4C),
+        (0x1228, 0x0002293C, 0xFFFF5D4E),
+        (0x1229, 0x00022940, 0xFFFF5D50),
+        (0x121D, 0x00022910, 0xFFFF5D52),
+        (0x121E, 0x00022914, 0xFFFF5D54),
+        (0x121F, 0x00022918, 0xFFFF5D56),
+        (0x1231, 0x00022960, 0xFFFF5D58),
+        (0x1232, 0x00022964, 0xFFFF5D5C),
+    ),
+    record_spans=(
+        (1, 0x000D3F60, 32),
+        (2, 0x000D3F60, 32),
+        (3, 0x000D3F60, 32),
+        (4, 0x000D6040, 40),
+        (5, 0x000D6220, 72),
+    ),
+)
+
+
+@dataclass(frozen=True)
+class EndpointUnit:
+    key: str
+    start: int
+    end: int
+    sha256: str
+
+
+@dataclass(frozen=True)
+class EndpointHook:
+    key: str
+    address: int
+    width: int
+    value: int
+
+
+@dataclass(frozen=True)
+class EndpointDid:
+    did: int
+    pointer_address: int
+    target: int
+
+
+@dataclass(frozen=True)
 class RollingEndpointSignature:
+    """One historical Rolling Launch endpoint: the digest of each unit, the
+    value of each hook, the published DIDs and the record schema, placed by
+    the endpoint's own addresses."""
+
     key: str
     roms: tuple[str, ...]
     configuration_schema_version: int
@@ -41,6 +136,76 @@ class RollingEndpointSignature:
     # The Rolling Launch DIDs that the endpoint publishes; None names the
     # nine DIDs of every endpoint before the RPM ceiling.
     published_dids: frozenset[int] | None = None
+    addresses: EndpointAddresses = EXACT_ENDPOINT_ADDRESSES
+
+    @property
+    def units(self):
+        spans = {key: (start, end) for key, start, end in self.addresses.unit_spans}
+        return tuple(
+            EndpointUnit(key, *spans[key], digest)
+            for key, digest in self.unit_sha256
+        )
+
+    @property
+    def hooks(self):
+        words = {key: (address, width) for key, address, width in self.addresses.hook_words}
+        return tuple(
+            EndpointHook(key, *words[key], value)
+            for key, value in self.hook_values
+        )
+
+    @property
+    def dids(self):
+        published = (
+            HISTORICAL_ROLLING_DIDS if self.published_dids is None
+            else self.published_dids
+        )
+        return tuple(
+            EndpointDid(did, pointer, target)
+            for did, pointer, target in self.addresses.did_slots
+            if did in published
+        )
+
+    @property
+    def record(self):
+        """Return the span of the endpoint's configuration record."""
+        for schema, start, size in self.addresses.record_spans:
+            if schema == self.configuration_schema_version:
+                return map_switching_layout.AddressRange(
+                    start, start + size, f"{self.key}.configuration"
+                )
+        raise EndpointError(
+            f"internal historical Rolling Launch endpoint {self.key!r} "
+            "has no record span"
+        )
+
+    def write_ranges(self):
+        """Return every span that the endpoint writes or keeps erased."""
+        ranges = [
+            map_switching_layout.AddressRange(unit.start, unit.end, f"unit.{unit.key}")
+            for unit in self.units
+        ]
+        ranges += [
+            map_switching_layout.AddressRange(
+                hook.address, hook.address + hook.width, f"hook.{hook.key}"
+            )
+            for hook in self.hooks
+        ]
+        ranges += [
+            map_switching_layout.AddressRange(
+                item.pointer_address, item.pointer_address + 4, f"did.{item.did:04x}"
+            )
+            for item in self.dids
+        ]
+        ranges.append(self.record)
+        return tuple(sorted(ranges, key=lambda item: (item.start, item.end)))
+
+    def write_offsets(self):
+        return frozenset(
+            offset
+            for item in self.write_ranges()
+            for offset in range(item.start, item.end)
+        )
 
 
 PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
@@ -125,13 +290,13 @@ GUARDED_SPEED_CONTROLLER_SHA256 = (
 BOUNDED_SPEED_CONTROLLER_SHA256 = (
     "0b0cede4221a03624990ba79d9df1ca827b947f29da705f14c3b702158a5a9b3"
 )
-# Every historical endpoint publishes these nine DIDs and leaves the later
-# Rolling Launch DID slots stock.
+# Every endpoint before the RPM ceiling publishes these nine DIDs and leaves
+# the later Rolling Launch DID slots stock.
 HISTORICAL_ROLLING_DIDS = frozenset(
     {0x1211, 0x1212, 0x1213, 0x1216, 0x1217, 0x1224, 0x1227, 0x1228, 0x1229}
 )
-# Every Rolling Launch DID of the current layout.
-CURRENT_ROLLING_DIDS = frozenset({
+# The fourteen DIDs of the spark-cut endpoints.
+SPARK_CUT_ROLLING_DIDS = frozenset({
     0x1211, 0x1212, 0x1213, 0x1216, 0x1217, 0x1224, 0x1227, 0x1228,
     0x1229, 0x121D, 0x121E, 0x121F, 0x1231, 0x1232,
 })
@@ -330,7 +495,7 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         carries_current_telemetry=True,
     ),
     # The speed hold with the spark-cut actuator and one integral gain: the
-    # 40-byte schema 4 record at 0xD6040 and every current hook and DID.
+    # 40-byte schema 4 record at 0xD6040 and the hooks and DIDs of the spark cut.
     RollingEndpointSignature(
         key="schema-4-uniform-gain",
         roms=runtime_targets.EXACT_ROMS,
@@ -348,7 +513,29 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         ),
         hook_values=SPARK_CUT_ROLLING_HOOK_VALUES,
         carries_current_telemetry=True,
-        published_dids=CURRENT_ROLLING_DIDS,
+        published_dids=SPARK_CUT_ROLLING_DIDS,
+    ),
+    # The speed hold with per-map slots and the fixed retard trim: the 72-byte
+    # schema 5 record at 0xD6220, the fuel-cut wrapper and the RPM ceiling, as
+    # flashed on JK08A.
+    RollingEndpointSignature(
+        key="schema-5-fixed-trim",
+        roms=("JK08A",),
+        configuration_schema_version=5,
+        unit_sha256=(
+            ("wrappers", "11232a674dcb39fcbe03354e2e6e3ae91e23bed27706c6b48db6e52ce95b3cf8"),
+            ("engine", "3c5a576220a3ca2695ee0d4655044f2e5373a56cf01a5539e121242e666df399"),
+            ("ignition_adapter", "da55e2ccb8801d14dba33e4d7ea17e2a13eb1b2f4fe229ef62caffbe2770d1f6"),
+            ("speed_controller", "7e08454cb05803d5c18ee4d69a501bc43bde0ae8b60164a97cdfd4d83cacecb5"),
+            ("feedback_arbiter", "1e1a884eee649ec5cfea48af0c2129c8290628401d11118253c5265e965b0da6"),
+            ("fuel_cut_wrapper", "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"),
+            ("rpm_ceiling", "5de36173709c7fd3880724eb9f13474f1b515ba725869205a7f48eeeb4c2c2dd"),
+            ("spark_cut", "30e69c6ac042bc21354fbf0f83a6ce7231bb58aab75fd5d654076e7f44ad181e"),
+            ("trim", "e01b86a6a7aea6d8f359e1c92caf342466faf821b714998de49659c33e3d823d"),
+        ),
+        hook_values=SPARK_CUT_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+        published_dids=SPARK_CUT_ROLLING_DIDS,
     ),
 )
 TELEMETRY_LOWER_ROLLING_STATES = frozenset(
@@ -392,15 +579,130 @@ HISTORICAL_SCHEMA_FORMATS = {
     2: ">H8B6H5sBHH",
     3: ">H8B3H2B2H5sBHH",
 }
+# The 40-byte head of the schema 4 and 5 records. The word at +0x16 holds the
+# integral gain of schema 4 and a reserved zero of schema 5, whose five
+# 6-byte map slots and end marker follow the head.
+SPEED_HOLD_HEAD_FORMAT = ">H6B4HhBB3H2B3H2B2H"
+SPEED_HOLD_HEAD_FIELDS = (
+    "magic", "schema_version", "mode", "enable_mask", "options",
+    "coolant_min", "coolant_max", "min_speed", "max_speed", "min_rpm_native",
+    "min_pedal", "target_speed_offset", "window_width", "window_top",
+    "u_rate_limit", "gain_word", "integrator_limit", "abort_above",
+    "abort_below", "rpm_ceiling_offset_native", "run_timeout_ticks",
+    "rearm_ticks", "speed_frame_age_limit", "rpm_ceiling_hysteresis_native",
+    "magic_inverse", "end_marker",
+)
+SPEED_HOLD_SLOT_FORMAT = "hBBH"
+SPEED_HOLD_SLOT_FIELDS = (
+    "integral_gain", "max_trim", "floor_command", "trim_efficiency",
+)
+SPEED_HOLD_SLOT_COUNT = 5
+SPEED_HOLD_SCHEMA_FORMATS = {
+    4: SPEED_HOLD_HEAD_FORMAT,
+    5: SPEED_HOLD_HEAD_FORMAT
+    + SPEED_HOLD_SLOT_FORMAT * SPEED_HOLD_SLOT_COUNT + "H",
+}
+# Mode names and limits of the schema 4 and 5 records.
+SPEED_HOLD_MODE_NAMES = ("observe", "hold")
+SPEED_HOLD_TRIM_MAX = 40
+SPEED_HOLD_U_ONE = 1000
+SPEED_HOLD_FRAME_AGE_LIMIT_MAX = 254
+
+
+def _speed_hold_fields(configuration, schema_version):
+    """Return the named values of a schema 4 or 5 record, or None when its
+    size or format differs."""
+    try:
+        values = struct.unpack(
+            SPEED_HOLD_SCHEMA_FORMATS[schema_version], bytes(configuration)
+        )
+    except (TypeError, struct.error):
+        return None
+    head = dict(zip(SPEED_HOLD_HEAD_FIELDS, values))
+    if schema_version == 4:
+        return head, ()
+    slot_size = len(SPEED_HOLD_SLOT_FIELDS)
+    slots = tuple(
+        dict(zip(SPEED_HOLD_SLOT_FIELDS, values[start : start + slot_size]))
+        for start in range(
+            len(SPEED_HOLD_HEAD_FIELDS),
+            len(SPEED_HOLD_HEAD_FIELDS) + slot_size * SPEED_HOLD_SLOT_COUNT,
+            slot_size,
+        )
+    )
+    head["slot_end_marker"] = values[-1]
+    return head, slots
+
+
+def _speed_hold_record_is_valid(configuration, schema_version):
+    parsed = _speed_hold_fields(configuration, schema_version)
+    if parsed is None:
+        return False
+    head, slots = parsed
+    gain_word = (
+        0 <= head["gain_word"] <= 0x7FFF if schema_version == 4
+        else head["gain_word"] == 0
+    )
+    common = all((
+        head["magic"] == rolling_launch.CONFIG_MAGIC,
+        head["schema_version"] == schema_version,
+        0 <= head["mode"] < len(SPEED_HOLD_MODE_NAMES),
+        0 <= head["enable_mask"] <= 0x1F,
+        head["options"] == 0,
+        0 <= head["coolant_min"] <= head["coolant_max"] <= 0xFF,
+        head["min_speed"] == 0
+        or head["max_speed"] == 0
+        or head["min_speed"] <= head["max_speed"],
+        0 < head["min_rpm_native"] <= 0xFFFF,
+        0 < head["abort_above"] <= 0xFF,
+        0 < head["abort_below"] <= 0xFF,
+        -head["abort_above"] < head["target_speed_offset"] < head["abort_below"],
+        0 < head["window_width"] <= 0xFF,
+        0 < head["u_rate_limit"] <= SPEED_HOLD_U_ONE,
+        gain_word,
+        0 <= head["integrator_limit"] <= SPEED_HOLD_U_ONE,
+        0 < head["rpm_ceiling_offset_native"] <= 0xFFFF,
+        0 < head["run_timeout_ticks"] <= 0x7FFF,
+        0 < head["rearm_ticks"] <= 0x7FFF,
+        0 < head["speed_frame_age_limit"] <= SPEED_HOLD_FRAME_AGE_LIMIT_MAX,
+        0 < head["rpm_ceiling_hysteresis_native"]
+        <= min(0xFF, head["rpm_ceiling_offset_native"]),
+        head["magic_inverse"] == rolling_launch.CONFIG_MAGIC_INVERSE,
+        head["end_marker"] == rolling_launch.CONFIG_END_MARKER,
+    ))
+    if schema_version == 4:
+        return common
+    return common and head["slot_end_marker"] == rolling_launch.CONFIG_END_MARKER and all(
+        0 <= slot["integral_gain"] <= 0x7FFF
+        and 0 <= slot["max_trim"] <= SPEED_HOLD_TRIM_MAX
+        and 0 < slot["trim_efficiency"] <= SPEED_HOLD_U_ONE
+        and (slot["max_trim"] != 0 or slot["trim_efficiency"] == SPEED_HOLD_U_ONE)
+        for slot in slots
+    )
 
 
 def historical_configuration_fields(configuration, schema_version):
-    """Return the named settings of a valid schema 1, 2, or 3 Rolling Launch
-    record, which the current profile schema cannot express."""
+    """Return the named settings of a valid historical Rolling Launch record,
+    which the current profile schema cannot express."""
     if not historical_configuration_is_valid(configuration, schema_version):
         raise EndpointError(
             f"no valid schema {schema_version} Rolling Launch record"
         )
+    if schema_version in SPEED_HOLD_SCHEMA_FORMATS:
+        head, slots = _speed_hold_fields(configuration, schema_version)
+        fields = {
+            name: value for name, value in head.items()
+            if name not in (
+                "magic", "schema_version", "magic_inverse", "end_marker",
+                "slot_end_marker", "options", "gain_word",
+            )
+        }
+        fields["mode"] = SPEED_HOLD_MODE_NAMES[head["mode"]]
+        if schema_version == 4:
+            fields["integral_gain"] = head["gain_word"]
+        else:
+            fields["slots"] = slots
+        return fields
     values = struct.unpack(
         HISTORICAL_SCHEMA_FORMATS[schema_version], bytes(configuration)
     )
@@ -441,12 +743,9 @@ def historical_configuration_fields(configuration, schema_version):
 
 
 def historical_configuration_is_valid(configuration, schema_version):
-    if schema_version == rolling_launch.LEGACY_SCHEMA_VERSION:
-        try:
-            rolling_launch.Calibration.from_legacy_bytes(bytes(configuration))
-        except (TypeError, ValueError, struct.error):
-            return False
-        return True
+    """Check a historical record against the contract of its schema."""
+    if schema_version in SPEED_HOLD_SCHEMA_FORMATS:
+        return _speed_hold_record_is_valid(configuration, schema_version)
     if schema_version not in HISTORICAL_SCHEMA_FORMATS:
         raise EndpointError(
             "internal historical Rolling Launch schema is unsupported"
@@ -505,14 +804,11 @@ def historical_configuration_is_valid(configuration, schema_version):
 
 def configuration_record(source, layout, state):
     """Return the Rolling Launch record of an endpoint state: the current
-    record, or the record of a historical endpoint in the retired span of
-    its schema."""
+    record, or the record in the span of a historical endpoint."""
     if state == "current":
         span = layout.configuration
     else:
-        span = layout.retired_configuration_for(
-            historical_endpoint(state).configuration_schema_version
-        )
+        span = historical_endpoint(state).record
     return bytes(source[span.start : span.end])
 
 
@@ -528,44 +824,101 @@ def _erased(source, span):
     return source[span.start : span.end] == bytes([0xFF]) * span.size
 
 
-def _endpoint_binding(endpoint, layout):
-    """Return the hash and hook maps of a signature of the layout's ROM.
-
-    A signature names unique units and hooks with lowercase SHA-256 text, and
-    its units, hooks, and hook values describe the layout of every ROM that it
-    names.
-    """
-    expected_hashes = dict(endpoint.unit_sha256)
-    expected_hooks = dict(endpoint.hook_values)
-    if (
-        len(expected_hashes) != len(endpoint.unit_sha256)
-        or len(expected_hooks) != len(endpoint.hook_values)
-        or any(
-            len(digest) != 64
-            or any(
-                character not in "0123456789abcdef"
-                for character in digest
-            )
-            for digest in expected_hashes.values()
+def require_valid_signature(endpoint):
+    """Check that a signature names each unit, hook and DID of its own
+    addresses once, with lowercase SHA-256 text, and that its writes do not
+    overlap."""
+    spans = {key for key, _start, _end in endpoint.addresses.unit_spans}
+    words = {key for key, _address, _width in endpoint.addresses.hook_words}
+    unit_keys = [key for key, _digest in endpoint.unit_sha256]
+    hook_keys = [key for key, _value in endpoint.hook_values]
+    published = (
+        HISTORICAL_ROLLING_DIDS if endpoint.published_dids is None
+        else endpoint.published_dids
+    )
+    valid = all((
+        endpoint.roms,
+        len(set(unit_keys)) == len(unit_keys),
+        len(set(hook_keys)) == len(hook_keys),
+        set(unit_keys) <= spans,
+        set(hook_keys) <= words,
+        set(published) <= {did for did, _pointer, _target in endpoint.addresses.did_slots},
+        all(
+            len(digest) == 64
+            and all(character in "0123456789abcdef" for character in digest)
+            for _key, digest in endpoint.unit_sha256
+        ),
+        any(
+            schema == endpoint.configuration_schema_version
+            for schema, _start, _size in endpoint.addresses.record_spans
+        ),
+    ))
+    if valid:
+        ranges = endpoint.write_ranges()
+        valid = not any(
+            left.overlaps(right) for left, right in zip(ranges, ranges[1:])
         )
-    ):
+    if not valid:
         raise EndpointError(
             f"internal historical Rolling Launch endpoint "
             f"{endpoint.key!r} is invalid"
         )
-    if (
-        set(expected_hashes) != set(layout.assembly_unit_by_key)
-        or set(expected_hooks) != set(layout.hook_by_key)
-        or any(
-            expected_hooks[hook.key] not in (hook.stock, hook.replacement)
-            for hook in layout.hooks
-        )
+
+
+def _layout_stock_bytes(layout):
+    """Return the stock byte of every offset that the layout writes: erased
+    claimed ROM and records, and the stock hook words and DID slots."""
+    stock = {}
+    for span in (
+        *layout.claimed_rom_ranges,
+        layout.configuration,
+        *layout.retired_configuration_spans,
     ):
-        raise EndpointError(
-            f"internal historical Rolling Launch endpoint "
-            f"{endpoint.key!r} does not describe the selected layout"
-        )
-    return expected_hashes, expected_hooks
+        stock.update((offset, 0xFF) for offset in range(span.start, span.end))
+    for hook in layout.hooks:
+        stock.update(zip(
+            range(hook.address, hook.address + hook.width),
+            hook.stock.to_bytes(hook.width, layout.byte_order),
+        ))
+    for item in layout.diagnostics:
+        stock.update(zip(
+            range(item.pointer_address, item.pointer_address + 4),
+            item.stock.to_bytes(4, layout.byte_order),
+        ))
+    return stock
+
+
+def _matches_historical(source, layout, endpoint):
+    """Return whether ``source`` holds exactly the endpoint: its units, hooks,
+    DIDs and a valid record at its own addresses, and stock bytes at every
+    other offset that the current layout writes."""
+    require_valid_signature(endpoint)
+    byte_order = endpoint.addresses.byte_order
+    footprint = endpoint.write_offsets()
+    record = endpoint.record
+    return all((
+        all(
+            sha256(source[unit.start : unit.end]) == unit.sha256
+            for unit in endpoint.units
+        ),
+        all(
+            read_integer(source, hook.address, hook.width, byte_order) == hook.value
+            for hook in endpoint.hooks
+        ),
+        all(
+            read_integer(source, item.pointer_address, 4, byte_order) == item.target
+            for item in endpoint.dids
+        ),
+        historical_configuration_is_valid(
+            source[record.start : record.end],
+            endpoint.configuration_schema_version,
+        ),
+        all(
+            source[offset] == value
+            for offset, value in _layout_stock_bytes(layout).items()
+            if offset not in footprint
+        ),
+    ))
 
 
 def require_coherent_rolling_endpoint(
@@ -632,40 +985,9 @@ def require_coherent_rolling_endpoint(
         if current_units and current_configuration:
             return "current"
 
-    if configuration == bytes([0xFF]) * len(configuration):
-        actual_hashes = {
-            key: sha256(value) for key, value in unit_bytes.items()
-        }
-        for endpoint in historical_endpoints(rom):
-            expected_hashes, expected_hooks = _endpoint_binding(
-                endpoint, layout
-            )
-            published = (
-                HISTORICAL_ROLLING_DIDS if endpoint.published_dids is None
-                else endpoint.published_dids
-            )
-            record_span = layout.retired_configuration_for(
-                endpoint.configuration_schema_version
-            )
-            if (
-                actual_hashes == expected_hashes
-                and hook_values == expected_hooks
-                and all(
-                    did_values[item.did]
-                    == (item.target if item.did in published else item.stock)
-                    for item in layout.diagnostics
-                )
-                and all(
-                    _erased(source, span)
-                    for span in layout.retired_configuration_spans
-                    if span != record_span
-                )
-                and historical_configuration_is_valid(
-                    source[record_span.start : record_span.end],
-                    endpoint.configuration_schema_version,
-                )
-            ):
-                return endpoint.key
+    for endpoint in historical_endpoints(rom):
+        if _matches_historical(source, layout, endpoint):
+            return endpoint.key
 
     raise EndpointError(
         f"{context}: partial or unknown Rolling Launch state"
@@ -832,20 +1154,26 @@ def require_complete_map_endpoint(
                 f"map unit {unit.key} differs"
             )
 
-    rolling_hook_values = (
-        {}
-        if launch_layout is None
-        else {
-            hook.address: hook.replacement for hook in launch_layout.hooks
-        }
-    )
+    # A Rolling Launch layer may own a map hook word: the current layer with
+    # its replacement, or a registered historical endpoint with its value.
+    rolling_hook_values = {}
+    if launch_layout is not None:
+        for hook in launch_layout.hooks:
+            rolling_hook_values.setdefault(hook.address, set()).add(
+                hook.replacement
+            )
+        for endpoint in historical_endpoints(rom):
+            for hook in endpoint.hooks:
+                rolling_hook_values.setdefault(hook.address, set()).add(
+                    hook.value
+                )
     for hook in map_layout.hooks:
         actual = read_integer(
             source, hook.address, hook.width, map_layout.byte_order
         )
-        allowed = {hook.replacement}
-        if hook.address in rolling_hook_values:
-            allowed.add(rolling_hook_values[hook.address])
+        allowed = {hook.replacement} | rolling_hook_values.get(
+            hook.address, set()
+        )
         if actual not in allowed:
             raise EndpointError(
                 f"{context}: partial or unknown patch state; "
@@ -890,6 +1218,55 @@ def historical_endpoints(rom):
     )
 
 
+def historical_write_offsets(rom):
+    """Return every offset that a registered historical endpoint of the ROM
+    writes or keeps erased."""
+    offsets = set()
+    for endpoint in historical_endpoints(rom):
+        offsets |= endpoint.write_offsets()
+    return frozenset(offsets)
+
+
+def _current_write_offsets(layout):
+    """Return the offsets that the current runtime composes."""
+    spans = [
+        (unit.span.start, unit.span.end) for unit in layout.assembly_units
+    ]
+    spans += [
+        (span.start, span.end)
+        for span in (layout.configuration, *layout.retired_configuration_spans)
+    ]
+    spans += [
+        (hook.address, hook.address + hook.width) for hook in layout.hooks
+    ]
+    spans += [
+        (item.pointer_address, item.pointer_address + 4)
+        for item in layout.diagnostics
+    ]
+    return {offset for start, end in spans for offset in range(start, end)}
+
+
+def _require_stock_outside_history(source, target, state, context):
+    """Refuse the bytes of another registered endpoint that lie outside the
+    offsets that the classified state verified: the current composition, or
+    the current layout and the endpoint's own writes."""
+    layout = target.rolling_layout
+    if state == "current":
+        covered = _current_write_offsets(layout)
+    else:
+        covered = set(_layout_stock_bytes(layout))
+        if state != "absent":
+            covered |= historical_endpoint(state).write_offsets()
+    stock = target.stock_image.data
+    if any(
+        source[offset] != stock[offset]
+        for offset in historical_write_offsets(target.rom) - covered
+    ):
+        raise EndpointError(
+            f"{context}: partial or unknown Rolling Launch state"
+        )
+
+
 def classify_runtime(source, target, context):
     """Classify the complete runtime of an image that differs from its stock
     image inside the builder write sets."""
@@ -913,6 +1290,10 @@ def classify_runtime(source, target, context):
         context,
         target.rom,
     )
+    if target.rolling_layout is not None:
+        _require_stock_outside_history(
+            lower_source, target, rolling_state, context
+        )
     if (
         telemetry_state != "absent"
         and rolling_state not in TELEMETRY_LOWER_ROLLING_STATES

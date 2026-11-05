@@ -867,13 +867,15 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 
 Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`, and schema 4 a
 40-byte record with one integral gain for every map at `0x000D6040`. Both
-spans stay claimed and erased inside the Rolling Launch write set, so the
-registered historical endpoints keep extracting their records from them.
+spans stay claimed and erased inside the current Rolling Launch write set.
+Each registered historical endpoint places its units, hook words, DID slots
+and record by its own addresses in `runtime_endpoints.py`, so classification
+and extraction of its images do not depend on the current layout.
 Extraction maps a schema-4 record to five slots with its gain and no trim. The Map Switching
 map copies at `0x000D3F80` leave no room to grow the record in place.
 
-Every registered historical endpoint leaves the slot-validator and trim span
-`0x000D6268..0x000D6320` erased. The endpoints before schema 4 also leave
+Every registered endpoint before schema 5 leaves the slot-validator and trim
+span `0x000D6268..0x000D6320` erased. The endpoints before schema 4 also leave
 the RPM ceiling span `0x000D6068..0x000D60C0` and the spark-cut span
 `0x000D60C0..0x000D6220` erased and the `GR11A` table entry at the stock
 handler. Every signature binds those bytes.
@@ -941,9 +943,10 @@ Raw engineering DIDs expose two-byte views of the state:
 
 Every view uses a free pointer slot of the service `0x22` table of family
 `0x12`, whose records outside the low bytes `0x00`, `0x20`, and `0x40`
-answer two bytes. Every historical endpoint publishes the views `0x1211`
-to `0x1229` and leaves the slots of `0x121D`, `0x121E`, `0x121F`,
-`0x1231`, and `0x1232` stock.
+answer two bytes. Every historical endpoint before the spark cut publishes
+the views `0x1211` to `0x1229` and leaves the slots of `0x121D`, `0x121E`,
+`0x121F`, `0x1231`, and `0x1232` stock. The schema 4 and 5 endpoints
+publish all fourteen views.
 
 These DIDs are custom instrumentation, not factory CONSULT parameters. They are
 useful only when the diagnostic client can request the raw identifiers and are
