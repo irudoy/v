@@ -593,11 +593,13 @@ snapshot, and a run keeps one kind:
   release: the snapshot that shows the accepted RELEASED after a run and
   every inactive snapshot after it up to the next run or a gap publish a
   zero cut fraction, and the cut-request counter of the release snapshot
-  holds through that interval. The runtime decides each veto at the dwell
-  arming of its cylinder, so no veto of the run remains after the release,
-  and a single later cut request fails. A cut request up to the release
-  snapshot belongs to the run: the tooth handlers of the release tick
-  precede the engine pass that accepts RELEASED.
+  holds through that interval. The runtime takes no veto decision after
+  RELEASED, so a single cut request after the release snapshot fails. A
+  dwell that a decision at its arming suppressed at or before the release
+  tick can still miss its spark after the release without a cut request; at
+  most the spark of each such dwell is missing. A cut request up to the
+  release snapshot belongs to the run: the tooth handlers of the release
+  tick precede the engine pass that accepts RELEASED.
 
 A q derived from configuration 3 is not a published q; configurations 4 and
 6 publish it.

@@ -1377,9 +1377,11 @@ def _release_cuts(samples, end, failures):
     fraction before the snapshot. Every inactive snapshot from it to the
     next ACTIVE snapshot, a gap, or the end of the capture publishes a zero
     cut fraction where it carries one, and the counter of the release
-    snapshot holds wherever a snapshot carries it. The runtime decides each
-    veto at the dwell arming of its cylinder, so no veto of the run remains
-    after the release, and a single later cut request fails.
+    snapshot holds wherever a snapshot carries it. The runtime takes no veto
+    decision after RELEASED, so a single cut request after the release
+    snapshot fails. A dwell that a decision at its arming suppressed at or
+    before the release tick can still miss its spark after the release
+    without a cut request; at most the spark of each such dwell is missing.
     """
     release = end + 1
     if (

@@ -768,8 +768,8 @@ class CurrentRunTest(unittest.TestCase):
         self.assertEqual(run.failures, ())
 
     def test_no_cut_request_follows_the_release_snapshot(self):
-        # The veto of a cylinder falls at its dwell arming, so no veto of the
-        # run waits for the successor cylinder after the release.
+        # The runtime takes no veto decision after RELEASED, so the counter
+        # holds after the release snapshot.
         for name, (simulation, settings, _kind) in KINDS.items():
             with self.subTest(name):
                 samples = configure(simulation(), *RL6_RELEASE)
