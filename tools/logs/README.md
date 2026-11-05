@@ -692,10 +692,14 @@ snapshot. A window shorter than `min_steady_s` reads `n/a`: the run checks
 entry and exit but no steady dynamics. Over the window the audit reports the
 5th and 95th percentiles and their width of the engine speed, the share of
 snapshots whose trim the floor command clips, and the RMS of the `band_hz`
-component of the engine speed and the vehicle speed. Runs split at a
+component of the engine speed and the vehicle speed. The percentiles are
+the first and last cut of `statistics.quantiles(n=20, method="inclusive")`,
+which interpolates linearly between order statistics. Runs split at a
 missing tick, so a window is tick-contiguous; the band uses the longest
 segment with a value, and a segment shorter than `band_min_s` reads `n/a`.
-A line and a Hann window are removed before the transform.
+The transform removes a least-squares line from the segment and applies a
+Hann window, normalized by its energy, so a sine well inside the band reads
+its RMS.
 
 - The RPM regulator: the peak and the mean of the engine speed less the
   launch RPM `Nt` of the map slot. The run passes when P5 >= `Nt - W -
@@ -706,13 +710,25 @@ A line and a Hann window are removed before the transform.
   speed error, otherwise the `0x280` speed less the selected target. The
   run passes when the absolute mean error <= `mean_error_kmh`, the speed
   width <= `speed_spread_kmh`, and the engine-speed width <= `rpm_spread_rpm`.
+  At a speed target of 0, the selected target or the target that the speed
+  and the published error imply, a window at 0 km/h has a speed error and a
+  speed width of 0 by construction: the speed checks do not apply, so such
+  a run fails on the engine-speed width or reads `n/a`.
 
 A missing value that a check needs makes the verdict `n/a`. A series is
-the runs of one map and regulator kind of a capture: snapshots carry no gear
-or pedal context, so the map and kind approximate the series of a session
-plan. A series fails when one judged run fails and passes when at least
-`repeats` runs are judged and pass; otherwise it is incomplete. The
-acceptance report leaves the exit status unchanged.
+the runs of one map, regulator kind and standstill state of a capture: a
+standstill run has a speed target of 0 or reads 0 km/h throughout.
+Snapshots carry no gear or pedal context, so these keys approximate the
+series of a session plan. A series fails when one judged run fails and
+passes when at least `repeats` runs are judged and pass; otherwise it is
+incomplete. The acceptance report leaves the exit status unchanged.
+
+The DFT bins of a segment of N snapshots lie 1 / (N * 10.24 ms) apart, about
+1 Hz for 1 s, and the Hann window spreads a component over two bins on each
+side, so the band edges are soft. With `band_hz = [3.0, 7.0]` a 1 s segment
+reads about 41% of the RMS of a 3 Hz sine, 92% at 4 Hz, and still 39% at
+8 Hz; a 2 s segment reads 92% at 3.5 Hz, the full RMS from 4 to 6 Hz, and
+below 1% at 2.5 and 8 Hz. A band threshold needs `band_min_s >= 2.0`.
 
 The same reader joins raw bus evidence to the holds of an MLG recording:
 

@@ -93,9 +93,9 @@ and speed frames for the optional bus join.
 
 With a thresholds file the audit also reports the acceptance metrics of the
 steady window of every run and the verdict of each run and of each series
-of runs of one map and regulator kind; see `run_acceptance`. The file holds
-every window and threshold value, and the report leaves the exit status
-unchanged.
+of runs of one map, regulator kind and standstill state; see
+`run_acceptance`. The file holds every window and threshold value, and the
+report leaves the exit status unchanged.
 """
 
 from __future__ import annotations
@@ -1118,7 +1118,11 @@ def load_thresholds(path: Path) -> Thresholds:
             f"{path}: thresholds tables differ; missing="
             f"{sorted(expected - set(raw))}; extra={sorted(set(raw) - expected)}"
         )
-    if raw["schema_version"] != THRESHOLD_SCHEMA_VERSION:
+    version = raw["schema_version"]
+    if (
+        isinstance(version, bool) or not isinstance(version, int)
+        or version != THRESHOLD_SCHEMA_VERSION
+    ):
         raise ValueError(f"{path}: unsupported thresholds schema {raw['schema_version']!r}")
     values = {}
     for table, keys in THRESHOLD_KEYS.items():
@@ -1151,7 +1155,9 @@ def load_thresholds(path: Path) -> Thresholds:
 
 @dataclass(frozen=True)
 class Spread:
-    """The 5th and 95th percentiles of a quantity."""
+    """The 5th and 95th percentiles of a quantity: the first and last cut
+    of `statistics.quantiles(values, n=20, method="inclusive")`, which
+    interpolates linearly between the order statistics of the values."""
 
     p5: float
     p95: float
@@ -1229,9 +1235,12 @@ class Acceptance:
     engine speed less the launch RPM; `mean_error` of the speed regulator is
     the mean speed error. `floor_share` is the share of the window whose
     trim the floor command clips, and the band values are the RMS of the
-    `band_hz` component of the longest contiguous segment. `verdict` is
-    "PASS", "FAIL", or "n/a" when the window or a value that a threshold
-    needs is missing; `reasons` names each failed or missing check."""
+    `band_hz` component of the longest contiguous segment. `standstill`
+    marks a run whose speed target is 0 or that reads 0 km/h throughout;
+    at a target of 0 a window at 0 km/h has no speed check.
+    `verdict` is "PASS", "FAIL", or "n/a" when the window or a value
+    that a threshold needs is missing; `reasons` names each failed or
+    missing check."""
 
     map_index: int | None
     kind: int | None
@@ -1244,6 +1253,7 @@ class Acceptance:
     floor_share: float | None = None
     band_rpm: float | None = None
     band_speed: float | None = None
+    standstill: bool = False
     verdict: str = "n/a"
     reasons: tuple[str, ...] = ()
 
@@ -1288,14 +1298,44 @@ def _speed_error_kmh(sample, target):
     return sample.speed_kmh - target / 10
 
 
+def _zero_speed_target(samples, start, end):
+    """Whether the speed target of a run is 0: its one selected target, or
+    else the target that the speed and the published error of every
+    snapshot imply."""
+    run = samples[start : end + 1]
+    selected = {s.selected_target for s in run if s.selected_target is not None}
+    if selected:
+        return selected == {0}
+    implied = set()
+    for sample in run:
+        error = (
+            sample.control_error if sample.control_error is not None
+            else sample.speed_error
+        )
+        if sample.speed_kmh is not None and error is not None:
+            implied.add(round(sample.speed_kmh * 10 - error))
+    return implied == {0}
+
+
 def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Acceptance:
     """The Acceptance of the run `start`..`end` of regulator `kind`."""
     period = BASE_TICK_SECONDS
     offset = math.ceil(thresholds.steady_after_s / period - 1e-9)
     first_tick = samples[start].tick + offset
     window = [sample for sample in samples[start : end + 1] if sample.tick >= first_tick]
+    run_speeds = [
+        sample.speed_kmh for sample in samples[start : end + 1]
+        if sample.speed_kmh is not None
+    ]
+    zero_target = (
+        kind == rolling_launch.RegulatorKind.SPEED
+        and _zero_speed_target(samples, start, end)
+    )
     result = Acceptance(
-        map_index=run_map(samples, start, end), kind=kind, steady_ticks=len(window)
+        map_index=run_map(samples, start, end), kind=kind, steady_ticks=len(window),
+        standstill=zero_target or (
+            bool(run_speeds) and all(speed == 0 for speed in run_speeds)
+        ),
     )
     duration = len(window) * period
     if duration < thresholds.min_steady_s or not window:
@@ -1309,6 +1349,8 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
     low, high = thresholds.band_hz
     min_band = math.ceil(thresholds.band_min_s / period - 1e-9)
     rpm_values = [sample.rpm_raw * RPM_PER_COUNT for sample in window]
+    speeds = [sample.speed_kmh for sample in window if sample.speed_kmh is not None]
+    still = all(speed == 0 for speed in speeds)
     rpm_segment = _longest_segment(window, lambda s: s.rpm_raw * RPM_PER_COUNT)
     speed_segment = _longest_segment(window, lambda s: s.speed_kmh)
     clipped = [
@@ -1366,29 +1408,33 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
             value for value in (_speed_error_kmh(s, target) for s in window)
             if value is not None
         ]
-        speeds = [sample.speed_kmh for sample in window if sample.speed_kmh is not None]
         result = replace(
             result,
             mean_error=statistics.fmean(errors) if errors else None,
             speed=_spread(speeds),
             speed_error=_spread(errors),
         )
-        if result.mean_error is None:
-            checks.append((None, "no speed error"))
+        if zero_target and still:
+            # At a target of 0 a window at 0 km/h has a speed error and a
+            # speed width of 0 by construction.
+            checks.append((None, "speed checks do not apply at a standing target of 0"))
         else:
-            checks.append((
-                abs(result.mean_error) <= thresholds.mean_error_kmh,
-                f"mean speed error {result.mean_error:+.2f} km/h beyond"
-                f" {thresholds.mean_error_kmh:.2f}",
-            ))
-        if result.speed is None:
-            checks.append((None, "no speed spread"))
-        else:
-            checks.append((
-                result.speed.width <= thresholds.speed_spread_kmh,
-                f"speed spread {result.speed.width:.2f} km/h above"
-                f" {thresholds.speed_spread_kmh:.2f}",
-            ))
+            if result.mean_error is None:
+                checks.append((None, "no speed error"))
+            else:
+                checks.append((
+                    abs(result.mean_error) <= thresholds.mean_error_kmh,
+                    f"mean speed error {result.mean_error:+.2f} km/h beyond"
+                    f" {thresholds.mean_error_kmh:.2f}",
+                ))
+            if result.speed is None:
+                checks.append((None, "no speed spread"))
+            else:
+                checks.append((
+                    result.speed.width <= thresholds.speed_spread_kmh,
+                    f"speed spread {result.speed.width:.2f} km/h above"
+                    f" {thresholds.speed_spread_kmh:.2f}",
+                ))
         if result.rpm is None:
             checks.append((None, "no RPM spread"))
         else:
@@ -1404,12 +1450,13 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
 
 @dataclass(frozen=True)
 class SeriesVerdict:
-    """The verdict of the runs of one map and regulator kind of a capture:
-    "FAIL" when a judged run fails, "PASS" when at least `repeats` runs are
-    judged and pass, and "INCOMPLETE" otherwise."""
+    """The verdict of the runs of one map, regulator kind and standstill
+    state of a capture: "FAIL" when a judged run fails, "PASS" when at
+    least `repeats` runs are judged and pass, and "INCOMPLETE" otherwise."""
 
     map_index: int | None
     kind: int | None
+    standstill: bool
     runs: int
     judged: int
     passed: int
@@ -1419,9 +1466,11 @@ class SeriesVerdict:
 def series_verdicts(acceptances, repeats) -> tuple[SeriesVerdict, ...]:
     groups = {}
     for item in acceptances:
-        groups.setdefault((item.map_index, item.kind), []).append(item)
+        groups.setdefault(
+            (item.map_index, item.kind, item.standstill), []
+        ).append(item)
     result = []
-    for (map_index, kind), items in groups.items():
+    for (map_index, kind, standstill), items in groups.items():
         judged = [item for item in items if item.verdict != "n/a"]
         passed = sum(item.verdict == "PASS" for item in judged)
         verdict = (
@@ -1429,7 +1478,9 @@ def series_verdicts(acceptances, repeats) -> tuple[SeriesVerdict, ...]:
             else "PASS" if len(judged) >= repeats
             else "INCOMPLETE"
         )
-        result.append(SeriesVerdict(map_index, kind, len(items), len(judged), passed, verdict))
+        result.append(SeriesVerdict(
+            map_index, kind, standstill, len(items), len(judged), passed, verdict
+        ))
     return tuple(result)
 
 
@@ -1456,6 +1507,7 @@ def _acceptance_summary(item: Acceptance) -> str:
     share = "n/a" if item.floor_share is None else f"{100 * item.floor_share:.0f}%"
     parts = [
         f"acceptance steady_ticks={item.steady_ticks}",
+        f"standstill={'yes' if item.standstill else 'no'}",
         f"rpm_p5_p95={spread(item.rpm)}",
     ]
     if item.kind == rolling_launch.RegulatorKind.RPM:
@@ -2623,6 +2675,7 @@ def main(argv: list[str] | None = None) -> int:
             label = "unknown" if series.map_index is None else str(series.map_index + 1)
             print(
                 f"  series map={label} kind={_kind_name(series.kind)}"
+                f" standstill={'yes' if series.standstill else 'no'}"
                 f" runs={series.runs} judged={series.judged}"
                 f" passed={series.passed} verdict={series.verdict}"
                 f" (repeats {thresholds.repeats})"

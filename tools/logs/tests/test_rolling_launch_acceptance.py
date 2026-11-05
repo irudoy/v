@@ -86,6 +86,12 @@ class ThresholdFileTest(unittest.TestCase):
             "extra key": (base.replace("[series]\n", "[series]\nlimit = 1\n"), "keys differ"),
             "missing table": (base.split("[series]")[0], "tables differ"),
             "schema": (base.replace("schema_version = 1", "schema_version = 2"), "schema"),
+            "schema boolean": (
+                base.replace("schema_version = 1", "schema_version = true"), "schema"
+            ),
+            "schema float": (
+                base.replace("schema_version = 1", "schema_version = 1.0"), "schema"
+            ),
             "negative": (base.replace("p95_above_rpm = 200", "p95_above_rpm = -1"), ">= 0"),
             "boolean": (base.replace("rpm_spread_rpm = 200", "rpm_spread_rpm = true"), "number"),
             "band order": (base.replace("[3.0, 7.0]", "[7.0, 3.0]"), "low < high"),
@@ -174,6 +180,7 @@ class RunAcceptanceTest(unittest.TestCase):
         values = thresholds(steady=0.0, minimum=1.0)
         item = accept(samples, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
         self.assertEqual(item.verdict, "PASS")
+        self.assertFalse(item.standstill)
         self.assertAlmostEqual(item.mean_error, 0.0, places=1)
         self.assertLess(item.speed.width, 1.0)
         self.assertEqual(item.rpm.width, 0)
@@ -183,6 +190,58 @@ class RunAcceptanceTest(unittest.TestCase):
         item = accept(drifting, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
         self.assertEqual(item.verdict, "FAIL")
         self.assertTrue(item.reasons[0].startswith("mean speed error +0.80"))
+
+    def test_a_standing_speed_hold_has_no_speed_check(self):
+        # A neutral hold at a target of 0 reads a speed error and a speed
+        # width of 0 by construction; only the engine-speed width judges it.
+        values = thresholds(steady=0.0, minimum=1.0)
+        steady = [
+            snapshot(5000 + index, 3000, 0.0, control_error=0) for index in range(120)
+        ]
+        selected = [
+            replace(sample, control_error=None, selected_target=0) for sample in steady
+        ]
+        for name, samples in (("implied", steady), ("selected", selected)):
+            with self.subTest(name):
+                item = accept(samples, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
+                self.assertTrue(item.standstill)
+                self.assertEqual(item.verdict, "n/a")
+                self.assertEqual(
+                    item.reasons,
+                    ("speed checks do not apply at a standing target of 0",),
+                )
+        revving = [
+            replace(sample, rpm_raw=sample.rpm_raw + (40 if index % 2 else 0))
+            for index, sample in enumerate(steady)
+        ]
+        item = accept(revving, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
+        self.assertEqual(item.verdict, "FAIL")
+        self.assertTrue(item.reasons[0].startswith("RPM spread"))
+
+    def test_a_hold_that_leaves_a_target_of_0_keeps_its_speed_checks(self):
+        samples = [
+            snapshot(6000 + index, 3000, index / 40, control_error=round(index / 4))
+            for index in range(120)
+        ]
+        item = accept(
+            samples, SPEED_SETTINGS, model.RegulatorKind.SPEED,
+            thresholds(steady=0.0, minimum=1.0),
+        )
+        self.assertTrue(item.standstill)
+        self.assertEqual(item.verdict, "FAIL")
+        mean = statistics.fmean(round(index / 4) for index in range(120)) / 10
+        self.assertTrue(item.reasons[0].startswith(f"mean speed error {mean:+.2f}"))
+
+    def test_a_standing_rpm_hold_keeps_its_rpm_checks(self):
+        samples = [
+            replace(sample, speed_kmh=0.0) for sample in rpm_window([LAUNCH] * 120)
+        ]
+        item = accept(
+            samples, RPM_SETTINGS, model.RegulatorKind.RPM,
+            thresholds(steady=0.0, minimum=1.0),
+        )
+        self.assertTrue(item.standstill)
+        self.assertEqual(item.verdict, "PASS")
 
     def test_a_speed_gap_splits_the_band_segment(self):
         samples = [
@@ -217,10 +276,10 @@ class RunAcceptanceTest(unittest.TestCase):
 
 class SeriesTest(unittest.TestCase):
     def test_a_series_passes_only_with_enough_judged_runs(self):
-        def run(verdict, map_index=2):
+        def run(verdict, map_index=2, standstill=False):
             return audit.Acceptance(
                 map_index=map_index, kind=model.RegulatorKind.RPM,
-                steady_ticks=200, verdict=verdict,
+                steady_ticks=200, standstill=standstill, verdict=verdict,
             )
 
         cases = {
@@ -234,6 +293,22 @@ class SeriesTest(unittest.TestCase):
                 self.assertEqual(series.verdict, verdict)
         groups = audit.series_verdicts((run("PASS", 1), run("PASS", 2)), 1)
         self.assertEqual([item.map_index for item in groups], [1, 2])
+
+    def test_standing_runs_form_their_own_series(self):
+        items = tuple(
+            audit.Acceptance(
+                map_index=3, kind=model.RegulatorKind.SPEED, steady_ticks=200,
+                standstill=standstill, verdict=verdict,
+            )
+            for standstill, verdict in (
+                (False, "PASS"), (True, "FAIL"), (False, "PASS"), (False, "PASS"),
+            )
+        )
+        road, standing = audit.series_verdicts(items, 3)
+        self.assertEqual((road.standstill, road.runs, road.verdict), (False, 3, "PASS"))
+        self.assertEqual(
+            (standing.standstill, standing.runs, standing.verdict), (True, 1, "FAIL")
+        )
 
 
 class MainTest(unittest.TestCase):
@@ -256,7 +331,8 @@ class MainTest(unittest.TestCase):
         report = stream.getvalue()
         self.assertEqual(judged, status)
         self.assertIn("acceptance steady_ticks=", report)
-        self.assertIn("series map=1 kind=RPM runs=1", report)
+        self.assertIn("standstill=yes", report)
+        self.assertIn("series map=1 kind=RPM standstill=yes runs=1", report)
         self.assertIn("verdict=INCOMPLETE (repeats 3)", report)
 
 
