@@ -627,7 +627,45 @@ with `a = 0`, `E[0]`, no ready mark, and `q = 0`, when the record fails the
 check, `CONFIG_VALID` is clear, `a` lies outside 0..40, or a ready hold has
 `a` above the trim of the run. Only an engine pass with a valid configuration
 and efficiency table sets `CONFIG_VALID`, so the publisher does not repeat the
-configuration check on every ignition event.
+configuration check on every ignition event. The publisher returns the
+command that the adapter applies: `P` with a published trim and `S` on the
+stock path, so the applied command always matches the publication.
+
+The engine runs in the periodic scheduler with interrupts enabled, and the
+ignition publisher runs from the crank-tooth interrupt between any two engine
+instructions outside a masked section. Every record state that a publication
+can observe in a steady `ACTIVE` pass passes the record check:
+
+- the engine runs the record check through its masked entry at `0x000D7008`,
+  so a publication cannot split the fields that the check reads;
+- each regulator stores its error pair, base `+0x10` or `+0x18` with
+  extension `+0x02`, as one masked store group;
+- the control publisher masks interrupts before it stores the law output at
+  extension `+0x16` and, in SPEED, the torque fraction at base `+0x0E`, and
+  keeps them masked while it reads `S`, `P`, `a`, and the ready mark and while
+  the body computes `E[a]`, `q`, and the wire views and stores them with `q`
+  last;
+- the engine reads, computes, and stores the wire views at the end of every
+  pass with interrupts masked.
+
+The integrator and the controller command have no field that the check
+couples to them, and they are stored outside the masked groups.
+
+Transitions keep store orders instead of masks. Activation stores the phase
+first, the mode after the map, and the trim of the run last, so the adapter
+computes `P = S` until the hold is complete, and the ready mark stays clear
+throughout. An abort stores the phase first. `COOLDOWN` and `IDLE` records
+carry no ready mark, and corrupt-state recovery clears the phase before the
+extension. No mixed state inside activation, an abort, the return from
+`COOLDOWN` to `IDLE`, or corrupt-state recovery passes the check as an
+`ACTIVE` ready record: a publication inside them fails the check and
+publishes the stock command, which is the correct command there, and the
+masked wire views at the end of the pass make the record consistent. The
+input sample precedes every transition. A sampled change that alters the
+wire views fails the check and occurs only on a pass that aborts or outside
+`ACTIVE`; other sampled fields are coupled to no control field, so a
+publication between the sample and the first store of an abort acts as if it
+ran before the pass.
 
 ## Spark-cut actuator
 

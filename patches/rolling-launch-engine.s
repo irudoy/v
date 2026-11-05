@@ -3,12 +3,16 @@
 // The engine runs once per exact periodic scheduler pass, 204800/Pphi seconds.
 // It keeps the base state at 0xFFFF5D40 in r8, the extension at 0xFFFF6100
 // in r9 and the configuration at 0xD6320 in r10 and restores r8..r14 and PR.
+// The scheduler runs it with interrupts enabled, so the ignition publisher
+// of the crank-tooth interrupt can run between any two instructions outside
+// a masked section.
 // The pass order follows the schema 6 model:
-//   1. A record that the model does not decode as a valid state restores
-//      map 1 through the limiter commit, clears base 0x00..0x1B, the trim and
-//      reserved byte at 0x1E/0x1F and the extension, and enters COOLDOWN with
-//      reason 16. The quiet and cut counters at base 0x1C/0x1D and the six
-//      accumulators remain.
+//   1. The record check at 0xD7008 runs with interrupts masked. A record
+//      that the model does not decode as a valid state restores map 1
+//      through the limiter commit, clears base 0x00..0x1B, the trim and
+//      reserved byte at 0x1E/0x1F and the extension, and enters COOLDOWN
+//      with reason 16. The quiet and cut counters at base 0x1C/0x1D and the
+//      six accumulators remain.
 //   2. The input sample stores the RPM and speed words, the CANCEL capture,
 //      the accepted button and the frame age, and input_status:
 //      bit0 raw speed word 0xFFFF3B3D/3E is not FFFF, bit1 frame age within
@@ -18,11 +22,12 @@
 //      satisfied gate and the first failure by priority. IDLE activates RPM
 //      below the map speed threshold and SPEED at or above it; ACTIVE keeps
 //      the latched regulator, map, mode and trim.
-//   4. Every pass ends with the wire views of the extension.
+//   4. Every pass ends with the wire views of the extension, read, computed
+//      and stored with interrupts masked.
 // The validator at 0xD6680 returns bit0 for a valid configuration and bit1
 // for a valid efficiency table. The RPM controller at 0xD6400 and the speed
 // controller at 0xD40C0 receive r4=configuration and r5=base state and end in
-// the control publisher.
+// the control publisher, which commits their law output together with q.
 
 .org 0x000D38E4
 rolling_launch_engine:
@@ -184,7 +189,7 @@ rl_extension_address:
 rl_config_address:
 .long 0x000D6320
 rl_state_check_entry:
-.long 0x000D7000
+.long 0x000D7008
 rl_speed_address:
 .long 0xFFFF113C
 rl_rpm_address:
@@ -603,11 +608,13 @@ nop
 
 // Leave ACTIVE through COOLDOWN with r2 as the reason: q and ready drop at
 // once and the regulator, trims and controller fields remain as diagnostics.
+// The phase is the first store, so the ignition publisher sees either the
+// previous ACTIVE record or a COOLDOWN record, which it publishes as stock.
 rl_abort:
-mov r2,r0
-mov.b r0,@(0x1,r8)
 mov #0x2,r0
 mov.b r0,@r8
+mov r2,r0
+mov.b r0,@(0x1,r8)
 mov r11,r0
 mov.w r0,@(0x2,r8)
 mov #0x0,r0
@@ -649,7 +656,14 @@ mov.b r0,@r8
 mov #0x10,r0
 mov.b r0,@(0x1,r8)
 
+// The wire views follow the stored trim, ready mark and efficiency, which
+// the ignition publisher rewrites from the crank-tooth interrupt. The views
+// are read, computed and stored with interrupts masked.
 rl_engine_exit:
+stc sr,r6
+mov r6,r0
+or 0xf0,r0
+ldc r0,sr
 mov r9,r7
 mov.l @(rl_load_views_entry,pc),r0
 jsr @r0
@@ -657,6 +671,7 @@ nop
 mov.l r3,@(0xc,r9)
 mov r1,r0
 mov.w r0,@(0x1e,r9)
+ldc r6,sr
 mov.l @r15+,r14
 mov.l @r15+,r13
 mov.l @r15+,r12
@@ -684,7 +699,7 @@ rl_rpm_controller_entry:
 rl_limiter_commit:
 .long 0x000D3660
 rl_load_views_entry:
-.long 0x000D7172
+.long 0x000D7184
 
 // Gate helper: r1 = flag bits, r2 = reason. A pass ORs r1 into r11; a
 // failure stores r2 in r13 unless an earlier gate failed. The valid entries

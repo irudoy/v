@@ -1,32 +1,51 @@
 // Actuation publishers for exact JK08A Rolling Launch.
 //
 // The control publisher at 0xD6500 runs after every controller step with
-// r4=configuration and r5=base state. It keeps the last applied command and
-// trim a, takes ready from the extension only in ACTIVE hold and publishes
-// e = E[a] and q for the new law output.
+// r4=configuration, r5=base state and r3=law output u. With interrupts
+// masked from its first store through the commit of the body, it stores u
+// as the law output at extension +0x16 and, in SPEED, as the torque fraction
+// at base +0x0E, takes the stored command tuple, and takes ready only in
+// ACTIVE hold, and publishes e = E[a] and q for u.
 //
-// The ignition publisher at 0xD6540 receives r4=wide stock command S and
-// r5=wide effective command P from the ignition adapter. A record that fails
-// the structural check, a base record without CONFIG_VALID, or an applied
-// trim a = P - S outside 0..40, or above the latched trim while ready,
-// publishes the stock command: P = S, a = 0, e = 1000, ready = 0 and q = 0.
-// Only an engine pass with a valid configuration and efficiency table sets
-// CONFIG_VALID, and every ACTIVE record comes from such a pass. Otherwise
-// ready = ACTIVE hold without the APC fallback 0xFFFF24C9 bit 6.
+// The ignition publisher at 0xD6540 runs from the crank-tooth interrupt with
+// r4=wide stock command S and r5=wide effective command P from the ignition
+// adapter, and returns in r5 the command to apply. A record that fails the
+// structural check, a base record without CONFIG_VALID, or an applied trim
+// a = P - S outside 0..40, or above the latched trim while ready, publishes
+// the stock command and returns r5 = S: P = S, a = 0, e = 1000, ready = 0
+// and q = 0. Only an engine pass with a valid configuration and efficiency
+// table sets CONFIG_VALID, and every ACTIVE record comes from such a pass.
+// Otherwise it returns r5 = P and publishes ready = ACTIVE hold without the
+// APC fallback 0xFFFF24C9 bit 6.
 //
-// The common body at 0xD6580 receives r1=a, r2=ready and r6=(S<<8)|P. It
-// computes e = 1000 for a = 0 and E[a] otherwise, q = 0 without ready,
-// 1000 - law in RPM and 1000 - min(1000, 1000 * law / e) in SPEED, and the
-// wire views through the views routine of the record check at 0xD717E. It
-// stores S, P, a, ready, e and the views with interrupts masked and q last.
+// The common body at 0xD6580 receives r1=a, r2=ready, r6=(S<<8)|P and the SR
+// of the caller on the stack. It computes e = 1000 for a = 0 and E[a]
+// otherwise, q = 0 without ready, 1000 - law in RPM and
+// 1000 - min(1000, 1000 * law / e) in SPEED, and the wire views through the
+// views routine of the record check. It stores S, P, a, ready, e and the
+// views with interrupts masked and q last, and returns with the SR of the
+// caller.
 //
-// Every entry preserves r4, r5 and r8..r15 and PR; r0..r3, r6, r7, MACL and
-// T are caller-clobbered. The stock unsigned divider at 0x21CE0 receives
-// r0=divisor and r1=dividend and preserves r2 through r7.
+// Both publishers preserve r4, r8..r15 and PR, and the control publisher
+// preserves r5; r0..r3, r6, r7, MACL and T are caller-clobbered. The stock
+// unsigned divider at 0x21CE0 receives r0=divisor and r1=dividend and
+// preserves r2 through r7.
 
 .org 0x000D6500
 rolling_launch_control_publisher:
+stc sr,r0
+mov.l r0,@-r15
+or 0xf0,r0
+ldc r0,sr
 mov.l @(rl_act_extension_address,pc),r7
+mov r3,r0
+mov.w r0,@(0x16,r7)
+mov.b @r7,r0
+cmp/eq 0x2,r0
+bf rl_act_control_tuple
+mov r3,r0
+mov.w r0,@(0xe,r5)
+rl_act_control_tuple:
 mov.w @(0x8,r7),r0
 extu.w r0,r6
 mov.b @(0xa,r7),r0
@@ -47,6 +66,8 @@ nop
 
 .org 0x000D6540
 rolling_launch_ignition_publisher:
+stc sr,r0
+mov.l r0,@-r15
 sts.l pr,@-r15
 mov.l @(rl_act_state_check,pc),r0
 jsr @r0
@@ -109,8 +130,7 @@ mov.l @(rl_act_views,pc),r0
 jsr @r0
 nop
 mov.l @(rl_act_state_address,pc),r4
-stc sr,r2
-mov r2,r0
+stc sr,r0
 or 0xf0,r0
 ldc r0,sr
 mov.l r6,@(0x8,r7)
@@ -119,10 +139,11 @@ mov r1,r0
 mov.w r0,@(0x1e,r7)
 mov r5,r0
 mov.w r0,@(0x1a,r4)
-ldc r2,sr
 lds.l @r15+,pr
 mov.l @r15+,r5
 mov.l @r15+,r4
+mov.l @r15+,r0
+ldc r0,sr
 rts
 nop
 
@@ -148,6 +169,7 @@ or r0,r6
 bra rolling_launch_actuation
 nop
 rl_act_ignition_stock:
+mov r4,r5
 extu.b r4,r6
 mov r6,r0
 shll8 r6
@@ -198,7 +220,7 @@ rl_act_unsigned_divide:
 rl_act_state_check:
 .long 0x000D7000
 rl_act_views:
-.long 0x000D717E
+.long 0x000D7190
 rl_act_apc_mode_address:
 .long 0xFFFF24C9
 rl_act_u_one:

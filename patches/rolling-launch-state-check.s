@@ -1,11 +1,14 @@
 // Schema 6 record check and wire views for exact JK08A Rolling Launch.
 //
-// The structural check at 0xD7000 returns T=1 when the base state at
-// 0xFFFF5D40 and the extension at 0xFFFF6100 decode as a schema 6 model
-// state: every field lies in its range, the reserved byte is zero, the
-// fields of the inactive regulator are zero and the wire views agree with
-// the fields they summarize. The engine runs it before every pass and the
-// ignition publisher before every publication.
+// The structural check returns T=1 when the base state at 0xFFFF5D40 and
+// the extension at 0xFFFF6100 decode as a schema 6 model state: every field
+// lies in its range, the reserved byte is zero, the fields of the inactive
+// regulator are zero and the wire views agree with the fields they
+// summarize. The ignition publisher runs the entry at 0xD7000 from the
+// crank-tooth interrupt, where the engine cannot run. The engine runs the
+// entry at 0xD7008 before every pass; it masks interrupts for the whole
+// check, so a publication cannot split the fields it reads. Both entries
+// restore the SR of the caller and return the result in T.
 //
 // The views routine receives r7=extension, r1=applied trim a, r2=ready and
 // r3=efficiency e and returns r1 = (mode/trim << 8) | status for +0x1E and
@@ -20,8 +23,19 @@
 .org 0x000D7000
 // Structural check: T=1 when the base and extension records decode as a
 // schema 6 model state with consistent wire views and a zero reserved byte.
-// It changes r0..r3, r6, r7 and T and preserves r4, r5, r8..r15 and PR.
+// It changes r0..r3, r6, r7 and T and preserves r4, r5, r8..r15, PR and the
+// remaining SR bits.
 rolling_launch_state_check:
+stc sr,r0
+mov.l r0,@-r15
+bra rl_check_begin
+nop
+rolling_launch_state_check_masked:
+stc sr,r0
+mov.l r0,@-r15
+or 0xf0,r0
+ldc r0,sr
+rl_check_begin:
 sts.l pr,@-r15
 mov.l @(rl_sc_state_address,pc),r6
 mov.l @(rl_sc_extension_address,pc),r7
@@ -83,7 +97,7 @@ sub r1,r0
 mov r0,r1
 mov.b @(0xa,r7),r0
 cmp/eq r0,r1
-bf rl_check_fail
+bf rl_check_fail_near
 // Without ready, q is zero. Ready needs ACTIVE hold, an applied trim within
 // the latched trim and the q of the regulator law.
 mov.b @(0xb,r7),r0
@@ -219,15 +233,18 @@ cmp/eq r0,r3
 bf rl_check_fail
 mov.w @(0x1e,r7),r0
 extu.w r0,r0
-cmp/eq r0,r1
+// r1 = 0 marks a valid record; the result moves to T after the SR restore.
+xor r0,r1
+rl_check_return:
 lds.l @r15+,pr
+mov.l @r15+,r0
+ldc r0,sr
+tst r1,r1
 rts
 nop
 rl_check_fail:
-mov #0x1,r0
-tst r0,r0
-lds.l @r15+,pr
-rts
+mov #0x1,r1
+bra rl_check_return
 nop
 
 
@@ -287,9 +304,9 @@ rl_sc_state_address:
 rl_sc_extension_address:
 .long 0xFFFF6100
 rl_sc_byte_limits:
-.long 0x000D71D6
+.long 0x000D71EA
 rl_sc_q_entry:
-.long 0x000D6618
+.long 0x000D661A
 rl_sc_u_one:
 .word 1000
 // Offset and maximum pairs: phase, reason, map, mode, latched trim and the

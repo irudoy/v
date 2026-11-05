@@ -3,9 +3,10 @@
 // The RPM controller at 0xD6400 receives r4=configuration and r5=base state
 // on the activation pass and on every ACTIVE RPM pass that passed all gates
 // and the run timer. It stores err = rpm - target_rpm in base +0x18 and
-// extension +0x02 and the firing permission p of the slot of the activation
-// map in extension +0x16, and then ends in the control publisher at 0xD6500
-// with r4 and r5 unchanged.
+// extension +0x02 as one masked store group, computes the firing permission
+// p of the slot of the activation map and ends in the control publisher at
+// 0xD6500 with p in r3 and r4 and r5 unchanged. The control publisher
+// commits p as the law output at extension +0x16 together with q.
 //
 // The pure fraction at 0xD6480 receives r4=signed err and r5=soft width W
 // and returns r0 = p: 0 for err >= 0, 1000 for W = 0 or err <= -W, else
@@ -22,10 +23,15 @@ extu.w r0,r6
 mov.w @(0x14,r5),r0
 extu.w r0,r0
 sub r0,r6
+mov.l @(rl_rpm_extension_address,pc),r7
+stc sr,r3
+mov r3,r0
+or 0xf0,r0
+ldc r0,sr
 mov r6,r0
 mov.w r0,@(0x18,r5)
-mov.l @(rl_rpm_extension_address,pc),r7
 mov.w r0,@(0x2,r7)
+ldc r3,sr
 mov.b @(0x4,r5),r0
 extu.b r0,r0
 shll2 r0
@@ -43,7 +49,7 @@ bsr rolling_launch_rpm_fraction
 nop
 mov.l @r15+,r5
 mov.l @r15+,r4
-mov.w r0,@(0x16,r7)
+mov r0,r3
 lds.l @r15+,pr
 mov.l @(rl_rpm_control_publisher,pc),r0
 jmp @r0

@@ -70,7 +70,7 @@ SOURCE_LABELS = {
 # equal the address of the label in the assembled source of that unit.
 INTERNAL_ENTRIES = (
     ("wrappers", "rolling_launch_engine_entry", "engine", "rolling_launch_engine"),
-    ("engine", "rl_state_check_entry", "state_check", "rolling_launch_state_check"),
+    ("engine", "rl_state_check_entry", "state_check", "rolling_launch_state_check_masked"),
     ("engine", "rl_load_views_entry", "state_check", "rolling_launch_load_views"),
     ("engine", "rl_slot_validator_entry", "slot_validator", "rolling_launch_slot_validator"),
     ("engine", "rl_speed_controller_entry", "speed_controller", "rolling_launch_speed_controller"),
@@ -219,6 +219,18 @@ def _region(parsed, start, end=None):
     ]
 
 
+def _masked_group(save, group):
+    """A store group between a mask to SR.I=15 and the restore of the saved SR."""
+    return [
+        f"stc sr,{save}", f"mov {save},r0", "or 0xf0,r0", "ldc r0,sr",
+        *group, f"ldc {save},sr",
+    ]
+
+
+def _sr_texts(texts):
+    return [text for text in texts if text.startswith(("stc", "ldc"))]
+
+
 def _validate_wrapper_abi(parsed):
     texts = _texts(parsed)
     if texts[:1] != ["sts.l pr,@-r15"]:
@@ -286,7 +298,14 @@ def _validate_engine_abi(parsed):
             "engine must check the record and the configuration before the pass"
         )
     restores = [f"mov.l @r15+,r{number}" for number in range(14, 7, -1)]
+    # The ignition publisher rewrites the trim, ready mark and efficiency from
+    # the crank-tooth interrupt, so the views are read, computed and stored
+    # under one mask.
     exit_sequence = [
+        "stc sr,r6",
+        "mov r6,r0",
+        "or 0xf0,r0",
+        "ldc r0,sr",
         "mov r9,r7",
         "mov.l @(rl_load_views_entry,pc),r0",
         "jsr @r0",
@@ -294,13 +313,14 @@ def _validate_engine_abi(parsed):
         "mov.l r3,@(0xc,r9)",
         "mov r1,r0",
         "mov.w r0,@(0x1e,r9)",
+        "ldc r6,sr",
         *restores,
         "lds.l @r15+,pr",
         "rts",
         "nop",
     ]
     if _region(parsed, "rl_engine_exit")[:len(exit_sequence)] != exit_sequence:
-        raise ValueError("engine exit does not store the wire views")
+        raise ValueError("engine exit does not store the wire views under one mask")
     if texts.count("jsr @r0") != 4:
         raise ValueError(
             "engine must call the record check, the limiter commit, one "
@@ -373,8 +393,9 @@ def _validate_engine_abi(parsed):
     rearm = ["mov r12,r0", "cmp/eq 0x3,r0", "bt rl_cooldown_valid"]
     if not _contains(texts, rearm):
         raise ValueError("COOLDOWN rearms without a valid configuration and table")
-    if any(text.startswith(("stc ", "ldc ")) for text in texts):
-        raise ValueError("engine masks interrupts outside the publishers")
+    if [text for text in texts if text.startswith(("stc", "ldc"))] != [
+            "stc sr,r6", "ldc r0,sr", "ldc r6,sr"]:
+        raise ValueError("engine changes SR outside its masked wire views")
     destination = re.compile(r"@(?:\([^)]*,r[89]\)|r[189]|-r15)$")
     if any(not destination.search(text) for text in _stores(texts)):
         raise ValueError("engine stores outside the base state and the extension")
@@ -547,13 +568,22 @@ def _validate_speed_controller_abi(parsed):
     if texts[:1] != ["sts.l pr,@-r15"]:
         raise ValueError("speed controller does not save PR")
     tail = [
+        "mov r2,r3",
         "lds.l @r15+,pr",
         "mov.l @(rl_spd_control_publisher,pc),r0",
         "jmp @r0",
         "nop",
     ]
-    if texts[-4:] != tail or texts.count("jmp @r0") != 1:
-        raise ValueError("speed controller does not end in the control publisher")
+    if texts[-5:] != tail or texts.count("jmp @r0") != 1:
+        raise ValueError(
+            "speed controller does not pass u in r3 to the control publisher"
+        )
+    # The ignition publisher checks control_error == speed_error.
+    error_pair = _masked_group(
+        "r6", ["mov r2,r0", "mov.w r0,@(0x10,r5)", "mov.w r0,@(0x2,r7)"]
+    )
+    if not _contains(texts, error_pair) or _sr_texts(texts) != _sr_texts(error_pair):
+        raise ValueError("speed controller error pair is not one masked store group")
     divider_call = [
         "mov.l @(rl_spd_unsigned_divide,pc),r3",
         "jsr @r3",
@@ -579,12 +609,10 @@ def _validate_speed_controller_abi(parsed):
         "mov.w r0,@(0x2,r7)",
         "mov.w r0,@(0x12,r5)",
         "mov.w r0,@(0x16,r5)",
-        "mov.w r0,@(0xe,r5)",
-        "mov.w r0,@(0x16,r7)",
     ])
     if _stores(texts) != expected:
         raise ValueError("speed controller store contract differs")
-    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "sr", "macl"}
     if not _registers(texts) <= allowed or _writes(texts, "r4", "r5"):
         raise ValueError("speed controller clobbers an undeclared register")
 
@@ -612,13 +640,22 @@ def _validate_rpm_abi(parsed):
         "nop",
         "mov.l @r15+,r5",
         "mov.l @r15+,r4",
+        "mov r0,r3",
     ]
     if not _contains(controller, width + call):
-        raise ValueError("RPM controller fraction call differs")
+        raise ValueError("RPM controller does not pass p in r3 to the control publisher")
+    # The ignition publisher checks control_error == rpm_error.
+    error_pair = _masked_group(
+        "r3", ["mov r6,r0", "mov.w r0,@(0x18,r5)", "mov.w r0,@(0x2,r7)"]
+    )
+    if (
+        not _contains(controller, error_pair)
+        or _sr_texts(controller) != _sr_texts(error_pair)
+    ):
+        raise ValueError("RPM controller error pair is not one masked store group")
     if _stores(controller) != sorted([
         "mov.w r0,@(0x18,r5)",
         "mov.w r0,@(0x2,r7)",
-        "mov.w r0,@(0x16,r7)",
     ]):
         raise ValueError("RPM controller store contract differs")
     divider_call = [
@@ -646,7 +683,7 @@ def _validate_rpm_abi(parsed):
         raise ValueError("RPM fraction uses an undeclared register")
     if _writes(fraction, "r4", "r5"):
         raise ValueError("RPM fraction changes its arguments")
-    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "sr", "macl"}
     if not _registers(controller) <= allowed:
         raise ValueError("RPM controller clobbers an undeclared register")
 
@@ -661,6 +698,24 @@ def _validate_actuation_abi(parsed):
     body = _region(parsed, "rolling_launch_actuation", "rl_act_ignition_ready")
     ready = _region(parsed, "rl_act_ignition_ready", "rolling_launch_q")
     q = _region(parsed, "rolling_launch_q")
+    # The control publisher masks interrupts before it stores the law output
+    # and keeps them masked through the commit of the body, so the law, the
+    # torque fraction, the command tuple it reads, e, q and the views form one
+    # store group for the ignition publisher.
+    control_law = [
+        "stc sr,r0",
+        "mov.l r0,@-r15",
+        "or 0xf0,r0",
+        "ldc r0,sr",
+        "mov.l @(rl_act_extension_address,pc),r7",
+        "mov r3,r0",
+        "mov.w r0,@(0x16,r7)",
+        "mov.b @r7,r0",
+        "cmp/eq 0x2,r0",
+        "bf rl_act_control_tuple",
+        "mov r3,r0",
+        "mov.w r0,@(0xe,r5)",
+    ]
     control_ready = [
         "mov.b @r5,r0",
         "cmp/eq 0x1,r0",
@@ -672,9 +727,19 @@ def _validate_actuation_abi(parsed):
         "bra rolling_launch_actuation",
         "nop",
     ]
-    if control[-len(control_ready):] != control_ready or _stores(control):
-        raise ValueError("control publisher must pass ready only in ACTIVE hold")
+    if (
+        control[:len(control_law)] != control_law
+        or control[-len(control_ready):] != control_ready
+        or _stores(control) != sorted(["mov.w r0,@(0x16,r7)", "mov.w r0,@(0xe,r5)"])
+        or _sr_texts(control) != ["stc sr,r0", "ldc r0,sr"]
+    ):
+        raise ValueError(
+            "control publisher must store the law under the mask of the "
+            "publication and pass ready only in ACTIVE hold"
+        )
     ignition_prefix = [
+        "stc sr,r0",
+        "mov.l r0,@-r15",
         "sts.l pr,@-r15",
         "mov.l @(rl_act_state_check,pc),r0",
         "jsr @r0",
@@ -709,7 +774,9 @@ def _validate_actuation_abi(parsed):
         "bf rl_act_ignition_stock",
         "mov #0x1,r2",
     ]
+    # The stock path returns the stock command as the command to apply.
     stock = [
+        "mov r4,r5",
         "extu.b r4,r6",
         "mov r6,r0",
         "shll8 r6",
@@ -726,26 +793,30 @@ def _validate_actuation_abi(parsed):
         or _stores(ready)
     ):
         raise ValueError("ignition ready or stock publication differs")
-    for name, texts in (
-        ("control publisher", control),
-        ("ignition publisher", ignition + ready),
+    if (
+        _writes(control, "r4", "r5")
+        or _writes(ignition + ready, "r4")
+        or [text for text in ignition + ready if text.endswith(",r5")] != ["mov r4,r5"]
+        or _sr_texts(ignition + ready) != ["stc sr,r0"]
     ):
-        if _writes(texts, "r4", "r5"):
-            raise ValueError(f"{name} changes its arguments")
+        raise ValueError("publishers change their arguments or SR")
     if (
         body[:3] != ["mov.l r4,@-r15", "mov.l r5,@-r15", "sts.l pr,@-r15"]
-        or body[-5:] != [
-            "lds.l @r15+,pr", "mov.l @r15+,r5", "mov.l @r15+,r4", "rts", "nop",
+        or body[-7:] != [
+            "lds.l @r15+,pr", "mov.l @r15+,r5", "mov.l @r15+,r4",
+            "mov.l @r15+,r0", "ldc r0,sr", "rts", "nop",
         ]
     ):
-        raise ValueError("actuation body does not preserve r4, r5 and PR")
+        raise ValueError(
+            "actuation body does not preserve r4, r5 and PR and restore the "
+            "SR of its caller"
+        )
     commit = [
         "mov.l @(rl_act_views,pc),r0",
         "jsr @r0",
         "nop",
         "mov.l @(rl_act_state_address,pc),r4",
-        "stc sr,r2",
-        "mov r2,r0",
+        "stc sr,r0",
         "or 0xf0,r0",
         "ldc r0,sr",
         "mov.l r6,@(0x8,r7)",
@@ -754,9 +825,12 @@ def _validate_actuation_abi(parsed):
         "mov.w r0,@(0x1e,r7)",
         "mov r5,r0",
         "mov.w r0,@(0x1a,r4)",
-        "ldc r2,sr",
+        "lds.l @r15+,pr",
     ]
-    if not _contains(body, commit) or body.count("ldc r0,sr") != 1:
+    if (
+        not _contains(body, commit)
+        or _sr_texts(body) != ["stc sr,r0", "ldc r0,sr", "ldc r0,sr"]
+    ):
         raise ValueError("actuation must publish with interrupts masked and q last")
     if _stores(body) != sorted([
         "mov.l r6,@(0x8,r7)",
@@ -816,12 +890,32 @@ def _validate_state_check_abi(parsed):
         parsed, "rolling_launch_state_check", "rolling_launch_load_views"
     )
     views = _region(parsed, "rolling_launch_load_views")
-    if check[:3] != [
+    # The interrupt entry keeps SR; the engine entry masks interrupts so that
+    # a publication cannot split the fields it reads. Both save the SR of the
+    # caller and restore it before they set T.
+    entries = [
+        "stc sr,r0",
+        "mov.l r0,@-r15",
+        "bra rl_check_begin",
+        "nop",
+        "stc sr,r0",
+        "mov.l r0,@-r15",
+        "or 0xf0,r0",
+        "ldc r0,sr",
         "sts.l pr,@-r15",
         "mov.l @(rl_sc_state_address,pc),r6",
         "mov.l @(rl_sc_extension_address,pc),r7",
-    ]:
-        raise ValueError("record check does not load the base state and the extension")
+    ]
+    entry = parsed.labels["rolling_launch_state_check"]
+    if (
+        check[:len(entries)] != entries
+        or parsed.labels["rolling_launch_state_check_masked"] != entry + 8
+        or parsed.labels["rl_check_begin"] != entry + 16
+    ):
+        raise ValueError(
+            "record check entries do not save SR, mask the engine entry and "
+            "load the base state and the extension"
+        )
     q_call = ["mov.l @(rl_sc_q_entry,pc),r0", "jsr @r0", "nop"]
     compare = [
         "bsr rolling_launch_load_views",
@@ -831,19 +925,23 @@ def _validate_state_check_abi(parsed):
         "bf rl_check_fail",
         "mov.w @(0x1e,r7),r0",
         "extu.w r0,r0",
-        "cmp/eq r0,r1",
+        "xor r0,r1",
         "lds.l @r15+,pr",
+        "mov.l @r15+,r0",
+        "ldc r0,sr",
+        "tst r1,r1",
         "rts",
         "nop",
     ]
-    fail = ["mov #0x1,r0", "tst r0,r0", "lds.l @r15+,pr", "rts", "nop"]
+    fail = ["mov #0x1,r1", "bra rl_check_return", "nop"]
     if (
         check.count("jsr @r0") != 1
         or not _contains(check, q_call)
         or not _contains(check, compare)
         or check[-len(fail):] != fail
-        or check.count("rts") != 2
+        or check.count("rts") != 1
         or texts.count("bsr rolling_launch_load_views") != 1
+        or _sr_texts(texts) != ["stc sr,r0", "stc sr,r0", "ldc r0,sr", "ldc r0,sr"]
     ):
         raise ValueError("record check calls or returns differ")
     loads = [
@@ -867,9 +965,73 @@ def _validate_state_check_abi(parsed):
     if _stores(texts):
         raise ValueError("record check and wire views must not store")
     if _writes(texts, "r4", "r5") or not _registers(texts) <= (
-        {f"r{number}" for number in range(8)} | {"r15", "pr"}
+        {f"r{number}" for number in range(8)} | {"r15", "pr", "sr"}
     ):
         raise ValueError("record check changes a preserved register")
+
+
+def _masked_flags(texts, masked=False):
+    """SR.I=15 state at each instruction of a straight-line region."""
+    flags = []
+    for index, text in enumerate(texts):
+        flags.append(masked)
+        if text.startswith("ldc ") and text.endswith(",sr"):
+            masked = text == "ldc r0,sr" and index and texts[index - 1] == "or 0xf0,r0"
+    return flags
+
+
+def _validate_publication_atomicity(parsed_by_unit):
+    """Keep every record state that the ignition publisher can observe valid.
+
+    The engine runs with interrupts enabled and the ignition publisher runs
+    from the crank-tooth interrupt. In a steady ACTIVE pass every store that a
+    record check couples to another field lies in a masked section: the
+    controller error pairs, the law output with the torque fraction, the
+    command tuple, e, q and the views, and the exit views. The integrator and
+    the controller command have no coupled field. Transitions keep a store
+    order instead: activation stores the phase first, the mode after the map
+    and the latched trim last, and an abort leaves ACTIVE with its first
+    store.
+    """
+    regions = (
+        ("speed_controller", "rolling_launch_speed_controller", None, False,
+         {"mov.w r0,@(0x12,r5)", "mov.w r0,@(0x16,r5)"}),
+        ("rpm", "rolling_launch_rpm_controller", "rolling_launch_rpm_fraction", False, set()),
+        ("actuation", "rolling_launch_control_publisher",
+         "rolling_launch_ignition_publisher", False, set()),
+        ("actuation", "rolling_launch_actuation", "rl_act_ignition_ready", False, set()),
+    )
+    for unit, start, end, masked, uncoupled in regions:
+        texts = _region(parsed_by_unit[unit], start, end)
+        flags = _masked_flags(texts, masked)
+        if any(text in _stores([text]) and text not in uncoupled and not flag
+               for text, flag in zip(texts, flags)):
+            raise ValueError(f"{unit}: a coupled store lies outside a masked section")
+    engine = parsed_by_unit["engine"]
+    texts = _texts(engine)
+    flags = _masked_flags(texts)
+    views = {"mov.l r3,@(0xc,r9)", "mov.w r0,@(0x1e,r9)"}
+    if any(text in views and not flag for text, flag in zip(texts, flags)) or sum(
+            text in views for text in texts) != 2:
+        raise ValueError("engine stores the wire views outside its masked exit")
+    activation = _stores_in_order(_region(engine, "rl_activate", "rl_active_post"))
+    if (
+        activation[:1] != ["mov.b r0,@r8"]
+        or activation[-1:] != ["mov.b r2,@(r0,r8)"]
+        or activation.index("mov.b r0,@(0x4,r8)") > activation.index("mov.b r0,@(0x5,r8)")
+    ):
+        raise ValueError(
+            "activation must store the phase first, the mode after the map and "
+            "the latched trim last"
+        )
+    abort = _stores_in_order(_region(engine, "rl_abort", "rl_corrupt_state"))
+    if abort[:1] != ["mov.b r0,@r8"] or not {
+            "mov.w r0,@(0x1a,r8)", "mov.b r0,@(0xb,r9)"} <= set(abort):
+        raise ValueError("abort must leave ACTIVE with its first store and clear q and ready")
+
+
+def _stores_in_order(texts):
+    return [text for text in texts if _stores([text])]
 
 
 def _validate_internal_entries(parsed_by_unit):
@@ -899,7 +1061,7 @@ def _expected_long_literals():
             "rl_state_address": 0xFFFF5D40,
             "rl_extension_address": 0xFFFF6100,
             "rl_config_address": 0x000D6320,
-            "rl_state_check_entry": 0x000D7000,
+            "rl_state_check_entry": 0x000D7008,
             "rl_speed_address": 0xFFFF113C,
             "rl_rpm_address": 0xFFFF11BC,
             "rl_speed_raw_address": 0xFFFF3B3D,
@@ -914,7 +1076,7 @@ def _expected_long_literals():
             "rl_speed_controller_entry": 0x000D40C0,
             "rl_rpm_controller_entry": 0x000D6400,
             "rl_limiter_commit": 0x000D3660,
-            "rl_load_views_entry": 0x000D7172,
+            "rl_load_views_entry": 0x000D7184,
             "rl_slot_validator_entry": 0x000D6680,
         },
         "ignition_adapter": {
@@ -957,7 +1119,7 @@ def _expected_long_literals():
             "rl_act_efficiency_address": 0x000D6390,
             "rl_act_unsigned_divide": 0x00021CE0,
             "rl_act_state_check": 0x000D7000,
-            "rl_act_views": 0x000D717E,
+            "rl_act_views": 0x000D7190,
             "rl_act_apc_mode_address": 0xFFFF24C9,
         },
         "slot_validator": {
@@ -967,8 +1129,8 @@ def _expected_long_literals():
         "state_check": {
             "rl_sc_state_address": 0xFFFF5D40,
             "rl_sc_extension_address": 0xFFFF6100,
-            "rl_sc_byte_limits": 0x000D71D6,
-            "rl_sc_q_entry": 0x000D6618,
+            "rl_sc_byte_limits": 0x000D71EA,
+            "rl_sc_q_entry": 0x000D661A,
         },
     }
 
@@ -1040,6 +1202,8 @@ def validate_assembly_sources(layout=None):
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     _validate_internal_entries(parsed_by_unit)
+    if {"engine", "speed_controller", "rpm", "actuation"} <= set(parsed_by_unit):
+        _validate_publication_atomicity(parsed_by_unit)
     return parsed_by_unit
 
 

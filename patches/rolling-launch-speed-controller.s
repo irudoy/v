@@ -9,9 +9,11 @@
 // deepens a saturated sum u_p + integrator / 16. The integrator stays within
 // 16 * limit. The command clamp(u_p + integrator / 16, 0, 1000) moves u by at
 // most the configured rate per pass. The controller stores e in base +0x10
-// and extension +0x02, the integrator, the command and u in base +0x12,
-// +0x16 and +0x0E, and u as the law output in extension +0x16, and then ends
-// in the control publisher at 0xD6500 with r4 and r5 unchanged.
+// and extension +0x02 as one masked store group and the integrator and the
+// command in base +0x12 and +0x16, and ends in the control publisher at
+// 0xD6500 with u in r3 and r4 and r5 unchanged. The control publisher
+// commits u as the torque fraction at base +0x0E and the law output at
+// extension +0x16 together with q.
 // The stock unsigned divider at 0x21CE0 receives r0=divisor and r1=dividend
 // and preserves r2 through r7.
 
@@ -24,10 +26,15 @@ extu.w r2,r2
 mov.w @(0xC,r5),r0
 extu.w r0,r0
 sub r0,r2
+mov.l @(rl_spd_extension_address,pc),r7
+stc sr,r6
+mov r6,r0
+or 0xf0,r0
+ldc r0,sr
 mov r2,r0
 mov.w r0,@(0x10,r5)
-mov.l @(rl_spd_extension_address,pc),r7
 mov.w r0,@(0x2,r7)
+ldc r6,sr
 
 // Windowed proportional fraction.
 mov r4,r1
@@ -138,9 +145,7 @@ cmp/ge r1,r2
 bt rl_spd_rate_lower
 mov r1,r2
 rl_spd_rate_lower:
-mov r2,r0
-mov.w r0,@(0xE,r5)
-mov.w r0,@(0x16,r7)
+mov r2,r3
 lds.l @r15+,pr
 mov.l @(rl_spd_control_publisher,pc),r0
 jmp @r0
