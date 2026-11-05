@@ -105,15 +105,6 @@ def _rolling_settings(source, layout, state):
         schema_version = runtime_endpoints.historical_endpoint(
             state
         ).configuration_schema_version
-    if schema_version == rolling_launch.LEGACY_SCHEMA_VERSION:
-        # The schema 5 record expresses every schema 4 setting: one integral
-        # gain in every map slot and no ignition trim.
-        try:
-            return record, rolling_launch.Calibration.from_legacy_bytes(record), ()
-        except ValueError as error:
-            raise ExtractionError(
-                f"Rolling Launch record of endpoint {state!r} is invalid"
-            ) from error
     if schema_version != rolling_launch.CONFIG_SCHEMA_VERSION:
         fields = runtime_endpoints.historical_configuration_fields(
             record, schema_version

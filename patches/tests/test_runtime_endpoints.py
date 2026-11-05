@@ -512,18 +512,22 @@ def test_schema_4_record_contract_is_frozen():
 
 
 @pytest.mark.parametrize("key", FLASHED_ENDPOINTS)
-def test_flashed_endpoint_upgrades_with_its_settings_and_calibration(key):
-    """The upgrade composes the current runtime over the flashed calibration.
-    The schema 5 endpoint is the current runtime until the runtime changes."""
+def test_flashed_endpoint_reports_unexpressed_settings_and_calibration(key):
+    """A historical hold has no implicit launch-RPM or threshold setting."""
     record = bytearray(endpoint_images.record(key))
     record[4] = 0x0E  # Maps 2 to 4 enabled.
     source = bytearray(endpoint_image(key, record=bytes(record)))
     family = target("JK08A").map_layout.families[0]
     source[family.copies[1] + 3] ^= 0x11
     source = closed(source)
-    result = build_rom.upgrade_image(source)
-    assert result.calibration_transfer["source_runtime"]["rolling_launch"] in (key, "current")
-    assert result.calibration_transfer["settings"]["rolling_launch"] == "matched"
-    assert result.profile.calibration.enable_mask == 0x0E
-    for offset in calibration_ranges.load("JK08A").offsets():
-        assert result.data[offset] == source[offset], hex(offset)
+    result = extract_calibration.extract(source)
+    assert result.rolling is None and not result.has_profile
+    ((component, endpoint_key, version, settings),) = result.unexpressed
+    assert component == "rolling_launch" and endpoint_key == key
+    assert version == runtime_endpoints.historical_endpoint(key).configuration_schema_version
+    assert settings["enable_mask"] == 0x0E
+    assert "launch_rpm_native" not in settings
+    address = family.copies[1] + 3
+    assert any(element.address <= address < element.end
+               and element.data[address-element.address] == source[address]
+               for element in result.calibration.elements)

@@ -4,28 +4,31 @@
 # a verification fixture only: checksum fields are not recalculated and no
 # output-file operation is exposed.
 #
-# Each retired configuration span held the record of earlier schemas: the
-# 32-byte record of schema 1 to 3 and the 40-byte record of schema 4. Each
-# stays claimed and erased, so extraction can read the record of a historical
-# image.
+# Retired records and removed executable spans remain claimed and erased in
+# the current write set. Historical endpoints use independent address books.
+# The schema 6 ABI reserves code budgets; payloads_ready prevents image
+# composition until the matching executable payloads are assembled and locked.
 #
 # hold_actuator states whether a payload consumes the torque fraction. While it
 # is false, preflash refuses an image that enables a map in hold mode.
 
-schema_version = 3
+schema_version = 4
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "0f70f8c04ae6d8f5d1b3e75da576ef3f32eb425e4c4d8654610dec971c47ca9d"
+expected_composition_sha256 = ""
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
 claimed_rom_end = 0x000D3F80
-configuration_address = 0x000D6220
-configuration_size = 72
-hold_actuator = true
-default_configuration = "524c0500000000ff00c804b000a00001000028140032000001f496640050030d00620a08adb3a55a0000000003e80000000003e80000000003e80000000003e80000000003e8a55a"
+configuration_address = 0x000D6320
+configuration_size = 102
+efficiency_address = 0x000D6390
+efficiency_size = 82
+hold_actuator = false
+payloads_ready = false
+default_configuration = "524c0600000000ff00c804b000a00001000028140032000001f496640000030d00620a00adb3a55a00000000000000a10001000000000000000000a10001000000000000000000a10001000000000000000000a10001000000000000000000a100010000a55a"
 
 [[retired_configuration]]
 address = 0x000D3F60
@@ -37,21 +40,56 @@ address = 0x000D6040
 size = 40
 schema_versions = [4]
 
+[[retired_configuration]]
+address = 0x000D6220
+size = 72
+schema_versions = [5]
+
 [[claimed_rom_extension]]
 start = 0x000D40C0
 end = 0x000D4280
 
 [[claimed_rom_extension]]
 start = 0x000D6000
+end = 0x000D6780
+
+[[erased_rom]]
+start = 0x000D6000
+end = 0x000D6040
+
+[[erased_rom]]
+start = 0x000D6068
+end = 0x000D60C0
+
+[[erased_rom]]
+start = 0x000D6268
 end = 0x000D6320
+
+[[erased_rom]]
+start = 0x000D6386
+end = 0x000D6390
+
+[[erased_rom]]
+start = 0x000D63E2
+end = 0x000D6400
 
 [scheduler]
 table_address = 0x0002196C
 table_index = 1
-fuel_cut_index = 28
 tick_numerator = 204800
 pphi_hz = 20000000
 tick_microseconds = 10240
+
+[speed_inputs]
+word_address = 0xFFFF113C
+age_address = 0xFFFF3B38
+hcan1_state_address = 0xFFFF4195
+initialized_mask = 0x01
+port_state_address = 0xFFFF4185
+port_ready_mask = 0x80
+# The raw word is unaligned; the SH implementation reads these two bytes.
+raw_high_address = 0xFFFF3B3D
+raw_low_address = 0xFFFF3B3E
 
 [ram]
 proven_free_start = 0xFFFF5D00
@@ -60,6 +98,8 @@ base_reservation_start = 0xFFFF5D00
 base_reservation_end = 0xFFFF5D3C
 state_start = 0xFFFF5D40
 state_size = 44
+extension_start = 0xFFFF6100
+extension_size = 32
 
 [[code_region]]
 key = "periodic_wrapper"
@@ -104,18 +144,6 @@ end = 0x000D4280
 entry = 0x000D41E0
 
 [[code_region]]
-key = "fuel_cut_wrapper"
-start = 0x000D6000
-end = 0x000D6040
-entry = 0x000D6000
-
-[[code_region]]
-key = "rpm_ceiling"
-start = 0x000D6068
-end = 0x000D60C0
-entry = 0x000D6068
-
-[[code_region]]
 key = "spark_cut"
 start = 0x000D60C0
 end = 0x000D6220
@@ -123,15 +151,39 @@ entry = 0x000D60C0
 
 [[code_region]]
 key = "slot_validator"
-start = 0x000D6268
-end = 0x000D62B8
-entry = 0x000D6268
+start = 0x000D6680
+end = 0x000D6780
+entry = 0x000D6680
 
 [[code_region]]
-key = "trim"
-start = 0x000D62B8
-end = 0x000D6320
-entry = 0x000D62B8
+key = "rpm_controller"
+start = 0x000D6400
+end = 0x000D6480
+entry = 0x000D6400
+
+[[code_region]]
+key = "rpm_fraction"
+start = 0x000D6480
+end = 0x000D6500
+entry = 0x000D6480
+
+[[code_region]]
+key = "control_publisher"
+start = 0x000D6500
+end = 0x000D6540
+entry = 0x000D6500
+
+[[code_region]]
+key = "ignition_publisher"
+start = 0x000D6540
+end = 0x000D6580
+entry = 0x000D6540
+
+[[code_region]]
+key = "actuation"
+start = 0x000D6580
+end = 0x000D6680
+entry = 0x000D6580
 
 [[assembly_unit]]
 key = "wrappers"
@@ -194,30 +246,6 @@ data_bytes = 16
 code_regions = ["feedback_arbiter"]
 
 [[assembly_unit]]
-key = "fuel_cut_wrapper"
-source = "rolling-launch-fuel-cut-wrapper.s"
-start = 0x000D6000
-end = 0x000D6040
-fill = 0xFF
-language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "7f0911a9b534511fbf5dfc3957cfba5fb5cab04a5daaa8fa0832deffb7e86abd"
-instruction_count = 21
-data_bytes = 12
-code_regions = ["fuel_cut_wrapper"]
-
-[[assembly_unit]]
-key = "rpm_ceiling"
-source = "rolling-launch-rpm-ceiling.s"
-start = 0x000D6068
-end = 0x000D60C0
-fill = 0xFF
-language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "5de36173709c7fd3880724eb9f13474f1b515ba725869205a7f48eeeb4c2c2dd"
-instruction_count = 37
-data_bytes = 4
-code_regions = ["rpm_ceiling"]
-
-[[assembly_unit]]
 key = "spark_cut"
 source = "rolling-launch-spark-cut.s"
 start = 0x000D60C0
@@ -228,18 +256,6 @@ expected_sha256 = "30e69c6ac042bc21354fbf0f83a6ce7231bb58aab75fd5d654076e7f44ad1
 instruction_count = 147
 data_bytes = 48
 code_regions = ["spark_cut"]
-
-[[assembly_unit]]
-key = "trim"
-source = "rolling-launch-trim.s"
-start = 0x000D6268
-end = 0x000D6320
-fill = 0xFF
-language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "e01b86a6a7aea6d8f359e1c92caf342466faf821b714998de49659c33e3d823d"
-instruction_count = 71
-data_bytes = 14
-code_regions = ["slot_validator", "trim"]
 
 [[hook]]
 key = "displaced_periodic_task"
@@ -280,14 +296,6 @@ width = 4
 stock = 0x000D35E0
 replacement = 0x000D41E0
 purpose = "Run map-selection pulses first, then publish Rolling Launch dashboard state when map feedback is idle."
-
-[[hook]]
-key = "fuel_cut_coordinator"
-address = 0x000219DC
-width = 4
-stock = 0x0004ED88
-replacement = 0x000D6000
-purpose = "Run the stock fuel-output inhibit coordinator, then OR the Rolling Launch fuel-cut request into its final mask."
 
 [[hook]]
 key = "spark_handler"
@@ -378,14 +386,6 @@ width = 2
 name = "integrator"
 
 [[diagnostic]]
-did = 0x121E
-pointer_address = 0x00022914
-stock = 0xFFFFFFFF
-target = 0xFFFF5D54
-width = 2
-name = "fuel_cut_request"
-
-[[diagnostic]]
 did = 0x121F
 pointer_address = 0x00022918
 stock = 0xFFFFFFFF
@@ -394,17 +394,24 @@ width = 2
 name = "torque_command"
 
 [[diagnostic]]
-did = 0x1231
-pointer_address = 0x00022960
-stock = 0xFFFFFFFF
-target = 0xFFFF5D58
-width = 2
-name = "rpm_ceiling_latch"
-
-[[diagnostic]]
 did = 0x1232
 pointer_address = 0x00022964
 stock = 0xFFFFFFFF
 target = 0xFFFF5D5C
 width = 2
 name = "spark_cut_counters"
+
+[[restored_word]]
+key = "stock_fuel_coordinator"
+address = 0x000219DC
+value = 0x0004ED88
+
+[[restored_word]]
+key = "retired_request_did"
+address = 0x00022914
+value = 0xFFFFFFFF
+
+[[restored_word]]
+key = "retired_ceiling_did"
+address = 0x00022960
+value = 0xFFFFFFFF

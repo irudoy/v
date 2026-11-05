@@ -1,836 +1,504 @@
-import dataclasses
-from pathlib import Path
-import re
-import unittest
+from dataclasses import fields, replace
+import struct
+
+import pytest
 
 from patches import rolling_launch as rl
 
 
-ROOT = Path(__file__).resolve().parents[2]
-HARNESS = ROOT / "tools" / "sh-elf-run" / "rolling_launch_harness.c"
-CONTROLLER_ROW = re.compile(r'\{"(ctrl-[a-z-]+)",([-0-9a-fx, ]+)\}')
-TRIM_ROW = re.compile(r'\{"((?:trim|gain)-[a-z0-9-]+)",([-0-9, ]+)\}')
-ADAPTER_ROW = re.compile(r'\{"(adapter-[a-z-]+)",([-0-9a-fxU, ]+)\}')
+@pytest.fixture
+def calibration():
+    slot = rl.Slot(integral_gain=2, max_trim_rpm=20, max_trim_speed=20, floor_command=120,
+                   launch_rpm_native=300, launch_speed_threshold=50,
+                   launch_soft_width_native=40)
+    return rl.Calibration(mode=rl.Mode.HOLD, enable_mask=31, slots=(slot,)*5,
+                          run_timeout_ticks=20, rearm_ticks=3)
 
 
-class RollingLaunchTest(unittest.TestCase):
-    def setUp(self):
-        self.calibration = rl.Calibration(
-            mode=rl.Mode.HOLD,
-            enable_mask=0x01,
-            coolant_min=80,
-            coolant_max=220,
-            run_timeout_ticks=4,
-            rearm_ticks=3,
-        )
-        self.inputs = rl.Inputs(
-            active_index=0,
-            button=rl.BUTTON_CANCEL,
-            speed=500,
-            rpm_native=300,
-            pedal=2000,
-            coolant=150,
-        )
-
-    def activate(self, calibration=None, inputs=None):
-        return rl.step(
-            rl.RuntimeState(),
-            inputs or self.inputs,
-            calibration or self.calibration,
-        ).state
-
-    def test_default_configuration_is_fail_closed_and_round_trips(self):
-        calibration = rl.Calibration()
-        self.assertTrue(calibration.is_valid())
-        self.assertEqual(calibration.enable_mask, 0)
-        encoded = calibration.to_bytes()
-        self.assertEqual(len(encoded), rl.CONFIG_SIZE)
-        self.assertEqual(rl.Calibration.from_bytes(encoded), calibration)
-
-    def test_configuration_rejects_each_integrity_and_range_failure(self):
-        invalid = (
-            {"magic": 0},
-            {"schema_version": 3},
-            {"mode": 2},
-            {"enable_mask": 0x20},
-            {"options": 1},
-            {"coolant_min": 221, "coolant_max": 220},
-            {"min_speed": -1},
-            {"max_speed": 0x10000},
-            {"min_speed": 600, "max_speed": 599},
-            {"min_rpm_native": 0},
-            {"min_pedal": 0x10000},
-            {"target_speed_offset": -150},
-            {"target_speed_offset": 100},
-            {"window_width": 0},
-            {"window_width": 0x100},
-            {"window_top": 0x100},
-            {"u_rate_limit": 0},
-            {"u_rate_limit": 1001},
-            {"reserved": 1},
-            {"slots": (rl.Slot(integral_gain=-1),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(integral_gain=0x8000),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(max_trim=rl.TRIM_MAX + 1, trim_efficiency=300),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(floor_command=0x100),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(max_trim=20, trim_efficiency=0),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(max_trim=20, trim_efficiency=1001),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(trim_efficiency=999),) * rl.SLOT_COUNT},
-            {"slots": (rl.Slot(),) * (rl.SLOT_COUNT - 1)},
-            {"slot_end_marker": 0},
-            {"integrator_limit": 1001},
-            {"abort_above": 0},
-            {"abort_below": 0},
-            {"rpm_ceiling_offset_native": 0},
-            {"run_timeout_ticks": 0},
-            {"run_timeout_ticks": 0x8000},
-            {"rearm_ticks": 0},
-            {"rearm_ticks": 0x8000},
-            {"speed_frame_age_limit": 0},
-            {"speed_frame_age_limit": 255},
-            {"rpm_ceiling_hysteresis_native": 0},
-            {"rpm_ceiling_hysteresis_native": 0x100},
-            {"rpm_ceiling_hysteresis_native": 81},
-            {"magic_inverse": 0},
-            {"end_marker": 0},
-        )
-        for changes in invalid:
-            with self.subTest(changes=changes):
-                candidate = dataclasses.replace(self.calibration, **changes)
-                self.assertFalse(candidate.is_valid())
-
-    def test_configuration_accepts_every_upper_bound(self):
-        candidate = dataclasses.replace(
-            self.calibration,
-            min_speed=0,
-            max_speed=0,
-            target_speed_offset=99,
-            window_width=0xFF,
-            window_top=0xFF,
-            u_rate_limit=rl.U_ONE,
-            slots=(
-                rl.Slot(
-                    integral_gain=0x7FFF,
-                    max_trim=rl.TRIM_MAX,
-                    floor_command=0xFF,
-                    trim_efficiency=1,
-                ),
-            ) * rl.SLOT_COUNT,
-            integrator_limit=rl.U_ONE,
-            rpm_ceiling_offset_native=0xFFFF,
-            rpm_ceiling_hysteresis_native=0xFF,
-            run_timeout_ticks=0x7FFF,
-            rearm_ticks=0x7FFF,
-            speed_frame_age_limit=rl.SPEED_FRAME_AGE_LIMIT_MAX,
-        )
-        self.assertTrue(candidate.is_valid())
-        self.assertTrue(
-            dataclasses.replace(candidate, target_speed_offset=-149).is_valid()
-        )
-        self.assertTrue(
-            dataclasses.replace(
-                self.calibration, rpm_ceiling_hysteresis_native=80
-            ).is_valid()
-        )
-
-    def test_gate_flags_report_all_conditions_not_only_first_failure(self):
-        inputs = dataclasses.replace(
-            self.inputs, button=rl.BUTTON_RELEASED, speed=100
-        )
-        flags, reason = rl.evaluate_gates(inputs, self.calibration)
-        self.assertEqual(reason, rl.AbortReason.BUTTON_INVALID)
-        self.assertTrue(flags & rl.Flag.CONFIG_VALID)
-        self.assertTrue(flags & rl.Flag.MAP_ENABLED)
-        self.assertTrue(flags & rl.Flag.SPEED_FRAME_OK)
-        self.assertTrue(flags & rl.Flag.RPM_OK)
-        self.assertTrue(flags & rl.Flag.COOLANT_OK)
-        self.assertFalse(flags & rl.Flag.BUTTON_HELD)
-        self.assertFalse(flags & rl.Flag.SPEED_OK)
-
-    def test_the_speed_frame_age_gates_activation_and_aborts_a_run(self):
-        limit = self.calibration.speed_frame_age_limit
-        exact = dataclasses.replace(self.inputs, speed_frame_age=limit)
-        self.assertEqual(self.activate(inputs=exact).phase, rl.Phase.ACTIVE)
-        # A stale frame takes priority over a speed outside the range.
-        stale = dataclasses.replace(
-            self.inputs, speed_frame_age=limit + 1, speed=100
-        )
-        refused = self.activate(inputs=stale)
-        self.assertEqual(refused.phase, rl.Phase.IDLE)
-        self.assertEqual(
-            refused.abort_reason, rl.AbortReason.SPEED_FRAME_STALE
-        )
-        self.assertFalse(refused.flags & rl.Flag.SPEED_FRAME_OK)
-
-        active = self.activate()
-        aborted = rl.step(
-            active,
-            dataclasses.replace(self.inputs, speed_frame_age=limit + 1),
-            self.calibration,
-        ).state
-        self.assertEqual(aborted.phase, rl.Phase.COOLDOWN)
-        self.assertEqual(
-            aborted.abort_reason, rl.AbortReason.SPEED_FRAME_STALE
-        )
-
-    def test_activation_speed_range_is_inclusive_and_zero_disables_a_side(self):
-        for speed, reason in (
-            (199, rl.AbortReason.SPEED_LOW),
-            (200, rl.AbortReason.NONE),
-            (1200, rl.AbortReason.NONE),
-            (1201, rl.AbortReason.SPEED_HIGH),
-        ):
-            with self.subTest(speed=speed):
-                inputs = dataclasses.replace(self.inputs, speed=speed)
-                state = self.activate(inputs=inputs)
-                self.assertEqual(state.abort_reason, reason)
-        open_low = dataclasses.replace(self.calibration, min_speed=0)
-        self.assertEqual(
-            self.activate(
-                open_low, dataclasses.replace(self.inputs, speed=0)
-            ).phase,
-            rl.Phase.ACTIVE,
-        )
-        open_high = dataclasses.replace(self.calibration, max_speed=0)
-        self.assertEqual(
-            self.activate(
-                open_high, dataclasses.replace(self.inputs, speed=0xFFFF)
-            ).phase,
-            rl.Phase.ACTIVE,
-        )
-
-    def test_dashboard_feedback_reports_attempt_active_and_cooldown(self):
-        failed = rl.RuntimeState(
-            abort_reason=rl.AbortReason.RPM_LOW,
-            flags=rl.Flag.BUTTON_HELD,
-        )
-        active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
-        cooldown = rl.RuntimeState(phase=rl.Phase.COOLDOWN)
-
-        self.assertEqual(rl.apply_dashboard_feedback(failed, 0xB5), 0xD5)
-        self.assertEqual(rl.apply_dashboard_feedback(active, 0xB5), 0xC5)
-        self.assertEqual(
-            rl.apply_dashboard_feedback(cooldown, 0xB5), 0x85
-        )
-
-    def test_dashboard_feedback_preserves_idle_corrupt_and_map_pulse(self):
-        normal = rl.RuntimeState(
-            abort_reason=rl.AbortReason.BUTTON_INVALID,
-        )
-        corrupt = dataclasses.replace(normal, phase=9)
-        active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
-        failed = rl.RuntimeState(
-            abort_reason=rl.AbortReason.RPM_LOW,
-            flags=rl.Flag.BUTTON_HELD,
-        )
-
-        self.assertEqual(rl.apply_dashboard_feedback(normal, 0xB5), 0xB5)
-        self.assertEqual(rl.apply_dashboard_feedback(corrupt, 0xB5), 0xB5)
-        # The map ON value differs from the failed-attempt value and the map
-        # OFF value differs from the ACTIVE value, so each case shows which
-        # source owns the frame.
-        self.assertEqual(
-            rl.apply_dashboard_feedback(
-                failed, 0xC5, map_feedback_active=True
-            ),
-            0xC5,
-        )
-        self.assertEqual(
-            rl.apply_dashboard_feedback(
-                active, 0x85, map_feedback_active=True
-            ),
-            0x85,
-        )
-
-        with self.assertRaisesRegex(ValueError, "serialized ASCD status"):
-            rl.apply_dashboard_feedback(active, 0x100)
-
-    def test_activation_captures_target_rpm_and_a_fresh_controller(self):
-        stale = rl.RuntimeState(
-            captured_rpm_native=0x5A5A,
-            target_speed=0x5A5A,
-            torque_fraction=5,
-            integrator=0x4000,
-            fuel_cut_request=0x3F,
-        )
-        result = rl.step(stale, self.inputs, self.calibration)
-        state = result.state
-        self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
-        self.assertEqual(state.phase, rl.Phase.ACTIVE)
-        self.assertEqual(state.active_mode_snapshot, rl.Mode.HOLD)
-        self.assertEqual(
-            (state.captured_rpm_native, state.target_speed), (300, 500)
-        )
-        # u_p = 20 * 1000 // 40 and u falls from full torque by the rate.
-        self.assertEqual(
-            (state.speed_error, state.integrator, state.torque_command,
-             state.torque_fraction, state.fuel_cut_request),
-            (0, 0, 500, 950, 0),
-        )
-        self.assertEqual(
-            state.flags, rl.Flag((1 << 12) - 1) | rl.Flag.ACTIVE | rl.Flag.HOLD
-        )
-
-    def test_the_captured_target_saturates_at_both_ends(self):
-        floor = dataclasses.replace(
-            self.calibration, min_speed=0, target_speed_offset=-50
-        )
-        state = self.activate(floor, dataclasses.replace(self.inputs, speed=30))
-        self.assertEqual((state.target_speed, state.speed_error), (0, 30))
-        ceiling = dataclasses.replace(
-            self.calibration, max_speed=0, target_speed_offset=60
-        )
-        state = self.activate(
-            ceiling, dataclasses.replace(self.inputs, speed=0xFFF0)
-        )
-        self.assertEqual((state.target_speed, state.speed_error), (0xFFFF, -15))
-
-    def test_proportional_fraction_spans_the_window(self):
-        for error, expected in (
-            (20, 0), (25, 0), (19, 25), (0, 500), (-19, 975), (-20, 1000),
-            (-30, 1000),
-        ):
-            with self.subTest(error=error):
-                self.assertEqual(
-                    rl.proportional_fraction(error, self.calibration),
-                    expected,
-                )
-
-    def test_the_integrator_freezes_on_a_saturated_sum_and_stays_bounded(self):
-        cal = self.calibration
-        self.assertEqual(rl.update_integrator(0, 0, 30, cal, 2), 0)
-        self.assertEqual(rl.update_integrator(0, 1000, -30, cal, 2), 0)
-        self.assertEqual(rl.update_integrator(0, 500, 5, cal, 2), -10)
-        self.assertEqual(rl.update_integrator(0, 500, -5, cal, 2), 10)
-        bounded = dataclasses.replace(cal, integrator_limit=1)
-        self.assertEqual(rl.update_integrator(15, 500, -5, bounded, 2), 16)
-        self.assertEqual(rl.update_integrator(-15, 500, 5, bounded, 2), -16)
-
-    def test_the_integrator_uses_the_gain_of_the_activation_map(self):
-        slots = tuple(
-            rl.Slot(integral_gain=index + 1) for index in range(rl.SLOT_COUNT)
-        )
-        calibration = dataclasses.replace(self.calibration, slots=slots)
-        for index in range(rl.SLOT_COUNT):
-            state = rl.RuntimeState(
-                phase=rl.Phase.ACTIVE,
-                active_index_snapshot=index,
-                target_speed=600,
-                torque_fraction=500,
-            )
-            inputs = dataclasses.replace(self.inputs, speed=605)
-            result = rl._publish_active(state, rl.Flag(0), inputs, calibration)
-            self.assertEqual(result.integrator, -5 * (index + 1))
-
-    def test_the_cut_fraction_compensates_the_trim_efficiency(self):
-        for u, e, expected in (
-            (0, 1000, 1000), (500, 1000, 500), (1000, 1000, 0),
-            (0, 824, 1000), (412, 824, 500), (824, 824, 0),
-            (900, 824, 0), (1000, 1, 0), (0, 1, 1000), (1, 3, 667),
-        ):
-            with self.subTest(u=u, e=e):
-                self.assertEqual(rl.cut_fraction(u, e), expected)
-        self.assertEqual(rl.trim_efficiency(0), rl.U_ONE)
-        self.assertEqual(rl.trim_efficiency(45), 824)
-        self.assertEqual(rl.trim_efficiency(0xFF), 3)
-        with self.assertRaises(ValueError):
-            rl.trim_efficiency(0x100)
-
-    def test_the_ignition_command_retards_to_the_floor_and_never_advances(self):
-        slot = rl.Slot(max_trim=20, floor_command=120, trim_efficiency=824)
-        slots = (rl.Slot(),) * 3 + (slot, rl.Slot())
-        calibration = dataclasses.replace(self.calibration, slots=slots)
-        hold = rl.RuntimeState(
-            phase=rl.Phase.ACTIVE,
-            active_index_snapshot=3,
-            active_mode_snapshot=rl.Mode.HOLD,
-        )
-        for stock, expected in (
-            (80, 100), (100, 120), (110, 120), (120, 120), (130, 130),
-            (0x1FF, 0xFF),
-        ):
-            with self.subTest(stock=stock):
-                self.assertEqual(
-                    rl.ignition_command(hold, stock, calibration, False),
-                    expected,
-                )
-        for state, fallback in (
-            (rl.RuntimeState(), False),
-            (dataclasses.replace(hold, active_mode_snapshot=rl.Mode.OBSERVE), False),
-            (dataclasses.replace(hold, phase=rl.Phase.COOLDOWN), False),
-            (dataclasses.replace(hold, active_index_snapshot=0), False),
-            (hold, True),
-        ):
-            with self.subTest(state=state, fallback=fallback):
-                self.assertEqual(
-                    rl.ignition_command(state, 80, calibration, fallback), 80
-                )
-
-    def test_a_schema_4_record_maps_to_uniform_slots(self):
-        head = bytearray(self.calibration.to_bytes()[: rl.LEGACY_CONFIG_SIZE])
-        head[2] = rl.LEGACY_SCHEMA_VERSION
-        head[0x16:0x18] = (3).to_bytes(2, "big")
-        calibration = rl.Calibration.from_legacy_bytes(bytes(head))
-        self.assertEqual(calibration.slots, (rl.Slot(integral_gain=3),) * rl.SLOT_COUNT)
-        self.assertEqual(calibration.reserved, 0)
-        self.assertEqual(calibration.to_bytes()[3:0x16], bytes(head[3:0x16]))
-        for corrupt in (bytes(head[:-1]), bytes(head[:2]) + b"\x05" + bytes(head[3:])):
-            with self.assertRaises(ValueError):
-                rl.Calibration.from_legacy_bytes(corrupt)
-
-    def test_harness_trim_table_matches_the_model(self):
-        rows = TRIM_ROW.findall(HARNESS.read_text(encoding="utf-8"))
-        self.assertEqual(len(rows), 11)
-        for name, values in rows:
-            (index, gain, efficiency, speed, fraction, next_integrator,
-             command, next_fraction, next_cut) = (
-                int(item, 0) for item in values.split(","))
-            with self.subTest(case=name):
-                slot = rl.Slot(
-                    integral_gain=gain,
-                    max_trim=0 if efficiency == rl.U_ONE else 20,
-                    floor_command=120,
-                    trim_efficiency=efficiency,
-                )
-                calibration = dataclasses.replace(
-                    self.calibration,
-                    window_width=40,
-                    window_top=20,
-                    slots=tuple(
-                        slot if item == index else rl.Slot()
-                        for item in range(rl.SLOT_COUNT)
-                    ),
-                )
-                self.assertTrue(calibration.is_valid())
-                state = rl.RuntimeState(
-                    phase=rl.Phase.ACTIVE,
-                    active_index_snapshot=index,
-                    active_mode_snapshot=rl.Mode.HOLD,
-                    captured_rpm_native=300,
-                    target_speed=500,
-                    torque_fraction=fraction,
-                )
-                inputs = dataclasses.replace(
-                    self.inputs, speed=speed, rpm_native=300
-                )
-                result = rl._publish_active(
-                    state, rl.Flag(0x0FFF), inputs, calibration
-                )
-                self.assertEqual(result.integrator, next_integrator)
-                self.assertEqual(result.torque_command, command)
-                self.assertEqual(result.torque_fraction, next_fraction)
-                self.assertEqual(result.cut_fraction, next_cut)
-
-    def test_harness_adapter_table_matches_the_model(self):
-        rows = ADAPTER_ROW.findall(HARNESS.read_text(encoding="utf-8"))
-        self.assertEqual(len(rows), 16)
-        slots = (rl.Slot(),) * 3 + (
-            rl.Slot(max_trim=20, floor_command=120, trim_efficiency=824),
-            rl.Slot(max_trim=20, floor_command=255, trim_efficiency=824),
-        )
-        calibration = dataclasses.replace(self.calibration, slots=slots)
-        for name, values in rows:
-            phase, mode, index, apc, stock, expected = (
-                int(item.rstrip("U"), 0) for item in values.split(","))
-            with self.subTest(case=name):
-                if index < rl.SLOT_COUNT:
-                    state = rl.RuntimeState(
-                        phase=phase,
-                        active_index_snapshot=index,
-                        active_mode_snapshot=mode,
-                    )
-                    low = rl.ignition_command(
-                        state, stock, calibration, bool(apc & 0x40)
-                    )
-                else:
-                    low = stock & 0xFF
-                # The adapter replaces r4 only with a later command.
-                self.assertEqual(
-                    expected, stock if low == stock & 0xFF else low
-                )
-
-    def test_harness_controller_table_matches_the_model(self):
-        rows = CONTROLLER_ROW.findall(HARNESS.read_text(encoding="utf-8"))
-        self.assertEqual(len(rows), 24)
-        for name, values in rows:
-            (mode, target, fraction, integrator, speed, rpm, captured, gain,
-             limit, fuel, error, next_integrator, command, next_fraction,
-             request, flags, latch, next_latch) = (
-                int(item, 0) for item in values.split(","))
-            with self.subTest(case=name):
-                calibration = dataclasses.replace(
-                    self.calibration,
-                    mode=mode,
-                    slots=(rl.Slot(integral_gain=gain),) * rl.SLOT_COUNT,
-                    integrator_limit=limit,
-                )
-                state = rl.RuntimeState(
-                    phase=rl.Phase.ACTIVE,
-                    active_mode_snapshot=mode,
-                    captured_rpm_native=captured,
-                    target_speed=target,
-                    torque_fraction=fraction,
-                    integrator=integrator,
-                    ceiling_latch=latch,
-                )
-                inputs = dataclasses.replace(
-                    self.inputs,
-                    speed=speed,
-                    rpm_native=rpm,
-                    fuel_cut_status=fuel,
-                )
-                result = rl.step(state, inputs, calibration).state
-                self.assertEqual(result.phase, rl.Phase.ACTIVE)
-                self.assertEqual(
-                    (result.speed_error, result.integrator,
-                     result.torque_command, result.torque_fraction,
-                     result.fuel_cut_request, int(result.flags),
-                     result.ceiling_latch),
-                    (error, next_integrator, command, next_fraction,
-                     request, flags, next_latch),
-                )
-
-    def test_observe_mode_never_requests_a_fuel_cut(self):
-        calibration = dataclasses.replace(
-            self.calibration, mode=rl.Mode.OBSERVE
-        )
-        state = self.activate(calibration)
-        self.assertEqual(state.phase, rl.Phase.ACTIVE)
-        self.assertFalse(state.flags & rl.Flag.HOLD)
-        high = dataclasses.replace(self.inputs, rpm_native=0xFFFF)
-        held = rl.step(
-            dataclasses.replace(state, ceiling_latch=1), high, calibration
-        ).state
-        self.assertEqual(held.phase, rl.Phase.ACTIVE)
-        self.assertEqual(held.fuel_cut_request, 0)
-        self.assertEqual(held.ceiling_latch, 0)
-        self.assertFalse(held.flags & rl.Flag.CEILING)
-
-    def test_the_ceiling_latch_cuts_above_the_ceiling_and_restores_below_the_hysteresis(self):
-        # Activation at 300 places the cut sum at 380 and the restore sum at 372.
-        state = self.activate()
-        for rpm, held in (
-            (379, False), (380, False), (381, True), (373, True),
-            (372, False), (376, False), (400, True),
-        ):
-            with self.subTest(rpm=rpm):
-                inputs = dataclasses.replace(self.inputs, rpm_native=rpm)
-                state = rl.step(state, inputs, self.calibration).state
-                self.assertEqual(state.phase, rl.Phase.ACTIVE)
-                self.assertEqual(state.ceiling_latch, int(held))
-                self.assertEqual(state.fuel_cut_request, 0x3F if held else 0)
-                self.assertEqual(bool(state.flags & rl.Flag.CEILING), held)
-                self.assertEqual(bool(state.flags & rl.Flag.FUEL_CUT), held)
-            state = dataclasses.replace(state, run_ticks=0)
-
-        released = dataclasses.replace(self.inputs, button=rl.BUTTON_RELEASED)
-        state = rl.step(state, released, self.calibration).state
-        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
-        self.assertEqual(state.fuel_cut_request, 0)
-        self.assertEqual(state.ceiling_latch, 0)
-        self.assertFalse(state.flags & rl.ACTIVE_OUTPUT_FLAGS)
-
-    def test_activation_clears_a_retained_ceiling_latch(self):
-        state = rl.step(
-            rl.RuntimeState(ceiling_latch=1), self.inputs, self.calibration
-        ).state
-        self.assertEqual(state.phase, rl.Phase.ACTIVE)
-        self.assertEqual(state.ceiling_latch, 0)
-
-    def test_every_tick_clears_a_stale_request(self):
-        cooldown = rl.RuntimeState(
-            phase=rl.Phase.COOLDOWN,
-            abort_reason=rl.AbortReason.BUTTON_RELEASED,
-            active_mode_snapshot=rl.Mode.HOLD,
-            fuel_cut_request=0x3F,
-        )
-        state = rl.step(cooldown, self.inputs, self.calibration).state
-        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
-        self.assertEqual(state.fuel_cut_request, 0)
-
-    def test_the_wrapper_ors_only_a_well_formed_request(self):
-        for stock, request, expected in (
-            (0x00, 0x0000, 0x00),
-            (0x05, 0x0000, 0x05),
-            (0x00, 0x003F, 0x3F),
-            (0x00, 0x0015, 0x15),
-            (0x0A, 0x0015, 0x1F),
-            (0x3F, 0x0001, 0x3F),
-            (0x00, 0x0040, 0x00),
-            (0x05, 0x007F, 0x05),
-            (0x05, 0x0100, 0x05),
-            (0x05, 0xFFFF, 0x05),
-        ):
-            with self.subTest(stock=stock, request=request):
-                self.assertEqual(
-                    rl.apply_fuel_cut_request(stock, request), expected
-                )
-        with self.assertRaisesRegex(ValueError, "stock cylinder mask"):
-            rl.apply_fuel_cut_request(0x100, 0)
-        with self.assertRaisesRegex(ValueError, "fuel-cut request"):
-            rl.apply_fuel_cut_request(0, 0x10000)
-
-    def test_the_fuel_cut_flag_follows_the_active_cut_bit_alone(self):
-        for status, expected in (
-            (rl.FUEL_CUT_ACTIVE_MASK, True),
-            (0xFF, True),
-            (0xFF ^ rl.FUEL_CUT_ACTIVE_MASK, False),
-            (0x00, False),
-        ):
-            with self.subTest(status=status):
-                inputs = dataclasses.replace(
-                    self.inputs, fuel_cut_status=status
-                )
-                state = self.activate(inputs=inputs)
-                self.assertEqual(state.phase, rl.Phase.ACTIVE)
-                self.assertEqual(bool(state.flags & rl.Flag.FUEL_CUT), expected)
-
-    def test_active_aborts_cover_every_reason(self):
-        active = self.activate()
-        cases = (
-            ({"button": rl.BUTTON_SET}, None, rl.AbortReason.MAP_REQUEST),
-            ({"button": rl.BUTTON_RELEASED}, None,
-             rl.AbortReason.BUTTON_RELEASED),
-            ({"button": 0x04}, None, rl.AbortReason.BUTTON_INVALID),
-            ({"active_index": 1}, None, rl.AbortReason.MAP_CHANGED),
-            ({}, {"mode": rl.Mode.OBSERVE}, rl.AbortReason.MODE_CHANGED),
-            ({}, {"magic": 0}, rl.AbortReason.CONFIG_INVALID),
-            ({"speed": 651}, None, rl.AbortReason.SPEED_ABOVE_WINDOW),
-            ({"speed": 399}, None, rl.AbortReason.SPEED_BELOW_WINDOW),
-        )
-        for inputs, calibration, reason in cases:
-            with self.subTest(reason=reason):
-                result = rl.step(
-                    active,
-                    dataclasses.replace(self.inputs, **inputs),
-                    dataclasses.replace(self.calibration, **(calibration or {})),
-                )
-                self.assertEqual(result.state.phase, rl.Phase.COOLDOWN)
-                self.assertEqual(result.state.abort_reason, reason)
-                self.assertEqual(result.limiter_action, rl.LimiterAction.NONE)
-                self.assertFalse(result.state.flags & rl.ACTIVE_OUTPUT_FLAGS)
-
-        for speed in (650, 400):
-            with self.subTest(speed=speed):
-                inputs = dataclasses.replace(self.inputs, speed=speed)
-                self.assertEqual(
-                    rl.step(active, inputs, self.calibration).state.phase,
-                    rl.Phase.ACTIVE,
-                )
-
-        state = active
-        for _ in range(self.calibration.run_timeout_ticks):
-            state = rl.step(state, self.inputs, self.calibration).state
-        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
-        self.assertEqual(state.abort_reason, rl.AbortReason.TIMEOUT)
-        self.assertFalse(state.flags & rl.Flag.TIMER_OK)
-
-    def test_active_checks_the_window_not_the_activation_range(self):
-        active = self.activate()
-        narrowed = dataclasses.replace(self.calibration, max_speed=600)
-        inputs = dataclasses.replace(self.inputs, speed=650)
-        self.assertEqual(
-            rl.step(active, inputs, narrowed).state.phase, rl.Phase.ACTIVE
-        )
-
-    def test_cooldown_requires_release_and_complete_rearm(self):
-        active = self.activate()
-        released = dataclasses.replace(
-            self.inputs, button=rl.BUTTON_RELEASED
-        )
-        state = rl.step(active, released, self.calibration).state
-
-        held = rl.step(state, self.inputs, self.calibration).state
-        self.assertEqual(held.rearm_ticks, 0)
-        state = held
-        for expected in (1, 2):
-            state = rl.step(state, released, self.calibration).state
-            self.assertEqual(state.phase, rl.Phase.COOLDOWN)
-            self.assertEqual(state.rearm_ticks, expected)
-        state = rl.step(state, released, self.calibration).state
-        self.assertEqual(state.phase, rl.Phase.IDLE)
-        self.assertEqual(state.rearm_ticks, 0)
-        self.assertEqual(state.active_mode_snapshot, rl.Mode.OBSERVE)
-
-        active_again = rl.step(state, self.inputs, self.calibration).state
-        self.assertEqual(active_again.phase, rl.Phase.ACTIVE)
-
-    def test_zero_code_does_not_advance_cooldown_rearm(self):
-        active = self.activate()
-        released = dataclasses.replace(
-            self.inputs, button=rl.BUTTON_RELEASED
-        )
-        cooldown = rl.step(active, released, self.calibration).state
-        unknown = dataclasses.replace(self.inputs, button=0x00)
-        state = rl.step(cooldown, unknown, self.calibration).state
-        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
-        self.assertEqual(state.rearm_ticks, 0)
-
-    def test_corrupt_state_restores_map_1(self):
-        for state in (
-            rl.RuntimeState(phase=9),
-            rl.RuntimeState(active_mode_snapshot=rl.Mode.HOLD),
-            rl.RuntimeState(phase=rl.Phase.ACTIVE, active_mode_snapshot=2),
-            rl.RuntimeState(phase=rl.Phase.ACTIVE, torque_fraction=1001),
-            rl.RuntimeState(phase=rl.Phase.ACTIVE, ceiling_latch=2),
-            rl.RuntimeState(phase=rl.Phase.COOLDOWN, rearm_ticks=0x8000),
-        ):
-            with self.subTest(state=state):
-                result = rl.step(state, self.inputs, self.calibration)
-                self.assertEqual(result.state.phase, rl.Phase.COOLDOWN)
-                self.assertEqual(
-                    result.state.abort_reason, rl.AbortReason.STATE_CORRUPT
-                )
-                self.assertEqual(
-                    result.limiter_action, rl.LimiterAction.RESTORE_MAP_1
-                )
-                self.assertEqual(result.limiter_index, 0)
-
-    def test_zero_minimum_pedal_disables_the_pedal_requirement(self):
-        calibration = dataclasses.replace(self.calibration, min_pedal=0)
-        inputs = dataclasses.replace(self.inputs, pedal=0)
-        state = self.activate(calibration, inputs)
-        self.assertEqual(state.phase, rl.Phase.ACTIVE)
-        self.assertTrue(state.flags & rl.Flag.PEDAL_OK)
+@pytest.fixture
+def inputs():
+    return rl.Inputs(button=rl.BUTTON_CANCEL, speed=500, rpm_native=280,
+                     pedal=100, coolant=150, hcan1_state=1,
+                     port_input_state=0x80, speed_wire_word=5000)
 
 
-class SparkCutActuatorTest(unittest.TestCase):
-    HOLD = rl.RuntimeState(
-        phase=rl.Phase.ACTIVE,
-        active_mode_snapshot=rl.Mode.HOLD,
-        torque_fraction=500,
-        cut_fraction=500,
-    )
+@pytest.fixture
+def table():
+    return rl.EfficiencyTable(tuple(1000-10*i for i in range(41)))
 
-    def reset(self):
-        return rl.spark_event(
-            rl.RuntimeState(), rl.SparkCutState(), rl.SparkEvent()
-        ).state
 
-    def run_events(self, runtime, count, cut=None, first=1, **event):
-        """Run ``count`` matches in firing order from cylinder ``first``."""
-        cut = cut or self.reset()
-        vetoes = []
-        for index in range(count):
-            cylinder = (first - 1 + index) % rl.SPARK_CYLINDER_COUNT + 1
-            result = rl.spark_event(
-                runtime, cut, rl.SparkEvent(cylinder=cylinder, **event)
-            )
-            cut = result.state
-            vetoes.append(result.vetoed)
-        return cut, vetoes
+def activate(calibration, inputs, table):
+    return rl.step(rl.RuntimeState(), inputs, calibration, table).state
 
-    def test_cut_count_and_cylinder_balance_hold_for_every_fraction(self):
-        period = 6 * rl.SPARK_CYLINDER_COUNT
-        for first in range(1, rl.SPARK_CYLINDER_COUNT + 1):
-            for u in range(rl.U_ONE + 1):
-                runtime = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE - u)
-                _cut, vetoes = self.run_events(runtime, 6 * period, first=first)
-                ideal = period * (rl.U_ONE - u) / rl.U_ONE
-                for start in range(len(vetoes) - period + 1):
-                    case = (first, u, start)
-                    count = sum(vetoes[start : start + period])
-                    self.assertLessEqual(abs(count - ideal), 3, case)
-                    if start % period:
-                        continue
-                    self.assertLessEqual(abs(count - ideal), 1, case)
-                    cylinders = [
-                        sum(
-                            vetoes[
-                                start + index : start + period : rl.SPARK_CYLINDER_COUNT
-                            ]
-                        )
-                        for index in range(rl.SPARK_CYLINDER_COUNT)
-                    ]
-                    self.assertLessEqual(max(cylinders) - min(cylinders), 1, case)
 
-    def test_timeout_forced_match_changes_nothing(self):
-        cut = rl.SparkCutState(quiet_events=7, cut_count=9)
-        event = rl.SparkEvent(spark_armed=False, veto_byte=0x41, misfire_latch=1)
-        for runtime in (rl.RuntimeState(), self.HOLD):
-            result = rl.spark_event(runtime, cut, event)
-            self.assertEqual(result, rl.SparkResult(cut, 0x41, 1))
+def test_record_offsets_have_an_independent_binary_vector(calibration):
+    data = calibration.to_bytes()
+    assert len(data) == 102
+    assert data[:8] == bytes.fromhex("524c06011f0000ff")
+    assert data[0x1C:0x1E] == b"\0\0"
+    assert data[0x23:0x28] == bytes.fromhex("00adb3a55a")
+    assert data[0x28:0x34] == bytes.fromhex("000214147800012c00320028")
+    assert data[0x64:] == bytes.fromhex("a55a")
+    assert rl.Calibration.from_bytes(data) == calibration
+    assert rl.Calibration().is_valid()
+    assert rl.Calibration().enable_mask == 0
 
-    def test_ineligible_events_leave_every_accumulator(self):
-        cut, _ = self.run_events(self.HOLD, 4)
-        for event in (
-            rl.SparkEvent(cylinder=5, synchronized=False),
-            rl.SparkEvent(cylinder=5, apc_fallback=True),
-            rl.SparkEvent(cylinder=5, dwell_degrees=rl.SPARK_DWELL_LIMIT_DEGREES + 1),
-            rl.SparkEvent(cylinder=5, dwell_degrees=0xFF),
-            rl.SparkEvent(cylinder=0),
-            rl.SparkEvent(cylinder=7),
-        ):
-            result = rl.spark_event(self.HOLD, cut, event)
-            self.assertEqual(result.state, cut)
-            self.assertFalse(result.vetoed)
-        limit = rl.SparkEvent(cylinder=5, dwell_degrees=rl.SPARK_DWELL_LIMIT_DEGREES)
-        result = rl.spark_event(self.HOLD, cut, limit)
-        self.assertNotEqual(result.state.accumulators[4], cut.accumulators[4])
-        self.assertEqual(result.state.accumulators[:4], cut.accumulators[:4])
 
-    def test_veto_sets_only_bit_7(self):
-        full = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE)
-        cut = self.reset()
-        for seed in (0x00, 0x40, 0x7F, 0x80, 0xC0):
-            result = rl.spark_event(full, cut, rl.SparkEvent(veto_byte=seed))
-            self.assertEqual(result.veto_byte, seed | 0x80)
-            self.assertEqual(result.state.cut_count, 1)
-        none = dataclasses.replace(self.HOLD, cut_fraction=0)
-        _cut, vetoes = self.run_events(none, 72)
-        self.assertFalse(any(vetoes))
+def test_asymmetric_trim_slots_preserve_word_alignment_and_reject_padding(calibration):
+    c = replace(calibration, slots=tuple(replace(slot, max_trim_rpm=40,
+                                                max_trim_speed=20) for slot in calibration.slots))
+    data = c.to_bytes()
+    assert data[0x28:0x34] == bytes.fromhex("000228147800012c00320028")
+    assert rl.Calibration.from_bytes(data) == c
+    damaged = bytearray(data)
+    damaged[0x28+5] = 1
+    assert not rl.Calibration.from_bytes(damaged).is_valid()
 
-    def test_states_outside_an_active_hold_reset_the_accumulators(self):
-        cut, _ = self.run_events(self.HOLD, 5)
-        for runtime in (
-            rl.RuntimeState(),
-            dataclasses.replace(self.HOLD, active_mode_snapshot=rl.Mode.OBSERVE),
-            dataclasses.replace(self.HOLD, phase=rl.Phase.COOLDOWN),
-            dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE + 1),
-        ):
-            result = rl.spark_event(runtime, cut, rl.SparkEvent())
-            self.assertFalse(result.vetoed)
-            self.assertEqual(result.state.accumulators, rl.SPARK_CYLINDER_OFFSETS)
-        corrupt = dataclasses.replace(cut, accumulators=(rl.SPARK_CUT_ONE,) * 6)
-        result = rl.spark_event(self.HOLD, corrupt, rl.SparkEvent(cylinder=3))
-        self.assertFalse(result.vetoed)
-        self.assertEqual(result.state.accumulators, rl.SPARK_CYLINDER_OFFSETS)
 
-    def test_leaving_active_sets_no_further_veto(self):
-        full = dataclasses.replace(self.HOLD, cut_fraction=rl.U_ONE)
-        cut, vetoes = self.run_events(full, 6)
-        self.assertTrue(all(vetoes))
-        released = dataclasses.replace(full, phase=rl.Phase.COOLDOWN)
-        _cut, vetoes = self.run_events(released, 6, cut)
-        self.assertFalse(any(vetoes))
+@pytest.mark.parametrize("size", [0, 40, 72, 92, 101, 103])
+def test_record_wrong_size_is_not_a_legacy_upgrade(size):
+    with pytest.raises(ValueError):
+        rl.Calibration.from_bytes(bytes(size))
 
-    def test_misfire_latch_is_marked_and_released_only_by_its_rules(self):
-        cut = self.reset()
-        marked = rl.spark_event(self.HOLD, cut, rl.SparkEvent())
-        self.assertEqual(marked.misfire_latch, rl.MISFIRE_MARKER)
-        stock = rl.spark_event(self.HOLD, cut, rl.SparkEvent(misfire_latch=0x32))
-        self.assertEqual(stock.misfire_latch, 0x32)
-        observe = dataclasses.replace(self.HOLD, active_mode_snapshot=rl.Mode.OBSERVE)
-        self.assertEqual(rl.spark_event(observe, cut, rl.SparkEvent()).misfire_latch, 0)
 
-        held = marked.state
-        self.assertEqual(held.quiet_events, 0)
-        for phase in (rl.Phase.COOLDOWN, rl.Phase.IDLE):
-            runtime = rl.RuntimeState(phase=phase)
-            state = held
-            for count in range(1, rl.MISFIRE_RELEASE_EVENTS + 1):
-                result = rl.spark_event(
-                    runtime, state, rl.SparkEvent(misfire_latch=rl.MISFIRE_MARKER)
-                )
-                state = result.state
-                self.assertEqual(state.quiet_events, count)
-                released = (
-                    phase == rl.Phase.IDLE and count >= rl.MISFIRE_RELEASE_EVENTS
-                )
-                self.assertEqual(result.misfire_latch, 0 if released else 1)
-        quiet = dataclasses.replace(held, quiet_events=rl.QUIET_EVENTS_MAX)
-        result = rl.spark_event(rl.RuntimeState(), quiet, rl.SparkEvent(misfire_latch=0x32))
-        self.assertEqual(result.misfire_latch, 0x32)
-        self.assertEqual(result.state.quiet_events, rl.QUIET_EVENTS_MAX)
+@pytest.mark.parametrize("name,value", [
+    ("magic", 0), ("schema_version", 5), ("mode", 2), ("enable_mask", 32),
+    ("options", 1), ("coolant_min", 256), ("coolant_max", -1),
+    ("min_speed", -1), ("max_speed", 65536), ("min_rpm_native", 0),
+    ("min_rpm_native", 32767), ("min_pedal", -1), ("window_width", 0),
+    ("window_top", 256), ("u_rate_limit", 0), ("u_rate_limit", 1001),
+    ("integrator_limit", 1001), ("reserved", 1), ("reserved_1c", 1),
+    ("reserved_1d", 1), ("reserved_23", 1), ("abort_above", 0),
+    ("abort_below", 256), ("run_timeout_ticks", 0), ("rearm_ticks", 32768),
+    ("speed_frame_age_limit", 0), ("speed_frame_age_limit", 255),
+    ("magic_inverse", 0), ("end_marker", 0), ("slot_end_marker", 0),
+    ("mode", True), ("enable_mask", False),
+])
+def test_configuration_rejects_out_of_range_fields(calibration, name, value):
+    assert not replace(calibration, **{name: value}).is_valid()
 
-if __name__ == "__main__":
-    unittest.main()
+
+def test_cross_field_bounds_are_checked_with_correct_offset_sign(calibration):
+    assert not replace(calibration, min_speed=600, max_speed=599).is_valid()
+    assert not replace(calibration, coolant_min=200, coolant_max=199).is_valid()
+    assert replace(calibration, target_speed_offset=99).is_valid()
+    assert not replace(calibration, target_speed_offset=100).is_valid()
+    assert replace(calibration, target_speed_offset=-149).is_valid()
+    assert not replace(calibration, target_speed_offset=-150).is_valid()
+
+
+@pytest.mark.parametrize("name,value", [
+    ("integral_gain", -1), ("integral_gain", 32768),
+    ("max_trim_rpm", 41), ("max_trim_speed", 41),
+    ("max_trim_rpm", -1), ("max_trim_speed", -1), ("reserved_05", 1),
+    ("floor_command", 121), ("launch_rpm_native", 160),
+    ("launch_rpm_native", 32768), ("launch_speed_threshold", 0),
+    ("launch_soft_width_native", -1), ("launch_soft_width_native", 140),
+    ("max_trim_rpm", True), ("max_trim_speed", False),
+])
+def test_every_slot_is_checked_even_when_disabled(calibration, name, value):
+    slots = list(calibration.slots)
+    slots[4] = replace(slots[4], **{name: value})
+    assert not replace(calibration, enable_mask=0, slots=tuple(slots)).is_valid()
+
+
+def test_upper_bounds_and_hard_zone(calibration):
+    slot = rl.Slot(integral_gain=32767, max_trim_rpm=40, max_trim_speed=40,
+                   floor_command=120, launch_rpm_native=32767,
+                   launch_speed_threshold=65535, launch_soft_width_native=32766-160)
+    c = replace(calibration, slots=(slot,)*5, min_speed=0, max_speed=0,
+                u_rate_limit=1000, integrator_limit=1000,
+                run_timeout_ticks=32767, rearm_ticks=32767, speed_frame_age_limit=254)
+    assert c.is_valid()
+    assert rl.Calibration.from_bytes(c.to_bytes()) == c
+    assert replace(c, slots=(replace(slot, launch_soft_width_native=0),)*5).is_valid()
+
+
+def test_efficiency_table_serialization_and_validation(table):
+    assert len(table.to_bytes()) == 82
+    assert table.to_bytes()[:6] == bytes.fromhex("03e803de03d4")
+    assert rl.EfficiencyTable.from_bytes(table.to_bytes()) == table
+    for values in [(), (999,)*41, (1000,)*40, (1000,)*40+(0,), (1000,)*40+(1001,)]:
+        assert not rl.EfficiencyTable(values).is_valid()
+        with pytest.raises(ValueError):
+            rl.EfficiencyTable(values).to_bytes()
+    with pytest.raises(ValueError):
+        rl.EfficiencyTable.from_bytes(bytes(82))
+
+
+def test_efficiency_curve_interpolation_includes_descending_floor():
+    axis = (0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45)
+    values = (1, 8, 3, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140)
+    table = rl.EfficiencyTable.from_curve(axis, values)
+    assert table.at(0) == 1000
+    assert table.at(1) == (256-3)*1000//256
+    # 8 + floor(-5/3) = 6, rather than truncation toward zero to 7.
+    assert table.at(4) == (256-6)*1000//256
+    assert table.at(40) == (256-123)*1000//256
+    with pytest.raises(ValueError):
+        rl.EfficiencyTable.from_curve((0,)*16, values)
+
+
+@pytest.mark.parametrize("width,error,expected", [
+    (0, -1, 1000), (0, 0, 0), (0, 1, 0),
+    (40, -41, 1000), (40, -40, 1000), (40, -20, 500),
+    (40, -1, 25), (40, 0, 0), (40, 1, 0),
+    (3, -2, 666), (3, -1, 333), (32767, -32768, 1000),
+])
+def test_rpm_fraction_boundaries(width, error, expected):
+    assert rl.rpm_fraction(error, width) == expected
+
+
+@pytest.mark.parametrize("speed,kind", [(0, rl.RegulatorKind.RPM),
+    (49, rl.RegulatorKind.RPM), (50, rl.RegulatorKind.SPEED), (51, rl.RegulatorKind.SPEED)])
+def test_threshold_uses_only_speed_and_equality_selects_speed(calibration, inputs, table, speed, kind):
+    c = replace(calibration, min_speed=0)
+    s = activate(c, replace(inputs, speed=speed), table)
+    assert s.phase == rl.Phase.ACTIVE
+    assert s.regulator_kind == kind
+    assert s.cut_fraction == 0 and not s.actuation_ready
+
+
+def test_speed_minimum_does_not_block_stationary_launch(calibration, inputs, table):
+    s = activate(calibration, replace(inputs, speed=0), table)
+    assert s.phase == rl.Phase.ACTIVE and s.regulator_kind == rl.RegulatorKind.RPM
+    assert s.target_rpm_native == 300 and s.control_error == -20
+    assert s.law_output == 500
+    assert (s.target_speed, s.torque_fraction, s.integrator, s.torque_command) == (0, 0, 0, 0)
+
+
+def test_mode_is_latched_when_threshold_is_crossed(calibration, inputs, table):
+    rpm_inputs = replace(inputs, speed=0)
+    rpm = activate(calibration, rpm_inputs, table)
+    rpm = rl.step(rpm, inputs, calibration, table).state
+    assert rpm.phase == rl.Phase.ACTIVE and rpm.regulator_kind == rl.RegulatorKind.RPM
+    c = replace(calibration, min_speed=0)
+    road = activate(c, replace(inputs, speed=50), table)
+    road = rl.step(road, replace(inputs, speed=0), c, table).state
+    assert road.phase == rl.Phase.ACTIVE and road.regulator_kind == rl.RegulatorKind.SPEED
+
+
+def test_mode_selects_and_latches_its_own_trim(calibration, inputs, table):
+    c = replace(calibration, min_speed=0, slots=tuple(
+        replace(slot, max_trim_rpm=40, max_trim_speed=20) for slot in calibration.slots))
+    rpm_inputs = replace(inputs, speed=0, rpm_native=280)
+    rpm = activate(c, rpm_inputs, table)
+    speed = activate(c, replace(inputs, speed=50), table)
+    assert rpm.active_max_trim == 40 and speed.active_max_trim == 20
+    rpm = rl.ignition_step(rpm, 80, c, table)
+    speed = rl.ignition_step(speed, 80, c, table)
+    assert (rpm.effective_command, rpm.applied_trim, rpm.applied_efficiency) == (120, 40, 600)
+    assert rpm.cut_fraction == 500
+    assert (speed.effective_command, speed.applied_trim, speed.applied_efficiency) == (100, 20, 800)
+    assert speed.cut_fraction == rl.cut_fraction(speed.law_output, 800)
+    # A changed speed cannot replace the latched RPM trim with the road trim.
+    rpm = rl.step(rpm, replace(rpm_inputs, speed=100), c, table).state
+    assert rpm.active_max_trim == 40 and rpm.regulator_kind == rl.RegulatorKind.RPM
+    # Selection is a value snapshot, not a later read of a different slot field.
+    edited = replace(c, slots=tuple(replace(slot, max_trim_rpm=0, max_trim_speed=0)
+                                  for slot in c.slots))
+    assert rl.ignition_step(rpm, 80, edited, table).applied_trim == 40
+
+
+def test_both_mode_trims_use_the_same_floor_and_actual_efficiency(calibration, inputs, table):
+    c = replace(calibration, slots=tuple(
+        replace(slot, max_trim_rpm=40, max_trim_speed=20) for slot in calibration.slots))
+    for speed, selected in [(0, 40), (500, 20)]:
+        state = activate(c, replace(inputs, speed=speed), table)
+        state = rl.ignition_step(state, 115, c, table)
+        assert state.active_max_trim == selected
+        assert (state.effective_command, state.applied_trim, state.applied_efficiency) == (120, 5, 950)
+
+
+def test_each_trim_can_be_disabled_independently(calibration, inputs, table):
+    for rpm_trim, speed_trim in [(0, 20), (40, 0)]:
+        c = replace(calibration, slots=tuple(
+            replace(slot, max_trim_rpm=rpm_trim, max_trim_speed=speed_trim)
+            for slot in calibration.slots))
+        rpm = rl.ignition_step(activate(c, replace(inputs, speed=0), table), 80, c, table)
+        road = rl.ignition_step(activate(c, inputs, table), 80, c, table)
+        assert rpm.applied_trim == rpm_trim
+        assert road.applied_trim == speed_trim
+
+
+def test_maps_have_independent_threshold_target_width_and_binary_slots(calibration, inputs, table):
+    slots = list(calibration.slots)
+    slots[1] = replace(slots[1], launch_rpm_native=400,
+                       launch_speed_threshold=100, launch_soft_width_native=100)
+    c = replace(calibration, min_speed=0, slots=tuple(slots))
+    assert c.to_bytes()[0x34:0x40] == bytes.fromhex("000214147800019000640064")
+    first = activate(c, replace(inputs, speed=70, rpm_native=350), table)
+    second = activate(c, replace(inputs, active_index=1, speed=70, rpm_native=350), table)
+    assert first.regulator_kind == rl.RegulatorKind.SPEED
+    assert second.regulator_kind == rl.RegulatorKind.RPM
+    assert second.target_rpm_native == 400 and second.law_output == 500
+
+
+def test_target_is_from_cancel_edge_even_if_other_gates_delay_activation(calibration, inputs, table):
+    waiting = rl.step(rl.RuntimeState(), replace(inputs, pedal=0), calibration, table).state
+    assert waiting.phase == rl.Phase.IDLE and waiting.cancel_speed_capture == 500
+    active = rl.step(waiting, replace(inputs, speed=520), calibration, table).state
+    assert active.phase == rl.Phase.ACTIVE and active.target_speed == 500
+    assert active.speed_error == 20
+    far = rl.step(waiting, replace(inputs, speed=651), calibration, table).state
+    assert far.phase == rl.Phase.IDLE and far.abort_reason == rl.AbortReason.SPEED_ABOVE_WINDOW
+
+
+@pytest.mark.parametrize("offset,error", [(99, -99), (-149, 149)])
+def test_offset_bounds_admit_the_actual_negative_initial_error(calibration, inputs, table, offset, error):
+    c = replace(calibration, target_speed_offset=offset)
+    state = activate(c, inputs, table)
+    assert state.phase == rl.Phase.ACTIVE
+    assert state.target_speed == inputs.speed+offset and state.speed_error == error
+
+
+@pytest.mark.parametrize("speed,offset,target", [(1, -149, 0), (65535, 99, 65535)])
+def test_speed_target_saturates_without_unsigned_wrap(calibration, inputs, table, speed, offset, target):
+    c = replace(calibration, min_speed=0, max_speed=0, target_speed_offset=offset,
+                slots=tuple(replace(slot, launch_speed_threshold=1) for slot in calibration.slots))
+    state = activate(c, replace(inputs, speed=speed), table)
+    assert state.phase == rl.Phase.ACTIVE and state.target_speed == target
+
+
+def test_invalid_cancel_capture_needs_a_new_press(calibration, inputs, table):
+    waiting = activate(calibration, replace(inputs, speed_wire_word=0xFFFF), table)
+    waiting = rl.step(waiting, inputs, calibration, table).state
+    assert waiting.phase == rl.Phase.IDLE
+    assert waiting.abort_reason == rl.AbortReason.CANCEL_CAPTURE_INVALID
+    released = rl.step(waiting, replace(inputs, button=rl.BUTTON_RELEASED), calibration, table).state
+    assert rl.step(released, inputs, calibration, table).state.phase == rl.Phase.ACTIVE
+
+
+@pytest.mark.parametrize("hcan,port,wire,expected", [
+    (0, 0x80, 0, False), (1, 0, 0, False), (0, 0, 0, False),
+    (1, 0x80, 0xFFFF, False), (1, 0x80, 0, True),
+    (0x81, 0xFF, 0, True), (0x80, 0x80, 0, False),
+])
+def test_real_standstill_needs_both_bits_and_a_valid_raw_word(
+        calibration, inputs, table, hcan, port, wire, expected):
+    i = replace(inputs, speed=0, speed_frame_age=0, hcan1_state=hcan,
+                port_input_state=port, speed_wire_word=wire)
+    state = activate(calibration, i, table)
+    assert (state.phase == rl.Phase.ACTIVE) == expected
+
+
+def test_age_boundary_and_running_rpm_input_failure(calibration, inputs, table):
+    i = replace(inputs, speed=0, speed_wire_word=0,
+                speed_frame_age=calibration.speed_frame_age_limit)
+    state = activate(calibration, i, table)
+    assert state.phase == rl.Phase.ACTIVE
+    state = rl.step(state, replace(i, port_input_state=0), calibration, table).state
+    assert state.phase == rl.Phase.COOLDOWN
+    assert state.abort_reason == rl.AbortReason.SPEED_SOURCE_NOT_READY
+
+
+def test_corrupt_efficiency_blocks_both_activation_and_a_running_hold(calibration, inputs, table):
+    invalid = rl.EfficiencyTable((0,)*41)
+    state = activate(calibration, inputs, invalid)
+    assert state.phase == rl.Phase.IDLE and state.abort_reason == rl.AbortReason.CONFIG_INVALID
+    active = activate(calibration, inputs, table)
+    aborted = rl.step(active, inputs, calibration, invalid).state
+    assert aborted.phase == rl.Phase.COOLDOWN and aborted.cut_fraction == 0
+
+
+def test_release_has_priority_over_other_input_failures(calibration, inputs, table):
+    active = activate(calibration, inputs, table)
+    state = rl.step(active, replace(inputs, button=rl.BUTTON_RELEASED,
+                                   port_input_state=0, pedal=0), calibration, table).state
+    assert state.abort_reason == rl.AbortReason.BUTTON_RELEASED
+
+
+def test_observe_computes_the_law_but_never_arms_cut(calibration, inputs, table):
+    c = replace(calibration, mode=rl.Mode.OBSERVE)
+    i = replace(inputs, speed=0, rpm_native=300)
+    state = activate(c, i, table)
+    state = rl.ignition_step(state, 100, c, table)
+    assert state.law_output == 0
+    assert state.effective_command == 100 and not state.actuation_ready
+    assert state.cut_fraction == 0 and not state.flags & rl.Flag.HOLD
+
+
+@pytest.mark.parametrize("changes,reason", [
+    ({"hcan1_state": 0}, rl.AbortReason.SPEED_SOURCE_NOT_READY),
+    ({"port_input_state": 0}, rl.AbortReason.SPEED_SOURCE_NOT_READY),
+    ({"speed_wire_word": 0xFFFF, "speed": 0}, rl.AbortReason.SPEED_VALUE_INVALID),
+    ({"speed_frame_age": 11}, rl.AbortReason.SPEED_FRAME_STALE),
+    ({"speed_frame_age": 255}, rl.AbortReason.SPEED_FRAME_STALE),
+    ({"rpm_native": 32768}, rl.AbortReason.RPM_INPUT_INVALID),
+    ({"rpm_native": 159}, rl.AbortReason.RPM_LOW),
+    ({"pedal": 0}, rl.AbortReason.PEDAL_LOW),
+    ({"active_index": 1}, rl.AbortReason.MAP_CHANGED),
+    ({"button": rl.BUTTON_SET}, rl.AbortReason.MAP_REQUEST),
+    ({"button": rl.BUTTON_RELEASED}, rl.AbortReason.BUTTON_RELEASED),
+    ({"button": 0}, rl.AbortReason.BUTTON_INVALID),
+])
+def test_active_abort_releases_q_without_slew(calibration, inputs, table, changes, reason):
+    state = activate(calibration, inputs, table)
+    state = rl.ignition_step(state, 100, calibration, table)
+    result = rl.step(state, replace(inputs, **changes), calibration, table).state
+    assert result.phase == rl.Phase.COOLDOWN and result.abort_reason == reason
+    assert result.cut_fraction == 0 and not result.actuation_ready
+
+
+def test_rpm_full_cut_is_immediate_after_the_command_is_applied(calibration, inputs, table):
+    i = replace(inputs, speed=0, rpm_native=300)
+    state = activate(replace(calibration, u_rate_limit=1), i, table)
+    assert state.law_output == 0 and state.cut_fraction == 0
+    state = rl.ignition_step(state, 100, calibration, table)
+    assert state.cut_fraction == 1000
+    assert state.applied_efficiency == 800
+    assert rl.actuation(rl.RegulatorKind.RPM, 500, 20, table, True) == 500
+
+
+def test_speed_hold_has_no_replacement_rpm_ceiling(calibration, inputs, table):
+    state = activate(calibration, inputs, table)
+    normal = rl.step(state, inputs, calibration, table).state
+    high = rl.step(state, replace(inputs, rpm_native=1000), calibration, table).state
+    normal = rl.ignition_step(normal, 100, calibration, table)
+    high = rl.ignition_step(high, 100, calibration, table)
+    assert normal.law_output == high.law_output
+    assert normal.cut_fraction == high.cut_fraction
+    assert high.target_rpm_native == 0 and int(high.flags) & 0xA000 == 0
+
+
+def test_clipping_republishes_efficiency_at_the_same_fixed_trim(calibration, inputs, table):
+    state = activate(calibration, inputs, table)
+    for _ in range(9):
+        state = rl.step(state, inputs, calibration, table).state
+    full = rl.ignition_step(state, 80, calibration, table)
+    clipped = rl.ignition_step(full, 115, calibration, table)
+    assert (full.effective_command, full.applied_trim, full.applied_efficiency) == (100, 20, 800)
+    assert (clipped.effective_command, clipped.applied_trim, clipped.applied_efficiency) == (120, 5, 950)
+    assert full.law_output == clipped.law_output
+    assert full.cut_fraction == 1000-1000*full.law_output//800
+    assert clipped.cut_fraction == 1000-1000*clipped.law_output//950
+    late = rl.ignition_step(clipped, 130, calibration, table)
+    assert (late.effective_command, late.applied_trim) == (130, 0)
+    fallback = rl.ignition_step(full, 80, calibration, table, apc_fallback=True)
+    assert (fallback.effective_command, fallback.cut_fraction, fallback.actuation_ready) == (80, 0, False)
+
+
+def test_road_replay_uses_selected_ki_and_signed_integrator(calibration, inputs, table):
+    slots = list(calibration.slots)
+    slots[2] = replace(slots[2], integral_gain=4)
+    c = replace(calibration, slots=tuple(slots))
+    i = replace(inputs, active_index=2)
+    state = activate(c, i, table)
+    state = rl.step(state, replace(i, speed=510), c, table).state
+    assert state.integrator == -40
+    assert state.torque_command == 247  # 250 + arithmetic(-40 >> 4)
+    assert state.torque_fraction == 900
+    assert rl.update_integrator(-1, 0, 10, c, 4) == -1
+    assert rl.update_integrator(16000, 1000, -10, c, 4) == 8000
+
+
+def test_timeout_and_rearm_use_exact_tick_boundaries(calibration, inputs, table):
+    c = replace(calibration, run_timeout_ticks=2)
+    state = activate(c, inputs, table)
+    state = rl.step(state, inputs, c, table).state
+    assert state.run_ticks == 1
+    state = rl.step(state, inputs, c, table).state
+    assert state.abort_reason == rl.AbortReason.TIMEOUT and state.phase == rl.Phase.COOLDOWN
+    released = replace(inputs, button=rl.BUTTON_RELEASED)
+    state = rl.step(state, released, c, table).state
+    state = rl.step(state, replace(released, button=0), c, table).state
+    assert state.rearm_ticks == 0
+    for _ in range(3):
+        state = rl.step(state, released, c, table).state
+    assert state.phase == rl.Phase.IDLE and state.regulator_kind == rl.RegulatorKind.NONE
+    assert state.active_max_trim == 0
+
+
+def test_corrupt_state_restores_map1_and_requests_only_extension_counter_reset(calibration, inputs, table):
+    active = activate(calibration, inputs, table)
+    for changes in [{"phase": 9}, {"regulator_kind": 0}, {"active_index_snapshot": 5},
+                    {"flags": 1 << 13}, {"cut_fraction": 1001}, {"actuation_ready": 2},
+                    {"applied_trim": 41}, {"active_max_trim": 41}, {"control_error": 99}]:
+        result = rl.step(replace(active, **changes), inputs, calibration, table)
+        assert result.limiter_action == rl.LimiterAction.RESTORE_MAP_1
+        assert result.reset_event_instrumentation
+        assert result.state.abort_reason == rl.AbortReason.STATE_CORRUPT
+        assert result.state.cut_fraction == 0
+        assert result.state.active_max_trim == 0
+
+
+def test_state_records_have_exact_reused_offsets(calibration, inputs, table):
+    state = activate(calibration, replace(inputs, speed=0), table)
+    state = rl.ignition_step(state, 115, calibration, table)
+    spark = rl.SparkCutState(quiet_events=7, cut_count=9, accumulators=(1,2,3,4,5,6),
+                             consumed_q_sum=0x12345678, eligible_event_counter=0xABCD)
+    base, ext = rl.encode_state(state, spark)
+    assert (len(base), len(ext)) == (44, 32)
+    assert base[0x14:0x16] == bytes.fromhex("012c")
+    assert base[0x18:0x1A] == bytes.fromhex("ffec")
+    assert base[0x1C:0x20] == bytes.fromhex("07091400")
+    assert rl.ENGINE_EXTRA_CLEAR_OFFSETS == (0x1E,)
+    assert ext[0x10:0x14] == bytes.fromhex("12345678")
+    assert ext[0x18:0x1A] == bytes.fromhex("abcd")
+    assert rl.decode_state(base, ext) == (state, spark)
+    damaged = bytearray(ext)
+    damaged[0x1E] ^= 1
+    with pytest.raises(ValueError):
+        rl.decode_state(base, damaged)
+    damaged_base = bytearray(base)
+    damaged_base[0x1F] = 1
+    with pytest.raises(ValueError):
+        rl.decode_state(damaged_base, ext)
+
+
+def test_no_current_fuel_control_api():
+    for cls in (rl.Slot, rl.Calibration, rl.Inputs, rl.RuntimeState):
+        assert not any("fuel" in field.name or "ceiling" in field.name for field in fields(cls))
+    assert not hasattr(rl.Flag, "FUEL_CUT") and not hasattr(rl.Flag, "CEILING")
+    assert not hasattr(rl, "apply_fuel_cut_request")
+
+
+def test_fractional_cut_balance_and_integral_for_every_q():
+    runtime = rl.RuntimeState(phase=rl.Phase.ACTIVE, active_mode_snapshot=rl.Mode.HOLD)
+    for q in range(1001):
+        for start in range(6):
+            cut = rl.SparkCutState(accumulators=rl.SPARK_CYLINDER_OFFSETS)
+            counts = [0]*6
+            for n in range(36):
+                cylinder = (start+n) % 6
+                result = rl.spark_event(replace(runtime, cut_fraction=q), cut,
+                                        rl.SparkEvent(cylinder=cylinder+1))
+                cut = result.state
+                counts[cylinder] += result.cut_requested
+            assert abs(sum(counts)-36*q/1000) <= 1
+            assert max(counts)-min(counts) <= 1
+            assert cut.consumed_q_sum == 36*q
+            assert cut.eligible_event_counter == 36
+
+
+def test_event_eligibility_and_instrumentation_wrap():
+    runtime = rl.RuntimeState(phase=rl.Phase.ACTIVE, active_mode_snapshot=rl.Mode.HOLD, cut_fraction=1000)
+    cut = rl.SparkCutState(accumulators=rl.SPARK_CYLINDER_OFFSETS,
+                           consumed_q_sum=0xFFFFFFFE, eligible_event_counter=65535, cut_count=255)
+    no = rl.spark_event(runtime, cut, rl.SparkEvent(eligible=False))
+    assert not no.cut_requested and no.state.consumed_q_sum == cut.consumed_q_sum
+    result = rl.spark_event(runtime, cut, rl.SparkEvent())
+    assert result.cut_requested and result.state.cut_count == 0
+    assert result.state.consumed_q_sum == 998 and result.state.eligible_event_counter == 0
+    quiet = rl.spark_event(rl.RuntimeState(), result.state, rl.SparkEvent())
+    assert not quiet.cut_requested and quiet.state.accumulators == rl.SPARK_CYLINDER_OFFSETS
+
+
+def test_misfire_marker_release_preserves_stock_latch():
+    runtime = rl.RuntimeState(phase=rl.Phase.ACTIVE, active_mode_snapshot=rl.Mode.HOLD)
+    result = rl.spark_event(runtime, rl.SparkCutState(), rl.SparkEvent())
+    assert result.misfire_latch == 1
+    cut = result.state
+    for _ in range(13):
+        result = rl.spark_event(rl.RuntimeState(), cut, rl.SparkEvent(misfire_latch=1))
+        cut = result.state
+        assert result.misfire_latch == 1
+    assert rl.spark_event(rl.RuntimeState(), cut, rl.SparkEvent(misfire_latch=1)).misfire_latch == 0
+    assert rl.spark_event(runtime, cut, rl.SparkEvent(misfire_latch=50)).misfire_latch == 50
+
+
+def test_dashboard_feedback_keeps_map_feedback_priority():
+    active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
+    assert rl.apply_dashboard_feedback(active, 0xB5) == 0xC5
+    assert rl.apply_dashboard_feedback(active, 0xB5, map_feedback_active=True) == 0xB5
+    assert rl.apply_dashboard_feedback(rl.RuntimeState(phase=99), 0xB5) == 0xB5

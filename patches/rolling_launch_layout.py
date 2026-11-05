@@ -25,15 +25,15 @@ from patches import rolling_launch as contract
 
 
 DEFAULT_MANIFEST = Path(__file__).with_name("rolling-launch-layout.toml")
+DEFAULT_RESERVATIONS = Path(__file__).with_name("jk08a-runtime-reservations.toml")
 # The record size of each retired configuration schema.
-RETIRED_CONFIG_SIZES = {1: 32, 2: 32, 3: 32, 4: contract.LEGACY_CONFIG_SIZE}
+RETIRED_CONFIG_SIZES = {1: 32, 2: 32, 3: 32, 4: 40, 5: 72}
 
 
 @dataclass(frozen=True)
 class SchedulerLayout:
     table_address: int
     table_index: int
-    fuel_cut_index: int
     tick_numerator: int
     pphi_hz: int
     tick_microseconds: int
@@ -44,6 +44,31 @@ class RamLayout:
     proven_free: common.AddressRange
     base_reservation: common.AddressRange
     state: common.AddressRange
+    extension: common.AddressRange
+
+    @property
+    def active_spans(self):
+        return self.state, self.extension
+
+
+@dataclass(frozen=True)
+class RestoredWord:
+    key: str
+    address: int
+    value: int
+    width: int = 4
+
+
+@dataclass(frozen=True)
+class SpeedInputs:
+    word_address: int
+    age_address: int
+    hcan1_state_address: int
+    initialized_mask: int
+    port_state_address: int
+    port_ready_mask: int
+    raw_high_address: int
+    raw_low_address: int
 
 
 @dataclass(frozen=True)
@@ -74,15 +99,20 @@ class Layout:
     claimed_rom: common.AddressRange
     claimed_rom_extensions: tuple[common.AddressRange, ...]
     configuration: common.AddressRange
+    efficiency: common.AddressRange
+    erased_rom_ranges: tuple[common.AddressRange, ...]
     retired_configurations: tuple[RetiredConfiguration, ...]
     default_configuration: bytes
     hold_actuator: bool
+    payloads_ready: bool
     scheduler: SchedulerLayout
+    speed_inputs: SpeedInputs
     ram: RamLayout
     code_regions: tuple[common.CodeRegion, ...]
     assembly_units: tuple[common.AssemblyUnit, ...]
     hooks: tuple[common.Hook, ...]
     diagnostics: tuple[Diagnostic, ...]
+    restored_words: tuple[RestoredWord, ...]
     variant: str = "canonical"
     source_texts: tuple[tuple[str, str], ...] = ()
     source_literals: tuple[
@@ -186,15 +216,21 @@ def load_layout(path=DEFAULT_MANIFEST):
             "claimed_rom_extension",
             "configuration_address",
             "configuration_size",
+            "efficiency_address",
+            "efficiency_size",
+            "erased_rom",
             "retired_configuration",
             "default_configuration",
             "hold_actuator",
+            "payloads_ready",
             "scheduler",
+            "speed_inputs",
             "ram",
             "code_region",
             "assembly_unit",
             "hook",
             "diagnostic",
+            "restored_word",
         ),
         path.name,
     )
@@ -205,7 +241,6 @@ def load_layout(path=DEFAULT_MANIFEST):
         (
             "table_address",
             "table_index",
-            "fuel_cut_index",
             "tick_numerator",
             "pphi_hz",
             "tick_microseconds",
@@ -224,6 +259,8 @@ def load_layout(path=DEFAULT_MANIFEST):
             "base_reservation_end",
             "state_start",
             "state_size",
+            "extension_start",
+            "extension_size",
         ),
         f"{path.name} [ram]",
     )
@@ -242,6 +279,11 @@ def load_layout(path=DEFAULT_MANIFEST):
             ram_raw["state_start"],
             ram_raw["state_start"] + ram_raw["state_size"],
             "ram.state",
+        ),
+        extension=common.AddressRange(
+            ram_raw["extension_start"],
+            ram_raw["extension_start"] + ram_raw["extension_size"],
+            "ram.extension",
         ),
     )
 
@@ -357,28 +399,43 @@ def load_layout(path=DEFAULT_MANIFEST):
             raw["configuration_address"] + raw["configuration_size"],
             "configuration",
         ),
+        efficiency=common.AddressRange(
+            raw["efficiency_address"],
+            raw["efficiency_address"] + raw["efficiency_size"], "efficiency",
+        ),
+        erased_rom_ranges=tuple(common.AddressRange(
+            item["start"], item["end"], f"erased_rom[{index}]")
+            for index, item in enumerate(raw["erased_rom"])),
         retired_configurations=tuple(retired_configurations),
         default_configuration=default_configuration,
         hold_actuator=raw["hold_actuator"],
+        payloads_ready=raw["payloads_ready"],
         scheduler=scheduler,
+        speed_inputs=SpeedInputs(**raw["speed_inputs"]),
         ram=ram,
         code_regions=tuple(code_regions),
         assembly_units=tuple(assembly_units),
         hooks=tuple(hooks),
         diagnostics=tuple(diagnostics),
+        restored_words=tuple(RestoredWord(**item) for item in raw["restored_word"]),
     )
     validate_structure(layout)
+    validate_reservations(layout)
     return layout
 
 
 def validate_structure(layout):
     """Validate every manifest invariant that does not need ROM bytes."""
-    if layout.schema_version != 3:
+    if layout.schema_version != 4:
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
     if not isinstance(layout.hold_actuator, bool):
         raise ValueError("hold_actuator must be a boolean")
+    if not isinstance(layout.payloads_ready, bool):
+        raise ValueError("payloads_ready must be a boolean")
+    if not layout.payloads_ready and layout.hold_actuator:
+        raise ValueError("unassembled payloads cannot declare a hold actuator")
     if (
         layout.byte_order != "big"
         or layout.variant != "canonical"
@@ -392,10 +449,10 @@ def validate_structure(layout):
     _sha256_text(
         layout.base_composition_sha256, "base_composition_sha256"
     )
-    _sha256_text(
-        layout.expected_composition_sha256,
-        "expected_composition_sha256",
-    )
+    if layout.payloads_ready:
+        _sha256_text(layout.expected_composition_sha256, "expected_composition_sha256")
+    elif layout.expected_composition_sha256 != "":
+        raise ValueError("unassembled payloads must not claim a composition digest")
     claimed_ranges = sorted(
         layout.claimed_rom_ranges,
         key=lambda item: (item.start, item.end),
@@ -410,6 +467,12 @@ def validate_structure(layout):
         raise ValueError("configuration lies outside claimed ROM")
     if layout.configuration.size != contract.CONFIG_SIZE:
         raise ValueError("configuration size differs from the runtime contract")
+    if layout.configuration.start % 2 or layout.efficiency.start % 2:
+        raise ValueError("configuration and efficiency must be word aligned")
+    if layout.efficiency.size != contract.EFFICIENCY_TABLE_SIZE:
+        raise ValueError("efficiency size differs from the runtime contract")
+    if not any(span.contains(layout.efficiency) for span in claimed_ranges):
+        raise ValueError("efficiency lies outside claimed ROM")
     schemas = [
         version
         for item in layout.retired_configurations
@@ -418,7 +481,7 @@ def validate_structure(layout):
     if sorted(schemas) != list(range(1, contract.CONFIG_SCHEMA_VERSION)):
         raise ValueError("retired configuration schemas differ")
     records = sorted(
-        layout.retired_configuration_spans + (layout.configuration,),
+        layout.retired_configuration_spans + (layout.configuration, layout.efficiency),
         key=lambda item: (item.start, item.end),
     )
     for left, right in zip(records, records[1:]):
@@ -442,7 +505,6 @@ def validate_structure(layout):
     if (
         scheduler.table_address % 4
         or scheduler.table_index < 0
-        or scheduler.fuel_cut_index <= scheduler.table_index
         or scheduler.tick_numerator != 204800
         or scheduler.pphi_hz != 20_000_000
         or scheduler.tick_microseconds
@@ -452,6 +514,11 @@ def validate_structure(layout):
         raise ValueError("periodic scheduler timing contract differs")
     if scheduler.table_address != 0x0002196C:
         raise ValueError("canonical scheduler table address differs")
+    if layout.speed_inputs != SpeedInputs(
+        0xFFFF113C, 0xFFFF3B38, 0xFFFF4195, 1,
+        0xFFFF4185, 0x80, 0xFFFF3B3D, 0xFFFF3B3E,
+    ):
+        raise ValueError("canonical speed input binding differs")
     periodic_hook = layout.hook_by_key.get("displaced_periodic_task")
     if (
         periodic_hook is not None
@@ -459,13 +526,6 @@ def validate_structure(layout):
         != scheduler.table_address + 4 * scheduler.table_index
     ):
         raise ValueError("displaced periodic task lies outside its table entry")
-    fuel_cut_hook = layout.hook_by_key.get("fuel_cut_coordinator")
-    if (
-        fuel_cut_hook is not None
-        and fuel_cut_hook.address
-        != scheduler.table_address + 4 * scheduler.fuel_cut_index
-    ):
-        raise ValueError("fuel-cut coordinator lies outside its table entry")
 
     if not layout.ram.proven_free.contains(layout.ram.base_reservation):
         raise ValueError("map-switching RAM lies outside the proven free range")
@@ -475,6 +535,13 @@ def validate_structure(layout):
         raise ValueError("Rolling Launch state overlaps map-switching RAM")
     if layout.ram.state.size != contract.STATE_SIZE:
         raise ValueError("runtime RAM sizes differ from the implementation")
+    if (not layout.ram.proven_free.contains(layout.ram.extension)
+            or layout.ram.extension.size != contract.EXTENSION_SIZE
+            or layout.ram.extension.start % 4):
+        raise ValueError("runtime extension differs from the implementation")
+    if (layout.ram.extension.overlaps(layout.ram.state)
+            or layout.ram.extension.overlaps(layout.ram.base_reservation)):
+        raise ValueError("runtime extension overlaps another state allocation")
 
     _unique(layout.code_regions, lambda item: item.key, "code region keys")
     _unique(layout.assembly_units, lambda item: item.key, "assembly unit keys")
@@ -524,11 +591,15 @@ def validate_structure(layout):
             if left.end != right.start:
                 raise ValueError(f"{unit.key}: owned regions are not contiguous")
         unit_spans.append(unit.span)
-    if owned != set(code):
+    if layout.payloads_ready and owned != set(code):
         raise ValueError("not every code region has one assembly owner")
+    pending_spans = [region.span for region in layout.code_regions if region.key not in owned]
+    for span in layout.erased_rom_ranges:
+        if not any(claimed.contains(span) for claimed in claimed_ranges):
+            raise ValueError("erased ROM lies outside claimed ROM")
     occupied_spans = sorted(
-        unit_spans
-        + [layout.configuration, *layout.retired_configuration_spans],
+        unit_spans + pending_spans + list(layout.erased_rom_ranges)
+        + [layout.configuration, layout.efficiency, *layout.retired_configuration_spans],
         key=lambda item: (item.start, item.end),
     )
     occupied_groups = []
@@ -550,7 +621,6 @@ def validate_structure(layout):
         "startup_state_clear",
         "primary_ignition_command",
         "feedback_arbitration",
-        "fuel_cut_coordinator",
         "spark_handler",
     }
     if set(layout.hook_by_key) != required_hooks:
@@ -561,7 +631,6 @@ def validate_structure(layout):
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
         "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
-        "fuel_cut_coordinator": (0x219DC, 0x4ED88, 0xD6000),
         "spark_handler": (0x202E4, 0x2AB24, 0xD60C0),
     }
     entries = {region.entry for region in layout.code_regions}
@@ -584,8 +653,7 @@ def validate_structure(layout):
     expected_views = (
         (0x1211, 0x00), (0x1212, 0x02), (0x1213, 0x04), (0x1216, 0x06),
         (0x1217, 0x08), (0x1224, 0x0A), (0x1227, 0x0C), (0x1228, 0x0E),
-        (0x1229, 0x10), (0x121D, 0x12), (0x121E, 0x14), (0x121F, 0x16),
-        (0x1231, 0x18), (0x1232, 0x1C),
+        (0x1229, 0x10), (0x121D, 0x12), (0x121F, 0x16), (0x1232, 0x1C),
     )
     if tuple(item.did for item in layout.diagnostics) != tuple(
         did for did, _offset in expected_views
@@ -613,6 +681,9 @@ def validate_structure(layout):
         for unit in layout.assembly_units
     ]
     writes.append(layout.configuration)
+    writes.append(layout.efficiency)
+    writes.extend(layout.erased_rom_ranges)
+    writes.extend(pending_spans)
     writes.extend(layout.retired_configuration_spans)
     writes.extend(common.AddressRange(
         hook.address, hook.address + hook.width, f"hook.{hook.key}"
@@ -622,14 +693,72 @@ def validate_structure(layout):
         item.pointer_address + 4,
         f"did.{item.did:04x}",
     ) for item in layout.diagnostics)
+    expected_restores = {
+        "stock_fuel_coordinator": (0x219DC, 0x4ED88),
+        "retired_request_did": (0x22914, 0xFFFFFFFF),
+        "retired_ceiling_did": (0x22960, 0xFFFFFFFF),
+    }
+    if {item.key: (item.address, item.value) for item in layout.restored_words} != expected_restores:
+        raise ValueError("restored stock words differ")
+    _unique(layout.restored_words, lambda item: item.key, "restored word keys")
+    for item in layout.restored_words:
+        if item.width != 4 or item.address % 4:
+            raise ValueError("restored word width or alignment differs")
+        writes.append(common.AddressRange(item.address, item.address + 4, item.key))
     writes.sort(key=lambda item: (item.start, item.end))
     for left, right in zip(writes, writes[1:]):
         if left.overlaps(right):
             raise ValueError(f"write ranges overlap: {left.key} and {right.key}")
 
 
+def validate_reservations(layout, path=DEFAULT_RESERVATIONS):
+    """Check the ABI against every active and future shared allocation.
+
+    This check needs no assembled image. Executable and checksum ownership
+    remain obligations of the complete cross-runtime composition gate.
+    """
+    with Path(path).open("rb") as source:
+        raw = tomllib.load(source)
+    owners = {"map_switching", "rolling_launch", "can_telemetry"}
+    if (raw["schema_version"] != 1 or raw["rom"] != layout.rom
+            or (raw["ram_proven_free_start"], raw["ram_proven_free_end"])
+            != (layout.ram.proven_free.start, layout.ram.proven_free.end)):
+        raise ValueError("shared reservation identity or proven-free RAM differs")
+    groups = {}
+    for kind in ("active_ram", "future_ram", "future_rom"):
+        rows = raw[kind]
+        if {item["owner"] for item in rows} != owners:
+            raise ValueError(f"{kind}: runtime owner set differs")
+        spans = []
+        for index, item in enumerate(rows):
+            span = common.AddressRange(item["start"], item["end"], f"{kind}[{index}]")
+            if span.size <= 0 or not item["purpose"].strip():
+                raise ValueError(f"{kind}: empty span or purpose")
+            if kind != "future_rom" and not layout.ram.proven_free.contains(span):
+                raise ValueError(f"{kind}: allocation lies outside proven-free RAM")
+            spans.append((item["owner"], span))
+        groups[kind] = spans
+    for name, spans in (
+        ("RAM", groups["active_ram"] + groups["future_ram"]),
+        ("future ROM", groups["future_rom"]),
+    ):
+        ordered = sorted(spans, key=lambda item: item[1].start)
+        for left, right in zip(ordered, ordered[1:]):
+            if left[1].overlaps(right[1]):
+                raise ValueError(f"{name}: allocations overlap")
+    active = sorted((span.start, span.end) for owner, span in groups["active_ram"]
+                    if owner == "rolling_launch")
+    if active != sorted((span.start, span.end) for span in layout.ram.active_spans):
+        raise ValueError("rolling_launch: active RAM differs from the ABI")
+    for _owner, span in groups["future_rom"]:
+        if any(span.overlaps(claimed) for claimed in layout.claimed_rom_ranges):
+            raise ValueError("future ROM overlaps the Rolling Launch write set")
+
+
 def validate_base_composition(layout, data):
     """Require the exact complete map-switching in-memory endpoint."""
+    if not layout.payloads_ready:
+        raise ValueError("schema 6 executable payloads are not assembled and qualified")
     data = bytes(data)
     actual_sha256 = hashlib.sha256(data).hexdigest()
     if actual_sha256 != layout.base_composition_sha256:
