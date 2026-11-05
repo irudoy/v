@@ -57,7 +57,9 @@ pytest = [
 [[subsystem]]
 name = "patches tests"
 paths = ["patches/tests/**"]
-pytest = ["patches/tests"]
+# Editor definitions name the refresh command, whose preflash contract names
+# patch tests. Repository projection checks consume those definitions too.
+pytest = ["patches/tests", "tools/mapkit/tests", "tools/tests"]
 
 [[subsystem]]
 name = "can_dashboard"
