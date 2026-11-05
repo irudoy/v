@@ -44,21 +44,34 @@ the registered stock image of the selected member. A built, calibrated, or
 otherwise modified image is rejected before composition, and the message names
 the calibration transfer commands.
 
-An existing complete image with expressible runtime settings upgrades in one
-invocation of the same builder:
+An existing complete image upgrades in one invocation of the same builder:
 
 ```bash
-make rom-build INPUT=tmp/in-car-profile7.bin OUTPUT=tmp/current-runtime.bin UPGRADE=1
+make rom-build INPUT=tmp/in-car-profile7.bin OUTPUT=tmp/current-runtime.bin \
+  UPGRADE=1 PROFILE=tmp/launch-profile.toml
+make rom-build INPUT=tmp/in-car-profile7.bin OUTPUT=tmp/current-runtime.bin \
+  UPGRADE=1 DISABLE_ROLLING_LAUNCH=1
 ```
 
 `UPGRADE=1` selects `--upgrade`. The builder validates the source through the
 calibration extractor, builds the current runtime from the registered stock
-image with the extracted logical settings, and applies every calibration
-element through the calibration writer. Rolling Launch settings must match;
-the command takes no `PROFILE` override and uses no `REPLACE_SETTINGS` bypass.
-Its manifest records source runtime identities, the settings match, the fresh
-runtime stage, and the calibration transfer. The output remains untested on
-hardware.
+image, and applies every calibration element through the calibration writer.
+The Rolling Launch settings of the output come from one of three sources:
+
+- without `PROFILE`, the extracted settings of a current record, which the
+  output must match;
+- `PROFILE` (`--profile`), whose Rolling Launch settings replace those of the
+  source; the profile scope must include the source ROM;
+- `DISABLE_ROLLING_LAUNCH=1` (`--disable-rolling-launch`), the built-in
+  `observe` profile with every map disabled; it requires `UPGRADE=1` and no
+  `PROFILE`.
+
+A registered historical Rolling Launch endpoint has no profile schema 4 form,
+so its upgrade requires `PROFILE` or `DISABLE_ROLLING_LAUNCH=1`. The CAN
+telemetry settings always come from the source and must match; the command
+uses no `REPLACE_SETTINGS` bypass. Its manifest records source runtime
+identities, the settings match or replacement, the fresh runtime stage, and
+the calibration transfer. The output remains untested on hardware.
 
 Every invocation validates `rom-images/roms.csv` and
 `rom-images/homology.toml`. The selected stock image must match its registered
@@ -173,32 +186,29 @@ from a fresh stock build: the stock bytes for the window and the Map 1 bytes
 for each Map 2 through Map 5 slot. No run crosses a range boundary. Its
 `[settings]` table binds configuration settings by SHA-256; it is a check,
 not a second source. CAN telemetry uses the configuration record bytes. The
-Rolling Launch binding of a current or expressible historical record is the
-current record of its settings with efficiencies derived from the registered
-stock F table, a normal form that a build of the extracted profile
-reproduces. The logical slot settings remain bound when a
-calibrated F table changes its derived efficiency; the F bytes travel as
-calibration elements. Application derives the efficiency words again after
-writing those elements and admits only those words as additional runtime
-writes. The stored efficiency is not a build-profile input.
+Rolling Launch binding is the SHA-256 of the current schema 6 record, which
+holds only logical settings. The derived efficiency table lies outside the
+record, so the binding holds when a calibrated F table changes it; the F bytes
+travel as calibration elements.
 The historical telemetry wire identity is omitted from that settings binding;
 its enabled state, CAN ID, and divisor transfer through the current profile
 format. The
 extracted profile carries the settings in the strict profile format below and
 is read back through the profile loader before it is written. A source without
-Rolling Launch settings yields the calibration file only. A historical schema 1,
-2, or 3 Rolling Launch record, which the profile schema cannot express, is
-reported with its fields; the command then writes the calibration file only
-and exits with status 3.
+Rolling Launch settings yields the calibration file only. Every registered
+historical Rolling Launch record, configuration schemas 1 through 5, has no
+profile schema 4 form: it is reported with its fields, and the command then
+writes the calibration file only and exits with status 3.
 
 `apply_calibration.py` accepts only an image that a rebuild of the registered
 stock image with the settings of its own configuration records reproduces byte
 for byte. Each configuration record that the calibration file binds must hold
 the extracted settings, so a transfer cannot fall back to the built-in profile
 unnoticed; `REPLACE_SETTINGS=1` (`--replace-settings`) replaces them
-explicitly. The command writes the calibration elements, recalculates every
+explicitly. The command writes the calibration elements, derives the Rolling
+Launch efficiency table again from F of the result, recalculates every
 checksum, requires every difference from the build to lie inside the
-calibration ranges, derived efficiency words or checksum fields, and requires
+calibration ranges, the efficiency table or checksum fields, and requires
 the output to remain an extraction input. It creates the ROM with SHA-256,
 MD5, and JSON manifest
 sidecars under the same publication rules as the builder. Its manifest binds
@@ -244,8 +254,11 @@ elements and recalculated checksums. An image with the current runtime must
 equal a build with the Rolling Launch and CAN telemetry settings of its own
 configuration records, followed by the application of its calibration
 elements. A registered historical runtime endpoint and settings that the
-profile schema cannot express are refused. The commit, CI, and test conditions
-are in the root `README.md`.
+profile schema cannot express are refused. The Rolling Launch efficiency table
+must equal the table derived from F of the image; a stale table is refused
+with the refresh command of the editor section below. A record that enables a
+map in `hold` mode is refused while the Rolling Launch layout declares no hold
+actuator. The commit, CI, and test conditions are in the root `README.md`.
 
 ## Relocated address profiles
 
@@ -498,19 +511,20 @@ range. These static results establish software ownership only; JK78C remains
 
 ## Rolling Launch profile
 
-Without `--profile`, a Rolling Launch-capable target uses the built-in
-`hold-map1-test` profile: Map 1 enabled, `hold` mode, and the controller
-defaults of the reference model. `make preflash` refuses a `hold` profile with
-an enabled map while the Rolling Launch layout declares no hold actuator. The relocated targets JK00C, JK00D, JK78C,
-1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage; they take the built-in
-`observe` profile with no enabled maps. A separate local TOML file selects the
-mode, the enabled maps, and every Rolling Launch field on a Rolling
-Launch-capable family:
+Without `--profile`, every target uses the built-in `observe` profile with
+every map disabled. It is a valid disabled record, not a hardware test
+profile. `make preflash` refuses a `hold` profile with an enabled map while
+the Rolling Launch layout declares no hold actuator. The relocated targets
+JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage, and
+their images receive no Rolling Launch bytes. A separate local TOML file of
+profile schema 4 selects the mode, the enabled maps, and every Rolling Launch
+field on a Rolling Launch-capable family. The values below show the format and
+are not recommended settings:
 
 ```toml
-schema_version = 3
+schema_version = 4
 rom = "sh7058_7mfkavn86"
-name = "hold-maps-1-3"
+name = "launch-maps-1-3"
 
 [rolling_launch]
 mode = "hold"
@@ -525,17 +539,19 @@ target_speed_offset = 0
 window_width = 40
 window_top = 20
 u_rate_limit = 50
-integral_gain = [0, 0, 4, 0, 0]
-max_trim = [0, 0, 20, 0, 0]
-floor_command = [0, 0, 120, 0, 0]
 integrator_limit = 500
 abort_above = 150
 abort_below = 100
-rpm_ceiling_offset_native = 80
-rpm_ceiling_hysteresis_native = 8
 run_timeout_ticks = 781
 rearm_ticks = 98
 speed_frame_age_limit = 10
+launch_rpm_native = [400, 400, 360, 400, 400]
+launch_speed_threshold = 30
+launch_soft_width_native = [0, 0, 16, 0, 0]
+integral_gain = [0, 0, 2, 0, 0]
+max_trim_rpm = [0, 0, 10, 0, 0]
+max_trim_speed = [0, 0, 20, 0, 0]
+floor_command = [0, 0, 120, 0, 0]
 
 [can_telemetry]
 enabled = false
@@ -552,13 +568,18 @@ make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin \
 ```
 
 The accepted mode names are `observe` and `hold`. `enabled_maps` uses one-based
-map numbers. `integral_gain`, `max_trim`, and `floor_command` are map-slot
-fields: a scalar sets all five maps, and a list of five values sets Maps 1
-through 5 in order. `max_trim` and `floor_command` are optional and default
-to 0; every other field is mandatory. Unknown fields are rejected. The
-builder writes the trim efficiency of each slot from the stock
-spark-efficiency pair, and the resulting 72-byte configuration must pass the
-independent fail-closed model.
+map numbers. `launch_rpm_native`, `launch_speed_threshold`,
+`launch_soft_width_native`, `integral_gain`, `max_trim_rpm`,
+`max_trim_speed`, and `floor_command` are map-slot fields: a scalar sets all
+five maps, and a list of five values sets Maps 1 through 5 in order.
+`max_trim_rpm`, `max_trim_speed`, and `floor_command` are optional and default
+to 0; every other field is mandatory. Unknown fields are rejected; the single
+`max_trim` field is refused as ambiguous, and the RPM-ceiling fields and
+profile schemas 1 through 3 have no automatic conversion. Every slot must
+satisfy its field contract whether or not its map is enabled, and the
+resulting 102-byte configuration must pass the independent fail-closed model.
+The builder writes the efficiency table from F of the image it builds; the
+table is not a profile field.
 `rom` may name the complete
 applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, `sh7059_1nd`, or
 `sh7059_1me3b` series, or bind the profile to one exact member. A profile for
@@ -567,20 +588,25 @@ accepts the same modes and one-based map mask as the SH7058
 VQ25HR/VQ35HR families.
 Speeds and the window and abort fields are km/h*10; `min_speed = 0` and
 `max_speed = 0` disable their side of the activation range, and
-`min_pedal = 0` disables the pedal-position activation gate. The controller
-fractions are thousandths of full torque, the timers count runtime ticks, and
-`rolling-launch.md` states the controller and the contract of every field.
+`min_pedal = 0` disables the pedal-position activation gate. RPM fields are
+native counts of 12.5 RPM, `launch_speed_threshold` is km/h*10, the trims and
+the floor are APC command counts, the controller fractions are thousandths,
+the timers count runtime ticks, and `rolling-launch.md` states the regulators
+and the contract of every field.
 Concrete profiles remain local and are not versioned.
 
 ### Editor changes to map slots
 
-RomRaider and TunerPro expose each map's integral gain, maximum retard trim in
-degrees, and timing floor in degrees ATDC. The floor display is
-`floor_command - 110`; a negative ATDC value is before TDC. The unsigned stored
-gain has the runtime's signed-positive limit of 32767. Trim is limited to
-0..40 degrees. The derived efficiency is hidden from the editors.
+RomRaider and TunerPro expose each map's launch speed threshold in km/h, the
+launch RPM and the soft width in RPM, the RPM trim and the speed-hold trim in
+degrees, the integral gain, and the timing floor in degrees ATDC. A zero soft
+width is the hard two-step. The floor display is `floor_command - 110`; a
+negative ATDC value is before TDC. The unsigned stored gain has the runtime's
+signed-positive limit of 32767. Each trim is limited to 0..40 degrees. The
+efficiency table is hidden from the editors. A map-slot edit leaves the table
+current.
 
-After editing map-slot fields or the F table, normalize the image into a new file:
+After editing the F table, normalize the image into a new file:
 
 ```bash
 uv run python patches/refresh_rolling_launch.py tmp/edited.bin \
@@ -588,21 +614,18 @@ uv run python patches/refresh_rolling_launch.py tmp/edited.bin \
 make preflash INPUT=tmp/ready.bin ROM=JK08A
 ```
 
-The command rewrites only the slot efficiency words from F of the edited image
-and the checksum fields. It rejects invalid independent settings, unknown or
+The command rewrites only the efficiency table from F of the edited image and
+the checksum fields. It rejects invalid independent settings, unknown or
 partial runtimes, illegal calibration changes, and a result that does not
 rebuild byte for byte. It never replaces the input. The image remains
 `UNTESTED`; the clean-commit, exact-commit CI and executable checks of preflash
-remain mandatory. A direct editor save with a stale efficiency is refused by
-preflash with the normalization command. The same normalization is required
-when a nonzero trim becomes zero, restoring efficiency 1000.
+remain mandatory. A direct editor save of F with a stale table is refused by
+preflash with the normalization command.
 
-An efficiency field beside the trim would require a manual coupled edit. A
-fixed list of F-table nodes would lose its relationship to a calibrated F
-table. Deriving the hidden value from the actual image keeps those pairs
-consistent without trusting the editor to compute them. Calibration extraction
-and `rom-calibrate` preserve all logical map-slot settings and rederive the
-efficiencies after F-table calibration bytes are applied.
+The efficiency table covers every retard count 0..40 of the F axis, so no
+slot field depends on it, and an editor never computes it. Calibration
+extraction and `rom-calibrate` preserve all logical map-slot settings and
+derive the table again after F-table calibration bytes are applied.
 
 Rolling Launch and CAN telemetry settings edited in a built image through an
 editor travel in the extracted profile of the calibration transfer. Application
@@ -675,7 +698,7 @@ the input; inputs under `rom-images/` require an explicit `--output`.
 
 The JSON manifest binds the stock input, Map Switching stage, Rolling Launch
 stage, both runtime configurations, CAN mailbox record, final output, checksum
-values, write-set counts, and exact instruction audit counts. Manifest schema 4
+values, write-set counts, and exact instruction audit counts. Manifest schema 5
 records both the series and exact member. Every new image is marked
 `hardware_status=UNTESTED`; software verification does not make it eligible for
 flashing without target-specific bench and vehicle gates.
@@ -685,6 +708,7 @@ absolute spellings of the same paths produce byte-identical manifests.
 
 The `input` section holds the path, SHA-256, and checksum values of the stock
 image. `output.configuration` contains the Rolling Launch and CAN telemetry
-records, their decoded settings, and the telemetry mailbox record; a target
+records, their decoded settings, the Rolling Launch efficiency table of the
+output as `efficiency_hex`, and the telemetry mailbox record; a target
 without Rolling Launch has `null` in its place. The `profile` section describes
 the selected output profile.

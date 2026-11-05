@@ -11,7 +11,9 @@ image of its ROM at HEAD:
   a rebuild from the stock image with the settings and calibration that the
   image carries reproduces it byte for byte;
 - its Rolling Launch record enables no map in hold mode while the runtime has
-  no hold actuator, the payload that consumes the torque fraction;
+  no hold actuator, the payload that withholds ignition events;
+- its Rolling Launch efficiency table equals the table derived from F of the
+  image;
 - the tracked worktree equals HEAD, and the `Verify` workflow of GitHub Actions
   has a green run of the exact HEAD commit. A running, failed, cancelled, or
   missing run refuses the image; runs of other commits do not count.
@@ -111,9 +113,9 @@ def _rebuild(stock, target, extraction):
 
 
 def require_hold_actuator(target, extraction):
-    """Refuse a hold-mode record while no payload consumes the torque fraction.
+    """Refuse a hold-mode record while no payload withholds ignition events.
 
-    Observe mode publishes no fuel-cut request, and a record that enables no map
+    Observe mode publishes the fraction q = 0, and a record that enables no map
     never activates, so both qualify.
     """
     layout = target.rolling_layout
