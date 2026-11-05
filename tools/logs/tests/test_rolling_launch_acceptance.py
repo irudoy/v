@@ -29,7 +29,7 @@ schema_version = 1
 steady_after_s = {steady}
 min_steady_s = {minimum}
 band_hz = [3.0, 7.0]
-band_min_s = 1.0
+band_min_s = 2.0
 
 [rpm]
 p5_below_soft_rpm = 100
@@ -95,6 +95,9 @@ class ThresholdFileTest(unittest.TestCase):
             "negative": (base.replace("p95_above_rpm = 200", "p95_above_rpm = -1"), ">= 0"),
             "boolean": (base.replace("rpm_spread_rpm = 200", "rpm_spread_rpm = true"), "number"),
             "band order": (base.replace("[3.0, 7.0]", "[7.0, 3.0]"), "low < high"),
+            "band segment": (
+                base.replace("band_min_s = 2.0", "band_min_s = 1.9"), r"band_min_s needs >= 2\.0"
+            ),
             "repeats": (base.replace("repeats = 3", "repeats = 0"), "integer >= 1"),
         }
         for name, (text, message) in cases.items():
@@ -243,10 +246,71 @@ class RunAcceptanceTest(unittest.TestCase):
         self.assertTrue(item.standstill)
         self.assertEqual(item.verdict, "PASS")
 
-    def test_a_speed_gap_splits_the_band_segment(self):
+    def test_the_implied_target_of_0_allows_the_sampling_offset(self):
+        # The logger speed and the published error are sampled at different
+        # instants, so single snapshots imply targets a few counts from 0;
+        # the nearest road holds of the recorded sessions imply 14..15.
+        values = thresholds(steady=0.0, minimum=1.0)
+
+        def hold(speeds, errors):
+            return [
+                snapshot(7000 + index, 3000, speed, control_error=error)
+                for index, (speed, error) in enumerate(zip(speeds, errors))
+            ]
+
+        cycle = range(120)
+        cases = {
+            "offset speed and error": (
+                hold([0.3 + 0.1 * (n % 3) for n in cycle], [1 - n % 3 for n in cycle]), True,
+            ),
+            "one offset snapshot": (hold([0.0] * 119 + [3.0], [0] * 120), True),
+            "road hold at 1.4 km/h": (
+                hold([1.4 + 0.1 * (n % 2) for n in cycle], [n % 3 - 1 for n in cycle]), False,
+            ),
+        }
+        for name, (samples, standing) in cases.items():
+            with self.subTest(name):
+                item = accept(samples, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
+                self.assertIs(item.standstill, standing)
+                self.assertNotIn(
+                    "speed checks do not apply at a standing target of 0", item.reasons
+                )
+        selected = [replace(sample, selected_target=150) for sample in cases[
+            "offset speed and error"][0]]
+        item = accept(selected, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
+        self.assertFalse(item.standstill)
+
+    def test_a_dead_logger_speed_at_a_moving_target_has_no_speed_width(self):
+        # The published error judges the hold; a logger speed of 0 km/h
+        # throughout has a width of 0 by construction.
         samples = [
-            snapshot(3000 + index, 3000, None if index == 60 else 50.0, control_error=0)
+            snapshot(8000 + index, 3000, 0.0, control_error=index % 3 - 1,
+                     selected_target=150)
             for index in range(120)
+        ]
+        item = accept(
+            samples, SPEED_SETTINGS, model.RegulatorKind.SPEED,
+            thresholds(steady=0.0, minimum=1.0),
+        )
+        self.assertTrue(item.standstill)
+        self.assertEqual(item.verdict, "n/a")
+        self.assertEqual(
+            item.reasons,
+            ("the logger speed reads 0 km/h throughout at a target other than 0",),
+        )
+        drifting = [replace(sample, control_error=8) for sample in samples]
+        item = accept(
+            drifting, SPEED_SETTINGS, model.RegulatorKind.SPEED,
+            thresholds(steady=0.0, minimum=1.0),
+        )
+        self.assertEqual(item.verdict, "FAIL")
+        self.assertTrue(item.reasons[0].startswith("mean speed error +0.80"))
+
+    def test_a_speed_gap_splits_the_band_segment(self):
+        # Two speed segments of 1.5 s; the engine speed has one of 3 s.
+        samples = [
+            snapshot(3000 + index, 3000, None if index == 150 else 50.0, control_error=0)
+            for index in range(300)
         ]
         item = accept(
             samples, SPEED_SETTINGS, model.RegulatorKind.SPEED,

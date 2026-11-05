@@ -671,7 +671,7 @@ schema_version = 1
 steady_after_s = 1.0
 min_steady_s = 1.0
 band_hz = [3.0, 7.0]
-band_min_s = 1.0
+band_min_s = 2.0
 
 [rpm]
 p5_below_soft_rpm = 100
@@ -710,10 +710,14 @@ its RMS.
   speed error, otherwise the `0x280` speed less the selected target. The
   run passes when the absolute mean error <= `mean_error_kmh`, the speed
   width <= `speed_spread_kmh`, and the engine-speed width <= `rpm_spread_rpm`.
-  At a speed target of 0, the selected target or the target that the speed
-  and the published error imply, a window at 0 km/h has a speed error and a
-  speed width of 0 by construction: the speed checks do not apply, so such
-  a run fails on the engine-speed width or reads `n/a`.
+  At a speed target of 0, a window at 0 km/h has a speed error and a speed
+  width of 0 by construction: the speed checks do not apply, so such a run
+  fails on the engine-speed width or reads `n/a`. The target is the
+  selected target, or else the median of the targets that the speed and
+  the published error of each snapshot imply, which reads 0 within
+  0.5 km/h because the two values are sampled at different instants. At
+  another target, a logger speed of 0 km/h throughout the window has no
+  speed width, so that check reads `n/a`.
 
 A missing value that a check needs makes the verdict `n/a`. A series is
 the runs of one map, regulator kind and standstill state of a capture: a
@@ -728,7 +732,7 @@ The DFT bins of a segment of N snapshots lie 1 / (N * 10.24 ms) apart, about
 side, so the band edges are soft. With `band_hz = [3.0, 7.0]` a 1 s segment
 reads about 41% of the RMS of a 3 Hz sine, 92% at 4 Hz, and still 39% at
 8 Hz; a 2 s segment reads 92% at 3.5 Hz, the full RMS from 4 to 6 Hz, and
-below 1% at 2.5 and 8 Hz. A band threshold needs `band_min_s >= 2.0`.
+below 1% at 2.5 and 8 Hz. The audit refuses a `band_min_s` below 2.0.
 
 The same reader joins raw bus evidence to the holds of an MLG recording:
 

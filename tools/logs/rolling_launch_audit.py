@@ -1074,6 +1074,9 @@ def run_regulation(samples, start, end, kind, target, classified_ticks):
 
 
 THRESHOLD_SCHEMA_VERSION = 1
+# The shortest band segment, in seconds, whose DFT bins resolve the band
+# edges; a shorter one reads much of the RMS of a component outside the band.
+BAND_MIN_SECONDS = 2.0
 THRESHOLD_KEYS = {
     "window": ("steady_after_s", "min_steady_s", "band_hz", "band_min_s"),
     "rpm": ("p5_below_soft_rpm", "p95_above_rpm", "peak_above_rpm"),
@@ -1150,6 +1153,10 @@ def load_thresholds(path: Path) -> Thresholds:
     for key, value in values.items():
         if key not in ("band_hz", "repeats"):
             values[key] = _threshold_number(value, f"{path}: {key}")
+    if values["band_min_s"] < BAND_MIN_SECONDS:
+        raise ValueError(
+            f"{path}: window.band_min_s needs >= {BAND_MIN_SECONDS:.1f} s to resolve band_hz"
+        )
     return Thresholds(**values)
 
 
@@ -1237,7 +1244,8 @@ class Acceptance:
     trim the floor command clips, and the band values are the RMS of the
     `band_hz` component of the longest contiguous segment. `standstill`
     marks a run whose speed target is 0 or that reads 0 km/h throughout;
-    at a target of 0 a window at 0 km/h has no speed check.
+    at a target of 0 a window at 0 km/h has no speed check, and at another
+    target it has no speed width check.
     `verdict` is "PASS", "FAIL", or "n/a" when the window or a value
     that a threshold needs is missing; `reasons` names each failed or
     missing check."""
@@ -1288,6 +1296,12 @@ def _floor_clipped(sample, slot, calibration, kind):
     )
 
 
+# The implied target of a standing speed hold, in counts of 0.1 km/h. The
+# logger speed and the published error are sampled at different instants,
+# so the targets that single snapshots imply spread by several counts.
+ZERO_TARGET_TOLERANCE = 5
+
+
 def _speed_error_kmh(sample, target):
     if sample.control_error is not None:
         return sample.control_error / 10
@@ -1300,21 +1314,21 @@ def _speed_error_kmh(sample, target):
 
 def _zero_speed_target(samples, start, end):
     """Whether the speed target of a run is 0: its one selected target, or
-    else the target that the speed and the published error of every
-    snapshot imply."""
+    else the median of the targets that the speed and the published error
+    of its snapshots imply, within `ZERO_TARGET_TOLERANCE`."""
     run = samples[start : end + 1]
     selected = {s.selected_target for s in run if s.selected_target is not None}
     if selected:
         return selected == {0}
-    implied = set()
+    implied = []
     for sample in run:
         error = (
             sample.control_error if sample.control_error is not None
             else sample.speed_error
         )
         if sample.speed_kmh is not None and error is not None:
-            implied.add(round(sample.speed_kmh * 10 - error))
-    return implied == {0}
+            implied.append(sample.speed_kmh * 10 - error)
+    return bool(implied) and abs(statistics.median(implied)) <= ZERO_TARGET_TOLERANCE
 
 
 def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Acceptance:
@@ -1429,6 +1443,12 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
                 ))
             if result.speed is None:
                 checks.append((None, "no speed spread"))
+            elif still:
+                # The width of a logger speed of 0 at a moving target is 0
+                # by construction.
+                checks.append((
+                    None, "the logger speed reads 0 km/h throughout at a target other than 0",
+                ))
             else:
                 checks.append((
                     result.speed.width <= thresholds.speed_spread_kmh,
