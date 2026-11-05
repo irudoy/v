@@ -12,12 +12,7 @@ def ledger():
     return reservations.load_ledger()
 
 
-def test_abi_only_ledger_checks_both_rolling_launch_state_spans(monkeypatch):
-    def no_composition():
-        pytest.fail("an ABI-only layout has no complete executable composition")
-
-    monkeypatch.setattr(reservations.can_telemetry_compose, "compose", no_composition)
-    actual = reservations.load_ledger()
+def _require_both_state_spans(actual):
     assert sorted(
         (item.span.start, item.span.end)
         for item in actual.active_ram if item.owner == "rolling_launch"
@@ -27,6 +22,34 @@ def test_abi_only_ledger_checks_both_rolling_launch_state_spans(monkeypatch):
         future_ram=tuple(reversed(actual.future_ram)),
         future_rom=tuple(reversed(actual.future_rom)),
     ))
+
+
+def test_abi_only_ledger_checks_both_rolling_launch_state_spans(monkeypatch):
+    layout = rolling_launch_layout.load_layout()
+    monkeypatch.setattr(
+        reservations.rolling_launch_layout, "load_layout",
+        lambda: replace(layout, payloads_ready=False),
+    )
+
+    def no_composition():
+        pytest.fail("an ABI-only layout has no complete executable composition")
+
+    monkeypatch.setattr(reservations.can_telemetry_compose, "compose", no_composition)
+    _require_both_state_spans(reservations.load_ledger())
+
+
+def test_ready_ledger_inspects_the_complete_composition(monkeypatch):
+    assert rolling_launch_layout.load_layout().payloads_ready
+    compose = reservations.can_telemetry_compose.compose
+    calls = []
+
+    def counted():
+        calls.append(None)
+        return compose()
+
+    monkeypatch.setattr(reservations.can_telemetry_compose, "compose", counted)
+    _require_both_state_spans(reservations.load_ledger())
+    assert calls
 
 
 @pytest.mark.parametrize("kind", ("active_ram", "future_rom", "future_ram"))
