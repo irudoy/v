@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -62,6 +63,21 @@ def synthetic_values(calibration, index):
         "iat_raw": 80 + index % 5,
         "battery_voltage_raw": 165,
     }
+    return values
+
+
+def sparse_values(calibration, index):
+    """Return a record of a recording whose channels carry no value at times.
+
+    The first records precede every frame, and the exhaust actual of bank 1
+    is a dynamic-page field that the active configuration omits until
+    record 100; the recorder writes NaN for both.
+    """
+    values = synthetic_values(calibration, index)
+    if index < 10:
+        return {name: math.nan for name in values}
+    if index < 100:
+        values["exhaust_cvtc_actual_b1_raw"] = math.nan
     return values
 
 
@@ -330,6 +346,47 @@ class MlgRelationAuditTest(unittest.TestCase):
                 for index in range(20)
             ],
         )
+
+    def test_records_without_a_value_leave_every_relation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "sparse.mlg"
+            write_synthetic_log(log, self.calibration, producer=sparse_values)
+            decoded = mlg_relation_audit.read_recording(log)
+        self.assertTrue(
+            math.isnan(decoded.columns["exhaust_cvtc_actual_b1_raw"][50])
+        )
+        result = mlg_relation_audit.audit_recording(
+            decoded, self.calibration, hold=6, target_hold=20
+        )
+
+        self.assertEqual(result["record_count"], 300)
+        self.assertEqual(result["intake_duty_b1_nonzero_pair_count"], 290)
+        self.assertEqual(
+            result["exhaust_cvtc_b2_steady_target_sample_count"], 250
+        )
+        self.assertEqual(
+            result["exhaust_cvtc_b1_steady_target_sample_count"], 180
+        )
+        self.assertEqual(result["exhaust_cvtc_b1_steady_target_within_two_share"], 1.0)
+        self.assertEqual(result["maf_chain_exact_share"], 1.0)
+        self.assertEqual(result["calculated_load_same_record_comparison_count"], 290)
+        self.assertEqual(result["calculated_load_same_record_exact_share"], 1.0)
+        self.assertEqual(result["bfs_over_producer_reference_median"], 1.0)
+        self.assertEqual(result["injection_b1_closed_loop_sample_count"], 285)
+        self.assertEqual(result["final_timing_apc_pair_count"], 290)
+        self.assertEqual(result["final_timing_apc_identity_share"], 1.0)
+        self.assertEqual(result["fuel_inhibit_mask_values"], [0, 63])
+        self.assertEqual(result["knock_state_min"], -307)
+        self.assertEqual(result["knock_state_event_step_count"], 1)
+        self.assertEqual(result["ltft_b1_values"], [0x6400])
+        self.assertEqual(result["coolant_raw_range"], [141, 141])
+
+    def test_a_channel_without_any_value_is_absent(self):
+        source = mlg_relation_audit.Recording(
+            Path("absent.mlg"), "0" * 64, (),
+            {"final_timing_raw": [math.nan] * 3, "apc_command_raw": [98.0] * 3}, 3,
+        )
+        self.assertEqual(mlg_relation_audit.audit_timing_command(source), {})
 
     def test_live_only_recording_reports_unavailable_latch_comparison(self):
         source = mlg_relation_audit.Recording(

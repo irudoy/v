@@ -351,11 +351,31 @@ def read_recording(path: Path) -> Recording:
     return Recording(path, _sha256_file(path), fields, columns, records)
 
 
-def _ints(recording_: Recording, source: str) -> list[int] | None:
+def _ints(recording_: Recording, source: str) -> list[int | None] | None:
+    """Raw integers of one channel per record, or None for an absent channel.
+
+    The recorder writes NaN into a record that carries no value of a channel,
+    such as a dynamic-page field outside the active configuration or a field
+    before its first frame. Such a record holds None, and a channel without
+    any value is absent.
+    """
     column = recording_.columns.get(source)
     if column is None:
         return None
-    return [int(round(value)) for value in column]
+    values = [
+        int(round(value)) if math.isfinite(value) else None for value in column
+    ]
+    if all(value is None for value in values):
+        return None
+    return values
+
+
+def _present(*values) -> bool:
+    return all(value is not None for value in values)
+
+
+def _values(column: list[int | None]) -> list[int]:
+    return [value for value in column if value is not None]
 
 
 def engine_speed_counts(recording_: Recording) -> list[int | None] | None:
@@ -372,15 +392,19 @@ def engine_speed_counts(recording_: Recording) -> list[int | None] | None:
     return [rpm_counts(value) for value in stock]
 
 
-def steady_mask(columns: list[list[int]], hold: int) -> list[bool]:
-    """Mark records whose listed inputs are unchanged over the previous hold records."""
+def steady_mask(columns: list[list[int | None]], hold: int) -> list[bool]:
+    """Mark records whose listed inputs are present and unchanged over the
+    previous hold records."""
     length = len(columns[0])
     mask = [False] * length
     for index in range(hold, length):
         mask[index] = all(
-            column[index - back] == column[index]
+            column[index] is not None
+            and all(
+                column[index - back] == column[index]
+                for back in range(1, hold + 1)
+            )
             for column in columns
-            for back in range(1, hold + 1)
         )
     return mask
 
@@ -428,10 +452,12 @@ def audit_duty_pairs(recording_: Recording) -> dict:
         if monitor is None or command is None:
             continue
         pairs = [
-            (m, c) for m, c in zip(monitor, command) if m > 0 and c > 0
+            (m, c)
+            for m, c in zip(monitor, command)
+            if _present(m, c) and m > 0 and c > 0
         ]
-        result[f"{prefix}_monitor_max_raw"] = max(monitor)
-        result[f"{prefix}_command_max_raw"] = max(command)
+        result[f"{prefix}_monitor_max_raw"] = max(_values(monitor))
+        result[f"{prefix}_command_max_raw"] = max(_values(command))
         result[f"{prefix}_nonzero_pair_count"] = len(pairs)
         if not pairs:
             continue
@@ -464,7 +490,9 @@ def audit_cvtc_tracking(recording_: Recording, target_hold: int) -> dict:
             if actual is None:
                 continue
             errors = [
-                a - t for a, t, keep in zip(actual, target, steady) if keep
+                a - t
+                for a, t, keep in zip(actual, target, steady)
+                if keep and a is not None
             ]
             prefix = f"{family}_cvtc_b{bank}_steady_target"
             result[f"{prefix}_sample_count"] = len(errors)
@@ -491,7 +519,7 @@ def audit_maf_chain(
     errors = []
     ratios = []
     for b1, b2, observed, keep in zip(maf_b1, maf_b2, total, steady):
-        if not keep:
+        if not keep or observed is None:
             continue
         output_a, output_b, predicted = maf_total_raw(calibration, b1, b2)
         errors.append(observed - predicted)
@@ -520,9 +548,9 @@ def audit_calculated_load(
     if bfs is None or rpm is None or load is None:
         return {}
     predicted = [
-        None
-        if r is None
-        else calculated_load_raw(b, r, calibration.calculated_load_reference)
+        calculated_load_raw(b, r, calibration.calculated_load_reference)
+        if _present(b, r)
+        else None
         for b, r in zip(bfs, rpm)
     ]
     result = {}
@@ -530,7 +558,7 @@ def audit_calculated_load(
         errors = [
             load[index] - predicted[index - lag]
             for index in range(lag, len(load))
-            if predicted[index - lag] is not None
+            if _present(load[index], predicted[index - lag])
         ]
         result[f"calculated_load_{label}_comparison_count"] = len(errors)
         if errors:
@@ -555,7 +583,7 @@ def audit_bfs_producer(
     steady = steady_mask([maf_b1, maf_b2, rpm], hold)
     ratios = []
     for b1, b2, observed, count, keep in zip(maf_b1, maf_b2, bfs, rpm, steady):
-        if not keep or count is None:
+        if not keep or observed is None:
             continue
         output_a, output_b, _total = maf_total_raw(calibration, b1, b2)
         reference = bfs_reference_raw(
@@ -590,6 +618,8 @@ def audit_injection_fit(recording_: Recording) -> dict:
         xs = []
         ys = []
         for b, a, m, s, p in zip(bfs, af_state, mask, stft, pulse):
+            if not _present(b, a, m, s, p):
+                continue
             if a != AF_STATE_NEUTRAL or m != 0 or p <= 0:
                 continue
             xs.append(b * s / STFT_NEUTRAL / 2048 * 100)
@@ -642,14 +672,22 @@ def audit_injection_chain(
         gains = []
         within_two_percent = 0
         for index in range(hold, len(bfs)):
+            window = bfs[index - hold : index + 1]
+            if not _present(
+                *window,
+                *(column[index] for column in columns.values()),
+                stft[index],
+                ltft[index],
+                pulse[index],
+                rpm[index],
+            ):
+                continue
             if (
                 columns["af_state_factor_raw"][index] != AF_STATE_NEUTRAL
                 or columns["fuel_inhibit_mask"][index] != 0
                 or pulse[index] <= 0
-                or rpm[index] is None
             ):
                 continue
-            window = bfs[index - hold : index + 1]
             if max(window) - min(window) > tolerance * window[-1]:
                 continue
             gain = common_pulse_gain_raw(
@@ -689,12 +727,11 @@ def audit_timing_command(recording_: Recording) -> dict:
     command = _ints(recording_, "apc_command_raw")
     if final is None or command is None:
         return {}
-    matches = sum(
-        1 for f, c in zip(final, command) if (APC_COMMAND_BASE - f) & 0xFF == c
-    )
+    pairs = [(f, c) for f, c in zip(final, command) if _present(f, c)]
+    matches = sum(1 for f, c in pairs if (APC_COMMAND_BASE - f) & 0xFF == c)
     return {
-        "final_timing_apc_pair_count": len(final),
-        "final_timing_apc_identity_share": _share(matches, len(final)),
+        "final_timing_apc_pair_count": len(pairs),
+        "final_timing_apc_identity_share": _share(matches, len(pairs)),
     }
 
 
@@ -702,7 +739,7 @@ def audit_states(recording_: Recording) -> dict:
     result = {}
     mask = _ints(recording_, "fuel_inhibit_mask")
     if mask is not None:
-        counts = Counter(mask)
+        counts = Counter(_values(mask))
         result["fuel_inhibit_mask_values"] = sorted(counts)
         result["fuel_inhibit_full_mask_sample_count"] = counts.get(0x3F, 0)
     state = _ints(recording_, "knock_timing_state_raw")
@@ -710,9 +747,10 @@ def audit_states(recording_: Recording) -> dict:
         steps = Counter(
             state[index] - state[index - 1]
             for index in range(1, len(state))
-            if state[index] != state[index - 1]
+            if _present(state[index], state[index - 1])
+            and state[index] != state[index - 1]
         )
-        result["knock_state_min"] = min(state)
+        result["knock_state_min"] = min(_values(state))
         result["knock_state_event_step_count"] = steps.get(KNOCK_EVENT_STEP, 0)
         result["knock_state_recovery_step_count"] = steps.get(
             KNOCK_RECOVERY_STEP, 0
@@ -726,7 +764,7 @@ def audit_states(recording_: Recording) -> dict:
     for bank in (1, 2):
         ltft = _ints(recording_, f"ltft_b{bank}_raw")
         if ltft is not None:
-            result[f"ltft_b{bank}_values"] = sorted(set(ltft))
+            result[f"ltft_b{bank}_values"] = sorted(set(_values(ltft)))
     for source, key in (
         ("coolant_raw", "coolant_raw_range"),
         ("iat_raw", "iat_raw_range"),
@@ -735,10 +773,10 @@ def audit_states(recording_: Recording) -> dict:
         ("transmission_reduction_state_raw", "transmission_reduction_state_raw_range"),
         ("torque_transition_state_raw", "torque_transition_state_raw_range"),
     ):
-        column = [int(round(value)) for value in recording_.columns.get(source, ())
-                  if math.isfinite(value)]
-        if column:
-            result[key] = [min(column), max(column)]
+        column = _ints(recording_, source)
+        if column is not None:
+            values = _values(column)
+            result[key] = [min(values), max(values)]
     return result
 
 
