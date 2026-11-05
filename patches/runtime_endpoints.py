@@ -969,7 +969,14 @@ def require_coherent_rolling_endpoint(
     dids_stock = all(
         did_values[item.did] == item.stock for item in layout.diagnostics
     )
-    if claimed_erased and hooks_stock and dids_stock:
+    # The stock words that the removed fuel path replaced hold their stock
+    # values in the absent and the current state alike.
+    words_restored = all(
+        read_integer(source, item.address, item.width, layout.byte_order)
+        == item.value
+        for item in layout.restored_words
+    )
+    if claimed_erased and hooks_stock and dids_stock and words_restored:
         return "absent"
 
     hooks_current = all(
@@ -980,7 +987,7 @@ def require_coherent_rolling_endpoint(
     )
     if hooks_current and dids_current:
         # The current runtime keeps its retired records and removed code
-        # erased and restores the stock words of the removed fuel path.
+        # erased.
         current_units = all(
             unit_bytes[unit.key] == payloads[unit.key]
             for unit in layout.assembly_units
@@ -989,11 +996,7 @@ def require_coherent_rolling_endpoint(
             for span in (
                 *layout.retired_configuration_spans, *layout.erased_rom_ranges
             )
-        ) and all(
-            read_integer(source, item.address, item.width, layout.byte_order)
-            == item.value
-            for item in layout.restored_words
-        )
+        ) and words_restored
         try:
             current_configuration = rolling_launch.Calibration.from_bytes(
                 configuration

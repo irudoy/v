@@ -11,6 +11,7 @@ from patches import calibration_ranges
 from patches import can_telemetry
 from patches import can_telemetry_history
 from patches import extract_calibration
+from patches import map_switching_compose
 from patches import rom_checksums
 from patches import runtime_endpoints
 from patches import runtime_targets
@@ -24,6 +25,14 @@ FLASHED_ENDPOINTS = ("schema-4-uniform-gain", "schema-5-fixed-trim")
 FUEL_PATH_UNITS = frozenset({"fuel_cut_wrapper", "rpm_ceiling"})
 FUEL_PATH_HOOKS = frozenset({"fuel_cut_coordinator"})
 FUEL_PATH_DIDS = frozenset({0x121E, 0x1231})
+# The fuel-path values of the flashed endpoints at the restored stock words:
+# scheduler entry 28 at the fuel-cut wrapper, and the request and ceiling DID
+# pointers.
+FUEL_PATH_WORDS = (
+    (0x000219DC, 0x000D6000),
+    (0x00022914, 0xFFFF5D54),
+    (0x00022960, 0xFFFF5D58),
+)
 
 
 @lru_cache(maxsize=None)
@@ -61,6 +70,45 @@ def test_signature_keys_are_unique_and_name_supported_roms():
 def test_a_relocated_rom_has_no_rolling_launch_endpoint(rom):
     assert target(rom).rolling_layout is None
     assert not runtime_endpoints.historical_endpoints(rom)
+
+
+@lru_cache(maxsize=None)
+def map_only_image():
+    """The JK08A stock image with the current Map Switching runtime alone."""
+    current = target("JK08A")
+    return map_switching_compose.compose(
+        layout=current.map_layout,
+        image=current.stock_image,
+        blobs=current.map_payloads,
+    ).data
+
+
+def absent_state(source):
+    """Classify the Rolling Launch layer of ``source``; the absent state reads
+    no payload bytes, so empty payloads of the layout units serve it."""
+    layout = target("JK08A").rolling_layout
+    payloads = {unit.key: b"" for unit in layout.assembly_units}
+    return runtime_endpoints.require_coherent_rolling_endpoint(
+        source, layout, payloads, "map only", "JK08A"
+    )
+
+
+def test_map_only_image_has_an_absent_rolling_layer():
+    assert {address for address, _ in FUEL_PATH_WORDS} == {
+        item.address for item in target("JK08A").rolling_layout.restored_words
+    }
+    assert absent_state(map_only_image()) == "absent"
+
+
+@pytest.mark.parametrize("address,value", FUEL_PATH_WORDS)
+def test_absent_rolling_layer_refuses_each_leftover_fuel_path_word(address, value):
+    data = bytearray(map_only_image())
+    data[address : address + 4] = value.to_bytes(4, "big")
+    with pytest.raises(
+        runtime_endpoints.EndpointError,
+        match="partial or unknown Rolling Launch state",
+    ):
+        absent_state(bytes(data))
 
 
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
