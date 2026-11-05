@@ -21,17 +21,20 @@
 //   +0x10 u32 consumed q sum, wrapping
 //   +0x18 u16 eligible arming counter, wrapping
 //
-// In an ACTIVE hold with the cut fraction q <= 1000 at state +0x1A, an arming
-// is eligible with the sync bit 0xFFFF8501.bit7, without the P0335 APC
+// Quiet-event and latch service precede admission. Outside ACTIVE HOLD, or
+// with q > 1000 at state +0x1A, all six accumulators reset before the
+// admission checks. In ACTIVE HOLD with an in-range q, an arming is eligible
+// with the sync bit 0xFFFF8501.bit7, without the P0335 APC
 // fallback 0xFFFF24C9.bit6, when the stock check would enable it
 // (0xFFFF84EA.bit7 and 0xFFFF4185.bit7 set, 0xFFFF13D2 zero, 0xFFFF8511.bit7
 // clear), and when 0xFFFF13D1 holds one cylinder bit of 0x01..0x20. An
-// ineligible arming leaves every accumulator and counter unchanged. An
+// admission failure leaves the accumulators and cut-accounting counters
+// unchanged. An
 // eligible arming reads q once, adds 6 * q to the accumulator of the armed
 // cylinder, adds q to the consumed q sum and counts the arming; a sum of 6000
 // subtracts 6000, sets the dwell-start veto 0xFFFF8511.bit7 and counts the
 // cut. These writes run in one section with interrupts masked. Outside an
-// ACTIVE hold, and for an out-of-range accumulator, the accumulators return
+// ACTIVE hold, for q > 1000, and for an out-of-range accumulator, they return
 // to offsets that differ by exact sixths in firing order. During an ACTIVE
 // hold the misfire-monitor latch 0xFFFF436F receives the marker 0x01 when it
 // is zero; in IDLE after 14 quiet events it is cleared while it holds 0x01.
