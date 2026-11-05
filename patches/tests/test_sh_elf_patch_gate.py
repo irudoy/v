@@ -27,6 +27,7 @@ def consumers(driver):
 def pipeline(driver, monkeypatch, tmp_path):
     events = []
     monkeypatch.setattr(driver, 'require_toolchain_version', lambda: ('simulator', 'gcc'))
+    monkeypatch.setattr(driver, 'verify_simulator_memory', lambda: None)
     monkeypatch.setattr(driver, 'verify_simulator_irq', lambda: None)
     monkeypatch.setattr(driver.layout_model, 'load_layout', lambda: SimpleNamespace(assembly_units=()))
     monkeypatch.setattr(driver.assembly_model, 'validate_assembly_sources', lambda layout: {})
@@ -66,7 +67,8 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
     execution = importlib.import_module('execution_report')
     assert [(row['start']['kind'], row['start']['name'])
             for row in execution.read(report, require_complete=True)] == [
-        ('pipeline', 'toolchain'), ('pipeline', 'simulator_irq'),
+        ('pipeline', 'toolchain'), ('pipeline', 'simulator_memory'),
+        ('pipeline', 'simulator_irq'),
         ('pipeline', 'reconstruction_fixture'),
         ('pipeline', 'map_switching'), ('pipeline', 'delay_slot_probe'),
         ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
@@ -85,7 +87,7 @@ def test_exact_rom_scope_runs_the_native_stages_only(pipeline, capsys):
     driver, events = pipeline
     assert driver.main(['--rom', 'JK03B']) == 0
     report = capsys.readouterr().out
-    assert _stages(report) == ['toolchain', 'simulator_irq', 'reconstruction_fixture', 'map_switching',
+    assert _stages(report) == ['toolchain', 'simulator_memory', 'simulator_irq', 'reconstruction_fixture', 'map_switching',
                                'delay_slot_probe', 'rolling_launch', 'can_telemetry']
     assert 'verify_runtime_targets' not in events
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK03B ' in report
@@ -103,7 +105,7 @@ def test_relocated_rom_scope_runs_its_target_only(pipeline, monkeypatch, capsys)
     monkeypatch.setattr(sys.modules['verify_runtime_targets'], 'verify', runtime)
     assert driver.main(['--rom', 'JK00D']) == 0
     report = capsys.readouterr().out
-    assert _stages(report) == ['toolchain', 'simulator_irq', 'delay_slot_probe', 'relocated_runtime_targets']
+    assert _stages(report) == ['toolchain', 'simulator_memory', 'simulator_irq', 'delay_slot_probe', 'relocated_runtime_targets']
     assert events == [] and requested == [('JK00D',)]
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK00D ' in report
     assert 'runtime_targets=1 runtime_target_cases=31' in report
@@ -119,6 +121,33 @@ def test_unknown_rom_scope_is_refused_before_execution(pipeline, monkeypatch):
         driver.main(['--rom', 'JK99Z'])
     assert error.value.code == 2
     assert events == []
+
+
+def test_simulator_memory_wrapper_preserves_the_probe_failure(driver, monkeypatch):
+    def fail():
+        raise RuntimeError('controlled memory probe failure')
+
+    monkeypatch.setitem(sys.modules, 'verify_simulator_memory', SimpleNamespace(verify=fail))
+    with pytest.raises(driver.VerificationError, match='simulator memory gate failed') as error:
+        driver.verify_simulator_memory()
+    assert isinstance(error.value.__cause__, RuntimeError)
+
+
+def test_failed_simulator_memory_probe_prevents_patch_execution(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+
+    def fail():
+        raise driver.VerificationError('controlled simulator memory failure')
+
+    monkeypatch.setattr(driver, 'verify_simulator_memory', fail)
+    assert driver.main([]) == 1
+    assert events == []
+    report = capsys.readouterr().out
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in report
+    execution = importlib.import_module('execution_report')
+    rows = execution.read(report)
+    assert rows[-1]['start']['name'] == 'simulator_memory'
+    assert rows[-1]['finish']['status'] == 'failed'
 
 
 def test_irq_probe_environment_is_disabled_by_default(driver, monkeypatch):

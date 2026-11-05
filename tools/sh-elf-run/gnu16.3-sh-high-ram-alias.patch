@@ -1,0 +1,126 @@
+--- a/sim/sh/interp.c
++++ b/sim/sh/interp.c
+@@ -732,8 +732,56 @@
++
++/* Optional host-only alias of SH on-chip data addresses.  An unset
++   VQ_SH_HIGH_RAM_BASE preserves the original special-address behavior.
++   The enabled 64 KiB window is ordinary flat storage, not a peripheral model.
++   Instruction addresses and the target instruction stream are unchanged.  */
++static int vq_high_ram_checked;
++static unsigned int vq_high_ram_base;
++
++static int
++vq_high_ram_alias (int addr, unsigned int alignment, unsigned int *alias)
++{
++  unsigned int address = (unsigned int) addr;
++  if (!vq_high_ram_checked)
++    {
++      int saved_errno = errno;
++      const char *value = getenv ("VQ_SH_HIGH_RAM_BASE");
++      vq_high_ram_checked = 1;
++      if (value != NULL)
++        {
++          char *end;
++          unsigned long base;
++          errno = 0;
++          base = strtoul (value, &end, 0);
++          if (*value < '0' || *value > '9' || *end != 0 || errno != 0
++              || base == 0 || (base & 0xffffUL) != 0
++              || saved_state.asregs.msize < 0x10000
++              || base > (unsigned long) saved_state.asregs.msize - 0x10000UL)
++            {
++              fprintf (stderr, "VQ_SH_HIGH_RAM error=invalid_base\n");
++              _Exit (125);
++            }
++          vq_high_ram_base = (unsigned int) base;
++        }
++      errno = saved_errno;
++    }
++  if (vq_high_ram_base == 0 || (address >> 16) != 0xffff
++      || (address & alignment) != 0)
++    return 0;
++  *alias = vq_high_ram_base + (address & 0xffff);
++  return 1;
++}
++
+ static void
+ process_wlat_addr (int addr, int value)
+ {
+   unsigned int *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 3, &alias))
++    {
++      *(unsigned int *) (saved_state.asregs.memory + alias) = value;
++      return;
++    }
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, 32, 3, value, );
+   *ptr = value;
+ }
+@@ -742,7 +790,13 @@
+ process_wwat_addr (int addr, int value)
+ {
+   unsigned short *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 1, &alias))
++    {
++      *(unsigned short *) (saved_state.asregs.memory + (alias ^ global_endianw)) = value;
++      return;
++    }
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, 16, 1, value, );
+   *ptr = value;
+ }
+@@ -751,7 +805,13 @@
+ process_wbat_addr (int addr, int value)
+ {
+   unsigned char *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 0, &alias))
++    {
++      saved_state.asregs.memory[alias ^ endianb] = value;
++      return;
++    }
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, 8, 0, value, );
+   *ptr = value;
+ }
+@@ -760,7 +820,10 @@
+ process_rlat_addr (int addr)
+ {
+   unsigned char *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 3, &alias))
++    return *(unsigned int *) (saved_state.asregs.memory + alias);
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, -32, 3, -1, 0);
+   return *ptr;
+ }
+@@ -769,7 +832,10 @@
+ process_rwat_addr (int addr)
+ {
+   unsigned char *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 1, &alias))
++    return *(unsigned short *) (saved_state.asregs.memory + (alias ^ global_endianw));
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, -16, 1, -1, 0);
+   return *ptr;
+ }
+@@ -778,7 +844,10 @@
+ process_rbat_addr (int addr)
+ {
+   unsigned char *ptr;
+-
++  unsigned int alias;
++
++  if (vq_high_ram_alias (addr, 0, &alias))
++    return saved_state.asregs.memory[alias ^ endianb];
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, -8, 0, -1, 0);
+   return *ptr;
+ }

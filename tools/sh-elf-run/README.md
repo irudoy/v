@@ -440,6 +440,24 @@ declared simulator-only RAM translations and stock-function stubs. The
 translations leave instructions and control-flow addresses under test unchanged.
 Harness storage is separate from ROM, target RAM and observation windows.
 
+`gnu16.3-sh-high-ram-alias.patch` supplies an optional host-side data-memory
+alias for exact stock instruction paths whose operands lie in
+`0xFFFF0000..0xFFFFFFFF`. With `VQ_SH_HIGH_RAM_BASE=0x01000000`, an aligned
+access uses flat storage at `0x01000000 + (address & 0xFFFF)`. The base must
+be nonzero, aligned to 64 KiB, and leave the complete window inside the
+simulator's allocated flat memory. An invalid setting refuses execution.
+An unset variable retains the original special-address behavior. Unaligned
+accesses retain their bus error, and instruction addresses and instruction
+bytes are unchanged. Mapped peripheral registers are ordinary fixture memory;
+the alias does not supply peripheral behavior or interrupt scheduling.
+
+The `simulator_memory` stage executes the alias probes before any patch gate.
+It checks the disabled default for each access width and direction, enabled
+byte/word/long access and target byte order, sign extension, both window
+boundaries, invalid bases, unaligned accesses and an address outside the window.
+The enabled setting is confined to the probe subprocesses; other gates retain
+the unset default unless their own fixture explicitly declares the alias.
+
 ## Optional SH-2E interrupt injection
 
 `gnu16.3-sh-irq-injection.patch` adds a one-shot maskable CPU interrupt request to the

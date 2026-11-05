@@ -48,6 +48,7 @@ RUN apt-get update \
 ADD --checksum=sha256:bcfcd095528a987917acf9fff3f1672181694926cc18d609c99d0042c00224c5 \
     https://ftp.gnu.org/gnu/gdb/gdb-16.3.tar.xz /tmp/gdb.tar.xz
 COPY gnu16.3-sh-pc-observer.patch /tmp/observer.patch
+COPY gnu16.3-sh-high-ram-alias.patch /tmp/high-ram-alias.patch
 COPY gnu16.3-sh-irq-injection.patch /tmp/irq-injection.patch
 
 RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
@@ -60,9 +61,13 @@ RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
         '99f809d2a5c710a7d3fe3f97aa19ed92c8ad00bf5ed0a153384457e7a5fa3a42' \
         | sha256sum -c - \
+    && patch --batch --fuzz=0 -p1 < /tmp/high-ram-alias.patch \
+    && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
+        '5cd8826649b59d5c5fca460679502ece9e3803164f4375ccad5119e709ab34fb' \
+        | sha256sum -c - \
     && patch --batch --fuzz=0 -p1 < /tmp/irq-injection.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
-        'c78dfc0b0ee91341d588893df83fd8ea1a9628660fefd20767ff078cef0f2beb' \
+        'a4dd6cd5f64df278333b5be64deb6550aba4c4d743d6a363a40362e5e0e6cc18' \
         | sha256sum -c - \
     && cd /opt/build \
     && /opt/src/gdb-16.3/configure \

@@ -1087,6 +1087,14 @@ def require_toolchain_version():
     return first_line, gcc
 
 
+def verify_simulator_memory():
+    import verify_simulator_memory as simulator_memory
+    try:
+        simulator_memory.verify()
+    except Exception as error:
+        raise VerificationError(f'simulator memory gate failed: {error}') from error
+
+
 def verify_simulator_irq():
     import verify_simulator_irq as simulator_irq
     try:
@@ -1113,6 +1121,8 @@ def verify(verbose=False, rom=None):
     )
     with stage('toolchain'):
         simulator, gcc_version = require_toolchain_version()
+    with stage('simulator_memory'):
+        verify_simulator_memory()
     with stage('simulator_irq'):
         verify_simulator_irq()
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-run-") as directory:
