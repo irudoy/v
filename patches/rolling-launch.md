@@ -1,15 +1,17 @@
 # Rolling Launch runtime
 
 Rolling Launch is an optional runtime layered on the complete five-slot
-Map Switching composition. While CANCEL is held it captures vehicle speed as
-the hold target and runs a speed-hold controller that publishes a torque
-fraction `u`. Hold mode withholds the dwell of a fraction `1 - u` of the
-eligible ignition events through a wrapper of the `GR11A` spark handler. It
-also latches an all-cylinder fuel-cut request above the captured engine speed
-plus a ceiling offset and releases it below a hysteresis, and a wrapper of the
-stock fuel-output inhibit coordinator merges the request into the final
-cylinder mask. It runs
-on the exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated
+Map Switching composition. While CANCEL is held it limits engine torque with
+the ignition alone: in hold mode it withholds the dwell of a fraction `q` of
+the eligible ignition events through a wrapper of the `GR11A` spark handler
+and retards the fired events by a fixed trim of the active map. The vehicle
+speed at activation selects one of two regulators against the speed threshold
+of the active map. Below the threshold an RPM regulator cuts engine speed at
+the launch engine speed of the map; at or above it a SPEED regulator holds the
+vehicle speed captured when CANCEL is pressed. The runtime writes no fuel-cut
+request: the stock fuel-output inhibit coordinator, the stock fuel-cut
+conditions, and the stock engine-speed limiter of the image act unchanged. It
+runs on the exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated
 targets JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch
 runtime.
 
@@ -21,20 +23,24 @@ The authoritative implementation sources are:
   model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The canonical JK08A runtime is software-verified. In hold mode the spark-cut
-actuator under "Speed-hold cut actuator" consumes the torque fraction, and the
-RPM ceiling request remains the hard limit. The vehicle evidence of the hold,
-the spark cut included, is under "Vehicle evidence of the hold".
+The current runtime is configuration schema 6. Its layout declares no hold
+actuator (`hold_actuator = false`) until the veto delivery of the spark-cut
+actuator, open in issue #150, has executable qualification; `make preflash`
+refuses an image that enables a map in hold mode while that field is false.
+No schema 6 image has vehicle evidence.
 
-The target-vehicle evidence below comes from exact local combined images of
-the registered historical endpoint `schema-3-fuel-shadow-hold`, which held RPM
-through the fuel-cut shadow of the selected map. It qualifies button decoding,
-dashboard states, repeated rearm, and the full software fuel-inhibit mask. The
-vehicle-speed capture, the controller, the coordinator wrapper, the ceiling
-request, and the spark cut are outside that endpoint; their vehicle evidence
-is under "Vehicle evidence of the hold". Physical spark timing and electrical
-injector output remain unmeasured. Concrete profiles, derived images, and
-active tune identities remain local and unversioned.
+The target-vehicle evidence below comes from exact local images of registered
+historical endpoints, whose units, records, and fuel paths
+`runtime_endpoints.py` binds by their own addresses. The endpoint
+`schema-3-fuel-shadow-hold` held RPM through the fuel-cut shadow of the
+selected map; its sessions qualify button decoding, dashboard states, repeated
+rearm, and the full software fuel-inhibit mask. The endpoint
+`schema-4-uniform-gain` held vehicle speed with the spark cut, an RPM ceiling,
+and a fuel-cut wrapper; its session under "Vehicle evidence of the hold"
+establishes the combustion loss of vetoed events. These results belong to
+their endpoints and do not qualify the schema 6 regulators. Physical spark
+timing and electrical injector output remain unmeasured. Concrete profiles,
+derived images, and active tune identities remain local and unversioned.
 
 ## Functional model
 
@@ -44,13 +50,14 @@ The runtime has three phases:
 IDLE -> ACTIVE -> COOLDOWN -> IDLE
 ```
 
-`IDLE` evaluates activation gates. Activation captures the selected map, the
-configured mode, native RPM, and the target speed, and starts the controller
-from full torque with an empty integrator. `ACTIVE` runs the controller on
-every tick that passes its gates and owns the fuel-cut request of hold mode.
-Any abort releases the request and enters `COOLDOWN`. `COOLDOWN` requires the
-released button code `0x20` for the configured rearm period before returning
-to `IDLE`.
+`IDLE` evaluates activation gates and captures the vehicle speed on the
+accepted CANCEL edge. Activation captures the selected map, the configured
+mode, and native RPM, selects the regulator kind, and latches the target and
+the trim of that kind for the map. `ACTIVE` runs the regulator on every tick
+that passes its gates. Any abort publishes `q = 0` and enters `COOLDOWN`.
+`COOLDOWN` keeps the regulator kind and the trim and requires the released
+button code `0x20` for the configured rearm period before returning to
+`IDLE`, which clears both.
 
 Button codes follow the target vehicle's debounced ASCD representation:
 
@@ -62,39 +69,51 @@ Button codes follow the target vehicle's debounced ASCD representation:
 | `0x00` | invalid, fail closed |
 
 The runtime never treats zero as a release. Invalid phase, snapshot, timer,
-torque-fraction, or configuration state restores Map 1 through the limiter
-commit path, clears the runtime state, and enters a safe cooldown.
+regulator, actuation, or configuration state restores Map 1 through the
+limiter commit path, clears the engine part of the state record and the state
+extension, and enters a safe cooldown. The spark-cut counters and accumulators
+keep their own reset.
 
 ## Activation gates
 
 Activation requires every gate to pass in this order:
 
-1. The 72-byte configuration record and its five map slots are
-   structurally valid.
+1. The 102-byte configuration record, its five map slots, and the efficiency
+   table are structurally valid.
 2. The active map index is within Maps 1 through 5.
 3. Rolling Launch is enabled for the active map.
 4. Selector phase, count, and elapsed time are idle.
 5. Visual-feedback pulse, phase, tick, and reserved fields are idle.
 6. The MAIN switch bit of the stock ASCD flag byte is clear.
 7. The stable button is CANCEL.
-8. The receive age of the vehicle-speed frame is within the configured limit.
-9. Vehicle speed lies inside the configured activation range; a zero bound
-   disables its side of the range.
-10. Engine speed meets the configured minimum.
-11. Pedal position meets the configured minimum; zero disables this gate.
-12. Coolant temperature is inside the configured range.
-13. Run and rearm timers are valid.
+8. The vehicle-speed source is ready: `0xFFFF4195` bit 0 and `0xFFFF4185`
+   bit 7 are set.
+9. The raw vehicle-speed word is not the invalid wire value `0xFFFF`.
+10. The receive age of the vehicle-speed frame is within the configured limit.
+11. The speed captured on the CANCEL edge is valid.
+12. For the SPEED regulator, vehicle speed lies inside the configured
+    activation range; a zero bound disables its side of the range. The RPM
+    regulator applies no speed range.
+13. Engine speed is a native value of at most 32767.
+14. Engine speed meets the configured minimum.
+15. Pedal position meets the configured minimum; zero disables this gate.
+16. Coolant temperature is inside the configured range.
+17. Run and rearm timers are valid.
 
-The first failed gate is recorded as the abort reason. `ACTIVE` evaluates the
-same gates on every tick, except that gate 9 becomes the speed-error window:
-the vehicle speed minus the captured target must stay within the configured
-distances above and below the target. Map or mode changes while active abort
-the run before any gate reason. Timeout, CANCEL release, an invalid button, a
-stale speed frame, a speed outside the window, or SET also abort. SET records
-a map-request abort so map selection can begin after rearm.
+The first failed gate is recorded as the abort reason. A SPEED activation is
+also refused while the speed error of the target already lies outside the
+abort window. `ACTIVE` evaluates the same gates on every tick, except that
+gate 12 of the SPEED regulator becomes the speed-error window: the vehicle
+speed minus the target must stay within the configured distances above and
+below the target. Map or mode changes while active abort the run before any
+gate reason. Timeout, CANCEL release, an invalid button, a speed input that is
+not ready, invalid, or stale, a speed outside the window, or SET also abort
+either regulator. SET records a map-request abort so map selection can begin
+after rearm, and a release records `BUTTON_RELEASED` in place of the gate
+reason that it causes.
 
 Vehicle speed is the word `0xFFFF113C` in km/h*10, which the stock receive
-handler of CAN frame `0x284` publishes (`../defs/JK08A.can.md`). Gate 8 reads
+handler of CAN frame `0x284` publishes (`../defs/JK08A.can.md`). Gate 10 reads
 the stock receive age `0xFFFF3B38` of that record. `FUN_000C3994` advances the
 age on every pass of the pending-task table `0x00021834`, which runs every
 10.24 ms like the Rolling Launch tick, and a pass that processes a new frame
@@ -104,10 +123,20 @@ stays at 0 to 2. One count is 10.24 ms, and the default limit of 10 tolerates
 aborts a run with `SPEED_FRAME_STALE`.
 
 The age stays at zero while `0xFFFF4185` bit 7 is clear and advances only
-while `0xFFFF4195` bit 0 is set. Outside those CAN states a lost frame leaves
-the age below the limit and `0xFFFF113C` at its last value, so only the run
-timeout and the CANCEL release end the hold. The vehicle check that this age
-follows frame `0x284` alongside the speed word is open (issue #103).
+while `0xFFFF4195` bit 0 is set, so gate 8 requires both bits before the age
+counts. The decoded speed word carries no validity flag: the stock decoder
+stores zero for the invalid wire word `0xFFFF`. Gate 9 therefore reads the raw
+word through its two unaligned bytes `0xFFFF3B3D` and `0xFFFF3B3E`; a raw zero
+with a ready source and an admissible age is a valid standstill. The vehicle
+check that this age follows frame `0x284` alongside the speed word is open
+(issue #103).
+
+In `IDLE`, the edge of the stable button code `0xFFFF2A85` from another code to
+CANCEL stores the current vehicle speed as the CANCEL capture when the
+configuration is valid and gates 8 to 10 pass; otherwise the capture is
+invalid until the next press. The capture is that of the stable code, not of
+the raw frame `0x239`, and any code other than CANCEL clears it. A press in
+`COOLDOWN` does not capture, so a capture never bypasses the rearm period.
 
 On JK08A, gate 6 follows the MAIN switch itself: the MAIN switch bit is set
 only while MAIN is pressed. The MAIN state that each press toggles,
@@ -125,6 +154,25 @@ Cruise Control Switch of their definitions selects ICC Switch (5 Buttons)
 While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents
 both runtimes from modifying shared state during one gesture.
+
+## Regulator selection
+
+Activation compares the vehicle speed with `launch_speed_threshold` of the
+active map: a lower speed selects the RPM regulator, an equal or higher speed
+the SPEED regulator. The kind holds for the whole run; crossing the threshold
+while `ACTIVE` neither changes it nor ends the run. Transmission and brake
+states are not inputs.
+
+| Kind | Target | Trim | Law output |
+| --- | --- | --- | --- |
+| RPM | `launch_rpm_native` of the map | `max_trim_rpm` of the map | firing fraction `p` |
+| SPEED | `clamp(capture + target_speed_offset, 0, 0xFFFF)` | `max_trim_speed` of the map | torque fraction `u` |
+
+The SPEED target takes the CANCEL capture even when the gates admit the
+activation on a later tick, so the offset applies once to the speed of the
+press. The captured RPM remains a diagnostic value of both kinds. The trim of
+the selected kind is copied into the state at activation, and the run uses
+that copy.
 
 ## Scheduler timebase
 
@@ -350,7 +398,8 @@ crankshaft and electrical injector output remain outside the measurement.
 
 ### Vehicle evidence of the hold
 
-`hardware-results.toml` records the 2026-11-03 session of the v2 hold image
+`hardware-results.toml` records the 2026-11-03 session of the v2 hold image,
+the historical endpoint `schema-4-uniform-gain`,
 on Map 3 under `rolling_launch.v2_hold_vehicle_2026_11_03`: stationary holds
 in neutral and moving holds in second and third gear, each capture with a
 dashboard recording and a TRC. Every hold passes the hold audit: the published
@@ -422,26 +471,55 @@ remain outside the measurement.
 
 ## Modes
 
-| Mode | Torque fraction | Ignition events | Fuel cut |
-| --- | --- | --- | --- |
-| `observe` | computed and published | unchanged | unchanged |
-| `hold` | computed and published | dwell of a fraction `q` of eligible events withheld; fired events carry the trim of the map slot | all-cylinder request latched above the RPM ceiling |
+| Mode | Regulator | Ignition events |
+| --- | --- | --- |
+| `observe` | computed and published; `q = 0` | unchanged |
+| `hold` | computed and published; `q` from the law output and the applied trim | dwell of a fraction `q` of eligible events withheld; fired events carry the trim of the run up to the floor |
 
-## Speed-hold controller
+Neither mode writes a fuel-cut request, the fuel-cut shadow of a map, or the
+final fuel-inhibit mask. Periodic scheduler entry 28 at `0x000219DC` holds the
+stock fuel-output inhibit coordinator `0x0004ED88`
+(`../defs/JK08A.fuel-inhibit.md`).
 
-Activation captures the vehicle speed and native RPM of the activation tick:
+Fractions are thousandths. On the activation tick and on every `ACTIVE` tick
+that passes its gates and the run timer, the regulator of the run computes its
+law output; the actuation under "Ignition command and actuation" turns it into
+`q`.
+
+## RPM regulator
+
+The RPM regulator compares native engine speed with the launch engine speed
+`Nt` of the map, in native counts of 12.5 RPM, and computes the firing
+fraction `p` with the soft width `W = launch_soft_width_native`:
 
 ```text
-target = clamp(speed + target_offset, 0, 0xFFFF)
+error = rpm - Nt
+p = 0                        if error >= 0
+p = 1000                     if error < 0 and (W = 0 or error <= -W)
+p = (-error * 1000) // W     otherwise
 ```
 
-Speeds are km/h*10. The torque fraction `u`, the command, and the cut
-fraction `q` are thousandths; the integrator holds sixteenths of one
-thousandth. Activation sets `u = 1000`, `q = 0`, and empties the
-integrator. `integral_gain`, `max_trim` (`z`), and `trim_efficiency`
-(`eff`) belong to the slot of the map snapshot of the activation. On the
-activation tick and on every `ACTIVE` tick that passes its gates and the
-run timer, the controller computes:
+`W = 0` is a hard two-step boundary: every eligible event fires below `Nt`
+and every one is cut at or above it. A positive `W` cuts a fraction that rises
+linearly from zero at `Nt - W` to all events at `Nt`; the engine speed settles
+inside that zone. The products are 32-bit, and only a positive numerator is
+divided by a nonzero width. The regulator has no integrator and no rate limit,
+so the first tick at `Nt` requests a full cut, and the trim efficiency does
+not enter `q = 1000 - p`. The configuration contract keeps
+`min_rpm_native < Nt - W`, so the zone lies above the minimum engine speed of
+gate 14. The stock engine-speed limiter of the image remains the overspeed
+protection, and a profile chooses `Nt` below it.
+
+The state record publishes the target and the error of the run, and the
+extension publishes `p` as the law output. The SPEED fields of the record hold
+zero during an RPM run.
+
+## SPEED regulator
+
+Speeds are km/h*10. The torque fraction `u` and the command are thousandths;
+the integrator holds sixteenths of one thousandth. Activation sets `u = 1000`
+and empties the integrator. `integral_gain` belongs to the slot of the map
+snapshot of the activation. Each tick computes:
 
 ```text
 e = speed - target
@@ -452,111 +530,105 @@ step = 0 if (u_p + I // 16 <= 0 and step < 0)
 I = clamp(I + step, -16 * integrator_limit, 16 * integrator_limit)
 command = clamp(u_p + I // 16, 0, 1000)
 u = clamp(command, u - rate_limit, u + rate_limit)
-q = 1000 - min(1000, 1000 * u // eff)
 ```
 
 The proportional fraction is full torque while `e <= window_top - window_width`,
-zero while `e >= window_top`, and linear between. The integrator falls
-while the speed is above the target, rises while it is below, and freezes
-while its step would deepen a saturated sum. The stock unsigned divider
-`0x00021CE0` forms both quotients. The state record publishes `e`, `I`, the
-command, `u`, and `q`. The controller runs only on ticks whose speed error
-lies inside the abort window `-abort_below <= e <= abort_above`.
+zero while `e >= window_top`, and linear between; the edges are decided before
+the division, so only a positive numerator is divided. `I // 16` rounds toward
+negative infinity. The integrator falls while the speed is above the target,
+rises while it is below, and freezes while its step would deepen a saturated
+sum. The controller runs only on ticks whose speed error lies inside the abort
+window `-abort_below <= e <= abort_above`. The state record publishes `e`,
+`I`, the command, and `u`, which is also the law output; the RPM fields of the
+record hold zero during a SPEED run.
 
-The fired events of a trimmed slot deliver the fraction `eff` of their
-torque, so the cut fraction compensates: the delivered torque
-`(1 - q) * eff` equals `u` while `u <= eff`, and every event fires at
-`u >= eff`. A slot without trim stores `eff = 1000`, and `q = 1000 - u`.
-The builder derives `eff` from the stock spark-efficiency pair
-`0x00011D24`/`0x0001199E`:
+## Efficiency table
+
+The fired events of a trimmed run deliver a fraction of their torque. The
+builder derives the efficiency table `E[0..40]`, 41 words at `0x000D6390`
+beside the configuration record, from the stock spark-efficiency pair
+`0x00011D24`/`0x0001199E` of the image:
 
 ```text
-eff = (256 - F(z)) * 1000 // 256
+E[0] = 1000
+E[z] = (256 - F(z)) * 1000 // 256        z = 1..40
 ```
 
-`F` interpolates the 16-point table linearly with a truncated result
-(`F(20) = 45`, `eff = 824`). `make preflash` refuses an image whose stored
-efficiency differs from the pair in that image and names the command that
-rederives the hidden value after editor changes:
+`F` interpolates the 16-point table linearly with a truncated result on
+rising and falling segments (`F(20) = 45`, `E[20] = 824`); its axis starts at
+0, rises strictly, and reaches 40. Both regulators share the table. The
+runtime requires `E[0] = 1000` and `1 <= E[z] <= 1000`; gate 1 refuses any
+other table.
+
+The table is neither calibration nor a profile setting. Every build writes it
+from F of the image, a calibration transfer derives it again after writing the
+F-table bytes, and the extracted settings exclude it. A slot edit leaves it
+current; an edit of F or its axis makes it stale. `make preflash` refuses an
+image whose stored table differs from F of that image and names the command
+that derives the table again:
 
 ```bash
 uv run python patches/refresh_rolling_launch.py tmp/edited.bin \
   --output tmp/ready.bin
 ```
 
-The command changes only the efficiency words and checksums, then requires a
-byte-identical stock rebuild with the image's calibration. Independent invalid
-settings and unknown or partial runtimes are refused. `make preflash` still
-requires a clean commit, its green Verify run and executable qualification.
-The efficiency stays hidden in the editors: a manual paired field can diverge
-from the trim, and a fixed list of F nodes becomes stale when F is calibrated.
-Deriving it from the actual image avoids both inconsistencies. Calibration
-transfer derives the words after applying the F-table bytes as well.
+The command accepts only an image with a valid current schema 6 record. It
+changes only the table and the checksums, then requires a byte-identical stock
+rebuild with the image's calibration. Invalid settings, historical records, and
+unknown or partial runtimes are refused. `make preflash` still requires a clean
+commit, its green Verify run, and executable qualification. The table stays
+hidden in the editors: a manual table can diverge from F, and deriving it
+from the actual image keeps both consistent.
 
-## Fuel-cut request
-
-In `hold`, every `ACTIVE` tick that runs the controller evaluates the RPM
-ceiling latch at state offset `+0x18`:
-
-```text
-cut     = captured_rpm + ceiling_offset
-restore = cut - ceiling_hysteresis
-latch   = 1 if rpm > cut
-          else latch and rpm > restore
-```
-
-The tick publishes the request `0x003F` in the state record while the latch is
-set, so the cut starts strictly above the ceiling and ends at or below the
-restore point. Both sums are formed in 32 bits, so a high captured RPM never
-wraps below either threshold. Every engine entry clears the request first, so
-only such a tick publishes it. Activation and every abort clear the latch, and
-an abort releases the request in the tick that detects the abort. `observe`
-clears the latch and never publishes a request. No mode writes the fuel-cut
-shadow of the selected map.
-
-The speed controller calls the leaf unit at `0x000D6068`, which evaluates the
-latch and adds the hold, ceiling, and fuel-cut flags to the published flags.
-
-Periodic scheduler entry 28 at `0x000219DC` calls the fuel-cut wrapper in
-place of the stock six-channel fuel-output inhibit coordinator `0x0004ED88`
-(`../defs/JK08A.fuel-inhibit.md`). The wrapper runs the coordinator first, so
-every stock contribution remains, then ORs a request of `0x0001..0x003F`
-into the final cylinder mask at `0xFFFF22E0` and returns the coordinator's
-`r0`. Zero and any request with a bit outside the six cylinder bits leave the
-stock mask unchanged. Entry 1 runs the engine before entry 28, so the mask
-carries the request of the same scheduler pass, and an abort releases the cut
-in the pass that detects it. An interrupt-context reader of the mask can
-observe the stock result between the coordinator store and the merge.
-
-## Primary ignition command
+## Ignition command and actuation
 
 The adapter at the primary ignition-command hook `0x0004E198` applies the
-retard trim of the map slot and tail-jumps to the stock consumer
-`0x0002A892`:
+trim `z` of the run to the last stock command `S`:
 
 ```text
-command = max(stock, min(stock + z, floor_command))
+P = max(S, min(S + z, floor_command))
+a = P - S
 ```
 
 The APC command counts retard, and the timing is `110 - command` degrees,
-so `floor_command` 120 limits the trim to 10 degrees ATDC. The adapter
+so the largest floor, 120, limits the trim to 10 degrees ATDC. The adapter
 keeps the stock command outside an `ACTIVE` hold, while the P0335 APC
 fallback `0xFFFF24C9.bit6` is set, and for a map snapshot outside Maps 1
-through 5; it never advances the timing. It changes `r0..r4` only, and
-every other argument register reaches the stock consumer unchanged.
+through 5; it never advances the timing. One effective command `P` reaches
+the stock primary consumer `0x0002A892` and `apc_output` `0xFFFF2022`, which
+the secondary builder `0x0004E080` and the diagnostics read, so the dwell
+start and the spark of an event follow the same command.
 
-The stored efficiency assumes the full trim. When the floor clips the
-trim (`stock + z > floor_command`), the applied retard is smaller than `z`,
-the fired events deliver more than `eff`, and the cut withholds more events
-than the delivered torque needs. The speed loop absorbs the difference, and
-the hold audit reports the clipped ticks of every run.
+The cut fraction uses the efficiency of the applied trim `a`, not of `z`:
 
-## Speed-hold cut actuator
+```text
+q = 0                                       outside an ACTIVE hold or before ready
+q = 1000 - p                                RPM
+q = 1000 - min(1000, 1000 * u // E[a])      SPEED
+```
 
-In hold mode a wrapper of the `GR11A` spark handler consumes the torque
-fraction: it withholds the dwell of selected ignition events. The
-fuel-inhibit mask through the coordinator wrapper remains the hard limit and
-the abort path. The runtime runs on the `7mfk` layout; the other
+When the floor clips the trim (`S + z > floor_command`), `a` is smaller than
+`z` and `E[a]` larger, so the SPEED cut follows the torque that the fired
+events deliver: `(1 - q) * E[a]` equals `u` while `u <= E[a]`, and every
+event fires at `u >= E[a]`. A run without trim has `a = 0`, `E[0] = 1000`,
+and `q = 1000 - u`.
+
+The adapter publishes `S`, `P`, `a`, and `E[a]`, marks the actuation ready for
+the current `ACTIVE` hold, and recalculates `q` from the current law output;
+the regulator recalculates `q` from a new law output with the last applied
+`a`. Activation clears the ready mark, so `q` stays zero until the adapter
+applies the first command of the run, and the P0335 fallback clears it again. An abort
+publishes `q = 0` in the tick that detects it; the stock command returns at
+the next call of the adapter.
+
+## Spark-cut actuator
+
+In hold mode a wrapper of the `GR11A` spark handler consumes the cut fraction
+`q` of either regulator: it withholds the dwell of selected ignition events.
+The delivery of the veto to the dwell of a selected event, the eligibility of
+an event, and the point at which the actuator consumes `q` are open in issue
+#150; the subsections below describe the stock veto and the cut point of the
+spark-cut endpoints. The runtime runs on the `7mfk` layout; the other
 layouts receive it after its vehicle acceptance on `7mfk`. The stock
 mechanisms are described in `../defs/JK08A.ignition-output.md`, the misfire
 readiness gate in `../defs/JK08A.diagnostics.md`, the inhibit history in
@@ -670,9 +742,15 @@ no veto and resets the accumulators. At most one carried-over event follows:
 the successor dwell vetoed at the preceding spark, because `0x0002AF38` is the
 only writer of `0xFFFF8511` and the runtime never clears it.
 
-`u = 0` cuts every eligible event. The run timeout bounds every hold (default
-781 ticks, 7.997 s), and the rearm period separates holds (default 98 ticks,
-1.004 s).
+Each eligible event reads `q` once. It uses that value for its cut decision,
+adds it to the wrapping 32-bit sum `consumed_q_sum`, and increments the
+wrapping 16-bit `eligible_event_counter` of the state extension. The sum
+integrates the cut fraction that the events consumed, including trim changes
+between snapshots, so the hold audit compares the cut counter with it.
+
+`q = 1000` cuts every eligible event. The run timeout bounds every hold
+(default 781 ticks, 7.997 s), and the rearm period separates holds (default
+98 ticks, 1.004 s).
 
 ### Ignition output hardware
 
@@ -710,8 +788,8 @@ the vehicle has held engine speed with it. As a hold actuator it has full
 authority and keeps every cylinder firing at its normal mixture, so the
 misfire monitor and the exhaust see no cut. The actual-torque word follows the
 reduced airflow, and the release waits for the plates to open and the manifold
-to fill; plate response time is unmeasured. The v2 design excludes throttle
-control.
+to fill; plate response time is unmeasured. Rolling Launch does not use
+throttle control.
 
 The transmission reduction request of frame `0x177` reaches the timing path
 only: `0xFFFF3373` -> `0xFFFF1866` -> `0xFFFF1870` -> `0x00065270` ->
@@ -751,7 +829,7 @@ near idle to 3.0 ms at 6000 RPM. Electrical timing at the coil terminals is
 outside that measurement. The periodic snapshot cannot express a per-event
 cut. The dynamic field `ignition_dwell_angle_raw` carries this meaning.
 
-The fuel-inhibit mask is not the speed-hold actuator. With single-channel
+The fuel-inhibit mask is not a Rolling Launch actuator. With single-channel
 injection events, a change of a partial mask acts on each channel at its next
 event, with no carry-over through the history `0xFFFF1935`. Start pulses and
 catch-up events that address several channels are all-or-nothing. No stock
@@ -782,67 +860,73 @@ interrupts masked, so neither interleaves with the stock writer.
 
 ## Configuration
 
-The strict 72-byte schema-5 record has a 40-byte head and five 6-byte map
-slots at `+0x28`. The head contains:
+The strict 102-byte schema-6 record at `0x000D6320` has a 40-byte head and
+five 12-byte map slots at `+0x28`. The head contains:
 
 | Field | Contract |
 | --- | --- |
-| magic, inverse, end marker | fixed integrity sentinels |
-| schema | version 5 |
+| magic, inverse, head marker | fixed integrity sentinels |
+| schema | version 6 |
 | mode | observe or hold |
 | enable mask | one bit per map, unused bits clear |
 | options | zero |
 | coolant minimum/maximum | ordered byte range |
-| minimum/maximum speed | km/h*10 words; zero disables that side; two nonzero bounds are ordered |
-| minimum RPM | nonzero native value |
+| minimum/maximum speed | km/h*10 words of the SPEED activation range; zero disables that side; two nonzero bounds are ordered |
+| minimum RPM | native value, 1..32766 |
 | minimum pedal | native value; zero disables the gate |
-| target offset | signed km/h*10, strictly inside both abort distances |
+| target offset | signed km/h*10, `-abort_above < offset < abort_below` |
 | window width | nonzero byte, km/h*10 |
 | window top | byte, km/h*10 |
 | rate limit | 1..1000 thousandths per tick |
 | reserved word `+0x16` | zero |
 | integrator limit | 0..1000 thousandths |
 | abort above/below | nonzero bytes, km/h*10 |
-| RPM ceiling offset | nonzero native value |
+| reserved bytes `+0x1C`, `+0x1D`, `+0x23` | zero |
 | run timeout and rearm | 1..0x7FFF ticks |
 | speed-frame age limit | 1..254 counts of the stock receive age |
-| RPM ceiling hysteresis | byte at `+0x23`, 1..255 native, at most the ceiling offset |
 
-Slot `n` at `+0x28 + 6 * n` belongs to Map `n + 1`, and the end marker
-`0xA55A` follows the last slot at `+0x46`:
+Slot `n` at `+0x28 + 12 * n` belongs to Map `n + 1`, and the end marker
+`0xA55A` follows the last slot at `+0x64`:
 
-| Slot field | Contract |
-| --- | --- |
-| integral gain | signed word, 0..0x7FFF |
-| max trim | byte, 0..40 APC command counts |
-| floor command | byte, the latest APC command of the trim |
-| trim efficiency | word, 1..1000 thousandths; 1000 when the trim is zero |
+| Slot offset | Field | Contract |
+| --- | --- | --- |
+| `+0` | integral gain | signed word, 0..0x7FFF, SPEED only |
+| `+2` | RPM trim | byte, 0..40 APC command counts |
+| `+3` | speed-hold trim | byte, 0..40 APC command counts |
+| `+4` | floor command | byte, 0..120, the latest APC command of either trim |
+| `+5` | reserved | zero |
+| `+6` | launch RPM | native word, above the minimum RPM and at most 0x7FFF |
+| `+8` | launch speed threshold | km/h*10 word, 1..0xFFFF |
+| `+0xA` | launch soft width | native word, below launch RPM minus the minimum RPM |
 
-The built-in production profile is `hold-map1-test`: Map 1 enabled, `hold`
-mode, and the controller defaults of the reference model. The layout declares
-the spark-cut hold actuator (`hold_actuator = true`); `make preflash` refuses
-an image that enables a map in `hold` mode while that field is false. The
-relocated targets take the built-in `observe` profile with no enabled maps,
-and their images receive no Rolling Launch bytes. A strict local TOML profile
-can select either mode, any map mask, every controller field, and the slot
-fields as a scalar or a list of five values. Every head field is mandatory,
-unknown fields are rejected, and enabled maps use one-based numbers. The
-builder writes the trim efficiency of each slot from the stock
-spark-efficiency pair. See `rom-builder.md` for the profile schema and build invocation.
+Every slot is validated whether or not its map is enabled. The RPM limits are
+an arithmetic contract, not recommended settings.
+
+The built-in profile is `observe` with every map disabled: launch RPM one
+count above the minimum RPM, threshold 1, soft width 0, and both trims 0. It
+is a valid disabled record of every family, not a hardware test profile. The
+relocated targets take it, and their images receive no Rolling Launch bytes.
+A strict local TOML profile of schema 4 selects the mode, the map mask, every
+head field, and the slot fields as a scalar or a list of five values; the
+launch RPM, threshold, soft width, and integral gain of every map are
+mandatory. Unknown fields are rejected, and enabled maps use one-based
+numbers. See `rom-builder.md` for the profile schema and build invocation.
 
 RomRaider and XDF expose the per-map enable bits, the pedal requirement as a
 switch, and independent calibration tables for the unsigned activation and
-controller fields. Each map slot exposes Ki at `+0`, maximum trim at `+2` in
-degrees, and the timing floor at `+3` in degrees ATDC. Its display is
-`floor_command - 110`, with inverse `ATDC + 110`; negative values are before
-TDC. The gain is limited to 0..32767, and the trim to 0..40. The derived word at
-`+4` is hidden and must be refreshed after changing the trim or F, including
-when a trim is disabled. Slot addresses derive from the configuration address
-of the runtime layout and the schema-5 slot offset and stride.
-The signed target offset, coolant maximum, and run and rearm periods stay in
-the build profile. Raw aggregate records remain
-implementation data, not a tuning interface. Generated definitions are
-projections of the live JK08A source annotations and layouts.
+controller fields. Each map exposes the launch speed threshold in km/h, the
+launch RPM and the soft width in RPM, where a zero width is the hard two-step,
+the RPM trim and the speed-hold trim in degrees, Ki, and the timing floor in
+degrees ATDC. The floor display is `floor_command - 110`, with inverse
+`ATDC + 110`; negative values are before TDC. The gain is limited to
+0..32767, and each trim to 0..40. The efficiency table and the reserved fields
+are hidden. A slot edit leaves the efficiency table current; an edit of F
+requires the refresh command. Slot addresses derive from the configuration
+address of the runtime layout and the schema-6 slot offset and stride. The
+signed target offset, coolant maximum, and run and rearm periods stay in the
+build profile. Raw aggregate records remain implementation data, not a tuning
+interface. Generated definitions are projections of the live JK08A source
+annotations and layouts.
 
 ## Allocation and hooks
 
@@ -852,27 +936,41 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | --- | ---: | --- |
 | `0x000D3860..0x000D38E4` | 132 | periodic, selector-arbiter, and startup wrappers |
 | `0x000D38E4..0x000D3EA0` | 1,468 | state engine, gates, and configuration check |
-| `0x000D3EA0..0x000D3F60` | 192 | primary ignition-command trim adapter |
-| `0x000D3F60..0x000D3F80` | 32 | retired configuration span, erased |
-| `0x000D40C0..0x000D41E0` | 288 | speed-hold controller |
+| `0x000D3EA0..0x000D3F60` | 192 | primary ignition-command adapter |
+| `0x000D3F60..0x000D3F80` | 32 | retired schema 1 to 3 configuration span, erased |
+| `0x000D40C0..0x000D41E0` | 288 | SPEED regulator |
 | `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
-| `0x000D6000..0x000D6040` | 64 | fuel-cut coordinator wrapper |
+| `0x000D6000..0x000D6040` | 64 | removed fuel-cut wrapper span, erased |
 | `0x000D6040..0x000D6068` | 40 | retired schema-4 configuration span, erased |
-| `0x000D6068..0x000D60C0` | 88 | RPM ceiling latch |
+| `0x000D6068..0x000D60C0` | 88 | removed RPM ceiling span, erased |
 | `0x000D60C0..0x000D6220` | 352 | spark-cut actuator |
-| `0x000D6220..0x000D6268` | 72 | configuration record |
-| `0x000D6268..0x000D62B8` | 80 | map-slot validator |
-| `0x000D62B8..0x000D6320` | 104 | trim cut-fraction unit |
+| `0x000D6220..0x000D6268` | 72 | retired schema-5 configuration span, erased |
+| `0x000D6268..0x000D6320` | 184 | removed schema-5 slot-validator and trim span, erased |
+| `0x000D6320..0x000D6386` | 102 | configuration record |
+| `0x000D6386..0x000D6390` | 10 | padding, erased |
+| `0x000D6390..0x000D63E2` | 82 | efficiency table |
+| `0x000D63E2..0x000D6400` | 30 | padding, erased |
+| `0x000D6400..0x000D6480` | 128 | RPM regulator |
+| `0x000D6480..0x000D6500` | 128 | RPM firing fraction |
+| `0x000D6500..0x000D6540` | 64 | control publisher of the actuation |
+| `0x000D6540..0x000D6580` | 64 | ignition publisher of the actuation |
+| `0x000D6580..0x000D6680` | 256 | common actuation body |
+| `0x000D6680..0x000D6780` | 256 | slot and efficiency-table validator |
 | `0xFFFF5D40..0xFFFF5D6C` | 44 | runtime state |
+| `0xFFFF6100..0xFFFF6120` | 32 | runtime state extension |
 
-Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`, and schema 4 a
-40-byte record with one integral gain for every map at `0x000D6040`. Both
-spans stay claimed and erased inside the current Rolling Launch write set.
-Each registered historical endpoint places its units, hook words, DID slots
-and record by its own addresses in `runtime_endpoints.py`, so classification
-and extraction of its images do not depend on the current layout.
-Extraction maps a schema-4 record to five slots with its gain and no trim. The Map Switching
-map copies at `0x000D3F80` leave no room to grow the record in place.
+Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`, schema 4 a 40-byte
+record with one integral gain for every map at `0x000D6040`, and schema 5 a
+72-byte record with 6-byte slots at `0x000D6220`. These spans, the removed
+fuel-cut wrapper, RPM ceiling, slot-validator, and trim spans, and the padding
+stay claimed and erased inside the current Rolling Launch write set. Each
+registered historical endpoint places its units, hook words, DID slots and
+record by its own addresses in `runtime_endpoints.py`, so classification and
+extraction of its images do not depend on the current layout. No historical
+record states the launch RPM, threshold, and soft width of schema 6, so
+extraction reports a historical record with its fields and writes no profile.
+The Map Switching map copies at `0x000D3F80` leave no room to grow the record
+in place.
 
 Every registered endpoint before schema 5 leaves the slot-validator and trim
 span `0x000D6268..0x000D6320` erased. The endpoints before schema 4 also leave
@@ -882,21 +980,22 @@ handler. Every signature binds those bytes.
 The speed-hold runtime without the ceiling latch, whose state has 24 bytes, is
 not a registered endpoint: the builder and `make preflash` classify its images
 as an unknown Rolling Launch state and refuse them.
-Its schema-4 record holds zero in the hysteresis byte `+0x23`, which is
-outside the field contract, so that record is also invalid for the current
-runtime.
 
-The composition replaces seven declared targets:
+The composition replaces six declared targets:
 
 - periodic scheduler entry 1 at `0x00021970`;
 - map-selector host at `0x000CE8DC`;
 - startup state initialization at `0x00027D28`;
 - primary ignition-command consumer at `0x0004E198`;
 - dashboard feedback call at `0x000C3FA4`;
-- periodic scheduler entry 28 at `0x000219DC`, the fuel-output inhibit
-  coordinator;
 - `GR11A` interrupt-table entry at `0x000202E4`, the spark handler
   `0x0002AB24`.
+
+It restores the stock words that the fuel path of the schema 4 and 5
+endpoints replaced: periodic scheduler entry 28 at `0x000219DC` holds the
+stock fuel-output inhibit coordinator `0x0004ED88`, and the DID pointer slots
+`0x00022914` and `0x00022960` of `0x121E` and `0x1231` hold `0xFFFFFFFF`.
+Classification refuses a current image that holds any word of that fuel path.
 
 The dashboard hook redirects the existing map-feedback wrapper call to the
 Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
@@ -906,23 +1005,43 @@ Allocation and hook bytes are authoritative only in
 
 ## State and diagnostics
 
-The canonical 44-byte state records phase, abort reason, flags, map/mode
-snapshots, run and rearm timers, captured RPM, target speed, the torque
-fraction after the rate limit, the speed error, the integrator, the fuel-cut
-request, the command before the rate limit, the RPM ceiling latch, and the
-cut fraction `q` at `+0x1A`. The spark-cut actuator owns
-`+0x1C..+0x2C`: the quiet-event count, the cut counter, a reserved zero word,
-and the six accumulators. Corrupt-state recovery clears the first 28 bytes,
-and the startup wrapper clears all 44. An `ACTIVE` state with a latch other
-than 0 or 1 is corrupt. The diagnostic views read fixed offsets of that
-record.
+The 44-byte state record at `0xFFFF5D40` and the 32-byte extension at
+`0xFFFF6100` are separate allocations. `STATE_FIELDS` of `rolling_launch.py`
+names the offset and format of every field of both; the telemetry
+configurations and the hold audit read them through that map.
 
-The flags publish every satisfied gate, `ACTIVE`, hold, and the RPM ceiling
-latch. The fuel-cut flag of an active state reports the ceiling request or bit 2,
-the active cut bit of the main RPM fuel-cut state byte. The other bits of the
-byte leave the flag clear.
+The record holds phase, abort reason, flags, map/mode snapshots, run and
+rearm timers, captured RPM, the SPEED target, the torque fraction after the
+rate limit, the speed error, the integrator, the command before the rate
+limit, the RPM target, the RPM error, the cut fraction `q` at `+0x1A`, and the
+trim of the run at `+0x1E`. The fields of the regulator that a run does not
+use hold zero. The spark-cut actuator owns the quiet-event count and the cut
+counter at `+0x1C` and `+0x1D` and the six accumulators at `+0x20..+0x2C`;
+`+0x1F` is a reserved zero byte.
 
-Raw engineering DIDs expose two-byte views of the state:
+The extension holds the regulator kind, the input status bits, the error of
+the regulator, the RPM and speed samples, the stock and effective commands,
+the applied trim, the actuation-ready mark, `E[a]`, the consumed `q` sum and
+the eligible-event counter of the actuator, the accepted button code, the
+speed age, the law output, the CANCEL capture, the target of the run, and
+three packed views for telemetry: `E[a]` with the kind and the ready mark,
+the applied trim with the kind and the ready mark, and the kind with the input
+bits, the CANCEL and released codes, and the ready mark.
+
+The startup wrapper clears both allocations. Corrupt-state recovery clears
+the engine part `+0x00..+0x1C` of the record, the trim of the run, and the
+extension. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
+`q` of 0..1000, a ready mark of 0 or 1, a trim of 0..40, zero reserved
+fields, and zero fields of the unused regulator; with the ready mark set, the
+applied trim does not exceed the trim of the run and `q` equals the actuation
+of the published law output and `E[a]`. Any other `ACTIVE` state is corrupt.
+
+The flags publish every satisfied gate, `ACTIVE`, and hold. Bits 13 and 15
+are always clear. Abort reasons 22 to 25 name the invalid speed value, the
+speed source that is not ready, the invalid RPM input, and the invalid CANCEL
+capture; the other reasons keep their numbers.
+
+Raw engineering DIDs expose two-byte views of the state record:
 
 | DID | View |
 | --- | --- |
@@ -936,17 +1055,21 @@ Raw engineering DIDs expose two-byte views of the state:
 | `0x1228` | torque fraction |
 | `0x1229` | speed error |
 | `0x121D` | integrator |
-| `0x121E` | fuel-cut request |
 | `0x121F` | command before the rate limit |
-| `0x1231` | RPM ceiling latch |
 | `0x1232` | quiet-event count (high byte) and cut counter (low byte) |
+
+The SPEED views `0x1227`, `0x1228`, `0x1229`, `0x121D`, and `0x121F` read zero
+during an RPM run. The RPM target, the RPM error, and the extension have no
+DID; the telemetry configurations read them as state views.
 
 Every view uses a free pointer slot of the service `0x22` table of family
 `0x12`, whose records outside the low bytes `0x00`, `0x20`, and `0x40`
 answer two bytes. Every historical endpoint before the spark cut publishes
 the views `0x1211` to `0x1229` and leaves the slots of `0x121D`, `0x121E`,
 `0x121F`, `0x1231`, and `0x1232` stock. The schema 4 and 5 endpoints
-publish all fourteen views.
+also publish `0x121D`, `0x121F`, `0x1232`, the fuel-cut request `0x121E`, and
+the RPM ceiling latch `0x1231`. The current runtime keeps the slots of
+`0x121E` and `0x1231` stock and does not reuse their numbers.
 
 These DIDs are custom instrumentation, not factory CONSULT parameters. They are
 useful only when the diagnostic client can request the raw identifiers and are
@@ -956,19 +1079,22 @@ not a prerequisite for runtime correctness.
 
 `build_rom.py` is the production entry point. It starts from the registered
 stock image, installs the current Map Switching composition, applies the
-target-specific Rolling Launch stage with the selected profile, adds the CAN
-telemetry layer, recalculates all checksum domains, and verifies the final
-closed write set.
+target-specific Rolling Launch stage with the selected profile and the
+efficiency table derived from F of the image, adds the CAN telemetry layer,
+recalculates all checksum domains, and verifies the final closed write set.
 
 The composition and assembly modules require the exact base composition and
-bind every byte to the declared layout and payload manifests.
+bind every byte to the declared layout and payload manifests. While the layout
+states `payloads_ready = false`, the layout loader accepts the ABI alone and
+the builder refuses composition.
 
-The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` for active state and
-`0x000D6000..0x000D6320` for the fuel-cut wrapper, the RPM ceiling latch,
-the spark-cut actuator, the configuration record, the slot validator, and
-the trim unit. The cross-runtime ledger assigns `0x000D6320..0x000D6800` and
-`0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
-reserves are erased and outside every exact current write set. See
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` and
+`0xFFFF6100..0xFFFF6120` for active state and `0x000D6000..0x000D6780` for its
+claimed ROM extension. The cross-runtime ledger assigns
+`0x000D6780..0x000D6800`, `0xFFFF6120..0xFFFF6160`, and
+`0xFFFF6160..0xFFFF6200` exclusively to future Rolling Launch revisions; the
+first RAM span is the scratch budget of the veto delivery. These reserves are
+erased and outside every exact current write set. See
 `runtime-reservations.md`.
 
 The implementation inventory is:
@@ -977,21 +1103,21 @@ The implementation inventory is:
 | --- | --- |
 | `rolling-launch-layout.toml` | allocation, hooks, diagnostics, and defaults |
 | `rolling-launch-payloads.toml` | exact assembled payloads |
+| `rolling-launch-wrappers.s` | periodic, selector-arbiter, and startup wrappers |
 | `rolling-launch-engine.s` | state engine, gates, and configuration check |
-| `rolling-launch-speed-controller.s` | speed-hold controller |
-| `rolling-launch-rpm-ceiling.s` | RPM ceiling latch and request |
+| `rolling-launch-speed-controller.s` | SPEED regulator |
 | `rolling-launch-spark-cut.s` | spark-cut actuator and misfire latch |
-| `rolling-launch-ignition-adapter.s` | primary ignition-command trim adapter |
+| `rolling-launch-ignition-adapter.s` | primary ignition-command adapter |
 | `rolling-launch-trim.s` | map-slot validator and trim cut fraction |
 | `rolling-launch-feedback.s` | dashboard feedback arbitration |
-| `rolling-launch-fuel-cut-wrapper.s` | fuel-cut coordinator wrapper |
 | `rolling_launch.py` | independent fail-closed model |
 | `rolling_launch_layout.py` | structural validation |
 | `rolling_launch_assembly.py` | payload and source-byte validation |
 | `rolling_launch_compose.py` | pure in-memory composition |
 | `apply_rolling_launch.py` | builder stage: source checks and application |
-| `build_rom.py` | production composition and checksum closure |
-| `runtime_endpoints.py` | historical endpoint identities and record extraction |
+| `build_rom.py` | production composition, efficiency table, and checksum closure |
+| `refresh_rolling_launch.py` | efficiency-table normalization of an edited image |
+| `runtime_endpoints.py` | historical endpoint identities, runtime classification, and record extraction |
 | `../tools/sh-elf-run/verify_rolling_launch.py` | independent GNU SH gate |
 | `hardware-results.toml` | immutable hardware-result registry |
 
@@ -1001,14 +1127,15 @@ A candidate is software-valid only when all applicable checks pass:
 
 1. The exact selected stock base and complete current Map Switching composition
    match the registered target profile.
-2. ROM/RAM ownership, stock anchors, hooks, diagnostic pointers, and payload
-   digests match their manifests.
+2. ROM/RAM ownership, stock anchors, hooks, restored stock words, diagnostic
+   pointers, and payload digests match their manifests.
 3. Assembly sources reproduce the exact injected bytes.
 4. The independent model covers every gate, phase transition, abort reason,
-   corrupt-state recovery, map isolation, rearm boundary, controller bound,
-   the map slots, the trim cut fraction and ignition command, the ceiling
-   latch with its hysteresis, and the cut selection, eligibility, resets,
-   and misfire latch of the spark-cut actuator.
+   corrupt-state recovery, map isolation, rearm boundary, the CANCEL capture,
+   the regulator selection, the hard and soft RPM zone, the SPEED controller
+   bounds, the map slots, the efficiency table, the ignition command and the
+   actuation with its ready mark, and the cut selection, consumed-`q`
+   accounting, resets, and misfire latch of the spark-cut actuator.
 5. The GNU SH fixture independently executes the same current payload bytes
    across all changed entries, branches, delay slots, call/return paths, and
    boundary cases, with controller expectations taken from the reference
@@ -1023,8 +1150,9 @@ A candidate is software-valid only when all applicable checks pass:
 7. The generated definition tables agree with the configuration contract.
 8. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
-Software verification does not authorize a flash. The vehicle-speed capture,
-the controller, the ceiling latch, the spark cut, corrupt-state recovery, and
-map changes while active remain software-only boundaries. A physical timing claim requires a crank-referenced
+Software verification does not authorize a flash. The CANCEL capture, both
+regulators, the actuation, the spark cut and its veto delivery, corrupt-state
+recovery, and map changes while active remain software-only boundaries of
+schema 6. A physical timing claim requires a crank-referenced
 measurement, and an injector-pulse claim requires an electrical measurement at
 the output path.
