@@ -1,4 +1,5 @@
 """The patch runner forwards bounded simulator waits to its owned container."""
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -14,6 +15,13 @@ INVALID = ("", "0", "119", "121", "239", "241", "-1", "+240", "240 ",
            "120.0", "nan", "inf", "٢٤٠")
 
 
+def image_inputs():
+    spec = importlib.util.spec_from_file_location("image_inputs", TOOL / "image_inputs.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def inputs_label(tool):
     return subprocess.run([sys.executable, str(tool / "image_inputs.py")], capture_output=True,
         text=True, check=True).stdout.strip()
@@ -26,8 +34,9 @@ def runner_environment(tmp_path, value):
     checkout = tmp_path / "checkout"
     tool = checkout / "tools/sh-elf-run"
     tool.mkdir(parents=True)
-    for filename in ('run.sh', 'docker_lifecycle.py', 'gate_paths.py', 'image_inputs.py',
-                     'Dockerfile', 'gnu16.3-sh-pc-observer.patch'):
+    # The runner and every image input, so the copy has the label of the tool.
+    for filename in dict.fromkeys(('run.sh', 'docker_lifecycle.py', 'gate_paths.py',
+                                   'image_inputs.py', *image_inputs().INPUTS)):
         target = tool / filename
         target.write_bytes((TOOL / filename).read_bytes())
         target.chmod((TOOL / filename).stat().st_mode)
