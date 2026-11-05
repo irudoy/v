@@ -2,13 +2,12 @@
 
 Every case starts from a current builder output with the built-in profile and
 turns it into a registered earlier endpoint, an editor-edited runtime, or a
-partial state.
+partial state. An earlier endpoint is placed by its own addresses, never by
+the spans of the current layout.
 """
 
 from dataclasses import replace
 from functools import lru_cache
-from pathlib import Path
-import tomllib
 from unittest import mock
 
 import pytest
@@ -23,6 +22,7 @@ from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_endpoints
 from patches import runtime_targets
+from patches.tests import rolling_endpoint_images as endpoint_images
 
 
 pytestmark = pytest.mark.slow
@@ -262,6 +262,18 @@ CEILING_LATCH_WRAPPERS = bytes.fromhex(
     "000d22a0"
 )
 EDITED_ROMS = ("JK08A", "JK00C", "JK78C", "1ND0A", "1ME3B")
+# Unit payloads of the schema-3 endpoints that the endpoint fixtures do not
+# hold.
+SCHEMA_3_UNITS = (
+    SCHEMA_3_WRAPPERS,
+    SCHEMA_3_ENGINE,
+    SCHEMA_3_ADAPTER,
+    BOUNDED_CONTROLLER + THRESHOLD_HELPER,
+    GUARDED_CONTROLLER + THRESHOLD_HELPER,
+    FUEL_SHADOW_WRAPPERS,
+    FUEL_SHADOW_ENGINE,
+)
+SCHEMA_4 = "schema-4-uniform-gain"
 
 
 @lru_cache(maxsize=None)
@@ -329,48 +341,40 @@ def edited_record():
     return bytes(record)
 
 
+def historical(rom, data, key, record=SCHEMA_3_RECORD, payloads=()):
+    """Return ``data`` with the registered endpoint ``key`` at its own
+    addresses in place of the current Rolling Launch layer."""
+    return endpoint_images.with_endpoint(
+        target(rom), data, key, record, SCHEMA_3_UNITS + tuple(payloads)
+    )
+
+
+def schema_3_lower(rom, data, record=SCHEMA_3_RECORD):
+    """Return ``data`` with the last RPM-hold endpoint, which holds through
+    the fuel-cut coordinator wrapper and keeps its record in the 32-byte span
+    of schemas 1 to 3."""
+    return historical(rom, data, "schema-3-fuel-cut-wrapper", record)
+
+
 def without_spark_cut(rom, data):
-    """Return ``data`` with the spark-cut and trim units erased, the stock
-    vector of the GR11A spark handler, and stock pointers in the DID slots
-    that only the later runtimes publish, as in every runtime before the
-    hold actuator."""
-    layout = target(rom).rolling_layout
+    """Return ``data`` of the schema 4 endpoint with the spark-cut and trim
+    spans erased, the stock vector of the GR11A spark handler, and stock
+    pointers in the DID slots that only the later runtimes publish, as in
+    every runtime before the hold actuator."""
+    endpoint = runtime_endpoints.historical_endpoint(SCHEMA_4)
+    stock = target(rom).stock_image.data
     source = bytearray(data)
     for key in ("spark_cut", "trim"):
-        span = layout.assembly_unit_by_key[key].span
-        source[span.start : span.end] = bytes([0xFF]) * span.size
-    hook = layout.hook_by_key["spark_handler"]
-    source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
-        hook.width, layout.byte_order
+        unit = endpoint_images.unit(endpoint, key)
+        source[unit.start : unit.end] = bytes([0xFF]) * (unit.end - unit.start)
+    hook = endpoint_images.hook(endpoint, "spark_handler")
+    source[hook.address : hook.address + hook.width] = (
+        stock[hook.address : hook.address + hook.width]
     )
-    for item in layout.diagnostics:
+    for item in endpoint.dids:
         if item.did not in runtime_endpoints.HISTORICAL_ROLLING_DIDS:
-            source[item.pointer_address : item.pointer_address + 4] = (
-                item.stock.to_bytes(4, layout.byte_order)
-            )
-    return source
-
-
-def schema_3_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
-    """Return ``data`` with the units and record of the last RPM-hold endpoint,
-    whose record occupies the retired span while the current span, the RPM
-    ceiling unit, and the spark-cut unit are erased."""
-    layout = target(rom).rolling_layout
-    source = without_spark_cut(rom, data)
-    ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
-    source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
-    for key, blob in (
-        ("wrappers", SCHEMA_3_WRAPPERS),
-        ("engine", SCHEMA_3_ENGINE),
-        ("ignition_adapter", SCHEMA_3_ADAPTER),
-        ("speed_controller", controller + THRESHOLD_HELPER),
-    ):
-        unit = layout.assembly_unit_by_key[key]
-        source[unit.span.start : unit.span.end] = blob
-    current = layout.configuration
-    source[current.start : current.end] = bytes([0xFF]) * current.size
-    retired = layout.retired_configuration_for(3)
-    source[retired.start : retired.end] = record
+            end = item.pointer_address + 4
+            source[item.pointer_address : end] = stock[item.pointer_address : end]
     return source
 
 
@@ -378,41 +382,24 @@ def speed_hold_unlatched(rom, data, part):
     """Return ``data`` with the speed-hold units that precede the RPM ceiling
     latch over an erased ceiling span. ``runtime`` also restores the wrappers
     and the hold-mode record with a zero hysteresis byte."""
-    layout = target(rom).rolling_layout
-    source = without_spark_cut(rom, data)
-    ceiling = layout.assembly_unit_by_key["rpm_ceiling"].span
-    source[ceiling.start : ceiling.end] = bytes([0xFF]) * ceiling.size
+    endpoint = runtime_endpoints.historical_endpoint(SCHEMA_4)
+    source = without_spark_cut(
+        rom, historical(rom, data, SCHEMA_4, endpoint_images.record(SCHEMA_4))
+    )
+    ceiling = endpoint_images.unit(endpoint, "rpm_ceiling")
+    source[ceiling.start : ceiling.end] = bytes([0xFF]) * (ceiling.end - ceiling.start)
     units = [
         ("engine", SPEED_HOLD_ENGINE),
         ("speed_controller", SPEED_HOLD_CONTROLLER),
     ]
     if part == "runtime":
         units.append(("wrappers", SPEED_HOLD_WRAPPERS))
-        start = layout.configuration.start
+        start = endpoint.record.start
         source[start + 3] = rolling_launch.Mode.HOLD
         source[start + 0x23] = 0
     for key, blob in units:
-        unit = layout.assembly_unit_by_key[key]
-        source[unit.span.start : unit.span.end] = blob
-    return source
-
-
-def fuel_shadow_lower(rom, data, record=SCHEMA_3_RECORD, controller=BOUNDED_CONTROLLER):
-    """Return ``data`` with the wrappers, engine, and stock fuel-cut hook of the
-    endpoints that hold RPM through the fuel-cut shadow."""
-    layout = target(rom).rolling_layout
-    source = schema_3_lower(rom, data, record, controller)
-    for key, blob in (
-        ("wrappers", FUEL_SHADOW_WRAPPERS),
-        ("engine", FUEL_SHADOW_ENGINE),
-        ("fuel_cut_wrapper", bytes([0xFF]) * 64),
-    ):
-        unit = layout.assembly_unit_by_key[key]
-        source[unit.span.start : unit.span.end] = blob
-    hook = layout.hook_by_key["fuel_cut_coordinator"]
-    source[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
-        hook.width, layout.byte_order
-    )
+        unit = endpoint_images.unit(endpoint, key)
+        source[unit.start : unit.end] = blob
     return source
 
 
@@ -423,7 +410,7 @@ def fuel_shadow_hold_image(rom="JK08A", *, telemetry=True, custom=False):
     if not telemetry:
         source = without_telemetry(rom, source)
     record = edited_record() if custom else SCHEMA_3_RECORD
-    return closed(rom, fuel_shadow_lower(rom, source, record))
+    return closed(rom, historical(rom, source, "schema-3-fuel-shadow-hold", record))
 
 
 def previous_current_image(*, telemetry=True, custom=False):
@@ -434,30 +421,24 @@ def previous_current_image(*, telemetry=True, custom=False):
         source = without_telemetry("JK08A", source)
     record = edited_record() if custom else SCHEMA_3_RECORD
     return closed(
-        "JK08A", fuel_shadow_lower("JK08A", source, record, GUARDED_CONTROLLER)
+        "JK08A", historical("JK08A", source, "schema-3-guarded-controller", record)
     )
 
 
 def state_6_7_arbiter_image():
-    layout = target("JK08A").rolling_layout
-    unit = layout.assembly_unit_by_key["feedback_arbiter"]
-    active_immediate = unit.span.start + 0x2D
-    failed_immediate = unit.span.start + 0x41
-    historical = fuel_shadow_lower(
-        "JK08A", built("JK08A"), controller=GUARDED_CONTROLLER
-    )
-    assert historical[active_immediate] == 0x40
-    assert historical[failed_immediate] == 0x50
-    historical[active_immediate] = 0x70
-    historical[failed_immediate] = 0x60
-    endpoint = next(
-        item for item in runtime_endpoints.HISTORICAL_ROLLING_ENDPOINTS
-        if item.key == "schema-3-state-6-7-indicators"
-    )
-    assert dict(endpoint.unit_sha256)["feedback_arbiter"] == build_rom.sha256(
-        historical[unit.span.start : unit.span.end]
-    )
-    return closed("JK08A", historical)
+    """Return the endpoint whose arbiter emits ASCD state 7 for ACTIVE and 6
+    for a failed held attempt instead of 4 and 5."""
+    arbiter = bytearray(endpoint_images.unit_payload(
+        "schema-3-guarded-controller", "feedback_arbiter"
+    ))
+    assert arbiter[0x2D] == 0x40
+    assert arbiter[0x41] == 0x50
+    arbiter[0x2D] = 0x70
+    arbiter[0x41] = 0x60
+    return closed("JK08A", historical(
+        "JK08A", built("JK08A"), "schema-3-state-6-7-indicators",
+        payloads=(bytes(arbiter),),
+    ))
 
 
 def unexpressed_fields(extraction, key):
@@ -501,7 +482,7 @@ def test_records_in_both_spans_are_refused(part):
         source[current.start : current.end] = built("JK08A")[current.start : current.end]
     else:
         source = bytearray(built("JK08A"))
-        retired = layout.retired_configuration_for(3)
+        retired = runtime_endpoints.historical_endpoint("schema-3-fuel-cut-wrapper").record
         source[retired.start : retired.end] = SCHEMA_3_RECORD
     with pytest.raises(
         extract_calibration.ExtractionError,
@@ -585,22 +566,12 @@ def test_telemetry_over_an_unflagged_historical_endpoint_is_rejected():
 
 
 def test_pre_feedback_indicator_endpoint_is_recognized():
-    layout = target("JK08A").rolling_layout
-    historical = fuel_shadow_lower(
+    source = historical(
         "JK08A",
         without_telemetry("JK08A", built("JK08A")),
-        controller=GUARDED_CONTROLLER,
+        "schema-3-pre-feedback-indicators",
     )
-    unit = layout.assembly_unit_by_key["feedback_arbiter"]
-    historical[unit.span.start : unit.span.end] = bytes([0xFF]) * unit.span.size
-    hook = layout.hook_by_key["feedback_arbitration"]
-    assert int.from_bytes(
-        historical[hook.address : hook.address + hook.width], layout.byte_order
-    ) == hook.replacement
-    historical[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
-        hook.width, layout.byte_order
-    )
-    extraction = extract(historical)
+    extraction = extract(source)
     assert state(extraction)["rolling_launch"] == "schema-3-pre-feedback-indicators"
     assert state(extraction)["can_telemetry"] == "absent"
     unexpressed_fields(extraction, "schema-3-pre-feedback-indicators")
@@ -633,16 +604,17 @@ def test_fuel_shadow_hold_endpoint_reports_its_editor_settings():
 
 @pytest.mark.parametrize("part", ("wrappers", "fuel_cut_wrapper", "hook"))
 def test_fuel_shadow_hold_hybrid_with_the_fuel_cut_wrapper_is_refused(part):
-    layout = target("JK08A").rolling_layout
-    current = built("JK08A")
+    key = "schema-3-fuel-cut-wrapper"
+    donor = schema_3_lower("JK08A", built("JK08A"))
     source = bytearray(fuel_shadow_hold_image())
     if part == "hook":
-        hook = layout.hook_by_key["fuel_cut_coordinator"]
+        hook = endpoint_images.hook(key, "fuel_cut_coordinator")
         span = (hook.address, hook.address + hook.width)
     else:
-        unit = layout.assembly_unit_by_key[part]
-        span = (unit.span.start, unit.span.end)
-    source[span[0] : span[1]] = current[span[0] : span[1]]
+        unit = endpoint_images.unit(key, part)
+        span = (unit.start, unit.end)
+    assert source[span[0] : span[1]] != donor[span[0] : span[1]]
+    source[span[0] : span[1]] = donor[span[0] : span[1]]
     with pytest.raises(
         extract_calibration.ExtractionError,
         match="partial or unknown Rolling Launch state",
@@ -659,7 +631,7 @@ def test_previous_guarded_controller_is_recognized_with_or_without_telemetry(tel
 
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
 def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
-    source = fuel_shadow_lower(rom, built(rom), controller=GUARDED_CONTROLLER)
+    source = historical(rom, built(rom), "schema-3-guarded-controller")
     extraction = extract(source, rom)
     assert state(extraction)["rolling_launch"] == "schema-3-guarded-controller"
     assert extraction.calibration.elements == ()
@@ -667,10 +639,11 @@ def test_previous_guarded_controller_is_recognized_on_every_exact_rom(rom):
 
 @pytest.mark.parametrize("part", ("speed_controller", "engine", "configuration"))
 def test_previous_guarded_controller_hybrid_and_malformed_endpoint_are_refused(part):
-    layout = target("JK08A").rolling_layout
+    key = "schema-3-guarded-controller"
     address = (
-        layout.retired_configuration_for(3).start if part == "configuration"
-        else layout.assembly_unit_by_key[part].span.start
+        runtime_endpoints.historical_endpoint(key).record.start
+        if part == "configuration"
+        else endpoint_images.unit(key, part).start
     )
     source = bytearray(previous_current_image())
     source[address] ^= 1
@@ -749,28 +722,12 @@ def test_speed_hold_runtime_without_the_ceiling_latch_is_refused(part):
         preflash.check_image(data, "JK08A")
 
 
-SCHEMA_4_FIXTURE = Path(__file__).parent / "data" / "rolling-launch-schema-4.toml"
-
-
 def schema_4_image(gain):
     """Return a build of the `schema-4-uniform-gain` endpoint with one
     integral gain for every map."""
-    with SCHEMA_4_FIXTURE.open("rb") as source:
-        fixture = tomllib.load(source)
-    layout = target("JK08A").rolling_layout
-    data = bytearray(built("JK08A"))
-    for key, payload in fixture["units"].items():
-        span = layout.assembly_unit_by_key[key].span
-        payload = bytes.fromhex("".join(payload.split()))
-        assert len(payload) == span.size
-        data[span.start : span.end] = payload
-    for span in (layout.assembly_unit_by_key["trim"].span, layout.configuration):
-        data[span.start : span.end] = bytes([0xFF]) * span.size
-    record = bytearray.fromhex(fixture["configuration"])
+    record = bytearray(endpoint_images.record(SCHEMA_4))
     record[0x16:0x18] = gain.to_bytes(2, "big")
-    legacy = layout.retired_configuration_for(rolling_launch.LEGACY_SCHEMA_VERSION)
-    data[legacy.start : legacy.end] = record
-    return closed("JK08A", data)
+    return closed("JK08A", historical("JK08A", built("JK08A"), SCHEMA_4, bytes(record)))
 
 
 def test_schema_4_endpoint_maps_its_gain_to_every_map_slot():
@@ -785,9 +742,8 @@ def test_schema_4_endpoint_maps_its_gain_to_every_map_slot():
 
 @pytest.mark.parametrize("part", ("trim", "engine"))
 def test_schema_4_endpoint_hybrid_is_refused(part):
-    layout = target("JK08A").rolling_layout
     source = bytearray(schema_4_image(3))
-    source[layout.assembly_unit_by_key[part].span.start] ^= 1
+    source[endpoint_images.unit(SCHEMA_4, part).start] ^= 1
     with pytest.raises(
         extract_calibration.ExtractionError, match="partial or unknown Rolling Launch"
     ):
@@ -795,12 +751,14 @@ def test_schema_4_endpoint_hybrid_is_refused(part):
 
 
 def test_ceiling_latch_runtime_without_the_spark_cut_is_refused():
-    layout = target("JK08A").rolling_layout
-    data = without_spark_cut("JK08A", built("JK08A"))
-    wrappers = layout.assembly_unit_by_key["wrappers"].span
+    data = without_spark_cut("JK08A", historical(
+        "JK08A", built("JK08A"), SCHEMA_4, endpoint_images.record(SCHEMA_4)
+    ))
+    wrappers = endpoint_images.unit(SCHEMA_4, "wrappers")
     data[wrappers.start : wrappers.end] = CEILING_LATCH_WRAPPERS
     # The built-in profile of that runtime observes on Map 1.
-    data[layout.configuration.start + 3] = rolling_launch.Mode.OBSERVE
+    record = runtime_endpoints.historical_endpoint(SCHEMA_4).record
+    data[record.start + 3] = rolling_launch.Mode.OBSERVE
     data = closed("JK08A", data)
     with pytest.raises(
         runtime_endpoints.EndpointError,
@@ -833,7 +791,7 @@ def _rolling_cases():
     # A zero speed-window width is outside the record contract.
     invalid_configuration[layout.configuration.start + 18] = 0
     mixed_schema = bytearray(base)
-    retired = layout.retired_configuration_for(3)
+    retired = runtime_endpoints.historical_endpoint("schema-1-bandless").record
     mixed_schema[retired.start : retired.end] = SCHEMA_1_RECORD
     return {
         "unknown-payload": unknown_payload,
@@ -905,11 +863,11 @@ def test_occupied_telemetry_reserve_is_rejected_by_address():
 @pytest.mark.parametrize("rom", runtime_targets.EXACT_ROMS)
 def test_historical_endpoint_calibration_transfers_with_replaced_settings(rom):
     families = target(rom).map_layout.families
-    source = fuel_shadow_lower(
+    source = historical(
         rom,
         edited_runtime(rom, telemetry=True),
+        "schema-3-guarded-controller",
         edited_record(),
-        GUARDED_CONTROLLER,
     )
     for index, family in enumerate(families):
         source[family.canonical_address] ^= 1 + index

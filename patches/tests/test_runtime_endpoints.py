@@ -3,8 +3,6 @@ registered historical endpoint is placed by its own addresses."""
 
 from dataclasses import replace
 from functools import lru_cache
-from pathlib import Path
-import tomllib
 
 import pytest
 
@@ -14,15 +12,12 @@ from patches import extract_calibration
 from patches import rom_checksums
 from patches import runtime_endpoints
 from patches import runtime_targets
+from patches.tests import rolling_endpoint_images as endpoint_images
 
 
-FIXTURES = Path(__file__).parent / "data"
 # The two endpoints flashed on JK08A: the uniform-gain speed hold and the
 # per-map slots with the fixed retard trim.
-FLASHED_ENDPOINTS = {
-    "schema-4-uniform-gain": "rolling-launch-schema-4.toml",
-    "schema-5-fixed-trim": "rolling-launch-schema-5.toml",
-}
+FLASHED_ENDPOINTS = ("schema-4-uniform-gain", "schema-5-fixed-trim")
 # The Rolling Launch parts that the fuel path owns in the flashed endpoints.
 FUEL_PATH_UNITS = frozenset({"fuel_cut_wrapper", "rpm_ceiling"})
 FUEL_PATH_HOOKS = frozenset({"fuel_cut_coordinator"})
@@ -146,55 +141,17 @@ def closed(data):
     return bytes(rom_checksums.recalculate(bytearray(data), target("JK08A").checksum_layout))
 
 
-def fixture(key):
-    with (FIXTURES / FLASHED_ENDPOINTS[key]).open("rb") as source:
-        return tomllib.load(source)
-
-
 def endpoint_image(key, *, record=None, lower=False):
-    """Return the current build with the units, hooks, DIDs and record of a
-    flashed endpoint at its own addresses and stock bytes at every other
-    offset of the current Rolling Launch layout. The CAN telemetry layer
-    keeps the hook words it owns; ``lower`` returns the bytes below it."""
-    endpoint = runtime_endpoints.historical_endpoint(key)
-    data = fixture(key)
+    """Return the current build with a flashed endpoint at its own addresses
+    in place of the current Rolling Launch layer; ``lower`` returns the bytes
+    below the CAN telemetry layer."""
     current = target("JK08A")
-    layout = current.rolling_layout
-    telemetry_hooks = {hook.address for hook in current.telemetry_layout.hooks}
-    source = bytearray(built_image())
-    footprint = endpoint.write_offsets()
-    for span in (*layout.claimed_rom_ranges, layout.configuration,
-                 *layout.retired_configuration_spans):
-        for offset in range(span.start, span.end):
-            if offset not in footprint:
-                source[offset] = 0xFF
-    for address, width, stock in (
-        *((hook.address, hook.width, hook.stock) for hook in layout.hooks
-          if hook.address not in telemetry_hooks),
-        *((item.pointer_address, 4, item.stock) for item in layout.diagnostics),
-    ):
-        if address not in footprint:
-            source[address : address + width] = stock.to_bytes(width, "big")
-    for unit in endpoint.units:
-        text = data["units"].get(unit.key)
-        payload = (
-            bytes([0xFF]) * (unit.end - unit.start) if text is None
-            else bytes.fromhex("".join(text.split()))
-        )
-        assert build_rom.sha256(payload) == unit.sha256, unit.key
-        source[unit.start : unit.end] = payload
-    for hook in endpoint.hooks:
-        if hook.address not in telemetry_hooks:
-            source[hook.address : hook.address + hook.width] = hook.value.to_bytes(
-                hook.width, "big"
-            )
-    for item in endpoint.dids:
-        source[item.pointer_address : item.pointer_address + 4] = item.target.to_bytes(4, "big")
-    span = endpoint.record
-    source[span.start : span.end] = (
-        bytes.fromhex(data["configuration"]) if record is None else record
-    )
-    source = closed(source)
+    source = closed(endpoint_images.with_endpoint(
+        current,
+        built_image(),
+        key,
+        endpoint_images.record(key) if record is None else record,
+    ))
     if lower:
         source = runtime_endpoints.strip_telemetry_endpoint(
             source, current.telemetry_layout, "current", current.checksum_layout
@@ -202,11 +159,12 @@ def endpoint_image(key, *, record=None, lower=False):
     return source
 
 
-def changed_target(*, fuel_path, telemetry=False):
+def changed_target(*, fuel_path, telemetry=False, adapter=True):
     """Return the JK08A target with a different current ignition adapter and,
     with ``fuel_path`` false, a current layout without the fuel-cut wrapper,
     the RPM ceiling, their hook and DIDs, and the schema 4 record span.
-    ``telemetry`` also changes the current CAN telemetry capture unit."""
+    ``telemetry`` also changes the current CAN telemetry capture unit, and a
+    false ``adapter`` keeps the current adapter."""
     current = target("JK08A")
     if telemetry:
         telemetry_payloads = dict(current.telemetry_payloads)
@@ -214,8 +172,9 @@ def changed_target(*, fuel_path, telemetry=False):
         telemetry_payloads["capture"] = bytes([capture[0] ^ 1]) + capture[1:]
         current = replace(current, telemetry_payloads=telemetry_payloads)
     payloads = dict(current.rolling_payloads)
-    adapter = payloads["ignition_adapter"]
-    payloads["ignition_adapter"] = adapter[:-1] + bytes([adapter[-1] ^ 0x5A])
+    if adapter:
+        blob = payloads["ignition_adapter"]
+        payloads["ignition_adapter"] = blob[:-1] + bytes([blob[-1] ^ 0x5A])
     layout = current.rolling_layout
     if not fuel_path:
         payloads = {
@@ -264,7 +223,7 @@ def selected_target(monkeypatch):
 @pytest.mark.parametrize(
     ("fuel_path", "telemetry"), ((True, False), (False, False), (False, True))
 )
-@pytest.mark.parametrize("key", sorted(FLASHED_ENDPOINTS))
+@pytest.mark.parametrize("key", FLASHED_ENDPOINTS)
 def test_flashed_endpoint_survives_a_change_of_the_current_runtime(
     selected_target, key, fuel_path, telemetry
 ):
@@ -298,53 +257,79 @@ def test_flashed_endpoint_survives_a_change_of_the_current_runtime(
 def test_mixed_flashed_endpoint_is_refused_by_a_changed_runtime(part):
     changed = changed_target(fuel_path=False)
     source = bytearray(endpoint_image("schema-5-fixed-trim"))
+    stock = target("JK08A").stock_image.data
     if part == "schema-4-engine":
-        unit = next(
-            item for item in runtime_endpoints.historical_endpoint("schema-4-uniform-gain").units
-            if item.key == "engine"
-        )
-        source[unit.start : unit.end] = bytes.fromhex(
-            "".join(fixture("schema-4-uniform-gain")["units"]["engine"].split())
+        unit = endpoint_images.unit("schema-4-uniform-gain", "engine")
+        source[unit.start : unit.end] = endpoint_images.unit_payload(
+            "schema-4-uniform-gain", "engine"
         )
     elif part == "fuel-hook":
-        hook = target("JK08A").rolling_layout.hook_by_key["fuel_cut_coordinator"]
-        source[hook.address : hook.address + 4] = hook.stock.to_bytes(4, "big")
+        hook = endpoint_images.hook("schema-5-fixed-trim", "fuel_cut_coordinator")
+        source[hook.address : hook.address + 4] = stock[hook.address : hook.address + 4]
     elif part == "fuel-did":
-        item = target("JK08A").rolling_layout.diagnostic_by_did[0x121E]
-        source[item.pointer_address : item.pointer_address + 4] = item.stock.to_bytes(4, "big")
+        item = next(
+            item for item in runtime_endpoints.historical_endpoint("schema-5-fixed-trim").dids
+            if item.did == 0x121E
+        )
+        end = item.pointer_address + 4
+        source[item.pointer_address : end] = stock[item.pointer_address : end]
     else:
         # The schema 4 record joins the schema 5 record.
         legacy = runtime_endpoints.historical_endpoint("schema-4-uniform-gain").record
-        source[legacy.start : legacy.end] = bytes.fromhex(
-            fixture("schema-4-uniform-gain")["configuration"]
-        )
+        source[legacy.start : legacy.end] = endpoint_images.record("schema-4-uniform-gain")
     with pytest.raises(runtime_endpoints.EndpointError, match="partial or unknown"):
         runtime_endpoints.classify_runtime(closed(source), changed, "mixed")
 
 
 def test_changed_current_runtime_refuses_leftover_fuel_path_bytes():
-    changed = changed_target(fuel_path=False)
-    adapter = changed.rolling_layout.assembly_unit_by_key["ignition_adapter"].span
-    source = bytearray(endpoint_image("schema-5-fixed-trim"))
-    source[adapter.start : adapter.end] = changed.rolling_payloads["ignition_adapter"]
-    with pytest.raises(runtime_endpoints.EndpointError, match="partial or unknown"):
-        runtime_endpoints.classify_runtime(closed(source), changed, "leftover")
-    endpoint = runtime_endpoints.historical_endpoint("schema-5-fixed-trim")
-    stock = target("JK08A").stock_image.data
-    spans = [(unit.start, unit.end) for unit in endpoint.units if unit.key in FUEL_PATH_UNITS]
-    spans += [
-        (hook.address, hook.address + hook.width)
+    """A current image holds no fuel-path byte of a flashed endpoint outside
+    the current Rolling Launch layout."""
+    changed = changed_target(fuel_path=False, adapter=False)
+    layout = changed.rolling_layout
+    covered = {
+        offset
+        for start, end in (
+            *((unit.span.start, unit.span.end) for unit in layout.assembly_units),
+            *((span.start, span.end) for span in (
+                layout.configuration, *layout.retired_configuration_spans
+            )),
+            *((hook.address, hook.address + hook.width) for hook in layout.hooks),
+            *((item.pointer_address, item.pointer_address + 4)
+              for item in layout.diagnostics),
+        )
+        for offset in range(start, end)
+    }
+    key = "schema-5-fixed-trim"
+    endpoint = runtime_endpoints.historical_endpoint(key)
+    parts = [
+        (unit.start, unit.end, endpoint_images.unit_payload(key, unit.key))
+        for unit in endpoint.units if unit.key in FUEL_PATH_UNITS
+    ]
+    parts += [
+        (hook.address, hook.address + hook.width, hook.value.to_bytes(hook.width, "big"))
         for hook in endpoint.hooks if hook.key in FUEL_PATH_HOOKS
     ]
-    spans += [
-        (item.pointer_address, item.pointer_address + 4)
+    parts += [
+        (item.pointer_address, item.pointer_address + 4, item.target.to_bytes(4, "big"))
         for item in endpoint.dids if item.did in FUEL_PATH_DIDS
     ]
-    for start, end in spans:
-        source[start:end] = stock[start:end]
-    assert runtime_endpoints.classify_runtime(closed(source), changed, "clean").rolling == (
+    parts = [
+        part for part in parts
+        if not covered.intersection(range(part[0], part[1]))
+    ]
+    assert parts
+    stock = target("JK08A").stock_image.data
+    clean = bytearray(built_image())
+    for start, end, _payload in parts:
+        clean[start:end] = stock[start:end]
+    assert runtime_endpoints.classify_runtime(closed(clean), changed, "clean").rolling == (
         "current"
     )
+    leftover = bytearray(clean)
+    for start, end, payload in parts:
+        leftover[start:end] = payload
+    with pytest.raises(runtime_endpoints.EndpointError, match="partial or unknown"):
+        runtime_endpoints.classify_runtime(closed(leftover), changed, "leftover")
 
 
 SCHEMA_5_SLOTS = (
@@ -357,7 +342,7 @@ SCHEMA_5_SLOTS = (
 
 
 def schema_5_record(*slots):
-    head = bytes.fromhex(fixture("schema-5-fixed-trim")["configuration"])[:40]
+    head = endpoint_images.record("schema-5-fixed-trim")[:40]
     return head + bytes.fromhex("".join(slots)) + bytes.fromhex("a55a")
 
 
@@ -385,7 +370,7 @@ def test_schema_5_record_contract_is_frozen(slot, valid):
 
 
 def test_schema_4_record_contract_is_frozen():
-    record = bytearray.fromhex(fixture("schema-4-uniform-gain")["configuration"])
+    record = bytearray(endpoint_images.record("schema-4-uniform-gain"))
     record[0x16:0x18] = (3).to_bytes(2, "big")
     assert runtime_endpoints.historical_configuration_fields(bytes(record), 4)[
         "integral_gain"
@@ -397,11 +382,11 @@ def test_schema_4_record_contract_is_frozen():
     )
 
 
-@pytest.mark.parametrize("key", sorted(FLASHED_ENDPOINTS))
+@pytest.mark.parametrize("key", FLASHED_ENDPOINTS)
 def test_flashed_endpoint_upgrades_with_its_settings_and_calibration(key):
     """The upgrade composes the current runtime over the flashed calibration.
     The schema 5 endpoint is the current runtime until the runtime changes."""
-    record = bytearray.fromhex(fixture(key)["configuration"])
+    record = bytearray(endpoint_images.record(key))
     record[4] = 0x0E  # Maps 2 to 4 enabled.
     source = bytearray(endpoint_image(key, record=bytes(record)))
     family = target("JK08A").map_layout.families[0]

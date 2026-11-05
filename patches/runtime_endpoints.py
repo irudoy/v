@@ -1257,9 +1257,16 @@ def _require_stock_outside_history(source, target, state, context):
         covered = set(_layout_stock_bytes(layout))
         if state != "absent":
             covered |= historical_endpoint(state).write_offsets()
-    stock = target.stock_image.data
+    # Below the Rolling Launch layer a hook word that Map Switching shares
+    # holds the Map Switching replacement; every other byte is stock.
+    below = bytearray(target.stock_image.data)
+    map_layout = target.map_layout
+    for hook in map_layout.hooks:
+        below[hook.address : hook.address + hook.width] = hook.replacement.to_bytes(
+            hook.width, map_layout.byte_order
+        )
     if any(
-        source[offset] != stock[offset]
+        source[offset] != below[offset]
         for offset in historical_write_offsets(target.rom) - covered
     ):
         raise EndpointError(

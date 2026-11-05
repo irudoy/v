@@ -10,10 +10,10 @@ from patches import build_rom
 from patches import calibration_file
 from patches import calibration_ranges
 from patches import extract_calibration
-from patches import rolling_launch_layout
 from patches import rom_checksums
 from patches import runtime_endpoints
 from patches import runtime_targets
+from patches.tests import rolling_endpoint_images as endpoint_images
 
 
 @lru_cache(maxsize=None)
@@ -235,51 +235,39 @@ def test_corrupt_rolling_record_is_a_partial_state_on_every_exact_rom(rom):
 
 @pytest.mark.slow
 def test_schema_1_record_is_reported_and_only_calibration_is_written(tmp_path, capsys):
-    layout = rolling_launch_layout.load_layout()
-    telemetry_layout = target("JK08A").telemetry_layout
-    historical = bytearray(runtime_endpoints.strip_telemetry_endpoint(
-        built("JK08A"), telemetry_layout, "current"
-    ))
-    controller = layout.assembly_unit_by_key["speed_controller"]
-    historical[controller.span.start : controller.span.end] = (
-        bytes([0xFF]) * controller.span.size
+    current = target("JK08A")
+    lower = runtime_endpoints.strip_telemetry_endpoint(
+        built("JK08A"), current.telemetry_layout, "current"
     )
-    # A historical endpoint keeps its 32-byte record in the retired span.
-    historical[layout.configuration.start : layout.configuration.end] = (
-        bytes([0xFF]) * layout.configuration.size
-    )
-    retired = layout.retired_configuration_for(3)
-    historical[retired.start : retired.end] = bytes.fromhex(
-        "524c0101050000ff010000a00001001000"
-        "04012c0064737373737300adb3a55a"
-    )
-    historical[0x8725] ^= 0x01
-    # A historical endpoint leaves the pointer slots of the later views stock.
-    for item in layout.diagnostics:
-        if item.did not in runtime_endpoints.HISTORICAL_ROLLING_DIDS:
-            historical[item.pointer_address : item.pointer_address + 4] = (
-                item.stock.to_bytes(4, layout.byte_order)
-            )
-    historical = closed("JK08A", historical)
+    below = endpoint_images.without_rolling_layer(current, lower)
+    addresses = runtime_endpoints.EXACT_ENDPOINT_ADDRESSES
+    # An endpoint with erased units over the hook words below the Rolling
+    # Launch layer that publishes the nine early views and keeps its 32-byte
+    # record in the span of schemas 1 to 3.
     signature = runtime_endpoints.RollingEndpointSignature(
         key="test-schema-1-endpoint",
         roms=("JK08A",),
         configuration_schema_version=1,
         unit_sha256=tuple(
-            (unit.key, build_rom.sha256(historical[unit.span.start : unit.span.end]))
-            for unit in layout.assembly_units
+            (key, build_rom.sha256(bytes([0xFF]) * (end - start)))
+            for key, start, end in addresses.unit_spans
         ),
         hook_values=tuple(
-            (
-                hook.key,
-                int.from_bytes(
-                    historical[hook.address : hook.address + hook.width],
-                    layout.byte_order,
-                ),
-            )
-            for hook in layout.hooks
+            (key, int.from_bytes(below[address : address + width], "big"))
+            for key, address, width in addresses.hook_words
         ),
     )
+    historical = endpoint_images.with_endpoint(
+        current,
+        lower,
+        signature,
+        bytes.fromhex(
+            "524c0101050000ff010000a00001001000"
+            "04012c0064737373737300adb3a55a"
+        ),
+    )
+    historical[0x8725] ^= 0x01
+    historical = closed("JK08A", historical)
     image = tmp_path / "historical.bin"
     image.write_bytes(historical)
     calibration = tmp_path / "historical-calibration.toml"
