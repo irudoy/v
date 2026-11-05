@@ -331,6 +331,29 @@ The interrupt-priority initializer `0x00028D3C` writes `0x8FFF` to `IPRJ`
 the crank-tooth sections at mask 8, and an interrupt above level 8 can delay
 both.
 
+The tooth entry `0x00028EA2` reads `ICR0A` at `0xFFFFF434`. Initializer
+`0x00028D3C` writes `IPRC = 0xF7F8`, so `ICI0A` uses priority 8
+(`IPRC[3:0]`, vector 84). The cam entry `0x0002A2BE` reads `TSR1A` at
+`0xFFFFF45E` and clears its bit 4 with `0x01EF` at `0x0002A2EE`.
+That flag is `IMF1E`, whose interrupt `IMI1E` uses vector 100 and
+`IPRD[3:0]`. The same initializer writes `IPRD = 0xFF8A`, so this source
+uses priority 10 and can preempt a tooth section at mask 8. The register
+and vector assignments are defined by the SH7058S/SH7059 hardware manual,
+table 7.4 and section 11.2.5.
+
+The cam path reaches the engine-event feeder through the fallback branch
+`0x0002A316..0x0002A31E`, `0x0002A4B2`, `0x0002A51E`, and the call to
+`0x0002B768` at `0x0002A592`. That routine calls `0x000208F8` at
+`0x0002BC80`. This branch requires `0xFFFF24C9.bit6` to be set; with the
+bit clear, the cam path does not run the ignition dispatcher. The mode
+snapshot is copied from `0xFFFF24CE..0xFFFF24D3` to
+`0xFFFF24C8..0xFFFF24CD` by `0x00022558` at `0x00021348`, after the
+periodic loop raises its mask to 15 at `0x00021300`. The snapshot cannot
+change while the tooth handler is suspended by the cam handler. Thus a
+normal-mode adapter publication cannot be interrupted by a cam fallback
+publication. When fallback is selected, the adapter and publisher must
+apply the stock command and publish zero cut fraction on every entry.
+
 ## Dwell sequence guard and recovery
 
 After recomputing `0xFFFF13D1`, handler `0x0002AF38` compares it with the
