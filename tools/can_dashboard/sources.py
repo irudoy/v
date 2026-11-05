@@ -150,7 +150,7 @@ def _send_control_requests(bus, can_module, config, requests, emit, pacing=None)
         ))
 
 
-def run_pcan(config, stop_event, emit, control_requests=None):
+def run_pcan(config, stop_event, emit, control_requests=None, capture=None):
     """Serialize PCAN open, receive and complete cleanup across reconnects."""
     if stop_event.is_set():
         emit(SourceStatus("stopped", "PCAN connection cancelled"))
@@ -167,12 +167,12 @@ def run_pcan(config, stop_event, emit, control_requests=None):
         if stop_event.is_set():
             emit(SourceStatus("stopped", "PCAN connection cancelled"))
             return
-        _run_pcan(config, stop_event, emit, control_requests)
+        _run_pcan(config, stop_event, emit, control_requests, capture)
     finally:
         _PCAN_SESSION.release()
 
 
-def _run_pcan(config, stop_event, emit, control_requests):
+def _run_pcan(config, stop_event, emit, control_requests, capture=None):
     """Read selected frames through python-can's PCAN-Basic backend."""
     try:
         import can
@@ -225,11 +225,7 @@ def _run_pcan(config, stop_event, emit, control_requests):
                 break
             if message is None:
                 continue
-            if not message.is_error_frame and (
-                message.is_extended_id or message.arbitration_id not in data_ids
-            ):
-                continue
-            emit(FrameRecord(
+            frame = FrameRecord(
                 arbitration_id=message.arbitration_id,
                 data=bytes(message.data),
                 timestamp=message.timestamp,
@@ -237,7 +233,15 @@ def _run_pcan(config, stop_event, emit, control_requests):
                 is_extended_id=message.is_extended_id,
                 is_remote_frame=message.is_remote_frame,
                 is_error_frame=message.is_error_frame,
-            ))
+                dlc=getattr(message, "dlc", None),
+            )
+            if capture is not None:
+                frame = capture(frame)
+            if not frame.is_error_frame and (
+                frame.is_extended_id or frame.arbitration_id not in data_ids
+            ):
+                continue
+            emit(frame)
     finally:
         cleanup_errors = []
         try:
@@ -266,6 +270,7 @@ def run_demo(
     emit,
     profile="tuning",
     schema_path=None,
+    capture=None,
 ):
     options = {"profile": profile}
     if schema_path is not None:
@@ -282,20 +287,22 @@ def run_demo(
             continue
         elapsed = now - started
         for frame in generator.group(tick, elapsed):
-            emit(FrameRecord(
+            received = FrameRecord(
                 frame.arbitration_id,
                 frame.data,
                 frame.timestamp,
                 now,
-            ))
+            )
+            emit(capture(received) if capture is not None else received)
         if tick % 10 == 0:
-            for frame in generator.stock_context(tick, elapsed):
-                emit(FrameRecord(
+            for frame in generator.stock_context(tick, elapsed, bus_detail=True):
+                received = FrameRecord(
                     frame.arbitration_id,
                     frame.data,
                     frame.timestamp,
                     now,
-                ))
+                )
+                emit(capture(received) if capture is not None else received)
         tick = (tick + 1) & 0xFFFF
         deadline += BASE_TICK_SECONDS
         if now - deadline > 0.25:

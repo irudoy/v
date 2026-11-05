@@ -154,7 +154,7 @@ class PcanReconnectTest(unittest.TestCase):
 
 
 class PcanFrameSelectionTest(unittest.TestCase):
-    def receive(self, records, *, can_id=model.DEFAULT_CAN_ID, listen_only=False):
+    def receive(self, records, *, can_id=model.DEFAULT_CAN_ID, listen_only=False, capture=None):
         stop = threading.Event()
         events = []
 
@@ -184,8 +184,27 @@ class PcanFrameSelectionTest(unittest.TestCase):
         with mock.patch.dict(sys.modules, {"can": fake_can}):
             sources.run_pcan(
                 sources.PcanConfiguration(can_id=can_id, listen_only=listen_only), stop, events.append,
+                capture=capture,
             )
         return [event for event in events if isinstance(event, model.FrameRecord)]
+
+    def test_raw_capture_precedes_display_selection_and_preserves_rtr_dlc(self):
+        frames = [
+            model.FrameRecord(0x123, b"\x01", 1),
+            model.FrameRecord(0x1234, b"\x02", 2, is_extended_id=True),
+            model.FrameRecord(0x456, b"", 3, is_remote_frame=True, dlc=8),
+            model.FrameRecord(0x180, bytes(8), 4),
+        ]
+        captured = []
+
+        def capture(frame):
+            captured.append(frame)
+            return frame
+
+        displayed = self.receive(frames, capture=capture)
+        self.assertEqual([f.arbitration_id for f in captured], [f.arbitration_id for f in frames])
+        self.assertEqual(captured[2].dlc, 8)
+        self.assertEqual([f.arbitration_id for f in displayed], [0x180])
 
     def test_live_errors_reach_the_model_and_visible_health_counter(self):
         generator = model.DemoGenerator()
@@ -227,7 +246,7 @@ class PcanFrameSelectionTest(unittest.TestCase):
             for listen_only in (False, True):
                 with self.subTest(can_id=can_id, listen_only=listen_only):
                     generator = model.DemoGenerator(can_id)
-                    expected = [*generator.group(1, 0.0), *generator.stock_context(1, 0.0)]
+                    expected = [*generator.group(1, 0.0), *generator.stock_context(1, 0.0, bus_detail=True)]
                     unrelated = model.FrameRecord(0x123, bytes(8), 0.0)
                     extended = model.FrameRecord(can_id, bytes(8), 0.0, is_extended_id=True)
                     records = self.receive(

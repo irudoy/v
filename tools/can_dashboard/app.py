@@ -45,6 +45,7 @@ from tools.can_dashboard.model import (
 from tools.can_dashboard.live_feed import LiveFeed, feed_channels, parse_endpoint
 from tools.can_dashboard.presentation import Metric
 from tools.can_dashboard.recording import TelemetryMlgRecorder, recover_recording
+from tools.can_dashboard.raw_log import BusRecording
 from tools.can_dashboard.replay import (
     ReplayLoaded,
     ReplayPlayer,
@@ -632,6 +633,7 @@ STATUS_FIELDS = (
     ("control_var", "Last stream command", "cyan", "right",
      "Control: START queued"),
     ("record_var", "MLG recording", "amber", "right", "MLG: recording"),
+    ("raw_record_var", "Raw bus recording", "amber", "right", "TRC: recording"),
     ("feed_var", "Live value feed", "muted", "right",
      "Feed: udp 127.0.0.1:47809, 999999 sent"),
     ("error_var", "Last application exception", "red", "left",
@@ -772,6 +774,7 @@ class DashboardApp:
         )
         self.recorder = None
         self.recording_clock = None
+        self.bus_recording = BusRecording()
         self.feed = None
         self.last_ui_group = 0
         self.stream_command = "start"
@@ -837,6 +840,7 @@ class DashboardApp:
         self.loss_var = tk.StringVar(self.root, value="Loss: 0 | Incomplete: 0 | Malformed: 0")
         self.control_var = tk.StringVar(self.root, value="Control: idle")
         self.record_var = tk.StringVar(self.root, value="MLG: idle")
+        self.raw_record_var = tk.StringVar(self.root, value="TRC: idle")
         self.feed_var = tk.StringVar(self.root, value="Feed: off")
         self.error_var = tk.StringVar(self.root, value="")
         self.run_value_vars = {
@@ -1770,6 +1774,16 @@ class DashboardApp:
 
         return emit
 
+    def _source_capture(self):
+        generation = self.source_generation
+
+        def capture(frame):
+            if generation != self.source_generation:
+                return frame
+            return self.bus_recording.capture(frame)
+
+        return capture
+
     def _selected_can_id(self):
         try:
             return _parse_standard_can_id(self.can_id_var.get())
@@ -1846,6 +1860,7 @@ class DashboardApp:
                 self.stop_event,
                 self._source_emitter(),
                 self.control_requests,
+                self._source_capture(),
             ),
             daemon=True,
             name="pcan-reader",
@@ -2029,6 +2044,7 @@ class DashboardApp:
                 self._source_emitter(),
                 self.args.profile,
                 self.args.schema,
+                self._source_capture(),
             ),
             daemon=True,
             name="telemetry-demo",
@@ -2119,6 +2135,8 @@ class DashboardApp:
         for index in range(first, last):
             item_now = player.host_time(timeline.times[index], now)
             item = timeline.item(index, item_now)
+            if isinstance(item, FrameRecord) and hasattr(self, "bus_recording"):
+                item = self.bus_recording.capture(item)
             if self._process_item(item, item_now) is not None:
                 new_snapshot = True
                 self._record_snapshot(item, item_now)
@@ -2284,6 +2302,10 @@ class DashboardApp:
                 return
         output = Path(path)
         force = False
+        raw_output = output.with_suffix(".trc")
+        if raw_output == output or raw_output.exists():
+            self.record_var.set(f"Recording error: raw destination unavailable: {raw_output}")
+            return
         if output.exists():
             if not interactive:
                 self.record_var.set(f"MLG error: {output.name} already exists")
@@ -2306,12 +2328,17 @@ class DashboardApp:
             self.record_var.set(f"MLG error: {error}")
             LOG.error("recording not started: %s", error)
             return
-        self.recording_clock = FrameClock(time.monotonic())
+        self.recording_clock = self.bus_recording.start(
+            raw_output, self.recorder.start_epoch, time.monotonic()
+        )
+        self.raw_record_var.set(self.bus_recording.status())
         self._sync_record_button()
         self.record_var.set(f"MLG: recording {output.name}")
         LOG.info("recording to %s", output)
 
     def stop_recording(self):
+        if hasattr(self, "bus_recording"):
+            self.bus_recording.stop()
         if self.recorder is None:
             return
         recorder = self.recorder
@@ -2400,6 +2427,8 @@ class DashboardApp:
             self.root.report_callback_exception(type(error), error, error.__traceback__)
 
     def _poll_events(self):
+        if hasattr(self, "bus_recording") and self.bus_recording.writer is not None:
+            self.raw_record_var.set(self.bus_recording.status())
         now = time.monotonic()
         processed = 0
         new_snapshot = False
@@ -2453,7 +2482,13 @@ class DashboardApp:
     def _record_snapshot(self, item, now):
         if self.recorder is None:
             return
-        elapsed = self.recording_clock.elapsed(item, now)
+        if (
+            isinstance(item, FrameRecord)
+            and item.recording_started == self.recording_clock.started
+        ):
+            elapsed = item.recording_elapsed
+        else:
+            elapsed = self.recording_clock.elapsed(item, now)
         if elapsed is None:
             return
         try:
@@ -2462,6 +2497,8 @@ class DashboardApp:
             recorder = self.recorder
             self.recorder = None
             self.recording_clock = None
+            if hasattr(self, "bus_recording"):
+                self.bus_recording.stop()
             self._sync_record_button()
             self._recording_failed(recorder, error)
 

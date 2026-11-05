@@ -11,6 +11,7 @@ import tempfile
 
 from tools.logs import mlvlg
 from tools.logs import can_telemetry
+from tools.can_dashboard import stock
 
 
 DEFAULT_SCHEMA = can_telemetry.DEFAULT_SCHEMA
@@ -239,7 +240,7 @@ def build_bindings(
             ),
             FieldBinding(
                 mlvlg.FieldSpec(
-                    "Gear", "", "Context", mlvlg.MLG_F32, digits=0
+                    "Gear", "gear", "Context", mlvlg.MLG_F32, digits=0
                 ),
                 "tcm_gear",
                 "attribute",
@@ -263,6 +264,14 @@ def build_bindings(
                 "attribute",
             ),
         )
+    )
+    bindings.extend(
+        FieldBinding(
+            mlvlg.FieldSpec(field.label, field.unit, "Vehicle bus", mlvlg.MLG_F32,
+                           digits=field.digits),
+            field.key, "attribute",
+        )
+        for field in stock.FIELDS
     )
     return tuple(bindings)
 

@@ -123,11 +123,13 @@ The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 Live frame selection runs in the dashboard source after `recv`. The pinned
 PCAN backend implements ID filters in software; the source leaves them unset
 so driver-delivered error frames reach the `errors=` health counter regardless
-of identifier. It forwards standard data for custom telemetry and stock context
-IDs `0x174`, `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide the
-transmission gear, engine speed, vehicle speed, ASCD input, selector state,
-and dashboard indication state. Unrelated standard data and extended data frames
-are discarded before entering the dashboard event queue.
+of identifier. Before selection, a running recording sends every received
+frame to its raw TRC writer. The display queue receives standard data for custom
+telemetry and stock context IDs `0x160`, `0x174`, `0x176`, `0x177`, `0x180`,
+`0x239`, `0x280`, `0x284`, `0x421`, and `0x551`. They provide the transmission
+state and speed ratio, CAN torque words, engine speed, both vehicle speeds,
+ASCD input, selector state, and dashboard indication state. Other standard
+data and extended data stay in the raw log without entering the display queue.
 
 `Engine speed` and `Stock CAN RPM` show frame `0x180`. `FUN_000384FE` shifts
 the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 4 into
@@ -457,6 +459,116 @@ recording declares no GPS channels rather than storing channels that hold only
 `NaN`. A real route requires a separately captured and decoded AV/navigation
 network or another GPS source. The logger never invents coordinates from
 vehicle speed.
+
+### Raw bus recording and time alignment
+
+`REC` and `--record drive.mlg` also write `drive.trc` in the same directory.
+The TRC uses PCAN-View 1.1 ASCII text and has no message-count or duration
+limit. It includes every frame delivered by `recv` during recording, before
+display-ID selection and before the bounded UI queue: standard and extended
+data, RTR with its declared DLC, and CAN error notifications. TRC error rows
+carry four status bytes; the description retains the complete original error
+payload and DLC. Frames the driver does not deliver cannot be recovered by the
+application. The raw log has no circular buffer or oldest-message replacement.
+
+One receive-side clock assigns elapsed seconds to every frame. The raw row's
+offset in milliseconds divided by 1000 equals the MLG `Elapsed` value of a
+snapshot's final telemetry page, within the F32 rounding of `Elapsed` and the
+10 us resolution of MLG block timestamps. A frame at offset 103.25 ms lies
+between snapshots at `Elapsed=0.100` and `Elapsed=0.110`. The MLG samples the
+last decoded stock values at that final page; the TRC retains their individual
+arrival times, including frames between two complete snapshots. Both clocks
+start at the recording request, not at the first snapshot. The shared clock
+uses the interface timestamp, with the host-clock fallback described above.
+The TRC header records the exact Unix start seconds and local PCAN-style
+`$STARTTIME` days since 1899-12-30. MLG `Date` is the integer part of Unix
+start seconds plus elapsed seconds; its header start is rounded down to whole
+seconds. Compare TRC offsets to `Elapsed` directly rather than subtracting the
+rounded MLG header time from a TRC wall-clock time.
+
+Disk operations run in a separate thread. Submission and stop do not wait for
+the disk or its final flush. The `Raw bus recording` status reports recording,
+saving, saved, or `TRC incomplete` with the path and error. A disk error ends
+raw writing while MLG and the dashboard continue. The pending queue bounds
+memory; if the disk cannot keep up and it fills, raw recording ends visibly as
+incomplete instead of silently dropping frames. The file itself has no frame
+limit. Normal stop and window close drain the accepted frames. A crash can
+leave an incomplete final line or buffered tail; the file remains at its final
+path and must not be treated as a complete session.
+
+A raw destination must be new, including when an MLG replacement is confirmed.
+An existing or concurrently created TRC is never overwritten. Raw frames are
+retained even when no complete telemetry snapshot produces an MLG. Demo mode
+writes its generated frames. A frame replay writes only the subset that replay
+loaded; an MLG replay has no raw frames and produces a header-only TRC. Replay
+recordings therefore do not replace a live full-bus capture.
+
+### Vehicle-bus field survey
+
+The local reference capture `tmp/rl-2.trc` is inventoried with
+`tools/logs/peak_trc_audit.py`. The table covers every ID in that capture.
+"Added" means a named MLG channel, "Not needed" means an existing channel
+or no additional quantity required by the current audits, and "Unknown"
+means no qualified payload meaning for this recording task. Every row remains
+in the live raw TRC regardless of its MLG classification. Mailbox membership
+alone does not establish a payload meaning.
+
+The sources are [`../../defs/JK08A.can.md`](../../defs/JK08A.can.md), the KB
+meanings `can_174_transmission_payload_decoder/fn`, `nimble-zebra/fn` and
+`vivid-macaque/ram`, and the decoders in
+[`../logs/tcm_shift_audit.py`](../logs/tcm_shift_audit.py),
+[`../logs/torque_scale_audit.py`](../logs/torque_scale_audit.py) and
+[`../logs/rolling_launch_audit.py`](../logs/rolling_launch_audit.py).
+`stock.py` owns the host-only added channel descriptors and decoding. Generated
+telemetry schema and dashboard metadata retain their declared sources.
+
+| ID | MLG result | Meaning and boundary |
+| --- | --- | --- |
+| `0x002` | Unknown | No qualified payload meaning. |
+| `0x160` | Added | `CAN limited request word` and `CAN parallel torque word`, packed 12-bit `cnt`; physical torque scale is unresolved. |
+| `0x174` | Added | Existing `Gear` is current gear; `TCM target gear` uses the high nibble. Both use `gear`, with no forward gear as NaN. `TCM word A`, `TCM word B` use packed `cnt`, and `TCM status` uses `code`. Counter and remaining flags stay raw. |
+| `0x176` | Added | `TCM output speed` and `TCM turbine speed` are big-endian word `cnt`; `TCM output / turbine ratio` is their dimensionless ratio, NaN with a zero denominator. No independent RPM scale is asserted. |
+| `0x177` | Added | `TCM gear phase` and `TCM shift code` use `index`; `TCM reduction byte` uses `cnt`. These are the shift-audit operands, not a claimed physical reduction scale. |
+| `0x180` | Added | Existing `Stock CAN RPM`; `CAN actual torque word` and `CAN pre-limiter request word` use packed `cnt`. Code 4095 is NaN. The pedal copy is not needed alongside streamed APP. |
+| `0x182` | Not needed | Opening-coordinate monitor is code-described; streamed throttle channels serve the current audits. Remaining fields have no additional qualified recording role. |
+| `0x1A5` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x1B4` | Unknown | No qualified payload meaning. |
+| `0x1F9` | Not needed | Engine speed duplicates `0x180`; other software-state copies have no additional recording role in the current audits. |
+| `0x215` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x216` | Unknown | No qualified payload meaning. |
+| `0x239` | Not needed | Existing ASCD input channel; telemetry and raw bytes retain the related runtime state. |
+| `0x245` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x280` | Not needed | Existing `Vehicle speed` from bytes 4..5, `km/h`; exact indicated-speed semantics remain unresolved. |
+| `0x284` | Added | `Vehicle speed 0x284`, bytes 4..5 divided by 100, `km/h`; the ECU's selected speed source. Invalid word 65535 is NaN, while the ECU stores zero for it. |
+| `0x285` | Unknown | No qualified payload meaning. |
+| `0x2A0` | Unknown | No qualified payload meaning. |
+| `0x2B0` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x2B3` | Unknown | No qualified payload meaning. |
+| `0x2B4` | Unknown | No qualified payload meaning. |
+| `0x2DE` | Unknown | No qualified payload meaning. |
+| `0x351` | Unknown | No qualified payload meaning. |
+| `0x354` | Not needed | Alternative ECU speed source in bytes 0..1; the active target selects `0x284`. Remaining fields are unqualified. |
+| `0x355` | Unknown | No qualified payload meaning. |
+| `0x358` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x35D` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x421` | Not needed | Existing selector code; the named lever position is restored from that code. |
+| `0x515` | Unknown | No qualified payload meaning. |
+| `0x51F` | Unknown | No qualified payload meaning. |
+| `0x540` | Unknown | No qualified payload meaning. |
+| `0x541` | Unknown | No qualified payload meaning. |
+| `0x542` | Unknown | No qualified payload meaning. |
+| `0x54A` | Unknown | No qualified payload meaning. |
+| `0x54B` | Unknown | No qualified payload meaning. |
+| `0x54C` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x551` | Not needed | Existing dashboard-state channel; coolant is already streamed. |
+| `0x560` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x580` | Unknown | Serializer and cadence are known; no qualified payload channel is assigned here. |
+| `0x5C5` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x60D` | Unknown | No qualified payload meaning. |
+| `0x625` | Unknown | Configured receive mailbox; payload meaning is not qualified. |
+| `0x6C2` | Unknown | No qualified payload meaning. |
+| `0x6E2` | Unknown | Serializer and cadence are known; no qualified payload channel is assigned here. |
+| `0x6F0` | Not needed | Every field of the selected telemetry profile is already recorded. |
 
 ### Recovering an unfinished recording
 

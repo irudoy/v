@@ -84,7 +84,7 @@ This table describes the local deployment and tool locations.
 | GNU SH toolchain | GCC 13.3.0, binutils 2.44, GDB SH simulator 16.3 | Image built from `sh-elf-run/Dockerfile`; the simulator version is required by `sh-elf-run/verify_map_switching.py` |
 | Python | 3.11 | `../pyproject.toml` and `../uv.lock` |
 | Poppler | 26.09.0 | Reference extraction release, installed through Homebrew; `pdftotext` and `pdfinfo` on PATH; `diagnostics/extract_esm.py` reports this reference and the installed releases; every release must meet inventory and projection checks |
-| CAN dashboard | 10.1.1 | `can_dashboard/__init__.py` |
+| CAN dashboard | 10.2.0 | `can_dashboard/__init__.py` |
 | PyInstaller | 6.21.0 | `can_dashboard/requirements-macos-build.txt` |
 | `python-can` | 4.6.1 | The three `can_dashboard/requirements-*.txt` pins |
 | `tzdata` | 2026.3 | `can_dashboard/requirements-windows.txt` |

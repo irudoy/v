@@ -14,6 +14,8 @@ from tools.can_dashboard.tests.tk_support import require_tk
 require_tk()
 
 from tools.can_dashboard import app
+from tools.can_dashboard.model import FrameRecord
+from tools.can_dashboard.raw_log import BusRecording
 from tools.logs import mlvlg
 
 
@@ -64,6 +66,27 @@ class RecordingFailureUiTest(unittest.TestCase):
             dashboard.stop_recording()
         self.assertIn("stream close failed", " ".join(logs.output))
         dashboard.record_var.set.assert_called_with(f"MLG incomplete: {retained}")
+
+
+class ReceiveClockUiTest(unittest.TestCase):
+    def test_ui_backlog_keeps_the_raw_timestamp_of_each_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            capture = BusRecording()
+            clock = capture.start(Path(directory) / "drive.trc", 1700000000, 10)
+            try:
+                capture.capture(FrameRecord(0x123, b"", 1000, 10.1))
+                snapshot = capture.capture(FrameRecord(0x6F0, bytes(8), 1000.01, 10.1))
+                capture.capture(FrameRecord(0x123, b"", 1000.02, 10.1))
+                dashboard = object.__new__(app.DashboardApp)
+                dashboard.recorder = types.SimpleNamespace(append=mock.Mock())
+                dashboard.recording_clock = clock
+                dashboard.model = object()
+                dashboard._record_snapshot(snapshot, 11.0)
+                dashboard.recorder.append.assert_called_once()
+                self.assertAlmostEqual(dashboard.recorder.append.call_args.args[1], 0.11)
+            finally:
+                capture.stop()
+                self.assertTrue(capture.writer.done.wait(2))
 
 
 class RecordingRecoveryCommandTest(unittest.TestCase):

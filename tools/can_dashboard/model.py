@@ -10,6 +10,7 @@ import time
 
 from tools.can_dashboard.acceleration import AccelerationTimer
 from tools.can_dashboard.selected_map import MAP_COUNT, MapTracker
+from tools.can_dashboard import stock
 from tools.logs import can_telemetry
 
 
@@ -23,6 +24,7 @@ DEFAULT_CAN_ID = 0x6F0
 DEFAULT_BITRATE = 500_000
 BASE_TICK_SECONDS = 0.01024
 OBSERVED_IDS = (
+    *stock.IDS,
     TCM_GEAR_ID,
     STOCK_RPM_ID,
     ASCD_BUTTON_ID,
@@ -151,6 +153,9 @@ class FrameRecord:
     is_extended_id: bool = False
     is_remote_frame: bool = False
     is_error_frame: bool = False
+    dlc: int | None = None
+    recording_started: float | None = None
+    recording_elapsed: float | None = None
 
 
 @dataclass(frozen=True)
@@ -369,6 +374,8 @@ class DashboardModel:
         self.gear = "?"
         self.gear_raw = None
         self.tcm_gear = None
+        for field in stock.FIELDS:
+            setattr(self, field.key, None)
         self.ascd_button = "?"
         self.ascd_button_raw = None
         self.dashboard_state = "?"
@@ -622,6 +629,8 @@ class DashboardModel:
 
     def _decode_stock_context(self, frame):
         data = bytes(frame.data)
+        for key, value in stock.decode(frame.arbitration_id, data).items():
+            setattr(self, key, value)
         if frame.arbitration_id == STOCK_RPM_ID and len(data) >= 2:
             self.stock_rpm = int.from_bytes(data[0:2], "big") / 8
         elif frame.arbitration_id == TCM_GEAR_ID and len(data) >= 4:
@@ -637,6 +646,9 @@ class DashboardModel:
             self._set_dashboard_state(data[5])
 
     def _record_stock_context(self, values):
+        for field in stock.FIELDS:
+            value = values.get(field.key)
+            setattr(self, field.key, value if _finite(value) else None)
         rpm = values.get("stock_rpm")
         if _finite(rpm):
             self.stock_rpm = rpm
@@ -932,7 +944,7 @@ class DemoGenerator:
             for payload in pages
         )
 
-    def stock_context(self, tick, elapsed=None):
+    def stock_context(self, tick, elapsed=None, *, bus_detail=False):
         elapsed = tick * BASE_TICK_SECONDS if elapsed is None else elapsed
         values = self._values(elapsed)
         rpm = int(values["stock_rpm"])
@@ -950,8 +962,15 @@ class DemoGenerator:
         tcm = bytearray(8)
         gear = min(5, 1 + int(speed_kmh // 12))
         tcm[3] = gear << 4 | gear
+        details = (
+            FrameRecord(0x176, (500).to_bytes(2, "big") + (1000).to_bytes(2, "big") + bytes(3), elapsed),
+            FrameRecord(0x177, bytes((0, 0, gear - 1, 0, 0, 0x78)), elapsed),
+            FrameRecord(0x160, bytes.fromhex("32032000000000"), elapsed),
+            FrameRecord(0x284, bytes(speed), elapsed),
+        ) if bus_detail else ()
         return (
             FrameRecord(TCM_GEAR_ID, bytes(tcm), elapsed),
+            *details,
             FrameRecord(STOCK_RPM_ID, bytes(rpm_payload), elapsed),
             FrameRecord(PRND_ID, bytes(prnd), elapsed),
             FrameRecord(ASCD_BUTTON_ID, bytes(button), elapsed),
