@@ -7,6 +7,7 @@ import pytest
 
 from patches import copy_map_slot, preflash, rom_checksums
 from patches.tests.test_preflash import built, target
+from patches.tests.test_extract_runtime_states import previous_current_image
 
 
 def slot(family, index):
@@ -98,6 +99,11 @@ def test_map_selection_is_refused(source_map, maps, message):
 def test_an_image_without_map_switching_is_refused():
     with pytest.raises(copy_map_slot.CopyError, match="Map Switching state 'absent'"):
         copy_map_slot.copy_image(target("JK08A").stock_image.data, 3)
+
+
+def test_an_image_with_unexpressed_settings_is_refused():
+    with pytest.raises(copy_map_slot.CopyError, match="cannot express"):
+        copy_map_slot.copy_image(previous_current_image(), 3)
 
 
 def test_a_change_outside_the_target_slots_is_refused(monkeypatch):
