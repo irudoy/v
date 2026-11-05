@@ -3,6 +3,7 @@ from dataclasses import replace
 from functools import lru_cache
 import io
 from pathlib import Path
+import statistics
 import struct
 import tempfile
 from types import SimpleNamespace
@@ -415,9 +416,9 @@ class HoldAuditTest(unittest.TestCase):
             "no ACTIVE run": (simulate(SPEEDS)[:2], HISTORICAL, 1),
             "current runtime": (configure(simulate(SPEEDS), *RL6_INPUTS), CALIBRATION, 0),
             # A hold-mode capture of the current runtime without the inputs
-            # configuration leaves the veto unchecked.
+            # configuration is a coverage gap of the classification.
             "current runtime without the veto geometry": (
-                configure(simulate(SPEEDS), *RL6_LAW), CALIBRATION, 1,
+                configure(simulate(SPEEDS), *RL6_LAW), CALIBRATION, 0,
             ),
         }
         for name, (samples, calibration, status) in cases.items():
@@ -766,6 +767,38 @@ class CurrentRunTest(unittest.TestCase):
         self.assertEqual(run.release_cuts, 0)
         self.assertEqual(run.failures, ())
 
+    def test_no_cut_request_follows_the_release_snapshot(self):
+        # The veto of a cylinder falls at its dwell arming, so no veto of the
+        # run waits for the successor cylinder after the release.
+        for name, (simulation, settings, _kind) in KINDS.items():
+            with self.subTest(name):
+                samples = configure(simulation(), *RL6_RELEASE)
+                release = next(
+                    index for index in range(len(samples))
+                    if index and samples[index - 1].phase == model.Phase.ACTIVE
+                    and samples[index].phase != model.Phase.ACTIVE
+                )
+                successor = [
+                    replace(s, cut_requests=(s.cut_requests + 1) & 0xFF)
+                    if index > release else s
+                    for index, s in enumerate(samples)
+                ]
+                (run,) = audit.audit_hold(successor, settings)
+                self.assertEqual(run.release_cuts, 1)
+                self.assertEqual(failed_ticks(run), {samples[release + 1].tick})
+                self.assertEqual(run_main(successor, settings)[0], 1)
+                # A cut request up to the release snapshot belongs to the run:
+                # the tooth handlers of the release tick precede the engine
+                # pass that accepts RELEASED.
+                boundary = [
+                    replace(s, cut_requests=(s.cut_requests + 1) & 0xFF)
+                    if index >= release else s
+                    for index, s in enumerate(samples)
+                ]
+                (run,) = audit.audit_hold(boundary, settings)
+                self.assertEqual(run.release_cuts, 0)
+                self.assertEqual(run.failures, ())
+
     def test_a_speed_sample_outside_the_decoded_range_fails(self):
         samples = configure(speed_run(), *RL6_INPUTS)
         active = active_indices(samples)
@@ -995,7 +1028,9 @@ class VetoTest(unittest.TestCase):
                 self.assertTrue(veto.shared_command)
                 self.assertEqual((veto.active_ticks, veto.covered_ticks), (active, active))
                 self.assertEqual(veto.on_time, active)
-                self.assertTrue(veto.passed)
+                self.assertEqual(veto.classified, 0)
+                self.assertEqual(veto.classified_share, 0)
+                self.assertIsNone(veto.classified_rpm)
                 self.assertIsNone(veto.requests)
                 self.assertEqual(veto.minimum.dwell, DWELL)
         (run,) = audit.audit_hold(configure(speed_run(), *RL6_INPUTS), SPEED_SETTINGS)
@@ -1012,12 +1047,19 @@ class VetoTest(unittest.TestCase):
         late = changed(samples, group0, dwell=112)
         (run,) = audit.audit_hold(late, SPEED_SETTINGS)
         self.assertEqual(run.veto.late, 3)
-        self.assertFalse(run.veto.passed)
+        self.assertEqual(run.veto.classified, 3)
+        self.assertEqual(
+            run.veto.classified_ticks,
+            {samples[index].tick for index in (group0 - 1, group0, group0 + 1)},
+        )
+        self.assertEqual(run.veto.classified_rpm, (RPM, RPM))
         self.assertEqual(run.veto.minimum.margin, -10)
+        self.assertEqual(run.failures, ())
         coincident = [replace(s, dwell=105) if s.dwell is not None else s for s in samples]
         (run,) = audit.audit_hold(coincident, SPEED_SETTINGS)
         self.assertEqual(run.veto.coincident, run.veto.covered_ticks)
-        self.assertFalse(run.veto.passed)
+        self.assertEqual(run.veto.classified, run.veto.covered_ticks)
+        self.assertEqual(run.veto.classified_share, 1)
 
     def test_a_snapshot_without_its_geometry_is_missing(self):
         samples = configure(speed_run(), *RL6_INPUTS)
@@ -1025,7 +1067,11 @@ class VetoTest(unittest.TestCase):
         group1 = next(i for i in active[2:-2] if samples[i].effective_command is not None)
         (run,) = audit.audit_hold(changed(samples, group1, effective_command=None), SPEED_SETTINGS)
         self.assertEqual(run.veto.missing, 1)
-        self.assertFalse(run.veto.passed)
+        # A missing pair is a coverage gap: it leaves the share of the placed
+        # snapshots and the verdict of the run.
+        self.assertEqual(run.veto.classified, 0)
+        self.assertEqual(run.veto.classified_share, 0)
+        self.assertEqual(run.failures, ())
 
     def test_coverage_counts_the_snapshots_of_the_inputs_configuration(self):
         simulated = speed_run()
@@ -1038,10 +1084,10 @@ class VetoTest(unittest.TestCase):
         (run,) = audit.audit_hold(samples, SPEED_SETTINGS)
         self.assertEqual(run.veto.covered_ticks, active[-1] - middle + 1)
         self.assertEqual(run.veto.active_ticks, len(active))
-        self.assertTrue(run.veto.passed)
+        self.assertEqual(run.veto.classified, 0)
         (run,) = audit.audit_hold(configure(simulated, *RL6_LAW), SPEED_SETTINGS)
         self.assertEqual(run.veto.covered_ticks, 0)
-        self.assertIsNone(run.veto.passed)
+        self.assertIsNone(run.veto.classified_share)
 
     def test_observe_mode_has_no_veto(self):
         observe = current_calibration(
@@ -1074,21 +1120,113 @@ class VetoTest(unittest.TestCase):
                     self.assertEqual(sum(veto.requests.values()), run.requested_cuts)
                     self.assertEqual(veto.requests[name], run.requested_cuts)
 
-    def test_only_the_current_veto_gates_the_audit(self):
+    def test_the_current_classification_is_a_report(self):
         status, output = run_main(configure(speed_run(), *RL6_INPUTS), SPEED_SETTINGS)
         self.assertEqual(status, 0, output)
-        self.assertIn("veto=PASS", output)
+        self.assertIn("id5 coverage=14/14 classified=0 share=0.000", output)
         late = [replace(s, dwell=112) for s in configure(speed_run(), *RL6_INPUTS)]
         status, output = run_main(late, SPEED_SETTINGS)
-        self.assertEqual(status, 1)
-        self.assertIn("veto=FAIL", output)
+        self.assertEqual(status, 0, output)
+        self.assertIn(
+            "id5 coverage=14/14 classified=14 share=1.000 rpm=4000.0..4000.0", output
+        )
         status, output = run_main(configure(speed_run(), *RL6_LAW), SPEED_SETTINGS)
-        self.assertEqual(status, 1)
-        self.assertIn("veto=UNCHECKED", output)
+        self.assertEqual(status, 0, output)
+        self.assertIn("id5 coverage gap: no ACTIVE snapshot of configuration 5", output)
+        # The counter bounds of configuration 4 remain the verdict.
+        samples = configure(speed_run(), *RL6_ACTUATION)
+        chain = [
+            index for index in active_indices(samples)
+            if samples[index].consumed_q_sum is not None
+        ]
+        extra = [
+            replace(s, cut_requests=(s.cut_requests + 6) & 0xFF)
+            if s.cut_requests is not None and index >= chain[2] else s
+            for index, s in enumerate(samples)
+        ]
+        self.assertEqual(run_main(extra, SPEED_SETTINGS)[0], 1)
         # The stock reset command of a historical endpoint is reported alone.
         status, output = run_main(launch_law(simulate(SPEEDS, dwell=112)), HISTORICAL)
         self.assertEqual(status, 0, output)
         self.assertIn("veto=FAIL (historical stock reset command, informational)", output)
+
+    def test_the_regulation_compares_the_classified_and_the_other_snapshots(self):
+        for name, (simulation, settings, kind) in KINDS.items():
+            with self.subTest(name):
+                samples = configure(simulation(), *RL6_INPUTS)
+                active = active_indices(samples)
+                later = set(active[len(active) // 2:])
+                samples = [
+                    replace(s, dwell=112) if index in later and s.dwell is not None else s
+                    for index, s in enumerate(samples)
+                ]
+                (run,) = audit.audit_hold(samples, settings)
+                self.assertEqual(run.failures, ())
+                classified = run.veto.classified_ticks
+                self.assertTrue(classified)
+                rpm = kind == model.RegulatorKind.RPM
+                target = (
+                    settings.slot(0).launch_rpm_native if rpm else next(
+                        samples[index].selected_target for index in active
+                        if samples[index].selected_target is not None
+                    )
+                )
+
+                def errors(members):
+                    values = [
+                        s.rpm_raw - target if rpm else s.speed_kmh * 10 - target
+                        for s in members
+                    ]
+                    return min(values), statistics.fmean(values), max(values)
+
+                members = [samples[index] for index in active]
+                inside = [s for s in members if s.tick in classified]
+                outside = [s for s in members if s.tick not in classified]
+                regulation = run.regulation
+                self.assertEqual(regulation["classified"].ticks, len(inside))
+                self.assertEqual(regulation["other"].ticks, len(outside))
+                for key, group in (("classified", inside), ("other", outside)):
+                    expected = errors(group)
+                    for actual, wanted in zip(regulation[key].error, expected):
+                        self.assertAlmostEqual(actual, wanted)
+                    # Configuration 5 publishes no q.
+                    self.assertIsNone(regulation[key].q)
+                status, output = run_main(samples, settings)
+                self.assertEqual(status, 0, output)
+                self.assertIn("regulation classified ticks=", output)
+                self.assertIn("rpm_error=" if rpm else "speed_error=", output)
+        # A published control error and a published q enter the other class.
+        for configuration in (RL6_LAW, RL6_ACTUATION):
+            samples = configure(speed_run(), *configuration)
+            (run,) = audit.audit_hold(samples, SPEED_SETTINGS)
+            other = run.regulation["other"]
+            members = [samples[index] for index in active_indices(samples)]
+            self.assertEqual(run.regulation["classified"].ticks, 0)
+            self.assertEqual(other.ticks, len(members))
+            errors = [s.control_error for s in members if s.control_error is not None]
+            fractions = [s.cut_fraction for s in members if s.cut_fraction is not None]
+            if errors:
+                self.assertEqual(other.error, (min(errors), statistics.fmean(errors), max(errors)))
+            if fractions:
+                self.assertEqual(
+                    other.q, (min(fractions), statistics.fmean(fractions), max(fractions))
+                )
+            else:
+                self.assertIsNone(other.q)
+
+    def test_a_historical_run_has_no_regulation_report(self):
+        (run,) = audit.audit_hold(launch_law(simulate(SPEEDS)), HISTORICAL)
+        self.assertIsNone(run.regulation)
+        observe = current_calibration(
+            replace(TRIM_CALIBRATION, mode=model.Mode.OBSERVE), TRIM_TABLE
+        )
+        samples = configure(
+            simulate(SPEEDS, calibration=replace(TRIM_CALIBRATION, mode=model.Mode.OBSERVE),
+                     table=TRIM_TABLE),
+            *RL6_INPUTS,
+        )
+        (run,) = audit.audit_hold(samples, observe)
+        self.assertIsNone(run.regulation)
 
 
 # The endpoints of the flashed hold images: one integral gain for every map,

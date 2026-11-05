@@ -62,16 +62,22 @@ counter holds from it.
 A q derived from configuration 3 is not a published q; configurations 4
 and 6 publish it.
 
-The counter counts the cut requests of the spark actuator, not withheld
-sparks: a requested cut whose dwell arming precedes the dwell-start veto
-still fires. The veto check of a hold-mode run reconstructs the margin of
-the reset arming of cylinder n + 1 after the spark of cylinder n for every
-ACTIVE snapshot of configuration 5 of the current runtime, or of the
-launch-law configurations of a historical endpoint; see `veto_check`. The
-geometry of the current runtime assumes the shared command of #150. A late,
-coincident, or missing snapshot fails the current runtime, and so does a
-hold-mode capture without a snapshot of configuration 5; the check of a
-historical endpoint is informational.
+The counter counts the cut requests of the spark actuator. A historical
+endpoint sets a dwell-start veto at the spark of cylinder n, which the reset
+arming of cylinder n + 1 reads, so a requested cut whose arming precedes the
+spark still fires. Its veto check reconstructs the margin of that arming
+after the spark for every ACTIVE snapshot of the launch-law configurations
+and is informational; see `veto_check`. The current runtime decides the veto
+of a cylinder at its dwell arming, before the stock permission check, and
+consumes q there. The same reconstruction over the ACTIVE snapshots of
+configuration 5 classifies the snapshots whose arming does not follow the
+spark of the previous cylinder, where a dwell-start veto comes late. Each
+hold-mode run reports their count, share, and engine-speed range, the
+coverage of configuration 5, and the regulation of the classified and the
+other snapshots: the error of the regulated quantity against its target and
+the published q. The classification and the regulation are reports; a
+missing pair or a capture without configuration 5 is a coverage gap. The
+counter bounds of configuration 4 remain the verdict of the actuation.
 
 The stock APC command of a snapshot is `110 - final_timing_raw` modulo 256,
 the command before the ignition trim of the map slot.
@@ -551,10 +557,10 @@ class VetoPoint:
 
 @dataclass(frozen=True)
 class VetoCheck:
-    """The dwell-start veto of the ACTIVE snapshots of one run.
+    """The order of the spark of cylinder n and the reset arming of cylinder
+    n + 1 over the ACTIVE snapshots of one run.
 
-    A requested cut sets the veto at the spark of cylinder n, and the reset
-    arming of cylinder n + 1 reads it, so a cut is withheld only when that
+    A dwell-start veto set at the spark withholds the cut only when that
     arming follows the spark. `active_ticks` counts the ACTIVE snapshots of
     the run and `covered_ticks` those of a veto configuration; each covered
     snapshot is on time, coincident, late, or missing, without a command or a
@@ -562,9 +568,14 @@ class VetoCheck:
     requests of each class, or is None when a snapshot lacks the counter;
     the requests up to the first inactive snapshot follow the last ACTIVE
     one. `minimum` is the snapshot with the smallest margin.
-    `shared_command` states that the effective command reaches both
-    schedulers, which the current runtime requires; a historical endpoint
-    passes the stock command to the reset builder.
+    `classified_ticks` are the ticks of the coincident and late snapshots,
+    whose arming does not follow the spark, and `classified_rpm` their
+    engine-speed range in counts of 12.5 RPM.
+    `shared_command` marks the current runtime, whose effective command
+    reaches both schedulers and which decides the veto at the dwell arming,
+    so its classes are a report; a historical endpoint passes the stock
+    command to the reset builder, and its classes are the verdict of its
+    dwell-start veto.
     """
 
     active_ticks: int
@@ -576,6 +587,8 @@ class VetoCheck:
     requests: dict | None
     minimum: VetoPoint | None
     shared_command: bool
+    classified_ticks: frozenset = frozenset()
+    classified_rpm: tuple[int, int] | None = None
 
     @property
     def passed(self) -> bool | None:
@@ -584,6 +597,37 @@ class VetoCheck:
         if not self.covered_ticks:
             return None
         return not (self.late or self.coincident or self.missing)
+
+    @property
+    def classified(self) -> int:
+        """The snapshots whose arming does not follow the spark."""
+        return self.coincident + self.late
+
+    @property
+    def classified_share(self) -> float | None:
+        """The classified share of the covered snapshots with a geometry, or
+        None without one."""
+        placed = self.covered_ticks - self.missing
+        return self.classified / placed if placed else None
+
+
+@dataclass(frozen=True)
+class Regulation:
+    """The regulation of one class of ACTIVE snapshots of a current run.
+
+    `error` is the (minimum, mean, maximum) of the regulated quantity less
+    its target over the snapshots that give it: engine speed less the launch
+    RPM of the map slot in counts of 12.5 RPM under the RPM regulator, and
+    vehicle speed less the selected target in km/h*10 under the speed
+    regulator. A published control error gives it directly; otherwise the
+    stock frame of the snapshot and the target of the run give it. `q` is
+    the (minimum, mean, maximum) of the published cut fraction. Each is None
+    without a value.
+    """
+
+    ticks: int
+    error: tuple[float, float, float] | None
+    q: tuple[float, float, float] | None
 
 
 @dataclass(frozen=True)
@@ -608,7 +652,11 @@ class HoldRun:
     than the trim of the slot. `release_cuts` counts the cut requests from
     the snapshot that shows the accepted release of the run to the next run
     or a gap, or is None without that snapshot or its counter. `veto` is the
-    dwell-start veto check of a hold-mode run. `target_check` is None
+    veto check of a hold-mode run, and `regulation` maps "classified" and
+    "other" to the Regulation of the classified snapshots of the veto check
+    of a current run and of its other ACTIVE snapshots; it is None for a
+    historical endpoint, outside hold mode, and without one regulator kind.
+    `target_check` is None
     without a published target, "checked" when the target follows the map
     slot or the speed sample of the accepted CANCEL edge, "bracketed" when
     it lies between the speed samples of the snapshots around an edge
@@ -633,6 +681,7 @@ class HoldRun:
     veto: VetoCheck | None = None
     target_check: str | None = None
     speed_source_ticks: int | None = None
+    regulation: dict | None = None
 
     @property
     def requested_cuts_inside(self) -> bool | None:
@@ -845,8 +894,9 @@ def _predecessor(samples, index):
 
 
 def veto_check(samples, start, end, calibration) -> VetoCheck | None:
-    """Check the dwell-start veto of every ACTIVE snapshot of a hold-mode
-    run of a veto configuration; None outside hold mode.
+    """Place the reset arming of cylinder n + 1 against the spark of
+    cylinder n for every ACTIVE snapshot of a hold-mode run of a veto
+    configuration; None outside hold mode.
 
     Configuration 5 of the current runtime carries the dwell in group 0 and
     the engine speed and the stock and effective commands in group 1, so a
@@ -877,10 +927,8 @@ def veto_check(samples, start, end, calibration) -> VetoCheck | None:
             if None in values:
                 return None
             effective, stock, rpm = values
-            # The geometry assumes the shared command of #150: the effective
-            # command reaches the primary scheduler and, through 0xFFFF2022,
-            # reset builder 0x0004E080. The pass rule is re-checked against
-            # the delivery constraints that the #150 fix proves.
+            # The effective command reaches the primary scheduler and,
+            # through 0xFFFF2022, reset builder 0x0004E080.
             return effective, effective, stock, rpm
         stock = stock_apc_command(sample.final_timing_raw)
         primary = (
@@ -903,6 +951,7 @@ def veto_check(samples, start, end, calibration) -> VetoCheck | None:
     classes = {}
     counts = dict.fromkeys(("on_time", "coincident", "late", "missing"), 0)
     minimum = None
+    classified = {}
     for index in range(start, end + 1):
         sample = samples[index]
         if not covered(sample):
@@ -937,6 +986,8 @@ def veto_check(samples, start, end, calibration) -> VetoCheck | None:
         )
         classes[index] = name
         counts[name] += 1
+        if name != "on_time":
+            classified[sample.tick] = point.rpm_raw
         if minimum is None or point.margin < minimum.margin:
             minimum = point
     requests = None
@@ -964,7 +1015,55 @@ def veto_check(samples, start, end, calibration) -> VetoCheck | None:
         requests=requests,
         minimum=minimum,
         shared_command=current,
+        classified_ticks=frozenset(classified),
+        classified_rpm=(
+            (min(classified.values()), max(classified.values()))
+            if classified else None
+        ),
     )
+
+
+def _statistics(values):
+    if not values:
+        return None
+    return min(values), statistics.fmean(values), max(values)
+
+
+def run_regulation(samples, start, end, kind, target, classified_ticks):
+    """The Regulation of the classified and the other ACTIVE snapshots of
+    a current run of one regulator `kind` and `target`: the launch RPM of
+    the map slot, or the selected speed target, or None when the run
+    publishes none."""
+    rpm = kind == rolling_launch.RegulatorKind.RPM
+
+    def error(sample):
+        if sample.control_error is not None:
+            return sample.control_error
+        if target is None:
+            return None
+        if rpm:
+            return sample.rpm_raw - target
+        if sample.speed_kmh is None:
+            return None
+        return sample.speed_kmh * 10 - target
+
+    groups = {"classified": [], "other": []}
+    for sample in samples[start : end + 1]:
+        name = "classified" if sample.tick in classified_ticks else "other"
+        groups[name].append(sample)
+    return {
+        name: Regulation(
+            ticks=len(members),
+            error=_statistics([
+                value for value in map(error, members) if value is not None
+            ]),
+            q=_statistics([
+                member.cut_fraction for member in members
+                if member.cut_fraction is not None
+            ]),
+        )
+        for name, members in groups.items()
+    }
 
 
 def _replay(samples, start, end, calibration, slot, *, error="speed_error",
@@ -1278,9 +1377,9 @@ def _release_cuts(samples, end, failures):
     fraction before the snapshot. Every inactive snapshot from it to the
     next ACTIVE snapshot, a gap, or the end of the capture publishes a zero
     cut fraction where it carries one, and the counter of the release
-    snapshot holds wherever a snapshot carries it. A veto that the last cut
-    request of the run placed for the next cylinder can still withhold one
-    spark after the release; it adds no cut request.
+    snapshot holds wherever a snapshot carries it. The runtime decides each
+    veto at the dwell arming of its cylinder, so no veto of the run remains
+    after the release, and a single later cut request fails.
     """
     release = end + 1
     if (
@@ -1548,6 +1647,15 @@ def _current_run(samples, start, end, calibration, timing=None):
     if calibration.hold:
         requested, owed = _consumed_cuts(samples, start, end, failures)
     release_cuts = _release_cuts(samples, end, failures)
+    veto = veto_check(samples, start, end, calibration)
+    regulation = None
+    if veto is not None and kind is not None:
+        target = slot.launch_rpm_native if rpm else (
+            next(iter(targets)) if len(targets) == 1 else None
+        )
+        regulation = run_regulation(
+            samples, start, end, kind, target, veto.classified_ticks
+        )
     return HoldRun(
         start_tick=samples[start].tick,
         end_tick=samples[end].tick,
@@ -1565,9 +1673,10 @@ def _current_run(samples, start, end, calibration, timing=None):
         actuation_ticks=actuation_ticks,
         input_ticks=input_ticks,
         release_cuts=release_cuts,
-        veto=veto_check(samples, start, end, calibration),
+        veto=veto,
         target_check=target_check,
         speed_source_ticks=speed_source_ticks,
+        regulation=regulation,
     )
 
 
@@ -1961,12 +2070,25 @@ def audit_bus(capture, runs, *, reference=None):
 
 
 def _veto_summary(veto: VetoCheck) -> str:
-    """One line of the veto check of a run."""
-    status = {None: "UNCHECKED", True: "PASS", False: "FAIL"}[veto.passed]
-    if not veto.shared_command:
-        status += " (historical stock reset command, informational)"
-    text = (
-        f"veto={status} coverage={veto.covered_ticks}/{veto.active_ticks}"
+    """One line of the veto check of a run: the verdict of a historical
+    dwell-start veto, or the classification of a current run."""
+    if veto.shared_command:
+        share = veto.classified_share
+        text = (
+            f"id5 coverage={veto.covered_ticks}/{veto.active_ticks}"
+            f" classified={veto.classified}"
+            f" share={'n/a' if share is None else f'{share:.3f}'}"
+        )
+        if veto.classified_rpm is not None:
+            low, high = veto.classified_rpm
+            text += f" rpm={low * RPM_PER_COUNT:.1f}..{high * RPM_PER_COUNT:.1f}"
+    else:
+        status = {None: "UNCHECKED", True: "PASS", False: "FAIL"}[veto.passed]
+        text = (
+            f"veto={status} (historical stock reset command, informational)"
+            f" coverage={veto.covered_ticks}/{veto.active_ticks}"
+        )
+    text += (
         f" on_time={veto.on_time} coincident={veto.coincident}"
         f" late={veto.late} missing={veto.missing}"
     )
@@ -1982,6 +2104,29 @@ def _veto_summary(veto: VetoCheck) -> str:
             f" command={point.primary} stock={point.stock}"
         )
     return text
+
+
+def _regulation_summary(run: HoldRun) -> str:
+    """One line of the regulation of the classes of a current run."""
+    rpm = run.kind == rolling_launch.RegulatorKind.RPM
+    name, scale, unit = (
+        ("rpm_error", RPM_PER_COUNT, "rpm") if rpm else ("speed_error", 0.1, "km/h")
+    )
+    parts = []
+    for key, regulation in run.regulation.items():
+        part = f"{key} ticks={regulation.ticks}"
+        if regulation.error is None:
+            part += f" {name}=n/a"
+        else:
+            low, mean, high = (value * scale for value in regulation.error)
+            part += f" {name}={low:+.1f}..{high:+.1f} mean={mean:+.1f} {unit}"
+        if regulation.q is None:
+            part += " q=n/a"
+        else:
+            low, mean, high = regulation.q
+            part += f" q={low:.0f}..{high:.0f} mean={mean:.1f}"
+        parts.append(part)
+    return "regulation " + "; ".join(parts)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -2041,21 +2186,21 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"    tick {tick}: {failure}")
             if run.veto is not None:
                 print(f"    {_veto_summary(run.veto)}")
+            if run.regulation is not None:
+                print(f"    {_regulation_summary(run)}")
             failed |= (
                 bool(run.failures)
                 or run.requested_cuts_inside is False
                 or not run.checked_ticks
             )
-        # The veto of the current runtime gates the capture: a late,
-        # coincident, or missing snapshot fails, and so does a hold-mode
-        # capture without a snapshot of configuration 5. The stock reset
-        # command of a historical endpoint makes its check informational.
+        # The classification of the current runtime is a report: a capture
+        # without configuration 5 is a coverage gap. The check of a
+        # historical endpoint is informational.
         checks = [run.veto for run in runs if run.veto is not None]
-        if checks and checks[0].shared_command:
-            unchecked = not any(check.covered_ticks for check in checks)
-            if unchecked:
-                print("  veto=UNCHECKED: no ACTIVE snapshot of configuration 5")
-            failed |= unchecked or any(check.passed is False for check in checks)
+        if checks and checks[0].shared_command and not any(
+            check.covered_ticks for check in checks
+        ):
+            print("  id5 coverage gap: no ACTIVE snapshot of configuration 5")
         if args.bus_json:
             reference = read_mlg(args.reference_mlg) if args.reference_mlg else capture
             reference_runs = audit_hold(reference.samples, calibration, timing=reference.timing)
