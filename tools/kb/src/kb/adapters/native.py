@@ -76,15 +76,19 @@ from kb import derive, l0, match, repo, sites, store, vocab
 
 TABLES = Path("defs/vq37-native-tables.toml")
 FUEL_CUT = Path("defs/vq37-native-fuel-cut.toml")
-SCHEMA_VERSIONS = {TABLES: 3, FUEL_CUT: 1}
+SCHEMA_VERSIONS = {TABLES: 4, FUEL_CUT: 1}
 KINDS = {"table": "tbl", "axis": "axis"}
 EDITOR = ("name", "category", "order", "format", "fine", "coarse", "mask", "static_axis",
-          "static_axis_name")
+          "static_axis_name", "static_axis_x", "static_axis_x_name", "static_axis_y",
+          "static_axis_y_name")
 # Symbol keys and the entry keys that state them.
 GEOMETRY = {"tbl": (("cols", "width"), ("rows", "height")),
             "axis": (("points", "length"), ("quantity", "kind"))}
 KEYS = (("unit", "units"), ("scale", "scale_expr"), ("to_raw", "to_byte"),
         ("scale_level", "scale_conf"), ("level", "confidence"), ("summary", "semantics"))
+# The axis entries of the registry state no semantics; the meaning keeps its
+# summary.
+SYMBOL_KEYS = {"tbl": KEYS, "axis": tuple(pair for pair in KEYS if pair[0] != "summary")}
 ENTRY_KEYS = frozenset({"id", "address", "width", "height", "length", "kind", "storagetype",
                         "values_sha256", "pointer_bindings", "axis_x", "axis_y", "note",
                         *EDITOR, *(source for _, source in KEYS)})
@@ -457,7 +461,8 @@ def relate(b, root):
 TABLE_ORDER = ("id", "address", "width", "height", "storagetype", "values_sha256",
                "pointer_bindings", "axis_x", "axis_y", "mask", "name", "category", "order",
                "format", "fine", "coarse", "units", "confidence", "scale_conf", "scale_expr",
-               "to_byte", "static_axis_name", "static_axis", "semantics", "note")
+               "to_byte", "static_axis_name", "static_axis", "static_axis_x_name",
+               "static_axis_x", "static_axis_y_name", "static_axis_y", "semantics", "note")
 AXIS_ORDER = ("id", "address", "length", "storagetype", "values_sha256", "pointer_bindings",
               "name", "kind", "format", "fine", "coarse", "units", "confidence", "scale_conf",
               "scale_expr", "to_byte", "note")
@@ -682,7 +687,7 @@ def _table_entry(meaning, symbol, rom, image, notes, carriers):
     """The entry of a symbol for one image of the images that carry it."""
     subject = f"target.{rom}.{meaning.name}"
     entry = {"id": meaning.name, "address": symbol.address}
-    for name, source in GEOMETRY[symbol.kind] + KEYS:
+    for name, source in GEOMETRY[symbol.kind] + SYMBOL_KEYS[symbol.kind]:
         value = symbol.value(name)
         if value is not None:
             entry[source] = value

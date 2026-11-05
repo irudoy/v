@@ -15,7 +15,7 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"})
@@ -47,6 +47,10 @@ OPTIONAL_TABLE_FIELDS = SCALE_FIELDS | frozenset({
     "mask",
     "static_axis_name",
     "static_axis",
+    "static_axis_x_name",
+    "static_axis_x",
+    "static_axis_y_name",
+    "static_axis_y",
 })
 REQUIRED_AXIS_FIELDS = frozenset({
     "id",
@@ -101,7 +105,11 @@ class NativeTable:
     scale_expr: str | None
     to_byte: str | None
     static_axis_name: str
-    static_axis: tuple[int, ...]
+    static_axis: tuple[int | str, ...]
+    static_axis_x_name: str
+    static_axis_x: tuple[int | str, ...]
+    static_axis_y_name: str
+    static_axis_y: tuple[int | str, ...]
     mask: str
     semantics: str
     note: str
@@ -292,6 +300,31 @@ def _mask(value, storagetype, context):
     return value.upper()
 
 
+def _static_axis(row, key, length, context):
+    """The labels and the name of the static axis `key` of `length` cells, or
+    ((), "") when the row declares none. The labels are increasing integers or
+    non-empty texts."""
+    labels = row.get(key)
+    name = row.get(f"{key}_name")
+    if (labels is None) != (name is None):
+        raise NativeTableError(f"{context}: {key} declaration is incomplete")
+    if labels is None:
+        return (), ""
+    name = _text(name, f"{context}.{key}_name")
+    numbers = isinstance(labels, list) and all(type(item) is int for item in labels)
+    texts = isinstance(labels, list) and all(
+        isinstance(item, str) and item.strip() for item in labels
+    )
+    if not (numbers or texts) or len(labels) != length:
+        raise NativeTableError(
+            f"{context}.{key}: expected {length} integers or {length} labels"
+        )
+    labels = tuple(labels)
+    if numbers and not romkit.monotone(labels):
+        raise NativeTableError(f"{context}.{key} is not monotone")
+    return labels, name
+
+
 def _parse_table(row, context):
     _fields(row, context, REQUIRED_TABLE_FIELDS, OPTIONAL_TABLE_FIELDS)
     identifier = _identifier(row, context)
@@ -315,29 +348,24 @@ def _parse_table(row, context):
         raise NativeTableError(f"{context}: axis pair is incomplete")
     if height == 1 and axes["axis_y"]:
         raise NativeTableError(f"{context}: one-dimensional table declares axis_y")
-    static_axis = row.get("static_axis")
-    static_axis_name = row.get("static_axis_name")
-    if (static_axis is None) != (static_axis_name is None):
-        raise NativeTableError(f"{context}: static axis declaration is incomplete")
-    if static_axis is None:
-        static_axis = ()
-        static_axis_name = ""
-    else:
-        static_axis_name = _text(static_axis_name, f"{context}.static_axis_name")
-        if (
-            not isinstance(static_axis, list)
-            or len(static_axis) != width
-            or any(type(item) is not int for item in static_axis)
-        ):
-            raise NativeTableError(
-                f"{context}.static_axis: expected {width} integers"
-            )
-        static_axis = tuple(static_axis)
-        if not romkit.monotone(static_axis):
-            raise NativeTableError(f"{context}.static_axis is not monotone")
-    if axes["axis_x"] and static_axis:
+    static_axis, static_axis_name = _static_axis(row, "static_axis", width, context)
+    static_x, static_x_name = _static_axis(row, "static_axis_x", width, context)
+    static_y, static_y_name = _static_axis(row, "static_axis_y", height, context)
+    # A one-dimensional table labels its cells with static_axis; a
+    # two-dimensional table without graph axes labels its columns with
+    # static_axis_x and its rows with static_axis_y.
+    if height == 1 and (static_x or static_y):
+        raise NativeTableError(
+            f"{context}: one-dimensional table declares static_axis_x or static_axis_y"
+        )
+    if height > 1 and static_axis:
+        raise NativeTableError(f"{context}: two-dimensional table declares static_axis")
+    if bool(static_x) != bool(static_y):
+        raise NativeTableError(f"{context}: static axis pair is incomplete")
+    static = static_axis or static_x
+    if axes["axis_x"] and static:
         raise NativeTableError(f"{context}: static axis overlaps a graph axis")
-    if not axes["axis_x"] and not static_axis:
+    if not axes["axis_x"] and not static:
         raise NativeTableError(f"{context}: no axis is declared")
     storagetype = _storagetype(row["storagetype"], f"{context}.storagetype")
     mask = _mask(row.get("mask"), storagetype, f"{context}.mask")
@@ -361,6 +389,10 @@ def _parse_table(row, context):
         **_scale(row, context),
         static_axis_name=static_axis_name,
         static_axis=static_axis,
+        static_axis_x_name=static_x_name,
+        static_axis_x=static_x,
+        static_axis_y_name=static_y_name,
+        static_axis_y=static_y,
         mask=mask,
         semantics=_text(row["semantics"], f"{context}.semantics"),
         note=_text(row["note"], f"{context}.note"),
@@ -554,6 +586,11 @@ def _presentation(table):
     if table.static_axis:
         override["static_axis_name"] = table.static_axis_name
         override["static_axis"] = list(table.static_axis)
+    if table.static_axis_x:
+        override["static_axis_x_name"] = table.static_axis_x_name
+        override["static_axis_x"] = list(table.static_axis_x)
+        override["static_axis_y_name"] = table.static_axis_y_name
+        override["static_axis_y"] = list(table.static_axis_y)
     if table.mask:
         override["mask"] = table.mask
     return override

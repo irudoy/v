@@ -1,4 +1,4 @@
-schema_version = 3
+schema_version = 4
 
 [target.JK78C]
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"

@@ -2,6 +2,7 @@ import hashlib
 
 import pytest
 
+from tools.mapkit import emit_def
 from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_tables
 
@@ -212,7 +213,7 @@ def _edited_registry(tmp_path, old, new):
 def test_registry_requires_the_complete_vq37_target_set(tmp_path):
     path = tmp_path / "native.toml"
     path.write_text(
-        "schema_version = 3\n[target.JK78C]\n",
+        "schema_version = 4\n[target.JK78C]\n",
         encoding="utf-8",
     )
 
@@ -398,6 +399,81 @@ def test_registry_rejects_an_invalid_table_mask(tmp_path, mask, message):
 
     with pytest.raises(vq37_native_tables.NativeTableError, match=message):
         vq37_native_tables.load_registry(path)
+
+
+def _table_row(width, height, **labels):
+    """A complete registry table row of the given geometry and axis keys."""
+    return {
+        "id": "static_axis_probe", "address": 0x9000, "width": width,
+        "height": height, "storagetype": "uint8", "values_sha256": "0" * 64,
+        "pointer_bindings": [{"site": 0x96F64, "accessor": 0x96CE0}],
+        "name": "Static Axis Probe", "category": "Probe", "order": 1,
+        "format": "0", "fine": 1, "coarse": 10, "confidence": "code",
+        "semantics": "Probe semantics.", "note": "Probe note.", **labels,
+    }
+
+
+def test_registry_labels_a_2d_table_without_graph_axes_by_static_axes():
+    table = vq37_native_tables._parse_table(_table_row(
+        2, 3,
+        static_axis_x_name="Column", static_axis_x=[0, 1],
+        static_axis_y_name="Row", static_axis_y=["low", "middle", "high"],
+    ), "probe")
+    presentation = vq37_native_tables._presentation(table)
+
+    assert (table.static_axis_x, table.static_axis_y) == ((0, 1), ("low", "middle", "high"))
+    assert {key: presentation[key] for key in (
+        "static_axis_x_name", "static_axis_x", "static_axis_y_name", "static_axis_y"
+    )} == {
+        "static_axis_x_name": "Column", "static_axis_x": [0, 1],
+        "static_axis_y_name": "Row", "static_axis_y": ["low", "middle", "high"],
+    }
+    assert "static_axis" not in presentation
+    model = vq37_native_tables._model(table, "Probe note.")
+    assert emit_def.definition_failure(model, {}, presentation) is None
+    xml = "\n".join(emit_def.table_axes_xml(model, presentation, {}, {}))
+    assert 'type="Static X Axis" name="Column" sizex="2"' in xml
+    assert 'type="Static Y Axis" name="Row" sizey="3"' in xml
+
+
+def test_registry_labels_a_scalar_by_one_text_label():
+    table = vq37_native_tables._parse_table(
+        _table_row(1, 1, static_axis_name="Threshold", static_axis=["byte gate"]),
+        "probe",
+    )
+
+    assert vq37_native_tables._presentation(table)["static_axis"] == ["byte gate"]
+
+
+@pytest.mark.parametrize(
+    ("width", "height", "labels", "message"),
+    [
+        (2, 2, {}, "no axis is declared"),
+        (2, 2, {"static_axis_x_name": "X", "static_axis_x": [0, 1]},
+         "static axis pair is incomplete"),
+        (2, 2, {"static_axis_name": "X", "static_axis": [0, 1]},
+         "two-dimensional table declares static_axis"),
+        (2, 1, {"static_axis_x_name": "X", "static_axis_x": [0, 1]},
+         "one-dimensional table declares static_axis_x"),
+        (2, 2, {"static_axis_x": [0, 1], "static_axis_y_name": "Y",
+                "static_axis_y": [0, 1]}, "static_axis_x declaration is incomplete"),
+        (2, 2, {"static_axis_x_name": "X", "static_axis_x": [0, 1, 2],
+                "static_axis_y_name": "Y", "static_axis_y": [0, 1]},
+         "expected 2 integers or 2 labels"),
+        (2, 2, {"static_axis_x_name": "X", "static_axis_x": [0, "one"],
+                "static_axis_y_name": "Y", "static_axis_y": [0, 1]},
+         "expected 2 integers or 2 labels"),
+        (2, 2, {"static_axis_x_name": "X", "static_axis_x": [0, 1],
+                "static_axis_y_name": "Y", "static_axis_y": [1, 0]},
+         "static_axis_y is not monotone"),
+        (2, 2, {"axis_x": 0x13000, "axis_y": 0x13010, "static_axis_x_name": "X",
+                "static_axis_x": [0, 1], "static_axis_y_name": "Y",
+                "static_axis_y": [0, 1]}, "static axis overlaps a graph axis"),
+    ],
+)
+def test_registry_rejects_an_invalid_static_axis(width, height, labels, message):
+    with pytest.raises(vq37_native_tables.NativeTableError, match=message):
+        vq37_native_tables._parse_table(_table_row(width, height, **labels), "probe")
 
 
 def test_apply_target_publishes_every_registered_table_and_axis():
