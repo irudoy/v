@@ -650,10 +650,20 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.control_var = types.SimpleNamespace(set=values.append)
         return dashboard, values
 
+    def test_the_menu_offers_the_configurations_with_frames(self):
+        dashboard, _values = self.page_dashboard()
+        labels = dashboard.model.configuration_labels
+        self.assertEqual(sorted(labels), [0, 1, 2, 3, 4, 5, 6])
+        self.assertEqual(
+            sorted(app.offered_configurations(labels, dashboard.configuration_frames)),
+            [0, 3, 4, 5, 6],
+        )
+        self.assertEqual(app.offered_configurations(labels, None), labels)
+
     def test_a_page_configuration_queues_its_spaced_frames(self):
         dashboard, values = self.page_dashboard()
 
-        dashboard.send_page_configuration(1)
+        dashboard.send_page_configuration(3)
 
         requests = []
         while not dashboard.control_requests.empty():
@@ -668,16 +678,16 @@ class DashboardPresentationTest(unittest.TestCase):
         )
         self.assertGreaterEqual(app.PAGE_FRAME_SPACING, 0.02)
         self.assertEqual(
-            values[-1], "Control: page configuration Rolling Launch law queued"
+            values[-1], "Control: page configuration Rolling Launch regulator queued"
         )
-        self.assertEqual(dashboard.page_request.configuration_id, 1)
+        self.assertEqual(dashboard.page_request.configuration_id, 3)
 
     def test_only_the_final_frame_of_the_request_commits_it(self):
         dashboard, _values = self.page_dashboard()
-        dashboard.send_page_configuration(1)
-        dashboard.send_page_configuration(2)
+        dashboard.send_page_configuration(3)
+        dashboard.send_page_configuration(4)
         dashboard.model.schema_verified = True
-        dashboard.model.page_configuration = 0x02
+        dashboard.model.page_configuration = 0x04
         # The final frame of the superseded request commits nothing.
         dashboard._note_page_frame("page-commit", True)
         dashboard._note_page_snapshot()
@@ -686,30 +696,30 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard._note_page_frame("page-commit", False)
         dashboard._note_page_snapshot()
         self.assertFalse(dashboard.page_request.committed)
-        dashboard.send_page_configuration(2)
+        dashboard.send_page_configuration(4)
         dashboard._note_page_frame("page-commit", True)
         dashboard._note_page_snapshot()
         self.assertEqual(dashboard.page_echo(0.0), "confirmed")
 
     def test_a_page_configuration_is_confirmed_by_its_echo(self):
         dashboard, values = self.page_dashboard()
-        dashboard.send_page_configuration(2)
+        dashboard.send_page_configuration(4)
         deadline = dashboard.page_request.deadline
         self.assertEqual(dashboard.page_echo(deadline - 0.5), "waiting")
         self.assertEqual(dashboard.page_echo(deadline + 0.1), "not echoed")
         dashboard._report_page_echo(deadline + 0.1)
         self.assertEqual(
             values[-1],
-            "Control error: page configuration Rolling Launch law and "
-            "integrator not echoed",
+            "Control error: page configuration Rolling Launch actuation "
+            "not echoed",
         )
         # The byte of a snapshot before the final frame leaves confirms
         # nothing.
         dashboard.model.schema_verified = True
-        dashboard.model.page_configuration = 0x82
+        dashboard.model.page_configuration = 0x84
         dashboard._note_page_snapshot()
         self.assertEqual(dashboard.page_echo(deadline + 0.2), "not echoed")
-        for _index in range(4):
+        for _index in range(6):
             dashboard._note_page_frame("page-set", True)
         dashboard._note_page_frame("page-commit", True)
         dashboard._note_page_snapshot()
@@ -717,27 +727,29 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard._report_page_echo(deadline + 0.2)
         self.assertEqual(
             values[-1],
-            "Control: page configuration Rolling Launch law and integrator "
-            "echoed",
+            "Control: page configuration Rolling Launch actuation echoed",
         )
         self.assertEqual(dashboard._page_metric("page_group"), 1)
         self.assertEqual(
             dashboard._page_metric("page_configuration"),
-            "Rolling Launch law and integrator",
+            "Rolling Launch actuation",
         )
 
     def test_a_page_configuration_needs_room_frames_and_a_defined_id(self):
         dashboard, values = self.page_dashboard(queued=app.CONTROL_QUEUE_SIZE - 4)
-        dashboard.send_page_configuration(1)
+        dashboard.send_page_configuration(3)
         self.assertEqual(values[-1], "Control error: command queue is full")
         self.assertIsNone(dashboard.page_request)
 
         dashboard, values = self.page_dashboard()
         dashboard.send_page_configuration(9)
         self.assertEqual(values[-1], "Control error: configuration 9 is undefined")
+        # A historical configuration decodes but has no frames to install.
+        dashboard.send_page_configuration(1)
+        self.assertEqual(values[-1], "Control error: configuration 1 is undefined")
 
         dashboard.configuration_frames = None
-        dashboard.send_page_configuration(1)
+        dashboard.send_page_configuration(3)
         self.assertEqual(
             values[-1], "Control error: the configuration frames are not loaded"
         )

@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from patches import rolling_launch
 from tools.logs import can_telemetry_schema
 
 
@@ -32,7 +33,11 @@ OPCODE_COMMIT = 0xC2
 MAXIMUM_ID = 0x7F
 MAXIMUM_GROUPS = 2
 SLOT_KEYS = {"name", "width", "signed", "scale", "source", "dashboard"}
-CONFIGURATION_KEYS = {"id", "name", "label", "groups"}
+CONFIGURATION_KEYS = {"id", "name", "label", "status", "groups"}
+# A current configuration has command frames; a historical one keeps its
+# schema entry so that a recorded trace decodes.
+STATUSES = ("current", "historical")
+STATE_FORMATS = {"B": (1, False), "H": (2, False), "h": (2, True), "I": (4, False)}
 
 
 @dataclass(frozen=True)
@@ -52,6 +57,7 @@ class Configuration:
     configuration_id: int
     name: str
     label: str
+    status: str
     groups: tuple[tuple[str, ...], ...]
 
 
@@ -74,16 +80,36 @@ def _require(table, keys, context):
         raise ValueError(f"{context}: expected exactly the keys {sorted(keys)}")
 
 
-def _diagnostics(path=ROLLING_LAUNCH_LAYOUT):
+def _layout_sources(path=ROLLING_LAUNCH_LAYOUT):
+    """The Rolling Launch views by name and the addresses and formats of the
+    fields of the runtime state record and its extension by name in the
+    JK08A layout."""
     with Path(path).open("rb") as source:
         layout = tomllib.load(source)
-    return {row["name"]: row for row in layout["diagnostic"]}
+    ram = layout["ram"]
+    state = {}
+    for start, rows in (
+        (ram["state_start"], rolling_launch.STATE_FIELDS["base"]),
+        (ram["extension_start"], rolling_launch.STATE_FIELDS["extension"]),
+    ):
+        for name, offset, fmt in rows:
+            state[name] = (start + offset, fmt)
+    return {row["name"]: row for row in layout["diagnostic"]}, state
 
 
-def _slot_address(source, width, context, diagnostics):
+def _slot_address(source, width, signed, context, sources):
     """Return (address, origin) of the JK08A source of a slot."""
+    diagnostics, state = sources
     if not isinstance(source, dict):
         raise ValueError(f"{context}: source must be a table")
+    if set(source) == {"rolling_launch_state"}:
+        name = source["rolling_launch_state"]
+        if name not in state:
+            raise ValueError(f"{context}: no Rolling Launch state field {name!r}")
+        address, fmt = state[name]
+        if STATE_FORMATS[fmt] != (width, signed):
+            raise ValueError(f"{context}: the width or signedness differs from the state field")
+        return address, f"rolling_launch_state.{name}"
     if set(source) in ({"rolling_launch"}, {"rolling_launch", "byte"}):
         view = diagnostics.get(source["rolling_launch"])
         byte = source.get("byte", 0)
@@ -97,19 +123,19 @@ def _slot_address(source, width, context, diagnostics):
         if type(source["ecu_ram"]) is not int or not (ROOT / specification).is_file():
             raise ValueError(f"{context}: ECU RAM needs an address and a specification")
         return source["ecu_ram"], f"ecu_ram ({specification})"
-    raise ValueError(f"{context}: source names neither a Rolling Launch view nor ECU RAM")
+    raise ValueError(f"{context}: source names no Rolling Launch view, state field or ECU RAM")
 
 
-def load_catalog(path=DEFAULT_SOURCE, diagnostics_path=ROLLING_LAUNCH_LAYOUT):
+def load_catalog(path=DEFAULT_SOURCE, layout_path=ROLLING_LAUNCH_LAYOUT):
     """Load and validate the catalog: unique slots that fit the RAM window
-    at their alignment, and configuration IDs 1..127 with one or two groups
-    of one to six slots that fit six bytes."""
+    at their alignment, and current or historical configuration IDs 1..127
+    with one or two groups of one to six slots that fit six bytes."""
     with Path(path).open("rb") as source:
         raw = tomllib.load(source)
     _require(raw, {"schema_version", "profile", "rom", "configuration", "slot"}, "catalog")
     if raw["schema_version"] != 1 or raw["rom"] != "JK08A":
         raise ValueError("catalog: schema_version 1 of JK08A is supported")
-    diagnostics = _diagnostics(diagnostics_path)
+    sources = _layout_sources(layout_path)
     slots = {}
     for index, row in enumerate(raw["slot"]):
         context = f"slot[{index}]"
@@ -119,7 +145,7 @@ def load_catalog(path=DEFAULT_SOURCE, diagnostics_path=ROLLING_LAUNCH_LAYOUT):
             raise ValueError(f"{context}: missing or repeated name")
         if width not in SLOT_WIDTHS or type(row["signed"]) is not bool:
             raise ValueError(f"{context}: width must be 1, 2 or 4 with a signedness")
-        address, origin = _slot_address(row["source"], width, context, diagnostics)
+        address, origin = _slot_address(row["source"], width, row["signed"], context, sources)
         if address % width or not RAM_WINDOW[0] <= address <= RAM_WINDOW[1] - width:
             raise ValueError(f"{context}: 0x{address:08X} is unaligned or outside the RAM window")
         slots[name] = Slot(name, width, row["signed"], row["scale"], address, origin,
@@ -131,6 +157,8 @@ def load_catalog(path=DEFAULT_SOURCE, diagnostics_path=ROLLING_LAUNCH_LAYOUT):
         groups = row["groups"]
         if type(row["id"]) is not int or not 1 <= row["id"] <= MAXIMUM_ID:
             raise ValueError(f"{context}: ID must be in 1..{MAXIMUM_ID}")
+        if row["status"] not in STATUSES:
+            raise ValueError(f"{context}: status must be one of {', '.join(STATUSES)}")
         if not isinstance(groups, list) or not 1 <= len(groups) <= MAXIMUM_GROUPS:
             raise ValueError(f"{context}: one or two groups")
         for group in groups:
@@ -141,7 +169,8 @@ def load_catalog(path=DEFAULT_SOURCE, diagnostics_path=ROLLING_LAUNCH_LAYOUT):
             if sum(slots[name].width for name in group) > 6:
                 raise ValueError(f"{context}: a group exceeds six bytes")
         configurations.append(Configuration(
-            row["id"], row["name"], row["label"], tuple(tuple(group) for group in groups)
+            row["id"], row["name"], row["label"], row["status"],
+            tuple(tuple(group) for group in groups),
         ))
     for key in ("configuration_id", "name", "label"):
         values = [getattr(item, key) for item in configurations]
@@ -211,7 +240,8 @@ def configuration_frames(catalog, configuration):
 
 
 def render_frames(catalog):
-    """The JK08A slot addresses and command frames of every configuration."""
+    """The JK08A slot addresses and command frames of every current
+    configuration."""
     document = {
         "schema_version": 1,
         "rom": catalog.rom,
@@ -239,6 +269,7 @@ def render_frames(catalog):
                 ],
             }
             for item in catalog.configurations
+            if item.status == "current"
         ],
     }
     return json.dumps(document, indent=2, sort_keys=True) + "\n"

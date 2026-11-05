@@ -49,6 +49,70 @@
           "id": 2,
           "label": "Rolling Launch law and integrator",
           "name": "launch_law_integrator"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_control_error_raw",
+              "rolling_launch_law_output_raw",
+              "rolling_launch_cut_counter",
+              "rolling_launch_mode_trim"
+            ]
+          ],
+          "id": 3,
+          "label": "Rolling Launch regulator",
+          "name": "rl6_law"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_consumed_q_sum_raw",
+              "rolling_launch_cut_counter",
+              "rolling_launch_mode_trim"
+            ],
+            [
+              "rolling_launch_cut_fraction_raw",
+              "rolling_launch_law_output_raw",
+              "rolling_launch_efficiency"
+            ]
+          ],
+          "id": 4,
+          "label": "Rolling Launch actuation",
+          "name": "rl6_actuation"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_speed_sample_raw",
+              "rolling_launch_selected_target_raw",
+              "rolling_launch_status",
+              "ignition_dwell_angle_raw"
+            ],
+            [
+              "rolling_launch_rpm_sample_raw",
+              "rolling_launch_stock_command_raw",
+              "rolling_launch_effective_command_raw",
+              "rolling_launch_accepted_button_raw",
+              "rolling_launch_speed_age_raw"
+            ]
+          ],
+          "id": 5,
+          "label": "Rolling Launch inputs",
+          "name": "rl6_inputs"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_cut_fraction_raw",
+              "rolling_launch_cut_counter",
+              "rolling_launch_accepted_button_raw",
+              "rolling_launch_status",
+              "rolling_launch_speed_age_raw"
+            ]
+          ],
+          "id": 6,
+          "label": "Rolling Launch release",
+          "name": "rl6_release"
         }
       ],
       "contexts": [
@@ -975,7 +1039,7 @@
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Torque fraction u of the speed-hold law after its rate limit. Hold mode withholds the dwell of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active.",
+            "description": "Torque fraction u of the speed-hold law after its rate limit. Hold mode requests the cut of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active.",
             "digits": 1,
             "group": "Rolling Launch",
             "label": "Launch torque fraction",
@@ -1015,7 +1079,7 @@
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Wrapping count of the ignition dwells that hold mode withholds; the difference between two snapshots counts the cuts between them. The dynamic page carries it in every group of a launch-law configuration.",
+            "description": "Wrapping count of the cut requests of the spark actuator; the difference between two snapshots counts the requests between them. A requested cut withholds its spark only when the dwell-start veto precedes the dwell arming of its event, so the count does not measure withheld sparks. The Rolling Launch configurations carry it in every group that names it.",
             "digits": 0,
             "group": "Rolling Launch",
             "label": "Launch cut counter",
@@ -1023,7 +1087,7 @@
             "panel": "Dynamic page"
           },
           "name": "rolling_launch_cut_counter",
-          "scale": "raw count; wrapping count of withheld dwells",
+          "scale": "raw count; wrapping count of cut requests",
           "signed": false,
           "unit": "count",
           "width": 1
@@ -1035,7 +1099,7 @@
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law configuration is active.",
+            "description": "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law or inputs configuration is active.",
             "digits": 0,
             "group": "Ignition",
             "label": "Dwell angle",
@@ -1064,6 +1128,360 @@
           },
           "name": "speed_frame_receive_age_raw",
           "scale": "raw * 10.24 ms; receive age of vehicle-speed frame 0x284, saturating at 255",
+          "signed": false,
+          "unit": "ms",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Error of the active Rolling Launch regulator: engine speed less the target RPM in counts of 12.5 RPM under the RPM regulator, and vehicle speed less the target speed in 0.1 km/h under the speed regulator. The mode-and-trim slot names the regulator kind.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch control error",
+            "order": 70,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_control_error_raw",
+          "scale": "raw count; engine speed less the target RPM in 12.5 RPM counts, or vehicle speed less the target speed in 0.1 km/h, by the regulator kind",
+          "signed": true,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Output of the Rolling Launch law: the firing fraction p of the RPM regulator, or the torque fraction u of the speed regulator after its rate limit.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch law output",
+            "order": 80,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_law_output_raw",
+          "scale": "raw / 10 percent; RPM fraction p or speed fraction u after the rate limit",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "bits": [
+            {
+              "bit": 6,
+              "name": "SPEED"
+            },
+            {
+              "bit": 7,
+              "name": "ACTUATION_READY"
+            }
+          ],
+          "dashboard": {
+            "description": "Applied ignition trim of the Rolling Launch hold in APC command degrees, the effective command less the stock command, with the speed-regulator bit and the bit that marks an applied ignition command of the current hold.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch mode and trim",
+            "order": 90,
+            "panel": "Dynamic page"
+          },
+          "field": {
+            "candidate": false,
+            "conversion": {
+              "factor": 1.0,
+              "offset": 0.0
+            },
+            "high": 5,
+            "low": 0,
+            "unit": "deg"
+          },
+          "name": "rolling_launch_mode_trim",
+          "scale": "field 0 through 5 raw deg; bits: 6 SPEED, 7 ACTUATION_READY",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Wrapping sum of the cut fraction q, in thousandths, that the spark actuator consumes at each eligible event. The difference between two snapshots over 1000 is the number of cuts that the consumed fractions owe.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch consumed q sum",
+            "order": 100,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_consumed_q_sum_raw",
+          "scale": "raw count; wrapping sum of the cut fraction q in thousandths over the eligible spark events",
+          "signed": false,
+          "unit": "count",
+          "width": 4
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Cut fraction q that the actuation publisher sets for eligible spark events: 1 - p under the RPM regulator, and 1 - u / e of the applied trim under the speed regulator, zero outside an ACTIVE hold with an applied ignition command.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch cut fraction",
+            "order": 110,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_cut_fraction_raw",
+          "scale": "raw / 10 percent; cut fraction q of eligible spark events",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "bits": [
+            {
+              "bit": 14,
+              "name": "SPEED"
+            },
+            {
+              "bit": 15,
+              "name": "ACTUATION_READY"
+            }
+          ],
+          "dashboard": {
+            "description": "Torque efficiency e of the applied ignition trim from the shared efficiency table, with the speed-regulator bit and the bit that marks an applied ignition command of the current hold, all of the same publication.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch trim efficiency",
+            "order": 120,
+            "panel": "Dynamic page"
+          },
+          "field": {
+            "candidate": false,
+            "conversion": {
+              "factor": 0.1,
+              "offset": 0.0
+            },
+            "high": 9,
+            "low": 0,
+            "unit": "percent"
+          },
+          "name": "rolling_launch_efficiency",
+          "scale": "field 0 through 9 raw / 10 percent; bits: 14 SPEED, 15 ACTUATION_READY",
+          "signed": false,
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Vehicle speed word that the Rolling Launch engine read in its last pass, in 0.1 km/h.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch speed sample",
+            "order": 130,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_speed_sample_raw",
+          "scale": "raw / 10 km/h; vehicle speed that the Rolling Launch engine read",
+          "signed": false,
+          "unit": "km/h",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Target of the active Rolling Launch regulator that activation latches: the target RPM of the map slot in counts of 12.5 RPM, or the captured CANCEL speed plus the offset in 0.1 km/h.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch target",
+            "order": 140,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_selected_target_raw",
+          "scale": "raw count; target RPM in 12.5 RPM counts or target speed in 0.1 km/h by the regulator kind",
+          "signed": false,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "bits": [
+            {
+              "bit": 2,
+              "name": "VALUE_VALID"
+            },
+            {
+              "bit": 3,
+              "name": "AGE_OK"
+            },
+            {
+              "bit": 4,
+              "name": "SOURCE_READY"
+            },
+            {
+              "bit": 5,
+              "name": "CANCEL"
+            },
+            {
+              "bit": 6,
+              "name": "RELEASED"
+            },
+            {
+              "bit": 7,
+              "name": "ACTUATION_READY"
+            }
+          ],
+          "dashboard": {
+            "description": "Regulator kind, the speed-input checks of the last engine pass, the accepted button code, and the bit that marks an applied ignition command of the current hold.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch status",
+            "order": 150,
+            "panel": "Dynamic page"
+          },
+          "field": {
+            "high": 1,
+            "low": 0,
+            "values": [
+              {
+                "name": "NONE",
+                "value": 0
+              },
+              {
+                "name": "RPM",
+                "value": 1
+              },
+              {
+                "name": "SPEED",
+                "value": 2
+              }
+            ]
+          },
+          "name": "rolling_launch_status",
+          "scale": "field 0 through 1 enumeration: 0 NONE, 1 RPM, 2 SPEED; bits: 2 VALUE_VALID, 3 AGE_OK, 4 SOURCE_READY, 5 CANCEL, 6 RELEASED, 7 ACTUATION_READY",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 12.5,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Engine speed that the Rolling Launch engine read in its last pass.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch RPM sample",
+            "order": 160,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_rpm_sample_raw",
+          "scale": "raw * 12.5 rpm; engine speed that the Rolling Launch engine read",
+          "signed": false,
+          "unit": "rpm",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": -1.0,
+            "offset": 110.0
+          },
+          "dashboard": {
+            "description": "Ignition timing of the last stock APC command that reached the Rolling Launch ignition adapter, before the trim.",
+            "digits": 0,
+            "group": "Ignition",
+            "label": "Launch stock timing",
+            "order": 170,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_stock_command_raw",
+          "scale": "110 - raw degBTDC; stock APC command before the trim",
+          "signed": false,
+          "unit": "degBTDC",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": -1.0,
+            "offset": 110.0
+          },
+          "dashboard": {
+            "description": "Ignition timing of the last effective APC command that the Rolling Launch ignition adapter passed to both schedulers: the stock command with the latched trim, no later than the floor command.",
+            "digits": 0,
+            "group": "Ignition",
+            "label": "Launch effective timing",
+            "order": 180,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_effective_command_raw",
+          "scale": "110 - raw degBTDC; effective APC command after the trim and the floor",
+          "signed": false,
+          "unit": "degBTDC",
+          "width": 1
+        },
+        {
+          "dashboard": {
+            "description": "Debounced ASCD button code that the Rolling Launch engine read in its last pass; another code reads in hexadecimal.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch accepted button",
+            "order": 190,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_accepted_button_raw",
+          "scale": "enumeration: 2 CANCEL, 8 SET, 32 RELEASED",
+          "signed": false,
+          "values": [
+            {
+              "name": "CANCEL",
+              "value": 2
+            },
+            {
+              "name": "SET",
+              "value": 8
+            },
+            {
+              "name": "RELEASED",
+              "value": 32
+            }
+          ],
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 10.24,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Receive age of the vehicle-speed frame that the Rolling Launch engine read in its last pass.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch speed age",
+            "order": 200,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_speed_age_raw",
+          "scale": "raw * 10.24 ms; speed frame age that the Rolling Launch engine read",
           "signed": false,
           "unit": "ms",
           "width": 1

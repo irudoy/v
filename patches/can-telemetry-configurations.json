@@ -3,29 +3,29 @@
   "configurations": [
     {
       "frames": [
-        "C10102FF5D505FCC",
-        "C10112FF5D4EB794",
-        "C10121FF5D5D22F3",
-        "C10131FF237A4687",
-        "C201010400003B45"
+        "C10302FF61022100",
+        "C10312FF61166812",
+        "C10321FF5D5D6670",
+        "C10331FF611E4588",
+        "C203010400007FC6"
       ],
-      "id": 1,
-      "name": "launch_law",
+      "id": 3,
+      "name": "rl6_law",
       "slots": [
         {
-          "address": "0xFFFF5D50",
+          "address": "0xFFFF6102",
           "group": 0,
-          "name": "rolling_launch_speed_error_raw",
+          "name": "rolling_launch_control_error_raw",
           "slot": 0,
-          "source": "rolling_launch.speed_error",
+          "source": "rolling_launch_state.control_error",
           "width": 2
         },
         {
-          "address": "0xFFFF5D4E",
+          "address": "0xFFFF6116",
           "group": 0,
-          "name": "rolling_launch_torque_fraction_raw",
+          "name": "rolling_launch_law_output_raw",
           "slot": 1,
-          "source": "rolling_launch.torque_fraction",
+          "source": "rolling_launch_state.law_output",
           "width": 2
         },
         {
@@ -33,55 +33,120 @@
           "group": 0,
           "name": "rolling_launch_cut_counter",
           "slot": 2,
-          "source": "rolling_launch.spark_cut_counters",
+          "source": "rolling_launch_state.cut_counter",
           "width": 1
         },
         {
-          "address": "0xFFFF237A",
+          "address": "0xFFFF611E",
           "group": 0,
-          "name": "ignition_dwell_angle_raw",
+          "name": "rolling_launch_mode_trim",
           "slot": 3,
-          "source": "ecu_ram (patches/rolling-launch.md)",
+          "source": "rolling_launch_state.wire_mode_trim",
           "width": 1
         }
       ]
     },
     {
       "frames": [
-        "C10202FF5D50B11E",
-        "C10212FF5D4E5946",
-        "C10221FF5D5DCC21",
-        "C10231FF237AA855",
-        "C10282FF5D524C64",
-        "C10291FF3B38A07F",
-        "C102A1FF5D5D1119",
-        "C202020403001B18"
+        "C10404FF6110533E",
+        "C10411FF5D5D2D4D",
+        "C10421FF611E39FB",
+        "C10482FF5D5A00E9",
+        "C10492FF6116D2FE",
+        "C104A2FF610E6D2E",
+        "C20402030300530D"
       ],
-      "id": 2,
-      "name": "launch_law_integrator",
+      "id": 4,
+      "name": "rl6_actuation",
       "slots": [
         {
-          "address": "0xFFFF5D50",
+          "address": "0xFFFF6110",
           "group": 0,
-          "name": "rolling_launch_speed_error_raw",
+          "name": "rolling_launch_consumed_q_sum_raw",
           "slot": 0,
-          "source": "rolling_launch.speed_error",
-          "width": 2
-        },
-        {
-          "address": "0xFFFF5D4E",
-          "group": 0,
-          "name": "rolling_launch_torque_fraction_raw",
-          "slot": 1,
-          "source": "rolling_launch.torque_fraction",
-          "width": 2
+          "source": "rolling_launch_state.consumed_q_sum",
+          "width": 4
         },
         {
           "address": "0xFFFF5D5D",
           "group": 0,
           "name": "rolling_launch_cut_counter",
+          "slot": 1,
+          "source": "rolling_launch_state.cut_counter",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF611E",
+          "group": 0,
+          "name": "rolling_launch_mode_trim",
           "slot": 2,
-          "source": "rolling_launch.spark_cut_counters",
+          "source": "rolling_launch_state.wire_mode_trim",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF5D5A",
+          "group": 1,
+          "name": "rolling_launch_cut_fraction_raw",
+          "slot": 0,
+          "source": "rolling_launch_state.cut_fraction",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF6116",
+          "group": 1,
+          "name": "rolling_launch_law_output_raw",
+          "slot": 1,
+          "source": "rolling_launch_state.law_output",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF610E",
+          "group": 1,
+          "name": "rolling_launch_efficiency",
+          "slot": 2,
+          "source": "rolling_launch_state.wire_efficiency",
+          "width": 2
+        }
+      ]
+    },
+    {
+      "frames": [
+        "C10502FF6106AC01",
+        "C10512FF611C04DD",
+        "C10521FF611F838B",
+        "C10531FF237ACF81",
+        "C10582FF6104517B",
+        "C10591FF6108108C",
+        "C105A1FF61092C44",
+        "C105B1FF6114F47F",
+        "C105C1FF6115A62B",
+        "C20502040500D66A"
+      ],
+      "id": 5,
+      "name": "rl6_inputs",
+      "slots": [
+        {
+          "address": "0xFFFF6106",
+          "group": 0,
+          "name": "rolling_launch_speed_sample_raw",
+          "slot": 0,
+          "source": "rolling_launch_state.speed_sample",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF611C",
+          "group": 0,
+          "name": "rolling_launch_selected_target_raw",
+          "slot": 1,
+          "source": "rolling_launch_state.selected_target",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF611F",
+          "group": 0,
+          "name": "rolling_launch_status",
+          "slot": 2,
+          "source": "rolling_launch_state.wire_status",
           "width": 1
         },
         {
@@ -93,27 +158,97 @@
           "width": 1
         },
         {
-          "address": "0xFFFF5D52",
+          "address": "0xFFFF6104",
           "group": 1,
-          "name": "rolling_launch_integrator_raw",
+          "name": "rolling_launch_rpm_sample_raw",
           "slot": 0,
-          "source": "rolling_launch.integrator",
+          "source": "rolling_launch_state.rpm_sample_native",
           "width": 2
         },
         {
-          "address": "0xFFFF3B38",
+          "address": "0xFFFF6108",
           "group": 1,
-          "name": "speed_frame_receive_age_raw",
+          "name": "rolling_launch_stock_command_raw",
           "slot": 1,
-          "source": "ecu_ram (patches/rolling-launch.md)",
+          "source": "rolling_launch_state.stock_command",
           "width": 1
         },
         {
-          "address": "0xFFFF5D5D",
+          "address": "0xFFFF6109",
           "group": 1,
-          "name": "rolling_launch_cut_counter",
+          "name": "rolling_launch_effective_command_raw",
           "slot": 2,
-          "source": "rolling_launch.spark_cut_counters",
+          "source": "rolling_launch_state.effective_command",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF6114",
+          "group": 1,
+          "name": "rolling_launch_accepted_button_raw",
+          "slot": 3,
+          "source": "rolling_launch_state.accepted_button",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF6115",
+          "group": 1,
+          "name": "rolling_launch_speed_age_raw",
+          "slot": 4,
+          "source": "rolling_launch_state.speed_age",
+          "width": 1
+        }
+      ]
+    },
+    {
+      "frames": [
+        "C10602FF5D5A9952",
+        "C10611FF5D5D69CE",
+        "C10621FF6114DC32",
+        "C10631FF611F76FE",
+        "C10641FF611595C1",
+        "C206010500006BA1"
+      ],
+      "id": 6,
+      "name": "rl6_release",
+      "slots": [
+        {
+          "address": "0xFFFF5D5A",
+          "group": 0,
+          "name": "rolling_launch_cut_fraction_raw",
+          "slot": 0,
+          "source": "rolling_launch_state.cut_fraction",
+          "width": 2
+        },
+        {
+          "address": "0xFFFF5D5D",
+          "group": 0,
+          "name": "rolling_launch_cut_counter",
+          "slot": 1,
+          "source": "rolling_launch_state.cut_counter",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF6114",
+          "group": 0,
+          "name": "rolling_launch_accepted_button_raw",
+          "slot": 2,
+          "source": "rolling_launch_state.accepted_button",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF611F",
+          "group": 0,
+          "name": "rolling_launch_status",
+          "slot": 3,
+          "source": "rolling_launch_state.wire_status",
+          "width": 1
+        },
+        {
+          "address": "0xFFFF6115",
+          "group": 0,
+          "name": "rolling_launch_speed_age_raw",
+          "slot": 4,
+          "source": "rolling_launch_state.speed_age",
           "width": 1
         }
       ]

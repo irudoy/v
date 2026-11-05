@@ -448,6 +448,7 @@ inputs = [
     "patches/can-telemetry-profile.toml",
     "patches/can-telemetry-configurations.toml",
     "patches/rolling-launch-layout.toml",
+    "patches/rolling_launch.py",
     "patches/jk08a-runtime-reservations.toml",
     "patches/can_telemetry_profile.py",
     "patches/can_telemetry_configurations.py",

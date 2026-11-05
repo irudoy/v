@@ -8,10 +8,13 @@ the erased reserve, and the mailbox record with its stock value. The record
 decodes under the frozen contract of its protocol version. An endpoint
 therefore stays recognizable when the current telemetry layout moves a unit,
 a hook or a record, or when the current configuration protocol changes.
+An endpoint may name the frozen host schema of its profile identity, which
+a decoder of a later profile reads its recordings with.
 """
 
 from dataclasses import dataclass
 from functools import lru_cache
+import json
 from pathlib import Path
 import struct
 import tomllib
@@ -30,6 +33,7 @@ ENDPOINT_KEYS = frozenset({
     "reserved_rom_end", "mailbox_record_address", "mailbox_record_stock",
     "hooks", "units",
 })
+OPTIONAL_ENDPOINT_KEYS = frozenset({"host_schema"})
 
 
 @dataclass(frozen=True)
@@ -153,6 +157,9 @@ class Endpoint:
     mailbox_record_stock: int
     hooks: tuple[Hook, ...]
     units: tuple[Unit, ...]
+    # The frozen host schema of the profile identity, relative to the
+    # registry, or None.
+    host_schema: str | None = None
 
     @property
     def protocol(self):
@@ -271,6 +278,25 @@ def _units(rows):
     return tuple(units)
 
 
+def _require_host_schema(row):
+    """Require the host schema of an endpoint to publish its identity: the
+    protocol version and the ID and CRC16 of the profile it transmits."""
+    path = REGISTRY.parent / row["host_schema"]
+    try:
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        profile = next(
+            item for item in schema["profiles"] if item["name"] == PROFILE_NAME
+        )
+        identity = (
+            schema["protocol_version"], profile["id"],
+            int(profile["crc16_ccitt_false"], 16),
+        )
+    except (OSError, ValueError, KeyError, TypeError, StopIteration) as error:
+        raise ValueError(f"{path.name}: unreadable host schema") from error
+    if identity != (row["protocol_version"], row["profile_id"], row["profile_crc16"]):
+        raise ValueError(f"{path.name}: host schema identity differs from its endpoint")
+
+
 @lru_cache(maxsize=1)
 def endpoints():
     with REGISTRY.open("rb") as source:
@@ -280,7 +306,7 @@ def endpoints():
         raise ValueError("historical telemetry registry schema differs")
     found = []
     for row in raw["endpoint"]:
-        if (set(row) != ENDPOINT_KEYS
+        if (not ENDPOINT_KEYS <= set(row) <= ENDPOINT_KEYS | OPTIONAL_ENDPOINT_KEYS
                 or row["protocol_version"] not in PROTOCOLS
                 or not isinstance(row["key"], str) or row["key"] in {"absent", "current"}
                 or not row["roms"] or len(set(row["roms"])) != len(row["roms"])
@@ -293,6 +319,8 @@ def endpoints():
                     "mailbox_record_stock"))
                 or row["reserved_rom_start"] >= row["reserved_rom_end"]):
             raise ValueError("historical telemetry endpoint identity differs")
+        if "host_schema" in row:
+            _require_host_schema(row)
         endpoint = Endpoint(
             **{key: value for key, value in row.items()
                if key not in ("units", "hooks", "roms")},

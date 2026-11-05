@@ -20,6 +20,10 @@ NAMED_SCALES = (
     ("bits: ", "bits", "bit"),
 )
 NAMED_ENTRY = re.compile(r"(\d+) ([A-Z][A-Z0-9_]*)")
+# A value in a run of bits with named bits beside it: the bit range, the
+# scale of the value, and the named bits.
+PACKED_SCALE = re.compile(r"field (\d+) through (\d+) ([^;]+); (bits: .+)")
+PACKED_BITS = 32
 # The commands of the dynamic page by opcode.
 PAGE_COMMANDS = {0xC0: "page-default", 0xC1: "page-set", 0xC2: "page-commit"}
 
@@ -231,11 +235,36 @@ def scale_terms(scale):
     ``conversion``, the factor and offset of the affine value in ``raw``,
     ``candidate``, and the ``unit`` it names. ``enumeration: <n> <NAME>,
     ...`` gives ``values`` and ``bits: <n> <NAME>, ...`` gives ``bits``, each
-    entry with its number and name. Any other scale describes the value and
-    gives nothing. A scale that names ``raw`` states arithmetic, so one that
-    does not parse raises ValueError, as does a named entry that is not
-    ``<n> <NAME>`` or that repeats a number or a name.
+    entry with its number and name. ``field <low> through <high> <scale>;
+    bits: <n> <NAME>, ...`` packs a value into bits ``low`` through ``high``
+    beside named bits outside them: it gives ``field``, the bit range with
+    the arithmetic or enumeration terms of the value, and ``bits``. Any other
+    scale describes the value and gives nothing. A scale that names ``raw``
+    states arithmetic, so one that does not parse raises ValueError, as does
+    a named entry that is not ``<n> <NAME>`` or that repeats a number or a
+    name, and a packed scale whose value states nothing, whose named values
+    exceed its bit range, or whose bits leave the 32-bit word or meet the
+    value.
     """
+    packed = PACKED_SCALE.fullmatch(scale)
+    if packed is not None:
+        low, high = int(packed[1]), int(packed[2])
+        value = scale_terms(packed[3])
+        bits = scale_terms(packed[4])["bits"]
+        if not 0 <= low <= high < PACKED_BITS or not (
+            "conversion" in value or "values" in value
+        ):
+            raise ValueError(f"scale {scale!r}: the field states no value")
+        if any(
+            item["value"] >> (high - low + 1) for item in value.get("values", ())
+        ):
+            raise ValueError(f"scale {scale!r}: a named value exceeds the field")
+        if any(
+            not 0 <= item["bit"] < PACKED_BITS or low <= item["bit"] <= high
+            for item in bits
+        ):
+            raise ValueError(f"scale {scale!r}: a named bit meets the field")
+        return {"field": {"low": low, "high": high, **value}, "bits": bits}
     for prefix, key, number in NAMED_SCALES:
         if scale.startswith(prefix):
             entries = []

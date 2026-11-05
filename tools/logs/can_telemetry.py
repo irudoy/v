@@ -18,6 +18,10 @@ if str(ROOT) not in sys.path:
 from tools.logs import can_telemetry_schema
 
 DEFAULT_SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
+# The frozen host schemas of the historical telemetry endpoints that
+# patches/can-telemetry-history.toml binds to their profile identities. A
+# decoder accepts the identity of their profiles beside the current one.
+HISTORICAL_SCHEMAS = (ROOT / "patches" / "can-telemetry-schema-profile9.json",)
 # The command frames that install the dynamic page configurations on JK08A.
 DEFAULT_CONFIGURATION_FRAMES = ROOT / "patches" / "can-telemetry-configurations.json"
 CANDUMP_COMPACT = re.compile(
@@ -516,7 +520,7 @@ def _validate_schema_field(field, context):
         raise DecodeError(f"{context}: {error}") from error
     stated = {
         key: field[key]
-        for key in ("conversion", "candidate", "unit", "values", "bits")
+        for key in ("conversion", "candidate", "unit", "values", "bits", "field")
         if key in field
     }
     if stated != terms:
@@ -559,7 +563,7 @@ def _validate_dashboard(dashboard, terms, context):
         or ("order" in dashboard and type(dashboard["order"]) is not int)
     ):
         raise DecodeError(f"{context} has an invalid presentation")
-    if "unit" in terms and "unit" in dashboard:
+    if ("unit" in terms or "unit" in terms.get("field", {})) and "unit" in dashboard:
         raise DecodeError(f"{context} states a unit that the scale states")
     feed = dashboard.get("feed")
     if feed is None:
@@ -618,13 +622,18 @@ class Decoder:
     """Strictly assemble complete, ordered telemetry snapshot groups.
 
     The health context of a run verifies the protocol version, the profile
-    ID, and the CRC16 of the selected profile; a group whose health context
-    publishes another identity is dropped. The configuration byte of a
-    dynamic page selects the placement of its data bytes; a configuration
-    that the schema does not define as published leaves them undecoded.
+    ID, and the CRC16 of the selected profile or of the same profile in a
+    historical schema; a group whose health context publishes another
+    identity is dropped. The verified identity selects the placement of the
+    data bytes, while ``profile`` and ``calibrations`` stay those of the
+    selected profile, whose fields the historical profiles share. The
+    configuration byte of a dynamic page selects the placement of its data
+    bytes; a configuration that the schema does not define as published
+    leaves them undecoded.
     """
 
-    def __init__(self, profile, can_id=0x6F0, schema_path=DEFAULT_SCHEMA):
+    def __init__(self, profile, can_id=0x6F0, schema_path=DEFAULT_SCHEMA,
+                 historical_schemas=HISTORICAL_SCHEMAS):
         self.schema, profiles = load_schema(schema_path)
         if profile not in profiles:
             raise DecodeError(f"unknown telemetry profile {profile!r}")
@@ -638,6 +647,23 @@ class Decoder:
         self._health = self.profile["_health"]
         self._health_fields = self._layout.contexts[self._health][1]
         self.calibrations = calibrations(self.profile)
+        self._decoding = self.profile
+        self._profiles = {self.expected_identity: self.profile}
+        for path in historical_schemas:
+            schema, others = load_schema(path)
+            other = others.get(profile)
+            if other is None:
+                continue
+            if (
+                other["page_count"] != self.page_count
+                or other["_context_pages"] != self.context_pages
+                or other["_health"] != self._health
+            ):
+                raise DecodeError(
+                    f"{path}: profile {profile!r} places its pages or health context apart"
+                )
+            identity = (schema["protocol_version"], other["id"], other["_crc16"])
+            self._profiles.setdefault(identity, other)
         self._pages = []
         self._sequence = None
         self._last_tick = None
@@ -665,6 +691,11 @@ class Decoder:
             self.schema["protocol_version"], self.profile["id"],
             self.profile["_crc16"],
         )
+
+    @property
+    def accepted_identities(self):
+        """The identities of the selected profile and its historical forms."""
+        return frozenset(self._profiles)
 
     def _discard(self):
         if self._pages:
@@ -743,7 +774,7 @@ class Decoder:
             self.malformed_frames += 1
             return None
         context_tag = next(iter(context_tags.values()))
-        for pad in self.profile.get("padding", ()):
+        for pad in self._decoding.get("padding", ()):
             if "tag" not in pad or pad["tag"] == context_tag:
                 if any(pages[pad["page"]][pad["offset"]:pad["offset"] + pad["width"]]):
                     self.malformed_frames += 1
@@ -760,10 +791,13 @@ class Decoder:
                 health["protocol_version"], health["profile_id"],
                 health["profile_crc16"],
             )
-            if self.reported_identity != self.expected_identity:
+            decoding = self._profiles.get(self.reported_identity)
+            if decoding is None:
                 self.schema_mismatches += 1
                 self._schema_verified = False
                 return None
+            self._decoding = decoding
+            self._layout = decoding["_layout"]
             self._schema_verified = True
 
         values = {}
@@ -803,7 +837,7 @@ class Decoder:
             context_name=context_name,
             schema_verified=self._schema_verified,
             timestamp=timestamp,
-            profile_id=self.profile["id"] if self._schema_verified else None,
+            profile_id=self._decoding["id"] if self._schema_verified else None,
         )
 
 

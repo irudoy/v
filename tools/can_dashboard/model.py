@@ -117,18 +117,53 @@ def _spelled(name):
     return name.replace("_", " ")
 
 
+def _packed_display(field):
+    """The display of a packed scale: the value of its bit range by its
+    conversion or named values, then the names of its set bits."""
+    packed = field["field"]
+    mask = (1 << (packed["high"] - packed["low"] + 1)) - 1
+    bits = tuple(
+        (entry["bit"], _spelled(entry["name"])) for entry in field["bits"]
+    )
+    if "values" in packed:
+        names = {
+            entry["value"]: _spelled(entry["name"]) for entry in packed["values"]
+        }
+
+        def value_text(value):
+            return names.get(value, f"0x{value:02X}")
+    else:
+        conversion = packed["conversion"]
+        digits = field.get("dashboard", {}).get("digits", 0)
+        unit = can_telemetry.DISPLAY_UNITS.get(
+            packed.get("unit", ""), packed.get("unit", "")
+        )
+
+        def value_text(value):
+            number = value * conversion["factor"] + conversion["offset"]
+            return f"{number:.{digits}f}" + (f" {unit}" if unit else "")
+
+    return lambda raw: ", ".join((
+        value_text(raw >> packed["low"] & mask),
+        *(name for bit, name in bits if raw >> bit & 1),
+    ))
+
+
 def field_display(field, calibration=None):
     """Return the function from the raw value of a field to the value the
     dashboard shows, or None for a field it shows raw.
 
     A code display names a mask in code; otherwise the calibration of the
-    field applies, or the named values or named bits of its scale. A code
+    field applies, or the named values or named bits of its scale, or the
+    packed value of its scale followed by the names of its set bits. A code
     without a name reads in hexadecimal.
     """
     if field["name"] in CODE_DISPLAYS:
         return CODE_DISPLAYS[field["name"]]
     if calibration is not None:
         return calibration.apply
+    if "field" in field:
+        return _packed_display(field)
     if "values" in field:
         names = {
             entry["value"]: _spelled(entry["name"]) for entry in field["values"]

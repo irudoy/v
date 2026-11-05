@@ -1,0 +1,2105 @@
+{
+  "byte_order": "big",
+  "control": {
+    "can_id": "data_can_id + 1",
+    "commands": {
+      "start": "54454C320201B632",
+      "stop": "54454C320200A613"
+    },
+    "dlc": 8,
+    "format": "standard_11_bit_classical_can",
+    "maximum_data_can_id": "0x7FE"
+  },
+  "frame": {
+    "default_can_id": "0x6F0",
+    "dlc": 8,
+    "format": "standard_11_bit_classical_can",
+    "header": "((tick16 & 0x0f) << 4) | page_id"
+  },
+  "profiles": [
+    {
+      "configurations": [
+        {
+          "groups": [
+            [
+              "rolling_launch_speed_error_raw",
+              "rolling_launch_torque_fraction_raw",
+              "rolling_launch_cut_counter",
+              "ignition_dwell_angle_raw"
+            ]
+          ],
+          "id": 1,
+          "label": "Rolling Launch law",
+          "name": "launch_law"
+        },
+        {
+          "groups": [
+            [
+              "rolling_launch_speed_error_raw",
+              "rolling_launch_torque_fraction_raw",
+              "rolling_launch_cut_counter",
+              "ignition_dwell_angle_raw"
+            ],
+            [
+              "rolling_launch_integrator_raw",
+              "speed_frame_receive_age_raw",
+              "rolling_launch_cut_counter"
+            ]
+          ],
+          "id": 2,
+          "label": "Rolling Launch law and integrator",
+          "name": "launch_law_integrator"
+        }
+      ],
+      "contexts": [
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": -50.0
+              },
+              "dashboard": {
+                "description": "Engine coolant temperature.",
+                "digits": 0,
+                "feed": {
+                  "format": "0",
+                  "key": "coolant_c",
+                  "maximum": 140,
+                  "minimum": -40,
+                  "name": "VQ Coolant Temperature",
+                  "step": 20
+                },
+                "group": "Temperature",
+                "label": "Coolant"
+              },
+              "name": "coolant_raw",
+              "scale": "raw - 50 degC",
+              "signed": false,
+              "unit": "degC",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": -50.0
+              },
+              "dashboard": {
+                "description": "Fuel temperature from the fuel tank temperature sensor.",
+                "digits": 0,
+                "group": "Temperature",
+                "label": "Fuel temperature",
+                "order": 20,
+                "panel": "Temperatures and context"
+              },
+              "name": "fuel_temperature_did_source_raw",
+              "scale": "raw - 50 degC",
+              "signed": false,
+              "unit": "degC",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Selected learned trim cell of bank 2, in percent. The publisher combines this cell with the running adjustment minus 100 percent before its conditional clamps and neutralization.",
+                "digits": 2,
+                "group": "Fuel",
+                "label": "LTFT learned bank 2",
+                "order": 11,
+                "panel": "Trims and supply"
+              },
+              "name": "ltft_learned_b2_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Running adjustment of the bank 2 long-term trim, in percent.",
+                "digits": 2,
+                "group": "Fuel",
+                "label": "LTFT adjustment bank 2",
+                "order": 21,
+                "panel": "Trims and supply"
+              },
+              "name": "ltft_adjustment_b2_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 2
+            }
+          ],
+          "name": "temperatures_and_b2_trim_terms",
+          "page": 9,
+          "tag": 0
+        },
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Short-term fuel trim of bank 1: the fast closed-loop correction from the A/F sensor, in percent. A positive value adds fuel.",
+                "digits": 2,
+                "feed": {
+                  "format": "0.00",
+                  "key": "stft_b1_pct",
+                  "maximum": 25,
+                  "minimum": -25,
+                  "name": "VQ STFT B1",
+                  "step": 5
+                },
+                "group": "Fuel",
+                "label": "STFT bank 1",
+                "order": 90,
+                "panel": "Air and fuel"
+              },
+              "name": "stft_b1_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": true,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Short-term fuel trim of bank 2: the fast closed-loop correction from the A/F sensor, in percent. A positive value adds fuel.",
+                "digits": 2,
+                "feed": {
+                  "format": "0.00",
+                  "key": "stft_b2_pct",
+                  "maximum": 25,
+                  "minimum": -25,
+                  "name": "VQ STFT B2",
+                  "step": 5
+                },
+                "group": "Fuel",
+                "label": "STFT bank 2",
+                "order": 100,
+                "panel": "Air and fuel"
+              },
+              "name": "stft_b2_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": true,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.39,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Duty of the bank 1 intake valve timing solenoid, in percent of its PWM period; the output that moves the camshaft. A larger duty advances the camshaft.",
+                "digits": 1,
+                "group": "CVTC",
+                "label": "CVTC duty B1",
+                "order": 110,
+                "panel": "Ignition, throttle, and CVTC"
+              },
+              "name": "intake_cvtc_duty_b1_raw",
+              "scale": "raw * 39 / 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.39,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Duty of the bank 2 intake valve timing solenoid, in percent of its PWM period; the output that moves the camshaft. A larger duty advances the camshaft.",
+                "digits": 1,
+                "group": "CVTC",
+                "label": "CVTC duty B2",
+                "order": 120,
+                "panel": "Ignition, throttle, and CVTC"
+              },
+              "name": "intake_cvtc_duty_b2_raw",
+              "scale": "raw * 39 / 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 1
+            }
+          ],
+          "name": "short_fuel_trim_cvtc_duty",
+          "page": 9,
+          "tag": 1
+        },
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Long-term fuel trim of bank 1 as diagnostics report it: the learned cell of the operating region plus the running adjustment, in percent. A positive value adds fuel.",
+                "digits": 2,
+                "feed": {
+                  "format": "0.00",
+                  "key": "ltft_b1_pct",
+                  "maximum": 25,
+                  "minimum": -25,
+                  "name": "VQ LTFT B1",
+                  "step": 5
+                },
+                "group": "Fuel",
+                "label": "LTFT bank 1",
+                "order": 110,
+                "panel": "Air and fuel"
+              },
+              "name": "ltft_b1_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": true,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Long-term fuel trim of bank 2 as diagnostics report it: the learned cell of the operating region plus the running adjustment, in percent. A positive value adds fuel.",
+                "digits": 2,
+                "feed": {
+                  "format": "0.00",
+                  "key": "ltft_b2_pct",
+                  "maximum": 25,
+                  "minimum": -25,
+                  "name": "VQ LTFT B2",
+                  "step": 5
+                },
+                "group": "Fuel",
+                "label": "LTFT bank 2",
+                "order": 120,
+                "panel": "Air and fuel"
+              },
+              "name": "ltft_b2_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": true,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": 1.0
+              },
+              "dashboard": {
+                "digits": 0,
+                "group": "Context",
+                "label": "Selected map"
+              },
+              "name": "active_map_index",
+              "scale": "raw + 1; 0 through 4 select Maps 1 through 5, and any other value selects Map 1",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "A byte curve-result coordinate derived from opening-area-domain counts divided by engine speed, used by the identified map consumer. Displayed in stored counts. Catalog QH0 Flow Quantity at x*0.390625 percent. The expression equals 100*x/256 numerically, but the physical quantity and reference are not established. The candidate percentage describes the retained catalog coordinate presentation, not a physical measurement or a universal target-layout consumer identity.",
+                "digits": 0,
+                "feed": {
+                  "format": "0",
+                  "key": "alpha_n_flow_count",
+                  "maximum": 255,
+                  "minimum": 0,
+                  "name": "VQ QH0 Flow Quantity",
+                  "step": 16
+                },
+                "group": "Fuel",
+                "label": "Fuel-compensation column count",
+                "order": 50,
+                "panel": "Air and fuel"
+              },
+              "name": "alpha_n_flow_raw",
+              "scale": "raw count",
+              "signed": false,
+              "unit": "count",
+              "width": 1
+            }
+          ],
+          "name": "long_fuel_trim_map_index_flow",
+          "page": 9,
+          "tag": 2
+        },
+        {
+          "fields": [
+            {
+              "dashboard": {
+                "description": "Telemetry protocol version that the ECU reports in the health context. Values are converted only when it matches the bundled schema.",
+                "digits": 0,
+                "group": "Transport",
+                "label": "Protocol version",
+                "order": 30,
+                "panel": "Throttle sensors and protocol"
+              },
+              "name": "protocol_version",
+              "scale": "identity",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "dashboard": {
+                "digits": 0,
+                "group": "Transport",
+                "label": "Profile ID"
+              },
+              "name": "profile_id",
+              "scale": "identity",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "dashboard": {
+                "description": "CRC16 of the wire layout that the ECU reports in the health context. Values are converted only when it equals the CRC of the bundled profile, because another layout carries other quantities in the same slots.",
+                "digits": 0,
+                "group": "Transport",
+                "hexadecimal": true,
+                "label": "Profile CRC16",
+                "order": 40,
+                "panel": "Throttle sensors and protocol"
+              },
+              "name": "profile_crc16",
+              "scale": "CRC-16/CCITT-FALSE",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "dashboard": {
+                "digits": 0,
+                "group": "Transport",
+                "label": "Snapshot overrun count"
+              },
+              "name": "snapshot_overrun_count",
+              "scale": "saturating count",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "dashboard": {
+                "digits": 0,
+                "group": "Transport",
+                "label": "TX abort count"
+              },
+              "name": "tx_abort_count",
+              "scale": "saturating count",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "name": "health",
+          "page": 9,
+          "tag": 3
+        },
+        {
+          "fields": [
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 1 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 1",
+                "order": 120,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch1_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            },
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 2 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 2",
+                "order": 130,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch2_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            },
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 3 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window. The stock threshold row of this channel holds 0xFFFF, so it reads -- unless the metric exceeds 32768.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 3",
+                "order": 140,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch3_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            }
+          ],
+          "name": "knock_margin_channels_1_to_3",
+          "page": 9,
+          "tag": 4
+        },
+        {
+          "fields": [
+            {
+              "dashboard": {
+                "description": "Reason code of the Rolling Launch runtime. In IDLE it names the first activation gate that fails, such as MAP DISABLED on a map without Rolling Launch or BUTTON INVALID while CANCEL is not held. ACTIVE reads NONE, and COOLDOWN keeps the reason that ended the run, such as SPEED BELOW WINDOW, SPEED FRAME STALE, or TIMEOUT.",
+                "digits": 0,
+                "group": "Context",
+                "label": "Rolling Launch reason",
+                "order": 90,
+                "panel": "Temperatures and context"
+              },
+              "name": "rolling_launch_abort_reason",
+              "scale": "enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 SPEED_FRAME_STALE, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED, 19 SPEED_HIGH, 20 SPEED_ABOVE_WINDOW, 21 SPEED_BELOW_WINDOW",
+              "signed": false,
+              "values": [
+                {
+                  "name": "NONE",
+                  "value": 0
+                },
+                {
+                  "name": "CONFIG_INVALID",
+                  "value": 1
+                },
+                {
+                  "name": "MAP_INDEX_INVALID",
+                  "value": 2
+                },
+                {
+                  "name": "MAP_DISABLED",
+                  "value": 3
+                },
+                {
+                  "name": "SELECTOR_BUSY",
+                  "value": 4
+                },
+                {
+                  "name": "FEEDBACK_BUSY",
+                  "value": 5
+                },
+                {
+                  "name": "MAIN_PRESSED",
+                  "value": 6
+                },
+                {
+                  "name": "BUTTON_RELEASED",
+                  "value": 7
+                },
+                {
+                  "name": "BUTTON_INVALID",
+                  "value": 8
+                },
+                {
+                  "name": "SPEED_LOW",
+                  "value": 9
+                },
+                {
+                  "name": "RPM_LOW",
+                  "value": 10
+                },
+                {
+                  "name": "PEDAL_LOW",
+                  "value": 11
+                },
+                {
+                  "name": "COOLANT_OUTSIDE",
+                  "value": 12
+                },
+                {
+                  "name": "SPEED_FRAME_STALE",
+                  "value": 13
+                },
+                {
+                  "name": "TIMEOUT",
+                  "value": 14
+                },
+                {
+                  "name": "MAP_REQUEST",
+                  "value": 15
+                },
+                {
+                  "name": "STATE_CORRUPT",
+                  "value": 16
+                },
+                {
+                  "name": "MAP_CHANGED",
+                  "value": 17
+                },
+                {
+                  "name": "MODE_CHANGED",
+                  "value": 18
+                },
+                {
+                  "name": "SPEED_HIGH",
+                  "value": 19
+                },
+                {
+                  "name": "SPEED_ABOVE_WINDOW",
+                  "value": 20
+                },
+                {
+                  "name": "SPEED_BELOW_WINDOW",
+                  "value": 21
+                }
+              ],
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.08,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Battery voltage at the ECU supply.",
+                "digits": 2,
+                "feed": {
+                  "format": "0.00",
+                  "key": "battery_v",
+                  "maximum": 16,
+                  "minimum": 8,
+                  "name": "VQ Battery Voltage",
+                  "step": 1
+                },
+                "group": "Context",
+                "label": "Battery voltage",
+                "order": 50,
+                "panel": "Trims and supply"
+              },
+              "name": "battery_voltage_raw",
+              "scale": "raw * 0.08 V",
+              "signed": false,
+              "unit": "V",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Selected learned trim cell of bank 1, in percent. The publisher combines this cell with the running adjustment minus 100 percent before its conditional clamps and neutralization.",
+                "digits": 2,
+                "group": "Fuel",
+                "label": "LTFT learned bank 1",
+                "order": 10,
+                "panel": "Trims and supply"
+              },
+              "name": "ltft_learned_b1_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.00390625,
+                "offset": -100.0
+              },
+              "dashboard": {
+                "description": "Running adjustment of the bank 1 long-term trim, in percent.",
+                "digits": 2,
+                "group": "Fuel",
+                "label": "LTFT adjustment bank 1",
+                "order": 20,
+                "panel": "Trims and supply"
+              },
+              "name": "ltft_adjustment_b1_raw",
+              "scale": "raw / 256 - 100 percent",
+              "signed": false,
+              "unit": "percent",
+              "width": 2
+            }
+          ],
+          "name": "launch_abort_voltage_and_trim_terms",
+          "page": 10,
+          "tag": 0
+        },
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": -50.0
+              },
+              "dashboard": {
+                "description": "Intake air temperature.",
+                "digits": 0,
+                "feed": {
+                  "format": "0",
+                  "key": "iat_c",
+                  "maximum": 140,
+                  "minimum": -40,
+                  "name": "VQ Intake Air Temperature",
+                  "step": 20
+                },
+                "group": "Temperature",
+                "label": "Intake air",
+                "order": 10,
+                "panel": "Temperatures and context"
+              },
+              "name": "iat_raw",
+              "scale": "raw - 50 degC",
+              "signed": false,
+              "unit": "degC",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 1.0,
+                "offset": -50.0
+              },
+              "dashboard": {
+                "description": "Engine oil temperature.",
+                "digits": 0,
+                "group": "Temperature",
+                "label": "Oil temperature",
+                "order": 30,
+                "panel": "Temperatures and context"
+              },
+              "name": "oil_temperature_did_source_raw",
+              "scale": "raw - 50 degC",
+              "signed": false,
+              "unit": "degC",
+              "width": 1
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 6.103515625e-05,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Commanded fuel multiplier against the stoichiometric base schedule. 1.0000 is the closed-loop stoichiometric target, and a larger value commands enrichment: the target map supplies 1.00..1.16. The commanded lambda is 1 / factor.",
+                "digits": 4,
+                "group": "Fuel",
+                "label": "A/F state factor",
+                "order": 80,
+                "panel": "Air and fuel"
+              },
+              "name": "af_state_factor_raw",
+              "scale": "raw / 16384 ratio",
+              "signed": false,
+              "unit": "ratio",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 2.0,
+                "offset": -590.0
+              },
+              "dashboard": {
+                "description": "End of injection in crank degrees after intake TDC of the injected cylinder. A firmware coordinate from the injection-end tables, not a measured injector event.",
+                "digits": 0,
+                "group": "Injection",
+                "label": "End of injection after intake TDC",
+                "order": 70,
+                "panel": "Torque and requests"
+              },
+              "name": "injection_end_angle_raw",
+              "scale": "raw * 2 - 590 degCA",
+              "signed": false,
+              "unit": "degCA",
+              "width": 2
+            }
+          ],
+          "name": "air_oil_temperature_and_af_state",
+          "page": 10,
+          "tag": 1
+        },
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.005,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Front A/F sensor signal of bank 1 in volts, the item the factory data monitor calls A/F SEN1: 2.20 V is the sensor reference, and lower is richer. It is not converted to AFR: the ECU curve from voltage to lambda is not identified, and under sustained enrichment the reading moves lean.",
+                "digits": 3,
+                "group": "Fuel",
+                "label": "Front A/F sensor B1",
+                "order": 60,
+                "panel": "Air and fuel",
+                "panel_label": "A/F sensor 1 B1"
+              },
+              "name": "front_af_sensor_b1_word_raw",
+              "scale": "raw / 200 V",
+              "signed": false,
+              "unit": "V",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.005,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Front A/F sensor signal of bank 2 in volts, the item the factory data monitor calls A/F SEN1: 2.20 V is the sensor reference, and lower is richer. It is not converted to AFR: the ECU curve from voltage to lambda is not identified, and under sustained enrichment the reading moves lean.",
+                "digits": 3,
+                "group": "Fuel",
+                "label": "Front A/F sensor B2",
+                "order": 70,
+                "panel": "Air and fuel",
+                "panel_label": "A/F sensor 1 B2"
+              },
+              "name": "front_af_sensor_b2_word_raw",
+              "scale": "raw / 200 V",
+              "signed": false,
+              "unit": "V",
+              "width": 2
+            },
+            {
+              "candidate": true,
+              "conversion": {
+                "factor": 0.002,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "A/F adjustment of bank 1: the signed correction that the ECU integrates from the difference between the target mixture and the A/F sensor 1 mixture, bounded to -500..500 counts. The candidate factor 0.002 maps the factory running range to -0.33..0.33. Every recording so far reads 0.",
+                "digits": 3,
+                "group": "Fuel",
+                "label": "A/F adjustment B1",
+                "order": 30,
+                "panel": "Trims and supply",
+                "panel_label": "A/F ADJ B1"
+              },
+              "name": "af_adjustment_b1_raw",
+              "scale": "candidate raw * 0.002 ratio",
+              "signed": true,
+              "unit": "ratio",
+              "width": 2
+            }
+          ],
+          "name": "front_af_and_adjustment_b1",
+          "page": 10,
+          "tag": 2
+        },
+        {
+          "fields": [
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.005,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Throttle position sensor 2 of the bank 1 throttle body in volts, the second track that the ECU checks against sensor 1; it rises with opening.",
+                "digits": 3,
+                "group": "Throttle",
+                "label": "Secondary TPS B1",
+                "order": 10,
+                "panel": "Throttle sensors and protocol"
+              },
+              "name": "secondary_tps_b1_raw",
+              "scale": "raw / 200 V",
+              "signed": false,
+              "unit": "V",
+              "width": 2
+            },
+            {
+              "candidate": false,
+              "conversion": {
+                "factor": 0.005,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "Throttle position sensor 2 of the bank 2 throttle body in volts, the second track that the ECU checks against sensor 1; it rises with opening.",
+                "digits": 3,
+                "group": "Throttle",
+                "label": "Secondary TPS B2",
+                "order": 20,
+                "panel": "Throttle sensors and protocol"
+              },
+              "name": "secondary_tps_b2_raw",
+              "scale": "raw / 200 V",
+              "signed": false,
+              "unit": "V",
+              "width": 2
+            },
+            {
+              "candidate": true,
+              "conversion": {
+                "factor": 0.002,
+                "offset": 0.0
+              },
+              "dashboard": {
+                "description": "A/F adjustment of bank 2: the signed correction that the ECU integrates from the difference between the target mixture and the A/F sensor 1 mixture, bounded to -500..500 counts. The candidate factor 0.002 maps the factory running range to -0.33..0.33. Every recording so far reads 0.",
+                "digits": 3,
+                "group": "Fuel",
+                "label": "A/F adjustment B2",
+                "order": 40,
+                "panel": "Trims and supply",
+                "panel_label": "A/F ADJ B2"
+              },
+              "name": "af_adjustment_b2_raw",
+              "scale": "candidate raw * 0.002 ratio",
+              "signed": true,
+              "unit": "ratio",
+              "width": 2
+            }
+          ],
+          "name": "secondary_throttle_and_adjustment_b2",
+          "page": 10,
+          "tag": 3
+        },
+        {
+          "fields": [
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 4 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 4",
+                "order": 150,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch4_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            },
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 5 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window. The stock threshold row of this channel holds 0xFFFF, so it reads -- unless the metric exceeds 32768.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 5",
+                "order": 160,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch5_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            },
+            {
+              "dashboard": {
+                "description": "Smallest knock margin of evaluator channel 6 since the previous capture of its context: the knock threshold minus the knock metric, in evaluator counts without a physical unit. A positive value is headroom below the threshold, and a negative value is an evaluation that the ECU counts as knock. The channel number is the cylinder number of the event that opens the knock window.",
+                "digits": 0,
+                "group": "Knock",
+                "label": "Knock margin ch 6",
+                "order": 170,
+                "panel": "Injection and knock",
+                "unit": "cnt"
+              },
+              "name": "knock_margin_min_ch6_raw",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
+              "signed": true,
+              "width": 2
+            }
+          ],
+          "name": "knock_margin_channels_4_to_6",
+          "page": 10,
+          "tag": 4
+        }
+      ],
+      "crc16_ccitt_false": "0x5DEF",
+      "dynamic": {
+        "configuration_offset": 7,
+        "data_bytes": 6,
+        "page": 3
+      },
+      "dynamic_fields": [
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Vehicle speed less the Rolling Launch target speed, the input of the speed-hold law. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch speed error",
+            "order": 10,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_speed_error_raw",
+          "scale": "raw / 10 km/h; vehicle speed less the target speed",
+          "signed": true,
+          "unit": "km/h",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.1,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Torque fraction u of the speed-hold law after its rate limit. Hold mode withholds the dwell of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 1,
+            "group": "Rolling Launch",
+            "label": "Launch torque fraction",
+            "order": 20,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_torque_fraction_raw",
+          "scale": "raw / 10 percent; torque fraction u after the rate limit",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.00625,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Integral term of the speed-hold law. The dynamic page carries it in group 1 of the launch-law and integrator configuration, every second snapshot.",
+            "digits": 2,
+            "group": "Rolling Launch",
+            "label": "Launch integrator",
+            "order": 30,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_integrator_raw",
+          "scale": "raw / 160 percent; speed-hold integrator",
+          "signed": true,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Wrapping count of the ignition dwells that hold mode withholds; the difference between two snapshots counts the cuts between them. The dynamic page carries it in every group of a launch-law configuration.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Launch cut counter",
+            "order": 40,
+            "panel": "Dynamic page"
+          },
+          "name": "rolling_launch_cut_counter",
+          "scale": "raw count; wrapping count of withheld dwells",
+          "signed": false,
+          "unit": "count",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law configuration is active.",
+            "digits": 0,
+            "group": "Ignition",
+            "label": "Dwell angle",
+            "order": 50,
+            "panel": "Dynamic page"
+          },
+          "name": "ignition_dwell_angle_raw",
+          "scale": "raw deg; coil dwell angle in crank degrees, stock range 0 through 114",
+          "signed": false,
+          "unit": "deg",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 10.24,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Receive age of the vehicle-speed frame 0x284 that the Rolling Launch speed gate checks; a pass that processes a new frame clears it. The dynamic page carries it in group 1 of the launch-law and integrator configuration.",
+            "digits": 0,
+            "group": "Rolling Launch",
+            "label": "Speed frame age",
+            "order": 60,
+            "panel": "Dynamic page"
+          },
+          "name": "speed_frame_receive_age_raw",
+          "scale": "raw * 10.24 ms; receive age of vehicle-speed frame 0x284, saturating at 255",
+          "signed": false,
+          "unit": "ms",
+          "width": 1
+        }
+      ],
+      "fields": [
+        {
+          "dashboard": {
+            "digits": 0,
+            "group": "Transport",
+            "label": "Telemetry tick"
+          },
+          "name": "tick16",
+          "offset": 1,
+          "page": 0,
+          "scale": "base scheduler ticks",
+          "signed": false,
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "A uint16 forward-conversion column coordinate formed from raw opening-area-domain counts divided by engine speed. Displayed in stored counts. Catalog QH0 Flow Potential at x*0.00152588 percent. The percentage remains candidate coordinate presentation and does not claim a measured physical flow or a bound source on an unresolved layout.",
+            "digits": 0,
+            "feed": {
+              "format": "0",
+              "key": "request_flow_count",
+              "maximum": 65535,
+              "minimum": 0,
+              "name": "VQ QH0 Flow Potential",
+              "step": 4096
+            },
+            "group": "Throttle",
+            "label": "Requested-torque column count",
+            "order": 30,
+            "panel": "Torque and requests"
+          },
+          "name": "request_flow_raw",
+          "offset": 3,
+          "page": 0,
+          "scale": "raw count",
+          "signed": false,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Final ignition timing coordinate in degrees before TDC. A software command, not a measured spark angle. During the late override of a historical Rolling Launch endpoint it is the upstream stock coordinate, and APC command carries the effective value.",
+            "digits": 0,
+            "feed": {
+              "format": "0",
+              "key": "timing_deg",
+              "maximum": 60,
+              "minimum": -20,
+              "name": "VQ Timing Command",
+              "step": 10
+            },
+            "group": "Ignition",
+            "label": "Timing command"
+          },
+          "name": "final_timing_raw",
+          "offset": 5,
+          "page": 0,
+          "scale": "raw degBTDC",
+          "signed": true,
+          "unit": "degBTDC",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": -1.0,
+            "offset": 110.0
+          },
+          "dashboard": {
+            "description": "Effective ignition timing command in degrees before TDC, as J1979 PID 0x0E reports it: 110 minus the APC byte. It follows the late override of a historical Rolling Launch endpoint and the stock modes that move the command away from the timing coordinate. A software command, not a measured spark angle.",
+            "digits": 0,
+            "group": "Ignition",
+            "label": "APC command",
+            "order": 10,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "apc_command_raw",
+          "offset": 6,
+          "page": 0,
+          "scale": "110 - raw degBTDC",
+          "signed": false,
+          "unit": "degBTDC",
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 0,
+              "name": "CYLINDER_1"
+            },
+            {
+              "bit": 1,
+              "name": "CYLINDER_2"
+            },
+            {
+              "bit": 2,
+              "name": "CYLINDER_3"
+            },
+            {
+              "bit": 3,
+              "name": "CYLINDER_4"
+            },
+            {
+              "bit": 4,
+              "name": "CYLINDER_5"
+            },
+            {
+              "bit": 5,
+              "name": "CYLINDER_6"
+            }
+          ],
+          "dashboard": {
+            "description": "Cylinders whose injection the ECU cuts at this moment: none, all for a complete fuel cut, or the list of cut cylinders.",
+            "digits": 0,
+            "group": "Injection",
+            "label": "Fuel inhibit mask",
+            "order": 70,
+            "panel": "Injection and knock",
+            "panel_label": "Fuel inhibit"
+          },
+          "name": "fuel_inhibit_mask",
+          "offset": 7,
+          "page": 0,
+          "scale": "bits: 0 CYLINDER_1, 1 CYLINDER_2, 2 CYLINDER_3, 3 CYLINDER_4, 4 CYLINDER_5, 5 CYLINDER_6",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Mass airflow sensor signal of bank 1 in volts, the ten-bit ADC count after a unit-nominal trim. The ECU converts it to airflow through its sensor table.",
+            "digits": 3,
+            "group": "Air",
+            "label": "MAF bank 1",
+            "order": 10,
+            "panel": "Air and fuel"
+          },
+          "name": "maf_b1_raw",
+          "offset": 1,
+          "page": 1,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Mass airflow sensor signal of bank 2 in volts, the ten-bit ADC count after a unit-nominal trim. The ECU converts it to airflow through its sensor table.",
+            "digits": 3,
+            "group": "Air",
+            "label": "MAF bank 2",
+            "order": 20,
+            "panel": "Air and fuel"
+          },
+          "name": "maf_b2_raw",
+          "offset": 3,
+          "page": 1,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.01,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Total intake airflow of both banks in g/s from the ECU airflow model, the value J1979 PID 0x10 reports. A model output, not a direct sensor reading.",
+            "digits": 2,
+            "feed": {
+              "format": "0.00",
+              "key": "maf_g_s",
+              "maximum": 400,
+              "minimum": 0,
+              "name": "VQ Total Airflow",
+              "step": 50
+            },
+            "group": "Air",
+            "label": "Total airflow"
+          },
+          "name": "maf_total_raw",
+          "offset": 5,
+          "page": 1,
+          "scale": "raw / 100 g/s",
+          "signed": false,
+          "unit": "g/s",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.78125,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Engine load that indexes the ignition and CVTC target maps: the Base Fuel Schedule as a ratio to the reference constant of the ROM in steps of 1/128, as the ECU computes it for the snapshot. 100 percent is the reference schedule, and the value saturates at 199.2 percent. The live value feed sends it as VQ Engine Load.",
+            "digits": 1,
+            "feed": {
+              "format": "0.00",
+              "key": "load",
+              "maximum": 200,
+              "minimum": 0,
+              "name": "VQ Engine Load",
+              "step": 20
+            },
+            "group": "Engine",
+            "label": "Engine load",
+            "order": 40,
+            "panel": "Air and fuel"
+          },
+          "name": "normalized_load_raw",
+          "offset": 7,
+          "page": 1,
+          "scale": "raw * 100 / 128 percent",
+          "signed": false,
+          "unit": "percent",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.00048828125,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Base Fuel Schedule: the base injection time in ms for the measured air charge, before the fuel trims, the target-mixture factor, and the injector opening time. Normalized to its reference constant, it is the load axis of the ignition and CVTC maps, which Engine load shows.",
+            "digits": 3,
+            "feed": {
+              "format": "0.000",
+              "key": "bfs_ms",
+              "maximum": 20,
+              "minimum": 0,
+              "name": "VQ Base Fuel Schedule",
+              "step": 2
+            },
+            "group": "Fuel",
+            "label": "Base fuel schedule",
+            "order": 30,
+            "panel": "Air and fuel",
+            "panel_label": "BFS"
+          },
+          "name": "bfs_raw",
+          "offset": 1,
+          "page": 2,
+          "scale": "raw / 2048 ms",
+          "signed": false,
+          "unit": "ms",
+          "width": 2
+        },
+        {
+          "dashboard": {
+            "description": "Phase of the Rolling Launch runtime: IDLE while it evaluates the activation gates, ACTIVE while it runs the speed-hold controller and owns the RPM-ceiling fuel cut, and COOLDOWN after a run ends, until the buttons stay released for the rearm period.",
+            "digits": 0,
+            "group": "Context",
+            "label": "Rolling Launch phase",
+            "order": 80,
+            "panel": "Temperatures and context",
+            "panel_label": "Rolling Launch"
+          },
+          "name": "rolling_launch_phase",
+          "offset": 3,
+          "page": 2,
+          "scale": "enumeration: 0 IDLE, 1 ACTIVE, 2 COOLDOWN",
+          "signed": false,
+          "values": [
+            {
+              "name": "IDLE",
+              "value": 0
+            },
+            {
+              "name": "ACTIVE",
+              "value": 1
+            },
+            {
+              "name": "COOLDOWN",
+              "value": 2
+            }
+          ],
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.01,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Calculated injection pulse of channel 0, which drives cylinder 1 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
+            "digits": 2,
+            "group": "Injection",
+            "label": "Injection calc 0",
+            "order": 10,
+            "panel": "Injection and knock"
+          },
+          "name": "injection_0_raw",
+          "offset": 4,
+          "page": 2,
+          "scale": "raw / 100 ms",
+          "signed": false,
+          "unit": "ms",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.01,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Calculated injection pulse of channel 1, which drives cylinder 2 by the diagnostic Power Balance order: the compensated software command in ms at 10 us per count, not a measured injector-open time.",
+            "digits": 2,
+            "group": "Injection",
+            "label": "Injection calc 1",
+            "order": 20,
+            "panel": "Injection and knock"
+          },
+          "name": "injection_1_raw",
+          "offset": 6,
+          "page": 2,
+          "scale": "raw / 100 ms",
+          "signed": false,
+          "unit": "ms",
+          "width": 2
+        },
+        {
+          "bits": [
+            {
+              "bit": 0,
+              "name": "BANK_1_COMPOSITE_PERMIT"
+            },
+            {
+              "bit": 1,
+              "name": "BANK_2_COMPOSITE_PERMIT"
+            }
+          ],
+          "dashboard": {
+            "description": "Bank bits 0 and 1 of the composite learning gate written by FUN 00058740. Learning also requires the corresponding stability-permit bit. The physical meaning of every contributing condition is unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT composite permit",
+            "order": 10,
+            "panel": "Learning and knock state"
+          },
+          "name": "fuel_learning_permit_b_raw",
+          "offset": 1,
+          "page": 3,
+          "scale": "bits: 0 BANK_1_COMPOSITE_PERMIT, 1 BANK_2_COMPOSITE_PERMIT",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 0,
+              "name": "BANK_1_STABILITY_PERMIT"
+            },
+            {
+              "bit": 1,
+              "name": "BANK_2_STABILITY_PERMIT"
+            }
+          ],
+          "dashboard": {
+            "description": "Bank bits 0 and 1 written by FUN 00058740 from bounded signal-change and derivative checks after the per-bank eligibility counters. Both permit bytes are required by the learned-grid update. Raw signal identities and physical learning permission remain unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT stability permit",
+            "order": 20,
+            "panel": "Learning and knock state"
+          },
+          "name": "fuel_learning_permit_a_raw",
+          "offset": 2,
+          "page": 3,
+          "scale": "bits: 0 BANK_1_STABILITY_PERMIT, 1 BANK_2_STABILITY_PERMIT",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 0,
+              "name": "NEUTRALIZE_PUBLICATION_AND_RESET_GRID"
+            }
+          ],
+          "dashboard": {
+            "description": "Bit 0 participates in learned-grid reset and neutral LTFT publication. FUN 00057900 produces it as an edge pulse from request FFFF99D8.bit5 and latch FFFF4201.bit6. The exact diagnostic request and other control bits are unreviewed.",
+            "digits": 0,
+            "group": "Fuel",
+            "hexadecimal": true,
+            "label": "LTFT neutralization state",
+            "order": 30,
+            "panel": "Learning and knock state"
+          },
+          "name": "ltft_publication_neutral_control_raw",
+          "offset": 3,
+          "page": 3,
+          "scale": "bits: 0 NEUTRALIZE_PUBLICATION_AND_RESET_GRID",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Raw 16-bit storage view of the generated Q8 transition state. The event timing stage consumes its unsigned high byte on the reviewed path; other modes use a separate latched path. Physical units and producer signedness remain unresolved, and the state is not exclusive to TCM requests.",
+            "digits": 0,
+            "group": "Torque",
+            "label": "Generated torque transition state",
+            "order": 72,
+            "panel": "Torque and requests"
+          },
+          "name": "torque_transition_state_raw",
+          "offset": 4,
+          "page": 3,
+          "scale": "raw count",
+          "signed": false,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Measured exhaust camshaft position of bank 1 in crank degrees, from the phase of the cam sensor edges.",
+            "digits": 1,
+            "group": "CVTC",
+            "label": "Exhaust CVTC actual B1",
+            "order": 10,
+            "panel": "CVTC detail"
+          },
+          "name": "exhaust_cvtc_actual_b1_raw",
+          "offset": 6,
+          "page": 3,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "dashboard": {
+            "description": "The dynamic configuration that page 3 carries: its ID in bits 0 through 6 and the group of the frame in bit 7. ID 0 is the default configuration, whose fields the profile names.",
+            "digits": 0,
+            "group": "Transport",
+            "label": "Page 3 configuration"
+          },
+          "name": "telemetry_page_configuration",
+          "offset": 7,
+          "page": 3,
+          "scale": "ID in bits 0 through 6, group in bit 7",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 6,
+              "name": "DIRECT_DIFFERENCE_ENABLE"
+            }
+          ],
+          "dashboard": {
+            "description": "Scheduler input-state snapshot taken before periodic tasks. Bit 6 permits the direct high-octane minus high-detonation map-difference branch when the prior coordinator inhibit flag is clear. Other bits and the physical producer of the switching state remain unreviewed.",
+            "digits": 0,
+            "group": "Knock",
+            "hexadecimal": true,
+            "label": "Knock input state",
+            "order": 40,
+            "panel": "Learning and knock state"
+          },
+          "name": "knock_state_snapshot_raw",
+          "offset": 1,
+          "page": 4,
+          "scale": "bits: 6 DIRECT_DIFFERENCE_ENABLE",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "bits": [
+            {
+              "bit": 7,
+              "name": "DIRECT_DIFFERENCE_INHIBIT"
+            }
+          ],
+          "dashboard": {
+            "description": "Coordinator state captured after FUN 000493E8. Bit 7 inhibits the direct map-difference branch at the next evaluation. Use the previous contiguous snapshot to recover that input for the current pass. Other bits and their physical causes remain unreviewed.",
+            "digits": 0,
+            "group": "Knock",
+            "hexadecimal": true,
+            "label": "Knock branch state",
+            "order": 50,
+            "panel": "Learning and knock state"
+          },
+          "name": "knock_branch_state_raw",
+          "offset": 2,
+          "page": 4,
+          "scale": "bits: 7 DIRECT_DIFFERENCE_INHIBIT",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.00390625,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Signed timing state of the knock and high-detonation coordinator in 1/256 degree; its whole-number part enters the engine-event timing correction.",
+            "digits": 3,
+            "group": "Knock",
+            "label": "Knock timing state",
+            "order": 80,
+            "panel": "Injection and knock"
+          },
+          "name": "knock_timing_state_raw",
+          "offset": 3,
+          "page": 4,
+          "scale": "raw / 256 deg",
+          "signed": true,
+          "unit": "deg",
+          "width": 2
+        },
+        {
+          "bits": [
+            {
+              "bit": 6,
+              "name": "HIGH_DETONATION"
+            }
+          ],
+          "dashboard": {
+            "description": "Hot ignition surface in use: HIGH OCTANE or HIGH DETONATION. The knock coordinator selects it through several gates, one of them a hysteresis on a knock state, and the same bit scales the target mixture.",
+            "digits": 0,
+            "group": "Knock",
+            "label": "Knock surface state",
+            "order": 90,
+            "panel": "Injection and knock",
+            "panel_label": "Active hot surface"
+          },
+          "name": "knock_surface_state",
+          "offset": 5,
+          "page": 4,
+          "scale": "bits: 6 HIGH_DETONATION",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "dashboard": {
+            "description": "Knock exceedances that the evaluator counted between two snapshots, saturating.",
+            "digits": 0,
+            "group": "Knock",
+            "label": "Knock interval count",
+            "order": 100,
+            "panel": "Injection and knock"
+          },
+          "name": "knock_count_latched",
+          "offset": 6,
+          "page": 4,
+          "scale": "saturating event count",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "dashboard": {
+            "description": "Knock channels that had an exceedance between two snapshots.",
+            "digits": 0,
+            "group": "Knock",
+            "label": "Knock channel mask",
+            "order": 110,
+            "panel": "Injection and knock",
+            "panel_label": "Knock channels"
+          },
+          "name": "knock_channel_mask_latched",
+          "offset": 7,
+          "page": 4,
+          "scale": "six-position bit mask; bit c - 1 is knock channel c",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Accelerator pedal position sensor 1 in volts; it rises with pedal travel. Factory bands: 0.5..1.0 V released and 4.2..4.8 V fully depressed.",
+            "digits": 3,
+            "group": "Throttle",
+            "label": "APP 1",
+            "order": 20,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "app1_raw",
+          "offset": 1,
+          "page": 5,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Accelerator pedal position sensor 2 in volts, the second track that the ECU checks against sensor 1; it rises with pedal travel.",
+            "digits": 3,
+            "group": "Throttle",
+            "label": "APP 2",
+            "order": 30,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "app2_raw",
+          "offset": 3,
+          "page": 5,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Throttle position sensor 1 of the bank 1 electric throttle body in volts; it rises with opening. Factory criteria: above 0.36 V released and below 4.75 V fully depressed.",
+            "digits": 3,
+            "group": "Throttle",
+            "label": "TPS bank 1",
+            "order": 40,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "tps_b1_raw",
+          "offset": 5,
+          "page": 5,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.39215686274509803,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Absolute throttle position as J1979 PID 0x11 reports it, in percent of the byte range.",
+            "digits": 1,
+            "feed": {
+              "format": "0.0",
+              "key": "throttle_pct",
+              "maximum": 100,
+              "minimum": 0,
+              "name": "VQ Absolute Throttle",
+              "step": 10
+            },
+            "group": "Throttle",
+            "label": "Absolute throttle",
+            "order": 60,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "absolute_throttle_raw",
+          "offset": 7,
+          "page": 5,
+          "scale": "raw * 100 / 255 percent",
+          "signed": false,
+          "unit": "percent",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.005,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Throttle position sensor 1 of the bank 2 electric throttle body in volts; it rises with opening. Factory criteria: above 0.36 V released and below 4.75 V fully depressed.",
+            "digits": 3,
+            "group": "Throttle",
+            "label": "TPS bank 2",
+            "order": 50,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "tps_b2_raw",
+          "offset": 1,
+          "page": 6,
+          "scale": "raw / 200 V",
+          "signed": false,
+          "unit": "V",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Measured intake camshaft advance of bank 1 in crank degrees, from the phase of the cam sensor edges; a larger value is more advance.",
+            "digits": 1,
+            "feed": {
+              "format": "0.0",
+              "key": "intake_cam_b1_deg",
+              "maximum": 64,
+              "minimum": -64,
+              "name": "VQ Intake Cam B1",
+              "step": 16
+            },
+            "group": "CVTC",
+            "label": "Intake CVTC actual B1",
+            "order": 70,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "intake_cvtc_actual_b1_raw",
+          "offset": 3,
+          "page": 6,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Measured intake camshaft advance of bank 2 in crank degrees, from the phase of the cam sensor edges; a larger value is more advance.",
+            "digits": 1,
+            "feed": {
+              "format": "0.0",
+              "key": "intake_cam_b2_deg",
+              "maximum": 64,
+              "minimum": -64,
+              "name": "VQ Intake Cam B2",
+              "step": 16
+            },
+            "group": "CVTC",
+            "label": "Intake CVTC actual B2",
+            "order": 80,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "intake_cvtc_actual_b2_raw",
+          "offset": 4,
+          "page": 6,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Intake camshaft advance target common to both banks, in crank degrees. The CVTC controller drives the measured positions toward it.",
+            "digits": 1,
+            "group": "CVTC",
+            "label": "Intake CVTC target",
+            "order": 90,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "intake_cvtc_target_raw",
+          "offset": 5,
+          "page": 6,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Exhaust camshaft target common to both banks, in crank degrees.",
+            "digits": 1,
+            "group": "CVTC",
+            "label": "Exhaust CVTC target",
+            "order": 100,
+            "panel": "Ignition, throttle, and CVTC"
+          },
+          "name": "exhaust_cvtc_target_raw",
+          "offset": 6,
+          "page": 6,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.39215686274509803,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Calculated load value of J1979 PID 0x04: the current airflow divided by the peak airflow. It is not the normalized Base Fuel Schedule that indexes the ignition and CVTC maps; Engine load carries that coordinate.",
+            "digits": 1,
+            "group": "Engine",
+            "label": "Calculated load"
+          },
+          "name": "calculated_load_raw",
+          "offset": 7,
+          "page": 6,
+          "scale": "raw * 100 / 255 percent",
+          "signed": false,
+          "unit": "percent",
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "A final bounded signed internal request used as the inverse torque-surface input. Displayed in stored counts. Candidate requested torque at x*0.1 Nm, dependent on the unresolved physical conversion of the internal torque domain. Requested torque is not actual torque. The hardware actuator and bank boundaries remain explicit.",
+            "digits": 0,
+            "group": "Throttle",
+            "label": "Bounded request count",
+            "order": 20,
+            "panel": "Torque and requests",
+            "panel_label": "Torque request"
+          },
+          "name": "throttle_request_bounded_raw",
+          "offset": 1,
+          "page": 7,
+          "scale": "raw count",
+          "signed": true,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "A signed gross state in the ECU torque-model raw domain, before the recorded net-state deductions. Displayed in stored counts. Candidate x*0.1 Nm for the internal modeled state, with x*0.08 still compatible for the evaluated net torque chain. A candidate modeled-torque label is not measured flywheel torque. The gross and net terms remain distinct.",
+            "digits": 0,
+            "group": "Engine",
+            "label": "Gross torque-model count",
+            "order": 10,
+            "panel": "Torque and requests"
+          },
+          "name": "engine_torque_state_raw",
+          "offset": 3,
+          "page": 7,
+          "scale": "raw count",
+          "signed": true,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Unsigned effective TCM reduction state after enable, shift, and inhibit handling. The enabled direct path uses the request byte shifted left by eight; other branches retain, limit, rebuild, decrease, or clear it. Raw stored counts without a physical torque conversion.",
+            "digits": 0,
+            "group": "Torque",
+            "label": "Accepted TCM reduction state",
+            "order": 71,
+            "panel": "Torque and requests"
+          },
+          "name": "transmission_reduction_state_raw",
+          "offset": 5,
+          "page": 7,
+          "scale": "raw count",
+          "signed": false,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "dashboard": {
+            "digits": 0,
+            "group": "Transport",
+            "label": "Telemetry status"
+          },
+          "name": "telemetry_status",
+          "offset": 7,
+          "page": 7,
+          "scale": "bit mask",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 1.0,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "A shared unsigned area-domain target count used by the two channel-target conversions. Displayed in stored counts. Candidate physical target opening area at x*0.0008 cm2 for the shared throttle-body model. The count-domain role is established. The proposed geometric coefficient and physical aggregation remain unresolved rather than silently removed.",
+            "digits": 0,
+            "group": "Throttle",
+            "label": "Shared area-domain count",
+            "order": 40,
+            "panel": "Torque and requests",
+            "panel_label": "Throttle area request"
+          },
+          "name": "throttle_target_shared_raw",
+          "offset": 1,
+          "page": 8,
+          "scale": "raw count",
+          "signed": false,
+          "unit": "count",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.030773387235753676,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Bank 1 throttle target as throttle opening above the learned closed position, on the percent scale the ECU publishes as J1979 absolute throttle. It is the coordinate of the throttle opening tables, and the live value feed publishes it for RomRaider Overlay Log.",
+            "digits": 2,
+            "feed": {
+              "format": "0.00",
+              "key": "throttle_target_pct",
+              "maximum": 100,
+              "minimum": 0,
+              "name": "VQ Throttle Target",
+              "step": 10
+            },
+            "group": "Throttle",
+            "label": "Throttle target channel 0",
+            "order": 50,
+            "panel": "Torque and requests",
+            "panel_label": "Throttle target B1"
+          },
+          "name": "throttle_target_channel_0_raw",
+          "offset": 3,
+          "page": 8,
+          "scale": "raw * 34285 / 1114112 percent",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.030773387235753676,
+            "offset": 0.0
+          },
+          "dashboard": {
+            "description": "Bank 2 throttle target as throttle opening above the learned closed position, on the percent scale the ECU publishes as J1979 absolute throttle.",
+            "digits": 2,
+            "group": "Throttle",
+            "label": "Throttle target channel 1",
+            "order": 60,
+            "panel": "Torque and requests",
+            "panel_label": "Throttle target B2"
+          },
+          "name": "throttle_target_channel_1_raw",
+          "offset": 5,
+          "page": 8,
+          "scale": "raw * 34285 / 1114112 percent",
+          "signed": false,
+          "unit": "percent",
+          "width": 2
+        },
+        {
+          "candidate": false,
+          "conversion": {
+            "factor": 0.5,
+            "offset": -64.0
+          },
+          "dashboard": {
+            "description": "Measured exhaust camshaft position of bank 2 in crank degrees, from the phase of the cam sensor edges.",
+            "digits": 1,
+            "group": "CVTC",
+            "label": "Exhaust CVTC actual B2",
+            "order": 20,
+            "panel": "CVTC detail"
+          },
+          "name": "exhaust_cvtc_actual_b2_raw",
+          "offset": 7,
+          "page": 8,
+          "scale": "raw * 0.5 - 64 degCA",
+          "signed": false,
+          "unit": "degCA",
+          "width": 1
+        }
+      ],
+      "id": 9,
+      "name": "tuning",
+      "page_count": 11
+    }
+  ],
+  "protocol_version": 2,
+  "schema_version": 2
+}

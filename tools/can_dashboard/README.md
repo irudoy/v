@@ -172,7 +172,9 @@ default fields or the RAM slots of a host-defined configuration, and byte 7
 echoes the configuration ID and the group of the snapshot
 ([`../../patches/can-telemetry.md`](../../patches/can-telemetry.md#dynamic-page)).
 The `PAGE` button of the `DYNAMIC` tab lists the configurations of the schema
-and sends the selected one on the control ID: DEFAULT for configuration 0, or
+that the command frames install, so a historical configuration that decodes
+in a recording is not offered, and sends the selected one on the control ID:
+DEFAULT for configuration 0, or
 a SET frame for every slot and a COMMIT frame. The frames go out at least
 20 ms apart because the ECU consumes one control frame per 10.24 ms tick.
 The frames come from `patches/can-telemetry-configurations.json`, the

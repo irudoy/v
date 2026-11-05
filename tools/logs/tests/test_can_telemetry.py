@@ -504,7 +504,7 @@ class DynamicPageTest(unittest.TestCase):
 
     def test_an_undefined_layout_leaves_the_page_undecoded(self):
         cases = {
-            "unknown ID": (5, bytes(6)),
+            "unknown ID": (7, bytes(6)),
             "group of a one-group configuration": (0x81, bytes(6)),
             "group 1 of the default": (0x80, bytes(6)),
             "bytes after the slots": (0x82, bytes((0, 1, 2, 3, 0, 1))),
@@ -572,18 +572,18 @@ class DynamicPageTest(unittest.TestCase):
 
     def test_configuration_commands_follow_the_schema_groups(self):
         can_id, commands = can_telemetry_schema.configuration_commands(
-            self.frames, self.profile, 0x6F0, 2
+            self.frames, self.profile, 0x6F0, 4
         )
         self.assertEqual(can_id, 0x6F1)
         self.assertEqual(
             [command for command, _payload in commands],
-            ["page-set"] * 7 + ["page-commit"],
+            ["page-set"] * 6 + ["page-commit"],
         )
         descriptors = [payload[2] for _command, payload in commands[:-1]]
-        self.assertEqual(descriptors, [0x02, 0x12, 0x21, 0x31, 0x82, 0x91, 0xA1])
-        self.assertEqual(commands[-1][1][:6], bytes((0xC2, 2, 2, 4, 3, 0)))
+        self.assertEqual(descriptors, [0x04, 0x11, 0x21, 0x82, 0x92, 0xA2])
+        self.assertEqual(commands[-1][1][:6], bytes((0xC2, 4, 2, 3, 3, 0)))
         for command, payload in commands:
-            self.assertEqual(payload[1], 2)
+            self.assertEqual(payload[1], 4)
             if command == "page-set":
                 self.assertEqual(payload[3], 0xFF)
             self.assertEqual(
@@ -607,16 +607,17 @@ class DynamicPageTest(unittest.TestCase):
 
         def corrupt(frames):
             row = frames["configurations"][0]
-            row["frames"][0] = row["frames"][0][:-1] + "0"
+            row["frames"][0] = row["frames"][0][:-1] + ("1" if row["frames"][0][-1] == "0" else "0")
 
         cases = {
-            "swapped slots": (tampered(swap), 1),
-            "corrupt CRC": (tampered(corrupt), 1),
+            "swapped slots": (tampered(swap), 3),
+            "corrupt CRC": (tampered(corrupt), 3),
             "dropped commit": (
-                tampered(lambda frames: frames["configurations"][0]["frames"].pop()), 1
+                tampered(lambda frames: frames["configurations"][0]["frames"].pop()), 3
             ),
             "other profile": (tampered(lambda frames: frames.update(profile="x")), 0),
             "undefined ID": (self.frames, 9),
+            "historical ID": (self.frames, 1),
         }
         for name, (frames, configuration_id) in cases.items():
             with self.subTest(name=name):
@@ -626,7 +627,7 @@ class DynamicPageTest(unittest.TestCase):
                     )
         with self.assertRaises(ValueError):
             can_telemetry_schema.configuration_commands(
-                self.frames, self.profile, 0x7FF, 1
+                self.frames, self.profile, 0x7FF, 3
             )
 
 
@@ -700,6 +701,93 @@ def field_of(document, name):
     raise KeyError(name)
 
 
+class HistoricalSchemaTest(unittest.TestCase):
+    """A decoder of a later profile reads the recordings of a frozen one."""
+
+    FROZEN = (2, 9, 24047)
+
+    @staticmethod
+    def later_schema(directory, profile_id=10):
+        """The current schema under another profile ID and its CRC."""
+        raw = json.loads(can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8"))
+        profile = raw["profiles"][0]
+        profile["id"] = profile_id
+        crc16 = can_telemetry_schema.profile_crc16(profile, raw["protocol_version"])
+        profile["crc16_ccitt_false"] = f"0x{crc16:04X}"
+        path = Path(directory) / "schema.json"
+        path.write_text(json.dumps(raw), encoding="utf-8")
+        return path, crc16
+
+    def test_the_history_registry_binds_the_frozen_schemas(self):
+        from patches import can_telemetry_history
+
+        named = {
+            endpoint.key: endpoint.host_schema
+            for endpoint in can_telemetry_history.endpoints()
+            if endpoint.host_schema is not None
+        }
+        self.assertEqual(named, {"schema2-profile9": "can-telemetry-schema-profile9.json"})
+        self.assertEqual(
+            {path.name for path in can_telemetry.HISTORICAL_SCHEMAS}, set(named.values())
+        )
+        for path in can_telemetry.HISTORICAL_SCHEMAS:
+            self.assertEqual(path.parent, can_telemetry_history.REGISTRY.parent)
+
+    def test_a_later_profile_decodes_a_frozen_profile_stream(self):
+        with tempfile.TemporaryDirectory() as directory:
+            later, crc16 = self.later_schema(directory)
+            decoder = can_telemetry.Decoder("tuning", schema_path=later)
+            strict = can_telemetry.Decoder(
+                "tuning", schema_path=later, historical_schemas=()
+            )
+        self.assertEqual(decoder.expected_identity, (2, 10, crc16))
+        self.assertEqual(decoder.accepted_identities, {(2, 10, crc16), self.FROZEN})
+        frozen = frames("tuning", 1, context_tag=3, identity=self.FROZEN[1:], configuration=1)
+        snapshot = feed_group(decoder, frozen)
+        self.assertTrue(snapshot.schema_verified)
+        self.assertEqual(snapshot.profile_id, 9)
+        self.assertIn("rolling_launch_speed_error_raw", snapshot.fields)
+        # Profile 9 defines no schema 6 configuration.
+        snapshot = feed_group(decoder, frames("tuning", 2, configuration=3))
+        self.assertEqual(decoder.unknown_configurations, 1)
+        self.assertNotIn("rolling_launch_law_output_raw", snapshot.fields)
+        self.assertIsNone(feed_group(strict, frozen))
+        self.assertEqual(strict.schema_mismatches, 1)
+        foreign = frames("tuning", 3, context_tag=3, identity=(11, 0x1234))
+        self.assertIsNone(feed_group(decoder, foreign))
+        self.assertEqual(decoder.schema_mismatches, 1)
+
+    def test_a_later_profile_stream_takes_the_later_layout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            later, crc16 = self.later_schema(directory)
+            decoder = can_telemetry.Decoder("tuning", schema_path=later)
+        feed_group(decoder, frames("tuning", 1, context_tag=3, identity=self.FROZEN[1:]))
+        group = frames("tuning", 2, context_tag=3, identity=(10, crc16), configuration=3)
+        snapshot = feed_group(decoder, group)
+        self.assertEqual(snapshot.profile_id, 10)
+        self.assertIn("rolling_launch_law_output_raw", snapshot.fields)
+        self.assertEqual(decoder.unknown_configurations, 0)
+
+    def test_the_frozen_profile_fields_are_fields_of_the_current_profile(self):
+        """The host presents a frozen profile through the current one."""
+        current = {
+            field["name"]: field
+            for field in can_telemetry.profile_fields(can_telemetry.load_schema()[1]["tuning"])
+        }
+        for path in can_telemetry.HISTORICAL_SCHEMAS:
+            profile = can_telemetry.load_schema(path)[1]["tuning"]
+            for field in can_telemetry.profile_fields(profile):
+                with self.subTest(schema=path.name, field=field["name"]):
+                    other = current[field["name"]]
+                    for key in ("width", "signed", "conversion", "unit", "candidate"):
+                        self.assertEqual(field.get(key), other.get(key))
+                    for key in ("values", "bits"):
+                        self.assertLessEqual(
+                            {json.dumps(item, sort_keys=True) for item in field.get(key, ())},
+                            {json.dumps(item, sort_keys=True) for item in other.get(key, ())},
+                        )
+
+
 class ScaleTermsTest(unittest.TestCase):
     """A scale string states what a host needs of its field."""
 
@@ -744,6 +832,47 @@ class ScaleTermsTest(unittest.TestCase):
             can_telemetry_schema.scale_terms("bits: 6 HIGH_DETONATION"),
             {"bits": [{"bit": 6, "name": "HIGH_DETONATION"}]},
         )
+
+    def test_a_packed_scale_gives_its_field_and_bits(self):
+        self.assertEqual(
+            can_telemetry_schema.scale_terms(
+                "field 0 through 9 raw / 10 percent; bits: 15 READY, 14 SPEED"
+            ),
+            {
+                "field": {
+                    "low": 0,
+                    "high": 9,
+                    "conversion": {"factor": 0.1, "offset": 0.0},
+                    "candidate": False,
+                    "unit": "percent",
+                },
+                "bits": [{"bit": 14, "name": "SPEED"}, {"bit": 15, "name": "READY"}],
+            },
+        )
+        self.assertEqual(
+            can_telemetry_schema.scale_terms(
+                "field 0 through 1 enumeration: 0 NONE, 2 SPEED; bits: 7 READY"
+            ),
+            {
+                "field": {
+                    "low": 0,
+                    "high": 1,
+                    "values": [{"value": 0, "name": "NONE"}, {"value": 2, "name": "SPEED"}],
+                },
+                "bits": [{"bit": 7, "name": "READY"}],
+            },
+        )
+
+    def test_a_packed_scale_keeps_its_value_apart_from_its_bits(self):
+        for scale in (
+            "field 0 through 5 bit mask; bits: 6 READY",
+            "field 0 through 5 raw deg; bits: 5 READY",
+            "field 2 through 1 raw deg; bits: 7 READY",
+            "field 0 through 5 raw deg; bits: 32 READY",
+            "field 0 through 1 enumeration: 0 NONE, 4 FAR; bits: 7 READY",
+        ):
+            with self.subTest(scale=scale), self.assertRaises(ValueError):
+                can_telemetry_schema.scale_terms(scale)
 
     def test_a_description_without_raw_states_nothing(self):
         for scale in (

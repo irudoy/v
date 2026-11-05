@@ -232,6 +232,27 @@ class DashboardModelTest(unittest.TestCase):
         )
         self.assertEqual(bits(0x41), "LEFT, HIGH DETONATION")
         self.assertEqual(bits(0x02), "none")
+        efficiency = model.field_display(
+            field(
+                width=2,
+                dashboard={"digits": 1},
+                **can_telemetry_schema.scale_terms(
+                    "field 0 through 9 raw / 10 percent; bits: 14 SPEED, 15 ACTUATION_READY"
+                ),
+            )
+        )
+        self.assertEqual(efficiency(750 | 3 << 14), "75.0 %, SPEED, ACTUATION READY")
+        self.assertEqual(efficiency(1000), "100.0 %")
+        status = model.field_display(
+            field(
+                **can_telemetry_schema.scale_terms(
+                    "field 0 through 1 enumeration: 0 NONE, 1 RPM, 2 SPEED; "
+                    "bits: 2 VALUE_VALID, 7 ACTUATION_READY"
+                )
+            )
+        )
+        self.assertEqual(status(0x86), "SPEED, VALUE VALID, ACTUATION READY")
+        self.assertEqual(status(0x03), "0x03")
         self.assertIsNone(model.field_display(field()))
         # A mask the dashboard names in code keeps its code display.
         self.assertIs(

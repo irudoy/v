@@ -34,6 +34,50 @@ RELEASED = {
             ("rolling_launch_cut_counter", 1, False),
         ),
     ),
+    3: (
+        (
+            ("rolling_launch_control_error_raw", 2, True),
+            ("rolling_launch_law_output_raw", 2, False),
+            ("rolling_launch_cut_counter", 1, False),
+            ("rolling_launch_mode_trim", 1, False),
+        ),
+    ),
+    4: (
+        (
+            ("rolling_launch_consumed_q_sum_raw", 4, False),
+            ("rolling_launch_cut_counter", 1, False),
+            ("rolling_launch_mode_trim", 1, False),
+        ),
+        (
+            ("rolling_launch_cut_fraction_raw", 2, False),
+            ("rolling_launch_law_output_raw", 2, False),
+            ("rolling_launch_efficiency", 2, False),
+        ),
+    ),
+    5: (
+        (
+            ("rolling_launch_speed_sample_raw", 2, False),
+            ("rolling_launch_selected_target_raw", 2, False),
+            ("rolling_launch_status", 1, False),
+            ("ignition_dwell_angle_raw", 1, False),
+        ),
+        (
+            ("rolling_launch_rpm_sample_raw", 2, False),
+            ("rolling_launch_stock_command_raw", 1, False),
+            ("rolling_launch_effective_command_raw", 1, False),
+            ("rolling_launch_accepted_button_raw", 1, False),
+            ("rolling_launch_speed_age_raw", 1, False),
+        ),
+    ),
+    6: (
+        (
+            ("rolling_launch_cut_fraction_raw", 2, False),
+            ("rolling_launch_cut_counter", 1, False),
+            ("rolling_launch_accepted_button_raw", 1, False),
+            ("rolling_launch_status", 1, False),
+            ("rolling_launch_speed_age_raw", 1, False),
+        ),
+    ),
 }
 
 
@@ -86,9 +130,25 @@ class CatalogTest(unittest.TestCase):
             "rolling_launch_cut_counter": 0xFFFF5D5D,
             "ignition_dwell_angle_raw": 0xFFFF237A,
             "speed_frame_receive_age_raw": 0xFFFF3B38,
+            "rolling_launch_control_error_raw": 0xFFFF6102,
+            "rolling_launch_law_output_raw": 0xFFFF6116,
+            "rolling_launch_mode_trim": 0xFFFF611E,
+            "rolling_launch_consumed_q_sum_raw": 0xFFFF6110,
+            "rolling_launch_cut_fraction_raw": 0xFFFF5D5A,
+            "rolling_launch_efficiency": 0xFFFF610E,
+            "rolling_launch_speed_sample_raw": 0xFFFF6106,
+            "rolling_launch_selected_target_raw": 0xFFFF611C,
+            "rolling_launch_status": 0xFFFF611F,
+            "rolling_launch_rpm_sample_raw": 0xFFFF6104,
+            "rolling_launch_stock_command_raw": 0xFFFF6108,
+            "rolling_launch_effective_command_raw": 0xFFFF6109,
+            "rolling_launch_accepted_button_raw": 0xFFFF6114,
+            "rolling_launch_speed_age_raw": 0xFFFF6115,
         })
         self.assertEqual(
-            [item.configuration_id for item in catalog.configurations], [1, 2]
+            [(item.configuration_id, item.status) for item in catalog.configurations],
+            [(1, "historical"), (2, "historical"), (3, "current"), (4, "current"),
+             (5, "current"), (6, "current")],
         )
 
     def test_released_configuration_ids_keep_their_layouts(self):
@@ -125,9 +185,14 @@ class CatalogTest(unittest.TestCase):
 
         def beyond_view(raw):
             raw["slot"][3]["source"] = {"rolling_launch": "spark_cut_counters", "byte": 2}
+            raw["slot"][3]["width"] = 1
 
         def unused(raw):
             raw["configuration"][1]["groups"][1].remove("speed_frame_receive_age_raw")
+
+        def state_slot(raw, **changes):
+            row = next(row for row in raw["slot"] if row["name"] == "rolling_launch_law_output_raw")
+            row.update(changes)
 
         cases = {
             "group above six bytes": widen,
@@ -142,6 +207,11 @@ class CatalogTest(unittest.TestCase):
             "byte outside its view": beyond_view,
             "unknown view": lambda raw: raw["slot"][0].update(source={"rolling_launch": "x"}),
             "unused slot": unused,
+            "unknown status": lambda raw: raw["configuration"][2].update(status="retired"),
+            "no status": lambda raw: raw["configuration"][2].pop("status"),
+            "unknown state field": lambda raw: state_slot(raw, source={"rolling_launch_state": "x"}),
+            "state field of another width": lambda raw: state_slot(raw, width=4),
+            "state field of another signedness": lambda raw: state_slot(raw, signed=True),
         }
         for name, change in cases.items():
             with self.subTest(name=name):
@@ -150,11 +220,13 @@ class CatalogTest(unittest.TestCase):
 
     def test_frames_encode_slot_group_width_and_address(self):
         catalog = configurations.load_catalog()
-        frames = configurations.configuration_frames(catalog, catalog.configurations[1])
-        self.assertEqual(len(frames), 8)
-        cut = frames[6]
-        self.assertEqual(cut[:6], bytes((0xC1, 2, 1 << 7 | 2 << 4 | 1, 0xFF, 0x5D, 0x5D)))
-        self.assertEqual(frames[-1][:6], bytes((0xC2, 2, 2, 4, 3, 0)))
+        actuation = next(item for item in catalog.configurations if item.configuration_id == 4)
+        frames = configurations.configuration_frames(catalog, actuation)
+        self.assertEqual(len(frames), 7)
+        self.assertEqual(frames[0][:6], bytes((0xC1, 4, 0 << 4 | 4, 0xFF, 0x61, 0x10)))
+        self.assertEqual(frames[1][:6], bytes((0xC1, 4, 1 << 4 | 1, 0xFF, 0x5D, 0x5D)))
+        self.assertEqual(frames[5][:6], bytes((0xC1, 4, 1 << 7 | 2 << 4 | 2, 0xFF, 0x61, 0x0E)))
+        self.assertEqual(frames[-1][:6], bytes((0xC2, 4, 2, 3, 3, 0)))
         for frame in frames:
             self.assertEqual(
                 int.from_bytes(frame[6:], "big"),
@@ -162,10 +234,16 @@ class CatalogTest(unittest.TestCase):
             )
         document = json.loads(configurations.render_frames(catalog))
         self.assertEqual(document["default"], "C00000000000B020")
-        self.assertEqual(
-            document["configurations"][1]["frames"],
-            [frame.hex().upper() for frame in frames],
-        )
+        rendered = {row["id"]: row for row in document["configurations"]}
+        self.assertEqual(sorted(rendered), [3, 4, 5, 6])
+        self.assertEqual(rendered[4]["frames"], [frame.hex().upper() for frame in frames])
+
+    def test_the_schema_keeps_the_historical_configurations(self):
+        catalog = configurations.load_catalog()
+        entries = configurations.schema_entries(catalog)
+        self.assertEqual([row["id"] for row in entries["configurations"]], [1, 2, 3, 4, 5, 6])
+        self.assertTrue(all(row.keys() == {"id", "name", "label", "groups"}
+                            for row in entries["configurations"]))
 
 
 if __name__ == "__main__":

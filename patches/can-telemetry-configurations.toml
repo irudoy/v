@@ -3,13 +3,18 @@
 # A configuration fills bytes 1..6 of the dynamic page with RAM slots that
 # the dashboard installs through SET and COMMIT frames. A slot names its
 # JK08A source: a `[[diagnostic]]` view of rolling-launch-layout.toml with an
-# optional byte offset, or an ECU RAM address and the specification that
-# describes it. can_telemetry_profile.py renders the ROM-neutral slots and
-# configurations into the wire schema and the JK08A slot addresses and
-# command frames into can-telemetry-configurations.json.
+# optional byte offset, a field of the Rolling Launch state record or its
+# extension by its name in STATE_FIELDS of patches/rolling_launch.py, or an
+# ECU RAM address and the specification that describes it.
+# can_telemetry_profile.py renders
+# the ROM-neutral slots and configurations into the wire schema and the JK08A
+# slot addresses and command frames of the current configurations into
+# can-telemetry-configurations.json.
 #
 # A configuration ID names one slot layout for good: a changed layout takes a
-# new ID, so a recorded trace decodes with any later catalog.
+# new ID, so a recorded trace decodes with any later catalog. A historical
+# configuration stays in the schema for decoding; the dashboard offers the
+# current configurations alone.
 
 schema_version = 1
 profile = "tuning"
@@ -19,6 +24,7 @@ rom = "JK08A"
 id = 1
 name = "launch_law"
 label = "Rolling Launch law"
+status = "historical"
 groups = [
     ["rolling_launch_speed_error_raw", "rolling_launch_torque_fraction_raw", "rolling_launch_cut_counter", "ignition_dwell_angle_raw"],
 ]
@@ -27,9 +33,48 @@ groups = [
 id = 2
 name = "launch_law_integrator"
 label = "Rolling Launch law and integrator"
+status = "historical"
 groups = [
     ["rolling_launch_speed_error_raw", "rolling_launch_torque_fraction_raw", "rolling_launch_cut_counter", "ignition_dwell_angle_raw"],
     ["rolling_launch_integrator_raw", "speed_frame_receive_age_raw", "rolling_launch_cut_counter"],
+]
+
+[[configuration]]
+id = 3
+name = "rl6_law"
+label = "Rolling Launch regulator"
+status = "current"
+groups = [
+    ["rolling_launch_control_error_raw", "rolling_launch_law_output_raw", "rolling_launch_cut_counter", "rolling_launch_mode_trim"],
+]
+
+[[configuration]]
+id = 4
+name = "rl6_actuation"
+label = "Rolling Launch actuation"
+status = "current"
+groups = [
+    ["rolling_launch_consumed_q_sum_raw", "rolling_launch_cut_counter", "rolling_launch_mode_trim"],
+    ["rolling_launch_cut_fraction_raw", "rolling_launch_law_output_raw", "rolling_launch_efficiency"],
+]
+
+[[configuration]]
+id = 5
+name = "rl6_inputs"
+label = "Rolling Launch inputs"
+status = "current"
+groups = [
+    ["rolling_launch_speed_sample_raw", "rolling_launch_selected_target_raw", "rolling_launch_status", "ignition_dwell_angle_raw"],
+    ["rolling_launch_rpm_sample_raw", "rolling_launch_stock_command_raw", "rolling_launch_effective_command_raw", "rolling_launch_accepted_button_raw", "rolling_launch_speed_age_raw"],
+]
+
+[[configuration]]
+id = 6
+name = "rl6_release"
+label = "Rolling Launch release"
+status = "current"
+groups = [
+    ["rolling_launch_cut_fraction_raw", "rolling_launch_cut_counter", "rolling_launch_accepted_button_raw", "rolling_launch_status", "rolling_launch_speed_age_raw"],
 ]
 
 [[slot]]
@@ -60,7 +105,7 @@ digits = 1
 group = "Rolling Launch"
 panel = "Dynamic page"
 order = 20
-description = "Torque fraction u of the speed-hold law after its rate limit. Hold mode withholds the dwell of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active."
+description = "Torque fraction u of the speed-hold law after its rate limit. Hold mode requests the cut of a fraction 1 - u of eligible ignition events. The dynamic page carries it while a launch-law configuration is active."
 
 [[slot]]
 name = "rolling_launch_integrator_raw"
@@ -81,8 +126,8 @@ description = "Integral term of the speed-hold law. The dynamic page carries it 
 name = "rolling_launch_cut_counter"
 width = 1
 signed = false
-scale = "raw count; wrapping count of withheld dwells"
-source = { rolling_launch = "spark_cut_counters", byte = 1 }
+scale = "raw count; wrapping count of cut requests"
+source = { rolling_launch_state = "cut_counter" }
 
 [slot.dashboard]
 label = "Launch cut counter"
@@ -90,7 +135,7 @@ digits = 0
 group = "Rolling Launch"
 panel = "Dynamic page"
 order = 40
-description = "Wrapping count of the ignition dwells that hold mode withholds; the difference between two snapshots counts the cuts between them. The dynamic page carries it in every group of a launch-law configuration."
+description = "Wrapping count of the cut requests of the spark actuator; the difference between two snapshots counts the requests between them. A requested cut withholds its spark only when the dwell-start veto precedes the dwell arming of its event, so the count does not measure withheld sparks. The Rolling Launch configurations carry it in every group that names it."
 
 [[slot]]
 name = "ignition_dwell_angle_raw"
@@ -105,7 +150,7 @@ digits = 0
 group = "Ignition"
 panel = "Dynamic page"
 order = 50
-description = "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law configuration is active."
+description = "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law or inputs configuration is active."
 
 [[slot]]
 name = "speed_frame_receive_age_raw"
@@ -121,3 +166,213 @@ group = "Rolling Launch"
 panel = "Dynamic page"
 order = 60
 description = "Receive age of the vehicle-speed frame 0x284 that the Rolling Launch speed gate checks; a pass that processes a new frame clears it. The dynamic page carries it in group 1 of the launch-law and integrator configuration."
+
+[[slot]]
+name = "rolling_launch_control_error_raw"
+width = 2
+signed = true
+scale = "raw count; engine speed less the target RPM in 12.5 RPM counts, or vehicle speed less the target speed in 0.1 km/h, by the regulator kind"
+source = { rolling_launch_state = "control_error" }
+
+[slot.dashboard]
+label = "Launch control error"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 70
+description = "Error of the active Rolling Launch regulator: engine speed less the target RPM in counts of 12.5 RPM under the RPM regulator, and vehicle speed less the target speed in 0.1 km/h under the speed regulator. The mode-and-trim slot names the regulator kind."
+
+[[slot]]
+name = "rolling_launch_law_output_raw"
+width = 2
+signed = false
+scale = "raw / 10 percent; RPM fraction p or speed fraction u after the rate limit"
+source = { rolling_launch_state = "law_output" }
+
+[slot.dashboard]
+label = "Launch law output"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 80
+description = "Output of the Rolling Launch law: the firing fraction p of the RPM regulator, or the torque fraction u of the speed regulator after its rate limit."
+
+[[slot]]
+name = "rolling_launch_mode_trim"
+width = 1
+signed = false
+scale = "field 0 through 5 raw deg; bits: 6 SPEED, 7 ACTUATION_READY"
+source = { rolling_launch_state = "wire_mode_trim" }
+
+[slot.dashboard]
+label = "Launch mode and trim"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 90
+description = "Applied ignition trim of the Rolling Launch hold in APC command degrees, the effective command less the stock command, with the speed-regulator bit and the bit that marks an applied ignition command of the current hold."
+
+[[slot]]
+name = "rolling_launch_consumed_q_sum_raw"
+width = 4
+signed = false
+scale = "raw count; wrapping sum of the cut fraction q in thousandths over the eligible spark events"
+source = { rolling_launch_state = "consumed_q_sum" }
+
+[slot.dashboard]
+label = "Launch consumed q sum"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 100
+description = "Wrapping sum of the cut fraction q, in thousandths, that the spark actuator consumes at each eligible event. The difference between two snapshots over 1000 is the number of cuts that the consumed fractions owe."
+
+[[slot]]
+name = "rolling_launch_cut_fraction_raw"
+width = 2
+signed = false
+scale = "raw / 10 percent; cut fraction q of eligible spark events"
+source = { rolling_launch_state = "cut_fraction" }
+
+[slot.dashboard]
+label = "Launch cut fraction"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 110
+description = "Cut fraction q that the actuation publisher sets for eligible spark events: 1 - p under the RPM regulator, and 1 - u / e of the applied trim under the speed regulator, zero outside an ACTIVE hold with an applied ignition command."
+
+[[slot]]
+name = "rolling_launch_efficiency"
+width = 2
+signed = false
+scale = "field 0 through 9 raw / 10 percent; bits: 14 SPEED, 15 ACTUATION_READY"
+source = { rolling_launch_state = "wire_efficiency" }
+
+[slot.dashboard]
+label = "Launch trim efficiency"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 120
+description = "Torque efficiency e of the applied ignition trim from the shared efficiency table, with the speed-regulator bit and the bit that marks an applied ignition command of the current hold, all of the same publication."
+
+[[slot]]
+name = "rolling_launch_speed_sample_raw"
+width = 2
+signed = false
+scale = "raw / 10 km/h; vehicle speed that the Rolling Launch engine read"
+source = { rolling_launch_state = "speed_sample" }
+
+[slot.dashboard]
+label = "Launch speed sample"
+digits = 1
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 130
+description = "Vehicle speed word that the Rolling Launch engine read in its last pass, in 0.1 km/h."
+
+[[slot]]
+name = "rolling_launch_selected_target_raw"
+width = 2
+signed = false
+scale = "raw count; target RPM in 12.5 RPM counts or target speed in 0.1 km/h by the regulator kind"
+source = { rolling_launch_state = "selected_target" }
+
+[slot.dashboard]
+label = "Launch target"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 140
+description = "Target of the active Rolling Launch regulator that activation latches: the target RPM of the map slot in counts of 12.5 RPM, or the captured CANCEL speed plus the offset in 0.1 km/h."
+
+[[slot]]
+name = "rolling_launch_status"
+width = 1
+signed = false
+scale = "field 0 through 1 enumeration: 0 NONE, 1 RPM, 2 SPEED; bits: 2 VALUE_VALID, 3 AGE_OK, 4 SOURCE_READY, 5 CANCEL, 6 RELEASED, 7 ACTUATION_READY"
+source = { rolling_launch_state = "wire_status" }
+
+[slot.dashboard]
+label = "Launch status"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 150
+description = "Regulator kind, the speed-input checks of the last engine pass, the accepted button code, and the bit that marks an applied ignition command of the current hold."
+
+[[slot]]
+name = "rolling_launch_rpm_sample_raw"
+width = 2
+signed = false
+scale = "raw * 12.5 rpm; engine speed that the Rolling Launch engine read"
+source = { rolling_launch_state = "rpm_sample_native" }
+
+[slot.dashboard]
+label = "Launch RPM sample"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 160
+description = "Engine speed that the Rolling Launch engine read in its last pass."
+
+[[slot]]
+name = "rolling_launch_stock_command_raw"
+width = 1
+signed = false
+scale = "110 - raw degBTDC; stock APC command before the trim"
+source = { rolling_launch_state = "stock_command" }
+
+[slot.dashboard]
+label = "Launch stock timing"
+digits = 0
+group = "Ignition"
+panel = "Dynamic page"
+order = 170
+description = "Ignition timing of the last stock APC command that reached the Rolling Launch ignition adapter, before the trim."
+
+[[slot]]
+name = "rolling_launch_effective_command_raw"
+width = 1
+signed = false
+scale = "110 - raw degBTDC; effective APC command after the trim and the floor"
+source = { rolling_launch_state = "effective_command" }
+
+[slot.dashboard]
+label = "Launch effective timing"
+digits = 0
+group = "Ignition"
+panel = "Dynamic page"
+order = 180
+description = "Ignition timing of the last effective APC command that the Rolling Launch ignition adapter passed to both schedulers: the stock command with the latched trim, no later than the floor command."
+
+[[slot]]
+name = "rolling_launch_accepted_button_raw"
+width = 1
+signed = false
+scale = "enumeration: 2 CANCEL, 8 SET, 32 RELEASED"
+source = { rolling_launch_state = "accepted_button" }
+
+[slot.dashboard]
+label = "Launch accepted button"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 190
+description = "Debounced ASCD button code that the Rolling Launch engine read in its last pass; another code reads in hexadecimal."
+
+[[slot]]
+name = "rolling_launch_speed_age_raw"
+width = 1
+signed = false
+scale = "raw * 10.24 ms; speed frame age that the Rolling Launch engine read"
+source = { rolling_launch_state = "speed_age" }
+
+[slot.dashboard]
+label = "Launch speed age"
+digits = 0
+group = "Rolling Launch"
+panel = "Dynamic page"
+order = 200
+description = "Receive age of the vehicle-speed frame that the Rolling Launch engine read in its last pass."

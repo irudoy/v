@@ -99,6 +99,7 @@ start = 871952
 
 [[endpoint]]
 key = "schema2-profile9"
+host_schema = "can-telemetry-schema-profile9.json"
 page_count = 11
 profile_crc16 = 24047
 profile_id = 9

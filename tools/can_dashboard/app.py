@@ -681,7 +681,7 @@ def schema_status(model):
     if not model.schema_verified:
         received = model.decoder.reported_identity
         expected = model.decoder.expected_identity
-        if received is not None and received != expected:
+        if received is not None and received not in model.decoder.accepted_identities:
             def describe(identity):
                 version, profile, crc = identity
                 return f"v{version}/profile {profile}/CRC {crc:04X}"
@@ -730,6 +730,26 @@ def load_configuration_frames(path):
         return json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, UnicodeError, ValueError):
         return None
+
+
+def offered_configurations(labels, frames):
+    """The labels of the configurations that the page menu offers: the
+    default and every configuration that the command frames install. A
+    historical configuration of the schema has no frames; without loaded
+    frames the menu offers every label and a request reports the missing
+    frames."""
+    if not isinstance(frames, dict):
+        return dict(labels)
+    installed = {
+        row.get("id")
+        for row in frames.get("configurations", ())
+        if isinstance(row, dict)
+    }
+    return {
+        configuration_id: label
+        for configuration_id, label in labels.items()
+        if configuration_id == 0 or configuration_id in installed
+    }
 
 
 class DashboardApp:
@@ -1897,7 +1917,9 @@ class DashboardApp:
     def open_page_menu(self):
         menu = tk.Menu(self.root, tearoff=False)
         for configuration_id, label in sorted(
-            self.model.configuration_labels.items()
+            offered_configurations(
+                self.model.configuration_labels, self.configuration_frames
+            ).items()
         ):
             menu.add_command(
                 label=f"{configuration_id}: {label}",
@@ -2615,7 +2637,8 @@ class DashboardApp:
         elif (
             not self.model.schema_verified
             and self.model.decoder.reported_identity is not None
-            and self.model.decoder.reported_identity != self.model.decoder.expected_identity
+            and self.model.decoder.reported_identity
+            not in self.model.decoder.accepted_identities
         ):
             state, color = "SCHEMA MISMATCH", palette.red
         elif age is None:

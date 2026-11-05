@@ -166,8 +166,9 @@ immediately afterward without another interrupt-state transition.
 
 All multi-byte values retain ECU big-endian representation. Firmware performs
 no engineering conversion. The generated host schema owns placement,
-signedness, the scale with the conversion, unit, candidate flag, values, or
-named bits that it states, and the host presentation of each field: the
+signedness, the scale with the conversion, unit, candidate flag, values,
+named bits, or a value packed into a bit range beside named bits that it
+states, and the host presentation of each field: the
 label, digits, recording group, dashboard panel, description, and live feed
 channel. Exact producer source addresses remain only in the firmware manifest
 and generated pointer table.
@@ -550,8 +551,12 @@ or more. At one evaluation of a channel per engine cycle, every tag-4 interval
 at divisor 1 holds an evaluation only above about 2350 rpm.
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2 and the profile ID and CRC of the generated identity header. A later
-mismatch disables conversions again.
+2 and the profile ID and CRC of the generated identity header, or the identity
+of the same profile in a frozen host schema that `can-telemetry-history.toml`
+binds to a historical endpoint. The reported identity selects the placement of
+the dynamic page; the host presents a frozen profile through the fields of the
+current one, which carry its fields with the same widths and conversions. A
+later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -631,20 +636,26 @@ of a snapshot does not carry is absent from it.
 ### Host configurations
 
 `can-telemetry-configurations.toml` defines the configurations: the ID,
-name, label, and groups of slot names of each, and every slot with its width,
-signedness, scale, presentation, and JK08A source, a `[[diagnostic]]` view of
-`rolling-launch-layout.toml` with an optional byte offset or an ECU RAM
-address with the specification that describes it. `can_telemetry_profile.py`
-validates the catalog against the command rules and the JK08A RAM window and
-renders the ROM-neutral slot fields and configurations into the profile of
-the schema, and the JK08A slot addresses and command frames into
+name, label, status, and groups of slot names of each, and every slot with
+its width, signedness, scale, presentation, and JK08A source. A source is a
+`[[diagnostic]]` view of `rolling-launch-layout.toml` with an optional byte
+offset, a field of the Rolling Launch state record or its extension by its
+name in `STATE_FIELDS` of `rolling_launch.py`, whose format fixes the width
+and signedness of the slot, or an ECU RAM address with the specification
+that describes it. `can_telemetry_profile.py` validates the catalog against
+the command rules and the JK08A RAM window and renders the ROM-neutral slot
+fields and every configuration into the profile of the schema, and the JK08A
+slot addresses and command frames of the current configurations into
 `can-telemetry-configurations.json`. A configuration ID names one slot layout
 for good: a changed layout takes a new ID, so a recorded trace decodes with a
-later catalog. The relocated targets have no generated slot addresses.
+later catalog. A historical configuration keeps its schema entry for
+decoding and has no command frames. The relocated targets have no generated
+slot addresses.
 
-The dashboard sends the frames of a configuration, checks them against the
-groups of the schema, and confirms the echo; the MLVLG recorder and the TRC
-converter hold the slot fields of every configuration.
+The dashboard offers the configurations that have command frames, sends the
+frames of a configuration, checks them against the groups of the schema, and
+confirms the echo; the MLVLG recorder and the TRC converter hold the slot
+fields of every configuration.
 
 ## Queue and interrupt behavior
 
@@ -816,6 +827,7 @@ changed entries.
 | `can-telemetry-profile.toml` | authoritative wire fields and exact JK08A producer bindings |
 | `can_telemetry_profile.py` | producer validator and generator of the pointer table, the neutral host schema, the identity header, and the slot tables of this specification |
 | `can-telemetry-schema.json` | generated ROM-neutral strict host contract |
+| `can-telemetry-schema-profile9.json` | frozen host contract of profile 9, bound to endpoint `schema2-profile9` of `can-telemetry-history.toml` |
 | `can-telemetry-configurations.toml` | host-defined dynamic page configurations and their JK08A slot sources |
 | `can_telemetry_configurations.py` | catalog validator and generator of the dynamic page schema entries and JK08A command frames |
 | `can-telemetry-configurations.json` | generated JK08A slot addresses and command frames of the configurations |
