@@ -662,12 +662,12 @@ corrupt-state recovery clears the phase before the extension. No mixed state
 inside an abort, the return from `COOLDOWN` to `IDLE`, or corrupt-state
 recovery passes the check as an `ACTIVE` ready record: a publication inside
 them fails the check and publishes the stock command, which is the correct
-command there. A publication inside activation either fails the check and
-publishes the stock command, or passes it with the law output 1000: it may
-set the ready mark and publishes `q = 0`, and the control publisher of the
-pass then publishes `q` of the new law with the ready mark stored at that
-point. The masked wire views at the end of the pass make the
-record consistent. The input sample precedes every transition. A sampled change that alters the
+command there. A publication inside activation also fails the check and
+publishes the stock command: the phase `ACTIVE` meets kind `NONE` until the
+kind store, and the status view keeps kind `NONE` of the `IDLE` record until
+the masked wire views at the end of the pass, which follow the control
+publisher. The first publication that passes the check observes the complete
+record with the law of the control publisher. The input sample precedes every transition. A sampled change that alters the
 wire views fails the check and occurs only on a pass that aborts or outside
 `ACTIVE`; other sampled fields are coupled to no control field, so a
 publication between the sample and the first store of an abort acts as if it
@@ -1202,6 +1202,16 @@ A candidate is software-valid only when all applicable checks pass:
    every instruction, both outcomes of every branch, every delay slot, every
    call with its return, and every literal target of each register transfer,
    and three negative row sets fail coverage at exactly their omitted paths.
+   Interrupt rows run the ignition publisher from an injected interrupt at
+   every interleaving with the loads and stores of steady `ACTIVE` passes of
+   both kinds, of an activation of each kind, of an abort and of
+   corrupt-state recovery. They
+   require acceptance only outside the masked sections, the model
+   publication of every observed record, final records of a publication
+   before or after the pass or, inside recovery, of the recovery alone, the
+   stock command from every publication between the error pair of the RPM
+   activation and the publisher mask, and the store orders of the
+   transitions.
    The ignition adapter and the spark-cut actuator have no executable
    coverage, so an image that contains them is not eligible for a hardware
    test.

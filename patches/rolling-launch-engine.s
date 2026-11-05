@@ -479,8 +479,9 @@ nop
 // Activation latches the map, mode, kind, captured RPM, target and the trim
 // of the kind. The controller starts with zero errors and integrator, q = 0,
 // ready = 0 and, in SPEED, full torque. The law output 1000 gives q = 0 for
-// both kinds and precedes the kind, so a publication inside activation
-// publishes q = 0.
+// both kinds and precedes the kind. A publication inside activation fails
+// the check: the status view keeps kind NONE until the masked wire views at
+// the end of the pass.
 rl_activate:
 mov r5,r0
 shll2 r0

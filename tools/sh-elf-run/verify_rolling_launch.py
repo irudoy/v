@@ -32,6 +32,7 @@ ROOT = TOOL_DIR.parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import rolling_launch_interrupts
 import rolling_launch_rows
 import verify_map_switching as base_verifier
 from elf_storage_layout import ELFStorageError, require_separate_storage
@@ -469,6 +470,10 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         raise VerificationError("Rolling Launch harness returned zero without the exact marker"
                                 + (f"\n{result.stdout.rstrip()}" if result.stdout else ""))
     covered = require_coverage(records, fixture, model, invoke_words, harness_entries)
+    interrupts = rolling_launch_interrupts.run_interrupt_rows(
+        fixture, build_dir, engine=regions["engine"].entry,
+        regulator=(regions["rpm_controller"].span.start, regions["control_publisher"].span.end),
+        invoke_object=invoke_object, rom_object=rom_object)
 
     negatives = (
         ("periodic", f"uncovered entry {regions['periodic_wrapper'].entry:#010x}"),
@@ -479,7 +484,8 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
     )
     lines = [result.stdout.strip(),
              "VQ_SH_ELF_ROLLING_COVERAGE status=PASS scope=JK08A:" + ",".join(COVERAGE_REGIONS)
-             + " " + " ".join(f"{key}={value}" for key, value in covered.items())]
+             + " " + " ".join(f"{key}={value}" for key, value in covered.items()),
+             interrupts]
     for variant, expected in negatives:
         negative_elf, negative_rows = build(variant)
         negative, records, invoke_words = execute(negative_elf)

@@ -1801,5 +1801,159 @@ class RollingLaunchRowsTest(unittest.TestCase):
                          ROLLING_VERIFIER.harness_cases(rows))
 
 
+ROLLING_IRQ = ROLLING_VERIFIER.rolling_launch_interrupts
+
+
+class RollingInterruptRowsTest(unittest.TestCase):
+    """Acceptance points, scenarios and claims of the Rolling Launch interrupt rows."""
+
+    STORE, LOAD, NOP, LDC_R0, LDC_R6, BRA, OR_MASK = (0x2102, 0x6012, 0x0009, 0x400E, 0x460E,
+                                                      0xA000, 0xCBF0)
+
+    def test_store_load_and_inhibit_opcodes(self):
+        for opcode in (0x2102, 0x2105, 0x0124, 0x8115, 0x1F12, 0xC10A, 0x4F22, 0x4F13):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertTrue(ROLLING_IRQ.stores(opcode))
+        for opcode in (0x6012, 0x8511, 0x4F26, 0x0009, 0x400E):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertFalse(ROLLING_IRQ.stores(opcode))
+        for opcode in (0x6012, 0x6F16, 0x017C, 0x8511, 0x5123, 0xC512, 0x4F26, 0x4F07, 0x010F):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertTrue(ROLLING_IRQ.loads(opcode))
+        for opcode in (0xD103, 0x9104, 0xC703, 0x2102, 0x0009, 0x000B, 0x400E):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertFalse(ROLLING_IRQ.loads(opcode))
+        for opcode in (0x400E, 0x4F07, 0x401E, 0x0002, 0x4F23, 0x401A, 0x4F26, 0x002A,
+                       0x4F12, 0x405A, 0xF00D):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertTrue(ROLLING_IRQ.inhibits(opcode))
+        for opcode in (0x0009, 0x2102, 0x6012, 0xA000, 0x000B):
+            with self.subTest(opcode=f"{opcode:04x}"):
+                self.assertFalse(ROLLING_IRQ.inhibits(opcode))
+
+    def _trace(self):
+        # A harness LDC sets the engine level; a store precedes a masked group
+        # of two stores, and a delay slot store precedes a nop.
+        return [
+            (0x300, self.LDC_R0, 0), (0x200, self.NOP, 0), (0x202, self.STORE, 0),
+            (0x204, self.OR_MASK, 0), (0x206, self.LDC_R0, 0), (0x208, self.STORE, 0),
+            (0x20A, self.STORE, 0), (0x20C, self.LDC_R6, 0), (0x20E, self.LOAD, 0),
+            (0x210, self.BRA, 0), (0x212, self.STORE, 1), (0x220, self.NOP, 0),
+            (0x302, self.NOP, 0),
+        ]
+
+    def test_acceptance_follows_the_instruction_after_the_lowering_ldc(self):
+        records = self._trace()
+        before = ROLLING_IRQ.levels(records)
+        self.assertEqual(before[:5], [None, 0, 0, 0, 0])
+        self.assertEqual(before[5:9], [15, 15, 15, 0])
+        self.assertEqual([ROLLING_IRQ.raises_mask(records, index) for index in (0, 4, 7)],
+                         [False, True, False])
+        index = {pc: position for position, (pc, _opcode, _delay) in enumerate(records)}
+        expected = {0x202: 0x204, 0x208: 0x210, 0x20A: 0x210, 0x212: 0x220}
+        for trigger, accepted in expected.items():
+            with self.subTest(trigger=f"{trigger:x}"):
+                position = ROLLING_IRQ.acceptance(records, index[trigger], before)
+                self.assertEqual(records[position][0], accepted)
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "no acceptance point"):
+            ROLLING_IRQ.acceptance(records[:9], index[0x208], before)
+
+    def test_triggers_bind_every_memory_access_to_its_pass_and_count(self):
+        records = self._trace() * 2
+        found = ROLLING_IRQ.triggers(records, 0x200, (0x300, 0x340))
+        pcs = [0x200, 0x202, 0x208, 0x20A, 0x20E, 0x212]
+        self.assertEqual([(item.scenario, item.pc, item.count) for item in found],
+                         [(0, pc, 1) for pc in pcs] + [(1, pc, 2) for pc in pcs])
+        first = found[:len(pcs)]
+        self.assertEqual([item.store for item in first],
+                         [pc in (0x202, 0x208, 0x20A, 0x212) for pc in pcs])
+        self.assertEqual([item.deferred for item in first],
+                         [pc in (0x208, 0x20A) for pc in pcs])
+        self.assertEqual([item.after_ldc for item in first],
+                         [pc in (0x208, 0x20A) for pc in pcs])
+        self.assertEqual([item.accepted for item in first],
+                         [0x202, 0x204, 0x210, 0x210, 0x210, 0x220])
+        # The load after the masked group shares its acceptance point.
+        self.assertEqual([item.pc for item in ROLLING_IRQ.injections(first)],
+                         [0x200, 0x202, 0x208, 0x20A, 0x212])
+
+    def test_scenarios_reach_their_outcomes(self):
+        scenarios = ROLLING_ROWS.interrupt_scenarios()
+        self.assertEqual([item.kind for item in scenarios],
+                         ["steady", "steady", "activation", "activation", "abort", "recovery"])
+        for scenario in scenarios:
+            finals = ROLLING_ROWS.interrupt_finals(scenario)
+            with self.subTest(scenario=scenario.name):
+                self.assertEqual(finals[0] == finals[1], scenario.kind == "steady")
+                self.assertEqual(len(finals), 3 if scenario.kind == "recovery" else 2)
+        header = ROLLING_ROWS.render_interrupts(scenarios)
+        for scenario in scenarios:
+            self.assertEqual(header.count(f'{{"{scenario.name}",'), 1)
+
+    def _row(self, scenario, seen, final=None):
+        publication = ROLLING_ROWS.ignition_publication(
+            seen, scenario.stock, scenario.effective, contract=False)
+        final = final or ROLLING_ROWS.interrupt_finals(scenario)[0]
+        return {
+            "hits": "1", "returned": f"{ROLLING_IRQ.RETURNED:08x}", "preserved": "1",
+            "sp": "1", "gbr": "1", "sr": "00000000", "irq_preserved": "1",
+            "irq_r4": f"{publication.stock_wide:08x}", "irq_r5": f"{publication.r5:08x}",
+            "irq_sr": f"{ROLLING_IRQ.PUBLISHER_SR:08x}", "seen": b"".join(seen).hex(),
+            "published": (publication.base + publication.extension).hex(),
+            "final": b"".join(final).hex(),
+        }
+
+    def test_steady_pass_requires_a_ready_publication(self):
+        scenario = ROLLING_ROWS.interrupt_scenarios()[0]
+        records = (scenario.base, scenario.extension)
+        self.assertEqual(ROLLING_IRQ.check_interrupted(self._row(scenario, records), scenario),
+                         (records, True))
+        corrupt = (bytes([3]) + scenario.base[1:], scenario.extension)
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "fails the publisher check"):
+            ROLLING_IRQ.check_interrupted(self._row(scenario, corrupt), scenario)
+        row = self._row(scenario, records)
+        row["irq_r5"] = row["irq_r4"]
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "differs from the model"):
+            ROLLING_IRQ.check_interrupted(row, scenario)
+        row = self._row(scenario, records)
+        row["returned"] = "00000000"
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "interrupt frame differs"):
+            ROLLING_IRQ.check_interrupted(row, scenario)
+
+    def test_abort_publishes_stock_after_its_phase_store(self):
+        scenario = ROLLING_ROWS.interrupt_scenarios()[4]
+        records = (scenario.base, scenario.extension)
+        self.assertEqual(ROLLING_IRQ.check_interrupted(self._row(scenario, records), scenario),
+                         (records, True))
+        moved = (scenario.base[:0x04] + bytes([2]) + scenario.base[0x05:], scenario.extension)
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError,
+                                    "active_index_snapshot precede the phase"):
+            ROLLING_IRQ.check_interrupted(self._row(scenario, moved), scenario)
+
+    def test_activation_order_rejects_each_reordered_store(self):
+        scenario = ROLLING_ROWS.interrupt_scenarios()[2]
+        initial = (scenario.base, scenario.extension)
+        final = ROLLING_ROWS.engine_pass(initial, scenario.inputs)[:2]
+        ROLLING_IRQ.check_activation_order(scenario, [initial, final])
+
+        def edit(records, region, offset, data):
+            parts = [bytearray(records[0]), bytearray(records[1])]
+            parts[region][offset:offset + len(data)] = data
+            return bytes(parts[0]), bytes(parts[1])
+
+        for name, observed, message in (
+            ("trim", edit(initial, 0, 0x1E, b"\x14"), "active_max_trim precede the phase"),
+            ("map", edit(final, 0, 0x04, initial[0][0x04:0x05]), "mode precedes the map"),
+            ("law", edit(final, 1, 0x16, initial[1][0x16:0x18]), "kind precedes the law"),
+            ("phase", edit(final, 0, 0x05, initial[0][0x05:0x06]),
+             "trim of the run precedes"),
+        ):
+            with self.subTest(store=name):
+                with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, message):
+                    ROLLING_IRQ.check_activation_order(scenario, [initial, observed, final])
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "no boundary observes"):
+            ROLLING_IRQ.check_activation_order(scenario, [initial])
+
+
 if __name__ == "__main__":
     unittest.main()

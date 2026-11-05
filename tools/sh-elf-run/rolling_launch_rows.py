@@ -66,6 +66,8 @@ GOOD = model.Inputs(
 # A state that the model rejects selects its corrupt-state and stock branches.
 REJECTED_PHASE = 3
 PUBLICATION = struct.Struct(">BBBBHH")
+# Bits 8..31 of the wide S of the publisher rows; P carries their complement.
+HIGH = 0x5AA5C3
 VARIANTS = (None, "periodic", "controller", "engine")
 # The source branches whose outcome the controller and engine variants omit:
 # the lower integrator clamp and the COOLDOWN pass without a valid
@@ -134,6 +136,75 @@ def _publish(base, extension, state):
 
 
 @dataclass(frozen=True)
+class Publication:
+    """The records and r5 after one ignition publication."""
+    base: bytes
+    extension: bytes
+    r5: int
+    stock_wide: int
+    effective_wide: int
+    state: model.RuntimeState
+
+
+def ignition_publication(records, stock, effective, *, apc=0x00, contract=True, high=HIGH,
+                         name="publication"):
+    """Return the publication of the publisher for S, P and one record pair.
+
+    A record that the model rejects, a record without CONFIG_VALID and a P
+    other than the model command publish the stock command.
+    """
+    base, extension = records
+    fallback = bool(apc & 0x40)
+    decoded = _decode(base, extension)
+    if decoded is None:
+        state = replace(_raw_state(base, extension), phase=REJECTED_PHASE)
+    else:
+        state = decoded[0]
+    stock_wide = (high << 8) | stock
+    result = model.ignition_step(state, stock, CALIBRATION, TABLE, apc_fallback=fallback)
+    publish = decoded is not None and bool(state.flags & model.Flag.CONFIG_VALID)
+    if effective is None:
+        effective = result.effective_command
+    if publish and effective != result.effective_command:
+        if contract:
+            raise ValueError(f"{name}: P differs from the model command")
+        publish = False
+    if not publish:
+        stock_state = replace(state, flags=state.flags & ~model.Flag.CONFIG_VALID)
+        result = model.ignition_step(stock_state, stock, CALIBRATION, TABLE,
+                                     apc_fallback=fallback)
+    effective_wide = ((high ^ 0xFFFFFF) << 8) | effective
+    base_out, extension_out = _publish(base, extension, result)
+    if decoded is not None and publish:
+        expected = model.encode_state(result, decoded[1])
+        if expected != (base_out, extension_out):
+            raise ValueError(f"{name}: publication fields differ from the model record")
+    r5 = effective_wide if publish and result.actuation_ready else stock_wide
+    return Publication(base_out, extension_out, r5, stock_wide, effective_wide, result)
+
+
+def engine_pass(records, inputs, config=None, table=None):
+    """Return the records, the map 1 restore and the state after one engine pass."""
+    config = CALIBRATION.to_bytes() if config is None else config
+    table = TABLE.to_bytes() if table is None else table
+    base, extension = records
+    decoded = _decode(base, extension)
+    if decoded is None:
+        state = replace(model.RuntimeState(), phase=REJECTED_PHASE)
+        spark = _kept_spark(base)
+    else:
+        state, spark = decoded
+    result = model.engine_step(state, inputs, _calibration(config), _table(table))
+    if result.reset_event_instrumentation != (decoded is None):
+        raise ValueError("unexpected event-counter reset")
+    restore = result.limiter_action == model.LimiterAction.RESTORE_MAP_1
+    if restore and result.limiter_index != 0:
+        raise ValueError("recovery restores a map other than map 1")
+    base_out, extension_out = model.encode_state(result.state, spark)
+    return base_out, extension_out, restore, result.state
+
+
+@dataclass(frozen=True)
 class EngineRow:
     name: str
     config: int
@@ -198,28 +269,17 @@ class Rows:
         config = CALIBRATION.to_bytes() if config is None else config
         table = TABLE.to_bytes() if table is None else table
         base, extension = records
-        decoded = _decode(base, extension)
-        if corrupt != (decoded is None):
-            raise ValueError(f"{name}: the model {'accepts' if decoded else 'rejects'} the record")
-        if decoded is None:
-            state = replace(model.RuntimeState(), phase=REJECTED_PHASE)
-            spark = _kept_spark(base)
-        else:
-            state, spark = decoded
-        result = model.engine_step(state, inputs, _calibration(config), _table(table))
-        if result.reset_event_instrumentation != corrupt:
-            raise ValueError(f"{name}: unexpected event-counter reset")
-        restore = result.limiter_action == model.LimiterAction.RESTORE_MAP_1
-        if restore and result.limiter_index != 0:
-            raise ValueError(f"{name}: recovery restores a map other than map 1")
-        base_out, extension_out = model.encode_state(result.state, spark)
+        if corrupt != (_decode(base, extension) is None):
+            raise ValueError(f"{name}: the model {'rejects' if not corrupt else 'accepts'} "
+                             "the record")
+        base_out, extension_out, restore, state = engine_pass(records, inputs, config, table)
         self.engine.append(EngineRow(
             self._name(name), self.config(config, table), inputs, base, extension,
             base_out, extension_out, restore, periodic))
-        return result.state
+        return state
 
     def ignition_row(self, name, records, stock, effective, *, apc=0x00,
-                     contract=True, high=0x5AA5C3):
+                     contract=True, high=HIGH):
         """Run the publisher with wide commands; contract rows take P from the model.
 
         Bits 8..31 of S hold ``high`` and those of P hold its complement. The
@@ -229,38 +289,13 @@ class Rows:
         publication.
         """
         base, extension = records
-        table = TABLE
-        fallback = bool(apc & 0x40)
-        decoded = _decode(base, extension)
-        if decoded is None:
-            state = replace(_raw_state(base, extension), phase=REJECTED_PHASE)
-        else:
-            state = decoded[0]
-        stock_wide = (high << 8) | stock
-        result = model.ignition_step(state, stock, CALIBRATION, table, apc_fallback=fallback)
-        publish = decoded is not None and bool(state.flags & model.Flag.CONFIG_VALID)
-        if effective is None:
-            effective = result.effective_command
-        if publish and effective != result.effective_command:
-            if contract:
-                raise ValueError(f"{name}: P differs from the model command")
-            publish = False
-        if not publish:
-            stock_state = replace(state, flags=state.flags & ~model.Flag.CONFIG_VALID)
-            result = model.ignition_step(stock_state, stock, CALIBRATION, table,
-                                         apc_fallback=fallback)
-        effective_wide = ((high ^ 0xFFFFFF) << 8) | effective
-        base_out, extension_out = _publish(base, extension, result)
-        if decoded is not None and publish:
-            expected = model.encode_state(result, decoded[1])
-            if expected != (base_out, extension_out):
-                raise ValueError(f"{name}: publication fields differ from the model record")
+        result = ignition_publication(records, stock, effective, apc=apc, contract=contract,
+                                      high=high, name=name)
         self.ignition.append(PublisherRow(
-            self._name(name), self.config(CALIBRATION.to_bytes(), table.to_bytes()),
-            apc, 0, stock_wide, effective_wide, base, extension,
-            base_out, extension_out,
-            effective_wide if publish and result.actuation_ready else stock_wide))
-        return result
+            self._name(name), self.config(CALIBRATION.to_bytes(), TABLE.to_bytes()),
+            apc, 0, result.stock_wide, result.effective_wide, base, extension,
+            result.base, result.extension, result.r5))
+        return result.state
 
     def control_row(self, name, state, law):
         """Run the control publisher with the law output of a controller in r3."""
@@ -653,6 +688,140 @@ def records_unchecked(state, spark=SPARK):
     return bytes(base), bytes(extension)
 
 
+@dataclass(frozen=True)
+class InterruptScenario:
+    """One engine pass that an injected ignition publication interrupts.
+
+    ``kind`` selects the claims of the pass: "steady" passes keep an ACTIVE
+    ready record that every publication accepts, "activation" passes leave
+    IDLE, "abort" passes leave ACTIVE and "recovery" passes repair a
+    rejected record. The injected publisher receives the wide S and P of
+    ``stock`` and ``effective``.
+    """
+    name: str
+    kind: str
+    regulator: model.RegulatorKind
+    inputs: model.Inputs
+    base: bytes
+    extension: bytes
+    stock: int
+    effective: int
+
+
+# The sampled fields of a pass, which precede every transition store.
+SAMPLE_FIELDS = frozenset({
+    "rpm_sample_native", "speed_sample", "cancel_speed_capture", "accepted_button",
+    "speed_age", "input_status",
+})
+
+
+def interrupt_scenarios():
+    """Return the passes of the interrupt rows.
+
+    The IDLE record of both activations keeps a map index, a law output and a
+    control error of an earlier hold that differ from the activation values,
+    so that every activation store changes an observable field. Its law
+    output 0 is the q = 1000 law of an RPM hold released at its ceiling.
+    """
+    good = GOOD
+    idle = model.RuntimeState()
+    speed_hold = step(idle, good)
+    rpm_hold = step(idle, replace(good, speed=80))
+    ready_speed = model.ignition_step(speed_hold, 20, CALIBRATION, TABLE)
+    ready_cut = model._publish_actuation(
+        replace(ready_speed, torque_fraction=500, law_output=500), TABLE)
+    ready_rpm = model.ignition_step(rpm_hold, 20, CALIBRATION, TABLE)
+    stale = replace(idle, active_index_snapshot=3, law_output=0, control_error=55)
+    rpm_inputs = replace(good, speed=80, rpm_native=380)
+    scenarios = (
+        InterruptScenario("irq-rpm-steady", "steady", model.RegulatorKind.RPM, rpm_inputs,
+                          *records(ready_rpm), 50, 60),
+        InterruptScenario("irq-speed-steady", "steady", model.RegulatorKind.SPEED,
+                          replace(good, speed=275), *records(ready_cut), 55, 60),
+        InterruptScenario("irq-rpm-activation", "activation", model.RegulatorKind.RPM,
+                          replace(good, speed=80), *records(stale), 50, 60),
+        InterruptScenario("irq-speed-activation", "activation", model.RegulatorKind.SPEED,
+                          good, *records(stale), 55, 60),
+        InterruptScenario("irq-abort", "abort", model.RegulatorKind.SPEED,
+                          replace(good, button=model.BUTTON_RELEASED), *records(ready_cut),
+                          55, 60),
+        InterruptScenario("irq-recovery", "recovery", model.RegulatorKind.SPEED, good,
+                          *mutate(ready_speed, "base", 0x1E, "B", ready_speed.applied_trim - 1),
+                          55, 60),
+    )
+    for scenario in scenarios:
+        decoded = _decode(scenario.base, scenario.extension)
+        if (decoded is None) != (scenario.kind == "recovery"):
+            raise ValueError(f"{scenario.name}: the model check of the record differs")
+        final = engine_pass((scenario.base, scenario.extension), scenario.inputs)[3]
+        expected_phase = {"steady": model.Phase.ACTIVE, "activation": model.Phase.ACTIVE,
+                          "abort": model.Phase.COOLDOWN, "recovery": model.Phase.COOLDOWN}
+        if final.phase != expected_phase[scenario.kind] or (
+                scenario.kind in ("steady", "activation")
+                and final.regulator_kind != scenario.regulator):
+            raise ValueError(f"{scenario.name}: the pass does not reach its outcome")
+    return scenarios
+
+
+def interrupt_finals(scenario):
+    """Return the records that a pass with one publication inside it may leave.
+
+    These are the records of a publication before the pass and after it.
+    Corrupt-state recovery clears both records after its check, so a
+    publication between the check and the clear also leaves the records of
+    the pass without a publication.
+    """
+    records = (scenario.base, scenario.extension)
+    before = ignition_publication(records, scenario.stock, scenario.effective,
+                                  contract=False)
+    publish_first = engine_pass((before.base, before.extension), scenario.inputs)[:2]
+    passed = engine_pass(records, scenario.inputs)[:2]
+    after = ignition_publication(passed, scenario.stock, scenario.effective, contract=False)
+    finals = (publish_first, (after.base, after.extension))
+    return finals + ((passed,) if scenario.kind == "recovery" else ())
+
+
+def render_interrupts(scenarios):
+    """Return the C header of the interrupt rows."""
+    lines = [
+        "/* Generated by tools/sh-elf-run/rolling_launch_rows.py from the schema 6",
+        "   model in patches/rolling_launch.py. */",
+        "struct rl_inputs {",
+        "    uint8_t selector[8];",
+        "    uint8_t ascd, button, age, hcan, port, coolant;",
+        "    uint16_t speed, wire, rpm, pedal;",
+        "};",
+        "struct irq_scenario {",
+        "    const char *name;",
+        "    struct rl_inputs in;",
+        "    uint8_t base[44], ext[32];",
+        "    uint32_t stock, effective;",
+        "};",
+        f"static const uint8_t rl_config[102] = {_bytes(CALIBRATION.to_bytes())};",
+        f"static const uint8_t rl_table[82] = {_bytes(TABLE.to_bytes())};",
+        "static const struct irq_scenario irq_scenarios[] = {",
+    ]
+    for scenario in scenarios:
+        stock = ignition_publication((scenario.base, scenario.extension), scenario.stock,
+                                     scenario.effective, contract=False)
+        lines.append(
+            f'    {{"{scenario.name}", {_inputs(scenario.inputs)},\n'
+            f"     {_bytes(scenario.base)},\n     {_bytes(scenario.extension)},\n"
+            f"     0x{stock.stock_wide:08x}U, 0x{stock.effective_wide:08x}U}},")
+    lines.append("};")
+    return "\n".join(lines) + "\n"
+
+
+def _inputs(values):
+    selector = (values.active_index, values.selector_phase, values.selection_count,
+                values.selector_elapsed, values.feedback_pulses, values.feedback_phase,
+                values.feedback_ticks, values.feedback_reserved)
+    return (f"{{{_bytes(selector)}, {values.ascd_status}, {values.button}, "
+            f"{values.speed_frame_age}, {values.hcan1_state}, {values.port_input_state}, "
+            f"{values.coolant}, {values.speed}, {values.speed_wire_word}, "
+            f"{values.rpm_native}, {values.pedal}}}")
+
+
 def _bytes(data):
     return "{" + ",".join(f"0x{value:02x}" for value in data) + "}"
 
@@ -700,16 +869,9 @@ def render(rows, variant=None):
         "static const struct engine_row engine_rows[] = {",
     ]
     for row in rows.engine:
-        values = row.inputs
-        selector = (values.active_index, values.selector_phase, values.selection_count,
-                    values.selector_elapsed, values.feedback_pulses, values.feedback_phase,
-                    values.feedback_ticks, values.feedback_reserved)
         lines.append(
             f'    {{"{row.name}", {row.config}, {int(row.restore)}, {int(row.periodic)}, '
-            f"{{{_bytes(selector)}, {values.ascd_status}, {values.button}, "
-            f"{values.speed_frame_age}, {values.hcan1_state}, {values.port_input_state}, "
-            f"{values.coolant}, {values.speed}, {values.speed_wire_word}, "
-            f"{values.rpm_native}, {values.pedal}}},\n"
+            f"{_inputs(row.inputs)},\n"
             f"     {_bytes(row.base)},\n     {_bytes(row.extension)},\n"
             f"     {_bytes(row.base_out)},\n     {_bytes(row.extension_out)}}},")
     lines.append("};")

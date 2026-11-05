@@ -242,6 +242,44 @@ must fail at exactly the periodic entry, the omitted outcome of the
 integrator lower-limit branch and the omitted outcome of the cooldown
 validity branch.
 
+The interrupt rows inject the crank-tooth publication into engine passes
+through the optional interrupt hook. `rolling_launch_rows.interrupt_scenarios`
+defines six passes, which `rolling_launch_irq.c` runs at SR.I = 0 through
+`invoke_regs`: steady ACTIVE ready holds of both kinds, an activation of each
+kind from an IDLE record that keeps a map index, a law output 0 and a control
+error of an earlier hold, an abort and corrupt-state recovery. A run without
+a request records the PC trace. A publication and a pass observe each other
+only through memory, so the interleavings of one publication with a pass are
+the points after its first instruction and after each of its loads and
+stores. One run requests vector 80 at level 8 after every store that a pass
+executes, inside and between its masked groups, and one more after the first
+of the other instructions that share each further acceptance point. The
+simulator-only handler `irq_rolling.s` saves
+`r0..r7`, PR, MACH, MACL and GBR, runs the ignition publisher at SR.I = 8 with
+the wide S and P of the scenario, restores them, stores a return marker and
+returns with RTE. The verifier derives the acceptance point from the trace:
+the first later boundary at SR.I below 8 that follows no delay slot and no
+LDC, STC, LDS or STS. An executed `ldc r0,sr` after `or #0xf0,r0` masks, and
+every other LDC to SR restores the level of the pass. The report must name
+that point and the handler, so a request inside a masked group is accepted
+only after the instruction that follows the LDC that lowers the mask.
+
+Each injected run must return through the handler with `r8..r14`, SP, GBR
+and SR preserved, leave the output of every other pass unchanged, store the
+model publication of the record pair that the handler observes, and leave
+the records of a publication before or after the pass. Corrupt-state
+recovery clears both records after its check, so it may also leave the
+records of the pass without a publication. In a steady pass every
+publication passes the check and publishes P with the ready mark. The RPM
+activation has at least one publication between its error pair and the
+publisher mask, and each publishes the stock command: the status view keeps
+kind NONE of the IDLE record until the masked wire views at the end of the
+pass. Across the observed records, an activation changes only the sample,
+the gate flags and the abort reason before the phase, stores the mode after
+the map, the law output before the kind and the trim of the run last; an
+abort changes only the sample before the phase, and recovery changes no
+record field before it. Neither publishes P after its phase store.
+
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original
 instruction window and operand pools before execution. The fixture translates
