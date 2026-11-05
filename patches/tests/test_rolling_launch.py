@@ -361,6 +361,23 @@ def test_speed_hold_has_no_replacement_rpm_ceiling(calibration, inputs, table):
     assert high.target_rpm_native == 0 and int(high.flags) & 0xA000 == 0
 
 
+@pytest.mark.parametrize("speed", (0, 500))
+def test_ignition_without_cached_config_validity_restores_stock(
+    calibration, inputs, table, speed,
+):
+    state = activate(calibration, replace(inputs, speed=speed), table)
+    trimmed = rl.ignition_step(state, 80, calibration, table)
+    assert trimmed.effective_command == 100 and trimmed.actuation_ready
+    missing_validity = replace(trimmed, flags=trimmed.flags & ~rl.Flag.CONFIG_VALID)
+    assert rl._state_is_structurally_valid(missing_validity)
+    result = rl.ignition_step(missing_validity, 80, calibration, table)
+    assert result.phase == rl.Phase.ACTIVE
+    assert result.flags == missing_validity.flags
+    assert (result.stock_command, result.effective_command, result.applied_trim) == (80, 80, 0)
+    assert (result.applied_efficiency, result.actuation_ready, result.cut_fraction) == (1000, False, 0)
+    assert result.law_output == trimmed.law_output
+
+
 def test_clipping_republishes_efficiency_at_the_same_fixed_trim(calibration, inputs, table):
     state = activate(calibration, inputs, table)
     for _ in range(9):

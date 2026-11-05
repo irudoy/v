@@ -555,7 +555,7 @@ def _publish_actuation(state, table):
 def ignition_step(state, stock_command, calibration, table, *, apc_fallback=False):
     """Publish one effective command for both schedulers and diagnostics."""
     if (not _state_is_structurally_valid(state)
-            or not calibration.is_valid() or not table.is_valid()):
+            or not (state.flags & Flag.CONFIG_VALID)):
         return replace(state, stock_command=stock_command & 255,
                        effective_command=stock_command & 255, applied_trim=0,
                        applied_efficiency=U_ONE, actuation_ready=False, cut_fraction=0)
