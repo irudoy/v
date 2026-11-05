@@ -491,11 +491,11 @@ recording or a strict schema-2 `tuning` TRC and audits the Rolling Launch
 hold. Each snapshot carries the stock button and dashboard frames, vehicle
 speed, coolant, and the fuel-inhibit, timing, pedal, BFS, knock-surface, and
 exhaust-CVTC telemetry sources, and the Rolling Launch phase and abort reason.
-The integrator, speed error, torque fraction, and cut-request counter are
-slots of the launch-law configurations of the dynamic page (`can-telemetry.md`,
-Dynamic page). The configuration byte of a snapshot names the slots it
-carries; the reader leaves the others None, because the dashboard holds the
-last value of a slot that the snapshot does not carry.
+The other Rolling Launch fields are slots of the page configurations of the
+dynamic page (`can-telemetry.md`, Dynamic page). The configuration byte of a
+snapshot names the slots it carries; the reader leaves the others None,
+because the dashboard holds the last value of a slot that the snapshot does
+not carry.
 
 ```bash
 python3 tools/logs/rolling_launch_audit.py --image <flashed image> <capture>...
@@ -513,10 +513,12 @@ python3 tools/logs/rolling_launch_audit.py --image <flashed image> <capture>...
 
 The hold audit reads the Rolling Launch record of the flashed image at the
 span of the runtime endpoint that `patches/runtime_endpoints.py` classifies:
-the current record, or the record of a registered historical endpoint, with
-one integral gain for every map (schema 4) or per-map slots with the fixed
-ignition trim (schema 5). The first output line names the endpoint. The
-audit reports every run of contiguous `ACTIVE` snapshots:
+the current schema 6 record with its efficiency table, or the record of a
+registered historical endpoint, with one integral gain for every map
+(schema 4) or per-map slots with the fixed ignition trim (schema 5). The
+first output line names the endpoint. The audit reports every run of
+contiguous `ACTIVE` snapshots. A historical endpoint carries the speed hold
+alone:
 
 - The speed error of every `ACTIVE` snapshot lies inside the abort window.
 - The replay of `patches/rolling_launch.py` starts from zero integrator and
@@ -548,10 +550,47 @@ audit reports every run of contiguous `ACTIVE` snapshots:
 - The target range is the `0x280` speed minus the published error; it stays
   narrow while the speed word follows that frame.
 
+The current runtime selects the RPM or the speed regulator at activation. The
+packed views of configurations 3 through 6 name the regulator kind of every
+snapshot, and a run keeps one kind:
+
+- Configuration 3 (`rl6_law`) carries the control error, the law output, the
+  cut-request counter, and the applied trim with the actuation-ready bit on
+  every tick. Under the RPM regulator every output equals the fraction of the
+  error and the soft width of the map slot, and the error plus the target of
+  the slot lies between the stock frames. Under the speed regulator the
+  replay above checks the outputs of a run that starts after `IDLE`. Without
+  the ready bit the applied trim is zero; with it the trim stays within the
+  trim of the regulator, and the floor ticks count the snapshots whose trim
+  the floor clips.
+- Group 1 of configuration 4 (`rl6_actuation`) checks the published cut
+  fraction q against the law output and the efficiency, kind, and ready bit
+  of the same snapshot: zero without the ready bit, `1000 - p` under the RPM
+  regulator, and the cut fraction of `u` at the efficiency under the speed
+  regulator; the efficiency is a table value of a trim up to the trim of the
+  regulator. Group 0 carries the consumed q sum and the counter together:
+  between two of its snapshots the cut requests lie strictly within six of
+  the owed cuts, the q sum difference over 1000, and from the group-0
+  snapshot before a run through the one after it they lie in
+  `(owed - 3.25, owed + 2.75]`. A gap or an interval that owes too many cuts
+  for the 8-bit counter leaves the bound open.
+- Configuration 5 (`rl6_inputs`) checks the speed-input bits, the accepted
+  CANCEL, the speed frame age, one target per run, the RPM target of the map
+  slot, the RPM sample between the stock frames, and the shared command: the
+  effective command is the stock command, or the stock command with the trim
+  clipped by the floor.
+- Configuration 6 (`rl6_release`) adds q without the ready bit and the
+  release: the snapshot that shows the accepted RELEASED after a run has no
+  cut fraction, and its cut-request counter holds through the next inactive
+  snapshots.
+
+A q derived from configuration 3 is not a published q; configurations 4 and
+6 publish it.
+
 The replay steps the controller once per snapshot, so the audit refuses a
 capture whose snapshots do not step by one tick, which a tick divisor above 1
 produces. A law failure, a requested-cut count outside its bounds, a run
-without a checked fraction, or a capture without an `ACTIVE` run makes the
+without a checked snapshot, or a capture without an `ACTIVE` run makes the
 exit status 1.
 
 The same reader joins raw bus evidence to the holds of an MLG recording:
