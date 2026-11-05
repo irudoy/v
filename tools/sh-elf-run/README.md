@@ -175,121 +175,72 @@ No canonical stock-consumer window runs on JK00C, JK00D, JK78C, 1ND0A or 1ND3B. 
 retain their existing execution checks and receive no measured qualification
 from these JK00C, JK00D, JK78C, 1ND0A and 1ND3B map scopes.
 
-The canonical JK08A Rolling Launch harness measures `periodic_wrapper`,
-`selector_arbiter`, `startup_wrapper`, `fuel_cut_wrapper`, `engine`,
-`speed_controller`, `rpm_ceiling`, `feedback_arbiter`, `ignition_adapter`,
-`spark_cut`, `slot_validator`, and `trim` with the same host PC observer. Typed instruction statements define this scope; pools and fill
-bytes do not count as instructions. Exact composed instructions and control
-literals survive the declared fixture translations and match the final ELF
-and invoke code. Each wrapper invocation retains its originating invoke frame
-through calls and selector tail transfers, and qualifies its return only after
-its declared stock RTS/NOP boundary. These boundaries do not qualify the stock
-bodies.
+The canonical JK08A Rolling Launch gate measures the regions
+`periodic_wrapper`, `selector_arbiter`, `startup_wrapper`, `engine`,
+`speed_controller`, `feedback_arbiter`, `rpm_controller`, `rpm_fraction`,
+`control_publisher`, `ignition_publisher`, `actuation`, `slot_validator` and
+`state_check` with the same host PC observer. Typed instruction statements of
+their units define this scope; pools and fill bytes do not count as
+instructions and must not execute. The gate does not execute the ignition
+adapter or the spark-cut actuator, so an image that contains them stays
+ineligible for hardware testing until their executable coverage exists.
 
-The fuel-cut wrapper calls a declared simulator-only coordinator stub at
-`0x0004ED88`. The stub copies the stock result byte of the harness cell
-`0xFFFF6FF0` into the final cylinder mask `0xFFFF22E0` and returns a sentinel
-in R0 through its RTS/NOP boundary; it does not qualify the coordinator body.
-Each case presets the mask to a value that no stub result has, so a merge
-before the stock call would be lost. Cases combine inactive, active and
-partial stock results with zero, partial, full and malformed requests and
-check the final mask, the returned R0, the complete state, the fuel-cut
-shadow, SP and GBR. A scheduler case reads entries 1 and 28 of the composed
-periodic table and runs them in that order through an activation, a held
-request and a release, so the mask follows the request of the same pass. An
-observe scheduler case runs above the RPM ceiling and requires the stock
-coordinator result in the final mask.
+`rolling_launch_rows.py` derives every row from the schema 6 model in
+`patches/rolling_launch.py` and renders it as the C header that
+`rolling_launch_harness.c` includes; the verifier compiles the harness once
+for each row set. Engine rows reject each check of the configuration head,
+the five map slots and the efficiency table alone, cross the gates at their
+boundaries, activate both regulator kinds, and run the ACTIVE transitions, both
+controllers and their saturations, the ready holds, the cooldown and its
+re-arm, and the recovery from every failing check of the record. Publisher
+rows run the ignition and control publishers, and fraction rows the RPM
+fraction at its soft-width boundaries. Five fixed cases run the startup
+wrapper and the selector arbiter in each phase, and eight cases run the
+feedback arbiter.
 
-The speed controller accepts an originating invoke call or the exact bound
-engine call window on an active engine frame. Its R3 load binds the composed
-control pool of the stock unsigned divider `0x00021CE0` before execution.
-Each divider call returns before the native RTS of the controller reaches the
-original continuation. Its R0 load binds the pool word of the trim unit, the
-only controller call besides the divider. The trim unit calls the divider
-through its R2 literal load and tail-jumps through its R0 literal load to the
-RPM ceiling unit; it has no RTS of its own. The ceiling unit is a leaf
-reached only through that tail, and each of its two native RTS returns to
-the controller continuation. The engine configuration check tail-jumps
-through its single R0 literal load to the slot validator, a leaf whose two
-native RTS return to the BSR continuation of the check. Both outcomes of
-every controller, trim, validator and ceiling branch and their delay slots
-must execute. The stock divider body receives no
-instruction-coverage qualification. The engine body is in the measured scope.
+Each row writes its configuration record at `0x000D6320` and its efficiency
+table at `0x000D6390` into the simulator ROM image, which changes no
+instruction byte, and its base record, extension and inputs into test RAM.
+The harness fills the rest of the 64 KiB test RAM with a pattern and, after
+the call, compares all of it with the expected image: the output records of
+the row, the map 1 limiter commit of a corrupt-state recovery, the
+diagnostic status mirror of the map selector host, and no other byte. The
+configuration and the table must stay unchanged.
 
-Controller rows of the canonical harness take their expected outputs from the
-reference model in `patches/rolling_launch.py`, and a Python test replays the
-model over the harness table. The rows cover the proportional floor, top,
-width and quotient, the integrator freeze on both saturated sums,
-accumulation, both integrator limits, the RPM ceiling at, above and across the
-16-bit range of its 32-bit sum, the latch held above and released at the
-hysteresis restore point, the unlatched band, observe release of a set latch,
-and the stock cut bit. Controller rows also require the cut fraction of an
-untrimmed slot. Trim rows take the cut fraction from the model for unit and
-partial efficiencies, both quotient clamps and the integral gain of each
-map slot. Configuration rows reject every out-of-range slot field, a trim
-without its efficiency, and a corrupt slot end marker. The complete state,
-configuration, selector, shadows, runtime words, named input/output buffers,
-stack pointer and GBR must otherwise remain intact. The observed R4 retains
-the configuration-pointer role exposed by `invoke_r4`; it is not a C
-return-value contract.
+`invoke_rolling.s` is a simulator-only call helper. `invoke_regs` loads
+`r1..r14` and the T, S, I, Q and M bits of SR from a register array, calls
+the entry through `r0`, and stores `r0..r14` and SR back; the simulator keeps
+its other SR bits, which later SR transfers need. The harness seeds every
+register that an entry does not take, and every call checks `r8..r14`, SP,
+GBR and the SR bits of its contract. The publishers run alternately at
+SR = 0 and with every loadable SR bit set and must restore the SR of their
+caller.
 
-The feedback arbiter accepts only a bound invoke origin. Its literal R0 call
-runs the existing Map Switching feedback wrapper before applying Rolling Launch
-status. That call must return to its original continuation after an actual
-nested call and return through the declared stock serializer fixture stub.
-The arbiter must then execute its own native RTS and delay slot. These call
-boundaries do not qualify the Map Switching or original stock function bodies.
+The fixture stubs the displaced periodic task `0x000A9554`, the stock ASCD
+host `0x000D09D8`, the startup initializer `0x0002C648` and the primary
+ignition consumer `0x0002A892` with RTS/NOP. The stock feedback serializer
+`0x000C5372` is a stub that stores `0xB5` in the ASCD status byte
+`0xFFFF3ADA` and returns. The stock unsigned divider `0x00021CE0` runs
+unstubbed. The idle selector path runs the Map Switching selector host. None
+of these executions qualifies a stock or Map Switching body.
 
-Canonical feedback rows retain independent literal status and map-feedback
-results, including an IDLE case with no failure reason and a held button.
-They check every payload byte, the complete Rolling Launch and selector state,
-configuration, pulse-count constants, concrete shadows and input/output
-buffers, SP and GBR. Unconsumed Rolling Launch state bytes carry a distinctive
-pattern. The existing case counter reports both canonical boundary matrices.
+The trace must match the fixture opcodes and execute every instruction of
+the scope, counting executions in a delay slot, both outcomes of every
+conditional branch, every delay slot, and every call with its return to the
+call continuation. The targets of a register transfer come from a backward
+walk of the control-flow graph of its unit: every path must end at a
+PC-relative long load of the transfer register, and a path that reaches
+another write of that register, a call or the unit entry leaves the transfer
+unbound. Execution must reach every such target and no other. The invoke
+helper may call only the harness entries, and an RTE fails the trace.
 
-The spark-cut wrapper is an exception handler. The fixture copies the
-composed `GR11A` interrupt-table word at `0x000202E4` into the TRAPA vector
-`0x00000100`, and `invoke_spark.s` enters it with `TRAPA #0x40`, `r0..r7` set
-to 1..8 and the T bit alternating between matches. The trace opens the
-wrapper frame at its entry with no open frame; a call into it is rejected.
-The single literal tail reaches a declared simulator-only stub at
-`0x0002AB24`, which pushes SR below the harness cell `0xFFFF6FEC`, restores
-R1, and returns with RTE; the frame closes only at that RTE after the tail.
-The simulator sets SR bit 28 on exception entry, so a control handler in
-`invoke_spark.s` measures the entry SR of the same TRAPA without the wrapper,
-and every match requires that SR at the stub, `r0..r7` after the return, and
-the unchanged stock inputs. Spark cases take their expected state, veto byte
-and misfire latch from a C reference of the cut selection in the harness. They
-cover a forced timeout match, every eligibility condition and its boundary,
-the accumulator and fraction resets, observe and the latch rules in each
-phase, the first match after leaving ACTIVE, and two aligned 36-match periods
-for sixteen fractions with their period and per-cylinder bounds. The stub does
-not qualify the stock handler body.
-
-The ignition adapter ends in a single literal tail to the stock consumer
-`0x0002A892`. Its entry, literal load and pool bind to the composed image
-before execution, and the tail reaches the declared RTS/NOP stub of the
-consumer, which returns to the original invoke continuation. Adapter rows
-take the command from the model: the stock command outside an ACTIVE hold,
-with the APC fallback bit, for an invalid map snapshot and for a zero trim,
-the trimmed command, the floor clip and a stock command past the floor. They
-check the command, the argument registers other than `r0..r4`, the complete
-state, concrete buffers, configuration, SP and GBR.
-
-A controller negative build moves the integrator input of the lower-limit row
-so that the step ends exactly on the limit, preserving its semantic
-assertions and case count, and the lower-limit clamp does not run. Coverage
-must reject the omitted clamp outcome. An engine build keeps the
-invalid-config case and its idle result, but leaves the map index valid, so
-the held config reason does not skip the map-index update. Coverage must
-reject that omitted outcome.
-
-A Rolling Launch negative build calls the engine directly instead of the
-periodic wrapper, preserving ROM bytes, case counts and the semantic PASS
-marker. Measured coverage must reject the omitted periodic entry. Calls
-into the speed controller, the limiter commit and the internal gate
-helpers stay paired with their returns. Stock callee bodies stay outside
-this qualification.
+Three negative row sets keep the semantic PASS marker and remove one covered
+path each: the periodic row calls the engine directly, the lower-limit
+integrator row of the speed controller stays above the limit, and the
+cooldown rows with an invalid configuration or table are omitted. Coverage
+must fail at exactly the periodic entry, the omitted outcome of the
+integrator lower-limit branch and the omitted outcome of the cooldown
+validity branch.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

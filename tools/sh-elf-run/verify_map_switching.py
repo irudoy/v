@@ -830,8 +830,8 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
     return covered
 
 
-def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
-    """Bind the final ELF ROM and invoke instructions to independently built bytes."""
+def _invoke_trace_bindings(elf, invoke, fixture, build_dir, names=PC_INVOKE_SYMBOLS):
+    """Bind the final ELF ROM and the named invoke functions to independently built bytes."""
     def section(path, name):
         output = build_dir / f"{path.stem}-{name}.raw"
         run_command([OBJCOPY, "-O", "binary", "--only-section", f".{name}", path, output])
@@ -840,10 +840,10 @@ def _invoke_trace_bindings(elf, invoke, fixture, build_dir):
     def symbols(path):
         found = {}
         for line in run_command([NM, "-S", "--defined-only", path]).stdout.splitlines():
-            match = re.fullmatch(r"([0-9a-f]+)\s+([0-9a-f]+)\s+\w\s+(_invoke_r[04]|_invoke_throttle_scalar)", line)
-            if match:
+            match = re.fullmatch(r"([0-9a-f]+)\s+([0-9a-f]+)\s+\w\s+(\S+)", line)
+            if match and match.group(3) in names:
                 found[match.group(3)] = (int(match.group(1), 16), int(match.group(2), 16))
-        if set(found) != PC_INVOKE_SYMBOLS:
+        if set(found) != set(names):
             raise VerificationError("ELF lacks exact invoke function extents")
         return found
 

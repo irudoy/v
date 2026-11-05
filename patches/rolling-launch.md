@@ -1193,14 +1193,16 @@ A candidate is software-valid only when all applicable checks pass:
    actuation with its ready mark, and the cut selection, consumed-`q`
    accounting, resets, and misfire latch of the spark-cut actuator.
 5. The GNU SH fixture independently executes the same current payload bytes
-   across all changed entries, branches, delay slots, call/return paths, and
-   boundary cases, with controller expectations taken from the reference
-   model, including the slot validator, the trim unit against a table of
-   model cut fractions, and the ignition adapter against a table of model
-   commands. The spark wrapper runs through `TRAPA` and the composed `GR11A`
-   table entry against a C reference of the cut selection, which checks every
-   register, `SR` at the stock handler entry, and the per-period cut
-   bounds.
+   of the wrappers, the engine, both controllers, the publishers, the
+   actuation, the slot validator and the record check against rows that the
+   reference model derives, and compares the complete test RAM, the
+   preserved registers, SP, GBR and SR after every call. Its trace covers
+   every instruction, both outcomes of every branch, every delay slot, every
+   call with its return, and every literal target of each register transfer,
+   and three negative row sets fail coverage at exactly their omitted paths.
+   The ignition adapter and the spark-cut actuator have no executable
+   coverage, so an image that contains them is not eligible for a hardware
+   test.
 6. Every final difference is inside the combined component and checksum write
    sets.
 7. The generated definition tables agree with the configuration contract.
