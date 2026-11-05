@@ -21,6 +21,8 @@ volatile uint32_t irq_seen_value, irq_seen_second;
 volatile uint32_t irq_iterations, irq_seen_iterations;
 volatile uint32_t irq_rte_sp;
 volatile uint32_t irq_trap_hits, irq_outer_resumed;
+volatile uint32_t irq_caller_resumed, irq_outer_sr;
+volatile uint32_t irq_caller_sr_before, irq_caller_sr_after;
 
 void irq_exit_handler(void)
 {
@@ -44,12 +46,15 @@ int main(void)
     printf("VQ_SH_IRQ_PROBE status=PASS hits=%u saved_pc=%08x saved_sr=%08x "
            "handler_sr=%08x entry_sp=%08x expected_sp=%08x after_sr=%08x "
            "after_r0=%08x after_r1=%08x seen_value=%08x seen_second=%08x "
-           "seen_iterations=%08x rte_sp=%08x trap_hits=%08x outer_resumed=%08x\n",
+           "seen_iterations=%08x rte_sp=%08x trap_hits=%08x outer_resumed=%08x "
+           "caller_resumed=%08x outer_sr=%08x caller_sr_before=%08x caller_sr_after=%08x\n",
            (unsigned)irq_hits, (unsigned)irq_saved_pc, (unsigned)irq_saved_sr,
            (unsigned)irq_handler_sr, (unsigned)irq_entry_sp, (unsigned)irq_expected_sp,
            (unsigned)irq_after_sr, (unsigned)irq_after_r0, (unsigned)irq_after_r1,
            (unsigned)irq_seen_value, (unsigned)irq_seen_second,
            (unsigned)irq_seen_iterations, (unsigned)irq_rte_sp,
-           (unsigned)irq_trap_hits, (unsigned)irq_outer_resumed);
+           (unsigned)irq_trap_hits, (unsigned)irq_outer_resumed,
+           (unsigned)irq_caller_resumed, (unsigned)irq_outer_sr,
+           (unsigned)irq_caller_sr_before, (unsigned)irq_caller_sr_after);
     return PROBE_EXIT;
 }

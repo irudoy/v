@@ -27,18 +27,27 @@ irq_probe:
     mov.l .Lvalue,r1
     mov.l .Lfirst,r0
 #if PROBE_CASE == 34
+    stc sr,r0
+    mov.l .Lcaller_sr_before,r2
+    mov.l r0,@r2
     trapa #0x40
     .global irq_outer_continuation
 irq_outer_continuation:
-    mov.l .Louter_resumed,r1
+    stc sr,r0
+    mov.l .Lcaller_sr_after,r2
+    mov.l r0,@r2
+    mov.l .Lcaller_resumed,r1
     mov #1,r0
     mov.l r0,@r1
     bra .Lfinish
     nop
     .global _irq_trap_handler
 _irq_trap_handler:
-    /* Match an ISR that opens its interrupt mask after GNU TRAPA entry. */
-    mov.l .Lequal_sr,r0
+    /* Match the stock ISR's SR read-modify-write: GNU BL remains set. */
+    stc sr,r0
+    mov.l .Lsr_mask_clear,r2
+    and r2,r0
+    or #0x80,r0
     ldc r0,sr
     nop
     mov.l .Lvalue,r1
@@ -189,6 +198,11 @@ irq_resume:
     mov.l .Lafter_sr,r2
     mov.l r0,@r2
 #if PROBE_CASE == 34
+    mov.l .Louter_sr,r2
+    mov.l r0,@r2
+    mov.l .Louter_resumed,r2
+    mov #1,r0
+    mov.l r0,@r2
     .global irq_outer_rte
 irq_outer_rte:
     rte
@@ -228,6 +242,11 @@ irq_outer_rte:
 .Lrte_sp: .long _irq_rte_sp
 .Literations: .long _irq_iterations
 .Louter_resumed: .long _irq_outer_resumed
+.Lcaller_resumed: .long _irq_caller_resumed
+.Louter_sr: .long _irq_outer_sr
+.Lcaller_sr_before: .long _irq_caller_sr_before
+.Lcaller_sr_after: .long _irq_caller_sr_after
+.Lsr_mask_clear: .long 0xffffff0f
     .size irq_probe,.-irq_probe
 
     .align 2

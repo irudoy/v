@@ -439,8 +439,12 @@ a probe verifies that the slot observes the restored stack pointer.
 At entry the hook saves the surrounding GNU SSR/SPC pair and restores it
 after the injected RTE and its slot complete. An ordinary GNU TRAPA inside
 the handler sets BL, so its RTE uses GNU's decoder without consuming the
-injected frame. Probes cover both an injected IRQ inside a GNU TRAPA ISR
-that opens its interrupt mask and a GNU TRAPA inside the injected handler.
+injected frame. IRQ entry clears GNU's BL tag only in the handler SR; the
+frame retains it, so the injected RTE restores BL in the outer ISR. Probes
+cover an IRQ inside a GNU TRAPA ISR that opens its mask by read-modify-write
+while retaining BL, the outer ISR tail and caller SR, and a GNU TRAPA inside
+the injected handler. A frame inside GNU TRAPA retains the GNU MD/RB/BL
+bits, which do not exist on SH-2E.
 This compatibility does not qualify SH-2E TRAPA semantics or other simulator
 exception paths. The hook supplies no peripheral behavior,
 INTC arbitration, nested maskable IRQ requests or cycle timing. Each fixture

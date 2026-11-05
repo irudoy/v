@@ -103,7 +103,8 @@ def check_positive(elf, directory, case, count, level, vector, *, name=None):
     _, values = run_probe(elf, request)
     expected = dict(triggered=addresses['irq_trigger'], accepted=addresses['irq_resume'],
                     handler=addresses['irq_handler_alt' if case in (29, 30) else 'irq_handler'],
-                    sr={5: 0x302, 19: 0x302, 20: 0x302, 31: 0x333, 34: 0x383}.get(case, 0x303))
+                    sr={5: 0x302, 19: 0x302, 20: 0x302, 31: 0x333,
+                        34: 0x70000383}.get(case, 0x303))
     rows = report.read_text().splitlines()
     if len(rows) != 2 or len(rows[0].split()) != len(expected):
         raise base.VerificationError('IRQ report lacks one entry and one return row')
@@ -116,7 +117,7 @@ def check_positive(elf, directory, case, count, level, vector, *, name=None):
     if return_values != dict(returned=expected['accepted'], sp=values['expected_sp']):
         raise base.VerificationError(f'IRQ return report differs: {return_values}')
     if (values['saved_pc'] != expected['accepted'] or values['saved_sr'] != expected['sr']
-            or values['handler_sr'] != ((expected['sr'] & ~0xF0) | level << 4)
+            or values['handler_sr'] != ((expected['sr'] & ~0x100000F0) | level << 4)
             or values['after_sr'] != expected['sr'] or values['seen_value'] != 0x12345678):
         raise base.VerificationError(f'IRQ frame or RTE differs: {values}')
     if case in (1, 6, 29, 30) and values['seen_second'] != 0x89ABCDEF:
@@ -125,8 +126,11 @@ def check_positive(elf, directory, case, count, level, vector, *, name=None):
         raise base.VerificationError(f'IRQ occurs at the wrong execution: {values}')
     if case == 33 and values['rte_sp'] != values['expected_sp']:
         raise base.VerificationError('RTE delay slot does not observe the restored stack pointer')
-    if case == 34 and values['outer_resumed'] != 1:
-        raise base.VerificationError('the surrounding GNU TRAPA does not return to its continuation')
+    if case == 34 and (values['outer_resumed'] != 1 or values['caller_resumed'] != 1
+                       or values['outer_sr'] != 0x70000383
+                       or values['caller_sr_before'] != 0x303
+                       or values['caller_sr_after'] != values['caller_sr_before']):
+        raise base.VerificationError('the surrounding GNU TRAPA loses its tail or SR state')
     if case == 35 and values['trap_hits'] != 1:
         raise base.VerificationError('GNU TRAPA inside the injected handler does not return')
     if case == 0 and (values['after_r0'] != 0x12345678

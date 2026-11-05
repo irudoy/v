@@ -1,6 +1,6 @@
 --- a/sim/sh/interp.c
 +++ b/sim/sh/interp.c
-@@ -794,4 +794,256 @@
+@@ -794,4 +794,258 @@
  #define SIGN32(x)	(SEXT32 (x) >> 31)
 
 +/* Optional, one-shot SH-2E interrupt injection at instruction boundaries.
@@ -210,7 +210,9 @@
 +  if (saved_state.asregs.exception)
 +    return 0;
 +  saved_state.asregs.regs[15] = sp - 8;
-+  SET_SR ((sr & ~SR_MASK_I) | (vq_sh_irq.level << 4));
++  /* GNU TRAPA marks its context with BL.  The injected SH-2E handler has
++     its own frame and must not inherit that tag; its saved SR retains it. */
++  SET_SR ((sr & ~SR_MASK_I & ~SR_MASK_BL) | (vq_sh_irq.level << 4));
 +  *handler = rlat_fast (memory, vector_address, maskl);
 +  if (saved_state.asregs.exception)
 +    return 0;
@@ -257,14 +259,14 @@
 +
  /* convert pointer from target to host value.  */
  #define PT2H(x) ((x) + memory)
-@@ -807,4 +1059,6 @@
+@@ -807,4 +1061,6 @@
  do { \
    iword = RIAT (TEMPPC); \
 +  if (vq_sh_irq.enabled) \
 +    vq_sh_irq_delay_slot ((unsigned int) PH2T (TEMPPC), iword); \
    vq_sh_pc_trace_observe ((unsigned int) PH2T (TEMPPC), iword, 1); \
    in_delay_slot = 1; \
-@@ -1906,7 +2160,30 @@
+@@ -1906,7 +2162,30 @@
    while (insn_ptr < saved_state.asregs.insn_end)
      {
 -      register unsigned int iword = RIAT (insn_ptr);
@@ -297,14 +299,14 @@
 +        vq_sh_irq_begin ((unsigned int) PH2T (insn_ptr), iword);
        vq_sh_pc_trace_observe ((unsigned int) PH2T (insn_ptr), iword, 0);
 
-@@ -1918,4 +2195,6 @@
+@@ -1918,4 +2197,6 @@
  #include "code.c"
 
 +      if (vq_sh_irq.enabled)
 +        vq_sh_irq_completed ();
 
        in_delay_slot = 0;
-@@ -2399,4 +2678,9 @@
+@@ -2399,4 +2680,9 @@
        *sigrc = saved_state.asregs.exception;
      }
 +  /* An undelivered or unreturned injection cannot qualify a successful run.
@@ -314,7 +316,7 @@
 +    *sigrc = 125;
  }
 
-@@ -2547,4 +2831,5 @@
+@@ -2547,4 +2833,5 @@
 
    vq_sh_pc_trace_init ();
 +  vq_sh_irq_init ();
