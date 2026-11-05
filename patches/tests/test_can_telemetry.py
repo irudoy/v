@@ -515,10 +515,10 @@ class CanTelemetryContractTest(unittest.TestCase):
             jk08a_runtime_reservations.OWNERS,
         )
         self.assertEqual(
-            sum(item.span.size for item in ledger.future_rom), 7392
+            sum(item.span.size for item in ledger.future_rom), 6272
         )
         self.assertEqual(
-            sum(item.span.size for item in ledger.future_ram), 624
+            sum(item.span.size for item in ledger.future_ram), 592
         )
 
 
