@@ -2,6 +2,7 @@
 """Validate map-switching models against the common JK08A definitions."""
 
 from pathlib import Path
+import struct
 import sys
 import tomllib
 import xml.etree.ElementTree as ET
@@ -12,6 +13,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_layout
+from patches import rolling_launch as launch_contract
+from patches import rolling_launch_layout
 from tools.mapkit import (
     definition_targets,
     emit_def,
@@ -155,41 +158,50 @@ def validate():
             "runtime does not expose 70 slot-specific editor views"
         )
     launch = projection.rolling_launch
-    if launch.enable_mask_address != "000d6224":
+    # Field offsets follow the schema-6 record of patches/rolling_launch.py.
+    configuration = rolling_launch_layout.load_layout().configuration.start
+    if launch.enable_mask_address != f"{configuration + 0x04:08x}":
         raise ValueError("Rolling Launch enable mask address differs")
-    if launch.pedal_requirement_address != "000d622e":
+    if launch.pedal_requirement_address != f"{configuration + 0x0E:08x}":
         raise ValueError("Rolling Launch pedal_requirement_address differs")
     expected_controls = {
-        "coolant_min": ("Rolling Launch Minimum Coolant Temperature", 0xD6226),
-        "min_speed": ("Rolling Launch Minimum Vehicle Speed", 0xD6228),
-        "max_speed": ("Rolling Launch Maximum Vehicle Speed", 0xD622A),
-        "min_rpm_native": ("Rolling Launch Minimum Engine Speed", 0xD622C),
-        "window_width": ("Rolling Launch Speed Window Width", 0xD6232),
-        "window_top": ("Rolling Launch Speed Window Top", 0xD6233),
-        "u_rate_limit": ("Rolling Launch Torque Fraction Rate Limit", 0xD6234),
-        "integrator_limit": ("Rolling Launch Integrator Limit", 0xD6238),
-        "abort_above": ("Rolling Launch Abort Above Target", 0xD623A),
-        "abort_below": ("Rolling Launch Abort Below Target", 0xD623B),
-        "rpm_ceiling_offset_native": (
-            "Rolling Launch RPM Ceiling Offset", 0xD623C,
-        ),
-        "speed_frame_age_limit": (
-            "Rolling Launch Speed Frame Age Limit", 0xD6242,
-        ),
-        "rpm_ceiling_hysteresis_native": (
-            "Rolling Launch RPM Ceiling Hysteresis", 0xD6243,
-        ),
+        key: (name, configuration + relative)
+        for key, name, relative in (
+            ("coolant_min", "Rolling Launch Minimum Coolant Temperature", 0x06),
+            ("min_speed", "Rolling Launch Minimum Vehicle Speed", 0x08),
+            ("max_speed", "Rolling Launch Maximum Vehicle Speed", 0x0A),
+            ("min_rpm_native", "Rolling Launch Minimum Engine Speed", 0x0C),
+            (
+                "speed_frame_age_limit",
+                "Rolling Launch Speed Frame Age Limit", 0x22,
+            ),
+            ("window_width", "Rolling Launch Speed Window Width", 0x12),
+            ("window_top", "Rolling Launch Speed Window Top", 0x13),
+            (
+                "u_rate_limit",
+                "Rolling Launch Torque Fraction Rate Limit", 0x14,
+            ),
+            ("integrator_limit", "Rolling Launch Integrator Limit", 0x18),
+            ("abort_above", "Rolling Launch Abort Above Target", 0x1A),
+            ("abort_below", "Rolling Launch Abort Below Target", 0x1B),
+        )
     }
+    slot_stride = struct.calcsize(launch_contract.SLOT_FORMAT)
     expected_controls.update({
         f"map_{index + 1}_{key}": (
             f"Rolling Launch Map {index + 1} {label}",
-            0xD6248 + index * 6 + relative,
+            configuration + launch_contract.SLOT_OFFSET
+            + index * slot_stride + relative,
         )
-        for index in range(5)
+        for index in range(launch_contract.SLOT_COUNT)
         for key, label, relative in (
+            ("launch_speed_threshold", "Launch Speed Threshold", 8),
+            ("launch_rpm_native", "Launch RPM", 6),
+            ("launch_soft_width_native", "Launch Soft Width", 10),
+            ("max_trim_rpm", "RPM Trim", 2),
             ("integral_gain", "Integral Gain", 0),
-            ("max_trim", "Maximum Trim", 2),
-            ("floor_command", "Timing Floor", 3),
+            ("max_trim_speed", "Speed-Hold Trim", 3),
+            ("floor_command", "Timing Floor", 4),
         )
     })
     if dict(launch.control_addresses) != {
@@ -217,7 +229,10 @@ def validate():
             raise ValueError(f"TunerPro projection lacks {name}")
     if "Rolling Launch Require Accelerator Pedal" not in romraider_model:
         raise ValueError("RomRaider projection lacks the pedal switch")
-    if 'storageaddress="0xD622E"' not in romraider_model:
+    if (
+        f'storageaddress="0x{configuration + 0x0E:X}"'
+        not in romraider_model
+    ):
         raise ValueError("RomRaider pedal-switch address differs")
     if "Rolling Launch Require Accelerator Pedal" not in xdf:
         raise ValueError("TunerPro projection lacks the pedal switch")

@@ -393,28 +393,29 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         self.assertIsNotNone(projection.map_switching)
         self.assertIsNotNone(projection.rolling_launch)
         self.assertEqual(projection.slot_editor_view_count, 70)
-        self.assertNotIn("000d6224", maps)
-        self.assertNotIn("000d622e", maps)
+        self.assertNotIn("000d6324", maps)
+        self.assertNotIn("000d632e", maps)
         self.assertTrue({
-            "000d6226",
-            "000d6228",
-            "000d622a",
-            "000d622c",
-            "000d6232",
-            "000d623c",
-            "000d6242",
+            "000d6326",
+            "000d6328",
+            "000d632a",
+            "000d632c",
+            "000d6332",
+            "000d6342",
+            "000d634e",
         } <= set(maps))
+        self.assertNotIn("000d633c", maps)
         launch_switches = [
             entry
             for entry in overrides["bitwise_switch"]
-            if entry["storageaddress"] == "0xD6224"
+            if entry["storageaddress"] == "0xD6324"
         ]
         self.assertEqual(len(launch_switches), 1)
         self.assertEqual(len(launch_switches[0]["bit"]), 5)
         pedal_switches = [
             entry
             for entry in overrides["switch"]
-            if entry["storageaddress"] == "0xD622E"
+            if entry["storageaddress"] == "0xD632E"
         ]
         self.assertEqual(len(pedal_switches), 1)
         self.assertEqual(maps, projection.maps)

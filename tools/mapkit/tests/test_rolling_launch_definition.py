@@ -9,23 +9,38 @@ from tools.mapkit import emit_def, rolling_launch, tunerpro
 
 
 ROOT = Path(__file__).resolve().parents[3]
-# Offsets and widths of the unsigned schema-5 head fields that the editors show.
+# Offsets and widths of the unsigned schema-6 head fields that the editors show.
 FIELD_OFFSETS = {
     "coolant_min": 0x06, "min_speed": 0x08, "max_speed": 0x0A,
     "min_rpm_native": 0x0C, "window_width": 0x12, "window_top": 0x13,
     "u_rate_limit": 0x14, "integrator_limit": 0x18,
     "abort_above": 0x1A, "abort_below": 0x1B,
-    "rpm_ceiling_offset_native": 0x1C, "speed_frame_age_limit": 0x22,
-    "rpm_ceiling_hysteresis_native": 0x23,
+    "speed_frame_age_limit": 0x22,
 }
 FIELD_WIDTHS = {
     "coolant_min": 1, "min_speed": 2, "max_speed": 2,
     "min_rpm_native": 2, "window_width": 1, "window_top": 1,
     "u_rate_limit": 2, "integrator_limit": 2,
     "abort_above": 1, "abort_below": 1,
-    "rpm_ceiling_offset_native": 2, "speed_frame_age_limit": 1,
-    "rpm_ceiling_hysteresis_native": 1,
+    "speed_frame_age_limit": 1,
 }
+# The schema-6 record starts at 0xD6320; its 12-byte slots start at +0x28.
+SLOT_BASE = 0xD6348
+SLOT_STRIDE = 12
+# key, relative offset, storage, label, units, expression, inverse
+SLOT_FIELDS = (
+    ("launch_speed_threshold", 8, "uint16", "Launch Speed Threshold", "km/h", "x/10", "x*10"),
+    ("launch_rpm_native", 6, "uint16", "Launch RPM", "RPM", "x*12.5", "x/12.5"),
+    ("launch_soft_width_native", 10, "uint16", "Launch Soft Width", "RPM", "x*12.5", "x/12.5"),
+    ("max_trim_rpm", 2, "uint8", "RPM Trim", "deg", "x", "x"),
+    ("integral_gain", 0, "uint16", "Integral Gain", "raw", "x", "x"),
+    ("max_trim_speed", 3, "uint8", "Speed-Hold Trim", "deg", "x", "x"),
+    ("floor_command", 4, "uint8", "Timing Floor", "deg ATDC", "x-110", "x+110"),
+)
+
+
+def slot_address(index, relative):
+    return SLOT_BASE + index * SLOT_STRIDE + relative
 
 
 class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
@@ -71,36 +86,34 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
 
     def test_projection_uses_exact_configuration_addresses(self):
         projection = self.project()
-        self.assertEqual(projection.configuration_address, "000d6220")
-        self.assertEqual(projection.enable_mask_address, "000d6224")
-        self.assertEqual(projection.pedal_requirement_address, "000d622e")
+        self.assertEqual(projection.configuration_address, "000d6320")
+        self.assertEqual(projection.enable_mask_address, "000d6324")
+        self.assertEqual(projection.pedal_requirement_address, "000d632e")
         expected = {
-            "coolant_min": "000d6226",
-            "min_speed": "000d6228",
-            "max_speed": "000d622a",
-            "min_rpm_native": "000d622c",
-            "speed_frame_age_limit": "000d6242",
-            "window_width": "000d6232",
-            "window_top": "000d6233",
-            "u_rate_limit": "000d6234",
-            "integrator_limit": "000d6238",
-            "abort_above": "000d623a",
-            "abort_below": "000d623b",
-            "rpm_ceiling_offset_native": "000d623c",
-            "rpm_ceiling_hysteresis_native": "000d6243",
+            "coolant_min": "000d6326",
+            "min_speed": "000d6328",
+            "max_speed": "000d632a",
+            "min_rpm_native": "000d632c",
+            "speed_frame_age_limit": "000d6342",
+            "window_width": "000d6332",
+            "window_top": "000d6333",
+            "u_rate_limit": "000d6334",
+            "integrator_limit": "000d6338",
+            "abort_above": "000d633a",
+            "abort_below": "000d633b",
         }
         expected.update({
-            f"map_{index + 1}_{key}": f"{0xD6248 + index * 6 + relative:08x}"
+            f"map_{index + 1}_{key}": f"{slot_address(index, relative):08x}"
             for index in range(5)
-            for key, relative in (("integral_gain", 0), ("max_trim", 2), ("floor_command", 3))
+            for key, relative, *_ in SLOT_FIELDS
         })
         self.assertEqual(dict(projection.control_addresses), expected)
-        self.assertEqual(projection.table_count, 28)
+        self.assertEqual(projection.table_count, 46)
         self.assertEqual(projection.masked_view_count, 0)
         self.assertEqual(projection.switch_count, 1)
         self.assertEqual(projection.bitwise_switch_count, 1)
         self.assertEqual(projection.enable_bit_count, 5)
-        self.assertEqual(projection.editor_view_count, 30)
+        self.assertEqual(projection.editor_view_count, 48)
 
     def test_controls_match_the_record_layout(self):
         projection = self.project()
@@ -126,7 +139,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         enable = projection.overrides["bitwise_switch"][-1]
         pedal = projection.overrides["switch"][-1]
 
-        self.assertEqual(projection.configuration_address, "000d6220")
+        self.assertEqual(projection.configuration_address, "000d6320")
         self.assertIn("Exact JK00A.", enable["description"])
         self.assertIn("Exact JK00A.", pedal["description"])
         self.assertNotIn("Exact JK08A.", enable["description"])
@@ -163,14 +176,6 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                 "uint16", "%", "x/10",
                 "Rolling Launch Torque Fraction Rate Limit",
             ),
-            "rpm_ceiling_offset_native": (
-                "uint16", "RPM", "x*12.5",
-                "Rolling Launch RPM Ceiling Offset",
-            ),
-            "rpm_ceiling_hysteresis_native": (
-                "uint8", "RPM", "x*12.5",
-                "Rolling Launch RPM Ceiling Hysteresis",
-            ),
         }
         for key, values in expected.items():
             with self.subTest(control=key):
@@ -187,7 +192,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         switches = [
             entry
             for entry in projection.overrides["bitwise_switch"]
-            if entry["storageaddress"] == "0xD6224"
+            if entry["storageaddress"] == "0xD6324"
         ]
         self.assertEqual(len(switches), 1)
         self.assertNotIn(projection.enable_mask_address, projection.maps)
@@ -222,7 +227,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         )
         self.assertIn('type="BitwiseSwitch"', romraider)
         self.assertIn('name="Rolling Launch Enable by Map"', romraider)
-        self.assertIn('storageaddress="0xD6224"', romraider)
+        self.assertIn('storageaddress="0xD6324"', romraider)
         self.assertEqual(romraider.count("<bit "), 5)
         self.assertIn(
             '<bit name="Map 4 - Rolling Launch Enable" position="3"/>',
@@ -252,7 +257,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             ["0x01", "0x02", "0x04", "0x08", "0x10"],
         )
         self.assertTrue(all(
-            flag.find("./EMBEDDEDDATA").get("mmedaddress") == "0xD6224"
+            flag.find("./EMBEDDEDDATA").get("mmedaddress") == "0xD6324"
             for flag in flags
         ))
 
@@ -261,7 +266,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         switches = [
             entry
             for entry in projection.overrides["switch"]
-            if entry["storageaddress"] == "0xD622E"
+            if entry["storageaddress"] == "0xD632E"
         ]
         self.assertEqual(len(switches), 1)
         pedal = switches[0]
@@ -274,7 +279,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertIn(
             'name="Rolling Launch Require Accelerator Pedal"', romraider
         )
-        self.assertIn('storageaddress="0xD622E"', romraider)
+        self.assertIn('storageaddress="0xD632E"', romraider)
 
         image = bytearray([0xFF] * 0x100000)
         xdf, stats = tunerpro.render(
@@ -290,7 +295,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(stats["other_patches"], 1)
         root = ET.fromstring(xdf)
         entry = root.find("./XDFPATCH/XDFPATCHENTRY")
-        self.assertEqual(entry.get("address"), "0xD622E")
+        self.assertEqual(entry.get("address"), "0xD632E")
         self.assertEqual(entry.get("basedata"), "0001")
         self.assertEqual(entry.get("patchdata"), "0000")
 
@@ -308,9 +313,9 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             )
         )
         self.assertIn('name="Rolling Launch Speed Window Width"', romraider)
-        self.assertIn('storageaddress="0xD6232"', romraider)
-        self.assertIn('storageaddress="0xD6238"', romraider)
-        self.assertIn('storageaddress="0xD6242"', romraider)
+        self.assertIn('storageaddress="0xD6332"', romraider)
+        self.assertIn('storageaddress="0xD6338"', romraider)
+        self.assertIn('storageaddress="0xD6342"', romraider)
         self.assertIn('expression="x/10"', romraider)
         self.assertIn('expression="x*10.24"', romraider)
 
@@ -326,15 +331,15 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             [],
         )
         self.assertEqual(stats["calibration_tables"], 3)
-        self.assertIn('mmedaddress="0xD6232"', xdf)
-        self.assertIn('mmedaddress="0xD6242"', xdf)
+        self.assertIn('mmedaddress="0xD6332"', xdf)
+        self.assertIn('mmedaddress="0xD6342"', xdf)
         self.assertIn('equation="X/10"', xdf)
 
     def test_common_definition_applies_both_projections(self):
         self.assertTrue(emit_def.rolling_launch_enabled(self.overrides))
 
     def test_projection_rejects_address_collisions(self):
-        for address in ("000d6224", "000d622e", "000d6228", "000d6242"):
+        for address in ("000d6324", "000d632e", "000d6328", "000d6342", "000d634e"):
             with self.subTest(address=address):
                 maps = deepcopy(self.maps)
                 maps[address] = deepcopy(maps["00001000"])
@@ -345,28 +350,41 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                     )
 
 
+    def test_projection_hides_retired_and_derived_fields(self):
+        projection = self.project()
+        keys = {control.key for control in rolling_launch.ALL_CONTROLS}
+        self.assertFalse(any("rpm_ceiling" in key for key in keys))
+        self.assertFalse(any(key.endswith("_max_trim") for key in keys))
+        hidden = [0xD633C, 0xD633D, 0xD6343]
+        hidden += [slot_address(index, 5) for index in range(5)]
+        hidden += range(self.layout.efficiency.start, self.layout.efficiency.end, 2)
+        for address in hidden:
+            with self.subTest(address=f"{address:#x}"):
+                self.assertNotIn(f"{address:08x}", projection.maps)
+                self.assertNotIn(
+                    f"{address:08x}", projection.overrides["table"]
+                )
+
     def test_map_slot_views_have_exact_width_units_and_reversible_timing_floor(self):
         projection = self.project()
-        self.assertEqual(len(rolling_launch.SLOT_CONTROLS), 15)
+        self.assertEqual(len(rolling_launch.SLOT_CONTROLS), 35)
         for index in range(5):
-            for key, relative, storage, units, expression, inverse in (
-                ("integral_gain", 0, "uint16", "raw", "x", "x"),
-                ("max_trim", 2, "uint8", "deg", "x", "x"),
-                ("floor_command", 3, "uint8", "deg ATDC", "x-110", "x+110"),
-            ):
-                address = f"{0xD6248 + index * 6 + relative:08x}"
+            for key, relative, storage, _label, units, expression, inverse in SLOT_FIELDS:
+                address = f"{slot_address(index, relative):08x}"
                 self.assertEqual(projection.address(f"map_{index + 1}_{key}"), address)
                 model = projection.maps[address]
                 self.assertEqual((model["storagetype"], model["units"], model["scale_expr"], model["to_byte"]),
                                  (storage, units, expression, inverse))
-                if key == "max_trim":
+                if key.startswith("max_trim_"):
                     self.assertIn("refresh_rolling_launch.py", model["note"])
-            efficiency = f"{0xD6248 + index * 6 + 4:08x}"
-            self.assertNotIn(efficiency, projection.maps)
         for command, atdc in ((0, -110), (110, 0), (120, 10), (255, 145)):
             floor = projection.maps[projection.address("map_1_floor_command")]
             self.assertEqual(eval(floor["scale_expr"], {"__builtins__": {}}, {"x": command}), atdc)
             self.assertEqual(eval(floor["to_byte"], {"__builtins__": {}}, {"x": atdc}), command)
+        for native, rpm in ((0, 0), (240, 3000), (32767, 409587.5)):
+            launch = projection.maps[projection.address("map_1_launch_rpm_native")]
+            self.assertEqual(eval(launch["scale_expr"], {"__builtins__": {}}, {"x": native}), rpm)
+            self.assertEqual(eval(launch["to_byte"], {"__builtins__": {}}, {"x": rpm}), native)
 
     def test_both_formats_render_every_slot_and_hide_derived_efficiency(self):
         projection = self.project()
@@ -381,11 +399,15 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             projection.overrides, {}, [], [],
         )
         root = ET.fromstring(xdf)
-        self.assertEqual(stats["calibration_tables"], 15)
+        self.assertEqual(stats["calibration_tables"], 35)
+        efficiency = f"0x{self.layout.efficiency.start:X}"
+        self.assertNotIn(f'storageaddress="{efficiency}"', ET.tostring(xml, encoding="unicode"))
+        self.assertNotIn(f'mmedaddress="{efficiency}"', xdf)
         for index in range(5):
-            for label, relative, bits in (("Integral Gain", 0, 16), ("Maximum Trim", 2, 8), ("Timing Floor", 3, 8)):
+            for _key, relative, storage, label, *_ in SLOT_FIELDS:
+                bits = 16 if storage == "uint16" else 8
                 name = f"Rolling Launch Map {index + 1} {label}"
-                address = f"0x{0xD6248 + index * 6 + relative:X}"
+                address = f"0x{slot_address(index, relative):X}"
                 table = next(t for t in xml.findall("table") if t.get("name") == name)
                 self.assertEqual(table.get("storageaddress"), address)
                 table = next(t for t in root.findall("XDFTABLE") if t.findtext("title") == name)

@@ -1,11 +1,13 @@
 """Definition projection for the exact-family Rolling Launch configuration.
 
-The runtime stores its head controls and five map slots in a validated schema-5
+The runtime stores its head controls and five map slots in a validated schema-6
 record. This module projects the head and logical slot fields into paired
-editor models backed by the canonical executable layout. The derived slot
-efficiency stays hidden and is refreshed from F after editing. The signed
-target-speed offset, coolant maximum, and run and rearm periods stay in the
-build profile. This module does not write definitions or ROM images.
+editor models backed by the canonical executable layout. Slot addresses derive
+from the configuration address, the slot offset, and the slot stride. The
+efficiency table derived from F and the reserved fields stay hidden; the
+efficiency table is refreshed from F after editing. The signed target-speed
+offset, coolant maximum, and run and rearm periods stay in the build profile.
+This module does not write definitions or ROM images.
 """
 
 from __future__ import annotations
@@ -60,22 +62,23 @@ CONTROLS = (
     ),
     Control(
         "min_speed", 0x08, "uint16",
-        "Minimum vehicle speed required for Rolling Launch activation; zero "
-        "disables this bound",
+        "Minimum vehicle speed required for Rolling Launch speed-hold "
+        "activation; zero disables this bound",
         "km/h", "x/10", "x*10",
-        SPEED_NOTE + " Activation requires the word at or above this "
-        "inclusive bound.",
+        SPEED_NOTE + " Speed-hold activation requires the word at or above "
+        "this inclusive bound; launch-RPM activation ignores it.",
         "Rolling Launch Minimum Vehicle Speed",
         "Rolling Launch / Activation", 900020, "Minimum vehicle speed",
         "0.0", 0.1, 1,
     ),
     Control(
         "max_speed", 0x0A, "uint16",
-        "Maximum vehicle speed allowed for Rolling Launch activation; zero "
-        "disables this bound",
+        "Maximum vehicle speed allowed for Rolling Launch speed-hold "
+        "activation; zero disables this bound",
         "km/h", "x/10", "x*10",
-        SPEED_NOTE + " Activation requires the word at or below this "
-        "inclusive bound; two nonzero bounds must be ordered.",
+        SPEED_NOTE + " Speed-hold activation requires the word at or below "
+        "this inclusive bound; launch-RPM activation ignores it. Two nonzero "
+        "bounds must be ordered.",
         "Rolling Launch Maximum Vehicle Speed",
         "Rolling Launch / Activation", 900021, "Maximum vehicle speed",
         "0.0", 0.1, 1,
@@ -85,7 +88,8 @@ CONTROLS = (
         "Minimum engine speed required for Rolling Launch activation",
         "RPM", "x*12.5", "x/12.5",
         "The runtime compares the native RPM/12.5 word at 0xFFFF11BC against "
-        "this inclusive minimum.",
+        "this inclusive minimum in both modes. Each map launch RPM must lie "
+        "above it.",
         "Rolling Launch Minimum Engine Speed",
         "Rolling Launch / Activation", 900030, "Minimum engine speed",
         "0", 12.5, 100,
@@ -152,8 +156,9 @@ CONTROLS = (
         "abort_above", 0x1A, "uint8",
         "Speed error above the target that ends a Rolling Launch run",
         "km/h", "x/10", "x*10",
-        "An ACTIVE pass with e above this nonzero bound aborts with "
-        "SPEED_ABOVE_WINDOW.",
+        "An ACTIVE speed-hold pass with e above this nonzero bound aborts "
+        "with SPEED_ABOVE_WINDOW; speed-hold activation outside the window "
+        "is refused.",
         "Rolling Launch Abort Above Target",
         "Rolling Launch / Speed Hold", 900140, "Abort above target",
         "0.0", 0.1, 1,
@@ -162,63 +167,78 @@ CONTROLS = (
         "abort_below", 0x1B, "uint8",
         "Speed error below the target that ends a Rolling Launch run",
         "km/h", "x/10", "x*10",
-        "An ACTIVE pass with e below the negative of this nonzero bound "
-        "aborts with SPEED_BELOW_WINDOW.",
+        "An ACTIVE speed-hold pass with e below the negative of this nonzero "
+        "bound aborts with SPEED_BELOW_WINDOW; speed-hold activation outside "
+        "the window is refused.",
         "Rolling Launch Abort Below Target",
         "Rolling Launch / Speed Hold", 900141, "Abort below target",
         "0.0", 0.1, 1,
-    ),
-    Control(
-        "rpm_ceiling_offset_native", 0x1C, "uint16",
-        "Rolling Launch RPM ceiling above the captured activation RPM",
-        "RPM", "x*12.5", "x/12.5",
-        "Hold mode latches the all-cylinder fuel-cut request when RPM "
-        "exceeds the captured RPM plus this nonzero offset.",
-        "Rolling Launch RPM Ceiling Offset",
-        "Rolling Launch / RPM Ceiling", 900210, "RPM ceiling offset",
-        "0", 12.5, 100,
-    ),
-    Control(
-        "rpm_ceiling_hysteresis_native", 0x23, "uint8",
-        "Rolling Launch RPM ceiling hysteresis below the cut threshold",
-        "RPM", "x*12.5", "x/12.5",
-        "A latched ceiling request holds while RPM exceeds the cut threshold "
-        "minus this hysteresis and releases at or below it. The value must "
-        "be nonzero and must not exceed the ceiling offset.",
-        "Rolling Launch RPM Ceiling Hysteresis",
-        "Rolling Launch / RPM Ceiling", 900211, "RPM ceiling hysteresis",
-        "0", 12.5, 100,
     ),
 )
 
 TRIM_REFRESH_TOOL = "patches/refresh_rolling_launch.py"
 
 
+TRIM_NOTE = (
+    " The trim is latched at activation. The hidden efficiency table derives "
+    "from the F table; after editing F, refresh it with " + TRIM_REFRESH_TOOL +
+    " as documented in patches/rolling-launch.md. Preflash rejects an "
+    "efficiency table that differs from F of the image."
+)
+SLOT_FIELDS = (
+    # key, relative offset, storage, label, units, expr, inverse, format,
+    # fine, coarse, note
+    ("launch_speed_threshold", 8, "uint16", "Launch Speed Threshold",
+     "km/h", "x/10", "x*10", "0.0", 0.1, 1,
+     "Activation selects launch-RPM regulation while the vehicle-speed word "
+     "lies below this threshold and speed hold at or above it. The selected "
+     "mode stays latched for the run. The value must lie in 0.1..6553.5 km/h."),
+    ("launch_rpm_native", 6, "uint16", "Launch RPM",
+     "RPM", "x*12.5", "x/12.5", "0", 12.5, 100,
+     "Target engine speed of launch-RPM regulation. With soft width zero, "
+     "every cylinder is cut at or above it. The native value must lie above "
+     "the minimum engine speed and must not exceed 32767."),
+    ("launch_soft_width_native", 10, "uint16", "Launch Soft Width",
+     "RPM", "x*12.5", "x/12.5", "0", 12.5, 100,
+     "Width of the launch-RPM cut ramp; zero is a hard two-step. With a "
+     "nonzero width the firing fraction falls linearly from full at launch "
+     "RPM minus the width to zero at launch RPM. The lower edge must stay "
+     "above the minimum engine speed."),
+    ("max_trim_rpm", 2, "uint8", "RPM Trim",
+     "deg", "x", "x", "0", 1, 5,
+     "Maximum retard trim of launch-RPM regulation, 0..40 degrees." + TRIM_NOTE),
+    ("integral_gain", 0, "uint16", "Integral Gain",
+     "raw", "x", "x", "0", 1, 5,
+     "Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass "
+     "adds -Ki * speed error to the Q4 integrator before its limit and "
+     "anti-windup gates. Launch-RPM regulation has no integrator."),
+    ("max_trim_speed", 3, "uint8", "Speed-Hold Trim",
+     "deg", "x", "x", "0", 1, 5,
+     "Maximum retard trim of speed hold, 0..40 degrees." + TRIM_NOTE),
+    ("floor_command", 4, "uint8", "Timing Floor",
+     "deg ATDC", "x-110", "x+110", "0", 1, 5,
+     "Latest ignition command of the trim in both modes, command 0..120. "
+     "Timing is 110 - command degrees BTDC, so the editor shows command - "
+     "110 degrees ATDC. Negative ATDC values are before TDC. Ignored when "
+     "the latched trim is zero."),
+)
+
+
 def _slot_controls():
+    stride = struct.calcsize(contract.SLOT_FORMAT)
     controls = []
     for index in range(contract.SLOT_COUNT):
-        offset = contract.SLOT_OFFSET + index * struct.calcsize(contract.SLOT_FORMAT)
+        offset = contract.SLOT_OFFSET + index * stride
         category = f"Rolling Launch / Map {index + 1}"
-        fields = (
-            ("integral_gain", 0, "uint16", "Integral Gain", "raw", "x", "x",
-             "Integral gain Ki, 0..32767. Each active pass adds -Ki * speed "
-             "error to the Q4 integrator before its limit and anti-windup gates."),
-            ("max_trim", 2, "uint8", "Maximum Trim", "deg", "x", "x",
-             "Maximum retard trim, 0..40 degrees. After editing this value or "
-             "the F table, refresh the hidden efficiency with " + TRIM_REFRESH_TOOL +
-             " as documented in patches/rolling-launch.md. The command uses F "
-             "of the edited image; preflash rejects an inconsistent efficiency."),
-            ("floor_command", 3, "uint8", "Timing Floor", "deg ATDC", "x-110", "x+110",
-             "Latest ignition command of the trim. Timing is 110 - command "
-             "degrees BTDC, so the editor shows command - 110 degrees ATDC. "
-             "Negative ATDC values are before TDC. Ignored when trim is zero."),
-        )
-        for order, (key, relative, storage, label, units, expr, inverse, note) in enumerate(fields):
+        for order, (
+            key, relative, storage, label, units, expr, inverse, fmt, fine,
+            coarse, note,
+        ) in enumerate(SLOT_FIELDS):
             controls.append(Control(
                 f"map_{index + 1}_{key}", offset + relative, storage,
                 f"Map {index + 1} Rolling Launch {label.lower()}", units, expr, inverse,
                 note, f"Rolling Launch Map {index + 1} {label}", category,
-                900300 + index * 10 + order, label, "0", 1, 5,
+                900300 + index * 10 + order, label, fmt, fine, coarse,
             ))
     return tuple(controls)
 

@@ -34,14 +34,15 @@ COMMON_TABLES = {
     "Rolling Launch Integrator Limit": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Above Target": "Rolling Launch / Speed Hold",
     "Rolling Launch Abort Below Target": "Rolling Launch / Speed Hold",
-    "Rolling Launch RPM Ceiling Offset": "Rolling Launch / RPM Ceiling",
-    "Rolling Launch RPM Ceiling Hysteresis": "Rolling Launch / RPM Ceiling",
 }
 
 COMMON_TABLES.update({
     f"Rolling Launch Map {slot} {label}": f"Rolling Launch / Map {slot}"
     for slot in range(1, 6)
-    for label in ("Integral Gain", "Maximum Trim", "Timing Floor")
+    for label in (
+        "Launch Speed Threshold", "Launch RPM", "Launch Soft Width",
+        "RPM Trim", "Integral Gain", "Speed-Hold Trim", "Timing Floor",
+    )
 })
 
 DEFAULT_VISIBLE_TABLES = {
@@ -422,7 +423,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertTrue(all(
             flags[f"Map {slot} - Rolling Launch Enable"]
             .find("./EMBEDDEDDATA")
-            .get("mmedaddress") == "0xD6224"
+            .get("mmedaddress") == "0xD6324"
             for slot in range(1, 6)
         ))
         self.assertNotIn(
@@ -617,7 +618,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                     self.assertEqual(int(entry.get("datasize"), 16), len(patchdata))
                     runtime_controls = {
                         "Rolling Launch Require Accelerator Pedal": (
-                            0xD622E,
+                            0xD632E,
                             b"\x00\x01",
                             b"\x00\x00",
                         ),
