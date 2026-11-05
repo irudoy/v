@@ -446,6 +446,59 @@ def test_state_records_have_exact_reused_offsets(calibration, inputs, table):
         rl.decode_state(damaged_base, ext)
 
 
+@pytest.mark.parametrize("block,size", [("base", 44), ("extension", 32)])
+def test_named_state_fields_own_every_byte_exactly_once(block, size):
+    counts = [0]*size
+    names = []
+    for name, offset, fmt in rl.STATE_FIELDS[block]:
+        width = struct.calcsize(">"+fmt)
+        assert 0 <= offset < offset+width <= size
+        assert offset % width == 0
+        names.append(name)
+        for byte in range(offset, offset+width):
+            counts[byte] += 1
+    assert len(names) == len(set(names))
+    assert counts == [1]*size
+    assert rl.BASE_RESERVED_FIELDS == (("reserved_1f", 0x1F, "B"),)
+
+
+def test_telemetry_views_have_named_scalar_sources():
+    base = {name: (offset, fmt) for name, offset, fmt in rl.BASE_COUNTER_FIELDS}
+    ext = {name: (offset, fmt) for name, offset, fmt in rl.EXTENSION_VIEW_FIELDS}
+    assert base == {"quiet_events": (0x1C, "B"), "cut_counter": (0x1D, "B")}
+    assert ext == {
+        "wire_efficiency": (0x0E, "H"), "consumed_q_sum": (0x10, "I"),
+        "eligible_event_counter": (0x18, "H"),
+        "wire_mode_trim": (0x1E, "B"), "wire_status": (0x1F, "B"),
+    }
+
+
+def test_codec_uses_view_maps_for_both_directions(calibration, inputs, table, monkeypatch):
+    runtime = rl.ignition_step(activate(calibration, replace(inputs, speed=0), table),
+                               115, calibration, table)
+    spark = rl.SparkCutState(quiet_events=7, cut_count=9,
+                             consumed_q_sum=0x12345678, eligible_event_counter=0xABCD)
+    # Exchange two equal-width views to detect any literal-offset codec path.
+    moved = tuple((name, 0x1F if name == "wire_mode_trim" else
+                   0x1E if name == "wire_status" else offset, fmt)
+                  for name, offset, fmt in rl.EXTENSION_VIEW_FIELDS)
+    monkeypatch.setattr(rl, "EXTENSION_VIEW_FIELDS", moved)
+    base, extension = rl.encode_state(runtime, spark)
+    assert runtime.wire_mode_trim != runtime.wire_status
+    assert extension[0x1F] == runtime.wire_mode_trim
+    assert extension[0x1E] == runtime.wire_status
+    assert rl.decode_state(base, extension) == (runtime, spark)
+
+
+@pytest.mark.parametrize("changes", [
+    {"quiet_events": 1.5}, {"cut_count": 1.5}, {"consumed_q_sum": 1.5},
+    {"eligible_event_counter": 1.5}, {"accumulators": (1.5, 0, 0, 0, 0, 0)},
+])
+def test_field_maps_do_not_coerce_non_integer_event_state(changes):
+    with pytest.raises(struct.error):
+        rl.encode_state(rl.RuntimeState(), replace(rl.SparkCutState(), **changes))
+
+
 def test_no_current_fuel_control_api():
     for cls in (rl.Slot, rl.Calibration, rl.Inputs, rl.RuntimeState):
         assert not any("fuel" in field.name or "ceiling" in field.name for field in fields(cls))

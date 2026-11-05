@@ -28,8 +28,6 @@ PREVIOUS_CONFIG_SIZE = 72
 TRIM_MAX = 40
 EFFICIENCY_TABLE_SIZE = 82
 ENGINE_STATE_SIZE = 28
-# The activation trim at base+0x1E is outside the engine clear prefix.
-ENGINE_EXTRA_CLEAR_OFFSETS = (0x1E,)
 STATE_SIZE = 44
 EXTENSION_SIZE = 32
 U_ONE = 1000
@@ -835,6 +833,19 @@ BASE_STATE_FIELDS = (
     ("cut_fraction", 0x1A, "H"),
     ("active_max_trim", 0x1E, "B"),
 )
+BASE_COUNTER_FIELDS = (
+    ("quiet_events", 0x1C, "B"), ("cut_counter", 0x1D, "B"),
+)
+BASE_ACCUMULATOR_FIELDS = tuple(
+    (f"accumulator_{index+1}", 0x20 + 2*index, "H")
+    for index in range(SPARK_CYLINDER_COUNT)
+)
+BASE_RESERVED_FIELDS = (("reserved_1f", 0x1F, "B"),)
+# Runtime-owned bytes beyond the contiguous engine prefix need an extra clear.
+ENGINE_EXTRA_CLEAR_OFFSETS = tuple(
+    offset for _name, offset, _fmt in BASE_STATE_FIELDS
+    if offset >= ENGINE_STATE_SIZE
+)
 EXTENSION_FIELDS = (
     ("regulator_kind", 0x00, "B"), ("input_status", 0x01, "B"),
     ("control_error", 0x02, "h"), ("rpm_sample_native", 0x04, "H"),
@@ -845,6 +856,27 @@ EXTENSION_FIELDS = (
     ("law_output", 0x16, "H"), ("cancel_speed_capture", 0x1A, "H"),
     ("selected_target", 0x1C, "H"),
 )
+EXTENSION_VIEW_FIELDS = (
+    ("wire_efficiency", 0x0E, "H"), ("consumed_q_sum", 0x10, "I"),
+    ("eligible_event_counter", 0x18, "H"),
+    ("wire_mode_trim", 0x1E, "B"), ("wire_status", 0x1F, "B"),
+)
+EXTENSION_EVENT_FIELD_NAMES = frozenset(("consumed_q_sum", "eligible_event_counter"))
+STATE_FIELDS = {
+    "base": (BASE_STATE_FIELDS + BASE_COUNTER_FIELDS
+             + BASE_ACCUMULATOR_FIELDS + BASE_RESERVED_FIELDS),
+    "extension": EXTENSION_FIELDS + EXTENSION_VIEW_FIELDS,
+}
+
+
+def _pack_fields(buffer, fields, values):
+    for name, offset, fmt in fields:
+        struct.pack_into(">"+fmt, buffer, offset, values[name])
+
+
+def _unpack_fields(buffer, fields):
+    return {name: struct.unpack_from(">"+fmt, buffer, offset)[0]
+            for name, offset, fmt in fields}
 
 
 def encode_state(runtime, spark):
@@ -853,14 +885,19 @@ def encode_state(runtime, spark):
         raise ValueError("invalid runtime state")
     base, extension = bytearray(STATE_SIZE), bytearray(EXTENSION_SIZE)
     for fields, buffer in ((BASE_STATE_FIELDS, base), (EXTENSION_FIELDS, extension)):
-        for name, offset, fmt in fields:
-            struct.pack_into(">"+fmt, buffer, offset, int(getattr(runtime, name)))
-    struct.pack_into(">BB", base, 0x1C, spark.quiet_events, spark.cut_count)
-    struct.pack_into(">6H", base, 0x20, *spark.accumulators)
-    struct.pack_into(">H", extension, 0x0E, runtime.wire_efficiency)
-    struct.pack_into(">I", extension, 0x10, spark.consumed_q_sum)
-    struct.pack_into(">H", extension, 0x18, spark.eligible_event_counter)
-    struct.pack_into(">BB", extension, 0x1E, runtime.wire_mode_trim, runtime.wire_status)
+        _pack_fields(buffer, fields, {name: getattr(runtime, name) for name, _offset, _fmt in fields})
+    _pack_fields(base, BASE_COUNTER_FIELDS,
+                 {"quiet_events": spark.quiet_events, "cut_counter": spark.cut_count})
+    if len(spark.accumulators) != len(BASE_ACCUMULATOR_FIELDS):
+        raise ValueError("actuator state must contain six accumulators")
+    _pack_fields(base, BASE_ACCUMULATOR_FIELDS,
+                 {name: value for (name, _offset, _fmt), value
+                  in zip(BASE_ACCUMULATOR_FIELDS, spark.accumulators)})
+    _pack_fields(base, BASE_RESERVED_FIELDS,
+                 {name: 0 for name, _offset, _fmt in BASE_RESERVED_FIELDS})
+    _pack_fields(extension, EXTENSION_VIEW_FIELDS,
+                 {name: getattr(spark if name in EXTENSION_EVENT_FIELD_NAMES else runtime, name)
+                  for name, _offset, _fmt in EXTENSION_VIEW_FIELDS})
     return bytes(base), bytes(extension)
 
 
@@ -869,20 +906,23 @@ def decode_state(base, extension):
         raise ValueError("runtime records must contain 44 and 32 bytes")
     values = {}
     for fields, buffer in ((BASE_STATE_FIELDS, base), (EXTENSION_FIELDS, extension)):
-        values.update((name, struct.unpack_from(">"+fmt, buffer, offset)[0])
-                      for name, offset, fmt in fields)
+        values.update(_unpack_fields(buffer, fields))
     if values["actuation_ready"] not in (0, 1):
         raise ValueError("invalid actuation-ready byte")
     values["actuation_ready"] = bool(values["actuation_ready"])
     runtime = RuntimeState(**values)
-    quiet, count = struct.unpack_from(">BB", base, 0x1C)
-    accumulators = struct.unpack_from(">6H", base, 0x20)
-    if (base[0x1F] or not _state_is_structurally_valid(runtime)
-            or struct.unpack_from(">H", extension, 0x0E)[0] != runtime.wire_efficiency
-            or extension[0x1E] != runtime.wire_mode_trim
-            or extension[0x1F] != runtime.wire_status):
+    counters = _unpack_fields(base, BASE_COUNTER_FIELDS)
+    accumulator_values = _unpack_fields(base, BASE_ACCUMULATOR_FIELDS)
+    reserved = _unpack_fields(base, BASE_RESERVED_FIELDS)
+    views = _unpack_fields(extension, EXTENSION_VIEW_FIELDS)
+    if (any(reserved.values()) or not _state_is_structurally_valid(runtime)
+            or any(value != getattr(runtime, name) for name, value in views.items()
+                   if name not in EXTENSION_EVENT_FIELD_NAMES)):
         raise ValueError("invalid runtime record or derived wire view")
-    spark = SparkCutState(quiet, count, tuple(accumulators),
-                          struct.unpack_from(">I", extension, 0x10)[0],
-                          struct.unpack_from(">H", extension, 0x18)[0])
+    spark = SparkCutState(
+        quiet_events=counters["quiet_events"], cut_count=counters["cut_counter"],
+        accumulators=tuple(accumulator_values[name] for name, _offset, _fmt in BASE_ACCUMULATOR_FIELDS),
+        consumed_q_sum=views["consumed_q_sum"],
+        eligible_event_counter=views["eligible_event_counter"],
+    )
     return runtime, spark
