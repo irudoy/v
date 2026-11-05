@@ -11,6 +11,8 @@ from patches import apply_can_telemetry
 from patches import apply_rolling_launch
 from patches import jk08a_checksums as checksums
 from patches import map_switching_compose as composer
+from patches import rolling_launch
+from patches import rolling_launch_compose
 from patches import map_switching_layout as layout_model
 from tools.mapkit import rom as romkit
 
@@ -237,7 +239,10 @@ class ApplyMapSwitchingTest(unittest.TestCase):
 
     def test_each_cli_refuses_foreign_md5_before_publishing_a_rom(self):
         rolling_result = apply_rolling_launch.patch_image(
-            self.result.data, expected_source_sha256=patcher.sha256(self.result.data)
+            self.result.data,
+            calibration=rolling_launch.Calibration(),
+            efficiency=rolling_launch_compose.efficiency_table(self.result.data),
+            expected_source_sha256=patcher.sha256(self.result.data),
         )
         telemetry_result = apply_can_telemetry.patch_image(rolling_result.data)
         for module, source, result in (
@@ -389,7 +394,7 @@ class ArtifactPublicationTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             alias = Path(directory) / "stock"
             alias.symlink_to(STOCK.parent, target_is_directory=True)
-            for module in (patcher, apply_rolling_launch, apply_can_telemetry):
+            for module in (patcher, apply_can_telemetry):
                 for source in (STOCK, alias / STOCK.name):
                     with self.subTest(module=module.__name__, source=source):
                         with self.assertRaisesRegex(patcher.PatchError, "explicit --output"):

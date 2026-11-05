@@ -72,7 +72,6 @@ def write_offsets(target):
         ranges += rolling_launch_compose.composition_write_ranges(
             target.rolling_layout
         )
-        ranges += (target.rolling_layout.efficiency,)
     ranges += can_telemetry_compose.composition_write_ranges(
         target.telemetry_layout
     )

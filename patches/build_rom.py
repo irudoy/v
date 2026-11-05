@@ -103,11 +103,10 @@ ROLLING_PROFILE_KEYS = frozenset(
 )
 # A single trim no longer names the mode it applies to.
 AMBIGUOUS_ROLLING_KEYS = frozenset(("max_trim",))
-# The stock torque-efficiency curve F of the exact layout: 16 u8 values over
-# the u8 retard axis 0..40, with e(z) = 1 - F(z) / 256.
-TRIM_TABLE_ADDRESS = 0x00011D24
-TRIM_AXIS_ADDRESS = 0x0001199E
-TRIM_POINTS = 16
+# The F table and its axis, which the composition derives E from.
+TRIM_TABLE_ADDRESS = rolling_launch_compose.TRIM_TABLE_ADDRESS
+TRIM_AXIS_ADDRESS = rolling_launch_compose.TRIM_AXIS_ADDRESS
+TRIM_POINTS = rolling_launch_compose.TRIM_POINTS
 MODE_NAMES = {
     "observe": rolling_launch.Mode.OBSERVE,
     "hold": rolling_launch.Mode.HOLD,
@@ -274,42 +273,13 @@ def _require_exact_keys(table, expected, context):
         )
 
 
-def trim_table_value(image, trim):
-    """Return F(trim), linear between the axis points and truncated."""
-    axis = image[TRIM_AXIS_ADDRESS : TRIM_AXIS_ADDRESS + TRIM_POINTS]
-    table = image[TRIM_TABLE_ADDRESS : TRIM_TABLE_ADDRESS + TRIM_POINTS]
-    if (
-        len(axis) != TRIM_POINTS
-        or len(table) != TRIM_POINTS
-        or axis[0] != 0
-        or axis[-1] < rolling_launch.TRIM_MAX
-        or any(left >= right for left, right in zip(axis, axis[1:]))
-    ):
-        raise BuildError("trim efficiency axis is not 0..40 and increasing")
-    if not 0 <= trim <= axis[-1]:
-        raise BuildError(f"trim {trim} lies outside the efficiency axis")
-    for index in range(TRIM_POINTS - 1):
-        low, high = axis[index], axis[index + 1]
-        if low <= trim <= high:
-            return table[index] + (
-                (table[index + 1] - table[index]) * (trim - low) // (high - low)
-            )
-    raise AssertionError("axis search is exhaustive")
-
-
 def efficiency_table(image):
     """Return the derived efficiency table E of ``image``: E[0] = 1000 and
     E[z] = (256 - F(z)) * 1000 // 256 for every applied trim z = 1..40."""
-    table = rolling_launch.EfficiencyTable((
-        rolling_launch.U_ONE,
-        *(
-            rolling_launch.trim_efficiency(trim_table_value(image, trim))
-            for trim in range(1, rolling_launch.TRIM_MAX + 1)
-        ),
-    ))
-    if not table.is_valid():
-        raise BuildError("derived trim efficiency table is invalid")
-    return table
+    try:
+        return rolling_launch_compose.efficiency_table(image)
+    except ValueError as error:
+        raise BuildError(f"derived trim efficiency table is invalid: {error}") from error
 
 
 def write_efficiency_table(data, layout, image=None):
@@ -567,9 +537,7 @@ def _component_ranges(map_layout, launch_layout, telemetry_layout=None):
         + (
             ()
             if launch_layout is None
-            # The builder also writes the efficiency table derived from F.
             else rolling_launch_compose.composition_write_ranges(launch_layout)
-            + (launch_layout.efficiency,)
         )
         + can_telemetry_compose.composition_write_ranges(telemetry_layout)
     )

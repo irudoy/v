@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Compose the validated JK08A Rolling Launch stage for the ROM builder.
 
-The production profile is deliberately narrow: mode 1 (hold) on Map 1 only,
-with the controller defaults of the reference model. The input must be the
-exact complete twelve-family map-switching stage-20 endpoint derived from the
-hardware-readback lookup stage and using the target-vehicle 0x20
-released-button code. Machine payloads, hooks, diagnostics, configuration,
-checksums, and the closed write set are all revalidated before an output can
-be written.
+The caller supplies the calibration record and the efficiency table E that
+the builder derives from F. The input must be the exact complete twelve-family
+map-switching stage-20 endpoint derived from the hardware-readback lookup
+stage and using the target-vehicle 0x20 released-button code. Machine
+payloads, hooks, diagnostics, configuration, efficiency, checksums, and the
+closed write set are all revalidated before an output can be written.
 """
 
 from __future__ import annotations
@@ -35,7 +34,6 @@ from patches import rolling_launch_layout as rolling_layout_model
 from patches import rom_checksums
 
 
-PROFILE_NAME = "hold-map1-test"
 HARDWARE_RESULTS_PATH = Path(__file__).with_name("hardware-results.toml")
 
 
@@ -67,10 +65,6 @@ def _load_base_digest():
 
 # The map-switching endpoint that the Rolling Launch stage is applied to.
 LOCKED_MAP_SWITCHING_SOURCE_SHA256 = _load_base_digest()
-PROFILE_CALIBRATION = rolling_launch.Calibration(
-    mode=rolling_launch.Mode.HOLD,
-    enable_mask=0x01,
-)
 
 
 class PatchError(ValueError):
@@ -80,8 +74,8 @@ class PatchError(ValueError):
 @dataclass(frozen=True)
 class PatchResult:
     data: bytes
-    profile: str
     configuration: bytes
+    efficiency: bytes
     source_sha256: str
     output_sha256: str
     source_checksums: rom_checksums.ChecksumValues
@@ -101,10 +95,6 @@ def sha256(data):
 
 def md5(data):
     return hashlib.md5(data).hexdigest()
-
-
-def default_output_path(source):
-    return map_runtime.default_output_path(source, f"rolling-launch-{PROFILE_NAME}")
 
 
 def _read_integer(data, address, width, byte_order):
@@ -198,8 +188,6 @@ def _validate_source(
 
 
 def _validate_calibration(calibration):
-    if calibration is None:
-        calibration = PROFILE_CALIBRATION
     if not isinstance(calibration, rolling_launch.Calibration):
         raise PatchError("calibration must be a Rolling Launch Calibration")
     if not calibration.is_valid():
@@ -248,7 +236,8 @@ def _validate_final_preservation(
 def patch_image(
     source,
     *,
-    calibration=None,
+    calibration,
+    efficiency,
     map_layout=None,
     rolling_layout=None,
     map_payloads=None,
@@ -257,7 +246,10 @@ def patch_image(
     expected_source_sha256=LOCKED_MAP_SWITCHING_SOURCE_SHA256,
     checksum_layout=None,
 ):
-    """Return one checksum-valid Rolling Launch hold image after strict checks."""
+    """Return one checksum-valid Rolling Launch image after strict checks.
+
+    ``efficiency`` is the table E that the builder derives from F of its
+    stock input."""
     map_layout = map_layout or map_layout_model.load_layout()
     rolling_layout = rolling_layout or rolling_layout_model.load_layout()
     checksum_layout = checksum_layout or canonical_checksums.LAYOUT
@@ -296,8 +288,14 @@ def patch_image(
     )
     calibration, configuration = _validate_calibration(calibration)
     try:
+        efficiency = rolling_launch_compose._validate_efficiency(
+            rolling_layout, efficiency
+        )
+    except (TypeError, ValueError) as error:
+        raise PatchError(f"Rolling Launch efficiency table is invalid: {error}") from error
+    try:
         composed = rolling_launch_compose._build_expected(
-            rolling_layout, source, rolling_payloads, configuration
+            rolling_layout, source, rolling_payloads, configuration, efficiency
         )
         (
             composition_changed,
@@ -310,6 +308,7 @@ def patch_image(
             composed,
             rolling_payloads,
             configuration,
+            efficiency,
         )
         patched = bytes(rom_checksums.recalculate(
             composed, checksum_layout
@@ -335,13 +334,15 @@ def patch_image(
         rolling_layout.configuration.start : rolling_layout.configuration.end
     ] != configuration:
         raise PatchError("final Rolling Launch configuration differs")
+    if patched[rolling_layout.efficiency.start : rolling_layout.efficiency.end] != efficiency:
+        raise PatchError("final Rolling Launch efficiency table differs")
 
     output_digest = sha256(patched)
 
     return PatchResult(
         data=patched,
-        profile=PROFILE_NAME,
         configuration=configuration,
+        efficiency=efficiency,
         source_sha256=source_digest,
         output_sha256=output_digest,
         source_checksums=source_verification.stored,
@@ -354,7 +355,3 @@ def patch_image(
         code_entry_count=code_entry_count,
         diagnostic_count=len(rolling_layout.diagnostics),
     )
-
-
-def _format_checksums(values):
-    return ",".join(f"{name}={value:#x}" for name, value in values.items())

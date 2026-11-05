@@ -2,9 +2,10 @@
 """Compose the JK08A Rolling Launch verification fixture in memory.
 
 The deterministic base is the complete SHA-locked map-switching composition.
-Rolling Launch assembly spans, hooks, diagnostic DID pointers, and one validated
-configuration record are applied through a closed write set. Stored checksum
-fields remain unchanged and this module has no output-file operation.
+Rolling Launch assembly spans, hooks, diagnostic DID pointers, one validated
+configuration record, the efficiency table derived from F, the erased ranges,
+and the restored stock words are applied through a closed write set. Stored
+checksum fields remain unchanged and this module has no output-file operation.
 """
 
 from __future__ import annotations
@@ -29,6 +30,13 @@ from patches import rolling_launch_assembly
 from patches import rolling_launch_layout
 
 
+# The stock torque-efficiency curve F of the exact layout: 16 u8 values over
+# the u8 retard axis 0..40, with e(z) = 1 - F(z) / 256.
+TRIM_TABLE_ADDRESS = 0x00011D24
+TRIM_AXIS_ADDRESS = 0x0001199E
+TRIM_POINTS = 16
+
+
 @dataclass(frozen=True)
 class Composition:
     data: bytes
@@ -49,6 +57,15 @@ def build_base_composition():
     return map_switching_compose.compose(layout=layout, blobs=payloads)
 
 
+def efficiency_table(image):
+    """Return the efficiency table E derived from F of ``image``: E[0] = 1000
+    and E[z] = (256 - F(z)) * 1000 // 256 for every applied trim z = 1..40,
+    with F linear between its axis points and truncated."""
+    axis = image[TRIM_AXIS_ADDRESS : TRIM_AXIS_ADDRESS + TRIM_POINTS]
+    values = image[TRIM_TABLE_ADDRESS : TRIM_TABLE_ADDRESS + TRIM_POINTS]
+    return rolling_launch.EfficiencyTable.from_curve(tuple(axis), tuple(values))
+
+
 def composition_write_ranges(layout):
     """Return the complete non-overlapping Rolling Launch write set."""
     ranges = [
@@ -58,10 +75,15 @@ def composition_write_ranges(layout):
         for unit in layout.assembly_units
     ]
     ranges.append(layout.configuration)
+    ranges.append(layout.efficiency)
     ranges.extend(layout.retired_configuration_spans)
+    ranges.extend(layout.erased_rom_ranges)
     ranges.extend(map_switching_layout.AddressRange(
         hook.address, hook.address + hook.width, f"hook.{hook.key}"
     ) for hook in layout.hooks)
+    ranges.extend(map_switching_layout.AddressRange(
+        item.address, item.address + item.width, f"restored.{item.key}"
+    ) for item in layout.restored_words)
     ranges.extend(map_switching_layout.AddressRange(
         item.pointer_address,
         item.pointer_address + 4,
@@ -91,6 +113,19 @@ def _validate_configuration(layout, configuration):
     return configuration
 
 
+def _validate_efficiency(layout, efficiency):
+    if isinstance(efficiency, rolling_launch.EfficiencyTable):
+        efficiency = efficiency.to_bytes()
+    efficiency = bytes(efficiency)
+    if len(efficiency) != layout.efficiency.size:
+        raise ValueError(
+            f"efficiency table is {len(efficiency)} bytes, expected "
+            f"{layout.efficiency.size}"
+        )
+    rolling_launch.EfficiencyTable.from_bytes(efficiency)
+    return efficiency
+
+
 def _validated_blobs(layout, blobs):
     expected = set(layout.assembly_unit_by_key)
     if set(blobs) != expected:
@@ -107,13 +142,18 @@ def _validated_blobs(layout, blobs):
     }
 
 
-def _build_expected(layout, base, blobs, configuration):
+def _build_expected(layout, base, blobs, configuration, efficiency):
     data = bytearray(base)
     for unit in layout.assembly_units:
         data[unit.span.start : unit.span.end] = blobs[unit.key]
     data[layout.configuration.start : layout.configuration.end] = configuration
-    for retired in layout.retired_configuration_spans:
-        data[retired.start : retired.end] = bytes([0xFF]) * retired.size
+    data[layout.efficiency.start : layout.efficiency.end] = efficiency
+    for erased in (*layout.retired_configuration_spans, *layout.erased_rom_ranges):
+        data[erased.start : erased.end] = bytes([0xFF]) * erased.size
+    for item in layout.restored_words:
+        data[item.address : item.address + item.width] = (
+            item.value.to_bytes(item.width, layout.byte_order)
+        )
     for hook in layout.hooks:
         data[hook.address : hook.address + hook.width] = (
             hook.replacement.to_bytes(hook.width, layout.byte_order)
@@ -179,10 +219,10 @@ def _validate_instruction_placement(layout, composed, blobs):
     return instructions, len(entries)
 
 
-def _validate_composed(layout, base, composed, blobs, configuration):
+def _validate_composed(layout, base, composed, blobs, configuration, efficiency):
     if len(composed) != len(base):
         raise ValueError("composed image length differs from its base")
-    expected = _build_expected(layout, base, blobs, configuration)
+    expected = _build_expected(layout, base, blobs, configuration, efficiency)
     if composed != expected:
         first = next(
             offset
@@ -221,8 +261,12 @@ def compose(
     base=None,
     blobs=None,
     configuration=None,
+    efficiency=None,
 ):
-    """Return a strictly validated, non-flashable in-memory composition."""
+    """Return a strictly validated, non-flashable in-memory composition.
+
+    Without ``efficiency`` the composition derives E from F of the base, as
+    the builder does from the stock image."""
     layout = layout or rolling_launch_layout.load_layout()
     if base is None:
         base = build_base_composition().data
@@ -235,9 +279,12 @@ def compose(
         layout,
         layout.default_configuration if configuration is None else configuration,
     )
-    data = _build_expected(layout, base, blobs, configuration)
+    efficiency = _validate_efficiency(
+        layout, efficiency_table(base) if efficiency is None else efficiency
+    )
+    data = _build_expected(layout, base, blobs, configuration, efficiency)
     changed, permitted, instructions, entries = _validate_composed(
-        layout, base, data, blobs, configuration
+        layout, base, data, blobs, configuration, efficiency
     )
     output_sha256 = hashlib.sha256(data).hexdigest()
     if (
@@ -267,8 +314,11 @@ def validate_composed(
     composed=None,
     blobs=None,
     configuration=None,
+    efficiency=None,
 ):
-    """Validate caller-supplied bytes against the deterministic fixture."""
+    """Validate caller-supplied bytes against the deterministic fixture.
+
+    Without ``efficiency`` the fixture derives E from F of the base."""
     layout = layout or rolling_launch_layout.load_layout()
     if base is None:
         base = build_base_composition().data
@@ -283,9 +333,12 @@ def validate_composed(
         layout,
         layout.default_configuration if configuration is None else configuration,
     )
+    efficiency = _validate_efficiency(
+        layout, efficiency_table(base) if efficiency is None else efficiency
+    )
     composed = bytes(composed)
     changed, permitted, instructions, entries = _validate_composed(
-        layout, base, composed, blobs, configuration
+        layout, base, composed, blobs, configuration, efficiency
     )
     output_sha256 = hashlib.sha256(composed).hexdigest()
     if (

@@ -14,6 +14,12 @@ from patches import rolling_launch_compose
 from patches import rolling_launch_layout as rolling_layout_model
 
 
+CALIBRATION = rolling_launch.Calibration(
+    mode=rolling_launch.Mode.HOLD,
+    enable_mask=0x01,
+)
+
+
 class ApplyRollingLaunchTest(unittest.TestCase):
     def test_stage_module_does_not_expose_a_command_entry_point(self):
         self.assertFalse(hasattr(patcher, "main"))
@@ -30,8 +36,11 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             rolling_launch_compose.build_base_composition().data
         ))
         cls.source_sha256 = patcher.sha256(cls.source)
+        cls.efficiency = rolling_launch_compose.efficiency_table(cls.source)
         cls.result = patcher.patch_image(
             cls.source,
+            calibration=CALIBRATION,
+            efficiency=cls.efficiency,
             map_layout=cls.map_layout,
             rolling_layout=cls.rolling_layout,
             map_payloads=cls.map_payloads,
@@ -41,6 +50,8 @@ class ApplyRollingLaunchTest(unittest.TestCase):
         )
 
     def patch(self, source, **kwargs):
+        kwargs.setdefault("calibration", CALIBRATION)
+        kwargs.setdefault("efficiency", self.efficiency)
         return patcher.patch_image(
             source,
             map_layout=self.map_layout,
@@ -54,20 +65,40 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             **kwargs,
         )
 
-    def test_profile_is_map1_only_hold_with_default_controller(self):
-        calibration = rolling_launch.Calibration.from_bytes(
-            self.result.configuration
-        )
-        self.assertEqual(self.result.profile, patcher.PROFILE_NAME)
-        self.assertEqual(calibration.mode, rolling_launch.Mode.HOLD)
-        self.assertEqual(calibration.enable_mask, 0x01)
-        self.assertEqual(calibration.options, rolling_launch.Option(0))
+    def test_configuration_is_the_given_calibration(self):
+        self.assertEqual(self.result.configuration, CALIBRATION.to_bytes())
         self.assertEqual(
-            replace(calibration, mode=rolling_launch.Mode.OBSERVE, enable_mask=0),
-            rolling_launch.Calibration(),
+            rolling_launch.Calibration.from_bytes(self.result.configuration),
+            CALIBRATION,
         )
-        self.assertEqual(calibration.run_timeout_ticks, 781)
-        self.assertEqual(calibration.rearm_ticks, 98)
+
+    def test_stage_requires_the_calibration_and_the_efficiency_table(self):
+        for missing in ("calibration", "efficiency"):
+            with self.subTest(missing=missing):
+                arguments = {"calibration": CALIBRATION, "efficiency": self.efficiency}
+                del arguments[missing]
+                with self.assertRaises(TypeError):
+                    patcher.patch_image(self.source, **arguments)
+
+    def test_stage_writes_the_given_efficiency_table(self):
+        span = self.rolling_layout.efficiency
+        self.assertEqual(
+            self.result.data[span.start : span.end], self.efficiency.to_bytes()
+        )
+        self.assertEqual(self.result.efficiency, self.efficiency.to_bytes())
+        table = rolling_launch.EfficiencyTable((1000, *range(999, 959, -1)))
+        result = self.patch(self.source, efficiency=table)
+        self.assertEqual(result.data[span.start : span.end], table.to_bytes())
+        self.assertTrue(checksums.verify(result.data).valid)
+
+    def test_invalid_efficiency_table_is_rejected(self):
+        table = self.efficiency.to_bytes()
+        for damaged in (table[:-2], bytes(2) + table[2:]):
+            with self.subTest(size=len(damaged)):
+                with self.assertRaisesRegex(
+                    patcher.PatchError, "efficiency table is invalid"
+                ):
+                    self.patch(self.source, efficiency=damaged)
 
     def test_base_identity_is_the_declared_map_switching_endpoint(self):
         digest = patcher.LOCKED_MAP_SWITCHING_SOURCE_SHA256
@@ -106,7 +137,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
                 self.rolling_layout.configuration.start :
                 self.rolling_layout.configuration.end
             ],
-            patcher.PROFILE_CALIBRATION.to_bytes(),
+            CALIBRATION.to_bytes(),
         )
 
     def test_closed_write_set_contains_only_payload_and_checksum_bytes(self):
@@ -144,6 +175,8 @@ class ApplyRollingLaunchTest(unittest.TestCase):
         with self.assertRaisesRegex(patcher.PatchError, "source SHA-256"):
             patcher.patch_image(
                 self.source,
+                calibration=CALIBRATION,
+                efficiency=self.efficiency,
                 map_layout=self.map_layout,
                 rolling_layout=self.rolling_layout,
                 map_payloads=self.map_payloads,
@@ -187,7 +220,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.patch(corrupt)
 
     def test_invalid_calibration_is_rejected(self):
-        invalid = replace(patcher.PROFILE_CALIBRATION, enable_mask=0x20)
+        invalid = replace(CALIBRATION, enable_mask=0x20)
         with self.assertRaisesRegex(patcher.PatchError, "calibration is invalid"):
             self.patch(self.source, calibration=invalid)
 
@@ -244,6 +277,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.source,
             self.rolling_payloads,
             self.result.configuration,
+            self.result.efficiency,
         )
         rolling_launch_compose._validate_composed(
             self.rolling_layout,
@@ -251,6 +285,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             composed,
             self.rolling_payloads,
             self.result.configuration,
+            self.result.efficiency,
         )
 
 
