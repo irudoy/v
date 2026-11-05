@@ -4,6 +4,128 @@ schema_version = 4
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
 
 [[target.JK78C.table]]
+id = "request_transition_input_byte_threshold"
+address = 0x00008935
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"
+pointer_bindings = [{ site = 0x00096D78, accessor = 0x00096CE0 }]
+constant_content = true
+name = "Gear Transition Request - Input Byte Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 130
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["byte gate threshold"]
+semantics = "Threshold of hysteretic gate ffff4567.bit7. Compare uint8[ffff1069], augmented by five while the bit is set, against this byte; values at or above the threshold set the bit."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge. The stock 0xFF keeps the hysteretic byte gate clear below an input byte of 0xFF."
+
+[[target.JK78C.table]]
+id = "request_transition_hold_reload"
+address = 0x00008937
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+pointer_bindings = [{ site = 0x00096F5C, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Hold Reload"
+category = "Electronic Throttle Control / Requested Torque"
+order = 132
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["hold reload"]
+semantics = "Byte reloaded into ffff477d on an active state transition. The held-state flag ffff45ca.bit5 remains set while either the active-transition bit or this hold byte is nonzero. The timer's decrementing producer and physical time unit remain unresolved."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_word_gate_threshold"
+address = 0x00009184
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "ca2fd00fa001190744c15c317643ab092e7048ce086a243e2be9437c898de1bb"
+pointer_bindings = [{ site = 0x00096F48, accessor = 0x00096CE0 }]
+constant_content = true
+name = "Gear Transition Request - Input Word Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 131
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["word gate threshold"]
+semantics = "Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), augmented by 50 while the bit is set, against this word. Values at or above the threshold set the bit."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge. The stock 0xFFFF keeps the hysteretic word gate clear below an input word of 0xFFFF."
+
+[[target.JK78C.table]]
+id = "request_transition_error_correction_gain"
+address = 0x00009186
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7"
+pointer_bindings = [{ site = 0x00097400, accessor = 0x00096CE0, offset = 0x2 }]
+name = "Gear Transition Request - Error Correction Gain"
+category = "Electronic Throttle Control / Requested Torque"
+order = 140
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["gain"]
+semantics = "Gain multiplying signed filtered-coordinate error ffff348e when its absolute value does not exceed ROM16[00009188]. The signed product is divided by 128 with truncation toward zero and subtracted from the signed request candidate."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_error_correction_limit"
+address = 0x00009188
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "61d7e4731e7a6546d92e99105ffce332c9ab905311cba8dbad8ac4f3bbc49447"
+pointer_bindings = [{ site = 0x00097400, accessor = 0x00096CE0, offset = 0x4 }]
+name = "Gear Transition Request - Error Correction Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 141
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["absolute error limit"]
+semantics = "Unsigned upper bound on the absolute filtered-coordinate error for the calibrated error-correction subtraction. The gain is read separately from ROM16[00009186]."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_reference_floor"
+address = 0x0000918C
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "2921a11f25dadaa24aa79a548e4e81508c2e5e56af2d833d65e2bcce448ce2f5"
+pointer_bindings = [{ site = 0x00097174, accessor = 0x00096CE0, offset = 0x8 }]
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["reference floor"]
+semantics = "Lower floor applied to the state-scaled word reference after the upper cap from rev_limit_throttle_cut. The resulting word is stored at ffff3492."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
 id = "transient_fuel_additional_surface"
 address = 0x00009B1A
 width = 8
@@ -124,6 +246,88 @@ coarse = 10
 confidence = "code"
 semantics = "Unsigned multiplier in FUN_0007154c. This explicit 8x8 byte lookup supplies one factor of a four-byte product normalized by a right shift of 12. A separately selected word addend is added before the uint16 cap. This target factor replaces the canonical one-dimensional minimum-intake-cam lookup; its physical quantity remains unresolved."
 note = "The active reader uses wrapper 00027ee0 with two explicit eight-byte axes and byte bilinear row stride 8. Coordinates derive from words ffff33a6 and ffff33a4 through helper 00021ce8, subtract 220 and 420 respectively and clamp the signed intermediates to 0..255. Inputs and output retain stored-count presentation; physical input quantities and an engineering output conversion remain unresolved."
+
+[[target.JK78C.table]]
+id = "request_transition_duration_table"
+address = 0x0000B34A
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "cb0488fabc0bab5163545e31c51318743b6a71fed323b726ad310486c27d4952"
+pointer_bindings = [{ site = 0x00096F64, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), using the latched indices of defs/JK78C.vvel.md, section \"Data flow\". The caller shifts both indices left by five and the helper recovers them without interpolation. The unsigned result bounds the saturating elapsed byte ffff3648 while the gear transition is active."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_rate_state_a_above_b"
+address = 0x0000B38A
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x00097190, accessor = 0x00096CE0 }]
+axis_x = 0x0001351F
+axis_y = 0x0001351B
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] >= min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_rate_special_branch"
+address = 0x0000B39A
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x00097184, accessor = 0x00096CE0 }]
+axis_x = 0x0001351F
+axis_y = 0x0001351B
+name = "Gear Transition Request - Rate - Special Branch"
+category = "Electronic Throttle Control / Requested Torque"
+order = 137
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when ffff23be.bit7 is clear and uint16[ffff11fa] exceeds ROM16[0000918e]. Coordinates are min(uint16[ffff10be]>>3,255) and the latched target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
+id = "request_transition_rate_other_state_relation"
+address = 0x0000B3AA
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x00097194, accessor = 0x00096CE0 }]
+axis_x = 0x0001351F
+axis_y = 0x0001351B
+name = "Gear Transition Request - Rate - Current below Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 139
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] < min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
 
 [[target.JK78C.table]]
 id = "vvel_duration_hot_intake_idle"
@@ -324,6 +528,28 @@ coarse = 2.0
 confidence = "code"
 semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00057322, zero at 0x8000 and 0.5 per count, looked up by engine speed and the VVEL load word 0xFFFF238A. With ROM8[0x8957].bit5 set (stock 0x3A), the stage writes 0xFFFFA1E0 = 0.5 * (raw - 0x8000) and centers the trimmed events 0xFFFFA1E4 and 0xFFFFA1E8 at 478 - 0xFFFFA1E0, where 478 = 450 + ROM16[0x8D8E] / 512; with the bit clear, the value adds to 478 - 0.5 * (0xFFFFA1EC + 0xFFFFA1F0). The mode 5 VTC target is 478 minus the mean of the blended events 0xFFFFA1B8 and 0xFFFFA1BC. Stock offsets are 0..120 counts."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the float literals 0.5 at 0x5750C and -16384.0 at 0x57640."
+
+[[target.JK78C.table]]
+id = "request_transition_offset_surface"
+address = 0x0001164E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5fedc0346b07ddc1d5f3c08bb984cb77acb81d121c1d9db37ffe8416972c838a"
+pointer_bindings = [{ site = 0x00096F6C, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Bound Offset"
+category = "Electronic Throttle Control / Requested Torque"
+order = 134
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Implicit word surface read through 00027ddc with min(target-gear index uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", and these coordinates select integer grid points. The low word of the result minus 32768 supplies signed request bound ffff36ec while the duration and gear-transition gates permit it; the disabled value is -32768."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
 
 [[target.JK78C.table]]
 id = "intake_cvtc_duty_hold"
@@ -590,6 +816,26 @@ semantics = "Unsigned-word conversion between the paired shaft-coordinate array 
 note = "Read by the task FUN_00054FD0 at callsites 0x556E2 and 0x55776, by FUN_0005693A at 0x56952 for the filtered actual duration 0xFFFFA180, and by FUN_0004D3CE at 0x4D3F0 and 0x4D40C through the 16-point uint16 wrapper 0x28320. FUN_0004D3CE reaches it as GBR + 0x20 from the literal 0x000156DC at 0x4D58C. The command-word unit is stored raw; DID 0x125C publishes the latched command 0xFFFF443E."
 
 [[target.JK78C.table]]
+id = "request_transition_recovery_decrement"
+address = 0x000158D2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "4c633169d5449c9401033affa9fe7183d8826d6def22e64ce2bad9e227707917"
+pointer_bindings = [{ site = 0x00097418, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Recovery Decrement"
+category = "Electronic Throttle Control / Requested Torque"
+order = 142
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Target Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word recovery array indexed by min(latched target-gear index uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section \"Data flow\". When the selected recovery byte is zero, subtract the unsigned entry from signed state ffff36b0 with a -32768 floor, then publish the maximum of that state and the independently bounded current candidate at ffff36ae. The inactive-transition path forces the recovery byte to zero; the active path uses the target-gear index ffff1077, which can also be zero."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.table]]
 id = "vvel_duration_characteristic"
 address = 0x00015AA2
 width = 16
@@ -805,6 +1051,26 @@ coarse = 1
 confidence = "code"
 semantics = "Load at which the VVEL idle-model stage FUN_00057208 starts to blend toward the high-load event pair, at 100/65536 percent per count and looked up by engine speed. The weight 0xFFFFA1D0 is (load - start) / (end - start), clamped to 0..1, with the VVEL load word 0xFFFF238A and the end curve 0x000162CA. The stage writes 0xFFFFA1C8 = w * upper + (1 - w) * 0xFFFFA1E4 and 0xFFFFA1CC = w * lower + (1 - w) * 0xFFFFA1E8. The reader addresses it at offset 0x20 from the literal 0x000162CA. Stock 61440 = 93.75 % through the eighth point, 57344 and 53248 at the ninth and tenth, and 1 above."
 note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: the float literal 100/65536 at 0x574C0."
+
+[[target.JK78C.table]]
+id = "request_transition_reference_multiplier"
+address = 0x00016464
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "d90bbd9b776f8ae7e236cb3b3fccf4b3af08da955d5db160c730831853465414"
+pointer_bindings = [{ site = 0x00097168, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Reference Multiplier"
+category = "Electronic Throttle Control / Requested Torque"
+order = 135
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word reference multiplier indexed by min(current-gear index uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear index uint8[ffff1077],7). The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\". The low 32-bit product with uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored at ffff3492."
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
 
 [[target.JK78C.table]]
 id = "vvel_duration_cold"
@@ -1109,6 +1375,36 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x-50 degC; proposed editor-grid inverse x+50. Origin: the byte 0xFFFF10F1 at the offset of the oil-temperature DID source 0xFFFF1171 in the scheduler block 0xFFFF1084 and the raw-50 conversion of the JK08A oil-temperature snapshot 0xFFFF2772. Recorded code interpretation: Oil-temperature axis of the settle count 0x00014230, 50..190, read by FUN_000E7FB4 with byte 0xFFFF10F1 and by FUN_000E56D4 with the live byte 0xFFFF1171."
+
+[[target.JK78C.axis]]
+id = "request_transition_rate_state_axis"
+address = 0x0001351B
+length = 4
+storagetype = "uint8"
+values_sha256 = "054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"
+pointer_bindings = [{ site = 0x0009718C, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Rate Target Gear Index Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
+
+[[target.JK78C.axis]]
+id = "request_transition_rate_coordinate_axis"
+address = 0x0001351F
+length = 4
+storagetype = "uint8"
+values_sha256 = "be339b3e97973e5f0ae11d6d28ef1076287b569911fca01bf9614a8de53a54e6"
+pointer_bindings = [{ site = 0x00097188, accessor = 0x00096CE0 }]
+name = "Gear Transition Request - Rate Coordinate Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the latched gear indices do not diverge."
 
 [[target.JK78C.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -1747,6 +2043,128 @@ vvel_duration_throttled_ramp_delay_axis = "The JK78C resolver FUN_000564A4 store
 stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
 
 [[target.1ND0A.table]]
+id = "request_transition_input_byte_threshold"
+address = 0x000089F8
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "f67ab10ad4e4c53121b6a5fe4da9c10ddee905b978d3788d2723d7bfacbe28a9"
+pointer_bindings = [{ site = 0x000ABDAC, accessor = 0x000ABC6E }]
+constant_content = true
+name = "Gear Transition Request - Input Byte Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 130
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["byte gate threshold"]
+semantics = "Threshold of hysteretic gate ffff4567.bit7. Compare uint8[ffff1069], augmented by five while the bit is set, against this byte; values at or above the threshold set the bit."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_hold_reload"
+address = 0x000089FA
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "9652595f37edd08c51dfa26567e6cd76e6fa2709c3e578478ca398d316837a7a"
+pointer_bindings = [{ site = 0x000ABDAC, accessor = 0x000ABC6E, offset = 0x2 }]
+name = "Gear Transition Request - Hold Reload"
+category = "Electronic Throttle Control / Requested Torque"
+order = 132
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["hold reload"]
+semantics = "Byte reloaded into ffff477d on an active state transition. The held-state flag ffff45ca.bit5 remains set while either the active-transition bit or this hold byte is nonzero. The timer's decrementing producer and physical time unit remain unresolved."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_word_gate_threshold"
+address = 0x0000939E
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "d070dc5b8da9aea7dc0f5ad4c29d89965200059c9a0ceca3abd5da2492dcb71d"
+pointer_bindings = [{ site = 0x000ABDB4, accessor = 0x000ABC6E, offset = 0x6 }]
+constant_content = true
+name = "Gear Transition Request - Input Word Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 131
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["word gate threshold"]
+semantics = "Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), augmented by 50 while the bit is set, against this word. Values at or above the threshold set the bit."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_error_correction_gain"
+address = 0x000093A0
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "203fea74fb42ca791709fb384495b3b3386582d330809a1d435b3684f7f630c3"
+pointer_bindings = [{ site = 0x000AC274, accessor = 0x000ABC6E, offset = 0x8 }]
+name = "Gear Transition Request - Error Correction Gain"
+category = "Electronic Throttle Control / Requested Torque"
+order = 140
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["gain"]
+semantics = "Gain multiplying signed filtered-coordinate error ffff348e when its absolute value does not exceed ROM16[00009188]. The signed product is divided by 128 with truncation toward zero and subtracted from the signed request candidate."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_error_correction_limit"
+address = 0x000093A2
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "61d7e4731e7a6546d92e99105ffce332c9ab905311cba8dbad8ac4f3bbc49447"
+pointer_bindings = [{ site = 0x000AC274, accessor = 0x000ABC6E, offset = 0xA }]
+name = "Gear Transition Request - Error Correction Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 141
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["absolute error limit"]
+semantics = "Unsigned upper bound on the absolute filtered-coordinate error for the calibrated error-correction subtraction. The gain is read separately from ROM16[00009186]."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_reference_floor"
+address = 0x000093A8
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "2921a11f25dadaa24aa79a548e4e81508c2e5e56af2d833d65e2bcce448ce2f5"
+pointer_bindings = [{ site = 0x000AC00C, accessor = 0x000ABC6E, offset = 0x10 }]
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["reference floor"]
+semantics = "Lower floor applied to the state-scaled word reference after the upper cap from rev_limit_throttle_cut. The resulting word is stored at ffff3492."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
 id = "transient_fuel_additional_surface"
 address = 0x00009E20
 width = 8
@@ -1953,6 +2371,88 @@ semantics = "Reader 0007db36 uses surface 0000b610 as one factor of its four-byt
 note = "Reader 0007db36 uses surface 0000b610 as one factor of its four-byte product. The product is shifted right by 12, combined with the separately selected word addend and capped at 65535 before publication at fffe8630. The factor's physical interpretation remains unresolved. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8 points. The raw column coordinate is clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads unsigned-byte cells at row*8+column. Physical quantities and conversions remain unresolved."
 
 [[target.1ND0A.table]]
+id = "request_transition_duration_table"
+address = 0x0000B790
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "b5f26e38a9aac491e0c7b04fffbd42beeb94cb6e015f45e0f0f5f83213ec3796"
+pointer_bindings = [{ site = 0x000ABFF4, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), using the latched indices of defs/JK78C.vvel.md, section \"Data flow\". The caller shifts both indices left by five and the helper recovers them without interpolation. The unsigned result bounds the saturating elapsed byte ffff3648 while the gear transition is active."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_rate_state_a_above_b"
+address = 0x0000B7D0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "c4fa2791ddce7afea4a75f6ba45f355a00fadd6b989f44655d8f34773a897293"
+pointer_bindings = [{ site = 0x000AC258, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] >= min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_rate_special_branch"
+address = 0x0000B7E0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "a81e9b77f9c943a249d800d817a7eec8eb45579bf311257ddec99d83ce533af3"
+pointer_bindings = [{ site = 0x000AC25C, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Special Branch"
+category = "Electronic Throttle Control / Requested Torque"
+order = 137
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when ffff23be.bit7 is clear and uint16[ffff11fa] exceeds ROM16[0000918e]. Coordinates are min(uint16[ffff10be]>>3,255) and the latched target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
+id = "request_transition_rate_other_state_relation"
+address = 0x0000B7F0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "b345efbd8f5fb18c9b1058928c301d1655fbee59510bd90b78baad5b24eadd96"
+pointer_bindings = [{ site = 0x000AC254, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Current below Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 139
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] < min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
 id = "vvel_duration_mode_14"
 address = 0x0000E6C8
 width = 8
@@ -2131,6 +2631,28 @@ coarse = 2.0
 confidence = "code"
 semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "request_transition_offset_surface"
+address = 0x000119C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "24d40808829c2e6d064a3a8aea76a14573d66655b2c4b0bb36c86bc6f6c90053"
+pointer_bindings = [{ site = 0x000AC000, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Bound Offset"
+category = "Electronic Throttle Control / Requested Torque"
+order = 134
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Implicit word surface read through 00027ddc with min(target-gear index uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", and these coordinates select integer grid points. The low word of the result minus 32768 supplies signed request bound ffff36ec while the duration and gear-transition gates permit it; the disabled value is -32768."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
 
 [[target.1ND0A.table]]
 id = "intake_cvtc_duty_hold"
@@ -2397,6 +2919,26 @@ semantics = "Unsigned-word conversion between the paired shaft-coordinate array 
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC."
 
 [[target.1ND0A.table]]
+id = "request_transition_recovery_decrement"
+address = 0x00015EB0
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "0c8e5a615c1f7a93bc2e3c4c01c32b24fc1a1eac19dea239f43d7c7a3d82bb75"
+pointer_bindings = [{ site = 0x000AC290, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Recovery Decrement"
+category = "Electronic Throttle Control / Requested Torque"
+order = 142
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Target Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word recovery array indexed by min(latched target-gear index uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section \"Data flow\". When the selected recovery byte is zero, subtract the unsigned entry from signed state ffff36b0 with a -32768 floor, then publish the maximum of that state and the independently bounded current candidate at ffff36ae. The inactive-transition path forces the recovery byte to zero; the active path uses the target-gear index ffff1077, which can also be zero."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.table]]
 id = "vvel_duration_characteristic"
 address = 0x00016090
 width = 16
@@ -2574,6 +3116,26 @@ coarse = 1
 confidence = "code"
 semantics = "Load at which the VVEL idle-model stage FUN_00060146 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the end curve is 0x000168C8."
 note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x0006035C, loaded at 0x0006017E. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162EA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.table]]
+id = "request_transition_reference_multiplier"
+address = 0x00016A62
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "5bf98916db14ec5d91465c3375d0b46e4c0e7054711498f3105629b7ece3ea0d"
+pointer_bindings = [{ site = 0x000AC01C, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Reference Multiplier"
+category = "Electronic Throttle Control / Requested Torque"
+order = 135
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word reference multiplier indexed by min(current-gear index uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear index uint8[ffff1077],7). The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\". The low 32-bit product with uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored at ffff3492."
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
 
 [[target.1ND0A.table]]
 id = "vvel_duration_cold"
@@ -2878,6 +3440,36 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
+
+[[target.1ND0A.axis]]
+id = "request_transition_rate_state_axis"
+address = 0x000138D5
+length = 4
+storagetype = "uint8"
+values_sha256 = "054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"
+pointer_bindings = [{ site = 0x000AC24C, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Rate Target Gear Index Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
+
+[[target.1ND0A.axis]]
+id = "request_transition_rate_coordinate_axis"
+address = 0x000138D9
+length = 4
+storagetype = "uint8"
+values_sha256 = "081795df727a2a9a53c18df44d2f9c73aa2c0673e9d76d788c58036959f3b619"
+pointer_bindings = [{ site = 0x000AC250, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Rate Coordinate Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714."
 
 [[target.1ND0A.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -3501,6 +4093,128 @@ vvel_duration_throttled_ramp_delay_axis = "The 1ND resolver FUN_0005F468 stores 
 stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
 
 [[target.1ND3B.table]]
+id = "request_transition_input_byte_threshold"
+address = 0x000089F8
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"
+pointer_bindings = [{ site = 0x000ABDAC, accessor = 0x000ABC6E }]
+constant_content = true
+name = "Gear Transition Request - Input Byte Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 130
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["byte gate threshold"]
+semantics = "Threshold of hysteretic gate ffff4567.bit7. Compare uint8[ffff1069], augmented by five while the bit is set, against this byte; values at or above the threshold set the bit."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive. The stock 0xFF keeps the hysteretic byte gate clear below an input byte of 0xFF."
+
+[[target.1ND3B.table]]
+id = "request_transition_hold_reload"
+address = 0x000089FA
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+pointer_bindings = [{ site = 0x000ABDAC, accessor = 0x000ABC6E, offset = 0x2 }]
+name = "Gear Transition Request - Hold Reload"
+category = "Electronic Throttle Control / Requested Torque"
+order = 132
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["hold reload"]
+semantics = "Byte reloaded into ffff477d on an active state transition. The held-state flag ffff45ca.bit5 remains set while either the active-transition bit or this hold byte is nonzero. The timer's decrementing producer and physical time unit remain unresolved."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_word_gate_threshold"
+address = 0x0000939E
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "ca2fd00fa001190744c15c317643ab092e7048ce086a243e2be9437c898de1bb"
+pointer_bindings = [{ site = 0x000ABDB4, accessor = 0x000ABC6E, offset = 0x6 }]
+constant_content = true
+name = "Gear Transition Request - Input Word Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 131
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["word gate threshold"]
+semantics = "Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), augmented by 50 while the bit is set, against this word. Values at or above the threshold set the bit."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive. The stock 0xFFFF keeps the hysteretic word gate clear below an input word of 0xFFFF."
+
+[[target.1ND3B.table]]
+id = "request_transition_error_correction_gain"
+address = 0x000093A0
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7"
+pointer_bindings = [{ site = 0x000AC274, accessor = 0x000ABC6E, offset = 0x8 }]
+name = "Gear Transition Request - Error Correction Gain"
+category = "Electronic Throttle Control / Requested Torque"
+order = 140
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["gain"]
+semantics = "Gain multiplying signed filtered-coordinate error ffff348e when its absolute value does not exceed ROM16[00009188]. The signed product is divided by 128 with truncation toward zero and subtracted from the signed request candidate."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_error_correction_limit"
+address = 0x000093A2
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "61d7e4731e7a6546d92e99105ffce332c9ab905311cba8dbad8ac4f3bbc49447"
+pointer_bindings = [{ site = 0x000AC274, accessor = 0x000ABC6E, offset = 0xA }]
+name = "Gear Transition Request - Error Correction Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 141
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["absolute error limit"]
+semantics = "Unsigned upper bound on the absolute filtered-coordinate error for the calibrated error-correction subtraction. The gain is read separately from ROM16[00009186]."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_reference_floor"
+address = 0x000093A8
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "2921a11f25dadaa24aa79a548e4e81508c2e5e56af2d833d65e2bcce448ce2f5"
+pointer_bindings = [{ site = 0x000AC00C, accessor = 0x000ABC6E, offset = 0x10 }]
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["reference floor"]
+semantics = "Lower floor applied to the state-scaled word reference after the upper cap from rev_limit_throttle_cut. The resulting word is stored at ffff3492."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
 id = "transient_fuel_additional_surface"
 address = 0x00009E20
 width = 8
@@ -3707,6 +4421,88 @@ semantics = "Reader 0007db36 uses surface 0000b610 as one factor of its four-byt
 note = "Reader 0007db36 uses surface 0000b610 as one factor of its four-byte product. The product is shifted right by 12, combined with the separately selected word addend and capped at 65535 before publication at fffe8630. The factor's physical interpretation remains unresolved. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8 points. The raw column coordinate is clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads unsigned-byte cells at row*8+column. Physical quantities and conversions remain unresolved."
 
 [[target.1ND3B.table]]
+id = "request_transition_duration_table"
+address = 0x0000B790
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "cb0488fabc0bab5163545e31c51318743b6a71fed323b726ad310486c27d4952"
+pointer_bindings = [{ site = 0x000ABFF4, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), using the latched indices of defs/JK78C.vvel.md, section \"Data flow\". The caller shifts both indices left by five and the helper recovers them without interpolation. The unsigned result bounds the saturating elapsed byte ffff3648 while the gear transition is active."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_rate_state_a_above_b"
+address = 0x0000B7D0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000AC258, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] >= min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_rate_special_branch"
+address = 0x0000B7E0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000AC25C, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Special Branch"
+category = "Electronic Throttle Control / Requested Torque"
+order = 137
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when ffff23be.bit7 is clear and uint16[ffff11fa] exceeds ROM16[0000918e]. Coordinates are min(uint16[ffff10be]>>3,255) and the latched target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
+id = "request_transition_rate_other_state_relation"
+address = 0x0000B7F0
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000AC254, accessor = 0x000ABC6E }]
+axis_x = 0x000138D9
+axis_y = 0x000138D5
+name = "Gear Transition Request - Rate - Current below Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 139
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] < min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
 id = "vvel_duration_mode_14"
 address = 0x0000E6C8
 width = 8
@@ -3885,6 +4681,28 @@ coarse = 2.0
 confidence = "code"
 semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00060244, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x000174C2 and by the VVEL load over the axis 0x000174F2. With ROM8[0x8A19].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00060244 through the literal-pool word 0x000603A8, loaded at 0x000602AE. FUN_00060244 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "request_transition_offset_surface"
+address = 0x000119C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5fedc0346b07ddc1d5f3c08bb984cb77acb81d121c1d9db37ffe8416972c838a"
+pointer_bindings = [{ site = 0x000AC000, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Bound Offset"
+category = "Electronic Throttle Control / Requested Torque"
+order = 134
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Implicit word surface read through 00027ddc with min(target-gear index uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", and these coordinates select integer grid points. The low word of the result minus 32768 supplies signed request bound ffff36ec while the duration and gear-transition gates permit it; the disabled value is -32768."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
 
 [[target.1ND3B.table]]
 id = "intake_cvtc_duty_hold"
@@ -4151,6 +4969,26 @@ semantics = "Unsigned-word conversion between the paired shaft-coordinate array 
 note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "request_transition_recovery_decrement"
+address = 0x00015EB0
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "4c633169d5449c9401033affa9fe7183d8826d6def22e64ce2bad9e227707917"
+pointer_bindings = [{ site = 0x000AC290, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Recovery Decrement"
+category = "Electronic Throttle Control / Requested Torque"
+order = 142
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Target Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word recovery array indexed by min(latched target-gear index uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section \"Data flow\". When the selected recovery byte is zero, subtract the unsigned entry from signed state ffff36b0 with a -32768 floor, then publish the maximum of that state and the independently bounded current candidate at ffff36ae. The inactive-transition path forces the recovery byte to zero; the active path uses the target-gear index ffff1077, which can also be zero."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.table]]
 id = "vvel_duration_characteristic"
 address = 0x00016090
 width = 16
@@ -4328,6 +5166,26 @@ coarse = 1
 confidence = "code"
 semantics = "Load at which the VVEL idle-model stage FUN_00060146 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x00016908; the end curve is 0x000168C8."
 note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_00060146 through the literal-pool word 0x0006035C, loaded at 0x0006017E. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x000162EA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "request_transition_reference_multiplier"
+address = 0x00016A62
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "d90bbd9b776f8ae7e236cb3b3fccf4b3af08da955d5db160c730831853465414"
+pointer_bindings = [{ site = 0x000AC01C, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Reference Multiplier"
+category = "Electronic Throttle Control / Requested Torque"
+order = 135
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word reference multiplier indexed by min(current-gear index uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear index uint8[ffff1077],7). The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\". The low 32-bit product with uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored at ffff3492."
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
 
 [[target.1ND3B.table]]
 id = "vvel_duration_cold"
@@ -4632,6 +5490,36 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
+
+[[target.1ND3B.axis]]
+id = "request_transition_rate_state_axis"
+address = 0x000138D5
+length = 4
+storagetype = "uint8"
+values_sha256 = "054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"
+pointer_bindings = [{ site = 0x000AC24C, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Rate Target Gear Index Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
+
+[[target.1ND3B.axis]]
+id = "request_transition_rate_coordinate_axis"
+address = 0x000138D9
+length = 4
+storagetype = "uint8"
+values_sha256 = "be339b3e97973e5f0ae11d6d28ef1076287b569911fca01bf9614a8de53a54e6"
+pointer_bindings = [{ site = 0x000AC250, accessor = 0x000ABC6E }]
+name = "Gear Transition Request - Rate Coordinate Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive record at 00009714 is inactive."
 
 [[target.1ND3B.axis]]
 id = "transient_fuel_multiplier_y_axis"
@@ -5255,6 +6143,128 @@ vvel_duration_throttled_ramp_delay_axis = "The 1ND resolver FUN_0005F468 stores 
 stock_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
 
 [[target.1ME3B.table]]
+id = "request_transition_input_byte_threshold"
+address = 0x00008A46
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "f67ab10ad4e4c53121b6a5fe4da9c10ddee905b978d3788d2723d7bfacbe28a9"
+pointer_bindings = [{ site = 0x000B318C, accessor = 0x000B2F2C }]
+constant_content = true
+name = "Gear Transition Request - Input Byte Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 130
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["byte gate threshold"]
+semantics = "Threshold of hysteretic gate ffff4567.bit7. Compare uint8[ffff1069], augmented by five while the bit is set, against this byte; values at or above the threshold set the bit."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_hold_reload"
+address = 0x00008A48
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "9652595f37edd08c51dfa26567e6cd76e6fa2709c3e578478ca398d316837a7a"
+pointer_bindings = [{ site = 0x000B318C, accessor = 0x000B2F2C, offset = 0x2 }]
+name = "Gear Transition Request - Hold Reload"
+category = "Electronic Throttle Control / Requested Torque"
+order = 132
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["hold reload"]
+semantics = "Byte reloaded into ffff477d on an active state transition. The held-state flag ffff45ca.bit5 remains set while either the active-transition bit or this hold byte is nonzero. The timer's decrementing producer and physical time unit remain unresolved."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_word_gate_threshold"
+address = 0x00009456
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "d070dc5b8da9aea7dc0f5ad4c29d89965200059c9a0ceca3abd5da2492dcb71d"
+pointer_bindings = [{ site = 0x000B3194, accessor = 0x000B2F2C, offset = 0x6 }]
+constant_content = true
+name = "Gear Transition Request - Input Word Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 131
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["word gate threshold"]
+semantics = "Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), augmented by 50 while the bit is set, against this word. Values at or above the threshold set the bit."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_error_correction_gain"
+address = 0x00009458
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "203fea74fb42ca791709fb384495b3b3386582d330809a1d435b3684f7f630c3"
+pointer_bindings = [{ site = 0x000B35A4, accessor = 0x000B2F2C, offset = 0x8 }]
+name = "Gear Transition Request - Error Correction Gain"
+category = "Electronic Throttle Control / Requested Torque"
+order = 140
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["gain"]
+semantics = "Gain multiplying signed filtered-coordinate error ffff348e when its absolute value does not exceed ROM16[00009188]. The signed product is divided by 128 with truncation toward zero and subtracted from the signed request candidate."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_error_correction_limit"
+address = 0x0000945A
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "61d7e4731e7a6546d92e99105ffce332c9ab905311cba8dbad8ac4f3bbc49447"
+pointer_bindings = [{ site = 0x000B35A4, accessor = 0x000B2F2C, offset = 0xA }]
+name = "Gear Transition Request - Error Correction Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 141
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["absolute error limit"]
+semantics = "Unsigned upper bound on the absolute filtered-coordinate error for the calibrated error-correction subtraction. The gain is read separately from ROM16[00009186]."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_reference_floor"
+address = 0x00009460
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "2921a11f25dadaa24aa79a548e4e81508c2e5e56af2d833d65e2bcce448ce2f5"
+pointer_bindings = [{ site = 0x000B3194, accessor = 0x000B2F2C, offset = 0x10 }]
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["reference floor"]
+semantics = "Lower floor applied to the state-scaled word reference after the upper cap from rev_limit_throttle_cut. The resulting word is stored at ffff3492."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
 id = "transient_fuel_additional_surface"
 address = 0x00009D94
 width = 8
@@ -5461,6 +6471,88 @@ semantics = "Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byt
 note = "Reader 000826c4 uses surface 0000b6c4 as one factor of its four-byte product. The product is shifted right by 12, combined with the separately selected word addend and capped at 65535 before publication at fffe85a4. The factor's physical interpretation remains unresolved. The raw row coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains eight uint8 points. The raw column coordinate is clamp(floor(uint16[fffea630]/20)-420,0,255). The explicit axis contains eight uint8 points. Wrapper 00028e10 bounds both indices at 7 and reads unsigned-byte cells at row*8+column. Physical quantities and conversions remain unresolved."
 
 [[target.1ME3B.table]]
+id = "request_transition_duration_table"
+address = 0x0000B844
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "82d8a2a43db7a1415ef312ac1436658cbb4fed2532dac3599f3d3989af556d98"
+pointer_bindings = [{ site = 0x000B31A8, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), using the latched indices of defs/JK78C.vvel.md, section \"Data flow\". The caller shifts both indices left by five and the helper recovers them without interpolation. The unsigned result bounds the saturating elapsed byte ffff3648 while the gear transition is active."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_rate_state_a_above_b"
+address = 0x0000B884
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "1854d2224d5487a371ca0fed0cb5983235396b72357a479ebbcf84b0d87d58c6"
+pointer_bindings = [{ site = 0x000B3410, accessor = 0x000B2F2C }]
+axis_x = 0x0001365D
+axis_y = 0x00013659
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] >= min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_rate_special_branch"
+address = 0x0000B894
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "a81e9b77f9c943a249d800d817a7eec8eb45579bf311257ddec99d83ce533af3"
+pointer_bindings = [{ site = 0x000B3408, accessor = 0x000B2F2C }]
+axis_x = 0x0001365D
+axis_y = 0x00013659
+name = "Gear Transition Request - Rate - Special Branch"
+category = "Electronic Throttle Control / Requested Torque"
+order = 137
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when ffff23be.bit7 is clear and uint16[ffff11fa] exceeds ROM16[0000918e]. Coordinates are min(uint16[ffff10be]>>3,255) and the latched target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
+id = "request_transition_rate_other_state_relation"
+address = 0x0000B8A4
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "ba5a6cfdeb0188e42152355348c688624f4e05bad2d6a9978cbae7b99cbc1a98"
+pointer_bindings = [{ site = 0x000B340C, accessor = 0x000B2F2C }]
+axis_x = 0x0001365D
+axis_y = 0x00013659
+name = "Gear Transition Request - Rate - Current below Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 139
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] < min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data flow\". The byte result is multiplied by ten before the signed request-update calculation."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_hot_intake_idle"
 address = 0x0000E17C
 width = 8
@@ -5659,6 +6751,28 @@ coarse = 2.0
 confidence = "code"
 semantics = "Phase of the trimmed valve event pair of the VVEL idle-model stage FUN_00064042, zero at 0x8000 and 0.5 per count, looked up by engine speed over the axis 0x00017596 and by the VVEL load over the axis 0x000175C6. With ROM8[0x8A6A].bit5 set (stock 0x3A), the trimmed events are centered 0.5 * (raw - 0x8000) below the base event center."
 note = "Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: on JK78C 0x00010ACE, the float literals 0.5 at 0x5750C and -16384.0 at 0x57640. Recorded code interpretation: Read by FUN_00064042 through the literal-pool word 0x00064200, loaded at 0x000640AC. FUN_00064042 holds the float literals of JK78C FUN_00057322. Stock bytes differ from JK78C 0x00010ACE: 32768..32898."
+
+[[target.1ME3B.table]]
+id = "request_transition_offset_surface"
+address = 0x000114FC
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "efec4e3829c79fd9933b2a2a26cbee78a70e5121ad921fcf48e4d65c3e5264d7"
+pointer_bindings = [{ site = 0x000B31B0, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Bound Offset"
+category = "Electronic Throttle Control / Requested Torque"
+order = 134
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Implicit word surface read through 00027ddc with min(target-gear index uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", and these coordinates select integer grid points. The low word of the result minus 32768 supplies signed request bound ffff36ec while the duration and gear-transition gates permit it; the disabled value is -32768."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
 
 [[target.1ME3B.table]]
 id = "intake_cvtc_duty_hold"
@@ -5948,6 +7062,26 @@ semantics = "Unsigned-word conversion between the paired shaft-coordinate array 
 note = "Read by the task FUN_00061D46 at callsites 0x623DA and 0x62444, by the resolver FUN_00062FAC at 0x63072 and 0x63086, by FUN_00058FAA at 0x58FC8 and 0x58FE8, and by FUN_00066A18 at 0x66A28 and 0x66A44 through the 16-point uint16 leaf 0x2AF88; the call at 0x623DA exchanges the roles of axis and values. JK78C reads the pair for the resolver in the separate function FUN_0005693A. Stock bytes are identical to JK78C 0x000156FC. FUN_0005C7D4 reads a byte-identical second pair 0x0001B738 over 0x0001B718."
 
 [[target.1ME3B.table]]
+id = "request_transition_recovery_decrement"
+address = 0x00015D54
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "4c633169d5449c9401033affa9fe7183d8826d6def22e64ce2bad9e227707917"
+pointer_bindings = [{ site = 0x000B35D4, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Recovery Decrement"
+category = "Electronic Throttle Control / Requested Torque"
+order = 142
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Target Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word recovery array indexed by min(latched target-gear index uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section \"Data flow\". When the selected recovery byte is zero, subtract the unsigned entry from signed state ffff36b0 with a -32768 floor, then publish the maximum of that state and the independently bounded current candidate at ffff36ae. The inactive-transition path forces the recovery byte to zero; the active path uses the target-gear index ffff1077, which can also be zero."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.table]]
 id = "vvel_duration_characteristic"
 address = 0x00015F54
 width = 16
@@ -6163,6 +7297,26 @@ coarse = 1
 confidence = "code"
 semantics = "Load at which the VVEL idle-model stage FUN_000638C0 starts to blend the trimmed event pair toward the high-load pair, at 100/65536 percent per count, looked up by engine speed over the axis 0x0001699C; the end curve is 0x0001695C."
 note = "Engineering conversion is unestablished. Retained hypothesis: x*100/65536 %; proposed editor-grid inverse x*65536/100. Origin: on JK78C 0x000162EA, the float literal 100/65536 at 0x574C0. Recorded code interpretation: Read by FUN_000638C0 through the literal-pool word 0x00063A08, loaded at 0x00063950. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x000162EA."
+
+[[target.1ME3B.table]]
+id = "request_transition_reference_multiplier"
+address = 0x00016AF6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29599d850e9754eec9e697aca79a6971d4f8f508d4661e48d444c471644654ef"
+pointer_bindings = [{ site = 0x000B31C4, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Reference Multiplier"
+category = "Electronic Throttle Control / Requested Torque"
+order = 135
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Eight-word reference multiplier indexed by min(current-gear index uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear index uint8[ffff1077],7). The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\". The low 32-bit product with uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored at ffff3492."
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
 
 [[target.1ME3B.table]]
 id = "vvel_duration_cold"
@@ -6486,6 +7640,36 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Engineering conversion is unestablished. These explicit uint8 breakpoints index the stock-selected settle-count reload. The editor exposes stored counts; the temperature conversion remains unqualified."
+
+[[target.1ME3B.axis]]
+id = "request_transition_rate_state_axis"
+address = 0x00013659
+length = 4
+storagetype = "uint8"
+values_sha256 = "054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"
+pointer_bindings = [{ site = 0x000B3400, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Rate Target Gear Index Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
+
+[[target.1ME3B.axis]]
+id = "request_transition_rate_coordinate_axis"
+address = 0x0001365D
+length = 4
+storagetype = "uint8"
+values_sha256 = "cdc7d546aa5a86a8ed2c67c39d12ebcf5882738e1259e032c4b337590e88cfc3"
+pointer_bindings = [{ site = 0x000B3404, accessor = 0x000B2F2C }]
+name = "Gear Transition Request - Rate Coordinate Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc."
 
 [[target.1ME3B.axis]]
 id = "transient_fuel_multiplier_y_axis"

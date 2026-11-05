@@ -197,7 +197,18 @@ canonical trio, `0x0095CA`, `0x0096CA`, and `0x0097CA`, hold three
 byte-identical copies in the gated half that the stock byte leaves unexecuted;
 the trio is recorded as unsupported. A registry table may declare a `mask`, a
 contiguous partial bit field of its cell; the ignition surfaces carry `7F`
-because the low seven bits hold the timing field. The
+because the low seven bits hold the timing field. The registry publishes the
+calibration of the request transition conditioner, JK78C `0x096CE0`, 1ND
+`0x0ABC6E`, and 1ME3B `0x0B2F2C`, as stored counts on all four images: the
+gate thresholds and the hold reload, the 8x8 duration and offset surfaces
+over static gear-index axes, the three 4x4 rate surfaces with their axes, the
+reference multiplier and floor, the error-correction gain and limit, and the
+recovery decrement. The stock calibration runs the conditioner on 1ND0A and
+1ME3B; on JK78C and 1ND3B the mode flags `0x80` leave it unexecuted. A
+registry table may declare `constant_content = true`, which accepts a stock
+block of all one bits as a reviewed value: the two gate thresholds carry it
+for the stock `0xFF` and `0xFFFF` of JK78C and 1ND3B, and the registry
+rejects an unmarked all-ones block as erased flash. The
 XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 

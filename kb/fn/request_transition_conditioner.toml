@@ -11,18 +11,17 @@ rate surfaces, update the signed request with its calibrated baseline and \
 bounds, and apply the recovery decrement 000158d2 indexed by target gear. \
 Publish the signed result at ffff36ae. The stock receive table has no frame \
 0x174 record, so the latched gear indices do not diverge; the stock \
-dispatcher selects 00097298 and 000978d6. Engineering units and editor \
-qualification remain unresolved."""
+dispatcher selects 00097298 and 000978d6. Engineering units remain \
+unresolved."""
 note = [
     """
 Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
 and ffff1077 latch the zero-based current-gear and target-gear indices \
 ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling and engineering units remain unresolved. Editor \
-qualification and later-layout correspondence remain unresolved under issue \
-#129.""",
+frame 0x174. Scaling and engineering units remain unresolved.""",
 ]
 level = "code"
+home = "jk78c"
 role = "consumer"
 block = "torque_request/block"
 
@@ -32,6 +31,48 @@ path = "defs/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Data flow"]
 anchor = "FUN_00096CE0"
+
+[[symbol]]
+layout = "1me3b"
+address = "000b2f2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b2f2c"
+to = "jk78c:00096ce0"
+note = """
+Conditioner 000b2f2c corresponds to the JK78C request transition conditioner \
+00096ce0: it loads the byte and word gate thresholds, the hold reload, the \
+8x8 duration and offset surfaces at gear coordinates shifted left by 5 and \
+13, the three 4x4 rate surfaces with their shared state and coordinate axes, \
+the gear-indexed reference multiplier and recovery decrement, the reference \
+floor, and the error-correction gain and limit through its own literal pool. \
+While bit 0 of ROM8[000083a6] is clear, dispatcher 000b218e calls it when \
+bit 7 of 00008a7f is clear, as JK78C 0009679a selects 00096ce0 by bit 0 of \
+00008383 and bit 7 of 00008968."""
+
+[[symbol]]
+layout = "1nd"
+address = "000abc6e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000abc6e"
+to = "jk78c:00096ce0"
+note = """
+Conditioner 000abc6e corresponds to the JK78C request transition conditioner \
+00096ce0: it loads the byte and word gate thresholds, the hold reload, the \
+8x8 duration and offset surfaces at gear coordinates shifted left by 5 and \
+13, the three 4x4 rate surfaces with their shared state and coordinate axes, \
+the gear-indexed reference multiplier and recovery decrement, the reference \
+floor, and the error-correction gain and limit through its own literal pool. \
+While bit 0 of ROM8[0000839f] is clear, dispatcher 000ab184 calls it when \
+bit 7 of 00008a2e is clear, as JK78C 0009679a selects 00096ce0 by bit 0 of \
+00008383 and bit 7 of 00008968."""
 
 [[symbol]]
 layout = "jk78c"

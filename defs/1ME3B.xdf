@@ -3276,6 +3276,377 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x7396" flags="0x0">
+    <title>Gear Transition Request - Input Byte Gate Threshold [stored count]</title>
+    <description>Exact 1ME3B. Address 0x8A46; 1 rows x 1 columns; uint8; map confidence code. Threshold of hysteretic gate ffff4567.bit7. Compare uint8[ffff1069], augmented by five while the bit is set, against this byte; values at or above the threshold set the bit. Exact 1ME3B target-native table at 0x8a46 bound to accessor 0xb2f2c through literal 0xb318c. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="byte gate threshold" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8A46" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xC9E9" flags="0x0">
+    <title>Gear Transition Request - Input Word Gate Threshold [stored count]</title>
+    <description>Exact 1ME3B. Address 0x9456; 1 rows x 1 columns; uint16; map confidence code. Threshold of ffff4567.bit6. Compare min(uint16[ffff10be],uint16[ffff10a8]), augmented by 50 while the bit is set, against this word. Values at or above the threshold set the bit. Exact 1ME3B target-native table at 0x9456 bound to accessor 0xb2f2c through literal 0xb3194 + 0x6. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="word gate threshold" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x9456" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x5E91" flags="0x0">
+    <title>Gear Transition Request - Hold Reload [stored count]</title>
+    <description>Exact 1ME3B. Address 0x8A48; 1 rows x 1 columns; uint8; map confidence code. Byte reloaded into ffff477d on an active state transition. The held-state flag ffff45ca.bit5 remains set while either the active-transition bit or this hold byte is nonzero. The timer's decrementing producer and physical time unit remain unresolved. Exact 1ME3B target-native table at 0x8a48 bound to accessor 0xb2f2c through literal 0xb318c + 0x2. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="hold reload" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8A48" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xE843" flags="0x0">
+    <title>Gear Transition Request - Duration Limit [stored count]</title>
+    <description>Exact 1ME3B. Address 0xB844; 8 rows x 8 columns; uint8; map confidence code. Direct 8x8 byte table accessed through 00027db8. Row=min(target-gear index uint8[ffff1077],7) and column=min(current-gear index uint8[ffff1076],7), using the latched indices of defs/JK78C.vvel.md, section "Data flow". The caller shifts both indices left by five and the helper recovers them without interpolation. The unsigned result bounds the saturating elapsed byte ffff3648 while the gear transition is active. Exact 1ME3B target-native table at 0xb844 bound to accessor 0xb2f2c through literal 0xb31a8. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Current Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Target Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB844" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x635A" flags="0x0">
+    <title>Gear Transition Request - Bound Offset [stored count]</title>
+    <description>Exact 1ME3B. Address 0x114FC; 8 rows x 8 columns; uint16; map confidence code. Implicit word surface read through 00027ddc with min(target-gear index uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. The latched gear indices follow defs/JK78C.vvel.md, section "Data flow", and these coordinates select integer grid points. The low word of the result minus 32768 supplies signed request bound ffff36ec while the duration and gear-transition gates permit it; the disabled value is -32768. Exact 1ME3B target-native table at 0x114fc bound to accessor 0xb2f2c through literal 0xb31b0. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Current Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Target Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x114FC" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x12C3" flags="0x0">
+    <title>Gear Transition Request - Reference Multiplier [stored count]</title>
+    <description>Exact 1ME3B. Address 0x16AF6; 1 rows x 8 columns; uint16; map confidence code. Eight-word reference multiplier indexed by min(current-gear index uint8[ffff1076],7) while ffff4563.bit3 is set, otherwise by min(target-gear index uint8[ffff1077],7). The latched gear indices follow defs/JK78C.vvel.md, section "Data flow". The low 32-bit product with uint16[ffff10d2] is arithmetically shifted right five and divided by 25; the result is capped by ROM16[0000911e], floored by ROM16[0000918c] and stored at ffff3492. Exact 1ME3B target-native table at 0x16af6 bound to accessor 0xb2f2c through literal 0xb31c4. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x16AF6" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x3F1F" flags="0x0">
+    <title>Gear Transition Request - Reference Floor [stored count]</title>
+    <description>Exact 1ME3B. Address 0x9460; 1 rows x 1 columns; uint16; map confidence code. Lower floor applied to the state-scaled word reference after the upper cap from rev_limit_throttle_cut. The resulting word is stored at ffff3492. Exact 1ME3B target-native table at 0x9460 bound to accessor 0xb2f2c through literal 0xb3194 + 0x10. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="reference floor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x9460" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x960E" flags="0x0">
+    <title>Gear Transition Request - Rate - Special Branch [stored count]</title>
+    <description>Exact 1ME3B. Address 0xB894; 4 rows x 4 columns; uint8; map confidence code. Selected rate surface when ffff23be.bit7 is clear and uint16[ffff11fa] exceeds ROM16[0000918e]. Coordinates are min(uint16[ffff10be]&gt;&gt;3,255) and the latched target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section "Data flow". The byte result is multiplied by ten before the signed request-update calculation. Exact 1ME3B target-native table at 0xb894 bound to accessor 0xb2f2c through literal 0xb3408. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13659" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1365D" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB894" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x9B6" flags="0x0">
     <title>MAF Sensor Transfer - Bank 2</title>
     <description>Exact 1ME3B. Address 0x15916; 1 rows x 64 columns; uint16; map confidence candidate. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 000141f4 through JK08A-1ME3B.definition-addresses.csv: the target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact 64-point table first and 00015996 second through the 64-point implicit leaf 0002abec. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
@@ -3381,6 +3752,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xA74F" flags="0x0">
+    <title>Gear Transition Request - Rate - Current at or above Target + 2 [stored count]</title>
+    <description>Exact 1ME3B. Address 0xB884; 4 rows x 4 columns; uint8; map confidence code. Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] &gt;= min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]&gt;&gt;3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section "Data flow". The byte result is multiplied by ten before the signed request-update calculation. Exact 1ME3B target-native table at 0xb884 bound to accessor 0xb2f2c through literal 0xb3410. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13659" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1365D" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB884" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x83BE" flags="0x0">
     <title>MAF Sensor Transfer - Bank 1</title>
     <description>Exact 1ME3B. Address 0x15996; 1 rows x 64 columns; uint16; map confidence candidate. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 00014274 through JK08A-1ME3B.definition-addresses.csv: the target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact 64-point table second after 00015916 through the 64-point implicit leaf 0002abec. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
@@ -3482,6 +3895,181 @@
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.0041015625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x4152" flags="0x0">
+    <title>Gear Transition Request - Rate - Current below Target + 2 [stored count]</title>
+    <description>Exact 1ME3B. Address 0xB8A4; 4 rows x 4 columns; uint8; map confidence code. Selected rate surface when the special branch is inactive and the latched current-gear index uint8[ffff1076] &lt; min(target-gear index uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]&gt;&gt;3,255) and the target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section "Data flow". The byte result is multiplied by ten before the signed request-update calculation. Exact 1ME3B target-native table at 0xb8a4 bound to accessor 0xb2f2c through literal 0xb340c. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13659" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1365D" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB8A4" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xE4EE" flags="0x0">
+    <title>Gear Transition Request - Error Correction Gain [stored count]</title>
+    <description>Exact 1ME3B. Address 0x9458; 1 rows x 1 columns; uint16; map confidence code. Gain multiplying signed filtered-coordinate error ffff348e when its absolute value does not exceed ROM16[00009188]. The signed product is divided by 128 with truncation toward zero and subtracted from the signed request candidate. Exact 1ME3B target-native table at 0x9458 bound to accessor 0xb2f2c through literal 0xb35a4 + 0x8. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="gain" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x9458" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xDBE" flags="0x0">
+    <title>Gear Transition Request - Error Correction Limit [stored count]</title>
+    <description>Exact 1ME3B. Address 0x945A; 1 rows x 1 columns; uint16; map confidence code. Unsigned upper bound on the absolute filtered-coordinate error for the calibrated error-correction subtraction. The gain is read separately from ROM16[00009186]. Exact 1ME3B target-native table at 0x945a bound to accessor 0xb2f2c through literal 0xb35a4 + 0xa. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Constant</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="absolute error limit" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x945A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x107D" flags="0x0">
+    <title>Gear Transition Request - Recovery Decrement [stored count]</title>
+    <description>Exact 1ME3B. Address 0x15D54; 1 rows x 8 columns; uint16; map confidence code. Eight-word recovery array indexed by min(latched target-gear index uint8[ffff1077],7), as described in defs/JK78C.vvel.md, section "Data flow". When the selected recovery byte is zero, subtract the unsigned entry from signed state ffff36b0 with a -32768 floor, then publish the maximum of that state and the independently bounded current candidate at ffff36ae. The inactive-transition path forces the recovery byte to zero; the active path uses the target-gear index ffff1077, which can also be zero. Exact 1ME3B target-native table at 0x15d54 bound to accessor 0xb2f2c through literal 0xb35d4. Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit 0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, and the flags hold 0x18. The receive table holds an active frame 0x174 record at 000097fc. Editor values are stored counts; no engineering conversion is established.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Target Gear Index</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="1" />
+      <LABEL index="2" value="2" />
+      <LABEL index="3" value="3" />
+      <LABEL index="4" value="4" />
+      <LABEL index="5" value="5" />
+      <LABEL index="6" value="6" />
+      <LABEL index="7" value="7" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x15D54" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

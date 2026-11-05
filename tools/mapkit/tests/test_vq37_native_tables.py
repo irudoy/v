@@ -145,6 +145,37 @@ INJECTION_TABLE_ROLES = {
     "injection_end_angle_conditional",
 }
 INJECTION_AXIS_ROLES = {"injection_end_angle_axis"}
+# The request transition conditioner reads its calibration through its own
+# literal pool on every target.
+CONDITIONER_TABLE_ROLES = {
+    "request_transition_input_byte_threshold",
+    "request_transition_word_gate_threshold",
+    "request_transition_hold_reload",
+    "request_transition_duration_table",
+    "request_transition_offset_surface",
+    "request_transition_reference_multiplier",
+    "request_transition_reference_floor",
+    "request_transition_rate_special_branch",
+    "request_transition_rate_state_a_above_b",
+    "request_transition_rate_other_state_relation",
+    "request_transition_error_correction_gain",
+    "request_transition_error_correction_limit",
+    "request_transition_recovery_decrement",
+}
+CONDITIONER_AXIS_ROLES = {
+    "request_transition_rate_coordinate_axis",
+    "request_transition_rate_state_axis",
+}
+CONDITIONER = {"JK78C": 0x96CE0, "1ND0A": 0xABC6E, "1ND3B": 0xABC6E, "1ME3B": 0xB2F2C}
+# The conditioner reaches its scalar constants through the base literal of
+# their constant block.
+CONDITIONER_BASE_OFFSETS = {
+    "request_transition_hold_reload": 0x2,
+    "request_transition_word_gate_threshold": 0x6,
+    "request_transition_error_correction_gain": 0x8,
+    "request_transition_error_correction_limit": 0xA,
+    "request_transition_reference_floor": 0x10,
+}
 ROLES = (
     SELECTOR_ROLES
     | FUEL_TABLE_ROLES
@@ -157,6 +188,8 @@ ROLES = (
     | CVTC_AXIS_ROLES
     | INJECTION_TABLE_ROLES
     | INJECTION_AXIS_ROLES
+    | CONDITIONER_TABLE_ROLES
+    | CONDITIONER_AXIS_ROLES
 )
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
@@ -236,10 +269,11 @@ def test_registry_declares_every_role_on_every_target():
         assert tables <= (
             SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
             | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES | INJECTION_TABLE_ROLES
+            | CONDITIONER_TABLE_ROLES
         )
         assert axes <= (
             FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
-            | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES
+            | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES | CONDITIONER_AXIS_ROLES
         )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
@@ -293,7 +327,7 @@ def test_registry_shares_the_1nd_layout_between_1nd0a_and_1nd3b():
     assert registry["1ND0A"].stock_sha256 != registry["1ND3B"].stock_sha256
 
 
-def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
+def test_registry_displaces_only_the_1me3b_conditioner_constants():
     registry = vq37_native_tables.load_registry()
     target = registry["1ME3B"]
     reference = registry["JK78C"]
@@ -302,11 +336,12 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
     assert identifiers == {
         e.identifier for e in (*reference.tables, *reference.axes)
     } | ONE_ME3B_ONLY_ROLES | IGNITION_STATE_ROLES
-    assert all(
-        pointer.offset == 0
+    assert {
+        entity.identifier: pointer.offset
         for entity in (*target.tables, *target.axes)
         for pointer in entity.pointer_bindings
-    )
+        if pointer.offset
+    } == CONDITIONER_BASE_OFFSETS
     floors = {
         t.identifier: t
         for t in target.tables
@@ -315,6 +350,41 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
     }
     assert {t.address for t in floors.values()} == {0x165DC, 0x165EC}
     assert all(t.axis_x == (0x165CC,) for t in floors.values())
+
+
+def test_registry_publishes_the_conditioner_calibration_through_its_pool():
+    gears = tuple(range(8))
+    for rom, target in vq37_native_tables.load_registry().items():
+        tables = {t.identifier: t for t in target.tables
+                  if t.identifier in CONDITIONER_TABLE_ROLES}
+        axes = {a.identifier: a for a in target.axes
+                if a.identifier in CONDITIONER_AXIS_ROLES}
+
+        assert set(tables) == CONDITIONER_TABLE_ROLES, rom
+        assert set(axes) == CONDITIONER_AXIS_ROLES, rom
+        for entity in (*tables.values(), *axes.values()):
+            assert {p.accessor for p in entity.pointer_bindings} == {CONDITIONER[rom]}
+            assert entity.scale_conf is None
+        # Gear-index coordinates select the grid points of both 8x8 surfaces.
+        for role in ("request_transition_duration_table",
+                     "request_transition_offset_surface"):
+            table = tables[role]
+            assert (table.width, table.height) == (8, 8)
+            assert (table.static_axis_x_name, table.static_axis_x) == (
+                "Current Gear Index", gears)
+            assert (table.static_axis_y_name, table.static_axis_y) == (
+                "Target Gear Index", gears)
+        rates = {role: t for role, t in tables.items() if "_rate_" in role}
+        assert {(t.axis_x, t.axis_y) for t in rates.values()} == {(
+            (axes["request_transition_rate_coordinate_axis"].address,),
+            (axes["request_transition_rate_state_axis"].address,),
+        )}
+        # Only the gate thresholds may hold all one bits: 0xFF and 0xFFFF on
+        # JK78C and 1ND3B keep both hysteretic gates clear.
+        assert {role for role, t in tables.items() if t.constant_content} == {
+            "request_transition_input_byte_threshold",
+            "request_transition_word_gate_threshold",
+        }
 
 
 def test_registry_rejects_a_missing_role_declaration(tmp_path):

@@ -2299,6 +2299,187 @@
       </table>
     </table>
 
+    <!-- 0x08935  1 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x8935 bound to accessor 0x96ce0 through literal
+         0x96d78. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. The stock 0xFF keeps the hysteretic byte gate
+         clear below an input byte of 0xFF. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Input Byte Gate Threshold [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x08935" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>byte gate threshold</data>
+      </table>
+    </table>
+
+    <!-- 0x09184  1 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x9184 bound to accessor 0x96ce0 through literal
+         0x96f48. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. The stock 0xFFFF keeps the hysteretic word gate
+         clear below an input word of 0xFFFF. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Input Word Gate Threshold [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x09184" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>word gate threshold</data>
+      </table>
+    </table>
+
+    <!-- 0x08937  1 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x8937 bound to accessor 0x96ce0 through literal
+         0x96f5c. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Hold Reload [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x08937" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>hold reload</data>
+      </table>
+    </table>
+
+    <!-- 0x0B34A  8x8 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0xb34a bound to accessor 0x96ce0 through literal
+         0x96f64. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Duration Limit [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B34A" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Current Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+      <table type="Static Y Axis" name="Target Gear Index" sizey="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x1164E  8x8 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x1164e bound to accessor 0x96ce0 through literal
+         0x96f6c. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Bound Offset [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x1164E" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Current Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+      <table type="Static Y Axis" name="Target Gear Index" sizey="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x16464  8 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x16464 bound to accessor 0x96ce0 through literal
+         0x97168. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Reference Multiplier [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x16464" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x0918C  1 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x918c bound to accessor 0x96ce0 through literal
+         0x97174 + 0x8. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls
+         it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Reference Floor [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x0918C" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>reference floor</data>
+      </table>
+    </table>
+
+    <!-- 0x0B39A  4x4 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1351F raw; X Axis 0x1351B raw
+         Exact JK78C target-native table at 0xb39a bound to accessor 0x96ce0 through literal
+         0x97184. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Rate - Special Branch [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B39A" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351B" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351F" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x1559C  64 uint16  map [candidate]
          scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
@@ -2337,6 +2518,35 @@
       </table>
     </table>
 
+    <!-- 0x0B38A  4x4 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1351F raw; X Axis 0x1351B raw
+         Exact JK78C target-native table at 0xb38a bound to accessor 0x96ce0 through literal
+         0x97190. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D"
+           name="Gear Transition Request - Rate - Current at or above Target + 2 [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B38A" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351B" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351F" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x1561C  64 uint16  map [candidate]
          scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
@@ -2372,6 +2582,96 @@
         <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
         <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
         <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
+      </table>
+    </table>
+
+    <!-- 0x0B3AA  4x4 uint8  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1351F raw; X Axis 0x1351B raw
+         Exact JK78C target-native table at 0xb3aa bound to accessor 0x96ce0 through literal
+         0x97194. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D"
+           name="Gear Transition Request - Rate - Current below Target + 2 [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B3AA" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351B" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x1351F" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09186  1 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x9186 bound to accessor 0x96ce0 through literal
+         0x97400 + 0x2. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls
+         it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Error Correction Gain [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x09186" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>gain</data>
+      </table>
+    </table>
+
+    <!-- 0x09188  1 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x9188 bound to accessor 0x96ce0 through literal
+         0x97400 + 0x4. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls
+         it only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Error Correction Limit [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x09188" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>absolute error limit</data>
+      </table>
+    </table>
+
+    <!-- 0x158D2  8 uint16  map [code]
+         accessor 0x96CE0; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact JK78C target-native table at 0x158d2 bound to accessor 0x96ce0 through literal
+         0x97418. Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it
+         only while bit 0 of ROM8[00008383] and bit 7 of the mode flags ROM8[00008968] are
+         clear, and the flags hold 0x80. The receive table carries no frame 0x174 record, so the
+         latched gear indices do not diverge. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Recovery Decrement [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x158D2" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Target Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
       </table>
     </table>
 

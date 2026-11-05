@@ -184,23 +184,23 @@ def test_1me3b_census_ledger_matches_the_stock_images(ledger):
 
     assert summary["map"] == {
         "total": 768,
-        "homolog": 592,
+        "homolog": 594,
         "ambiguous": 4,
-        "unpaired": 172,
+        "unpaired": 170,
         "aligned-reference": 500,
         "unique-exact-content": 82,
-        "published-registry": 10,
+        "published-registry": 12,
         "bytes_equal": 560,
     }
     assert summary["axis"] == {
         "total": 433,
-        "homolog": 363,
+        "homolog": 365,
         "ambiguous": 2,
-        "unpaired": 68,
+        "unpaired": 66,
         "aligned-reference": 310,
         "unique-exact-content": 40,
-        "published-registry": 13,
-        "bytes_equal": 350,
+        "published-registry": 15,
+        "bytes_equal": 351,
     }
 
 

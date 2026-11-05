@@ -11,8 +11,8 @@ note = [
 Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
 and ffff1077 latch the zero-based current-gear and target-gear indices \
 ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling and engineering units remain unresolved. Editor \
-qualification remains unresolved under issue #129.""",
+frame 0x174. Scaling and engineering units remain unresolved, so the editor \
+definitions show stored counts.""",
 ]
 level = "code"
 home = "jk78c"
@@ -24,12 +24,22 @@ rows = 4
 storage = "uint8"
 
 [editor]
-emit = false
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
 
 [[symbol]]
 layout = "1me3b"
 address = "0000b884"
 level = "code"
+note = """
+Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit \
+0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, \
+and the flags hold 0x18. The receive table holds an active frame 0x174 \
+record at 000097fc."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -56,6 +66,18 @@ JK78C."""
 layout = "1nd"
 address = "0000b7d0"
 level = "code"
+note = [
+    """
+1ND0A: Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it \
+while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are \
+clear, and the flags hold 0x18. The receive table holds an active frame \
+0x174 record at 00009714.""",
+    """
+1ND3B: Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 \
+calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags \
+ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive \
+record at 00009714 is inactive.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -82,6 +104,11 @@ from JK78C; 1ND3B stock bytes equal JK78C."""
 layout = "jk78c"
 address = "0000b38a"
 level = "code"
+note = """
+Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it \
+only while bit 0 of ROM8[00008383] and bit 7 of the mode flags \
+ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries \
+no frame 0x174 record, so the latched gear indices do not diverge."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -92,7 +119,7 @@ at = "jk78c:00097088"
 type = "axis"
 to = "request_transition_rate_coordinate_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -100,11 +127,23 @@ supports = "identity"
 at = "jk78c:00097088"
 note = "The reviewed explicit wrapper call passes this axis in the x slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ac078"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b333c"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
 [[link]]
 type = "axis"
 to = "request_transition_rate_state_axis/axis"
 slot = "y"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -112,14 +151,34 @@ supports = "identity"
 at = "jk78c:00097088"
 note = "The reviewed explicit wrapper call passes this axis in the y slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ac078"
+note = "The reviewed explicit wrapper call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b333c"
+note = "The reviewed explicit wrapper call passes this axis in the y slot."
+
 [[link]]
 type = "reader"
 to = "request_transition_conditioner/fn"
-layouts = ["jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00097088"
-note = "The complete reader and literal-pool operand establish this access."
+at = "jk78c:00097190"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ac258"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b3410"

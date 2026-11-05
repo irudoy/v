@@ -4,9 +4,8 @@ Lower floor applied to the state-scaled word reference after the upper cap \
 from rev_limit_throttle_cut. The resulting word is stored at ffff3492."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Physical input identities and engineering conversions require separate \
+evidence, so the editor definitions show stored counts.""",
 ]
 level = "code"
 home = "jk78c"
@@ -18,12 +17,24 @@ rows = 1
 storage = "uint16"
 
 [editor]
-emit = false
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+static_axis = ["reference floor"]
+static_axis_name = "Constant"
 
 [[symbol]]
 layout = "1me3b"
 address = "00009460"
 level = "code"
+note = """
+Stock 1ME3B executes the conditioner: dispatcher 000b218e calls it while bit \
+0 of ROM8[000083a6] and bit 7 of the mode flags ROM8[00008a7f] are clear, \
+and the flags hold 0x18. The receive table holds an active frame 0x174 \
+record at 000097fc."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -49,6 +60,18 @@ floor of the reference product, as JK78C 00096ce0 reads 0000918c at \
 layout = "1nd"
 address = "000093a8"
 level = "code"
+note = [
+    """
+1ND0A: Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it \
+while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are \
+clear, and the flags hold 0x18. The receive table holds an active frame \
+0x174 record at 00009714.""",
+    """
+1ND3B: Stock 1ND3B leaves the conditioner unexecuted: dispatcher 000ab184 \
+calls it only while bit 0 of ROM8[0000839f] and bit 7 of the mode flags \
+ROM8[00008a2e] are clear, and the flags hold 0x80. The frame 0x174 receive \
+record at 00009714 is inactive.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -74,6 +97,11 @@ the floor of the reference product, as JK78C 00096ce0 reads 0000918c at \
 layout = "jk78c"
 address = "0000918c"
 level = "code"
+note = """
+Stock JK78C leaves the conditioner unexecuted: dispatcher 0009679a calls it \
+only while bit 0 of ROM8[00008383] and bit 7 of the mode flags \
+ROM8[00008968] are clear, and the flags hold 0x80. The receive table carries \
+no frame 0x174 record, so the latched gear indices do not diverge."""
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -85,13 +113,25 @@ mode = "base"
 [[link]]
 type = "reader"
 to = "request_transition_conditioner/fn"
-layouts = ["jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "indirect"
 supports = "identity"
-at = "jk78c:00096fbc"
+at = "jk78c:00097174"
 value = 8
 mode = "base"
-note = "The complete reader and literal-pool operand establish this access."
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1nd:000ac00c"
+value = 16
+mode = "base"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "1me3b:000b3194"
+value = 16
+mode = "base"

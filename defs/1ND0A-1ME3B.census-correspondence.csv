@@ -63,9 +63,9 @@ map,0000b484,16x16:uint8,homolog,0000b410,16x16:uint8,aligned-reference,yes,
 map,0000b584,16x16:uint8,homolog,0000b510,16x16:uint8,aligned-reference,yes,
 map,0000b684,8x8:uint8,unpaired,,,,,flat-content
 map,0000b6c4,8x8:uint8,homolog,0000b610,8x8:uint8,aligned-reference,yes,
-map,0000b884,4x4:uint8,unpaired,,,,,no-content-match
+map,0000b884,4x4:uint8,homolog,0000b7d0,4x4:uint8,published-registry,no,
 map,0000b894,4x4:uint8,homolog,0000b7e0,4x4:uint8,unique-exact-content,yes,
-map,0000b8a4,4x4:uint8,unpaired,,,,,no-content-match
+map,0000b8a4,4x4:uint8,homolog,0000b7f0,4x4:uint8,published-registry,no,
 map,0000b8b4,4x4:uint8,homolog,0000b800,4x4:uint8,aligned-reference,yes,
 map,0000b954,16x16:uint8,homolog,0000b8a0,16x16:uint8,unique-exact-content,yes,
 map,0000ba54,16x16:uint8,homolog,0000b9a0,16x16:uint8,unique-exact-content,yes,
@@ -233,8 +233,8 @@ map,000135ed,8x1:uint8:step32,unpaired,,,,,flat-content
 map,000135f5,8x1:uint8:step32,unpaired,,,,,flat-content
 axis,0001360d,8:uint8,homolog,00013889,8:uint8,aligned-reference,yes,
 axis,00013641,8:uint8,homolog,000138bd,8:uint8,aligned-reference,yes,
-axis,00013659,4:uint8,unpaired,,,,,duplicate-content
-axis,0001365d,4:uint8,unpaired,,,,,no-content-match
+axis,00013659,4:uint8,homolog,000138d5,4:uint8,published-registry,yes,
+axis,0001365d,4:uint8,homolog,000138d9,4:uint8,published-registry,no,
 map,0001368e,16x1:uint8:step16,unpaired,,,,,flat-content
 map,0001369e,8x1:uint8:step32,unpaired,,,,,flat-content
 map,000136a6,16x1:uint8:step16,unpaired,,,,,flat-content

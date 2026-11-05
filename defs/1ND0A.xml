@@ -2297,6 +2297,177 @@
       </table>
     </table>
 
+    <!-- 0x089F8  1 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x89f8 bound to accessor 0xabc6e through literal
+         0xabdac. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Input Byte Gate Threshold [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x089F8" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>byte gate threshold</data>
+      </table>
+    </table>
+
+    <!-- 0x0939E  1 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x939e bound to accessor 0xabc6e through literal
+         0xabdb4 + 0x6. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while
+         bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the
+         flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Input Word Gate Threshold [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x0939E" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>word gate threshold</data>
+      </table>
+    </table>
+
+    <!-- 0x089FA  1 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x89fa bound to accessor 0xabc6e through literal
+         0xabdac + 0x2. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while
+         bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the
+         flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Hold Reload [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x089FA" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>hold reload</data>
+      </table>
+    </table>
+
+    <!-- 0x0B790  8x8 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0xb790 bound to accessor 0xabc6e through literal
+         0xabff4. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Duration Limit [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B790" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Current Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+      <table type="Static Y Axis" name="Target Gear Index" sizey="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x119C8  8x8 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x119c8 bound to accessor 0xabc6e through literal
+         0xac000. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Bound Offset [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x119C8" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Current Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+      <table type="Static Y Axis" name="Target Gear Index" sizey="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x16A62  8 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x16a62 bound to accessor 0xabc6e through literal
+         0xac01c. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Reference Multiplier [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x16A62" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+      </table>
+    </table>
+
+    <!-- 0x093A8  1 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x93a8 bound to accessor 0xabc6e through literal
+         0xac00c + 0x10. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it
+         while bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and
+         the flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Reference Floor [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x093A8" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>reference floor</data>
+      </table>
+    </table>
+
+    <!-- 0x0B7E0  4x4 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x138D9 raw; X Axis 0x138D5 raw
+         Exact 1ND0A target-native table at 0xb7e0 bound to accessor 0xabc6e through literal
+         0xac25c. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Gear Transition Request - Rate - Special Branch [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B7E0" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D5" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D9" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x15AC2  64 uint16  map [candidate]
          scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
@@ -2335,6 +2506,34 @@
       </table>
     </table>
 
+    <!-- 0x0B7D0  4x4 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x138D9 raw; X Axis 0x138D5 raw
+         Exact 1ND0A target-native table at 0xb7d0 bound to accessor 0xabc6e through literal
+         0xac258. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D"
+           name="Gear Transition Request - Rate - Current at or above Target + 2 [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B7D0" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D5" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D9" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x15B42  64 uint16  map [candidate]
          scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
@@ -2370,6 +2569,92 @@
         <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
         <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
         <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
+      </table>
+    </table>
+
+    <!-- 0x0B7F0  4x4 uint8  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x138D9 raw; X Axis 0x138D5 raw
+         Exact 1ND0A target-native table at 0xb7f0 bound to accessor 0xabc6e through literal
+         0xac254. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D"
+           name="Gear Transition Request - Rate - Current below Target + 2 [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint8"
+           storageaddress="0x0B7F0" sizex="4" sizey="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis"
+             name="Gear Transition Request - Rate Target Gear Index Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D5" sizex="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Gear Transition Request - Rate Coordinate Axis [stored count]"
+             storagetype="uint8" storageaddress="0x138D9" sizey="4" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x093A0  1 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x93a0 bound to accessor 0xabc6e through literal
+         0xac274 + 0x8. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while
+         bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the
+         flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Error Correction Gain [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x093A0" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>gain</data>
+      </table>
+    </table>
+
+    <!-- 0x093A2  1 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x93a2 bound to accessor 0xabc6e through literal
+         0xac274 + 0xa. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while
+         bit 0 of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the
+         flags hold 0x18. The receive table holds an active frame 0x174 record at 00009714.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Error Correction Limit [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x093A2" sizex="1" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Constant" sizex="1">
+        <data>absolute error limit</data>
+      </table>
+    </table>
+
+    <!-- 0x15EB0  8 uint16  map [code]
+         accessor 0xABC6E; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ND0A target-native table at 0x15eb0 bound to accessor 0xabc6e through literal
+         0xac290. Stock 1ND0A executes the conditioner: dispatcher 000ab184 calls it while bit 0
+         of ROM8[0000839f] and bit 7 of the mode flags ROM8[00008a2e] are clear, and the flags
+         hold 0x18. The receive table holds an active frame 0x174 record at 00009714. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Gear Transition Request - Recovery Decrement [stored count]"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
+           storageaddress="0x15EB0" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Target Gear Index" sizex="8">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
       </table>
     </table>
 
