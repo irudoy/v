@@ -1029,13 +1029,13 @@
           "width": 1
         },
         {
-          "candidate": true,
+          "candidate": false,
           "conversion": {
             "factor": 1.0,
             "offset": 0.0
           },
           "dashboard": {
-            "description": "Candidate dwell angle: the periodic snapshot of the APC reset-offset source 0xFFFF2406, bounded to 0 through 114, from which builder 0x0004E080 derives the APC reset-edge command offset. Its reading as the dwell in crank degrees is unverified. Under that reading a dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The dynamic page carries it while a launch-law configuration is active.",
+            "description": "Coil dwell angle in crank degrees: KB ignition_dwell_angle/ram at 0xFFFF237A, the periodic snapshot of source 0xFFFF2406, bounded to 0 through 114. Builder 0x0004E080 derives the APC reset-edge command offset from this angle. A dwell above about 110 degrees can arm a successor before the spark that the hold veto reaches. The vehicle evidence is rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle in patches/hardware-results.toml. The dynamic page carries it while a launch-law configuration is active.",
             "digits": 0,
             "group": "Ignition",
             "label": "Dwell angle",
@@ -1043,9 +1043,9 @@
             "panel": "Dynamic page"
           },
           "name": "ignition_dwell_angle_raw",
-          "scale": "candidate raw degrees; periodic dwell-angle snapshot, stock range 0 through 114",
+          "scale": "raw deg; coil dwell angle in crank degrees, stock range 0 through 114",
           "signed": false,
-          "unit": "degrees",
+          "unit": "deg",
           "width": 1
         },
         {

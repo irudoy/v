@@ -724,8 +724,17 @@ The other stock enable conditions of the arming are not cut points.
 `0xFFFF84EA.bit7` and `0xFFFF13D2` are state of the crank-tooth and capture
 handlers. `0xFFFF4185.bit7` is the debounced port input that the stock
 debouncer `0x00038618` rewrites and that the fuel schedule also reads. The
-dwell angle `0xFFFF237A` is a periodic snapshot with a stock range of 0..114
-degrees and cannot express a per-event cut.
+dwell angle `ignition_dwell_angle/ram` at `0xFFFF237A` is the coil dwell
+angle in crank degrees. It is the periodic snapshot of `0xFFFF2406`, bounded
+by producer `0x0004C1E4` to 0..114. Builder `0x0004E080` derives the
+GR11B reset-edge offset as `120 - angle`, placing the reset edge that angle
+before the following spark; the reset-offset source and dwell angle name
+the mechanism and physical quantity of the same byte. The narrow hardware
+record `rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle` supports the
+unit: `angle * 1000 / (6 * RPM)` gives a dwell time that falls from 4.6 ms
+near idle to 3.0 ms at 6000 RPM. Electrical timing at the coil terminals is
+outside that measurement. The periodic snapshot cannot express a per-event
+cut. The dynamic field `ignition_dwell_angle_raw` carries this meaning.
 
 The fuel-inhibit mask is not the speed-hold actuator. With single-channel
 injection events, a change of a partial mask acts on each channel at its next

@@ -1,15 +1,21 @@
+title = "Coil dwell angle in crank degrees"
 summary = """
-Periodic snapshot of ffff2406 used by 0004e080 and 0002af38 while \
-constructing and maintaining the GR11B command offset. FUN 00020dfe copies \
-0x8c bytes from ffff23bc to ffff2330, mapping source offset 0x4a exactly to \
-this byte."""
+Coil dwell angle in crank degrees, held as the periodic snapshot of \
+ffff2406. FUN 00020dfe copies 0x8c bytes from ffff23bc to ffff2330, mapping \
+offset 0x4a to this byte. Producer 0004c1e4 bounds it to 0..114. Reader \
+0004e080 derives the GR11B reset-edge command offset as 120 minus this \
+angle, and 0002af38 maintains that edge before the following spark. The \
+spark-cut wrapper reads this angle to guard the successor dwell start."""
 note = [
     """
-Producer 0004c1e4 bounds ffff2406 and this snapshot to 0..114. The physical \
-offset meaning remains unverified.""",
+The APC reset-offset snapshot describes the role of the same coil \
+dwell-angle byte. The 2026-11-03 vehicle evidence supports its unit through \
+angle * 1000 / (6 * RPM), which converts it to dwell time in milliseconds; \
+the actual coil-terminal voltage and electrical pulse duration are not \
+measured.""",
 ]
 level = "code"
-unit = "raw offset source"
+unit = "deg crank"
 
 [[ledger]]
 registry = "vars"
@@ -53,7 +59,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "ffff237a"
-name = "aloof-stork"
+former = ["aloof-stork/ram/7mfk-ffff237a"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -89,6 +95,23 @@ supports = "identity"
 at = "7mfk:0004e086"
 value = {named = ["00020dfe", "0002af38", "0004e080", "ffff237a", "ffff2406"], span = 1}
 key = "reference"
+
+[[symbol.evidence]]
+kind = "hardware"
+supports = "identity"
+at = "7mfk:ffff237a"
+key = "rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle"
+note = """
+RPM-correlated dwell-time conversion supports the crank-degree unit; \
+coil-terminal electrical timing is outside the measurement."""
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/rolling-launch.md"
+note = """
+The GR11A spark-cut wrapper reads the coil dwell angle and compares it with \
+the 110-degree successor-arming limit."""
 
 [[link]]
 type = "input"

@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "aloof-stork/ram"
+to = "apc_output/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "apc_output/ram"
+to = "ignition_dwell_angle/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"

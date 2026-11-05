@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "aloof-stork/ram"
+to = "ignition_dwell_angle/ram"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -84,7 +84,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "aloof-stork/ram"
+to = "ignition_dwell_angle/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

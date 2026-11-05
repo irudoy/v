@@ -8308,10 +8308,10 @@ reason = "The snapshot helper reaches this RAM cell through an indirect source o
 kind = "access"
 subject = "7mfk-ffff237a/ram"
 layout = "7mfk"
-claim_sha256 = "2d3d38bfc95886e048e79a3e7ff1f4a4d8f1ef24487c08d6ac36508e61a4c1fe"
+claim_sha256 = "7487b9331a66206ab64b9bc50d81cf9a25d5f71ca9b338e5effaa13c2995a07b"
 l0 = "3ef2478f06d83c6d"
 detail = "writer 7mfk-ffff237a/ram -> 7mfk-00020dfe/fn: no matching normalized L0 access; the original claim remains unresolved"
-sources = ["kb/ram/aloof-stork.toml"]
+sources = ["kb/ram/ignition_dwell_angle.toml"]
 state = "unresolved"
 reason = "The snapshot helper reaches this RAM cell through an indirect source or destination pointer. Normalized L0 has no matching direct access record for this cell at the declared helper; the access remains unresolved."
 

@@ -948,6 +948,19 @@ speed_ratio_through_holds = "pass_trc_covered_holds"
 integral_gain_derivation = "partially_covered"
 physical_outputs = "outside_measurement"
 
+[rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle]
+hardware_status = "pass"
+hardware_scope = "physical interpretation and unit of the logged coil dwell-angle snapshot"
+session = "rolling_launch.v2_hold_vehicle_2026_11_03"
+source_address = 0xFFFF237A
+quantity = "coil dwell angle"
+unit = "deg crank"
+time_conversion = "dwell_time_ms = angle * 1000 / (6 * RPM)"
+near_idle_dwell_time_ms = 4.6
+near_6000_rpm_dwell_time_ms = 3.0
+result = "the RPM-correlated time conversion agrees with coil dwell, and the static APC reset-command reader places the reset edge this crank angle before the next spark; the logged byte is the periodic snapshot of source 0xFFFF2406, not a separate physical offset quantity"
+evidence_boundary = "the pass covers the interpretation of the logged quantity; coil-terminal voltage and electrical pulse duration are not measured, and the parent vehicle acceptance retains its open boundaries"
+
 [can_telemetry.current_wide54_divisor1]
 target_ecu = "23710-JK00D"
 recorded_on = "2026-08-17"

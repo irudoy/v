@@ -6,9 +6,12 @@ ffff1875, and writes ffff2406=min(ffff1874,ffff1875). Diagnostic state \
 ffff4251.bit0 instead forces ffff2406=24."""
 note = [
     """
-Periodic dispatcher 00020dfe copies ffff2406 to actuator-facing snapshot \
-ffff237a. The arithmetic and 0..114 output bound are exact; the physical \
-dwell meaning remains unverified.""",
+On 7mfk, periodic dispatcher 00020dfe copies ffff2406 to coil dwell-angle \
+snapshot ffff237a. The arithmetic and 0..114 output bound are exact. The \
+reset-command reader and \
+rolling_launch.v2_hold_vehicle_2026_11_03.dwell_angle identify its unit as \
+crank degrees; electrical timing at the coil terminals remains outside the \
+vehicle measurement.""",
 ]
 level = "code"
 role = "accessor"

@@ -1,14 +1,17 @@
+title = "Current coil dwell-angle source"
 summary = """
-Current APC reset-offset source selected by 0004c1e4 as \
+Current coil dwell angle in crank degrees, selected by 0004c1e4 as \
 min(ffff1874,ffff1875), with a diagnostic-state override to 24. Its proven \
-stock range is 0..114. Periodic dispatcher 00020dfe copies it to ffff237a."""
+stock range is 0..114. Periodic dispatcher 00020dfe copies it to \
+actuator-facing snapshot ffff237a, which the APC reset-command path reads."""
 note = [
     """
 The copy uses matching offset 0x4a inside the 0x8c-byte ffff23bc -> ffff2330 \
-snapshot.""",
+snapshot. APC reset-offset source names the scheduling role of this \
+dwell-angle quantity.""",
 ]
 level = "code"
-unit = "raw command count"
+unit = "deg crank"
 
 [[ledger]]
 registry = "vars"
@@ -51,18 +54,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "aloof-stork/ram"
-type = "depends"
+to = "apc_reset_offset_source_builder/fn"
+type = "writer"
 end = "owner"
-link_role = "writes"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "apc_reset_offset_source_builder/fn"
-type = "writer"
+to = "ignition_dwell_angle/ram"
+type = "depends"
 end = "owner"
+link_role = "writes"
 relies = "structure"
 supports = "identity"
 
@@ -108,7 +111,7 @@ key = "reference"
 
 [[link]]
 type = "depends"
-to = "aloof-stork/ram"
+to = "ignition_dwell_angle/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
