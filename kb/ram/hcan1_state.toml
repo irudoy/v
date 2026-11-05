@@ -1,0 +1,44 @@
+title = "CAN controller state byte whose bit 0 marks HCAN1 initialization"
+summary = """
+CAN controller state byte. hcan1_init sets bit 0 at 000c3402 after it \
+configures HCAN1, and FUN 0009333e sets it after its register check. The \
+receive copier 000c3620, the receive-age task 000c3994, and dispatcher \
+000c3b14 run only while bit 0 is set. The register checks 0009333e, \
+00093292, 000930e4, and 000931d8 set bit 1, which FUN 00092844 clears; FUN \
+00078a86 writes bit 5 and FUN 000c4606 bit 6."""
+note = [
+    """
+None of the twelve stock stores to the byte clears bit 0, so after the first \
+HCAN1 initialization the bit stays set until a reset.""",
+]
+level = "code"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[bit]]
+bit = 0
+name = "hcan1_initialized"
+summary = """
+Set by hcan1_init and by FUN 0009333e; gates CAN receive copying, receive \
+ages, and payload dispatch."""
+level = "code"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:000c3402"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff4195"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c3402"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c3b30"

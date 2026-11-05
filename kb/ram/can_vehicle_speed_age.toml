@@ -1,0 +1,64 @@
+title = "Receive age of the CAN 0x284 vehicle-speed record"
+summary = """
+Receive age of CAN software record 13, the 0x284 vehicle-speed frame: byte 1 \
+of the ten-byte record ffff3ab5 + 10*13. FUN 000c3994, entry 3 of the \
+pending-task table 0x00021834, increments the age of every receive record on \
+each 10.24 ms pass, saturating at 255, only while ffff4195 bit 0 and \
+ffff4185 bit 7 are set. FUN 000c3620 calls FUN 000c34e0 for every receive \
+record while ffff4195 bit 0 is set, and its FUN 000c34a8 clears the age \
+after a dispatcher pass that processed a new frame of the record (state bit \
+3) and on every pass while ffff4185 bit 7 is clear. Dispatcher 000c3b14 sets \
+ffff4224 bit 6 when the age of any receive record reaches ROM 0x834c (254), \
+and FUN 000c401a copies this age into ffff3e43 when the image selects the \
+0x284 writer of ffff113c."""
+note = [
+    """
+Outside the CAN receive states the age does not grow: it reads 0 while \
+ffff4185 bit 7 is clear, and it keeps its value while ffff4195 bit 0 is \
+clear. A missing 0x284 frame raises the age only while both bits are set, so \
+an age limit alone does not separate a current speed from a stale one.""",
+]
+level = "code"
+width = 8
+signed = false
+unit = "10.24 ms passes"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff3b38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c40a2"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000c399c"
+value = 372
+mode = "base"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:000c34ba"
+value = 372
+mode = "base"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.can.md"
+
+[[link]]
+type = "base"
+to = "feedback_payload_base/ram"
+offset = 0x83
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "indirect"
+at = "7mfk:000c401a"
+value = 131
+mode = "base"

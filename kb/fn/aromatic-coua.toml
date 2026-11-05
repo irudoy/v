@@ -81,6 +81,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
+to = "can_vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
 to = "notorious-falcon/ram"
 type = "reader"
 end = "to"
@@ -100,15 +109,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "indexed_by"
 to = "tough-hoatzin/ram"
-type = "reader"
-end = "to"
-link_role = "indexed_by"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "indexed_by"
-to = "vivid-macaque/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"

@@ -6,12 +6,11 @@ requires zero before the stationary rev-limiter state can advance. P0128 \
 model functions also use boundaries 2 and shifted coordinates."""
 note = [
     """
-Exact firmware decodes CAN 0x280 bytes 4 and 5, filters the value through \
-ffff113c/ffff115e, and FUN 0003a254 divides it by 20 into ffff118e. \
-Homologous Z34 CAN data identifies this field as vehicle speed; the \
-resulting byte uses approximately 2 km/h per count. The DFCO boundary is \
-therefore approximately 8 km/h, while the physical scale remains a \
-hardware-validation item.""",
+Exact firmware decodes CAN 0x284 bytes 4 and 5 into ffff113c, filters the \
+value into ffff115e, and FUN 0003a254 divides it by 20 into ffff118e; J1979 \
+PID 0x0D returns twice ffff118e as km/h, so one count is 2 km/h by the ECU's \
+declaration. The DFCO boundary is therefore 8 km/h, while the physical scale \
+remains a hardware-validation item.""",
 ]
 level = "code"
 unit = "coarse vehicle-speed counts"

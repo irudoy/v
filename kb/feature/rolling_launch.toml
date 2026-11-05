@@ -26,6 +26,7 @@ Rolling Launch v2 is ported to this layout after its vehicle acceptance on \
 [[target]]
 layout = "7mfk"
 status = "supported"
+requires = ["can_vehicle_speed_age/ram"]
 
 [target.allocations.rolling_launch_abort_reason]
 address = "ffff5d41"
@@ -49,7 +50,7 @@ rpm = "rpm/ram"
 scheduler_task = "scheduler_task/fn"
 stock_ignition_consumer = "stock_ignition_consumer/fn"
 unsigned_divide = "unsigned_divide/fn"
-vehicle_speed = "vehicle_speed/ram"
+vehicle_speed = "can_vehicle_speed/ram"
 
 [[target]]
 layout = "jk00c"

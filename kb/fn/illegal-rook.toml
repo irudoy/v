@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "vivid-macaque/ram"
+to = "can_vehicle_speed/ram"
 type = "reader"
 end = "to"
 link_role = "indexed_by"

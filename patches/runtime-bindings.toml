@@ -46,7 +46,7 @@
 "scheduler_task" = 0xA9554
 "stock_ignition_consumer" = 0x2A892
 "unsigned_divide" = 0x21CE0
-"vehicle_speed" = 0xFFFF110E
+"vehicle_speed" = 0xFFFF113C
 
 ["canonical_symbols"."can_telemetry"]
 "coherent_snapshot" = 0x20DFE

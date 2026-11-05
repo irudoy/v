@@ -15,6 +15,28 @@ and is OFF after engine start.""",
 level = "code"
 unit = "bitfield"
 
+[[bit]]
+bit = 7
+name = "pl4_debounced_high"
+summary = """
+Debounced PLDR bit 4 (fffff75e bit 4). FUN 00038618 clears the bit in state \
+1 of debouncer ffff39c4, reached after the pin reads 0 through the countdown \
+of 5 at ffff25d5, and sets it otherwise, including a pending low reading. \
+Dispatcher 000c3b14 and the receive-age task 000c3994 run only while it is \
+set, and FUN 000c34a8 clears every CAN receive age while it is clear. The \
+physical input on PL4 is not identified."""
+level = "code"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:00038958"
+
+[[bit.evidence]]
+kind = "l0"
+supports = "role"
+at = "7mfk:000c3b24"
+
 [[diagnostic]]
 id = "start-signal-did-1302-bit1"
 kind = "runtime_value"

@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "vivid-macaque/ram"
+to = "can_vehicle_speed/ram"
 type = "writer"
 end = "to"
 relies = "structure"

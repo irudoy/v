@@ -43,18 +43,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "cerise-spaniel/axis"
-type = "depends"
+to = "can_vehicle_speed/ram"
+type = "index"
 end = "owner"
-link_role = "indexed_by"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "vivid-macaque/ram"
-type = "index"
+to = "cerise-spaniel/axis"
+type = "depends"
 end = "owner"
+link_role = "indexed_by"
 relies = "structure"
 supports = "identity"
 
@@ -266,7 +266,7 @@ role = "indexed_by"
 
 [[link]]
 type = "index"
-to = "vivid-macaque/ram"
+to = "can_vehicle_speed/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

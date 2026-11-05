@@ -154,3 +154,23 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "selector"
+to = "hcan1_state/ram"
+slot = "bit0"
+note = "The dispatcher returns without dispatching while bit 0 is clear."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000c3b30"
+
+[[link]]
+type = "selector"
+to = "small-sheep/ram"
+slot = "bit7"
+note = "The dispatcher returns without dispatching while bit 7 is clear."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000c3b24"

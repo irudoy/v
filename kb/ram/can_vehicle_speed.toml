@@ -1,17 +1,29 @@
+title = "CAN 0x284 vehicle-speed word in km/h*10"
 summary = """
 CAN-derived vehicle-speed word. FUN 000c4506 assembles CAN 0x284 bytes 4 and \
-5 (software receive record 13, dispatcher key 0x5080) as big-endian uint16, \
-treats 0xffff as invalid, divides by 10, and writes the word; FUN 0003a174 \
-filters it into ffff115e. ROM 0x8349 bit 3, 0x834f = 2, and 0x89c0 = 0 \
-select this writer; meter-frame decoder 000c456c writes the word only when \
-0x834f = 1, and FUN 000c4d6a only when 0x89c0 = 1. No stock path rewrites \
-the word while 0x284 is absent; the receive age of record 13 is ffff3b38."""
+5 (software receive record 13, dispatcher key 0x5080) as a big-endian \
+uint16, writes 0 for the wire value 0xffff, and otherwise writes the wire \
+value divided by 10; FUN 0003a174 filters the word into ffff115e. ROM 0x8349 \
+bit 3, 0x834f = 2, and 0x89c0 = 0 select this writer; meter-frame decoder \
+000c456c writes the word only when 0x834f = 1, and FUN 000c4d6a only when \
+0x89c0 = 1. Dispatcher 000c3b14 calls the writer only for a new frame of \
+record 13 and runs only while ffff4185 bit 7 and ffff4195 bit 0 are set. No \
+stock path rewrites the word while 0x284 is absent, so it keeps its last \
+value; the receive age of record 13 is ffff3b38."""
 note = [
     """
 J1979 PID 0x0D returns min(255, 2*ffff118e) with ffff118e = ffff115e/20, so \
 the CAN word is km/h*100 and this word km/h*10.""",
+    """
+The word carries no validity flag. Zero stands for a wire value below 10 and \
+for the wire value 0xffff alike; the wire bytes stay in record 13 at \
+ffff3b3d and ffff3b3e until the next frame. A zero is a current stop only \
+while ffff4185 bit 7 and ffff4195 bit 0 are set, the age ffff3b38 is within \
+its limit, and the wire word differs from 0xffff.""",
 ]
 level = "code"
+width = 16
+signed = false
 unit = "km/h*10"
 
 [[ledger]]
@@ -39,7 +51,7 @@ supports = "identity"
 [[symbol]]
 layout = "7mfk"
 address = "ffff113c"
-name = "vivid-macaque"
+former = ["vivid-macaque/ram/7mfk-ffff113c"]
 
 [[symbol.evidence]]
 kind = "l0"

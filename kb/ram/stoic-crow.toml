@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "vivid-macaque/ram"
+to = "can_vehicle_speed/ram"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ at = "7mfk:00039f18"
 
 [[link]]
 type = "input"
-to = "vivid-macaque/ram"
+to = "can_vehicle_speed/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
