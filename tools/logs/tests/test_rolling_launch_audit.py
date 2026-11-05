@@ -459,6 +459,20 @@ class BusJoinTest(unittest.TestCase):
         self.assertEqual(row["release_rpm"], 4000)
         self.assertEqual(row["next_torque_frame_ms"], 5)
         self.assertAlmostEqual(row["next_torque_frame_cycles"], 1 / 6)
+        cut = row["cut_release"]
+        self.assertEqual(cut["ecu_release_inferred_ms_bounds"], [150, 160])
+        self.assertEqual(cut["cuts_after_phase_exit_snapshot"], 0)
+        self.assertLessEqual(cut["last_cut_after_ecu_release_upper_cycles"], 1)
+
+    def test_pedal_abort_precedes_acceptance_of_the_stable_release(self):
+        capture = self.capture()
+        (run,) = audit.audit_hold(capture.samples, CALIBRATION)
+        run = replace(run, abort_reason=model.AbortReason.PEDAL_LOW)
+        (row,) = audit.audit_bus(capture, (run,))["holds"]
+        cut = row["cut_release"]
+        self.assertNotIn("ecu_release_inferred_ms_bounds", cut)
+        self.assertEqual(cut["ecu_release_inferred_not_before_ms"], 160)
+        self.assertEqual(cut["last_cut_after_ecu_release_upper_cycles"], 0)
 
     def test_reference_join_survives_a_tick_wrap_before_the_mlg_starts(self):
         reference = self.capture()
@@ -546,6 +560,79 @@ class BusJoinTest(unittest.TestCase):
         self.assertEqual(result["target_intersection_raw"], [200, 200])
         self.assertEqual(result["target_candidates_raw"], [])
         self.assertFalse(result["compatible"])
+
+
+class ReleaseCutTimingTest(unittest.TestCase):
+    def capture(self, *, late_cut=False, next_hold=False):
+        base = simulate(SPEEDS)[:12]
+        counters = [250, 251, 252, 254, 255, 0, 2, 2, 2, 2, 2, 2]
+        if late_cut:
+            counters[8:] = [3] * 4
+        samples = tuple(replace(
+            s, phase=1 if 1 <= i < 6 or next_hold and i >= 10 else 2,
+            button=2 if i < 3 else 32, cut_counter=counters[i],
+        ) for i, s in enumerate(base))
+        return BusJoinTest.capture(samples)
+
+    def result(self, capture, release=25):
+        return audit.release_cut_timing(
+            capture, 1, 6, release,
+            audit._BusIndex(capture.timing.bus_frames[0x180]),
+        )
+
+    def test_transition_interval_counts_are_not_cuts_after_inactive_snapshot(self):
+        result = self.result(self.capture())
+        self.assertEqual(result["host_release_snapshot_first_page_ms"], 30)
+        self.assertEqual(result["host_release_snapshot_ms"], 33)
+        self.assertIsNone(result["ecu_release_snapshot_ms"])
+        self.assertEqual(result["phase_exit_snapshot_ms"], 60)
+        self.assertEqual(result["last_increment_snapshot_ms"], 60)
+        self.assertEqual(result["phase_exit_counter_increment"], 2)
+        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 0)
+        # The counter wraps, and two cuts straddle the raw release frame.
+        self.assertEqual(result["cuts_after_release_bounds"], [4, 6])
+        self.assertEqual(result["last_cut_offset_ms_bounds"], [25, 35])
+        self.assertEqual(result["raw_release_one_cycle"], "straddles_one_cycle")
+
+    def test_a_veto_after_the_inactive_snapshot_is_detected(self):
+        result = self.result(self.capture(late_cut=True))
+        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 1)
+        self.assertEqual(result["last_increment_snapshot_ms"], 80)
+        self.assertEqual(result["last_cut_cycles_bounds"], [1.5, 55 / 30])
+        self.assertEqual(result["raw_release_one_cycle"], "beyond_snapshot_bound")
+
+    def test_a_later_hold_is_outside_the_quiet_observation_window(self):
+        capture = self.capture(next_hold=True)
+        samples = list(capture.samples)
+        samples[10] = replace(samples[10], cut_counter=7)
+        result = self.result(replace(capture, samples=tuple(samples)))
+        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 0)
+        self.assertEqual(result["inactive_snapshots_checked"], 3)
+
+    def test_missing_counter_coverage_does_not_pass_the_release_bound(self):
+        capture = self.capture()
+        samples = list(capture.samples)
+        samples[7] = replace(samples[7], cut_counter=None)
+        result = self.result(replace(capture, samples=tuple(samples)))
+        self.assertFalse(result["counter_window_complete"])
+        self.assertIsNone(result["cuts_after_phase_exit_snapshot"])
+        self.assertIsNone(result["cuts_after_release_bounds"])
+        self.assertEqual(result["raw_release_one_cycle"], "unresolved_window")
+
+    def test_the_last_cut_can_precede_the_raw_button_release(self):
+        result = self.result(self.capture(), release=85)
+        self.assertEqual(result["cuts_after_release_bounds"], [0, 0])
+        self.assertEqual(result["last_cut_offset_ms_bounds"], [-35, -25])
+        self.assertEqual(result["raw_release_one_cycle"], "within_snapshot_bound")
+
+    def test_a_stream_pause_does_not_form_continuous_counter_coverage(self):
+        capture = self.capture()
+        times = tuple(t + (100 if i >= 7 else 0)
+                      for i, t in enumerate(capture.timing.first_page_ms))
+        capture = replace(capture, timing=replace(capture.timing, first_page_ms=times))
+        result = self.result(capture)
+        self.assertFalse(result["counter_window_complete"])
+        self.assertIsNone(result["cuts_after_phase_exit_snapshot"])
 
 
 if __name__ == "__main__":

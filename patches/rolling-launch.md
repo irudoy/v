@@ -392,10 +392,33 @@ The first `0x180` frame after a released `0x239` code bounds the sampling
 delay alone. Its estimated torque equals the parallel `0x160` word through
 the holds: neither estimate accounts for the added spark veto. `0x174`
 words A and B are TCM requests. These words cannot time restoration of full
-physical torque, and cut-counter updates continue after release in several
-holds. The one-engine-cycle release bound, M-mode acceptance, and integral
-gain selection remain open in issue #103. Spark angle at the crankshaft and
-the electrical output at the coil terminals remain outside the measurement.
+physical torque. The veto counter provides ECU-side release timing between
+adjacent coherent snapshots. Phase is a fixed field of page 2 and is current
+every tick. In every TRC-covered hold, the counter is constant after the
+first non-ACTIVE snapshot through the following inactive interval. An
+increment ending at that first snapshot spans the phase transition, rather
+than proving a veto after it.
+
+The last-veto intervals on the first-page capture clock extend beyond one
+four-stroke engine cycle after the raw released `0x239` frame in some holds.
+The stable input `0xFFFF2A85` is not logged: the MLG button channel is host
+context from `0x239`, sampled at group completion. A `BUTTON_RELEASED`
+abort bounds acceptance of the stable release between the last ACTIVE and
+first non-ACTIVE snapshots. Gate aborts `PEDAL_LOW` and `RPM_LOW` precede
+acceptance, since the released input overrides those reasons. Under this
+runtime contract, the observed veto ends within one snapshot interval of
+acceptance, or before it. The post-frame counts belong to the interval
+before or ending at the phase exit; no continued veto after the first
+inactive snapshot is observed. Attribution of the full input delay to the
+stock five-sample filter remains indirect without its input byte.
+
+The hardware record owns the per-hold timestamps, count bounds, RPM, and
+cycle bounds. First-page times are capture proxies rather than interrupt
+timestamps; they include unmeasured publication latency. The one-cycle
+criterion measured from the raw CAN frame is not accepted. M-mode
+acceptance and integral gain selection remain open in issue #103. Spark
+angle at the crankshaft and the electrical output at the coil terminals
+remain outside the measurement.
 
 ## Modes
 

@@ -568,9 +568,26 @@ ambiguous, or matching ticks with different contents, refuse the join.
   estimate in `0x160` do not account for the added spark veto. Equality of
   those words through a cut cannot establish full shaft torque. `0x174`
   words A and B are requests from the TCM, not actual torque. The report
-  leaves physical recovery unmeasured and reports the last observed cut
-  counter change after release separately; rotated phase context does not
-  time the abort.
+  leaves physical recovery unmeasured and reports veto release from the cut
+  counter separately.
+- Phase is a fixed field of page 2, current in every snapshot. Counter
+  increments are modulo 256. A last veto lies between adjacent coherent
+  snapshots; their first-page times are capture proxies, not interrupt-event
+  timestamps. An increment in the first non-ACTIVE snapshot spans the
+  transition and does not establish a veto after it. The audit checks all
+  subsequent inactive snapshots up to the next hold, rejects incomplete
+  coverage as a release proof, and bounds how many cuts straddle or follow
+  the raw release frame.
+- The snapshot button attribute is host context from `0x239`, not the stable
+  ECU input `0xFFFF2A85`, which these recordings do not carry. A
+  `BUTTON_RELEASED` abort bounds acceptance of the stable release between
+  the last ACTIVE and first non-ACTIVE snapshots: the runtime consumes the
+  debounced input after the stock ASCD task and aborts in that pass.
+  `PEDAL_LOW` and `RPM_LOW` aborts precede acceptance, since an accepted
+  released code overrides those gate reasons with `BUTTON_RELEASED`.
+  The audit keeps these inferred input bounds separate from observations
+  and compares veto release with both the raw CAN code and the inferred
+  stable input.
 - The `0x176` output/turbine ratio is reported over each hold and compared
   with stable-gear medians using the field decoder and selection of
   `tcm_shift_audit.py`. Neutral ratios do not identify a driving gear.

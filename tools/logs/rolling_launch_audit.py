@@ -55,6 +55,7 @@ from patches import rolling_launch
 from patches.rolling_launch_layout import load_layout
 from tools.can_dashboard.model import (
     ASCD_BUTTON_ID,
+    BASE_TICK_SECONDS,
     DASHBOARD_STATE_ID,
     DashboardModel,
     FrameRecord,
@@ -813,6 +814,83 @@ def _speed_targets(samples, times, bus):
     return result
 
 
+def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames):
+    """Bound veto-count events between adjacent coherent snapshots.
+
+    Phase is fixed page 2, current every tick. The button attribute is host
+    context from 0x239, not the debounced ECU input 0xFFFF2A85. A counter
+    increment ending at the first non-ACTIVE snapshot spans the transition;
+    only subsequent increments demonstrate counting after that snapshot.
+    First-page times are capture proxies, not interrupt-event timestamps.
+    """
+    samples = capture.samples
+    times = capture.timing.first_page_ms
+    stop = next((i for i in range(exit_index + 1, len(samples))
+                 if samples[i].phase == rolling_launch.Phase.ACTIVE), len(samples))
+    deltas = {}
+    complete = True
+    for index in range(start_index + 1, stop):
+        previous, sample = samples[index - 1:index + 1]
+        elapsed_ms = times[index] - times[index - 1]
+        if (sample.tick != previous.tick + 1 or not 0 < elapsed_ms <= 2000 * BASE_TICK_SECONDS
+                or previous.cut_counter is None
+                or sample.cut_counter is None):
+            complete = False
+            continue
+        deltas[index] = (sample.cut_counter - previous.cut_counter) & 0xFF
+    host = next((i for i in range(start_index, stop)
+                 if capture.timing.last_page_ms[i] >= release_ms
+                 and samples[i].button == rolling_launch.BUTTON_RELEASED), None)
+    changes = [i for i, count in deltas.items() if count]
+    result = {
+        "host_release_snapshot_tick": samples[host].tick if host is not None else None,
+        "host_release_snapshot_first_page_ms": times[host] if host is not None else None,
+        "host_release_snapshot_ms": (
+            capture.timing.last_page_ms[host] if host is not None else None
+        ),
+        "ecu_release_snapshot_ms": None,
+        "phase_exit_snapshot_tick": samples[exit_index].tick,
+        "phase_exit_snapshot_ms": times[exit_index],
+        "phase_exit_interval_ms": [times[exit_index - 1], times[exit_index]],
+        "phase_exit_counter_increment": deltas.get(exit_index),
+        "cuts_after_release_bounds": [
+            sum(count for i, count in deltas.items() if times[i - 1] >= release_ms),
+            sum(count for i, count in deltas.items() if times[i] > release_ms),
+        ] if complete else None,
+        "cuts_after_phase_exit_snapshot": (
+            sum(count for i, count in deltas.items() if i > exit_index)
+            if complete else None
+        ),
+        "inactive_snapshots_checked": stop - exit_index - 1,
+        "inactive_observation_ms": times[stop - 1] - times[exit_index],
+        "counter_window_complete": complete,
+        "last_increment_snapshot_tick": None,
+        "last_increment_snapshot_ms": None,
+        "last_cut_offset_ms_bounds": None,
+        "last_cut_cycles_bounds": None,
+    }
+    if not changes:
+        return result
+    last = changes[-1]
+    bounds = [times[last - 1] - release_ms, times[last] - release_ms]
+    result.update(last_increment_snapshot_tick=samples[last].tick,
+                  last_increment_snapshot_ms=times[last],
+                  last_cut_offset_ms_bounds=bounds)
+    rpm_frame = rpm_frames.before(times[last])
+    if rpm_frame is None or len(rpm_frame[1]) < 2:
+        return result
+    rpm = int.from_bytes(rpm_frame[1][:2], "big") / 8
+    cycles = [ms * rpm / 120000 for ms in bounds]
+    result.update(last_cut_rpm=rpm, last_cut_cycles_bounds=cycles,
+                  raw_release_one_cycle=(
+                      "unresolved_window" if not complete else
+                      "within_snapshot_bound" if cycles[1] <= 1 else
+                      "beyond_snapshot_bound" if cycles[0] > 1 else
+                      "straddles_one_cycle"
+                  ))
+    return result
+
+
 def audit_bus(capture, runs, *, reference=None):
     """Join holds to raw CAN frames without calling an estimate shaft torque.
 
@@ -908,15 +986,40 @@ def audit_bus(capture, runs, *, reference=None):
             row.update(next_torque_frame_ms=delay, release_rpm=rpm,
                        release_rpm_age_ms=release - previous_frame[0],
                        next_torque_frame_cycles=delay * rpm / 120000)
-        changes = [
-            capture.timing.first_page_ms[index] - release
-            for index in range(start_index + 1, min(end_index + 3, len(capture.samples)))
-            if capture.samples[index].cut_counter is not None
-            and capture.samples[index - 1].cut_counter is not None
-            and capture.samples[index].cut_counter != capture.samples[index - 1].cut_counter
-            and capture.timing.first_page_ms[index] >= release
-        ]
-        row["last_cut_counter_update_after_release_ms"] = max(changes, default=None)
+        cut_timing = release_cut_timing(capture, start_index, end_index, release, bus[0x180])
+        if run.abort_reason == rolling_launch.AbortReason.BUTTON_RELEASED:
+            # The runtime consumes the stable input after the stock ASCD
+            # task and aborts in that pass. The input byte itself is absent.
+            cut_timing["ecu_release_inferred_ms_bounds"] = [
+                capture.timing.first_page_ms[end_index - 1], end,
+            ]
+            last = cut_timing["last_increment_snapshot_ms"]
+            if (last is not None and "last_cut_rpm" in cut_timing
+                    and cut_timing["counter_window_complete"]):
+                upper = max(0, last - capture.timing.first_page_ms[end_index - 1])
+                cut_timing["last_cut_after_ecu_release_upper_ms"] = upper
+                cut_timing["last_cut_after_ecu_release_upper_cycles"] = (
+                    upper * cut_timing["last_cut_rpm"] / 120000
+                )
+        elif run.abort_reason in (
+            rolling_launch.AbortReason.PEDAL_LOW, rolling_launch.AbortReason.RPM_LOW,
+        ):
+            # A released stable input overrides these gate reasons with
+            # BUTTON_RELEASED. It has not been accepted at this abort pass.
+            cut_timing["ecu_release_inferred_not_before_ms"] = end
+            last = cut_timing["last_increment_snapshot_ms"]
+            if (last is not None and "last_cut_rpm" in cut_timing
+                    and cut_timing["counter_window_complete"]):
+                upper = max(0, last - end)
+                cut_timing["last_cut_after_ecu_release_upper_ms"] = upper
+                cut_timing["last_cut_after_ecu_release_upper_cycles"] = (
+                    upper * cut_timing["last_cut_rpm"] / 120000
+                )
+        row["cut_release"] = cut_timing
+        last = cut_timing["last_increment_snapshot_ms"]
+        row["last_cut_counter_update_after_release_ms"] = (
+            last - release if last is not None and last >= release else None
+        )
     frame_speeds = {"inside": [], "outside": []}
     for time, data in bus[0x280].frames:
         other = bus[0x284].before(time)

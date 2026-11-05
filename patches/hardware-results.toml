@@ -755,7 +755,7 @@ neutral_steady_throttle_holds = [13, 14]
 neutral_steady_throttle_rpm_inside = [[2371.875, 2496.875], [3268.75, 3365.625]]
 neutral_steady_throttle_rpm_after_1s = [2771.875, 3778.125]
 result = "all 28 holds enter ACTIVE on Map 3 and pass the hold audit: every published fraction follows the model, every cut count lies inside the bounds that the fractions owe, and no fuel mask or cut appears outside ACTIVE; at standstill u steps from 950 to 500 at the rate limit and stays at 500, the all-cylinder cut latches near the captured RPM plus 1000 and releases near 100 RPM below it, and engine speeds below 2000 RPM refuse activation; on the road the speed error stays between -1.4 and +2.9 km/h, and the button releases eleven holds and RPM_LOW one"
-evidence_boundary = "RPM comes from the stock frame, so the ceiling offsets are bounded by the frame sampling and are not a latch replay; most road snapshots carry configuration 2, whose fractions are checked against two-tick bounds; the speed word is reconstructed through the hold error and ROM selection rather than logged directly; neither 0x180 nor 0x160 estimates the added spark veto, so physical torque recovery and the one-engine-cycle release bound remain unmeasured; the capture does not measure spark angle at the crankshaft or electrical injector output"
+evidence_boundary = "RPM comes from the stock frame, so the ceiling offsets are bounded by the frame sampling and are not a latch replay; most road snapshots carry configuration 2, whose fractions are checked against two-tick bounds; the speed word is reconstructed through the hold error and ROM selection rather than logged directly; neither 0x180 nor 0x160 estimates the added spark veto; the veto counter bounds ECU-side release between snapshots, while physical torque and spark or injector output timing are unmeasured; the stable ASCD input is inferred from abort semantics rather than logged directly, and first-page capture proxies include unmeasured publication latency"
 bus_alignment_basis = "TRC and MLG snapshots join by the 16-bit telemetry tick with equal RPM, phase, page configuration, speed error, torque fraction, cut counter, pedal and fuel mask; the stationary TRC starts before the tick wrap preceding the MLG"
 bus_release_time_basis = "milliseconds from the start in each TRC header, including the retained trace offset; first 0x239 transition from CANCEL 0x02 to released 0x20 through a hold or within one second after it"
 bus_time_resolution_ms = 0.1
@@ -763,7 +763,15 @@ bus_torque_basis = "0x180 actual word is byte 2 and byte 3 high nibble; 0x160 pa
 bus_cycle_basis = "four-stroke engine cycles = delay_ms * RPM / 120000; the next 0x180 frame delay is sampling latency, not torque recovery"
 bus_release_rpm_basis = "RPM from the last 0x180 frame at or before the released 0x239 frame; its age is recorded per hold"
 bus_physical_torque_recovery = "unobservable_in_the_recorded_torque_words"
-bus_cut_counter_basis = "last first-page timestamp with a cut-counter increment after release, not an actuator-event timestamp; the rotated phase field cannot time the abort"
+bus_cut_counter_basis = "counter deltas modulo 256 bound veto events between adjacent coherent snapshots; phase is fixed page 2 and current every tick; an increment ending at the first non-ACTIVE snapshot spans the transition, and later increments are checked through the inactive interval up to the next hold"
+bus_cut_time_basis = "last-cut bounds use the first-page timestamps of adjacent snapshots as capture proxies, not ISR timestamps; the unknown capture-to-page publication delay qualifies these bounds; negative offsets mean the last increment precedes the raw release frame"
+bus_cut_rpm_basis = "RPM from the last 0x180 frame at or before the last-increment snapshot; four-stroke cycle bounds = millisecond bounds * RPM / 120000"
+bus_post_release_count_basis = "the lower bound excludes the interval straddling the raw release frame, and the upper bound includes it"
+bus_host_button_basis = "the ASCD channel is host context from 0x239, sampled when the telemetry group completes; both the first-page and completion timestamps of its first released snapshot are recorded"
+bus_ecu_button_directly_logged = false
+bus_ecu_button_address = 0xFFFF2A85
+bus_ecu_release_inference_basis = "the runtime consumes the stable code after the stock ASCD task and aborts in that pass; BUTTON_RELEASED bounds acceptance between the last ACTIVE and first non-ACTIVE snapshots; PEDAL_LOW and RPM_LOW precede acceptance because a released input overrides those reasons"
+bus_release_delay_interpretation = "post-frame counting is confined to ACTIVE or the interval ending at the first non-ACTIVE snapshot; no later inactive-snapshot increment is observed; the delay is consistent with upstream input filtering and scheduler sampling, but the stable input and its five-sample buffer are not recorded"
 speed_decoder = "0x284 bytes 4 and 5 form a big-endian uint16; 0xFFFF maps to zero and every other value divides by ten with truncation into 0.1 km/h counts; 0x280 uses the same wire bytes for the meter speed"
 speed_source_rom_options = [{ address = 0x8349, value = 0x3B }, { address = 0x834F, value = 2 }, { address = 0x89C0, value = 0 }]
 speed_source_selected_can_id = 0x284
@@ -818,6 +826,23 @@ bus_last_cut_counter_update_after_release_ms = [4.4, 5.0, 87.0, 45.2, 35.8, 46.3
 bus_button_period_median_ms = 20.5
 bus_actual_period_median_ms = 10.2
 bus_speed_period_median_ms = 20.0
+
+bus_first_raw_release_snapshot_first_page_ms = [95787.0, 104444.5, 117363.6, 123449.5, 143047.3, 219694.7, 232368.2, 238689.8, 241906.2, 244611.0, 255019.3, 289678.2, 295097.7, 302044.9, 308846.9, 314336.9]
+bus_first_raw_release_snapshot_complete_ms = [95789.7, 104450.2, 117370.2, 123452.3, 143054.2, 219698.3, 232374.5, 238693.4, 241908.7, 244616.2, 255022.6, 289686.2, 295100.8, 302050.2, 308849.7, 314339.7]
+bus_phase_exit_snapshot_ms = [95797.1, 104454.5, 117353.4, 123438.8, 143139.9, 219756.6, 232358.1, 238730.4, 241865.2, 244580.3, 255070.5, 289749.9, 295128.2, 302094.8, 308856.0, 314367.9]
+bus_last_increment_snapshot_ms = [95787.0, 104454.5, 117343.2, 123428.4, 143139.9, 219736.1, 232347.6, 238720.2, 241854.9, 244569.8, 255060.3, 289749.9, 295118.0, 302074.2, 308846.9, 314367.9]
+bus_last_cut_ms_bounds = [[-6.1, 4.4], [-5.0, 5.0], [-26.0, -15.7], [-25.7, -15.6], [76.8, 87.0], [34.5, 45.2], [-36.4, -26.2], [25.6, 35.8], [-56.4, -46.3], [-46.3, -36.3], [35.8, 46.3], [55.9, 66.0], [14.3, 24.6], [25.5, 35.4], [-4.9, 6.3], [25.6, 36.0]]
+bus_last_cut_rpm = [3806.25, 3746.875, 3050.0, 4168.75, 3753.125, 3278.125, 3656.25, 3937.5, 3900.0, 4443.75, 3246.875, 3081.25, 2384.375, 3287.5, 3331.25, 3490.625]
+bus_last_cut_cycle_bounds = [[-0.193484, 0.139562], [-0.15612, 0.15612], [-0.660833, -0.399042], [-0.892807, -0.541938], [2.402, 2.721016], [0.942461, 1.23476], [-1.109062, -0.798281], [0.84, 1.174688], [-1.833, -1.50475], [-1.714547, -1.344234], [0.968651, 1.252753], [1.435349, 1.694687], [0.284138, 0.488797], [0.698594, 0.969813], [-0.136026, 0.174891], [0.744667, 1.047187]]
+bus_cuts_after_release_bounds = [[0, 1], [0, 1], [0, 0], [0, 0], [7, 7], [4, 5], [0, 0], [4, 4], [0, 0], [0, 0], [3, 5], [5, 6], [2, 2], [3, 5], [0, 2], [2, 3]]
+bus_phase_exit_counter_increment = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
+bus_cuts_after_phase_exit_snapshot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+bus_inactive_snapshots_checked = [770, 1120, 486, 1817, 7404, 1106, 566, 259, 188, 953, 3294, 389, 589, 589, 409, 2898]
+bus_inactive_observation_ms = [7889.1, 11474.7, 4978.8, 18614.9, 75858.0, 11331.8, 5798.5, 2653.7, 1926.0, 9762.7, 33747.2, 3985.3, 6034.2, 6034.0, 4190.0, 29691.2]
+bus_counter_window_complete = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+bus_ecu_release_upper_ms = [0, 0, 0, 0, 10.2, 0, 0, 0, 0, 0, 0, 10.1, 0, 0, 0, 0]
+bus_ecu_release_upper_cycles = [0.0, 0.0, 0.0, 0.0, 0.319016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.259339, 0.0, 0.0, 0.0, 0.0]
+bus_raw_release_one_cycle = ["within_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "beyond_snapshot_bound", "straddles_one_cycle", "within_snapshot_bound", "straddles_one_cycle", "within_snapshot_bound", "within_snapshot_bound", "straddles_one_cycle", "beyond_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "straddles_one_cycle"]
 
 [[rolling_launch.v2_hold_vehicle_2026_11_03.captures]]
 stage = "road"
@@ -880,6 +905,23 @@ bus_284_over_280_outside_min_median_max = [0.936275, 0.95614, 0.992163]
 bus_284_over_280_sample_counts = [605, 12986]
 bus_coverage_basis = "hold 3 at MLG t=98.657 s is covered: ticks 32945..33030 and their contents match the TRC at 127368.8..128239.5 ms; holds 1 and 2 precede the retained trace"
 
+bus_first_raw_release_snapshot_first_page_ms = [128178.2, 146062.3, 238812.1, 305435.4, 329193.8, 346087.1, 348913.6, 351125.0, 360166.0, 370928.1]
+bus_first_raw_release_snapshot_complete_ms = [128181.5, 146065.4, 238815.5, 305441.6, 329196.7, 346090.3, 348917.7, 351127.4, 360173.9, 370930.5]
+bus_phase_exit_snapshot_ms = [128239.5, 146113.4, 238853.3, 305200.3, 329223.5, 346118.4, 348984.9, 351186.4, 360247.9, 370998.8]
+bus_last_increment_snapshot_ms = [128239.5, 146113.4, 238842.9, 305190.2, 329213.6, 346107.6, 348984.9, 351186.4, 360247.9, 370998.8]
+bus_last_cut_ms_bounds = [[56.2, 66.4], [45.5, 55.6], [26.2, 35.9], [-251.9, -240.9], [15.7, 25.8], [14.8, 25.1], [66.2, 76.5], [56.4, 66.6], [65.2, 75.6], [66.2, 76.5]]
+bus_last_cut_rpm = [4862.5, 2765.625, 3246.875, 2059.375, 3203.125, 2837.5, 3903.125, 4759.375, 4453.125, 4218.75]
+bus_last_cut_cycle_bounds = [[2.277271, 2.690583], [1.048633, 1.281406], [0.708901, 0.971357], [-4.322971, -4.134195], [0.419076, 0.688672], [0.349958, 0.59351], [2.153224, 2.488242], [2.236906, 2.641453], [2.419531, 2.805469], [2.327344, 2.689453]]
+bus_cuts_after_release_bounds = [[13, 15], [4, 5], [4, 6], [0, 0], [2, 3], [1, 2], [8, 8], [9, 10], [12, 14], [12, 13]]
+bus_phase_exit_counter_increment = [1, 1, 0, 0, 0, 0, 1, 1, 1, 1]
+bus_cuts_after_phase_exit_snapshot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+bus_inactive_snapshots_checked = [1614, 8974, 6434, 2280, 1334, 144, 139, 709, 969, 8222]
+bus_inactive_observation_ms = [16532.4, 91910.3, 65886.0, 23347.5, 13659.0, 1474.0, 1423.2, 7259.6, 9921.6, 84197.6]
+bus_counter_window_complete = [true, true, true, true, true, true, true, true, true, true]
+bus_ecu_release_upper_ms = [10.2, 10.1, 0, 0, 0, 0, 10.3, 10.2, 10.4, 10.3]
+bus_ecu_release_upper_cycles = [0.413312, 0.232773, 0.0, 0.0, 0.0, 0.0, 0.335018, 0.404547, 0.385938, 0.362109]
+bus_raw_release_one_cycle = ["beyond_snapshot_bound", "beyond_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "within_snapshot_bound", "beyond_snapshot_bound", "beyond_snapshot_bound", "beyond_snapshot_bound", "beyond_snapshot_bound"]
+
 [rolling_launch.v2_hold_vehicle_2026_11_03.term_status]
 preflash = "pass"
 stationary_activation = "pass"
@@ -898,8 +940,10 @@ dwell_limit = "pass"
 dtc_readout = "pass"
 run_timeout = "untested"
 speed_word_source = "pass_hold_error_and_rom_selection"
-release_to_torque = "unobservable_in_recorded_torque_words"
-one_engine_cycle_release = "not_demonstrated"
+release_to_torque = "ecu_veto_release_bounded_physical_torque_unmeasured"
+one_engine_cycle_release = "not_accepted_from_raw_0x239_frame"
+one_engine_cycle_from_stable_input = "pass_code_inferred_snapshot_bound"
+cut_counter_after_inactive_snapshot = "pass_no_increments_in_covered_holds"
 speed_ratio_through_holds = "pass_trc_covered_holds"
 integral_gain_derivation = "partially_covered"
 physical_outputs = "outside_measurement"
