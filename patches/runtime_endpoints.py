@@ -870,7 +870,8 @@ def require_valid_signature(endpoint):
 
 def _layout_stock_bytes(layout):
     """Return the stock byte of every offset that the layout writes: erased
-    claimed ROM and records, and the stock hook words and DID slots."""
+    claimed ROM and records, the stock hook words and DID slots, and the stock
+    words that the layout restores."""
     stock = {}
     for span in (
         *layout.claimed_rom_ranges,
@@ -887,6 +888,11 @@ def _layout_stock_bytes(layout):
         stock.update(zip(
             range(item.pointer_address, item.pointer_address + 4),
             item.stock.to_bytes(4, layout.byte_order),
+        ))
+    for item in layout.restored_words:
+        stock.update(zip(
+            range(item.address, item.address + item.width),
+            item.value.to_bytes(item.width, layout.byte_order),
         ))
     return stock
 
@@ -973,11 +979,20 @@ def require_coherent_rolling_endpoint(
         did_values[item.did] == item.target for item in layout.diagnostics
     )
     if hooks_current and dids_current:
+        # The current runtime keeps its retired records and removed code
+        # erased and restores the stock words of the removed fuel path.
         current_units = all(
             unit_bytes[unit.key] == payloads[unit.key]
             for unit in layout.assembly_units
         ) and all(
-            _erased(source, span) for span in layout.retired_configuration_spans
+            _erased(source, span)
+            for span in (
+                *layout.retired_configuration_spans, *layout.erased_rom_ranges
+            )
+        ) and all(
+            read_integer(source, item.address, item.width, layout.byte_order)
+            == item.value
+            for item in layout.restored_words
         )
         try:
             current_configuration = rolling_launch.Calibration.from_bytes(
@@ -1268,16 +1283,26 @@ def historical_write_offsets(rom):
 
 
 def _current_write_offsets(layout):
-    """Return the offsets that the current runtime composes."""
+    """Return the offsets that the current runtime composes: its units,
+    records, efficiency table, hook words, DID slots and restored words."""
     spans = [
         (unit.span.start, unit.span.end) for unit in layout.assembly_units
     ]
     spans += [
         (span.start, span.end)
-        for span in (layout.configuration, *layout.retired_configuration_spans)
+        for span in (
+            layout.configuration,
+            layout.efficiency,
+            *layout.retired_configuration_spans,
+            *layout.erased_rom_ranges,
+        )
     ]
     spans += [
         (hook.address, hook.address + hook.width) for hook in layout.hooks
+    ]
+    spans += [
+        (item.address, item.address + item.width)
+        for item in layout.restored_words
     ]
     spans += [
         (item.pointer_address, item.pointer_address + 4)

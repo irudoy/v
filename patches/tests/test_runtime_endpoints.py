@@ -91,6 +91,25 @@ def test_every_signature_of_a_rom_is_placed_in_erased_stock_rom(rom):
         assert max(endpoint.write_offsets()) < len(stock)
 
 
+def test_current_write_set_holds_the_derived_table_and_the_restored_words():
+    """The current layer composes the efficiency table, keeps its removed
+    spans erased and restores the stock words of the removed fuel path."""
+    current = target("JK08A")
+    layout = current.rolling_layout
+    offsets = runtime_endpoints._current_write_offsets(layout)
+    stock = runtime_endpoints._layout_stock_bytes(layout)
+    for span in (layout.efficiency, *layout.erased_rom_ranges):
+        assert set(range(span.start, span.end)) <= offsets, span.key
+        assert all(stock[offset] == 0xFF for offset in range(span.start, span.end))
+    assert layout.restored_words
+    for item in layout.restored_words:
+        words = range(item.address, item.address + item.width)
+        value = item.value.to_bytes(item.width, layout.byte_order)
+        assert set(words) <= offsets, item.key
+        assert bytes(stock[offset] for offset in words) == value
+        assert current.stock_image.data[item.address : item.address + item.width] == value
+
+
 @pytest.mark.parametrize("damage", ("unit", "digest", "overlap", "record"))
 def test_invalid_signature_is_internal(monkeypatch, damage):
     endpoint = runtime_endpoints.historical_endpoint("schema-5-fixed-trim")
@@ -161,12 +180,9 @@ def endpoint_image(key, *, record=None, lower=False):
     return source
 
 
-def changed_target(*, fuel_path, telemetry=False, adapter=True):
-    """Return the JK08A target with a different current ignition adapter and,
-    with ``fuel_path`` false, a current layout without the fuel-cut wrapper,
-    the RPM ceiling, their hook and DIDs, and the schema 4 record span.
-    ``telemetry`` also changes the current CAN telemetry capture unit, and a
-    false ``adapter`` keeps the current adapter."""
+def changed_target(*, telemetry=False):
+    """Return the JK08A target with a different current ignition adapter;
+    ``telemetry`` also changes the current CAN telemetry capture unit."""
     current = target("JK08A")
     if telemetry:
         telemetry_payloads = dict(current.telemetry_payloads)
@@ -174,34 +190,9 @@ def changed_target(*, fuel_path, telemetry=False, adapter=True):
         telemetry_payloads["capture"] = bytes([capture[0] ^ 1]) + capture[1:]
         current = replace(current, telemetry_payloads=telemetry_payloads)
     payloads = dict(current.rolling_payloads)
-    if adapter:
-        blob = payloads["ignition_adapter"]
-        payloads["ignition_adapter"] = blob[:-1] + bytes([blob[-1] ^ 0x5A])
-    layout = current.rolling_layout
-    if not fuel_path:
-        payloads = {
-            key: value for key, value in payloads.items() if key not in FUEL_PATH_UNITS
-        }
-        claimed = tuple(
-            replace(span, start=0x000D60C0) if span.start == 0x000D6000 else span
-            for span in layout.claimed_rom_extensions
-        )
-        layout = replace(
-            layout,
-            claimed_rom_extensions=claimed,
-            retired_configurations=tuple(
-                item for item in layout.retired_configurations
-                if 4 not in item.schema_versions
-            ),
-            assembly_units=tuple(
-                unit for unit in layout.assembly_units if unit.key not in FUEL_PATH_UNITS
-            ),
-            hooks=tuple(hook for hook in layout.hooks if hook.key not in FUEL_PATH_HOOKS),
-            diagnostics=tuple(
-                item for item in layout.diagnostics if item.did not in FUEL_PATH_DIDS
-            ),
-        )
-    return replace(current, rolling_layout=layout, rolling_payloads=payloads)
+    blob = payloads["ignition_adapter"]
+    payloads["ignition_adapter"] = blob[:-1] + bytes([blob[-1] ^ 0x5A])
+    return replace(current, rolling_payloads=payloads)
 
 
 @pytest.fixture
@@ -222,14 +213,12 @@ def selected_target(monkeypatch):
     calibration_ranges.load.cache_clear()
 
 
-@pytest.mark.parametrize(
-    ("fuel_path", "telemetry"), ((True, False), (False, False), (False, True))
-)
+@pytest.mark.parametrize("telemetry", (False, True))
 @pytest.mark.parametrize("key", FLASHED_ENDPOINTS)
 def test_flashed_endpoint_survives_a_change_of_the_current_runtime(
-    selected_target, key, fuel_path, telemetry
+    selected_target, key, telemetry
 ):
-    changed = changed_target(fuel_path=fuel_path, telemetry=telemetry)
+    changed = changed_target(telemetry=telemetry)
     telemetry_state = "schema2-profile9" if telemetry else "current"
     source = bytearray(endpoint_image(key))
     family = changed.map_layout.families[0]
@@ -257,7 +246,7 @@ def test_flashed_endpoint_survives_a_change_of_the_current_runtime(
 
 @pytest.mark.parametrize("part", ("schema-4-engine", "fuel-hook", "fuel-did", "record"))
 def test_mixed_flashed_endpoint_is_refused_by_a_changed_runtime(part):
-    changed = changed_target(fuel_path=False)
+    changed = changed_target()
     source = bytearray(endpoint_image("schema-5-fixed-trim"))
     stock = target("JK08A").stock_image.data
     if part == "schema-4-engine":
@@ -283,24 +272,11 @@ def test_mixed_flashed_endpoint_is_refused_by_a_changed_runtime(part):
         runtime_endpoints.classify_runtime(closed(source), changed, "mixed")
 
 
-def test_changed_current_runtime_refuses_leftover_fuel_path_bytes():
-    """A current image holds no fuel-path byte of a flashed endpoint outside
-    the current Rolling Launch layout."""
-    changed = changed_target(fuel_path=False, adapter=False)
-    layout = changed.rolling_layout
-    covered = {
-        offset
-        for start, end in (
-            *((unit.span.start, unit.span.end) for unit in layout.assembly_units),
-            *((span.start, span.end) for span in (
-                layout.configuration, *layout.retired_configuration_spans
-            )),
-            *((hook.address, hook.address + hook.width) for hook in layout.hooks),
-            *((item.pointer_address, item.pointer_address + 4)
-              for item in layout.diagnostics),
-        )
-        for offset in range(start, end)
-    }
+def test_current_runtime_refuses_each_leftover_fuel_path_part():
+    """A current image holds no fuel-path part of a flashed endpoint: the
+    current layout keeps the fuel units erased and restores the stock
+    coordinator hook and DID slots."""
+    current = target("JK08A")
     key = "schema-5-fixed-trim"
     endpoint = runtime_endpoints.historical_endpoint(key)
     parts = [
@@ -315,23 +291,27 @@ def test_changed_current_runtime_refuses_leftover_fuel_path_bytes():
         (item.pointer_address, item.pointer_address + 4, item.target.to_bytes(4, "big"))
         for item in endpoint.dids if item.did in FUEL_PATH_DIDS
     ]
-    parts = [
-        part for part in parts
-        if not covered.intersection(range(part[0], part[1]))
-    ]
-    assert parts
-    stock = target("JK08A").stock_image.data
-    clean = bytearray(built_image())
-    for start, end, _payload in parts:
-        clean[start:end] = stock[start:end]
-    assert runtime_endpoints.classify_runtime(closed(clean), changed, "clean").rolling == (
-        "current"
-    )
-    leftover = bytearray(clean)
+    assert len(parts) == len(FUEL_PATH_UNITS | FUEL_PATH_HOOKS | FUEL_PATH_DIDS)
+    clean = built_image()
+    assert runtime_endpoints.classify_runtime(clean, current, "clean").rolling == "current"
     for start, end, payload in parts:
+        leftover = bytearray(clean)
         leftover[start:end] = payload
-    with pytest.raises(runtime_endpoints.EndpointError, match="partial or unknown"):
-        runtime_endpoints.classify_runtime(closed(leftover), changed, "leftover")
+        with pytest.raises(runtime_endpoints.EndpointError, match="partial or unknown"):
+            runtime_endpoints.classify_runtime(closed(leftover), current, hex(start))
+
+
+def test_current_runtime_keeps_retired_and_removed_spans_erased():
+    current = target("JK08A")
+    layout = current.rolling_layout
+    for span in (*layout.retired_configuration_spans, *layout.erased_rom_ranges):
+        source = bytearray(built_image())
+        source[span.end - 1] = 0x00
+        with pytest.raises(
+            runtime_endpoints.EndpointError,
+            match="partial or unknown Rolling Launch state",
+        ):
+            runtime_endpoints.classify_runtime(closed(source), current, span.key)
 
 
 SCHEMA_5_SLOTS = (
@@ -351,11 +331,11 @@ TELEMETRY_CHANGES = (
 
 
 def changed_telemetry(change, monkeypatch):
-    """Return ``changed_target(fuel_path=False)`` with one change of the
-    current CAN telemetry: the control unit or the configuration record moved
-    into the reserve, a hook word with a new value or at a new address, or a
-    new configuration protocol."""
-    current = changed_target(fuel_path=False)
+    """Return ``changed_target()`` with one change of the current CAN
+    telemetry: the control unit or the configuration record moved into the
+    reserve, a hook word with a new value or at a new address, or a new
+    configuration protocol."""
+    current = changed_target()
     layout = current.telemetry_layout
     reserve = layout.reserved_rom
     if change == "unit-span":
