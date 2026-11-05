@@ -49,11 +49,15 @@ between two such snapshots the cut requests lie strictly within six of the
 owed cuts, the q sum difference over 1000, and from the reset of the
 accumulators before a run they lie in (owed - 3.25, owed + 2.75].
 Configuration 5 checks the speed-input bits, the accepted CANCEL, the speed
-frame age, one target per run, the RPM target of the map slot, the RPM
-sample between the stock frames, and the shared command: the effective
-command is the stock command or the stock command with the trim, clipped by
-the floor. Configuration 6 adds the release: the first snapshot that shows
-the accepted RELEASED has no cut fraction, and the counter holds from it.
+frame age, a speed sample in the decoded range, one target per run, the RPM
+target of the map slot, the speed target of the CANCEL capture plus the
+offset where the capture shows that edge, the RPM sample between the stock
+frames, and the shared command: the effective command is the stock command
+or the stock command with the trim, clipped by the floor. A TRC checks the
+speed samples against its 0x284 frames. Configuration 6 adds the release:
+the first snapshot that shows the accepted RELEASED and every inactive
+snapshot after it up to the next run or a gap have no cut fraction, and the
+counter holds from it.
 A q derived from configuration 3 is not a published q; configurations 4
 and 6 publish it.
 
@@ -181,11 +185,13 @@ STATUS_CANCEL_BIT = 5
 STATUS_RELEASED_BIT = 6
 STATUS_BUTTON_MASK = 1 << STATUS_CANCEL_BIT | 1 << STATUS_RELEASED_BIT
 STATUS_READY_BIT = 7
-# The inactive snapshots after an accepted release whose cut-request
-# counter the release audit compares.
-RELEASE_SNAPSHOTS = 5
 # Engine speed of one native count.
 RPM_PER_COUNT = 12.5
+# The receiver of 0x284 divides the speed word by ten and maps the invalid
+# word 0xFFFF to zero (decode_speed_word), so a speed sample above this is
+# no decoded speed.
+SPEED_SAMPLE_MAX = 0xFFFE // 10
+TICK_MS = BASE_TICK_SECONDS * 1000
 # Spark events per tick and native RPM count: three events per revolution,
 # 12.5 RPM per count, and 10.24 ms per tick.
 EVENTS_PER_COUNT_TICK = 3 * RPM_PER_COUNT / 60 * 0.01024
@@ -598,9 +604,14 @@ class HoldRun:
     the spark actuator publishes, over 1000, from the reset of its
     accumulators before the run. `floor_ticks` counts the hold snapshots
     whose trim the floor command clips, so the applied retard is smaller
-    than the trim of the slot. `release_cuts` counts the cut requests after
-    the snapshot that shows the accepted release of the run, or is None
-    without it. `veto` is the dwell-start veto check of a hold-mode run.
+    than the trim of the slot. `release_cuts` counts the cut requests from
+    the snapshot that shows the accepted release of the run to the next run
+    or a gap, or is None without that snapshot or its counter. `veto` is the
+    dwell-start veto check of a hold-mode run. `target_checked` is None without a published target, True when the
+    target follows the map slot or the accepted CANCEL capture, and False
+    when the capture lacks that evidence. `speed_source_ticks` counts the
+    speed samples checked against the 0x284 frames of a TRC, or is None
+    without them.
     """
 
     start_tick: int
@@ -617,6 +628,8 @@ class HoldRun:
     input_ticks: int = 0
     release_cuts: int | None = None
     veto: VetoCheck | None = None
+    target_checked: bool | None = None
+    speed_source_ticks: int | None = None
 
     @property
     def requested_cuts_inside(self) -> bool | None:
@@ -647,7 +660,8 @@ class HoldCalibration:
     endpoint whose record they come from, and `schema` the schema of the
     record. The slots of the current runtime are `rolling_launch.Slot`
     values beside its efficiency `table`; those of a historical endpoint are
-    `HoldSlot` values."""
+    `HoldSlot` values. `target_speed_offset` is the offset of the current
+    SPEED target over the speed captured at the accepted CANCEL edge."""
 
     endpoint: str
     hold: bool
@@ -661,6 +675,7 @@ class HoldCalibration:
     schema: int = rolling_launch.CONFIG_SCHEMA_VERSION
     table: rolling_launch.EfficiencyTable | None = None
     speed_frame_age_limit: int | None = None
+    target_speed_offset: int | None = None
 
     def slot(self, index):
         return self.slots[index]
@@ -731,6 +746,7 @@ def endpoint_calibration(record: bytes, state: str, table: bytes | None = None) 
             schema=calibration.schema_version,
             table=efficiency,
             speed_frame_age_limit=calibration.speed_frame_age_limit,
+            target_speed_offset=calibration.target_speed_offset,
         )
     schema = runtime_endpoints.historical_endpoint(state).configuration_schema_version
     if schema not in runtime_endpoints.SPEED_HOLD_SCHEMA_FORMATS:
@@ -1069,14 +1085,16 @@ def _owed_cuts(samples, start, end, bounds, efficiency):
     return max(0.0, low / unit + CUTS_BELOW), high / unit + CUTS_ABOVE
 
 
-def audit_hold(samples, calibration) -> tuple[HoldRun, ...]:
+def audit_hold(samples, calibration, timing=None) -> tuple[HoldRun, ...]:
     """Audit every ACTIVE run of the verified snapshots.
 
     The replay steps the controller once per snapshot, so a capture whose
     snapshots do not step by one tick, which a tick divisor above 1
     produces, is refused. A record of the current runtime audits the runs
     by the schema 6 views of the page configurations; a historical record
-    replays the speed hold of its endpoint.
+    replays the speed hold of its endpoint. `timing` is the TraceTiming of
+    a TRC whose pages align with the snapshots; its 0x284 frames check the
+    speed samples of the current runtime.
     """
     samples = list(samples)
     if not any(sample.phase is not None for sample in samples):
@@ -1089,7 +1107,11 @@ def audit_hold(samples, calibration) -> tuple[HoldRun, ...]:
             f"the snapshots step by {step} ticks; the hold audit needs one"
             " snapshot per tick"
         )
-    audit_run = _run if calibration.table is None else _current_run
+    if calibration.table is None:
+        audit_run = _run
+    else:
+        def audit_run(samples, start, end, calibration):
+            return _current_run(samples, start, end, calibration, timing)
     active = rolling_launch.Phase.ACTIVE
     runs = []
     index = 0
@@ -1246,11 +1268,16 @@ def _released(sample):
 
 def _release_cuts(samples, end, failures):
     """The cut requests after the snapshot that shows the accepted release
-    of a run, or None without that snapshot or its counters.
+    of a run, or None without that snapshot, its counter, or a later
+    snapshot.
 
     The engine pass that accepts RELEASED ends the hold and clears the cut
-    fraction before the snapshot, so the counter holds from that snapshot
-    through the inactive snapshots that follow it.
+    fraction before the snapshot. Every inactive snapshot from it to the
+    next ACTIVE snapshot, a gap, or the end of the capture publishes a zero
+    cut fraction where it carries one, and the counter of the release
+    snapshot holds wherever a snapshot carries it. A veto that the last cut
+    request of the run placed for the next cylinder can still withhold one
+    spark after the release; it adds no cut request.
     """
     release = end + 1
     if (
@@ -1260,29 +1287,100 @@ def _release_cuts(samples, end, failures):
         or not _released(samples[release])
     ):
         return None
-    sample = samples[release]
-    if sample.cut_fraction is not None and sample.cut_fraction:
-        failures.append(
-            (sample.tick, f"cut fraction {sample.cut_fraction} after the accepted release")
-        )
     last = release
     while (
         last + 1 < len(samples)
-        and last + 1 - release < RELEASE_SNAPSHOTS
         and samples[last + 1].phase != rolling_launch.Phase.ACTIVE
         and _contiguous(samples, last, last + 1)
     ):
         last += 1
-    counters = [item.cut_requests for item in samples[release : last + 1]]
-    if last == release or None in counters:
+    for sample in samples[release:last + 1]:
+        if sample.cut_fraction is not None and sample.cut_fraction:
+            failures.append(
+                (sample.tick, f"cut fraction {sample.cut_fraction} after the accepted release")
+            )
+    previous = samples[release].cut_requests
+    if previous is None or last == release:
         return None
-    cuts = sum((right - left) & 0xFF for left, right in zip(counters, counters[1:]))
-    if cuts:
-        failures.append((sample.tick, f"{cuts} cut requests after the accepted release"))
+    cuts = 0
+    for sample in samples[release + 1:last + 1]:
+        if sample.cut_requests is None:
+            continue
+        step = (sample.cut_requests - previous) & 0xFF
+        if step:
+            failures.append((sample.tick, f"{step} cut requests after the accepted release"))
+        cuts += step
+        previous = sample.cut_requests
     return cuts
 
 
-def _current_run(samples, start, end, calibration):
+def _accepted_cancel(sample):
+    """Whether a snapshot shows the accepted CANCEL, or None without the
+    accepted button and the status."""
+    if sample.accepted_button is not None:
+        return sample.accepted_button == rolling_launch.BUTTON_CANCEL
+    if sample.status is not None:
+        return _bit(sample.status, STATUS_CANCEL_BIT)
+    return None
+
+
+def _cancel_capture(samples, start):
+    """The speed sample of the accepted CANCEL edge before the run at
+    `start`, or None when the snapshots do not show that edge and its speed.
+
+    The engine pass that first accepts CANCEL in IDLE captures the speed it
+    samples, and the snapshot of that pass publishes both."""
+    edge = start
+    if _accepted_cancel(samples[edge]) is not True:
+        return None
+    while True:
+        before = edge - 1
+        if before < 0 or not _contiguous(samples, before, edge):
+            return None
+        accepted = _accepted_cancel(samples[before])
+        if accepted is None:
+            return None
+        if not accepted:
+            break
+        edge = before
+    if samples[edge - 1].phase != rolling_launch.Phase.IDLE:
+        return None
+    return samples[edge].speed_sample
+
+
+def _speed_sources(samples, start, end, calibration, timing, failures):
+    """The speed samples of a run checked against the 0x284 frames of a TRC,
+    or None without them: a sample equals the decoded word of a valid frame
+    received within the age limit and two ticks before its group."""
+    frames = () if timing is None else timing.bus_frames.get(0x284, ())
+    if not frames or calibration.speed_frame_age_limit is None:
+        return None
+    bus = _BusIndex(frames)
+    window = (calibration.speed_frame_age_limit + 2) * TICK_MS
+    checked = 0
+    for index in range(start, end + 1):
+        sample = samples[index]
+        time = timing.first_page_ms[index]
+        if sample.speed_sample is None or time is None:
+            continue
+        checked += 1
+        words = [
+            int.from_bytes(data[4:6], "big")
+            for _time, data in bus.between(time - window, time)
+            if len(data) >= 6
+        ]
+        if not any(
+            word != 0xFFFF and word // 10 == sample.speed_sample for word in words
+        ):
+            failures.append((
+                sample.tick,
+                f"speed sample {sample.speed_sample} matches no valid 0x284"
+                f" frame of the {window:.0f} ms before the snapshot",
+            ))
+    return checked
+
+
+def _current_run(samples, start, end, calibration, timing=None):
     """Audit one run of the current runtime by the views that its snapshots
     carry; see the module description."""
     run = samples[start : end + 1]
@@ -1367,6 +1465,8 @@ def _current_run(samples, start, end, calibration):
                 failures.append((tick, f"cut fraction {sample.cut_fraction} without an applied command"))
             if sample.status & STATUS_BUTTON_MASK != 1 << STATUS_CANCEL_BIT:
                 failures.append((tick, "the accepted button is not CANCEL"))
+        if sample.speed_sample is not None and sample.speed_sample > SPEED_SAMPLE_MAX:
+            failures.append((tick, f"speed sample {sample.speed_sample} is no decoded speed"))
         if sample.accepted_button is not None:
             checked = True
             if sample.accepted_button != rolling_launch.BUTTON_CANCEL:
@@ -1393,6 +1493,24 @@ def _current_run(samples, start, end, calibration):
         input_ticks += checked
     if len(targets) > 1:
         failures.append((samples[start].tick, "the target changes in the run"))
+    target_checked = None
+    if targets:
+        # The RPM target follows the map slot snapshot by snapshot above.
+        target_checked = rpm
+        capture = (
+            _cancel_capture(samples, start)
+            if kind == rolling_launch.RegulatorKind.SPEED else None
+        )
+        if capture is not None and calibration.target_speed_offset is not None:
+            target_checked = True
+            offset = calibration.target_speed_offset
+            expected = max(0, min(capture + offset, 0xFFFF))
+            for target in sorted(targets - {expected}):
+                failures.append((
+                    samples[start].tick,
+                    f"SPEED target {target}, CANCEL capture {capture} plus offset {offset}",
+                ))
+    speed_source_ticks = _speed_sources(samples, start, end, calibration, timing, failures)
     speeds = [
         sample.speed_kmh * 10 - sample.control_error
         for sample in run
@@ -1420,6 +1538,8 @@ def _current_run(samples, start, end, calibration):
         input_ticks=input_ticks,
         release_cuts=release_cuts,
         veto=veto_check(samples, start, end, calibration),
+        target_checked=target_checked,
+        speed_source_ticks=speed_source_ticks,
     )
 
 
@@ -1856,7 +1976,7 @@ def main(argv: list[str] | None = None) -> int:
     failed = False
     for path in args.captures:
         capture = read_capture(path)
-        runs = audit_hold(capture.samples, calibration)
+        runs = audit_hold(capture.samples, calibration, timing=capture.timing)
         print(f"{capture.path.name} sha256={capture.sha256} runs={len(runs)}")
         # A capture without a run, or a run without a checked fraction,
         # checks nothing and cannot pass.
@@ -1872,6 +1992,8 @@ def main(argv: list[str] | None = None) -> int:
                 requested = f"{run.requested_cuts} owed ({low:.2f}, {high:.2f}]"
             kind = "unknown" if run.kind is None else rolling_launch.RegulatorKind(run.kind).name
             release = "n/a" if run.release_cuts is None else str(run.release_cuts)
+            target_check = {None: "n/a", False: "unchecked", True: "checked"}[run.target_checked]
+            sources = "n/a" if run.speed_source_ticks is None else str(run.speed_source_ticks)
             print(
                 f"  ticks {run.start_tick}..{run.end_tick}"
                 f" kind={kind}"
@@ -1881,6 +2003,8 @@ def main(argv: list[str] | None = None) -> int:
                 f" input_ticks={run.input_ticks}"
                 f" failed_ticks={len({tick for tick, _ in run.failures})}"
                 f" target={target}"
+                f" selected_target={target_check}"
+                f" speed_source_ticks={sources}"
                 f" requested_cuts={requested}"
                 f" floor_ticks={run.floor_ticks}"
                 f" release_cuts={release}"
@@ -1906,7 +2030,7 @@ def main(argv: list[str] | None = None) -> int:
             failed |= unchecked or any(check.passed is False for check in checks)
         if args.bus_json:
             reference = read_mlg(args.reference_mlg) if args.reference_mlg else capture
-            reference_runs = audit_hold(reference.samples, calibration)
+            reference_runs = audit_hold(reference.samples, calibration, timing=reference.timing)
             failed |= not reference_runs or any(
                 run.failures or run.requested_cuts_inside is False
                 or not run.checked_ticks

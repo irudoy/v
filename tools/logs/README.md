@@ -575,14 +575,24 @@ snapshot, and a run keeps one kind:
   `(owed - 3.25, owed + 2.75]`. A gap or an interval that owes too many cuts
   for the 8-bit counter leaves the bound open.
 - Configuration 5 (`rl6_inputs`) checks the speed-input bits, the accepted
-  CANCEL, the speed frame age, one target per run, the RPM target of the map
-  slot, the RPM sample between the stock frames, and the shared command: the
-  effective command is the stock command, or the stock command with the trim
-  clipped by the floor.
+  CANCEL, the speed frame age, a speed sample in the decoded range of the
+  `0x284` word, one target per run, the RPM target of the map slot, the RPM
+  sample between the stock frames, and the shared command: the effective
+  command is the stock command, or the stock command with the trim clipped
+  by the floor. The speed target equals the speed sample of the snapshot
+  that first shows the accepted CANCEL after `IDLE` plus the target speed
+  offset of the endpoint; a capture without that snapshot or its speed
+  sample reports the target `unchecked`. A TRC also checks every speed
+  sample against the `0x284` frames of the frame age limit and two ticks
+  before its group: the sample equals the word over ten of a frame whose
+  word is not `0xFFFF`.
 - Configuration 6 (`rl6_release`) adds q without the ready bit and the
-  release: the snapshot that shows the accepted RELEASED after a run has no
-  cut fraction, and its cut-request counter holds through the next inactive
-  snapshots.
+  release: the snapshot that shows the accepted RELEASED after a run and
+  every inactive snapshot after it up to the next run or a gap publish a
+  zero cut fraction, and the cut-request counter of the release snapshot
+  holds through that interval. A veto that the last cut request of the run
+  placed for the next cylinder can withhold one spark after the release;
+  it adds no cut request.
 
 A q derived from configuration 3 is not a published q; configurations 4 and
 6 publish it.

@@ -733,9 +733,144 @@ class CurrentRunTest(unittest.TestCase):
         ]
         (run,) = audit.audit_hold(late, SPEED_SETTINGS)
         self.assertEqual(run.release_cuts, 1)
-        self.assertIn(release, failed_ticks(run))
+        self.assertIn(release + 1, failed_ticks(run))
         (run,) = audit.audit_hold(changed(samples, release, cut_fraction=5), SPEED_SETTINGS)
         self.assertIn(release, failed_ticks(run))
+
+    def test_the_release_check_covers_the_inactive_interval(self):
+        samples = configure(speed_run(released_after=12), *RL6_RELEASE)
+        release = 2 + len(SPEEDS)
+        (run,) = audit.audit_hold(samples, SPEED_SETTINGS)
+        self.assertEqual(run.failures, ())
+        self.assertEqual(run.release_cuts, 0)
+        restored = [
+            replace(s, cut_fraction=model.U_ONE) if s.tick > release else s
+            for s in samples
+        ]
+        (run,) = audit.audit_hold(restored, SPEED_SETTINGS)
+        self.assertEqual(run.release_cuts, 0)
+        self.assertEqual(failed_ticks(run), set(range(release + 1, len(samples))))
+        self.assertEqual(run_main(restored, SPEED_SETTINGS)[0], 1)
+        late = [
+            replace(s, cut_requests=(s.cut_requests + 1) & 0xFF)
+            if s.tick >= release + 7 else s
+            for s in samples
+        ]
+        (run,) = audit.audit_hold(late, SPEED_SETTINGS)
+        self.assertEqual(run.release_cuts, 1)
+        self.assertEqual(failed_ticks(run), {release + 7})
+        self.assertEqual(run_main(late, SPEED_SETTINGS)[0], 1)
+        # A gap ends the interval that the release snapshot bounds.
+        gap = late[:release + 5] + late[release + 6:]
+        (run,) = audit.audit_hold(gap, SPEED_SETTINGS)
+        self.assertEqual(run.release_cuts, 0)
+        self.assertEqual(run.failures, ())
+
+    def test_a_speed_sample_outside_the_decoded_range_fails(self):
+        samples = configure(speed_run(), *RL6_INPUTS)
+        active = active_indices(samples)
+        tampered = [
+            replace(s, speed_sample=0xFFFF)
+            if i in active and s.speed_sample is not None else s
+            for i, s in enumerate(samples)
+        ]
+        (run,) = audit.audit_hold(tampered, SPEED_SETTINGS)
+        self.assertEqual(
+            failed_ticks(run),
+            {samples[i].tick for i in active if samples[i].speed_sample is not None},
+        )
+        self.assertEqual(run_main(tampered, SPEED_SETTINGS)[0], 1)
+        # A snapshot after the CANCEL edge, whose speed bounds no target.
+        later = [i for i in active if samples[i].speed_sample is not None][2]
+        largest = changed(samples, later, speed_sample=audit.SPEED_SAMPLE_MAX)
+        (run,) = audit.audit_hold(largest, SPEED_SETTINGS)
+        self.assertEqual(run.failures, ())
+
+    def test_the_speed_target_follows_the_cancel_capture_and_offset(self):
+        for target_offset in (0, -15):
+            calibration = replace(TRIM_CALIBRATION, target_speed_offset=target_offset)
+            settings = current_calibration(calibration, TRIM_TABLE)
+            samples = configure(
+                simulate(SPEEDS, calibration=calibration, table=TRIM_TABLE), *RL6_INPUTS
+            )
+            with self.subTest(offset=target_offset):
+                self.assertEqual(settings.target_speed_offset, target_offset)
+                (run,) = audit.audit_hold(samples, settings)
+                self.assertEqual(run.failures, ())
+                self.assertIs(run.target_checked, True)
+        samples = configure(speed_run(), *RL6_INPUTS)
+        edge = active_indices(samples)[0]
+        self.assertEqual(samples[edge].speed_sample, SPEEDS[0])
+        constant = [
+            replace(s, selected_target=12345) if s.selected_target is not None
+            and s.phase == model.Phase.ACTIVE else s
+            for s in samples
+        ]
+        (run,) = audit.audit_hold(constant, SPEED_SETTINGS)
+        self.assertIs(run.target_checked, True)
+        self.assertTrue(any("SPEED target 12345" in failure for _tick, failure in run.failures))
+        self.assertEqual(run_main(constant, SPEED_SETTINGS)[0], 1)
+        # The snapshot of the edge carries no speed sample in group 1.
+        shifted = configure(speed_run(), *RL6_INPUTS, offset=1)
+        self.assertIsNone(shifted[edge].speed_sample)
+        (run,) = audit.audit_hold(shifted, SPEED_SETTINGS)
+        self.assertEqual(run.failures, ())
+        self.assertIs(run.target_checked, False)
+        # A run without its CANCEL edge leaves the target unchecked.
+        (run,) = audit.audit_hold(samples[edge:], SPEED_SETTINGS)
+        self.assertIs(run.target_checked, False)
+
+    def test_an_rpm_target_off_the_map_slot_fails(self):
+        samples = configure(rpm_run(), *RL6_INPUTS)
+        (run,) = audit.audit_hold(samples, RPM_SETTINGS)
+        self.assertIs(run.target_checked, True)
+        tampered = [
+            replace(s, selected_target=RPM_SLOT.launch_rpm_native + 5)
+            if s.selected_target is not None and s.phase == model.Phase.ACTIVE else s
+            for s in samples
+        ]
+        (run,) = audit.audit_hold(tampered, RPM_SETTINGS)
+        self.assertNotEqual(run.failures, ())
+
+    def test_a_trace_checks_the_speed_samples_against_0x284(self):
+        samples = configure(speed_run(), *RL6_INPUTS)
+
+        def timing(word_of_tick):
+            frames = tuple(
+                (s.tick * audit.TICK_MS + 1.0,
+                 bytes(4) + word_of_tick(s.tick, s).to_bytes(2, "big"))
+                for s in samples
+            )
+            return audit.TraceTiming(
+                first_page_ms=tuple(s.tick * audit.TICK_MS + 5.0 for s in samples),
+                last_page_ms=tuple(s.tick * audit.TICK_MS + 8.0 for s in samples),
+                button_frames=(), dashboard_frames=(), bus_frames={0x284: frames},
+            )
+
+        recorded = timing(lambda _tick, s: round(s.speed_kmh * 10) * 10 + 3)
+        (run,) = audit.audit_hold(samples, SPEED_SETTINGS, timing=recorded)
+        checked = sum(
+            samples[i].speed_sample is not None for i in active_indices(samples)
+        )
+        self.assertEqual(run.failures, ())
+        self.assertEqual(run.speed_source_ticks, checked)
+        self.assertIsNone(audit.audit_hold(samples, SPEED_SETTINGS)[0].speed_source_ticks)
+        # A snapshot after the CANCEL edge, whose speed bounds no target.
+        index = [i for i in active_indices(samples) if samples[i].speed_sample is not None][2]
+        tick = samples[index].tick
+        mismatch = changed(samples, index, speed_sample=samples[index].speed_sample + 40)
+        (run,) = audit.audit_hold(mismatch, SPEED_SETTINGS, timing=recorded)
+        self.assertEqual(failed_ticks(run), {tick})
+        # The receiver maps the invalid word to zero; a zero sample of an
+        # invalid frame matches no valid frame.
+        window = range(tick - MODEL_CALIBRATION.speed_frame_age_limit - 2, tick + 1)
+        invalid = timing(
+            lambda frame_tick, s: 0xFFFF if frame_tick in window
+            else round(s.speed_kmh * 10) * 10
+        )
+        zero = changed(samples, index, speed_sample=0)
+        (run,) = audit.audit_hold(zero, SPEED_SETTINGS, timing=invalid)
+        self.assertIn(tick, failed_ticks(run))
 
     def test_a_q_without_an_applied_command_fails(self):
         samples = configure(speed_run(), *RL6_RELEASE)
