@@ -1926,15 +1926,87 @@ class RollingInterruptRowsTest(unittest.TestCase):
     def test_scenarios_reach_their_outcomes(self):
         scenarios = ROLLING_ROWS.interrupt_scenarios()
         self.assertEqual([item.kind for item in scenarios],
-                         ["steady", "steady", "activation", "activation", "abort", "recovery"])
+                         ["steady", "steady", "activation", "activation", "abort", "recovery",
+                          "activation", "republication", "republication", "republication"])
         for scenario in scenarios:
             finals = ROLLING_ROWS.interrupt_finals(scenario)
             with self.subTest(scenario=scenario.name):
                 self.assertEqual(finals[0] == finals[1], scenario.kind == "steady")
                 self.assertEqual(len(finals), 3 if scenario.kind == "recovery" else 2)
+                self.assertEqual(len(scenario.prior), 12 if scenario.kind == "republication" else 0)
         header = ROLLING_ROWS.render_interrupts(scenarios)
         for scenario in scenarios:
             self.assertEqual(header.count(f'{{"{scenario.name}",'), 1)
+        self.assertEqual(header.count("\n     1, {"), 3)
+
+    def _before_second(self, scenario):
+        """The records after the activation stores of ``scenario`` with its first publication."""
+        records = (scenario.base, scenario.extension)
+        passed = ROLLING_ROWS.engine_pass(records, scenario.inputs)[3]
+        neutral = replace(passed, control_error=0, rpm_error_native=0, speed_error=0,
+                          integrator=0, torque_command=0,
+                          torque_fraction=0 if scenario.regulator == ROLLING_ROWS.model.RegulatorKind.RPM
+                          else 1000,
+                          law_output=1000, cut_fraction=0, actuation_ready=False,
+                          applied_trim=0, stock_command=0, effective_command=0,
+                          applied_efficiency=1000)
+        return ROLLING_ROWS.with_publication_bytes(ROLLING_ROWS.records(neutral), scenario.prior)
+
+    def test_second_publication_after_the_activation_stores_publishes_ready_p(self):
+        for scenario in ROLLING_ROWS.interrupt_scenarios()[7:]:
+            with self.subTest(scenario=scenario.name):
+                seen = self._before_second(scenario)
+                finals = ROLLING_ROWS.interrupt_finals(scenario)
+                row = self._row(scenario, seen, final=finals[1])
+                self.assertTrue(ROLLING_IRQ.check_republication(row, scenario, seen))
+                self.assertEqual(int(row["irq_r5"], 16),
+                                 ROLLING_ROWS.ignition_publication(
+                                     seen, scenario.stock, scenario.effective).effective_wide)
+                with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "publication after it"):
+                    ROLLING_IRQ.check_republication(self._row(scenario, seen, final=finals[0]),
+                                                    scenario, seen)
+                other = ROLLING_ROWS.with_publication_bytes(seen, bytes(12))
+                with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "observes records other"):
+                    ROLLING_IRQ.check_republication(row, scenario, other)
+                # The control error of an earlier hold, or the status view of
+                # the IDLE record, rejects the record, and the stock command follows.
+                error = (seen[0], seen[1][:0x02] + b"\x00\x37" + seen[1][0x04:])
+                for name, rejected in (
+                    ("error", error),
+                    ("view", ROLLING_ROWS.with_publication_bytes(
+                        seen, ROLLING_ROWS.publication_bytes((scenario.base, scenario.extension)))),
+                ):
+                    with self.subTest(rejected=name):
+                        self.assertFalse(ROLLING_IRQ.check_republication(
+                            self._row(scenario, rejected, final=finals[0]), scenario, rejected))
+                mismatch = replace(scenario, effective=scenario.effective + 1)
+                with self.assertRaisesRegex(ROLLING_IRQ.InterruptError,
+                                            "of a valid record publishes S"):
+                    ROLLING_IRQ.check_republication(
+                        self._row(mismatch, seen,
+                                  final=ROLLING_ROWS.interrupt_finals(mismatch)[0]),
+                        mismatch, seen)
+
+    def test_republication_points_and_transfer(self):
+        scenario = ROLLING_ROWS.interrupt_scenarios()[7]
+        initial = (scenario.base, scenario.extension)
+        final = ROLLING_ROWS.engine_pass(initial, scenario.inputs)[:2]
+
+        def edit(records, region, offset, data):
+            parts = [bytearray(records[0]), bytearray(records[1])]
+            parts[region][offset:offset + len(data)] = data
+            return bytes(parts[0]), bytes(parts[1])
+
+        kind = edit(initial, 1, 0x00, final[1][0x00:0x01])
+        trim = edit(kind, 0, 0x1E, final[0][0x1E:0x1F])
+        viewed = edit(trim, 1, 0x1F, final[1][0x1F:0x20])
+        self.assertEqual(ROLLING_IRQ.republication_points(
+            scenario, {0: initial, 1: kind, 2: trim, 3: viewed}), ([1, 2], [2]))
+        self.assertEqual(ROLLING_IRQ.expected_republication(scenario, trim, scenario.prior),
+                         ROLLING_ROWS.with_publication_bytes(trim, scenario.prior))
+        stored = edit(trim, 1, 0x08, b"\x07")
+        with self.assertRaisesRegex(ROLLING_IRQ.InterruptError, "publication byte 2"):
+            ROLLING_IRQ.expected_republication(scenario, stored, scenario.prior)
 
     def _row(self, scenario, seen, final=None):
         publication = ROLLING_ROWS.ignition_publication(

@@ -667,12 +667,26 @@ corrupt-state recovery clears the phase before the extension. No mixed state
 inside an abort, the return from `COOLDOWN` to `IDLE`, or corrupt-state
 recovery passes the check as an `ACTIVE` ready record: a publication inside
 them fails the check and publishes the stock command, which is the correct
-command there. A publication inside activation also fails the check and
-publishes the stock command: the phase `ACTIVE` meets kind `NONE` until the
-kind store, and the status view keeps kind `NONE` of the `IDLE` record until
-the masked wire views at the end of the pass, which follow the control
-publisher. The first publication that passes the check observes the complete
-record with the law of the control publisher. The input sample precedes every transition. A sampled change that alters the
+command there. Inside activation the phase `ACTIVE` meets kind `NONE` until
+the kind store, and the status view at extension `+0x1F` keeps kind `NONE`
+of the `IDLE` record until a publication or the masked wire views at the end
+of the pass rewrite it, so the first publication inside activation fails the
+check and publishes the stock command. After the kind store that
+publication stores the status view of the new kind. A second publication
+after the trim store and before the control publisher then passes the check
+once the control error at extension `+0x02` equals the error of the
+regulator: activation clears the regulator error, so an `IDLE` record without
+a control error passes from the trim store on, and one with the control error
+of an earlier hold passes after the error pair of the regulator. Before that
+point the second publication fails the check and publishes the stock
+command. No regulator reads the control error, so the control error of an
+earlier hold delays only that ready mark, at `q = 0`. A second publication that passes publishes the ready mark and `P` of
+the complete hold with the law output 1000, so `q = 0`; the control publisher
+takes that ready mark and commits `q` of its law, which leaves the records of
+a publication after the pass. At
+high engine speed the crank-tooth interrupt runs more than once in an engine
+pass, so both outcomes occur. Neither publishes a nonzero `q` before the
+control publisher commits the law of the pass. The input sample precedes every transition. A sampled change that alters the
 wire views fails the check and occurs only on a pass that aborts or outside
 `ACTIVE`; other sampled fields are coupled to no control field, so a
 publication between the sample and the first store of an abort acts as if it
@@ -1205,9 +1219,16 @@ A candidate is software-valid only when all applicable checks pass:
    require acceptance only outside the masked sections, the model
    publication of every observed record, final records of a publication
    before or after the pass or, inside recovery, of the recovery alone, the
-   stock command from every publication between the error pair of the RPM
-   activation and the publisher mask, and the store orders of the
-   transitions.
+   stock command from every first publication between the error pair of the
+   RPM activation and the publisher mask, and the store orders of the
+   transitions. The hook requests one interrupt per run, so a republication
+   pass of each activation stores the bytes of the executed first
+   publication after the kind store before its publication. Every such
+   second publication after the trim store publishes the model command of
+   its record, and each that passes the check publishes the ready mark and
+   `P` with `q = 0` and leaves the records of a publication after the pass.
+   An RPM activation from an `IDLE` record without a control error passes
+   at every such boundary.
    The ignition gate binds both command builders and schedulers, the
    phase normalizer, the tooth countdown and recovery, the stock GR11A/GR11B
    handlers, the adapter and the veto into one path. The veto kernel checks

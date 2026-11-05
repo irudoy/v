@@ -305,10 +305,11 @@ the delay slot of the next unconditional transfer.
 
 The interrupt rows inject the crank-tooth publication into engine passes
 through the optional interrupt hook. `rolling_launch_rows.interrupt_scenarios`
-defines six passes, which `rolling_launch_irq.c` runs at SR.I = 0 through
+defines the passes, which `rolling_launch_irq.c` runs at SR.I = 0 through
 `invoke_regs`: steady ACTIVE ready holds of both kinds, an activation of each
 kind from an IDLE record that keeps a map index, a law output 0 and a control
-error of an earlier hold, an abort and corrupt-state recovery. A run without
+error of an earlier hold, an abort, corrupt-state recovery, and a
+republication pass of each activation. A run without
 a request records the PC trace. A publication and a pass observe each other
 only through memory, so the interleavings of one publication with a pass are
 the points after its first instruction and after each of its loads and
@@ -336,13 +337,36 @@ recovery clears both records after its check, so it may also leave the
 records of the pass without a publication. In a steady pass every
 publication passes the check and publishes P with the ready mark. The RPM
 activation has at least one publication between its error pair and the
-publisher mask, and each publishes the stock command: the status view keeps
-kind NONE of the IDLE record until the masked wire views at the end of the
-pass. Across the observed records, an activation changes only the sample,
-the gate flags and the abort reason before the phase, stores the mode after
-the map, the law output before the kind and the trim of the run last; an
-abort changes only the sample before the phase, and recovery changes no
-record field before it. Neither publishes P after its phase store.
+publisher mask, and each publishes the stock command: without an earlier
+publication the status view keeps kind NONE of the IDLE record. Across the
+observed records, an activation changes only the sample, the gate flags and
+the abort reason before the phase, stores the mode after the map, the law
+output before the kind and the trim of the run last; an abort changes only
+the sample before the phase, and recovery changes no record field before
+it. Neither publishes P after its phase store.
+
+A publication after the kind store of an activation stores the status view
+of the new kind, so a second publication after the trim store passes the
+check once the control error equals the cleared error of the regulator: an
+IDLE record with the control error of an earlier hold passes after the error
+pair, one without it from the trim store on. The hook requests one interrupt
+per run, so a republication pass
+repeats an activation and its handler first stores the publication-owned
+bytes of that first publication: q at base `+0x1A`, the command tuple at
+extension `+0x08` and the wire views at `+0x1E`. Every executed first
+publication after the kind store and before the status view changes must
+store exactly these bytes, and the activation must store no other value
+into them before the second boundary. Its passes execute the instructions of
+the activation; one run follows each boundary after the trim store and
+before the status view changes. Each second publication must observe the
+records of the activation at that boundary with these bytes and publish the
+model command of that record. Each that passes the check must publish P with
+the ready mark, the law output 1000 and q = 0, and leave the records of a
+publication after the pass; every republication pass has one, and the RPM
+activation without a control error passes at every such boundary.
+
+The interrupt harness ELF passes the storage-separation check of the
+ordinary harness against the test RAM window before any run.
 
 The canonical JK08A harness also executes the fuel-cut state-machine consumer
 of the redirected limiter pointer. Its independent assembly binds the original

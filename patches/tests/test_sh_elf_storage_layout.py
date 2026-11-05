@@ -196,3 +196,44 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         assert options == {'timeout': 120 if route == 'map' else 180}
     assert len(linked) == 1
     assert next(options for args, options in calls if args[0] == base.GCC) == {'timeout': 120}
+
+
+@pytest.mark.parametrize('layout', ['data', 'bss', 'virtual', 'physical', 'before', 'after', 'malformed', 'missing'])
+def test_rolling_interrupt_rows_inspect_their_elf_before_simulator(tmp_path, monkeypatch, layout):
+    import importlib
+    from types import SimpleNamespace
+
+    module = importlib.import_module('rolling_launch_interrupts')
+    base = module.base_verifier
+    overlap = layout in ('data', 'bss', 'virtual', 'physical')
+    begin = RAM if overlap else RAM - 4 if layout == 'before' else RAM + 65536
+    data = image(section=(begin, 4, 8 if layout == 'bss' else 1, 2))
+    if layout in ('virtual', 'physical'):
+        data = image(load=(RAM if layout == 'virtual' else 0x110000,
+                           RAM if layout == 'physical' else 0x110000, 0, 4))
+    if layout == 'malformed':
+        data = b'not an ELF'
+    calls = []
+
+    def command(args, **options):
+        calls.append(args)
+        if args[0] == base.GCC and layout != 'missing':
+            Path(args[args.index('-o') + 1]).write_bytes(data)
+        return SimpleNamespace(stdout='')
+
+    class StorageAccepted(Exception):
+        pass
+
+    def after_storage(*args, **kwargs):
+        raise StorageAccepted
+
+    monkeypatch.setattr(base, 'run_command', command)
+    monkeypatch.setattr(base, '_invoke_trace_bindings', after_storage)
+    expected = (module.InterruptError if overlap or layout in ('malformed', 'missing')
+                else StorageAccepted)
+    with pytest.raises(expected, match='ELF storage separation' if expected is not StorageAccepted else None):
+        module.run_interrupt_rows(b'controlled fixture', tmp_path, engine=0, regulator=(0, 0),
+                                  definitions=[], invoke_object=tmp_path / 'invoke.o',
+                                  rom_object=tmp_path / 'rom.o')
+    assert base.RUN not in [args[0] for args in calls]
+    assert [args[0] for args in calls].count(base.GCC) == 1

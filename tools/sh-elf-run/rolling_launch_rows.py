@@ -695,7 +695,10 @@ class InterruptScenario:
     ``kind`` selects the claims of the pass: "steady" passes keep an ACTIVE
     ready record that every publication accepts, "activation" passes leave
     IDLE, "abort" passes leave ACTIVE and "recovery" passes repair a
-    rejected record. The injected publisher receives the wide S and P of
+    rejected record. A "republication" pass is an activation pass whose
+    handler stores ``prior``, the publication-owned bytes of a first
+    publication after the kind store, before it runs the second
+    publication. The injected publisher receives the wide S and P of
     ``stock`` and ``effective``.
     """
     name: str
@@ -706,6 +709,42 @@ class InterruptScenario:
     extension: bytes
     stock: int
     effective: int
+    prior: bytes = b""
+
+
+# The bytes that an ignition publication stores: q at base +0x1A, S, P, a,
+# ready, e and wire e at extension +0x08, and the wire views at +0x1E.
+PUBLICATION_BYTES = ((0, 0x1A, 0x1C), (1, 0x08, 0x10), (1, 0x1E, 0x20))
+
+
+def publication_bytes(records):
+    """The publication-owned bytes of a record pair, in PUBLICATION_BYTES order."""
+    return b"".join(records[region][start:end] for region, start, end in PUBLICATION_BYTES)
+
+
+def with_publication_bytes(records, prior):
+    """The record pair with its publication-owned bytes replaced by ``prior``."""
+    parts = [bytearray(records[0]), bytearray(records[1])]
+    offset = 0
+    for region, start, end in PUBLICATION_BYTES:
+        parts[region][start:end] = prior[offset:offset + end - start]
+        offset += end - start
+    return bytes(parts[0]), bytes(parts[1])
+
+
+def first_publication(scenario):
+    """The publication-owned bytes of a publication after the kind store of an activation.
+
+    Until a publication rewrites it, the status view keeps kind NONE of the
+    IDLE record, so the publication fails the check and stores the stock
+    command, q = 0 and the wire views of the new kind and of the sample of
+    the pass.
+    """
+    records = (scenario.base, scenario.extension)
+    passed = engine_pass(records, scenario.inputs)[3]
+    stock = model.ignition_step(replace(passed, flags=passed.flags & ~model.Flag.CONFIG_VALID),
+                                scenario.stock, CALIBRATION, TABLE)
+    return publication_bytes(_publish(*records, stock))
 
 
 # The sampled fields of a pass, which precede every transition store.
@@ -722,6 +761,9 @@ def interrupt_scenarios():
     control error of an earlier hold that differ from the activation values,
     so that every activation store changes an observable field. Its law
     output 0 is the q = 1000 law of an RPM hold released at its ceiling.
+    A second RPM activation starts from that record without the control
+    error. A republication pass repeats each activation with the first
+    publication after the kind store.
     """
     good = GOOD
     idle = model.RuntimeState()
@@ -748,16 +790,24 @@ def interrupt_scenarios():
         InterruptScenario("irq-recovery", "recovery", model.RegulatorKind.SPEED, good,
                           *mutate(ready_speed, "base", 0x1E, "B", ready_speed.applied_trim - 1),
                           55, 60),
+        InterruptScenario("irq-rpm-activation-without-error", "activation",
+                          model.RegulatorKind.RPM, replace(good, speed=80),
+                          *records(replace(stale, control_error=0)), 50, 60),
     )
+    scenarios += tuple(
+        replace(item, name=item.name.replace("activation", "republication"),
+                kind="republication", prior=first_publication(item))
+        for item in scenarios if item.kind == "activation")
     for scenario in scenarios:
         decoded = _decode(scenario.base, scenario.extension)
         if (decoded is None) != (scenario.kind == "recovery"):
             raise ValueError(f"{scenario.name}: the model check of the record differs")
         final = engine_pass((scenario.base, scenario.extension), scenario.inputs)[3]
         expected_phase = {"steady": model.Phase.ACTIVE, "activation": model.Phase.ACTIVE,
+                          "republication": model.Phase.ACTIVE,
                           "abort": model.Phase.COOLDOWN, "recovery": model.Phase.COOLDOWN}
         if final.phase != expected_phase[scenario.kind] or (
-                scenario.kind in ("steady", "activation")
+                scenario.kind in ("steady", "activation", "republication")
                 and final.regulator_kind != scenario.regulator):
             raise ValueError(f"{scenario.name}: the pass does not reach its outcome")
     return scenarios
@@ -796,6 +846,7 @@ def render_interrupts(scenarios):
         "    struct rl_inputs in;",
         "    uint8_t base[44], ext[32];",
         "    uint32_t stock, effective;",
+        "    uint8_t has_prior, prior[12];",
         "};",
         f"static const uint8_t rl_config[102] = {_bytes(CALIBRATION.to_bytes())};",
         f"static const uint8_t rl_table[82] = {_bytes(TABLE.to_bytes())};",
@@ -804,10 +855,14 @@ def render_interrupts(scenarios):
     for scenario in scenarios:
         stock = ignition_publication((scenario.base, scenario.extension), scenario.stock,
                                      scenario.effective, contract=False)
+        prior = scenario.prior or bytes(12)
+        if len(prior) != 12:
+            raise ValueError(f"{scenario.name}: prior publication bytes differ in size")
         lines.append(
             f'    {{"{scenario.name}", {_inputs(scenario.inputs)},\n'
             f"     {_bytes(scenario.base)},\n     {_bytes(scenario.extension)},\n"
-            f"     0x{stock.stock_wide:08x}U, 0x{stock.effective_wide:08x}U}},")
+            f"     0x{stock.stock_wide:08x}U, 0x{stock.effective_wide:08x}U,\n"
+            f"     {int(bool(scenario.prior))}, {_bytes(prior)}}},")
     lines.append("};")
     return "\n".join(lines) + "\n"
 

@@ -1,7 +1,7 @@
 """Interrupt rows of the GNU SH-2E gate of exact JK08A Rolling Launch.
 
 The ignition publisher runs from the crank-tooth interrupt between any two
-engine instructions outside a masked section. The rows run six engine passes
+engine instructions outside a masked section. The rows run the engine passes
 of rolling_launch_rows.interrupt_scenarios and inject one ignition
 publication through the simulator interrupt hook. A publication observes the
 memory of the pass, and the pass observes the publication, only through
@@ -24,23 +24,40 @@ each other acceptance point. Each injected run then requires:
   publication before or after the pass;
 - in a steady ACTIVE pass, a ready publication of P at every boundary;
 - in an RPM activation, at least one publication between the error pair and
-  the publisher mask, and the stock command from each of them: the status
-  view keeps kind NONE of the IDLE record until the masked wire views at the
-  end of the pass;
+  the publisher mask, and the stock command from each of them: without an
+  earlier publication the status view keeps kind NONE of the IDLE record;
 - the store orders of the transitions: activation stores the phase first,
   the mode after the map, the law output before the kind and the trim of the
   run last; an abort and corrupt-state recovery leave ACTIVE with their first
   record store after the sample.
+
+A publication after the kind store of an activation fails the check and
+stores the status view of the new kind, so a second publication after the
+trim store passes it once the control error equals the cleared error of the
+regulator. The hook requests one interrupt per run, so a
+republication pass repeats the activation and its handler stores the
+publication-owned bytes of the first publication before it runs the second.
+The executed first publication at every boundary after the kind store and
+before the status view changes stores exactly these bytes, and the pass
+stores no other value into them. Each second publication, at every boundary
+after the trim store and before the status view changes, must observe the
+records of the activation at that boundary with the first publication bytes
+and publish the model command of that record. Each that passes the check
+must publish ready P with the law output 1000 and q = 0 and leave the
+records of a publication after the pass; at least one passes in every
+republication pass, and every one passes without an earlier control error.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import itertools
 import os
 from pathlib import Path
 import re
 import struct
 
+from elf_storage_layout import ELFStorageError, require_separate_storage
 import rolling_launch_rows
 import verify_map_switching as base_verifier
 
@@ -318,6 +335,73 @@ def check_activation_order(scenario, observed):
         raise InterruptError(f"{name}: no boundary observes {[k for k, v in seen.items() if not v]}")
 
 
+def check_republication(row, scenario, expected):
+    """Check a second publication after the activation stores; return whether it is ready.
+
+    ``expected`` is the record pair that the activation pass leaves at the
+    same boundary with the first publication bytes of ``scenario``. The
+    record passes the check once the control error equals the error of the
+    regulator; a ready publication publishes P with the law output 1000 and
+    q = 0 and leaves the records of a publication after the pass.
+    """
+    name = scenario.name
+    seen, ready = check_interrupted(row, scenario)
+    if seen != expected:
+        raise InterruptError(f"{name}: the second publication observes records other than "
+                             f"the pass after its first publication: {_changed(seen, expected)}")
+    if ready != (rolling_launch_rows._decode(*seen) is not None):
+        raise InterruptError(f"{name}: the second publication of a "
+                             f"{'valid' if not ready else 'rejected'} record "
+                             f"{'publishes S' if not ready else 'publishes P'}")
+    if not ready:
+        return False
+    published = _fields(_records(row["published"]))
+    if published["law_output"] != model.U_ONE or published["cut_fraction"] != 0:
+        raise InterruptError(f"{name}: the second publication publishes q "
+                             f"{published['cut_fraction']} of law {published['law_output']}")
+    if _records(row["final"]) != rolling_launch_rows.interrupt_finals(scenario)[1]:
+        raise InterruptError(f"{name}: the pass leaves records other than those of a "
+                             "publication after it")
+    return True
+
+
+def republication_points(scenario, observations):
+    """Split the observed boundaries of an activation into first and second points.
+
+    ``observations`` maps the ordinal of each injected boundary of the pass to
+    its observed record pair. A first point follows the kind store, a second
+    point the trim store, and both precede every rewrite of the status view.
+    Return both ordinal lists.
+    """
+    initial = (scenario.base, scenario.extension)
+    final = rolling_launch_rows.engine_pass(initial, scenario.inputs)[:2]
+    first, second = [], []
+    for ordinal, seen in sorted(observations.items()):
+        if seen[1][0x1F] != initial[1][0x1F]:
+            continue
+        if seen[1][0x00] == final[1][0x00] != initial[1][0x00]:
+            first.append(ordinal)
+        if seen[0][0x1E] == final[0][0x1E] != initial[0][0x1E]:
+            second.append(ordinal)
+    return first, second
+
+
+def expected_republication(scenario, seen, prior):
+    """The records of a second publication: the pass at that boundary after the first.
+
+    Among the publication-owned bytes, the activation stores only zero ready
+    and q, which the first publication also stores; every other byte that the
+    pass changes before the boundary refutes the transfer.
+    """
+    initial = rolling_launch_rows.publication_bytes((scenario.base, scenario.extension))
+    current = rolling_launch_rows.publication_bytes(seen)
+    for index, (before, value, first) in enumerate(zip(initial, current, prior, strict=True)):
+        if value != before and value != first:
+            raise InterruptError(f"{scenario.name}: the pass stores publication byte {index} "
+                                 "with a value other than the first publication")
+    return rolling_launch_rows.with_publication_bytes(seen, prior)
+
+
 def error_pair_end(records, regulator):
     """PC of the LDC that lowers the mask of the error pair, the first inside ``regulator``."""
     for index, (pc, opcode, _delay) in enumerate(records):
@@ -351,6 +435,10 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, in
         "-Wl,--section-start=.rom=0", "-o", elf, TOOL_DIR / "rolling_launch_irq.c",
         handler_object, invoke_object, rom_object,
     ], timeout=120)
+    try:
+        require_separate_storage(elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+    except (ELFStorageError, OSError) as error:
+        raise InterruptError(f"rolling-launch-irq: ELF storage separation: {error}") from error
     ranges, _words = base_verifier._invoke_trace_bindings(
         elf, invoke_object, fixture, build_dir, names=frozenset({"_invoke_regs"}))
     symbols = {}
@@ -375,12 +463,21 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, in
     pair = error_pair_end(records, regulator)
     if {item.scenario for item in found} != set(range(len(scenarios))):
         raise InterruptError("an interrupt scenario has no instruction boundary")
+    by_scenario = {index: [item for item in found if item.scenario == index]
+                   for index in range(len(scenarios))}
+    ordinal = {item.index: number for items in by_scenario.values()
+               for number, item in enumerate(items)}
     observed = {index: [] for index in range(len(scenarios))}
+    publications = {index: {} for index in range(len(scenarios))}
     publication_b = 0
     elf_bytes = elf.read_bytes()
-    runs = injections(found)
-    for number, item in enumerate(runs):
-        report = build_dir / f"irq-{number}.report"
+    runs = [item for item in injections(found)
+            if scenarios[item.scenario].kind != "republication"]
+    run_number = itertools.count()
+
+    def inject(item):
+        """Run one request and return the row of its pass; the others keep the baseline."""
+        report = build_dir / f"irq-{next(run_number)}.report"
         result = base_verifier.run_command([base_verifier.RUN, memory, elf], timeout=60, env={
             **clean, "VQ_SH_IRQ_PC": f"{item.pc:x}", "VQ_SH_IRQ_COUNT": str(item.count),
             "VQ_SH_IRQ_LEVEL": str(LEVEL), "VQ_SH_IRQ_VECTOR": str(VECTOR),
@@ -404,23 +501,65 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, in
                 f"{item.pc:#010x} #{item.count}: returns to {resumed:#010x} with sp {sp:#010x}, "
                 f"expected {item.accepted:#010x} and {frame + FRAME_SIZE:#010x}")
         for index, (row, scenario) in enumerate(zip(rows, scenarios)):
-            if index != item.scenario:
-                if row != baseline[index]:
-                    raise InterruptError(f"{scenario.name}: a publication in another pass "
-                                         "changes its observations")
-                continue
+            if index != item.scenario and row != baseline[index]:
+                raise InterruptError(f"{scenario.name}: a publication in another pass "
+                                     "changes its observations")
+        return rows[item.scenario]
+
+    def where(item):
+        return f"{item.pc:#010x} #{item.count} accepted at {item.accepted:#010x}"
+
+    for item in runs:
+        row = inject(item)
+        scenario = scenarios[item.scenario]
+        try:
+            seen, ready = check_interrupted(row, scenario)
+        except InterruptError as error:
+            raise InterruptError(f"{where(item)}: {error}") from error
+        observed[item.scenario].append(seen)
+        publications[item.scenario][ordinal[item.index]] = (seen, _records(row["published"]))
+        if (scenario.kind == "activation" and scenario.regulator == model.RegulatorKind.RPM
+                and pair < item.accepted < regulator[1]):
+            if ready:
+                raise InterruptError(f"{where(item)}: publication B passes the check")
+            publication_b += 1
+    republications = ready_republications = 0
+    names = [item.name for item in scenarios]
+    for index, scenario in enumerate(scenarios):
+        if scenario.kind != "republication":
+            continue
+        source = names.index(scenario.name.replace("republication", "activation"))
+        stale_error = _fields((scenario.base, scenario.extension))["control_error"]
+        ready_points = 0
+        twins = by_scenario[index]
+        if ([(item.pc, item.accepted, item.store) for item in twins]
+                != [(item.pc, item.accepted, item.store) for item in by_scenario[source]]):
+            raise InterruptError(f"{scenario.name}: the pass differs from its activation")
+        runs_of_source = publications[source]
+        first, second = republication_points(
+            scenario, {number: seen for number, (seen, _published) in runs_of_source.items()})
+        if not first or not second:
+            raise InterruptError(f"{scenario.name}: no boundary follows the kind store or the "
+                                 "trim store before the status view changes")
+        for number in first:
+            if rolling_launch_rows.publication_bytes(runs_of_source[number][1]) != scenario.prior:
+                raise InterruptError(f"{scenario.name}: the first publication at ordinal {number} "
+                                     "stores other bytes than the second publication receives")
+        for number in second:
+            item = twins[number]
+            expected = expected_republication(scenario, runs_of_source[number][0], scenario.prior)
             try:
-                seen, ready = check_interrupted(row, scenario)
+                ready = check_republication(inject(item), scenario, expected)
             except InterruptError as error:
-                raise InterruptError(f"{item.pc:#010x} #{item.count} accepted at "
-                                     f"{item.accepted:#010x}: {error}") from error
-            observed[index].append(seen)
-            if (scenario.kind == "activation" and scenario.regulator == model.RegulatorKind.RPM
-                    and pair < item.accepted < regulator[1]):
-                if ready:
-                    raise InterruptError(f"{item.pc:#010x} #{item.count} accepted at "
-                                         f"{item.accepted:#010x}: publication B passes the check")
-                publication_b += 1
+                raise InterruptError(f"{where(item)}: {error}") from error
+            if not ready and not stale_error:
+                raise InterruptError(f"{where(item)}: {scenario.name}: a second publication "
+                                     "without an earlier control error fails the check")
+            republications += 1
+            ready_points += ready
+        if not ready_points:
+            raise InterruptError(f"{scenario.name}: no second publication passes the check")
+        ready_republications += ready_points
     if elf.read_bytes() != elf_bytes:
         raise InterruptError("interrupt harness ELF changes during execution")
     for index, scenario in enumerate(scenarios):
@@ -436,4 +575,5 @@ def run_interrupt_rows(fixture, build_dir, *, engine, regulator, definitions, in
     return (f"VQ_SH_ELF_ROLLING_IRQ status=PASS scenarios={len(scenarios)} "
             f"boundaries={len(found)} stores={sum(item.store for item in found)} "
             f"injections={len(runs)} deferred={deferred} after_ldc={after_ldc} "
-            f"publication_b={publication_b} level={LEVEL}")
+            f"publication_b={publication_b} republications={republications} "
+            f"ready_republications={ready_republications} level={LEVEL}")

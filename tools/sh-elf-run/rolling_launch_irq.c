@@ -5,7 +5,10 @@
  * interrupt hook enters irq_rolling_handler inside one pass; the handler runs
  * the ignition publisher with the wide S and P of the scenario at SR.I = 8,
  * as the crank-tooth interrupt does, and records the base record and the
- * extension that the publication observes and leaves. The handler stores
+ * extension that the publication observes and leaves. In a scenario with
+ * prior publication bytes, the handler first stores them where a publication
+ * stores q, the command tuple and the wire views, so the publication is the
+ * second of the pass after a first publication. The handler stores
  * its return marker immediately before RTE. Every scenario prints its
  * observations, and verify_rolling_launch.py compares them with the model.
  * The harness checks r8..r14, the stack pointer, GBR and the SR.I and SR.S
@@ -122,6 +125,12 @@ void irq_rolling_publish(void)
     int preserved = 1;
 
     ++irq_hits;
+    if (current->has_prior) {
+        /* The order of rolling_launch_rows.PUBLICATION_BYTES. */
+        write_bytes(ram_pointer(RL_STATE + 0x1aU), current->prior, 2U);
+        write_bytes(ram_pointer(RL_EXTENSION + 0x08U), current->prior + 2, 8U);
+        write_bytes(ram_pointer(RL_EXTENSION + 0x1eU), current->prior + 10, 2U);
+    }
     read_records(seen);
     for (index = 1; index < 15U; ++index)
         irq_regs[index] = distinct(index) ^ 0x00ff00ffU;
