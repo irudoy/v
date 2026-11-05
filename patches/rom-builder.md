@@ -209,6 +209,32 @@ Calibration files, profiles, and calibrated images are local artifacts. Both
 commands write only outside the repository or to a path that Git ignores, such
 as `tmp/`.
 
+### Map calibration copy
+
+`copy_map_slot.py` gives other maps the calibration of one map of an image
+with the current Map Switching runtime:
+
+```bash
+uv run python patches/copy_map_slot.py tmp/upgraded.bin --source-map 3 \
+  --output tmp/map-3-base.bin
+uv run python patches/copy_map_slot.py tmp/upgraded.bin --source-map 3 \
+  --target-maps 1 5 --output tmp/maps-1-5-from-3.bin
+```
+
+For every Map Switching family of the layout of the ROM, the command copies
+the slot of `--source-map` over the slot of each target map; Map 1 is the
+canonical stock table. `--target-maps` defaults to every other map. The
+command recalculates the checksum fields and requires every changed byte to
+lie in a target slot or a checksum field, and the result to remain an
+extraction input that a build of the registered stock image followed by its
+calibration reproduces byte for byte. It refuses an image without the current
+Map Switching runtime, a source map among the targets, and an output path
+equal to the input. It writes the ROM with SHA-256, MD5, and JSON manifest
+sidecars under the publication rules of the builder; the manifest names the
+families whose target slots changed and the changed byte count, and marks the
+output `hardware_status=UNTESTED`. The Rolling Launch flash gates and the
+commit and CI qualification remain those of `make preflash`.
+
 ## Pre-flash qualification
 
 `preflash.py` (`make preflash`) accepts an image for flashing only when the
