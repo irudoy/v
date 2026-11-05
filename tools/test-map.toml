@@ -62,6 +62,12 @@ paths = ["patches/tests/**"]
 pytest = ["patches/tests", "tools/mapkit/tests", "tools/tests"]
 
 [[subsystem]]
+name = "rolling endpoint images"
+paths = ["patches/tests/rolling_endpoint_images.py"]
+# The Rolling Launch audit tests read the flashed endpoint images too.
+pytest = ["tools/logs/tests"]
+
+[[subsystem]]
 name = "can_dashboard"
 paths = ["tools/can_dashboard/*.py"]
 pytest = [
@@ -282,6 +288,7 @@ pytest = [
     "tools/can_dashboard/tests",
     "tools/diagnostics/tests",
     "tools/kb/tests",
+    "tools/logs/tests",
     "tools/mapkit/tests",
     "tools/maps/tests",
     "tools/memgraph/tests",

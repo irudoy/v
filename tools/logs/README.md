@@ -489,9 +489,9 @@ neither `0xFFFF41B5` nor the remaining permit terms of `FUN 00057D1E`.
 `rolling_launch_audit.py` reads the verified snapshots of a dashboard MLVLG
 recording or a strict schema-2 `tuning` TRC and audits the Rolling Launch
 hold. Each snapshot carries the stock button and dashboard frames, vehicle
-speed, coolant, and the fuel-inhibit, timing, APC, pedal, BFS, knock-surface,
-and exhaust-CVTC telemetry sources, and the Rolling Launch phase and abort
-reason. The integrator, speed error, torque fraction, and cut counter are
+speed, coolant, and the fuel-inhibit, timing, pedal, BFS, knock-surface, and
+exhaust-CVTC telemetry sources, and the Rolling Launch phase and abort reason.
+The integrator, speed error, torque fraction, and cut-request counter are
 slots of the launch-law configurations of the dynamic page (`can-telemetry.md`,
 Dynamic page). The configuration byte of a snapshot names the slots it
 carries; the reader leaves the others None, because the dashboard holds the
@@ -511,8 +511,12 @@ python3 tools/logs/rolling_launch_audit.py --image <flashed image> <capture>...
   first and last page of every snapshot group and of the `0x239` and `0x551`
   context frames, measured from the trace start.
 
-The hold audit reads the configuration record of the flashed image and
-reports every run of contiguous `ACTIVE` snapshots:
+The hold audit reads the Rolling Launch record of the flashed image at the
+span of the runtime endpoint that `patches/runtime_endpoints.py` classifies:
+the current record, or the record of a registered historical endpoint, with
+one integral gain for every map (schema 4) or per-map slots with the fixed
+ignition trim (schema 5). The first output line names the endpoint. The
+audit reports every run of contiguous `ACTIVE` snapshots:
 
 - The speed error of every `ACTIVE` snapshot lies inside the abort window.
 - The replay of `patches/rolling_launch.py` starts from zero integrator and
@@ -522,18 +526,23 @@ reports every run of contiguous `ACTIVE` snapshots:
   without the error leaves it unknown. A published torque fraction must lie
   within the model step from the previous fraction, or from the range that
   the rate limit allows after a snapshot without the fraction.
-- Configuration 1 (`launch_law`) carries the error, the fraction, and the cut
-  counter on every tick, so every fraction of a run that starts after `IDLE`
-  equals its model step. Configuration 2 (`launch_law_integrator`) alternates
-  its groups: a group-0 snapshot follows the integrator of the group-1
-  snapshot before it, and its fraction lies within the model range of the
-  two-tick step.
-- In hold mode, the cut counter from the `IDLE` snapshot before a run through
-  the snapshot after it lies within the cuts that the delivered fractions owe
-  the spark events of the bracketed engine speed: three events per
-  revolution, the fraction ranges on both sides of each tick update, the 2.75
-  cuts of the accumulator offsets, the truncation of six accumulators, and
-  one event at each end.
+- Configuration 1 (`launch_law`) carries the error, the fraction, and the
+  cut-request counter on every tick, so every fraction of a run that starts
+  after `IDLE` equals its model step. Configuration 2
+  (`launch_law_integrator`) alternates its groups: a group-0 snapshot follows
+  the integrator of the group-1 snapshot before it, and its fraction lies
+  within the model range of the two-tick step.
+- In hold mode, the cut requests from the `IDLE` snapshot before a run
+  through the snapshot after it lie within the cuts that the delivered
+  fractions owe the spark events of the bracketed engine speed: three events
+  per revolution, the fraction ranges on both sides of each tick update, the
+  2.75 cuts of the accumulator offsets, the truncation of six accumulators,
+  and one event at each end. The counter counts the cut requests of the
+  spark actuator, not withheld sparks: a requested cut whose dwell arming
+  precedes the dwell-start veto still fires.
+- The floor ticks of a hold run count the snapshots whose stock APC command,
+  `110 - final_timing_raw` modulo 256, plus the trim of the map slot lies
+  past the floor command of the slot.
 - The abort reason is the context value five snapshots after the run, which
   the rotation has refreshed since the abort.
 - The target range is the `0x280` speed minus the published error; it stays
@@ -541,9 +550,9 @@ reports every run of contiguous `ACTIVE` snapshots:
 
 The replay steps the controller once per snapshot, so the audit refuses a
 capture whose snapshots do not step by one tick, which a tick divisor above 1
-produces. A law failure, a cut count outside its bounds, a run without a
-checked fraction, or a capture without an `ACTIVE` run makes the exit
-status 1.
+produces. A law failure, a requested-cut count outside its bounds, a run
+without a checked fraction, or a capture without an `ACTIVE` run makes the
+exit status 1.
 
 The same reader joins raw bus evidence to the holds of an MLG recording:
 
@@ -568,16 +577,16 @@ ambiguous, or matching ticks with different contents, refuse the join.
   estimate in `0x160` do not account for the added spark veto. Equality of
   those words through a cut cannot establish full shaft torque. `0x174`
   words A and B are requests from the TCM, not actual torque. The report
-  leaves physical recovery unmeasured and reports veto release from the cut
-  counter separately.
+  leaves physical recovery unmeasured and reports the release of cut
+  requests from the cut-request counter separately.
 - Phase is a fixed field of page 2, current in every snapshot. Counter
-  increments are modulo 256. A last veto lies between adjacent coherent
-  snapshots; their first-page times are capture proxies, not interrupt-event
-  timestamps. An increment in the first non-ACTIVE snapshot spans the
-  transition and does not establish a veto after it. The audit checks all
-  subsequent inactive snapshots up to the next hold, rejects incomplete
-  coverage as a release proof, and bounds how many cuts straddle or follow
-  the raw release frame.
+  increments are modulo 256. The last cut request lies between adjacent
+  coherent snapshots; their first-page times are capture proxies, not
+  interrupt-event timestamps. An increment in the first non-ACTIVE snapshot
+  spans the transition and does not establish a cut request after it. The
+  audit checks all subsequent inactive snapshots up to the next hold, rejects
+  incomplete coverage as a release proof, and bounds how many cut requests
+  straddle or follow the raw release frame.
 - The snapshot button attribute is host context from `0x239`, not the stable
   ECU input `0xFFFF2A85`, which these recordings do not carry. A
   `BUTTON_RELEASED` abort bounds acceptance of the stable release between
@@ -586,8 +595,8 @@ ambiguous, or matching ticks with different contents, refuse the join.
   `PEDAL_LOW` and `RPM_LOW` aborts precede acceptance, since an accepted
   released code overrides those gate reasons with `BUTTON_RELEASED`.
   The audit keeps these inferred input bounds separate from observations
-  and compares veto release with both the raw CAN code and the inferred
-  stable input.
+  and compares the release of cut requests with both the raw CAN code and
+  the inferred stable input.
 - The `0x176` output/turbine ratio is reported over each hold and compared
   with stable-gear medians using the field decoder and selection of
   `tcm_shift_audit.py`. Neutral ratios do not identify a driving gear.

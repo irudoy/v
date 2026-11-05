@@ -1,23 +1,38 @@
 import contextlib
 from dataclasses import replace
+from functools import lru_cache
 import io
 from pathlib import Path
+import struct
 import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest import mock
 
+from patches import build_rom
 from patches import rolling_launch as model
+from patches import rom_checksums
+from patches import runtime_endpoints
+from patches import runtime_targets
+from patches.tests import rolling_endpoint_images as endpoint_images
 from tools.logs import can_telemetry
 from tools.logs import rolling_launch_audit as audit
 
 
-CALIBRATION = replace(
+MODEL_CALIBRATION = replace(
     model.Calibration(),
     mode=model.Mode.HOLD,
     enable_mask=0x01,
     slots=(model.Slot(integral_gain=3),) * model.SLOT_COUNT,
 )
+
+
+def hold_calibration(calibration):
+    """The audit settings of the current record of a model calibration."""
+    return audit.endpoint_calibration(calibration.to_bytes(), "current")
+
+
+CALIBRATION = hold_calibration(MODEL_CALIBRATION)
 # Native RPM counts of 12.5 RPM: 4000 RPM.
 RPM = 320
 SPEEDS = (500, 505, 512, 520, 526, 530, 528, 522, 515, 510, 506, 503, 500, 498)
@@ -35,7 +50,7 @@ def inputs(speed, button=model.BUTTON_CANCEL, active_index=0):
 
 
 def simulate(
-    speeds, *, idle_before=2, released_after=6, calibration=CALIBRATION,
+    speeds, *, idle_before=2, released_after=6, calibration=MODEL_CALIBRATION,
     active_index=0,
 ):
     """Snapshots of the model with the spark actuator between ticks.
@@ -84,7 +99,6 @@ def sample(tick, speed, state, cut):
         rpm_high=RPM + audit.STOCK_RPM_MARGIN,
         fuel_inhibit_mask=0,
         final_timing_raw=20,
-        apc_command_raw=90,
         app1_raw=600,
         bfs_raw=1000,
         knock_surface_state=0,
@@ -94,7 +108,7 @@ def sample(tick, speed, state, cut):
         integrator=state.integrator,
         speed_error=state.speed_error,
         torque_fraction=state.torque_fraction,
-        cut_counter=cut.cut_count,
+        cut_requests=cut.cut_count,
     )
 
 
@@ -128,15 +142,15 @@ class HoldAuditTest(unittest.TestCase):
         self.assertEqual(run.failures, ())
         self.assertEqual(run.abort_reason, model.AbortReason.BUTTON_RELEASED)
         self.assertEqual(run.target_speed, (500.0, 500.0))
-        self.assertGreater(run.cuts, 0)
-        self.assertTrue(run.cuts_inside)
+        self.assertGreater(run.requested_cuts, 0)
+        self.assertTrue(run.requested_cuts_inside)
 
     def test_the_one_group_configuration_replays_every_step(self):
         samples = launch_law(simulate(SPEEDS))
         (run,) = audit.audit_hold(samples, CALIBRATION)
         self.assertEqual(run.law_ticks, len(SPEEDS))
         self.assertEqual(run.failures, ())
-        self.assertTrue(run.cuts_inside)
+        self.assertTrue(run.requested_cuts_inside)
 
     def test_the_one_group_configuration_catches_a_fraction_off_the_model(self):
         samples = launch_law(simulate(SPEEDS))
@@ -155,7 +169,7 @@ class HoldAuditTest(unittest.TestCase):
                 self.assertEqual(run.law_ticks, len(SPEEDS) // 2)
                 self.assertEqual(run.failures, ())
                 self.assertEqual(run.target_speed, (500.0, 500.0))
-                self.assertTrue(run.cuts_inside)
+                self.assertTrue(run.requested_cuts_inside)
 
     def test_the_two_group_configuration_catches_a_fraction_off_the_model(self):
         samples = launch_law_integrator(simulate(SPEEDS))
@@ -179,7 +193,7 @@ class HoldAuditTest(unittest.TestCase):
             1: {"integrator"},
             2: {"integrator"},
             0x82: {"speed_error", "torque_fraction"},
-            0: {"integrator", "speed_error", "torque_fraction", "cut_counter"},
+            0: {"integrator", "speed_error", "torque_fraction", "cut_requests"},
         }
         for selector, absent in expected.items():
             with self.subTest(configuration=selector):
@@ -188,7 +202,7 @@ class HoldAuditTest(unittest.TestCase):
                 self.assertEqual(sample.configuration, selector)
                 self.assertEqual(sample.phase, 7)
                 for attribute in ("integrator", "speed_error",
-                                  "torque_fraction", "cut_counter"):
+                                  "torque_fraction", "cut_requests"):
                     self.assertEqual(
                         getattr(sample, attribute) is None,
                         attribute in absent,
@@ -239,23 +253,23 @@ class HoldAuditTest(unittest.TestCase):
 
     def test_missing_cuts_fall_below_the_owed_bound(self):
         samples = simulate(SPEEDS)
-        frozen = samples[2].cut_counter
+        frozen = samples[2].cut_requests
         samples = [
-            replace(s, cut_counter=frozen) if s.tick >= 2 else s for s in samples
+            replace(s, cut_requests=frozen) if s.tick >= 2 else s for s in samples
         ]
         (run,) = audit.audit_hold(samples, CALIBRATION)
-        self.assertEqual(run.cuts, 0)
-        self.assertFalse(run.cuts_inside)
+        self.assertEqual(run.requested_cuts, 0)
+        self.assertFalse(run.requested_cuts_inside)
 
     def test_extra_cuts_exceed_the_owed_bound(self):
         samples = simulate(SPEEDS)
         end = 2 + len(SPEEDS)
         samples = [
-            replace(s, cut_counter=(s.cut_counter + 8) & 0xFF) if s.tick >= end else s
+            replace(s, cut_requests=(s.cut_requests + 8) & 0xFF) if s.tick >= end else s
             for s in samples
         ]
         (run,) = audit.audit_hold(samples, CALIBRATION)
-        self.assertFalse(run.cuts_inside)
+        self.assertFalse(run.requested_cuts_inside)
 
     def test_a_gap_skips_the_step_and_the_cut_bound(self):
         samples = simulate(SPEEDS)
@@ -265,16 +279,16 @@ class HoldAuditTest(unittest.TestCase):
         # Ticks 2..6 and 8..15; tick 8 lacks its predecessor.
         self.assertEqual(first.law_ticks, 5)
         self.assertEqual(second.law_ticks, len(SPEEDS) - 7)
-        self.assertIsNone(first.cuts)
+        self.assertIsNone(first.requested_cuts)
         self.assertIsNone(first.abort_reason)
-        self.assertIsNone(second.cuts)
+        self.assertIsNone(second.requested_cuts)
 
     def test_observe_mode_has_no_cut_bound(self):
-        calibration = replace(CALIBRATION, mode=model.Mode.OBSERVE)
+        calibration = replace(CALIBRATION, hold=False)
         samples = simulate(SPEEDS)
         (run,) = audit.audit_hold(samples, calibration)
-        self.assertIsNone(run.cuts)
-        self.assertIsNone(run.cuts_inside)
+        self.assertIsNone(run.requested_cuts)
+        self.assertIsNone(run.requested_cuts_inside)
 
     def test_a_capture_without_the_hold_fields_is_refused(self):
         samples = [
@@ -323,17 +337,20 @@ class HoldAuditTest(unittest.TestCase):
             integral_gain=2, max_trim=20, floor_command=120,
             trim_efficiency=824,
         )
-        calibration = replace(
-            CALIBRATION,
+        model_calibration = replace(
+            MODEL_CALIBRATION,
             enable_mask=0x08,
             slots=(model.Slot(integral_gain=3),) * 3
             + (trimmed, model.Slot(integral_gain=3)),
         )
-        samples = simulate(SPEEDS, calibration=calibration, active_index=3)
+        calibration = hold_calibration(model_calibration)
+        samples = simulate(
+            SPEEDS, calibration=model_calibration, active_index=3
+        )
         (run,) = audit.audit_hold(samples, calibration)
         self.assertEqual(run.failures, ())
         self.assertGreater(run.law_ticks, 0)
-        self.assertTrue(run.cuts_inside)
+        self.assertTrue(run.requested_cuts_inside)
         # A stock command of 90 plus the trim stays below the floor of 120.
         self.assertEqual(run.floor_ticks, 0)
 
@@ -353,59 +370,154 @@ class HoldAuditTest(unittest.TestCase):
             integral_gain=3, max_trim=20, floor_command=120,
             trim_efficiency=824,
         )
-        calibration = replace(
-            CALIBRATION, slots=(trimmed,) * model.SLOT_COUNT
+        model_calibration = replace(
+            MODEL_CALIBRATION, slots=(trimmed,) * model.SLOT_COUNT
         )
-        samples = simulate(SPEEDS, calibration=calibration)
+        calibration = hold_calibration(model_calibration)
+        samples = simulate(SPEEDS, calibration=model_calibration)
         active = sum(s.phase == model.Phase.ACTIVE for s in samples)
-        clipped = [replace(s, apc_command_raw=105) for s in samples]
+        # A final timing of 5 is the stock command 105, past the floor of
+        # 120 by 5 with the trim of 20.
+        clipped = [replace(s, final_timing_raw=5) for s in samples]
         (run,) = audit.audit_hold(clipped, calibration)
         self.assertEqual(run.floor_ticks, active)
         # A stock command whose full trim reaches the floor is not clipped.
         (run,) = audit.audit_hold(
-            [replace(s, apc_command_raw=100) for s in samples], calibration
+            [replace(s, final_timing_raw=10) for s in samples], calibration
         )
         self.assertEqual(run.floor_ticks, 0)
+
+    def test_the_stock_command_follows_the_final_timing(self):
+        self.assertEqual(audit.stock_apc_command(20), 90)
+        self.assertEqual(audit.stock_apc_command(0), 110)
+        # A final timing past the base wraps modulo 256, as the command byte.
+        self.assertEqual(audit.stock_apc_command(120), 246)
 
     def test_the_owed_cuts_follow_the_trim_efficiency(self):
         samples = simulate(SPEEDS)
         (stock,) = audit.audit_hold(samples, CALIBRATION)
-        trimmed = replace(
-            CALIBRATION,
+        trimmed = hold_calibration(replace(
+            MODEL_CALIBRATION,
             slots=(model.Slot(
                 integral_gain=3, max_trim=20, floor_command=120,
                 trim_efficiency=824,
             ),) * model.SLOT_COUNT,
-        )
+        ))
         (run,) = audit.audit_hold(samples, trimmed)
         self.assertLess(run.owed[1], stock.owed[1])
-
-    def test_a_schema_4_image_reads_one_gain_for_every_map(self):
-        layout = audit.load_layout()
-        span = layout.configuration
-        legacy = layout.retired_configuration_for(model.LEGACY_SCHEMA_VERSION)
-        head = bytearray(CALIBRATION.to_bytes()[: model.LEGACY_CONFIG_SIZE])
-        head[2] = model.LEGACY_SCHEMA_VERSION
-        head[0x16:0x18] = (3).to_bytes(2, "big")
-        image = bytearray(b"\xff" * max(span.end, legacy.end))
-        image[legacy.start : legacy.end] = head
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "image.bin"
-            path.write_bytes(image)
-            self.assertEqual(audit.read_calibration(path), CALIBRATION)
-            image[span.start : span.end] = CALIBRATION.to_bytes()
-            image[legacy.start : legacy.end] = b"\xff" * len(head)
-            path.write_bytes(image)
-            self.assertEqual(audit.read_calibration(path), CALIBRATION)
-            image[span.start : span.end] = b"\xff" * (span.end - span.start)
-            path.write_bytes(image)
-            with self.assertRaisesRegex(ValueError, "configuration is invalid"):
-                audit.read_calibration(path)
 
     def test_cut_bounds_follow_the_accumulator_offsets(self):
         self.assertAlmostEqual(audit.CUTS_BELOW, 2.75 - 6 - 1)
         self.assertAlmostEqual(audit.CUTS_ABOVE, 2.75 + 1)
         self.assertAlmostEqual(audit.EVENTS_PER_COUNT_TICK, 0.0064)
+
+
+# The endpoints of the flashed hold images: one integral gain for every map,
+# and per-map slots with the fixed ignition trim.
+FLASHED_ENDPOINTS = ("schema-4-uniform-gain", "schema-5-fixed-trim")
+
+
+def endpoint_record(key, slots=None, **head):
+    """The fixture record of a flashed endpoint with changed head fields
+    and, by slot index, changed map slots."""
+    schema = runtime_endpoints.historical_endpoint(key).configuration_schema_version
+    layout = runtime_endpoints.SPEED_HOLD_SCHEMA_FORMATS[schema]
+    values = list(struct.unpack(layout, endpoint_images.record(key)))
+    for name, value in head.items():
+        values[runtime_endpoints.SPEED_HOLD_HEAD_FIELDS.index(name)] = value
+    width = len(runtime_endpoints.SPEED_HOLD_SLOT_FIELDS)
+    for index, slot in (slots or {}).items():
+        start = len(runtime_endpoints.SPEED_HOLD_HEAD_FIELDS) + width * index
+        values[start : start + width] = slot
+    return struct.pack(layout, *values)
+
+
+@lru_cache(maxsize=None)
+def endpoint_image(key):
+    """The current JK08A build with a flashed endpoint in place of the
+    current Rolling Launch layer."""
+    target = runtime_targets.load_runtime_target("JK08A")
+    built = build_rom.build_image(
+        target.stock_image.data, source_name="JK08A stock"
+    ).data
+    source = endpoint_images.with_endpoint(
+        target, built, key, endpoint_images.record(key)
+    )
+    return bytes(
+        rom_checksums.recalculate(bytearray(source), target.checksum_layout)
+    )
+
+
+class EndpointCalibrationTest(unittest.TestCase):
+    def test_a_uniform_gain_record_holds_its_gain_in_every_map(self):
+        key = "schema-4-uniform-gain"
+        record = endpoint_record(key, mode=1, gain_word=3)
+        calibration = audit.endpoint_calibration(record, key)
+        fields = runtime_endpoints.historical_configuration_fields(record, 4)
+        self.assertEqual(calibration.endpoint, key)
+        self.assertTrue(calibration.hold)
+        self.assertEqual(
+            calibration.slots,
+            (audit.HoldSlot(integral_gain=3),)
+            * runtime_endpoints.SPEED_HOLD_SLOT_COUNT,
+        )
+        for name in (
+            "window_top", "window_width", "u_rate_limit", "integrator_limit",
+            "abort_above", "abort_below",
+        ):
+            self.assertEqual(getattr(calibration, name), fields[name], name)
+
+    def test_a_fixed_trim_record_keeps_the_trim_of_each_map(self):
+        key = "schema-5-fixed-trim"
+        record = endpoint_record(key, slots={3: (2, 20, 120, 824)})
+        calibration = audit.endpoint_calibration(record, key)
+        self.assertFalse(calibration.hold)
+        self.assertEqual(calibration.slot(3), audit.HoldSlot(2, 20, 120, 824))
+        fixture = audit.endpoint_calibration(endpoint_images.record(key), key)
+        for index in (0, 1, 2, 4):
+            self.assertEqual(calibration.slot(index), fixture.slot(index))
+
+    def test_a_record_off_its_contract_is_refused(self):
+        for key in FLASHED_ENDPOINTS:
+            with self.subTest(key):
+                record = endpoint_record(key, magic=0)
+                with self.assertRaisesRegex(ValueError, "no valid schema"):
+                    audit.endpoint_calibration(record, key)
+        with self.assertRaisesRegex(ValueError, "record is invalid"):
+            audit.endpoint_calibration(b"\xff" * model.CONFIG_SIZE, "current")
+        earlier = next(
+            endpoint for endpoint in runtime_endpoints.HISTORICAL_ROLLING_ENDPOINTS
+            if endpoint.configuration_schema_version
+            not in runtime_endpoints.SPEED_HOLD_SCHEMA_FORMATS
+        )
+        with self.assertRaisesRegex(ValueError, "has no speed hold"):
+            audit.endpoint_calibration(b"", earlier.key)
+
+    def test_a_flashed_image_reads_the_record_of_its_endpoint(self):
+        target = runtime_targets.load_runtime_target("JK08A")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "image.bin"
+            for key in FLASHED_ENDPOINTS:
+                with self.subTest(key):
+                    image = endpoint_image(key)
+                    path.write_bytes(image)
+                    calibration = audit.read_calibration(path)
+                    state = runtime_endpoints.classify_runtime(
+                        image, target, key
+                    ).rolling
+                    # A current runtime that composes the endpoint classifies
+                    # as current and reads the same settings.
+                    self.assertIn(state, (key, "current"))
+                    self.assertEqual(calibration.endpoint, state)
+                    self.assertEqual(
+                        replace(calibration, endpoint=key),
+                        audit.endpoint_calibration(
+                            endpoint_images.record(key), key
+                        ),
+                    )
+            path.write_bytes(target.stock_image.data)
+            with self.assertRaisesRegex(ValueError, "no Rolling Launch runtime"):
+                audit.read_calibration(path)
 
 
 class BusJoinTest(unittest.TestCase):
@@ -459,20 +571,20 @@ class BusJoinTest(unittest.TestCase):
         self.assertEqual(row["release_rpm"], 4000)
         self.assertEqual(row["next_torque_frame_ms"], 5)
         self.assertAlmostEqual(row["next_torque_frame_cycles"], 1 / 6)
-        cut = row["cut_release"]
+        cut = row["cut_request_release"]
         self.assertEqual(cut["ecu_release_inferred_ms_bounds"], [150, 160])
-        self.assertEqual(cut["cuts_after_phase_exit_snapshot"], 0)
-        self.assertLessEqual(cut["last_cut_after_ecu_release_upper_cycles"], 1)
+        self.assertEqual(cut["requested_cuts_after_phase_exit_snapshot"], 0)
+        self.assertLessEqual(cut["last_cut_request_after_ecu_release_upper_cycles"], 1)
 
     def test_pedal_abort_precedes_acceptance_of_the_stable_release(self):
         capture = self.capture()
         (run,) = audit.audit_hold(capture.samples, CALIBRATION)
         run = replace(run, abort_reason=model.AbortReason.PEDAL_LOW)
         (row,) = audit.audit_bus(capture, (run,))["holds"]
-        cut = row["cut_release"]
+        cut = row["cut_request_release"]
         self.assertNotIn("ecu_release_inferred_ms_bounds", cut)
         self.assertEqual(cut["ecu_release_inferred_not_before_ms"], 160)
-        self.assertEqual(cut["last_cut_after_ecu_release_upper_cycles"], 0)
+        self.assertEqual(cut["last_cut_request_after_ecu_release_upper_cycles"], 0)
 
     def test_reference_join_survives_a_tick_wrap_before_the_mlg_starts(self):
         reference = self.capture()
@@ -570,12 +682,12 @@ class ReleaseCutTimingTest(unittest.TestCase):
             counters[8:] = [3] * 4
         samples = tuple(replace(
             s, phase=1 if 1 <= i < 6 or next_hold and i >= 10 else 2,
-            button=2 if i < 3 else 32, cut_counter=counters[i],
+            button=2 if i < 3 else 32, cut_requests=counters[i],
         ) for i, s in enumerate(base))
         return BusJoinTest.capture(samples)
 
     def result(self, capture, release=25):
-        return audit.release_cut_timing(
+        return audit.release_cut_request_timing(
             capture, 1, 6, release,
             audit._BusIndex(capture.timing.bus_frames[0x180]),
         )
@@ -588,41 +700,41 @@ class ReleaseCutTimingTest(unittest.TestCase):
         self.assertEqual(result["phase_exit_snapshot_ms"], 60)
         self.assertEqual(result["last_increment_snapshot_ms"], 60)
         self.assertEqual(result["phase_exit_counter_increment"], 2)
-        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 0)
+        self.assertEqual(result["requested_cuts_after_phase_exit_snapshot"], 0)
         # The counter wraps, and two cuts straddle the raw release frame.
-        self.assertEqual(result["cuts_after_release_bounds"], [4, 6])
-        self.assertEqual(result["last_cut_offset_ms_bounds"], [25, 35])
+        self.assertEqual(result["requested_cuts_after_release_bounds"], [4, 6])
+        self.assertEqual(result["last_cut_request_offset_ms_bounds"], [25, 35])
         self.assertEqual(result["raw_release_one_cycle"], "straddles_one_cycle")
 
     def test_a_veto_after_the_inactive_snapshot_is_detected(self):
         result = self.result(self.capture(late_cut=True))
-        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 1)
+        self.assertEqual(result["requested_cuts_after_phase_exit_snapshot"], 1)
         self.assertEqual(result["last_increment_snapshot_ms"], 80)
-        self.assertEqual(result["last_cut_cycles_bounds"], [1.5, 55 / 30])
+        self.assertEqual(result["last_cut_request_cycles_bounds"], [1.5, 55 / 30])
         self.assertEqual(result["raw_release_one_cycle"], "beyond_snapshot_bound")
 
     def test_a_later_hold_is_outside_the_quiet_observation_window(self):
         capture = self.capture(next_hold=True)
         samples = list(capture.samples)
-        samples[10] = replace(samples[10], cut_counter=7)
+        samples[10] = replace(samples[10], cut_requests=7)
         result = self.result(replace(capture, samples=tuple(samples)))
-        self.assertEqual(result["cuts_after_phase_exit_snapshot"], 0)
+        self.assertEqual(result["requested_cuts_after_phase_exit_snapshot"], 0)
         self.assertEqual(result["inactive_snapshots_checked"], 3)
 
     def test_missing_counter_coverage_does_not_pass_the_release_bound(self):
         capture = self.capture()
         samples = list(capture.samples)
-        samples[7] = replace(samples[7], cut_counter=None)
+        samples[7] = replace(samples[7], cut_requests=None)
         result = self.result(replace(capture, samples=tuple(samples)))
         self.assertFalse(result["counter_window_complete"])
-        self.assertIsNone(result["cuts_after_phase_exit_snapshot"])
-        self.assertIsNone(result["cuts_after_release_bounds"])
+        self.assertIsNone(result["requested_cuts_after_phase_exit_snapshot"])
+        self.assertIsNone(result["requested_cuts_after_release_bounds"])
         self.assertEqual(result["raw_release_one_cycle"], "unresolved_window")
 
     def test_the_last_cut_can_precede_the_raw_button_release(self):
         result = self.result(self.capture(), release=85)
-        self.assertEqual(result["cuts_after_release_bounds"], [0, 0])
-        self.assertEqual(result["last_cut_offset_ms_bounds"], [-35, -25])
+        self.assertEqual(result["requested_cuts_after_release_bounds"], [0, 0])
+        self.assertEqual(result["last_cut_request_offset_ms_bounds"], [-35, -25])
         self.assertEqual(result["raw_release_one_cycle"], "within_snapshot_bound")
 
     def test_a_stream_pause_does_not_form_continuous_counter_coverage(self):
@@ -632,7 +744,7 @@ class ReleaseCutTimingTest(unittest.TestCase):
         capture = replace(capture, timing=replace(capture.timing, first_page_ms=times))
         result = self.result(capture)
         self.assertFalse(result["counter_window_complete"])
-        self.assertIsNone(result["cuts_after_phase_exit_snapshot"])
+        self.assertIsNone(result["requested_cuts_after_phase_exit_snapshot"])
 
 
 if __name__ == "__main__":

@@ -3,27 +3,34 @@
 
 The reader returns the verified snapshots of a capture. Each snapshot carries
 the stock button and dashboard frames, vehicle speed, coolant, the
-fuel-inhibit, timing, APC, pedal, BFS, knock-surface, and exhaust-CVTC
-telemetry sources, and the Rolling Launch phase and abort reason. The
-integrator, speed error, torque fraction, and cut counter are slots of the
-launch-law configurations of the dynamic page: a snapshot carries the slots
-that the configuration and group of its configuration byte name, and the
-others read None.
+fuel-inhibit, timing, pedal, BFS, knock-surface, and exhaust-CVTC telemetry
+sources, and the Rolling Launch phase and abort reason. The integrator, speed
+error, torque fraction, and cut-request counter are slots of the launch-law
+configurations of the dynamic page: a snapshot carries the slots that the
+configuration and group of its configuration byte name, and the others read
+None.
 
 The hold audit replays the speed controller of `patches/rolling_launch.py`
-with the calibration of the flashed image through every ACTIVE run. The
-speed error of a snapshot lies inside the abort window. The model integrator
-follows the published errors from zero at the entry tick, or from a published
-integrator; the model fraction follows from the previous fraction through the
-rate limit. A snapshot without the speed error leaves the integrator unknown,
-and one without the fraction widens the previous fraction by the rate limit.
-Under the one-group configuration every snapshot carries the error, the
-fraction, and the cut counter, so every fraction equals its model step. Under
-the two-group configuration a snapshot of group 0 follows a published
-integrator and a snapshot whose fraction is unknown, so its fraction lies in
-the model range of the two-tick step. In hold mode the cut counter of a run
-lies within the cuts that the delivered fractions owe the spark events of its
-engine speed.
+with the Rolling Launch record of the flashed image through every ACTIVE run:
+the record of the current runtime, or the record of the registered historical
+endpoint that the image carries. The speed error of a snapshot lies inside
+the abort window. The model integrator follows the published errors from zero
+at the entry tick, or from a published integrator; the model fraction follows
+from the previous fraction through the rate limit. A snapshot without the
+speed error leaves the integrator unknown, and one without the fraction
+widens the previous fraction by the rate limit. Under the one-group
+configuration every snapshot carries the error, the fraction, and the
+cut-request counter, so every fraction equals its model step. Under the
+two-group configuration a snapshot of group 0 follows a published integrator
+and a snapshot whose fraction is unknown, so its fraction lies in the model
+range of the two-tick step. In hold mode the cut requests of a run lie within
+the cuts that the delivered fractions owe the spark events of its engine
+speed. The counter counts the cut requests of the spark actuator, not
+withheld sparks: a requested cut whose dwell arming precedes the dwell-start
+veto still fires.
+
+The stock APC command of a snapshot is `110 - final_timing_raw` modulo 256,
+the command before the ignition trim of the map slot.
 
 Engine speed is the coordinate `0xFFFF11F4` in counts of 12.5 RPM, which is a
 shift of the word that stock frame 0x180 carries. The frame is sampled at
@@ -51,8 +58,11 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from patches import build_rom
+from patches import calibration_ranges
 from patches import rolling_launch
-from patches.rolling_launch_layout import load_layout
+from patches import runtime_endpoints
+from patches import runtime_targets
 from tools.can_dashboard.model import (
     ASCD_BUTTON_ID,
     BASE_TICK_SECONDS,
@@ -73,7 +83,6 @@ STOCK_RPM_MARGIN = 8
 TELEMETRY_SOURCES = (
     "fuel_inhibit_mask",
     "final_timing_raw",
-    "apc_command_raw",
     "app1_raw",
     "bfs_raw",
     "knock_surface_state",
@@ -94,7 +103,7 @@ HOLD_SOURCES = {
     "rolling_launch_integrator_raw": "integrator",
     "rolling_launch_speed_error_raw": "speed_error",
     "rolling_launch_torque_fraction_raw": "torque_fraction",
-    "rolling_launch_cut_counter": "cut_counter",
+    "rolling_launch_cut_counter": "cut_requests",
 }
 # Spark events per tick and native RPM count: three events per revolution,
 # 12.5 RPM per count, and 10.24 ms per tick.
@@ -127,7 +136,6 @@ class Sample:
     rpm_high: int
     fuel_inhibit_mask: int
     final_timing_raw: int
-    apc_command_raw: int
     app1_raw: int
     bfs_raw: int
     knock_surface_state: int
@@ -137,7 +145,8 @@ class Sample:
     integrator: int | None = None
     speed_error: int | None = None
     torque_fraction: int | None = None
-    cut_counter: int | None = None
+    # The wrapping count of cut requests of the spark actuator.
+    cut_requests: int | None = None
     # The configuration byte of the dynamic page.
     configuration: int | None = None
     # The selected map index of the rotating context, 0 for Map 1.
@@ -393,10 +402,10 @@ class HoldRun:
     against the model step.
     `target_speed` is the range of the stock-frame speed minus the published
     error in km/h*10, which stays narrow while the speed word follows the
-    frame. `cuts` and `owed` are None outside hold mode, for a run without
-    the snapshots before and after it, and when a fraction of the run or a
-    cut counter of those snapshots is unknown. The owed cuts follow the cut
-    fraction of the trim efficiency of the map slot.
+    frame. `requested_cuts` and `owed` are None outside hold mode, for a run
+    without the snapshots before and after it, and when a fraction of the run
+    or a cut-request counter of those snapshots is unknown. The owed cuts
+    follow the cut fraction of the trim efficiency of the map slot.
     `floor_ticks` counts the hold snapshots whose stock APC command plus
     the trim lies past the floor command, so the applied retard is smaller
     than the trim, the fired events deliver more than the stored
@@ -411,41 +420,140 @@ class HoldRun:
     failures: tuple[tuple[int, str], ...]
     target_speed: tuple[float, float] | None
     ceiling_ticks: int
-    cuts: int | None
+    requested_cuts: int | None
     owed: tuple[float, float] | None
     floor_ticks: int = 0
 
     @property
-    def cuts_inside(self) -> bool | None:
-        if self.cuts is None or self.owed is None:
+    def requested_cuts_inside(self) -> bool | None:
+        if self.requested_cuts is None or self.owed is None:
             return None
-        return self.owed[0] < self.cuts <= self.owed[1]
+        return self.owed[0] < self.requested_cuts <= self.owed[1]
 
 
-def read_calibration(image: Path) -> rolling_launch.Calibration:
-    """Read the Rolling Launch configuration record of a flashed image: the
-    current record, or the schema 4 record of an earlier image, which
-    holds one integral gain for every map and no trim."""
-    layout = load_layout()
-    span = layout.configuration
-    legacy = layout.retired_configuration_for(rolling_launch.LEGACY_SCHEMA_VERSION)
-    data = Path(image).read_bytes()
-    if len(data) < max(span.end, legacy.end):
-        raise ValueError(f"{image}: image ends before the configuration record")
-    calibration = rolling_launch.Calibration.from_bytes(data[span.start : span.end])
-    if calibration.is_valid():
-        return calibration
-    try:
-        return rolling_launch.Calibration.from_legacy_bytes(
-            data[legacy.start : legacy.end]
+@dataclass(frozen=True)
+class HoldSlot:
+    """The controller and spark-actuator settings of one map slot."""
+
+    integral_gain: int
+    max_trim: int = 0
+    floor_command: int = 0
+    trim_efficiency: int = rolling_launch.U_ONE
+
+
+@dataclass(frozen=True)
+class HoldCalibration:
+    """The settings of a flashed Rolling Launch record that the hold audit
+    replays. `endpoint` is "current" or the key of the registered historical
+    endpoint whose record they come from."""
+
+    endpoint: str
+    hold: bool
+    window_top: int
+    window_width: int
+    u_rate_limit: int
+    integrator_limit: int
+    abort_above: int
+    abort_below: int
+    slots: tuple[HoldSlot, ...]
+
+    def slot(self, index):
+        return self.slots[index]
+
+
+def stock_apc_command(final_timing_raw: int) -> int:
+    """The stock APC command of a final-timing byte, before the trim."""
+    return (mlg_relation_audit.APC_COMMAND_BASE - final_timing_raw) & 0xFF
+
+
+def endpoint_calibration(record: bytes, state: str) -> HoldCalibration:
+    """Return the hold settings of the Rolling Launch record of an endpoint
+    state: "current", or the key of a registered historical endpoint whose
+    speed-hold record has one integral gain for every map (schema 4) or
+    per-map slots with the fixed trim (schema 5)."""
+    if state == "current":
+        calibration = rolling_launch.Calibration.from_bytes(record)
+        if not calibration.is_valid() or calibration.to_bytes() != record:
+            raise ValueError("the current Rolling Launch record is invalid")
+        return HoldCalibration(
+            endpoint=state,
+            hold=calibration.mode == rolling_launch.Mode.HOLD,
+            window_top=calibration.window_top,
+            window_width=calibration.window_width,
+            u_rate_limit=calibration.u_rate_limit,
+            integrator_limit=calibration.integrator_limit,
+            abort_above=calibration.abort_above,
+            abort_below=calibration.abort_below,
+            slots=tuple(
+                HoldSlot(
+                    slot.integral_gain, slot.max_trim, slot.floor_command,
+                    slot.trim_efficiency,
+                )
+                for slot in calibration.slots
+            ),
         )
-    except ValueError:
+    schema = runtime_endpoints.historical_endpoint(state).configuration_schema_version
+    if schema not in runtime_endpoints.SPEED_HOLD_SCHEMA_FORMATS:
         raise ValueError(
-            f"{image}: the Rolling Launch configuration is invalid"
-        ) from None
+            f"the schema {schema} record of endpoint {state!r} has no speed hold"
+        )
+    fields = runtime_endpoints.historical_configuration_fields(record, schema)
+    if schema == 4:
+        slots = (HoldSlot(fields["integral_gain"]),) * (
+            runtime_endpoints.SPEED_HOLD_SLOT_COUNT
+        )
+    else:
+        slots = tuple(HoldSlot(**slot) for slot in fields["slots"])
+    return HoldCalibration(
+        endpoint=state,
+        hold=fields["mode"] == "hold",
+        window_top=fields["window_top"],
+        window_width=fields["window_width"],
+        u_rate_limit=fields["u_rate_limit"],
+        integrator_limit=fields["integrator_limit"],
+        abort_above=fields["abort_above"],
+        abort_below=fields["abort_below"],
+        slots=slots,
+    )
 
 
-def run_slot(samples, start, end, calibration) -> rolling_launch.Slot:
+def read_calibration(image: Path) -> HoldCalibration:
+    """Read the hold settings of a flashed image from the Rolling Launch
+    record of the runtime endpoint that the image carries."""
+    data = Path(image).read_bytes()
+    try:
+        rom, _detection = build_rom.select_rom(data, build_rom.AUTO_ROM)
+    except build_rom.BuildError as error:
+        raise ValueError(f"{image}: {error}") from None
+    target = runtime_targets.load_runtime_target(rom)
+    if target.rolling_layout is None:
+        raise ValueError(f"{image}: {rom} has no Rolling Launch runtime")
+    stock = target.stock_image.data
+    if len(data) != len(stock):
+        raise ValueError(
+            f"{image}: image has {len(data)} bytes, expected {len(stock)}"
+        )
+    if all(
+        data[offset] == stock[offset]
+        for offset in calibration_ranges.load(rom).write_offsets
+    ):
+        state = "absent"
+    else:
+        state = runtime_endpoints.classify_runtime(
+            data, target, str(image)
+        ).rolling
+    if state == "absent":
+        raise ValueError(f"{image}: the image carries no Rolling Launch runtime")
+    record = runtime_endpoints.configuration_record(
+        data, target.rolling_layout, state
+    )
+    try:
+        return endpoint_calibration(record, state)
+    except ValueError as error:
+        raise ValueError(f"{image}: {error}") from None
+
+
+def run_slot(samples, start, end, calibration) -> HoldSlot:
     """The map slot of an ACTIVE run: the slot of the selected map that the
     context refresh reports within the run and the snapshots before it."""
     slots = set(calibration.slots)
@@ -457,7 +565,7 @@ def run_slot(samples, start, end, calibration) -> rolling_launch.Slot:
         for sample in samples[first : end + 1]
         if sample.map_index is not None
     }
-    if len(indices) != 1 or not 0 <= min(indices) < rolling_launch.SLOT_COUNT:
+    if len(indices) != 1 or not 0 <= min(indices) < len(calibration.slots):
         raise ValueError(
             f"tick {samples[start].tick}: the capture lacks one selected map"
             " for the run of a configuration with per-map slots"
@@ -641,12 +749,13 @@ def _run(samples, start, end, calibration):
         for sample in run
         if sample.speed_kmh is not None and sample.speed_error is not None
     ]
-    cuts = owed = None
+    requested = owed = None
     floor_ticks = 0
-    if calibration.mode == rolling_launch.Mode.HOLD:
+    if calibration.hold:
         if slot.max_trim:
             floor_ticks = sum(
-                sample.apc_command_raw + slot.max_trim > slot.floor_command
+                stock_apc_command(sample.final_timing_raw) + slot.max_trim
+                > slot.floor_command
                 for sample in run
             )
         owed = _owed_cuts(
@@ -654,12 +763,12 @@ def _run(samples, start, end, calibration):
         )
         if owed is not None:
             counters = [
-                sample.cut_counter for sample in samples[start - 1 : end + 2]
+                sample.cut_requests for sample in samples[start - 1 : end + 2]
             ]
             if None in counters:
                 owed = None
             else:
-                cuts = sum(
+                requested = sum(
                     (after - before) & 0xFF
                     for before, after in zip(counters, counters[1:])
                 )
@@ -675,7 +784,7 @@ def _run(samples, start, end, calibration):
             == rolling_launch.FUEL_CUT_CYLINDER_MASK
             for sample in run
         ),
-        cuts=cuts,
+        requested_cuts=requested,
         owed=owed,
         floor_ticks=floor_ticks,
     )
@@ -761,7 +870,7 @@ def _reference_ticks(capture, reference):
     matched = 0
     signature = (
         "rpm_raw", "phase", "configuration", "speed_error", "torque_fraction",
-        "cut_counter", "app1_raw", "fuel_inhibit_mask",
+        "cut_requests", "app1_raw", "fuel_inhibit_mask",
     )
     for sample in reference.samples:
         tick = sample.tick & 0xFFFF
@@ -814,10 +923,11 @@ def _speed_targets(samples, times, bus):
     return result
 
 
-def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames):
-    """Bound veto-count events between adjacent coherent snapshots.
+def release_cut_request_timing(capture, start_index, exit_index, release_ms, rpm_frames):
+    """Bound cut-request counter events between adjacent coherent snapshots.
 
-    Phase is fixed page 2, current every tick. The button attribute is host
+    The counter counts requested cuts, not withheld sparks. Phase is fixed
+    page 2, current every tick. The button attribute is host
     context from 0x239, not the debounced ECU input 0xFFFF2A85. A counter
     increment ending at the first non-ACTIVE snapshot spans the transition;
     only subsequent increments demonstrate counting after that snapshot.
@@ -833,11 +943,11 @@ def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames)
         previous, sample = samples[index - 1:index + 1]
         elapsed_ms = times[index] - times[index - 1]
         if (sample.tick != previous.tick + 1 or not 0 < elapsed_ms <= 2000 * BASE_TICK_SECONDS
-                or previous.cut_counter is None
-                or sample.cut_counter is None):
+                or previous.cut_requests is None
+                or sample.cut_requests is None):
             complete = False
             continue
-        deltas[index] = (sample.cut_counter - previous.cut_counter) & 0xFF
+        deltas[index] = (sample.cut_requests - previous.cut_requests) & 0xFF
     host = next((i for i in range(start_index, stop)
                  if capture.timing.last_page_ms[i] >= release_ms
                  and samples[i].button == rolling_launch.BUTTON_RELEASED), None)
@@ -853,11 +963,11 @@ def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames)
         "phase_exit_snapshot_ms": times[exit_index],
         "phase_exit_interval_ms": [times[exit_index - 1], times[exit_index]],
         "phase_exit_counter_increment": deltas.get(exit_index),
-        "cuts_after_release_bounds": [
+        "requested_cuts_after_release_bounds": [
             sum(count for i, count in deltas.items() if times[i - 1] >= release_ms),
             sum(count for i, count in deltas.items() if times[i] > release_ms),
         ] if complete else None,
-        "cuts_after_phase_exit_snapshot": (
+        "requested_cuts_after_phase_exit_snapshot": (
             sum(count for i, count in deltas.items() if i > exit_index)
             if complete else None
         ),
@@ -866,8 +976,8 @@ def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames)
         "counter_window_complete": complete,
         "last_increment_snapshot_tick": None,
         "last_increment_snapshot_ms": None,
-        "last_cut_offset_ms_bounds": None,
-        "last_cut_cycles_bounds": None,
+        "last_cut_request_offset_ms_bounds": None,
+        "last_cut_request_cycles_bounds": None,
     }
     if not changes:
         return result
@@ -875,13 +985,13 @@ def release_cut_timing(capture, start_index, exit_index, release_ms, rpm_frames)
     bounds = [times[last - 1] - release_ms, times[last] - release_ms]
     result.update(last_increment_snapshot_tick=samples[last].tick,
                   last_increment_snapshot_ms=times[last],
-                  last_cut_offset_ms_bounds=bounds)
+                  last_cut_request_offset_ms_bounds=bounds)
     rpm_frame = rpm_frames.before(times[last])
     if rpm_frame is None or len(rpm_frame[1]) < 2:
         return result
     rpm = int.from_bytes(rpm_frame[1][:2], "big") / 8
     cycles = [ms * rpm / 120000 for ms in bounds]
-    result.update(last_cut_rpm=rpm, last_cut_cycles_bounds=cycles,
+    result.update(last_cut_request_rpm=rpm, last_cut_request_cycles_bounds=cycles,
                   raw_release_one_cycle=(
                       "unresolved_window" if not complete else
                       "within_snapshot_bound" if cycles[1] <= 1 else
@@ -986,7 +1096,7 @@ def audit_bus(capture, runs, *, reference=None):
             row.update(next_torque_frame_ms=delay, release_rpm=rpm,
                        release_rpm_age_ms=release - previous_frame[0],
                        next_torque_frame_cycles=delay * rpm / 120000)
-        cut_timing = release_cut_timing(capture, start_index, end_index, release, bus[0x180])
+        cut_timing = release_cut_request_timing(capture, start_index, end_index, release, bus[0x180])
         if run.abort_reason == rolling_launch.AbortReason.BUTTON_RELEASED:
             # The runtime consumes the stable input after the stock ASCD
             # task and aborts in that pass. The input byte itself is absent.
@@ -994,12 +1104,12 @@ def audit_bus(capture, runs, *, reference=None):
                 capture.timing.first_page_ms[end_index - 1], end,
             ]
             last = cut_timing["last_increment_snapshot_ms"]
-            if (last is not None and "last_cut_rpm" in cut_timing
+            if (last is not None and "last_cut_request_rpm" in cut_timing
                     and cut_timing["counter_window_complete"]):
                 upper = max(0, last - capture.timing.first_page_ms[end_index - 1])
-                cut_timing["last_cut_after_ecu_release_upper_ms"] = upper
-                cut_timing["last_cut_after_ecu_release_upper_cycles"] = (
-                    upper * cut_timing["last_cut_rpm"] / 120000
+                cut_timing["last_cut_request_after_ecu_release_upper_ms"] = upper
+                cut_timing["last_cut_request_after_ecu_release_upper_cycles"] = (
+                    upper * cut_timing["last_cut_request_rpm"] / 120000
                 )
         elif run.abort_reason in (
             rolling_launch.AbortReason.PEDAL_LOW, rolling_launch.AbortReason.RPM_LOW,
@@ -1008,16 +1118,16 @@ def audit_bus(capture, runs, *, reference=None):
             # BUTTON_RELEASED. It has not been accepted at this abort pass.
             cut_timing["ecu_release_inferred_not_before_ms"] = end
             last = cut_timing["last_increment_snapshot_ms"]
-            if (last is not None and "last_cut_rpm" in cut_timing
+            if (last is not None and "last_cut_request_rpm" in cut_timing
                     and cut_timing["counter_window_complete"]):
                 upper = max(0, last - end)
-                cut_timing["last_cut_after_ecu_release_upper_ms"] = upper
-                cut_timing["last_cut_after_ecu_release_upper_cycles"] = (
-                    upper * cut_timing["last_cut_rpm"] / 120000
+                cut_timing["last_cut_request_after_ecu_release_upper_ms"] = upper
+                cut_timing["last_cut_request_after_ecu_release_upper_cycles"] = (
+                    upper * cut_timing["last_cut_request_rpm"] / 120000
                 )
-        row["cut_release"] = cut_timing
+        row["cut_request_release"] = cut_timing
         last = cut_timing["last_increment_snapshot_ms"]
-        row["last_cut_counter_update_after_release_ms"] = (
+        row["last_cut_request_after_release_ms"] = (
             last - release if last is not None and last >= release else None
         )
     frame_speeds = {"inside": [], "outside": []}
@@ -1065,6 +1175,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.reference_mlg and not args.bus_json:
         parser.error("--reference-mlg requires --bus-json")
     calibration = read_calibration(args.image)
+    print(f"{args.image.name} rolling_launch={calibration.endpoint}")
     failed = False
     for path in args.captures:
         capture = read_capture(path)
@@ -1078,31 +1189,33 @@ def main(argv: list[str] | None = None) -> int:
                 "none" if run.target_speed is None
                 else f"{run.target_speed[0]:.0f}..{run.target_speed[1]:.0f}"
             )
-            cuts = "n/a"
-            if run.cuts is not None:
+            requested = "n/a"
+            if run.requested_cuts is not None:
                 low, high = run.owed
-                cuts = f"{run.cuts} owed ({low:.2f}, {high:.2f}]"
+                requested = f"{run.requested_cuts} owed ({low:.2f}, {high:.2f}]"
             print(
                 f"  ticks {run.start_tick}..{run.end_tick}"
                 f" abort={_reason_name(run.abort_reason)}"
                 f" law_ticks={run.law_ticks}"
                 f" failed_ticks={len({tick for tick, _ in run.failures})}"
                 f" target={target}"
-                f" ceiling_ticks={run.ceiling_ticks} cuts={cuts}"
+                f" ceiling_ticks={run.ceiling_ticks}"
+                f" requested_cuts={requested}"
                 f" floor_ticks={run.floor_ticks}"
             )
             for tick, failure in run.failures:
                 print(f"    tick {tick}: {failure}")
             failed |= (
                 bool(run.failures)
-                or run.cuts_inside is False
+                or run.requested_cuts_inside is False
                 or not run.law_ticks
             )
         if args.bus_json:
             reference = read_mlg(args.reference_mlg) if args.reference_mlg else capture
             reference_runs = audit_hold(reference.samples, calibration)
             failed |= not reference_runs or any(
-                run.failures or run.cuts_inside is False or not run.law_ticks
+                run.failures or run.requested_cuts_inside is False
+                or not run.law_ticks
                 for run in reference_runs
             )
             result = audit_bus(capture, reference_runs, reference=reference)
