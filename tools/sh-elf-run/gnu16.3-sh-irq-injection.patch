@@ -1,0 +1,301 @@
+--- a/sim/sh/interp.c
++++ b/sim/sh/interp.c
+@@ -794,4 +794,236 @@
+ #define SIGN32(x)	(SEXT32 (x) >> 31)
+
++/* Optional, one-shot SH-2E interrupt injection at instruction boundaries.
++   This supplies CPU entry state, not an interrupt-controller or timing model. */
++static struct
++{
++  int enabled, pending, delivered, inhibit, branch_waiting, in_handler;
++  unsigned int pc, level, vector, current_pc, current_opcode, branch_pc;
++  unsigned long long count, seen;
++  FILE *report;
++} vq_sh_irq;
++
++static void
++vq_sh_irq_error (const char *reason)
++{
++  fprintf (stderr, "VQ_SH_IRQ error=%s\n", reason);
++  _Exit (125);
++}
++
++static unsigned long long
++vq_sh_irq_number (const char *value, int radix, unsigned long long low,
++                  unsigned long long high, const char *reason)
++{
++  char *end;
++  unsigned long long result;
++  if (*value == 0 || (radix == 16 ? !isxdigit ((unsigned char) *value)
++                                 : (*value < '0' || *value > '9')))
++    vq_sh_irq_error (reason);
++  errno = 0;
++  result = strtoull (value, &end, radix);
++  if (*end != 0 || errno != 0 || result < low || result > high)
++    vq_sh_irq_error (reason);
++  return result;
++}
++
++static void
++vq_sh_irq_close (void)
++{
++  int saved_errno = errno;
++  if (vq_sh_irq.report == NULL)
++    return;
++  if (!vq_sh_irq.delivered
++      && fprintf (vq_sh_irq.report, "status=PENDING\n") < 0)
++    vq_sh_irq_error ("report_write");
++  if (fclose (vq_sh_irq.report) != 0)
++    vq_sh_irq_error ("report_close");
++  vq_sh_irq.report = NULL;
++  errno = saved_errno;
++}
++
++static void
++vq_sh_irq_init (void)
++{
++  int saved_errno = errno;
++  const char *pc = getenv ("VQ_SH_IRQ_PC");
++  const char *count = getenv ("VQ_SH_IRQ_COUNT");
++  const char *level = getenv ("VQ_SH_IRQ_LEVEL");
++  const char *vector = getenv ("VQ_SH_IRQ_VECTOR");
++  const char *report = getenv ("VQ_SH_IRQ_REPORT");
++  if (pc == NULL && count == NULL && level == NULL
++      && vector == NULL && report == NULL)
++    {
++      errno = saved_errno;
++      return;
++    }
++  if (pc == NULL || count == NULL || level == NULL
++      || vector == NULL || report == NULL || *report == 0)
++    vq_sh_irq_error ("incomplete_request");
++  vq_sh_irq.pc = vq_sh_irq_number (pc, 16, 0, 0xfffffffeULL, "invalid_pc");
++  if (vq_sh_irq.pc & 1)
++    vq_sh_irq_error ("invalid_pc");
++  vq_sh_irq.count = vq_sh_irq_number (count, 10, 1, ~0ULL, "invalid_count");
++  vq_sh_irq.level = vq_sh_irq_number (level, 10, 1, 15, "invalid_level");
++  vq_sh_irq.vector = vq_sh_irq_number (vector, 10, 0, 255, "invalid_vector");
++  vq_sh_irq.report = fopen (report, "w");
++  if (vq_sh_irq.report == NULL)
++    vq_sh_irq_error ("report_open");
++  if (atexit (vq_sh_irq_close) != 0)
++    vq_sh_irq_error ("atexit_failed");
++  vq_sh_irq.enabled = 1;
++  errno = saved_errno;
++}
++
++static int
++vq_sh_irq_delayed (unsigned int opcode)
++{
++  if ((opcode & 0xf000) == 0xa000 || (opcode & 0xf000) == 0xb000
++      || (opcode & 0xff00) == 0x8d00 || (opcode & 0xff00) == 0x8f00)
++    return 1;
++  switch (opcode & 0xf0ff)
++    {
++    case 0x402b: case 0x400b: case 0x0023: case 0x0003:
++      return 1;
++    }
++  return opcode == 0x000b || opcode == 0x002b;
++}
++
++/* SH7059/SH7058S Hardware Manual 6.6, table 6.10, and 8.3.3:
++   the instruction following one of these executes before pending acceptance.
++   The FPU instructions of tables 2.18 and 2.19 also inhibit acceptance. */
++static int
++vq_sh_irq_inhibiting (unsigned int opcode)
++{
++  if ((opcode & 0xf000) == 0xf000)
++    return 1;
++  switch (opcode & 0xf0ff)
++    {
++    /* LDC / LDC.L; STC / STC.L: SR, GBR, VBR. */
++    case 0x400e: case 0x401e: case 0x402e:
++    case 0x4007: case 0x4017: case 0x4027:
++    case 0x0002: case 0x0012: case 0x0022:
++    case 0x4003: case 0x4013: case 0x4023:
++    /* LDS / LDS.L; STS / STS.L: MACH, MACL, PR, FPUL, FPSCR. */
++    case 0x400a: case 0x401a: case 0x402a: case 0x405a: case 0x406a:
++    case 0x4006: case 0x4016: case 0x4026: case 0x4056: case 0x4066:
++    case 0x000a: case 0x001a: case 0x002a: case 0x005a: case 0x006a:
++    case 0x4002: case 0x4012: case 0x4022: case 0x4052: case 0x4062:
++      return 1;
++    }
++  return 0;
++}
++
++static void
++vq_sh_irq_begin (unsigned int pc, unsigned int opcode)
++{
++  vq_sh_irq.current_pc = pc;
++  vq_sh_irq.current_opcode = opcode;
++}
++
++static void
++vq_sh_irq_delay_slot (unsigned int pc, unsigned int opcode)
++{
++  if (saved_state.asregs.exception)
++    return;
++  if (vq_sh_irq.branch_waiting)
++    {
++      raise_exception (SIGILL);
++      return;
++    }
++  vq_sh_irq.branch_pc = vq_sh_irq.current_pc;
++  vq_sh_irq.branch_waiting = 1;
++  vq_sh_irq_begin (pc, opcode);
++}
++
++static void
++vq_sh_irq_count (unsigned int pc)
++{
++  if (!vq_sh_irq.pending && !vq_sh_irq.delivered && pc == vq_sh_irq.pc
++      && ++vq_sh_irq.seen == vq_sh_irq.count)
++    vq_sh_irq.pending = 1;
++}
++
++static void
++vq_sh_irq_completed (void)
++{
++  if (saved_state.asregs.exception)
++    return;
++  if (vq_sh_irq.branch_waiting)
++    {
++      vq_sh_irq_count (vq_sh_irq.branch_pc);
++      vq_sh_irq.branch_waiting = 0;
++    }
++  else if (vq_sh_irq_delayed (vq_sh_irq.current_opcode))
++    {
++      /* An untaken BF/S or BT/S executes its slot in the next loop turn. */
++      vq_sh_irq.branch_pc = vq_sh_irq.current_pc;
++      vq_sh_irq.branch_waiting = 1;
++      return;
++    }
++  vq_sh_irq_count (vq_sh_irq.current_pc);
++  vq_sh_irq.inhibit = vq_sh_irq_inhibiting (vq_sh_irq.current_opcode);
++}
++
++static int
++vq_sh_irq_accept (unsigned char *memory, int maskl, unsigned int pc,
++                 unsigned int *handler)
++{
++  unsigned int sr, sp, vector_address;
++  if (!vq_sh_irq.pending || vq_sh_irq.inhibit || vq_sh_irq.branch_waiting
++      || ((GET_SR () >> 4) & 15) >= vq_sh_irq.level)
++    return 0;
++  sr = GET_SR ();
++  sp = saved_state.asregs.regs[15];
++  if ((sp & 3) || sp < 8
++      || (unsigned int) VBR > 0xffffffffU - 4 * vq_sh_irq.vector)
++    vq_sh_irq_error ("invalid_entry_address");
++  vector_address = (unsigned int) VBR + 4 * vq_sh_irq.vector;
++  wlat_fast (memory, sp - 4, sr, maskl);
++  if (saved_state.asregs.exception)
++    return 0;
++  wlat_fast (memory, sp - 8, pc, maskl);
++  if (saved_state.asregs.exception)
++    return 0;
++  saved_state.asregs.regs[15] = sp - 8;
++  SET_SR ((sr & ~SR_MASK_I) | (vq_sh_irq.level << 4));
++  *handler = rlat_fast (memory, vector_address, maskl);
++  if (saved_state.asregs.exception)
++    return 0;
++  if ((*handler & 1) || *handler >= (unsigned int) saved_state.asregs.msize - 1)
++    vq_sh_irq_error ("invalid_handler");
++  vq_sh_irq.pending = 0;
++  vq_sh_irq.delivered = 1;
++  vq_sh_irq.in_handler = 1;
++  if (fprintf (vq_sh_irq.report,
++               "triggered=%08x accepted=%08x handler=%08x sr=%08x\n",
++               vq_sh_irq.pc, pc, *handler, sr) < 0
++      || fflush (vq_sh_irq.report) != 0)
++    vq_sh_irq_error ("report_write");
++  return 1;
++}
++
++/* GNU's RTE decoder uses SH-4 SSR/SPC instead of a SH-2E stack frame.
++   Adapt only the return from this hook's injected exception.  The ordinary
++   decoder still executes the original RTE and its delay-slot instruction. */
++static void
++vq_sh_irq_prepare_rte (unsigned char *memory, int maskl)
++{
++  unsigned int sp = saved_state.asregs.regs[15];
++  unsigned int pc, sr;
++  if ((sp & 3) || sp > 0xfffffff7U)
++    vq_sh_irq_error ("invalid_return_address");
++  pc = rlat_fast (memory, sp, maskl);
++  if (saved_state.asregs.exception)
++    return;
++  sr = rlat_fast (memory, sp + 4, maskl);
++  if (saved_state.asregs.exception)
++    return;
++  SPC = pc;
++  SSR = sr;
++  saved_state.asregs.regs[15] = sp + 8;
++  vq_sh_irq.in_handler = 0;
++}
++
++
+ /* convert pointer from target to host value.  */
+ #define PT2H(x) ((x) + memory)
+@@ -807,4 +1039,6 @@
+ do { \
+   iword = RIAT (TEMPPC); \
++  if (vq_sh_irq.enabled) \
++    vq_sh_irq_delay_slot ((unsigned int) PH2T (TEMPPC), iword); \
+   vq_sh_pc_trace_observe ((unsigned int) PH2T (TEMPPC), iword, 1); \
+   in_delay_slot = 1; \
+@@ -1906,7 +2140,29 @@
+   while (insn_ptr < saved_state.asregs.insn_end)
+     {
+-      register unsigned int iword = RIAT (insn_ptr);
++      register unsigned int iword;
+       register unsigned int ult;
+-      register unsigned char *nip = insn_ptr + 2;
++      register unsigned char *nip;
++      if (vq_sh_irq.enabled)
++        {
++          unsigned int handler;
++          if (vq_sh_irq_accept (memory, maskl, (unsigned int) PH2T (insn_ptr),
++                                &handler))
++            {
++              insn_ptr = PT2H (handler);
++              CHECK_INSN_PTR (insn_ptr);
++            }
++          if (saved_state.asregs.exception)
++            break;
++        }
++      iword = RIAT (insn_ptr);
++      if (vq_sh_irq.enabled && vq_sh_irq.in_handler && iword == 0x002b)
++        {
++          vq_sh_irq_prepare_rte (memory, maskl);
++          if (saved_state.asregs.exception)
++            break;
++        }
++      nip = insn_ptr + 2;
++      if (vq_sh_irq.enabled)
++        vq_sh_irq_begin ((unsigned int) PH2T (insn_ptr), iword);
+       vq_sh_pc_trace_observe ((unsigned int) PH2T (insn_ptr), iword, 0);
+
+@@ -1918,4 +2174,6 @@
+ #include "code.c"
+
++      if (vq_sh_irq.enabled)
++        vq_sh_irq_completed ();
+
+       in_delay_slot = 0;
+@@ -2399,4 +2657,9 @@
+       *sigrc = saved_state.asregs.exception;
+     }
++  /* A requested, undelivered injection cannot qualify a successful run.
++     Preserve an existing target failure or signal. */
++  if (vq_sh_irq.enabled && !vq_sh_irq.delivered
++      && *reason == sim_exited && *sigrc == 0)
++    *sigrc = 125;
+ }
+
+@@ -2547,4 +2810,5 @@
+
+   vq_sh_pc_trace_init ();
++  vq_sh_irq_init ();
+   return sd;
+ }

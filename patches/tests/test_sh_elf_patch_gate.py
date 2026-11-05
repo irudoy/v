@@ -27,6 +27,7 @@ def consumers(driver):
 def pipeline(driver, monkeypatch, tmp_path):
     events = []
     monkeypatch.setattr(driver, 'require_toolchain_version', lambda: ('simulator', 'gcc'))
+    monkeypatch.setattr(driver, 'verify_simulator_irq', lambda: None)
     monkeypatch.setattr(driver.layout_model, 'load_layout', lambda: SimpleNamespace(assembly_units=()))
     monkeypatch.setattr(driver.assembly_model, 'validate_assembly_sources', lambda layout: {})
     monkeypatch.setattr(driver, 'assemble_all_units', lambda *args, **kwargs: {})
@@ -65,7 +66,8 @@ def test_default_gate_runs_each_patch_stage_without_stock_or_receipt_modules(pip
     execution = importlib.import_module('execution_report')
     assert [(row['start']['kind'], row['start']['name'])
             for row in execution.read(report, require_complete=True)] == [
-        ('pipeline', 'toolchain'), ('pipeline', 'reconstruction_fixture'),
+        ('pipeline', 'toolchain'), ('pipeline', 'simulator_irq'),
+        ('pipeline', 'reconstruction_fixture'),
         ('pipeline', 'map_switching'), ('pipeline', 'delay_slot_probe'),
         ('pipeline', 'rolling_launch'), ('pipeline', 'can_telemetry'),
         ('pipeline', 'relocated_runtime_targets'),
@@ -83,7 +85,7 @@ def test_exact_rom_scope_runs_the_native_stages_only(pipeline, capsys):
     driver, events = pipeline
     assert driver.main(['--rom', 'JK03B']) == 0
     report = capsys.readouterr().out
-    assert _stages(report) == ['toolchain', 'reconstruction_fixture', 'map_switching',
+    assert _stages(report) == ['toolchain', 'simulator_irq', 'reconstruction_fixture', 'map_switching',
                                'delay_slot_probe', 'rolling_launch', 'can_telemetry']
     assert 'verify_runtime_targets' not in events
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK03B ' in report
@@ -101,7 +103,7 @@ def test_relocated_rom_scope_runs_its_target_only(pipeline, monkeypatch, capsys)
     monkeypatch.setattr(sys.modules['verify_runtime_targets'], 'verify', runtime)
     assert driver.main(['--rom', 'JK00D']) == 0
     report = capsys.readouterr().out
-    assert _stages(report) == ['toolchain', 'delay_slot_probe', 'relocated_runtime_targets']
+    assert _stages(report) == ['toolchain', 'simulator_irq', 'delay_slot_probe', 'relocated_runtime_targets']
     assert events == [] and requested == [('JK00D',)]
     assert 'VQ_SH_ELF_VERIFY status=PASS scope=rom:JK00D ' in report
     assert 'runtime_targets=1 runtime_target_cases=31' in report
@@ -117,6 +119,48 @@ def test_unknown_rom_scope_is_refused_before_execution(pipeline, monkeypatch):
         driver.main(['--rom', 'JK99Z'])
     assert error.value.code == 2
     assert events == []
+
+
+def test_irq_probe_environment_is_disabled_by_default(driver, monkeypatch):
+    import os
+    simulator = importlib.import_module('verify_simulator_irq')
+    for name in simulator.VARIABLES:
+        monkeypatch.setenv(name, 'inherited request')
+    child = simulator.environment()
+    assert not (set(simulator.VARIABLES) & child.keys())
+    assert all(os.environ[name] == 'inherited request' for name in simulator.VARIABLES)
+    requested = simulator.environment(dict(PC='1234', COUNT=3, LEVEL=8,
+                                          VECTOR=80, REPORT='irq.report'))
+    assert {name: requested[name] for name in simulator.VARIABLES} == dict(
+        VQ_SH_IRQ_PC='1234', VQ_SH_IRQ_COUNT='3', VQ_SH_IRQ_LEVEL='8',
+        VQ_SH_IRQ_VECTOR='80', VQ_SH_IRQ_REPORT='irq.report')
+
+
+def test_irq_wrapper_preserves_the_original_probe_failure(driver, monkeypatch):
+    def fail():
+        raise RuntimeError('controlled IRQ probe failure')
+
+    monkeypatch.setitem(sys.modules, 'verify_simulator_irq', SimpleNamespace(verify=fail))
+    with pytest.raises(driver.VerificationError, match='simulator IRQ gate failed') as error:
+        driver.verify_simulator_irq()
+    assert isinstance(error.value.__cause__, RuntimeError)
+
+
+def test_failed_irq_probe_prevents_patch_execution(pipeline, monkeypatch, capsys):
+    driver, events = pipeline
+
+    def fail():
+        raise driver.VerificationError('controlled IRQ failure')
+
+    monkeypatch.setattr(driver, 'verify_simulator_irq', fail)
+    assert driver.main([]) == 1
+    assert not events
+    report = capsys.readouterr().out
+    assert 'VQ_SH_ELF_VERIFY status=PASS' not in report
+    execution = importlib.import_module('execution_report')
+    rows = execution.read(report)
+    assert rows[-1]['start']['name'] == 'simulator_irq'
+    assert rows[-1]['finish']['status'] == 'failed'
 
 
 def test_failed_fuel_cut_binding_prevents_execution(pipeline, monkeypatch, capsys):

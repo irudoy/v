@@ -1087,6 +1087,14 @@ def require_toolchain_version():
     return first_line, gcc
 
 
+def verify_simulator_irq():
+    import verify_simulator_irq as simulator_irq
+    try:
+        simulator_irq.verify()
+    except Exception as error:
+        raise VerificationError(f'simulator IRQ gate failed: {error}') from error
+
+
 def verify(verbose=False, rom=None):
     """Execute the patch stages of every supported ROM, or of ``rom`` only.
 
@@ -1105,6 +1113,8 @@ def verify(verbose=False, rom=None):
     )
     with stage('toolchain'):
         simulator, gcc_version = require_toolchain_version()
+    with stage('simulator_irq'):
+        verify_simulator_irq()
     with tempfile.TemporaryDirectory(prefix="vq-sh-elf-run-") as directory:
         build_dir = Path(directory)
         if native:

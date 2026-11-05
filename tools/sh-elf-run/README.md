@@ -389,6 +389,81 @@ declared simulator-only RAM translations and stock-function stubs. The
 translations leave instructions and control-flow addresses under test unchanged.
 Harness storage is separate from ROM, target RAM and observation windows.
 
+## Optional SH-2E interrupt injection
+
+`gnu16.3-sh-irq-injection.patch` adds a one-shot maskable CPU interrupt request to the
+standalone GNU runner. A publication-race fixture can run an interrupt
+handler after a selected store of an unmasked engine pass. With all
+`VQ_SH_IRQ_*` variables unset, instruction
+execution, exception handling and the PC observer retain their ordinary
+behavior. A request supplies all of these variables:
+
+| Variable | Value |
+| --- | --- |
+| `VQ_SH_IRQ_PC` | An even 32-bit instruction address in hexadecimal, with an optional `0x` prefix |
+| `VQ_SH_IRQ_COUNT` | A decimal execution number, at least 1, within an unsigned 64-bit value |
+| `VQ_SH_IRQ_LEVEL` | A decimal priority level from 1 to 15 |
+| `VQ_SH_IRQ_VECTOR` | A decimal vector number from 0 to 255 |
+| `VQ_SH_IRQ_REPORT` | The path of the request report |
+
+The request becomes pending after completion of the selected execution of
+the instruction. A delayed branch completes with its executed delay slot;
+a trigger on the slot also becomes pending after that slot. Both outcomes
+of `BT/S` and `BF/S` retain the protected slot. Pending delivery waits until
+the first instruction boundary where `SR.I < LEVEL` and interrupt acceptance
+is allowed. It occurs before execution of the instruction at that boundary.
+
+The [SH7059/SH7058S Hardware Manual](../../refs/renesas-sh7059-sh7058s-hardware-manual.md),
+section 6.6, table 6.10, prohibits acceptance between a delayed branch and its
+slot, and immediately after `LDC`, `LDC.L`, `STC`, `STC.L`, `LDS`, `LDS.L`,
+`STS` and `STS.L`. The FPU instructions in its tables 2.18 and 2.19 also
+inhibit acceptance. Section 8.3.3 confirms that the following instruction
+executes before a deferred interrupt is accepted. Consecutive inhibiting
+instructions extend this deferral. For `ldc ...,sr; nop; resume:`, a pending
+request is accepted at `resume`, even when the LDC lowers the mask.
+
+At acceptance, the hook writes SR at `SP-4`, the return PC at `SP-8`, sets
+SP to `SP-8`, and sets `SR.I` to the requested level. It reads the handler
+from `mem32[VBR + 4*VECTOR]` at acceptance, including any intervening change
+to VBR or the vector entry. Entry validates stack alignment and address
+arithmetic. Memory accesses use the ordinary data paths; their bus faults
+stop the run. The handler runs
+from its original instruction address; no target opcode is replaced.
+
+GNU's RTE decoder uses the SH-4 SSR/SPC return registers. For the RTE ending
+this hook's injected exception, the hook reads PC and SR from the current
+SH-2E stack frame, advances SP by eight bytes, and supplies those return
+registers to the unchanged decoder. RTE and its delay slot execute normally;
+a probe verifies that the slot observes the restored stack pointer.
+This adaptation is confined to the injected exception; it does not qualify
+other simulator exception paths. The hook supplies no peripheral behavior,
+INTC arbitration, nested interrupts or cycle timing. Each fixture declares
+its stack, vector and harness storage separately from executable storage.
+
+An accepted request writes one report line with hexadecimal values:
+
+```text
+triggered=00001200 accepted=00001202 handler=00001400 sr=00000000
+```
+
+`triggered` is the configured instruction address; `accepted` is the return
+PC placed in the frame, which can differ from the instruction immediately
+following the trigger. An undelivered request, including an execution count
+that is never reached, writes `status=PENDING`. It changes an otherwise
+successful runner exit to 125 and retains an existing target failure or
+signal. Partial or invalid requests refuse execution with exit code 125;
+report I/O errors fail the run with that code. The ordinary PC trace remains
+an ordered record of the instructions that execute, including the handler,
+RTE and its delay slot.
+
+The mandatory `simulator_irq` stage runs the compiled C and assembly probes
+before patch execution. It checks the unset default, repeated executions,
+priority masking, inhibit chains, delayed branches, the saved frame, RTE,
+vector lookup at acceptance, undelivered requests and invalid settings.
+Disabled and enabled runs consume the same ELF bytes. Requests are confined
+to child processes; the probe uses ordinary flat memory without enabling a
+high-RAM alias.
+
 The simulator does not reproduce the complete ECU, peripherals, power sequence
 or engine. HCAN write-one-to-clear registers behave as ordinary memory in the
 fixture. The exception model does not establish the silicon exception stack.
