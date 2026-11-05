@@ -457,6 +457,10 @@ byte/word/long access and target byte order, sign extension, both window
 boundaries, invalid bases, unaligned accesses and an address outside the window.
 The enabled setting is confined to the probe subprocesses; other gates retain
 the unset default unless their own fixture explicitly declares the alias.
+Before any probe executes, its ELF load segments and allocated sections must
+exclude the complete alias window and the adjacent probe canary. A fixture
+that enables the alias declares and checks its own ELF and harness storage;
+the simulator patch itself has no ELF ownership model.
 
 ## Optional SH-2E interrupt injection
 

@@ -6,11 +6,16 @@ import signal
 import tempfile
 
 import verify_map_switching as base
+from elf_storage_layout import require_separate_storage
 
 
 SOURCE = Path(__file__).with_name('harness-simulator-high-ram.c')
 VARIABLE = 'VQ_SH_HIGH_RAM_BASE'
-ALIAS = '0x01000000'
+ALIAS_BASE = 0x01000000
+ALIAS_SIZE = 0x10000
+ALIAS = f'{ALIAS_BASE:#x}'
+# The fixed probe also writes a canary immediately beyond the aliased window.
+PROBE_RAM = ((ALIAS_BASE, ALIAS_SIZE), (ALIAS_BASE + ALIAS_SIZE, 4))
 PASS = 'VQ_SH_HIGH_RAM_PROBE status=PASS'
 BUS_CODE = int(signal.SIGBUS)
 BUS_ERROR = f'signal {BUS_CODE} (Bus error)'
@@ -45,6 +50,7 @@ def verify():
             elf = directory / f'probe-{case}.elf'
             base.run_command([base.GCC, '-m2e', '-mb', '-O1',
                               f'-DPROBE_CASE={case}', SOURCE, '-o', elf])
+            require_separate_storage(elf, PROBE_RAM)
             probes[case] = elf
         require_result(probes[0], ALIAS)
         for case in (0, 6, 7, 8, 9, 10):
