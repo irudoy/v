@@ -557,6 +557,14 @@ def build(variant=None):
     rows.engine_row("ready-speed-cut", records(ready_cut), replace(good, speed=275))
     rows.engine_row("ready-rpm", records(ready_rpm), replace(good, speed=80, rpm_native=380))
     rows.engine_row("ready-abort", records(ready_cut), replace(good, button=model.BUTTON_RELEASED))
+    for cache in (1, 2, 3):
+        rows.engine_row(f"reset-cache-valid-{cache}",
+                        records(idle, replace(SPARK, reset_phase=cache,
+                                              accumulators=model.SPARK_CYLINDER_OFFSETS)), good)
+    rows.engine_row("reset-cache-corrupt-recovery",
+                    mutate(idle, "base", 0x00, "B", 3,
+                           spark=replace(SPARK, reset_phase=3,
+                                         accumulators=model.SPARK_CYLINDER_OFFSETS)), good, corrupt=True)
 
     # COOLDOWN rearms after three released passes with a valid configuration.
     cooldown = step(speed_hold, replace(good, button=model.BUTTON_RELEASED))
@@ -579,8 +587,8 @@ def build(variant=None):
         ("map", speed_hold, "base", 0x04, "B", 5),
         ("mode", speed_hold, "base", 0x05, "B", 2),
         ("latched", speed_hold, "base", 0x1E, "B", 41),
-        ("reserved", idle, "base", 0x1F, "B", 1),
-        ("reserved-active", ready_speed, "base", 0x1F, "B", 0x80),
+        ("reset-cache", idle, "base", 0x1F, "B", 4),
+        ("reset-cache-active", ready_speed, "base", 0x1F, "B", 0x80),
         ("kind", speed_hold, "extension", 0x00, "B", 3),
         ("status", idle, "extension", 0x01, "B", 32),
         ("trim", idle, "extension", 0x0A, "B", 41),

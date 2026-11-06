@@ -493,27 +493,40 @@ requires a counter wrap, whose full period is `209.7152 ms`. This does not
 establish that a vehicle output remains unchanged for that period; later
 stock writes and recovery can replace the compare.
 
-### Static instruction accounting
+### Instruction accounting and executed paths
 
 The accounting model assigns five CPU states to every executed instruction,
 including delay slots, at 80 MHz: one instruction costs `0.0625 us`.
-These figures are **static control-flow envelopes**, not measured execution
-maxima or hardware WCET. Both branch outcomes are included where predicates
-are unconstrained. The private paths count the helper call, its return and
-the tail jump, and stop before stock divider `0x00021CE0`.
+The private-path figures are **maximum instruction counts observed in the
+GNU matrix**, not hardware WCET. The observer binds each executed word,
+branch, delay slot and call/return to the payload and fixture. Counts start
+at the actuator entry, include helper calls, their returns and the tail
+jump, and stop before stock divider `0x00021CE0`.
 
-| Private path | Instruction envelope | Model time per call |
+| Private path | Maximum observed instructions | Model time per call |
 | --- | ---: | ---: |
-| Outside ACTIVE HOLD, including idle latch release and accumulator reset | 75 | 4.6875 us |
-| Admitted arming, including a cut and a zero-to-one latch update | 151 | 9.4375 us |
-| Unconstrained CFG, including mutually inconsistent predicates | 157 | 9.8125 us |
+| Cached off-HOLD phase, quiet counter saturated, no marker to release | 27 | 1.6875 us |
+| Cached off-HOLD phase, quiet counter still increasing | 29 | 1.8125 us |
+| Cached ACTIVE outside HOLD | 22 | 1.375 us |
+| First off-HOLD arming of a phase, including reset and event service | 105 | 6.5625 us |
+| Cached IDLE with marker 1 requiring the masked recheck | 84 | 5.25 us |
+| Admitted HOLD arming, including a cut and a zero-to-one latch update | 153 | 9.5625 us |
+| Other HOLD paths, including invalid q or accumulator reset | 144 | 9 us |
 
-The admitted envelope enumerates the six valid one-hot cylinder masks;
-their index branches cannot all take the longer alternative together.
-An ACTIVE HOLD call with invalid q has a separate 78-instruction reset
-envelope. Before the second `GR11B` store, both countdown slots can call the
-veto. Its cumulative admitted addition is then at most 302 instructions,
-or `18.875 us` in this model; the unconstrained allowance is `19.625 us`.
+The matrix includes all six valid one-hot cylinder masks, first and repeated
+armings, quiet counts across 13/14 and 254/255, a marker supplied after
+saturation, and an IDLE/ACTIVE/COOLDOWN/IDLE cycle. The trace requires a
+single reset on the first off-HOLD path and no reset on either cached path.
+The reset cache at base `+0x1F` is published after all six accumulator
+stores with interrupts masked, and every HOLD entry invalidates it before
+an accumulator can change. Quiet and latch service continue on cache hits.
+The fast tail enters the original divider at `0x00021CE0`; its ABI and
+final stack are compared with the independently executed stock call.
+
+Before the second `GR11B` store, both countdown slots can call the veto.
+Charging the observed admitted maximum twice gives 306 instructions, or
+`19.125 us` in this model. The counts cover the declared functional matrix;
+they do not establish a capture-to-store time or interrupt arrival bound.
 
 The stock capture prefix is not executed by this fixture. A deliberately
 loose static allocation counts every listed instruction once, expands each
@@ -581,9 +594,9 @@ time. The requested margin is `M = window - A - S / 16 - W - P` in us,
 and its ratio to the wrapper addition is `M / W`.
 
 At 7650 RPM, the admitted-path allocations give
-`M1 = 71.9125 - 0.375 * H - A - P` and
-`M2 = 50.6 - 0.375 * H - A - P` us. At 5000 RPM, replace the constants
-by `187.1125` and `165.8`. These are conditional allocation equations,
+`M1 = 71.7875 - 0.375 * H - A - P` and
+`M2 = 50.35 - 0.375 * H - A - P` us. At 5000 RPM, replace the constants
+by `186.9875` and `165.55`. These are conditional allocation equations,
 not observed margins. H, A and P remain unresolved, and the deliberately
 loose stock allocation is not an executed maximum. A positive complete
 margin or a tenfold `M / W` factor is not established.

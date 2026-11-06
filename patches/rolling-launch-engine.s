@@ -10,7 +10,7 @@
 //   1. The record check at 0xD7008 runs with interrupts masked. A record
 //      that the model does not decode as a valid state restores map 1
 //      through the limiter commit, clears base 0x00..0x1B, the trim and
-//      reserved byte at 0x1E/0x1F and the extension, and enters COOLDOWN
+//      trim/reset-cache word at 0x1E/0x1F and the extension, and enters COOLDOWN
 //      with reason 16. The quiet and cut counters at base 0x1C/0x1D and the
 //      six accumulators remain.
 //   2. The input sample stores the RPM and speed words, the CANCEL capture,

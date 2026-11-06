@@ -290,7 +290,49 @@ def require_private_trace(trace, fixture, parsed, keys):
     for pc, required in branches.items():
         if observed[pc] != required:
             raise base.VerificationError(f"ignition branch outcomes differ at {pc:#x}")
-    return f"instructions={len(executed)} branch_outcomes={2 * len(branches)} delays={len(delayed)}"
+    metrics = f"instructions={len(executed)} branch_outcomes={2 * len(branches)} delays={len(delayed)}"
+    if keys == KERNEL_UNITS:
+        labels = parsed["spark_cut"].labels
+        reset_pc = parsed["spark_events"].labels["rolling_launch_spark_reset"]
+        groups, segment = {}, []
+
+        def finish(pcs):
+            if not pcs:
+                return
+            present = set(pcs)
+            if labels["rl_cut_cold"] in present:
+                kind = "off_first"
+                resets = 1
+            elif labels["rl_cut_latch"] in present:
+                kind = "off_latch"
+                resets = 0
+            elif labels["rl_cut_full"] not in present:
+                if labels["rl_cut_active"] in present:
+                    kind = "off_fast_observe"
+                else:
+                    kind = ("off_fast_warm" if labels["rl_cut_quiet_done"]-2 in present
+                            else "off_fast_steady")
+                resets = 0
+            else:
+                kind = "hold_admitted" if labels["rl_cut_commit"] in present else "hold_other"
+                resets = int(labels["rl_cut_reset"] in present)
+            if pcs.count(reset_pc) != resets:
+                raise base.VerificationError("dwell reset repeats outside its first or HOLD-reset path")
+            groups[kind] = max(groups.get(kind, 0), len(pcs))
+
+        for pc, _word, _delay in records:
+            if pc == labels["rolling_launch_spark_cut"]:
+                finish(segment)
+                segment = []
+            segment.append(pc)
+        finish(segment)
+        if set(groups) != {"off_first", "off_latch", "off_fast_observe", "off_fast_warm",
+                           "off_fast_steady", "hold_admitted", "hold_other"}:
+            raise base.VerificationError("dwell timing trace lacks a required path")
+        if groups["hold_admitted"] > 153:
+            raise base.VerificationError("admitted HOLD path exceeds its 153-instruction budget")
+        metrics += " " + " ".join(f"max_{key}={value}" for key, value in sorted(groups.items()))
+    return metrics
 
 
 def verify_builders(directory, fixture, invoke, layout, parsed):
@@ -512,7 +554,7 @@ def verify_kernel():
         result = base.run_command([base.RUN, positive], env=environment, timeout=180)
         if positive.read_bytes() != before:
             raise base.VerificationError("ignition kernel ELF changes during execution")
-        if "RL_DWELL_VETO_KERNEL status=PASS rows=53760" not in result.stdout:
+        if "RL_DWELL_VETO_KERNEL status=PASS rows=53761" not in result.stdout:
             raise base.VerificationError("dwell veto kernel lacks its complete row count")
         coverage = compile_harness(directory, rom, invoke, "kernel-coverage", ("VQ_VETO_COVERAGE",))
         require_storage(coverage, fixture)

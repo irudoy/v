@@ -15,15 +15,18 @@
 // Actuator bytes of the state at 0xFFFF5D40, written only by this actuator:
 //   +0x1C u8  quiet events: 0 while ACTIVE, else a count saturating at 255
 //   +0x1D u8  cut counter, wrapping
+//   +0x1F u8  completed off-HOLD reset phase plus one, or zero
 //   +0x20 u16 accumulators of the armed cylinders 1..6, in sixths of a
 //             thousandth of a cut
 // and of the extension at 0xFFFF6100:
 //   +0x10 u32 consumed q sum, wrapping
 //   +0x18 u16 eligible arming counter, wrapping
 //
-// Quiet-event and latch service precede admission. Outside ACTIVE HOLD, or
-// with q > 1000 at state +0x1A, all six accumulators reset before the
-// admission checks. In ACTIVE HOLD with an in-range q, an arming is eligible
+// Quiet-event and latch service precede admission. On the first off-HOLD
+// arming of a phase, all six accumulators reset instead of the admission
+// checks. Later armings keep servicing quiet events and the IDLE latch.
+// In ACTIVE HOLD, q > 1000 at state +0x1A also resets the accumulators.
+// With an in-range q, an arming is eligible
 // with the sync bit 0xFFFF8501.bit7, without the P0335 APC
 // fallback 0xFFFF24C9.bit6, when the stock check would enable it
 // (0xFFFF84EA.bit7 and 0xFFFF4185.bit7 set, 0xFFFF13D2 zero, 0xFFFF8511.bit7
@@ -39,25 +42,89 @@
 // hold the misfire-monitor latch 0xFFFF436F receives the marker 0x01 when it
 // is zero; in IDLE after 14 quiet events it is cleared while it holds 0x01.
 // That check-and-store also runs with interrupts masked.
+//
+// Base +0x1F caches the completed reset's phase plus one, or zero. A cache
+// hit still services quiet events and an IDLE marker. Every HOLD entry
+// invalidates it before any accumulator change. Fast paths preserve r0/r2
+// and SR.I; the stock divider's initial TST replaces T before using it.
+
+.org 0x000D6080
+rl_cut_active:
+mov.b @(0x5,r2),r0
+cmp/eq 0x1,r0
+bt rl_cut_hold
+mov #0x2,r0
+add 0x1f,r2
+mov.b @r2,r2
+cmp/eq r2,r0
+bf rl_cut_cold
+bra rl_cut_fast_chain
+nop
+rl_cut_cold:
+mov r0,r2
+bra rl_cut_full
+nop
+rl_cut_latch:
+mov #-0x1,r2
+bra rl_cut_full
+nop
+rl_cut_hold:
+mov #0x0,r2
+bra rl_cut_full
+nop
 
 .org 0x000D60C0
 rolling_launch_spark_cut:
 mov.l r0,@-r15
+mov.l r2,@-r15
+mov.l @(rl_cut_state_address,pc),r2
+mov.b @r2,r0
+extu.b r0,r0
+add 0x1,r0
+cmp/eq 0x2,r0
+bt rl_cut_active
+add 0x1f,r2
+mov.b @r2,r2
+cmp/eq r2,r0
+bf rl_cut_cold
+mov.l @(rl_cut_quiet_address,pc),r2
+mov.b @r2,r0
+cmp/eq -0x1,r0
+bt rl_cut_quiet_done
+add 0x1,r0
+mov.b r0,@r2
+rl_cut_quiet_done:
+mov.b @(0x3,r2),r0
+cmp/eq 0x1,r0
+bf rl_cut_fast_chain
+mov.l @(rl_cut_misfire_latch_address,pc),r2
+mov.b @r2,r0
+cmp/eq 0x1,r0
+bt rl_cut_latch
+rl_cut_fast_chain:
+mov.l @r15+,r2
+mov.l @(rl_cut_stock_divider,pc),r0
+jmp @r0
+mov.l @r15+,r0
+
+rl_cut_full:
 sts.l pr,@-r15
 mov.l r1,@-r15
-mov.l r2,@-r15
 mov.l r3,@-r15
 mov.l r4,@-r15
 mov.l r5,@-r15
 mov.l r6,@-r15
 mov.l r7,@-r15
+mov r2,r6
 stc sr,r0
 mov.l r0,@-r15
 mov.l @(rl_cut_state_address,pc),r5
-bsr 0x000D6780
+mov r5,r4
+add 0x1c,r4
+bsr 0x000D6268
 nop
 tst r2,r2
-bt rl_cut_reset
+bt rl_cut_chain
 mov.w @(0x1a,r5),r0
 extu.w r0,r1
 mov.w @(rl_cut_u_one,pc),r3
@@ -155,18 +222,8 @@ ldc r6,sr
 bra rl_cut_chain
 nop
 rl_cut_reset:
-mov.w @(rl_cut_offset_1,pc),r0
-mov.w r0,@(0x4,r4)
-mov.w @(rl_cut_offset_2,pc),r0
-mov.w r0,@(0x6,r4)
-mov.w @(rl_cut_offset_3,pc),r0
-mov.w r0,@(0x8,r4)
-mov.w @(rl_cut_offset_4,pc),r0
-mov.w r0,@(0xa,r4)
-mov.w @(rl_cut_offset_5,pc),r0
-mov.w r0,@(0xc,r4)
-mov.w @(rl_cut_offset_6,pc),r0
-mov.w r0,@(0xe,r4)
+bsr 0x000D6274
+nop
 rl_cut_chain:
 mov.l @r15+,r0
 ldc r0,sr
@@ -175,14 +232,14 @@ mov.l @r15+,r6
 mov.l @r15+,r5
 mov.l @r15+,r4
 mov.l @r15+,r3
-mov.l @r15+,r2
 mov.l @r15+,r1
 lds.l @r15+,pr
+mov.l @r15+,r2
 mov.l @(rl_cut_stock_divider,pc),r0
 jmp @r0
 mov.l @r15+,r0
 
-.org 0x000D61E0
+.org 0x000D61F0
 rl_cut_state_address:
 .long 0xFFFF5D40
 rl_cut_sync_address:
@@ -205,15 +262,7 @@ rl_cut_u_one:
 .word 1000
 rl_cut_one:
 .word 6000
-rl_cut_offset_1:
-.word 250
-rl_cut_offset_2:
-.word 2250
-rl_cut_offset_3:
-.word 4250
-rl_cut_offset_4:
-.word 1250
-rl_cut_offset_5:
-.word 3250
-rl_cut_offset_6:
-.word 5250
+rl_cut_quiet_address:
+.long 0xFFFF5D5C
+rl_cut_misfire_latch_address:
+.long 0xFFFF436F

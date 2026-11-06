@@ -39,7 +39,12 @@ scope for the ROM of the image it qualifies.
 unsigned divider. Its matrix checks eligibility, cylinder masks, accumulator
 boundaries, counter wrapping, quiet events, the misfire latch and the complete
 divider ABI. A PC trace requires every kernel instruction, both outcomes of
-each conditional branch and every delay slot. The alias window is excluded
+each conditional branch and every delay slot. First and repeated off-HOLD armings
+check the reset cache, quiet counts across 13/14 and 254/255, reasserted
+marker 1 and the IDLE/ACTIVE/COOLDOWN/IDLE cycle. The trace requires exactly
+one reset on a first off-HOLD path, none on a cached path, and reports the
+maximum executed private instructions per path. An admitted HOLD path
+must stay within its 153-instruction budget. The alias window is excluded
 from the harness ELF and ROM fixture, with a compiled collision case that
 must fail before simulator entry. The same scope executes both stock command
 builders, the adapter and publisher, both stock schedulers, the command splitter

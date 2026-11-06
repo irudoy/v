@@ -480,39 +480,60 @@ def _validate_ignition_abi(parsed):
 def _validate_spark_cut_abi(parsed):
     texts = _texts(parsed)
     if "rolling_launch_spark_events" in parsed.labels:
-        if texts[:2] != ["mov r5,r4", "add 0x1c,r4"] or texts[-3:] != ["ldc r7,sr", "rts", "nop"]:
-            raise ValueError("spark events helper entry or return differs")
-        if [text for text in texts if text.split()[0] in {"jsr", "bsr", "jmp", "rts", "rte"}] != ["rts"]:
+        if texts[:2] != ["tst r6,r6", "bt rl_event_hold"]:
+            raise ValueError("spark events dispatch differs")
+        if any(text.split()[0] in {"jsr", "bsr", "jmp", "rte"} for text in texts):
             raise ValueError("spark events helper must be a leaf")
-        if sorted(_stores(texts)) != sorted(["mov.b r0,@r4"]*2 + ["mov.b r0,@r3"]*2):
-            raise ValueError("spark events helper stores outside quiet state and the latch")
-        if not _contains(texts, ["stc sr,r7", "mov r7,r0", "or 0xf0,r0", "ldc r0,sr", "mov.b @r3,r0"]):
-            raise ValueError("spark events latch check is not masked")
-        if texts.count("mov.b @r5,r0") != 1 or texts.count("mov.b @(0x5,r5),r0") != 1:
-            raise ValueError("spark events phase and mode read set differs")
-        allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r7", "sr"}
+        reset = _region(parsed, "rolling_launch_spark_reset", "rl_event_hold")
+        if parsed.labels["rolling_launch_spark_reset"] != 0xD6274:
+            raise ValueError("spark reset entry differs")
+        if not _contains(reset, ["stc sr,r7", "mov r7,r0", "or 0xf0,r0", "ldc r0,sr"]):
+            raise ValueError("spark reset is not masked")
+        expected = [f"mov.w r0,@(0x{n:x},r4)" for n in range(4, 15, 2)]
+        expected += ["mov.b r0,@(0x3,r4)"]
+        if _stores_in_order(reset) != expected:
+            raise ValueError("spark reset must publish its cache after all accumulators")
+        hold = _region(parsed, "rl_event_hold", "rl_event_quiet")
+        if hold[:3] != ["mov #0x0,r0", "mov.b r0,@r4", "mov.b r0,@(0x3,r4)"]:
+            raise ValueError("HOLD must invalidate the reset cache before accumulator changes")
+        latch = _region(parsed, "rl_event_latch", "rl_event_return_lite")
+        for region in (hold, latch):
+            if not _contains(region, ["stc sr,r7", "mov r7,r0", "or 0xf0,r0", "ldc r0,sr", "mov.b @r3,r0"]):
+                raise ValueError("spark events latch check is not masked")
+        if set(_stores(texts)) - (set(expected) | {"mov.b r0,@r4", "mov.b r0,@r3"}):
+            raise ValueError("spark events helper stores outside its actuator fields and latch")
+        allowed = {"r0", "r2", "r3", "r4", "r5", "r6", "r7", "sr"}
     else:
-        saves = ["mov.l r0,@-r15", "sts.l pr,@-r15"] + [f"mov.l r{n},@-r15" for n in range(1, 8)]
-        saves += ["stc sr,r0", "mov.l r0,@-r15"]
-        restores = ["mov.l @r15+,r0", "ldc r0,sr"] + [f"mov.l @r15+,r{n}" for n in range(7, 0, -1)]
-        restores += ["lds.l @r15+,pr", "mov.l @(rl_cut_stock_divider,pc),r0", "jmp @r0", "mov.l @r15+,r0"]
-        if texts[:len(saves)] != saves or texts[-len(restores):] != restores:
+        entry = _region(parsed, "rolling_launch_spark_cut", "rl_cut_full")
+        if entry[:2] != ["mov.l r0,@-r15", "mov.l r2,@-r15"]:
+            raise ValueError("dwell veto must preserve the divider fast-path inputs")
+        fast = _region(parsed, "rl_cut_fast_chain", "rl_cut_full")
+        fast_return = ["mov.l @r15+,r2", "mov.l @(rl_cut_stock_divider,pc),r0",
+                       "jmp @r0", "mov.l @r15+,r0"]
+        restore = ["mov.l @r15+,r0", "ldc r0,sr"]
+        restore += [f"mov.l @r15+,r{n}" for n in (7, 6, 5, 4, 3, 1)]
+        restore += ["lds.l @r15+,pr", *fast_return]
+        if fast != fast_return or _region(parsed, "rl_cut_chain") != restore:
             raise ValueError("dwell veto must preserve the divider inputs, caller and SR")
+        full = _region(parsed, "rl_cut_full")
+        saves = ["sts.l pr,@-r15"] + [f"mov.l r{n},@-r15" for n in (1, 3, 4, 5, 6, 7)]
+        saves += ["mov r2,r6", "stc sr,r0", "mov.l r0,@-r15"]
+        if full[:len(saves)] != saves:
+            raise ValueError("dwell veto full frame differs")
         transfers = [text for text in texts if text.split()[0] in {"jsr", "bsr", "jmp", "rts", "rte"}]
-        if transfers != ["bsr 0x000d6780", "jmp @r0"]:
-            raise ValueError("dwell veto must call its event helper and tail-jump to the divider")
+        if transfers != ["jmp @r0", "bsr 0x000d6268", "bsr 0x000d6274", "jmp @r0"]:
+            raise ValueError("dwell veto helper calls or stock tails differ")
         if texts.count("mov.w @(0x1a,r5),r0") != 1 or any(text.startswith("mov.b @(0x1a,r5)") for text in texts):
             raise ValueError("dwell veto must consume one aligned q word")
         expected = ["mov.w r7,@(r0,r4)", "mov.l r0,@(0x10,r3)", "mov.w r0,@(0x18,r3)",
                     "mov.b r0,@r3", "mov.b r0,@(0x1,r4)"]
-        expected += [f"mov.w r0,@(0x{n:x},r4)" for n in range(4, 15, 2)]
         stores = [text for text in _stores(texts) if not text.endswith(",@-r15")]
-        if sorted(stores) != sorted(expected):
+        if sorted(stores) != sorted(expected + ["mov.b r0,@r2"]):
             raise ValueError("dwell veto actuator/counter store contract differs")
         commit = _region(parsed, "rl_cut_commit", "rl_cut_unmask")
         if not _contains(commit, ["stc sr,r6", "mov r6,r0", "or 0xf0,r0", "ldc r0,sr"]):
             raise ValueError("dwell veto event commit is not masked")
-        if _stores_in_order(commit) != expected[:5] or texts[texts.index("ldc r6,sr")+1:texts.index("ldc r6,sr")+3] != ["bra rl_cut_chain", "nop"]:
+        if _stores_in_order(commit) != expected or texts[texts.index("ldc r6,sr")+1:texts.index("ldc r6,sr")+3] != ["bra rl_cut_chain", "nop"]:
             raise ValueError("dwell veto event commit order differs")
         if not _contains(texts, ["mov.l @(rl_cut_dwell_mask_address,pc),r3", "mov.b @(0x1,r3),r0", "tst r0,r0", "bf rl_cut_chain", "mov.b @r3,r0"]):
             raise ValueError("dwell veto must use the armed cylinder and the stock guard")
@@ -1140,6 +1161,8 @@ def _expected_long_literals():
             "rl_cut_dwell_mask_address": 0xFFFF13D1,
             "rl_cut_extension_address": 0xFFFF6100,
             "rl_cut_stock_divider": 0x00021CE0,
+            "rl_cut_quiet_address": 0xFFFF5D5C,
+            "rl_cut_misfire_latch_address": 0xFFFF436F,
         },
         "spark_events": {"rl_cut_misfire_latch_address": 0xFFFF436F},
         "rpm": {

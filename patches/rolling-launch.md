@@ -1063,8 +1063,15 @@ rate limit, the speed error, the integrator, the command before the rate
 limit, the RPM target, the RPM error, the cut fraction `q` at `+0x1A`, and the
 trim of the run at `+0x1E`. The fields of the regulator that a run does not
 use hold zero. The spark-cut actuator owns the quiet-event count and the cut
-counter at `+0x1C` and `+0x1D` and the six accumulators at `+0x20..+0x2C`;
-`+0x1F` is a reserved zero byte.
+counter at `+0x1C` and `+0x1D`, the reset cache at `+0x1F`, and the six
+accumulators at `+0x20..+0x2C`. The cache is zero when invalid and otherwise
+holds the phase plus one: 1 for IDLE, 2 for ACTIVE outside HOLD, and 3 for
+COOLDOWN. Its publication follows all six accumulator stores in the same
+masked reset section. Every HOLD entry invalidates it before any accumulator
+change. A matching phase skips only the repeated reset; quiet events still
+increment to 255, and every IDLE arming releases marker 1 after 14 quiet
+events, including a marker supplied after the counter saturates. Another
+latch value is preserved.
 
 The extension holds the regulator kind, the input status bits, the error of
 the regulator, the RPM and speed samples, the stock and effective commands,
@@ -1077,10 +1084,10 @@ bits, the CANCEL and released codes, and the ready mark.
 
 The startup wrapper clears both allocations. Corrupt-state recovery clears
 the engine part `+0x00..+0x1C` of the record, the trim of the run, the
-reserved byte, and the extension. Both then store `E[0] = 1000` and its wire
+reset cache, and the extension. Both then store `E[0] = 1000` and its wire
 view. An `ACTIVE` state requires the RPM or SPEED kind, a law output and
-`q` of 0..1000, a ready mark of 0 or 1, a trim of 0..40, zero reserved
-fields, and zero fields of the unused regulator; with the ready mark set, the
+`q` of 0..1000, a ready mark of 0 or 1, a trim of 0..40, a reset cache of
+0..3, and zero fields of the unused regulator; with the ready mark set, the
 applied trim does not exceed the trim of the run and `q` equals the actuation
 of the published law output and `E[a]`. Any other `ACTIVE` state is corrupt.
 

@@ -449,7 +449,7 @@ def test_state_records_have_exact_reused_offsets(calibration, inputs, table):
     assert base[0x14:0x16] == bytes.fromhex("012c")
     assert base[0x18:0x1A] == bytes.fromhex("ffec")
     assert base[0x1C:0x20] == bytes.fromhex("07091400")
-    assert rl.ENGINE_EXTRA_CLEAR_OFFSETS == (0x1E,)
+    assert rl.ENGINE_EXTRA_CLEAR_OFFSETS == (0x1E, 0x1F)
     assert ext[0x10:0x14] == bytes.fromhex("12345678")
     assert ext[0x18:0x1A] == bytes.fromhex("abcd")
     assert rl.decode_state(base, ext) == (state, spark)
@@ -458,7 +458,7 @@ def test_state_records_have_exact_reused_offsets(calibration, inputs, table):
     with pytest.raises(ValueError):
         rl.decode_state(base, damaged)
     damaged_base = bytearray(base)
-    damaged_base[0x1F] = 1
+    damaged_base[0x1F] = 4
     with pytest.raises(ValueError):
         rl.decode_state(damaged_base, ext)
 
@@ -476,7 +476,8 @@ def test_named_state_fields_own_every_byte_exactly_once(block, size):
             counts[byte] += 1
     assert len(names) == len(set(names))
     assert counts == [1]*size
-    assert rl.BASE_RESERVED_FIELDS == (("reserved_1f", 0x1F, "B"),)
+    assert rl.BASE_RESERVED_FIELDS == ()
+    assert rl.BASE_PRIVATE_FIELDS == (("reset_phase", 0x1F, "B"),)
 
 
 def test_telemetry_views_have_named_scalar_sources():
@@ -565,6 +566,42 @@ def test_misfire_marker_release_preserves_stock_latch():
         assert result.misfire_latch == 1
     assert rl.spark_event(rl.RuntimeState(), cut, rl.SparkEvent(misfire_latch=1)).misfire_latch == 0
     assert rl.spark_event(runtime, cut, rl.SparkEvent(misfire_latch=50)).misfire_latch == 50
+
+
+def test_reset_cache_keeps_quiet_and_latch_service_and_invalidates_in_hold():
+    idle = rl.RuntimeState()
+    cut = rl.SparkCutState(quiet_events=12, accumulators=rl.SPARK_CYLINDER_OFFSETS)
+    for quiet, latch in ((13, 1), (14, 0)):
+        result = rl.spark_event(idle, cut, rl.SparkEvent(misfire_latch=1))
+        cut = result.state
+        assert (cut.quiet_events, result.misfire_latch) == (quiet, latch)
+        assert cut.reset_phase == 1
+    cut = replace(cut, quiet_events=254)
+    for _ in range(2):
+        result = rl.spark_event(idle, cut, rl.SparkEvent(misfire_latch=1))
+        cut = result.state
+        assert (cut.quiet_events, result.misfire_latch) == (255, 0)
+    hold = replace(idle, phase=rl.Phase.ACTIVE, active_mode_snapshot=rl.Mode.HOLD,
+                   cut_fraction=500)
+    result = rl.spark_event(hold, cut, rl.SparkEvent())
+    assert result.state.reset_phase == 0
+    assert result.state.quiet_events == 0
+    assert result.state.eligible_event_counter == 1
+    assert result.state.consumed_q_sum == 500
+    cooldown = replace(hold, phase=rl.Phase.COOLDOWN)
+    result = rl.spark_event(cooldown, result.state, rl.SparkEvent(misfire_latch=1))
+    assert result.state.reset_phase == 3
+    assert result.state.accumulators == rl.SPARK_CYLINDER_OFFSETS
+    assert result.misfire_latch == 1
+
+
+@pytest.mark.parametrize("cache", (0, 1, 2, 3))
+def test_reset_cache_roundtrips_in_private_byte(cache):
+    runtime = rl.RuntimeState()
+    spark = rl.SparkCutState(reset_phase=cache, accumulators=rl.SPARK_CYLINDER_OFFSETS)
+    base, extension = rl.encode_state(runtime, spark)
+    assert base[0x1f] == cache
+    assert rl.decode_state(base, extension) == (runtime, spark)
 
 
 def test_dashboard_feedback_keeps_map_feedback_priority():

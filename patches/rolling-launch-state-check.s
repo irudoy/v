@@ -2,7 +2,7 @@
 //
 // The structural check returns T=1 when the base state at 0xFFFF5D40 and
 // the extension at 0xFFFF6100 decode as a schema 6 model state: every field
-// lies in its range, the reserved byte is zero, the fields of the inactive
+// lies in its range, the actuator reset cache is 0..3, the fields of the inactive
 // regulator are zero and the wire views agree with the fields they
 // summarize. The ignition publisher runs the entry at 0xD7000 from the
 // crank-tooth interrupt, where the engine cannot run. The engine runs the
@@ -22,7 +22,7 @@
 
 .org 0x000D7000
 // Structural check: T=1 when the base and extension records decode as a
-// schema 6 model state with consistent wire views and a zero reserved byte.
+// schema 6 model state with consistent wire views and a valid reset cache.
 // It changes r0..r3, r6, r7, MACL and T and preserves r4, r5, r8..r15, PR
 // and the remaining SR bits.
 rolling_launch_state_check:
@@ -310,8 +310,8 @@ rl_sc_q_entry:
 rl_sc_u_one:
 .word 1000
 // Offset and maximum pairs: phase, reason, map, mode, latched trim and the
-// reserved byte of the base; kind, input_status, applied trim and ready of
+// reset cache of the base; kind, input_status, applied trim and ready of
 // the extension, whose offsets carry bit 7.
 rl_sc_byte_limit_table:
-.byte 0x00,0x02,0x01,0x19,0x04,0x04,0x05,0x01,0x1e,0x28,0x1f,0x00
+.byte 0x00,0x02,0x01,0x19,0x04,0x04,0x05,0x01,0x1e,0x28,0x1f,0x03
 .byte 0x80,0x02,0x81,0x1f,0x8a,0x28,0x8b,0x01

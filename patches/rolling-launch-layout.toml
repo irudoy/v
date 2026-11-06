@@ -17,7 +17,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
-expected_composition_sha256 = "c4bd1081057b56ba5dca2280c872fd7e3da3cf608bd702d59ad0ace8569f5b99"
+expected_composition_sha256 = "d776a9053c0a78a9ca5ee27fc9e4daad25600ce9b71a75aed6c5594ade8a9f46"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -63,11 +63,11 @@ end = 0x000D6040
 
 [[erased_rom]]
 start = 0x000D6068
-end = 0x000D60C0
+end = 0x000D6080
 
 [[erased_rom]]
-start = 0x000D6268
-end = 0x000D6320
+start = 0x000D6780
+end = 0x000D67F0
 
 [[erased_rom]]
 start = 0x000D6386
@@ -149,15 +149,15 @@ entry = 0x000D41E0
 
 [[code_region]]
 key = "spark_cut"
-start = 0x000D60C0
+start = 0x000D6080
 end = 0x000D6220
 entry = 0x000D60C0
 
 [[code_region]]
 key = "spark_events"
-start = 0x000D6780
-end = 0x000D67F0
-entry = 0x000D6780
+start = 0x000D6268
+end = 0x000D6320
+entry = 0x000D6268
 
 [[code_region]]
 key = "slot_validator"
@@ -264,13 +264,13 @@ code_regions = ["feedback_arbiter"]
 [[assembly_unit]]
 key = "spark_cut"
 source = "rolling-launch-spark-cut.s"
-start = 0x000D60C0
+start = 0x000D6080
 end = 0x000D6220
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "b376e2523cba460bbca7f595da94b23c079ae2877209d99c677513fc8a895ab6"
-instruction_count = 132
-data_bytes = 52
+expected_sha256 = "706018e54dbbeb14e362d91cb659493030618714448a4c9e7941c26f1ae87c21"
+instruction_count = 171
+data_bytes = 48
 code_regions = ["spark_cut"]
 
 [[assembly_unit]]
@@ -316,7 +316,7 @@ start = 0x000D7000
 end = 0x000D7200
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "99d8c09d9b5e76ebbf726915c3825b0a41acafe5077cb348ec91c8061e3d4709"
+expected_sha256 = "4c004125c667e9e97ace559516161409e2faad703447296c71c10d5231ceb9e9"
 instruction_count = 235
 data_bytes = 38
 code_regions = ["state_check"]
@@ -324,13 +324,13 @@ code_regions = ["state_check"]
 [[assembly_unit]]
 key = "spark_events"
 source = "rolling-launch-spark-events.s"
-start = 0x000D6780
-end = 0x000D67F0
+start = 0x000D6268
+end = 0x000D6320
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "ceace232e53d2dd4c62f262b3a9565938ed7e1ba9de2079441d4e254a3c45535"
-instruction_count = 48
-data_bytes = 4
+expected_sha256 = "073065acc432a429fab140a731023124096af082fbb8844b81eeb77d70cc703d"
+instruction_count = 84
+data_bytes = 16
 code_regions = ["spark_events"]
 
 [[hook]]

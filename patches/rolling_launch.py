@@ -777,6 +777,7 @@ class SparkCutState:
     accumulators: tuple[int, ...] = (0,) * 6
     consumed_q_sum: int = 0
     eligible_event_counter: int = 0
+    reset_phase: int = 0
 
 
 @dataclass(frozen=True)
@@ -798,7 +799,8 @@ def spark_event(runtime, cut, event):
         latch = MISFIRE_MARKER
     elif runtime.phase == Phase.IDLE and latch == MISFIRE_MARKER and quiet >= MISFIRE_RELEASE_EVENTS:
         latch = 0
-    cut = replace(cut, quiet_events=quiet)
+    cache = int(runtime.phase)+1 if not hold and runtime.phase in tuple(Phase) else 0
+    cut = replace(cut, quiet_events=quiet, reset_phase=cache)
     reset = replace(cut, accumulators=SPARK_CYLINDER_OFFSETS)
     if not hold or not _integer(runtime.cut_fraction, 0, U_ONE):
         return SparkResult(reset, False, latch)
@@ -840,10 +842,11 @@ BASE_ACCUMULATOR_FIELDS = tuple(
     (f"accumulator_{index+1}", 0x20 + 2*index, "H")
     for index in range(SPARK_CYLINDER_COUNT)
 )
-BASE_RESERVED_FIELDS = (("reserved_1f", 0x1F, "B"),)
+BASE_PRIVATE_FIELDS = (("reset_phase", 0x1F, "B"),)
+BASE_RESERVED_FIELDS = ()
 # Runtime-owned bytes beyond the contiguous engine prefix need an extra clear.
 ENGINE_EXTRA_CLEAR_OFFSETS = tuple(
-    offset for _name, offset, _fmt in BASE_STATE_FIELDS
+    offset for _name, offset, _fmt in BASE_STATE_FIELDS + BASE_PRIVATE_FIELDS
     if offset >= ENGINE_STATE_SIZE
 )
 EXTENSION_FIELDS = (
@@ -864,7 +867,7 @@ EXTENSION_VIEW_FIELDS = (
 EXTENSION_EVENT_FIELD_NAMES = frozenset(("consumed_q_sum", "eligible_event_counter"))
 STATE_FIELDS = {
     "base": (BASE_STATE_FIELDS + BASE_COUNTER_FIELDS
-             + BASE_ACCUMULATOR_FIELDS + BASE_RESERVED_FIELDS),
+             + BASE_ACCUMULATOR_FIELDS + BASE_PRIVATE_FIELDS + BASE_RESERVED_FIELDS),
     "extension": EXTENSION_FIELDS + EXTENSION_VIEW_FIELDS,
 }
 
@@ -883,6 +886,8 @@ def encode_state(runtime, spark):
     """Return the exact base and extension records, with no padding aliases."""
     if not _state_is_structurally_valid(runtime):
         raise ValueError("invalid runtime state")
+    if not _integer(spark.reset_phase, 0, 3):
+        raise ValueError("invalid actuator reset phase")
     base, extension = bytearray(STATE_SIZE), bytearray(EXTENSION_SIZE)
     for fields, buffer in ((BASE_STATE_FIELDS, base), (EXTENSION_FIELDS, extension)):
         _pack_fields(buffer, fields, {name: getattr(runtime, name) for name, _offset, _fmt in fields})
@@ -895,6 +900,7 @@ def encode_state(runtime, spark):
                   in zip(BASE_ACCUMULATOR_FIELDS, spark.accumulators)})
     _pack_fields(base, BASE_RESERVED_FIELDS,
                  {name: 0 for name, _offset, _fmt in BASE_RESERVED_FIELDS})
+    _pack_fields(base, BASE_PRIVATE_FIELDS, {"reset_phase": spark.reset_phase})
     _pack_fields(extension, EXTENSION_VIEW_FIELDS,
                  {name: getattr(spark if name in EXTENSION_EVENT_FIELD_NAMES else runtime, name)
                   for name, _offset, _fmt in EXTENSION_VIEW_FIELDS})
@@ -914,8 +920,9 @@ def decode_state(base, extension):
     counters = _unpack_fields(base, BASE_COUNTER_FIELDS)
     accumulator_values = _unpack_fields(base, BASE_ACCUMULATOR_FIELDS)
     reserved = _unpack_fields(base, BASE_RESERVED_FIELDS)
+    private = _unpack_fields(base, BASE_PRIVATE_FIELDS)
     views = _unpack_fields(extension, EXTENSION_VIEW_FIELDS)
-    if (any(reserved.values()) or not _state_is_structurally_valid(runtime)
+    if (any(reserved.values()) or private["reset_phase"] > 3 or not _state_is_structurally_valid(runtime)
             or any(value != getattr(runtime, name) for name, value in views.items()
                    if name not in EXTENSION_EVENT_FIELD_NAMES)):
         raise ValueError("invalid runtime record or derived wire view")
@@ -924,5 +931,6 @@ def decode_state(base, extension):
         accumulators=tuple(accumulator_values[name] for name, _offset, _fmt in BASE_ACCUMULATOR_FIELDS),
         consumed_q_sum=views["consumed_q_sum"],
         eligible_event_counter=views["eligible_event_counter"],
+        reset_phase=private["reset_phase"],
     )
     return runtime, spark
