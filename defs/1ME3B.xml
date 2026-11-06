@@ -2926,6 +2926,699 @@
       </table>
     </table>
 
+    <!-- 0x110FC  16x16 uint16  map [code]
+         accessor 0x64E62; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15516 raw; X Axis 0x148D2 raw
+         Exact 1ME3B target-native table at 0x110fc bound to accessor 0x64e62 through literal
+         0x64fc4. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 00064e62 reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Float Affine Base Surface [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x110FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Affine Pair Axis Y [stored count]"
+             storagetype="uint16" storageaddress="0x148D2" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Float Affine Pair Axis X [stored count]"
+             storagetype="uint16" storageaddress="0x15516" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x112FC  16x16 uint16  map [code]
+         accessor 0x64E62; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15516 raw; X Axis 0x148D2 raw
+         Exact 1ME3B target-native table at 0x112fc bound to accessor 0x64e62 through literal
+         0x64fd8. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 00064e62 reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Float Affine Gain Surface [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x112FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Affine Pair Axis Y [stored count]"
+             storagetype="uint16" storageaddress="0x148D2" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Float Affine Pair Axis X [stored count]"
+             storagetype="uint16" storageaddress="0x15516" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0BCF4  8x8 uint16  map [code]
+         accessor 0x64F0C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x14B1A raw; X Axis 0x16274 raw
+         Exact 1ME3B target-native table at 0xbcf4 bound to accessor 0x64f0c through literal
+         0x6529c. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 00064f0c reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Float Ratio Parameter Surface [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x0BCF4" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Ratio Parameter Axis Y [stored count]"
+             storagetype="uint16" storageaddress="0x16274" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Float Ratio Parameter Axis X [stored count]"
+             storagetype="uint16" storageaddress="0x14B1A" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1197C  16x16 uint16  map [code]
+         accessor 0x64F0C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x14B3A raw; X Axis 0x15846 raw
+         Exact 1ME3B target-native table at 0x1197c bound to accessor 0x64f0c through literal
+         0x652c0. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 00064f0c reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. The issue #114 float model also reads it at 00059954. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Float Ratio Response Surface [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x1197C" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Ratio Response Axis Y [stored count]"
+             storagetype="uint16" storageaddress="0x15846" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Float Ratio Response Axis X [stored count]"
+             storagetype="uint16" storageaddress="0x14B3A" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15A96  8 uint16  map [code]
+         accessor 0x6452E; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14B2A raw
+         Exact 1ME3B target-native table at 0x15a96 bound to accessor 0x6452e through literal
+         0x6474c. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 0006452e reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Base Coefficient Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15A96" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Base Coefficient Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14B2A" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x149B2  8 uint16  map [code]
+         accessor 0x650EA; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14B0A raw
+         Exact 1ME3B target-native table at 0x149b2 bound to accessor 0x650ea through literal
+         0x652e4. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 000650ea reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Product Coefficient Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x149B2" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Product Coefficient Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14B0A" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x16244  16 uint16  map [code]
+         accessor 0x651D8; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x15886 raw
+         Exact 1ME3B target-native table at 0x16244 bound to accessor 0x651d8 through literal
+         0x65330. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 000651d8 reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Conditional Multiplier Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x16244" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Conditional Multiplier Axis [stored count]"
+             storagetype="uint16" storageaddress="0x15886" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15AB0  16 uint16  map [code]
+         accessor 0x6533C, 0x6560A; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x157E6 raw
+         Exact 1ME3B target-native table at 0x15ab0 bound to accessor 0x6533c through literal
+         0x655ac, accessor 0x6560a through literal 0x6589c. Stock lookup status: active.
+         Scheduler entry 00022200 calls the float model root 0006452e; readers 0006533c and
+         0006560a read this role without a calibration branch. The root publishes the words
+         fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte
+         fffe93d0 nonlinear_transition_controller and four other functions read. Stored counts
+         are retained. Physical quantities and engineering conversions are unresolved. Editor
+         values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Bounded Ratio Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15AB0" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Bounded Ratio Axis [stored count]"
+             storagetype="uint16" storageaddress="0x157E6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14752  16 uint16  map [code]
+         accessor 0x6452E; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14872 raw
+         Exact 1ME3B target-native table at 0x14752 bound to accessor 0x6452e through literal
+         0x64a80. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 0006452e reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Branch Multiplier Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14752" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Branch Coefficient Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14872" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14892  16 uint16  map [code]
+         accessor 0x6452E; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17896 raw
+         Exact 1ME3B target-native table at 0x14892 bound to accessor 0x6452e through literal
+         0x64a94. Stock lookup status: active. Scheduler entry 00022200 calls the float model
+         root 0006452e; reader 0006452e reads this role without a calibration branch. The root
+         publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
+         whose output byte fffe93d0 nonlinear_transition_controller and four other functions
+         read. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Scale Coefficient Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14892" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Auxiliary Input Axis [stored count]"
+             storagetype="uint16" storageaddress="0x17896" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x17216  16 uint16  map [code]
+         accessor 0x65C96; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14992 raw
+         Exact 1ME3B target-native table at 0x17216 bound to accessor 0x65c96 through literal
+         0x65ec4. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065c96 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Low Branch Response Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x17216" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Low Branch Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14992" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x171D6  32 uint16  map [code]
+         accessor 0x65C96, 0x660A0; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14952 raw
+         Exact 1ME3B target-native table at 0x171d6 bound to accessor 0x65c96 through literal
+         0x65ed0, accessor 0x660a0 through literal 0x66230. Stock lookup status: active.
+         Scheduler entry 00022208 runs 00077680, which calls the float consumer 00065918
+         unconditionally at 000777d6; readers 00065c96, 00065e10 and 000660a0 read this role
+         without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Absolute Response Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x171D6" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Absolute Response Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14952" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14FA6  16 uint16  map [code]
+         accessor 0x65918; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14C36 raw
+         Exact 1ME3B target-native table at 0x14fa6 bound to accessor 0x65918 through literal
+         0x65bb4. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065918 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Input Weight Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14FA6" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Input Weight Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14C36" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14A02  32 uint16  map [code]
+         accessor 0x65D2A; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14952 raw
+         Exact 1ME3B target-native table at 0x14a02 bound to accessor 0x65d2a through literal
+         0x65ef4. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065d2a reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Ratio Numerator Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14A02" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Absolute Response Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14952" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14E86  16 uint16  map [code]
+         accessor 0x65D2A; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14BB6 raw
+         Exact 1ME3B target-native table at 0x14e86 bound to accessor 0x65d2a through literal
+         0x65ee8. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065d2a reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Denominator Gain Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14E86" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Denominator Gain Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14BB6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x178F6  32 uint16  map [code]
+         accessor 0x65E10; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14DD6 raw
+         Exact 1ME3B target-native table at 0x178f6 bound to accessor 0x65e10 through literal
+         0x661b0. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; readers 00065e10 and
+         000660a0 read this role without a calibration branch. The consumer publishes byte
+         fffe93d0, which nonlinear_transition_controller and four other functions read. Stored
+         counts are retained. Physical quantities and engineering conversions are unresolved.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Ratio Output Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x178F6" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Ratio Output Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14DD6" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14F86  16 uint16  map [code]
+         accessor 0x65918, 0x65F84; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14C16 raw
+         Exact 1ME3B target-native table at 0x14f86 bound to accessor 0x65918 through literal
+         0x65bec, accessor 0x65f84 through literal 0x661cc. Stock lookup status: active.
+         Scheduler entry 00022208 runs 00077680, which calls the float consumer 00065918
+         unconditionally at 000777d6; readers 00065918 and 00065f84 read this role without a
+         calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Affine Factor Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14F86" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Affine Factor Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14C16" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15006  8 uint16  map [code]
+         accessor 0x65F84; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14C96 raw
+         Exact 1ME3B target-native table at 0x15006 bound to accessor 0x65f84 through literal
+         0x6620c. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065f84 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Attenuation Factor A [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15006" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Attenuation Axis A [stored count]"
+             storagetype="uint16" storageaddress="0x14C96" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15016  8 uint16  map [code]
+         accessor 0x65F84; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14CA6 raw
+         Exact 1ME3B target-native table at 0x15016 bound to accessor 0x65f84 through literal
+         0x661fc. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00065f84 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Attenuation Factor B [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15016" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Attenuation Axis B [stored count]"
+             storagetype="uint16" storageaddress="0x14CA6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14FC6  32 uint16  map [code]
+         accessor 0x65918, 0x65F84; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14C56 raw
+         Exact 1ME3B target-native table at 0x14fc6 bound to accessor 0x65918 through literal
+         0x65c08, accessor 0x65f84 through literal 0x661f0. Stock lookup status: active.
+         Scheduler entry 00022208 runs 00077680, which calls the float consumer 00065918
+         unconditionally at 000777d6; readers 00065918 and 00065f84 read this role without a
+         calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Product Factor Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x14FC6" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Product Factor Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14C56" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15806  32 uint16  map [code]
+         accessor 0x65918; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14BD6 raw
+         Exact 1ME3B target-native table at 0x15806 bound to accessor 0x65918 through literal
+         0x65bd0, accessor 0x65918 through literal 0x65e98. Stock lookup status: active.
+         Scheduler entry 00022208 runs 00077680, which calls the float consumer 00065918
+         unconditionally at 000777d6; reader 00065918 reads this role without a calibration
+         branch. The consumer publishes byte fffe93d0, which nonlinear_transition_controller and
+         four other functions read. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Normalized Multiplier Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15806" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Normalized Multiplier Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14BD6" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15166  16 uint16  map [code]
+         accessor 0x66180; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17896 raw
+         Exact 1ME3B target-native table at 0x15166 bound to accessor 0x66180 through literal
+         0x664bc. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066180 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Difference Product Auxiliary Factor [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15166" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Auxiliary Input Axis [stored count]"
+             storagetype="uint16" storageaddress="0x17896" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x150E6  32 uint16  map [code]
+         accessor 0x66180; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14D56 raw
+         Exact 1ME3B target-native table at 0x150e6 bound to accessor 0x66180 through literal
+         0x664a8. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066180 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Every stock cell holds
+         21739. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Difference Product Factor Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x150E6" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Difference Product Factor Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14D56" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15126  32 uint16  map [code]
+         accessor 0x66180; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14D96 raw
+         Exact 1ME3B target-native table at 0x15126 bound to accessor 0x66180 through literal
+         0x664cc. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066180 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Difference Product Word Factor [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15126" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Difference Product Word Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14D96" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x150C6  16 uint16  map [code]
+         accessor 0x66366; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x17896 raw
+         Exact 1ME3B target-native table at 0x150c6 bound to accessor 0x66366 through literal
+         0x66524. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066366 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Multi Product Auxiliary Factor [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x150C6" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Auxiliary Input Axis [stored count]"
+             storagetype="uint16" storageaddress="0x17896" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15086  32 uint16  map [code]
+         accessor 0x66366; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14D16 raw
+         Exact 1ME3B target-native table at 0x15086 bound to accessor 0x66366 through literal
+         0x6650c. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066366 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Multi Product Coordinate A Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15086" sizex="32" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Multi Product Coordinate A Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14D16" sizex="32" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15046  16 uint16  map [code]
+         accessor 0x66366; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14CD6 raw
+         Exact 1ME3B target-native table at 0x15046 bound to accessor 0x66366 through literal
+         0x6651c. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066366 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Multi Product Coordinate B Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15046" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Multi Product Coordinate B Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14CD6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15026  16 uint16  map [code]
+         accessor 0x66366; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14CB6 raw
+         Exact 1ME3B target-native table at 0x15026 bound to accessor 0x66366 through literal
+         0x66544. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066366 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Multi Product Difference Curve [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15026" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Multi Product Difference Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14CB6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x15066  16 uint16  map [code]
+         accessor 0x66366; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14CF6 raw
+         Exact 1ME3B target-native table at 0x15066 bound to accessor 0x66366 through literal
+         0x66530. Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which
+         calls the float consumer 00065918 unconditionally at 000777d6; reader 00066366 reads
+         this role without a calibration branch. The consumer publishes byte fffe93d0, which
+         nonlinear_transition_controller and four other functions read. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Float Multi Product Word Factor [stored count]"
+           category="Ignition//Timing Model Corrections" storagetype="uint16"
+           storageaddress="0x15066" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Float Multi Product Word Factor Axis [stored count]"
+             storagetype="uint16" storageaddress="0x14CF6" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x0A0F4  16x16 uint8  common-definition Map 1 storage projected from 0x0A0F4
          [candidate]
          Map 1 uses canonical stock storage

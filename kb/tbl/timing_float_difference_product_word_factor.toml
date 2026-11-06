@@ -1,12 +1,11 @@
 summary = """
-Word-indexed factor of FUN_0005974A, multiplied with its float-coordinate \
-factor, auxiliary factor and bounded word difference before the independent \
-subtraction."""
+Word-indexed factor of the difference-product builder, multiplied with its \
+float-coordinate factor, auxiliary factor and bounded word difference before \
+the independent subtraction."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,24 @@ cols = 32
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Difference Product Word Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3123
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00015126"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; reader \
+00066180 reads this role without a calibration branch. The consumer \
+publishes byte fffe93d0, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -44,6 +58,22 @@ equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000152c2"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062390 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062390 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -68,6 +98,13 @@ stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00014dac"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; reader \
+0005974a reads this role without a calibration branch. The consumer \
+publishes byte ffff2346, which nonlinear_transition_controller and seven \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -83,7 +120,7 @@ difference before the independent subtraction."""
 type = "axis"
 to = "timing_float_difference_product_word_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -91,18 +128,41 @@ supports = "identity"
 at = "jk78c:000597d8"
 note = "The reviewed lookup supplies axis 00014a1c in slot x for table 00014dac."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000624a0"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066290"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_difference_product_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000597d8"
-note = """
-Reader 0005974a supplies this table to the reviewed interpolation path. \
-Word-indexed factor of FUN_0005974A, multiplied with its float-coordinate \
-factor, auxiliary factor and bounded word difference before the independent \
-subtraction."""
+at = "1me3b:000664cc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000626dc"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000598d8"
+value = 64
+mode = "base"

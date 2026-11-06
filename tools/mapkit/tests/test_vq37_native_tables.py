@@ -190,6 +190,103 @@ LIMITER_SITES = {
 # On JK78C the fuel-cut state machine and the two-stage limit builder also
 # load the axis through their own literal pools.
 LIMITER_AXIS_OTHER_BINDINGS = {"JK78C": {(0x6B074, 0x6AEB8, 0), (0x925DC, 0x9248A, 0)}}
+# The float ignition model: the producer tree and its consumer read every
+# role through literal-pool words. JK78C reads twelve roles through a base
+# literal that the reader displaces; 1ND and 1ME3B load every role directly.
+FLOAT_MODEL_TABLE_ROLES = {
+    "timing_float_absolute_response_curve",
+    "timing_float_affine_base_surface",
+    "timing_float_affine_factor_curve",
+    "timing_float_affine_gain_surface",
+    "timing_float_attenuation_factor_a",
+    "timing_float_attenuation_factor_b",
+    "timing_float_base_coefficient_curve",
+    "timing_float_bounded_ratio_curve",
+    "timing_float_branch_multiplier_curve",
+    "timing_float_conditional_multiplier_curve",
+    "timing_float_denominator_gain_curve",
+    "timing_float_difference_product_auxiliary_factor",
+    "timing_float_difference_product_factor_curve",
+    "timing_float_difference_product_word_factor",
+    "timing_float_input_weight_curve",
+    "timing_float_low_branch_response_curve",
+    "timing_float_multi_product_auxiliary_factor",
+    "timing_float_multi_product_coordinate_a_curve",
+    "timing_float_multi_product_coordinate_b_curve",
+    "timing_float_multi_product_difference_curve",
+    "timing_float_multi_product_word_factor",
+    "timing_float_normalized_multiplier_curve",
+    "timing_float_product_coefficient_curve",
+    "timing_float_product_factor_curve",
+    "timing_float_ratio_numerator_curve",
+    "timing_float_ratio_output_curve",
+    "timing_float_ratio_parameter_surface",
+    "timing_float_ratio_response_surface",
+    "timing_float_scale_coefficient_curve",
+}
+FLOAT_MODEL_AXIS_ROLES = {
+    "timing_float_absolute_response_axis",
+    "timing_float_affine_factor_axis",
+    "timing_float_affine_pair_axis_x",
+    "timing_float_affine_pair_axis_y",
+    "timing_float_attenuation_axis_a",
+    "timing_float_attenuation_axis_b",
+    "timing_float_auxiliary_input_axis",
+    "timing_float_base_coefficient_axis",
+    "timing_float_bounded_ratio_axis",
+    "timing_float_branch_coefficient_axis",
+    "timing_float_conditional_multiplier_axis",
+    "timing_float_denominator_gain_axis",
+    "timing_float_difference_product_factor_axis",
+    "timing_float_difference_product_word_axis",
+    "timing_float_input_weight_axis",
+    "timing_float_low_branch_axis",
+    "timing_float_multi_product_coordinate_a_axis",
+    "timing_float_multi_product_coordinate_b_axis",
+    "timing_float_multi_product_difference_axis",
+    "timing_float_multi_product_word_factor_axis",
+    "timing_float_normalized_multiplier_axis",
+    "timing_float_product_coefficient_axis",
+    "timing_float_product_factor_axis",
+    "timing_float_ratio_output_axis",
+    "timing_float_ratio_parameter_axis_x",
+    "timing_float_ratio_parameter_axis_y",
+    "timing_float_ratio_response_axis_x",
+    "timing_float_ratio_response_axis_y",
+}
+FLOAT_MODEL_ROLES = FLOAT_MODEL_TABLE_ROLES | FLOAT_MODEL_AXIS_ROLES
+# The reader entries of each layout; the target trees inline seven JK78C readers.
+FLOAT_MODEL_READERS = {
+    "JK78C": {
+        0x57D88, 0x57E46, 0x5803E, 0x580F2, 0x58286, 0x584BC, 0x5860C, 0x589E8, 0x58AE8,
+        0x58EBA, 0x58F6A, 0x58F94, 0x59110, 0x59204, 0x593E8, 0x59498, 0x59620, 0x596D8,
+        0x5974A, 0x5995C,
+    },
+    "1ND0A": {
+        0x60756, 0x61076, 0x61120, 0x612FE, 0x613EC, 0x61550, 0x6181A, 0x61B28, 0x61EA6,
+        0x61F3A, 0x62020, 0x62194, 0x622B0, 0x62390, 0x62576,
+    },
+    "1ME3B": {
+        0x6452E, 0x64E62, 0x64F0C, 0x650EA, 0x651D8, 0x6533C, 0x6560A, 0x65918, 0x65C96,
+        0x65D2A, 0x65E10, 0x65F84, 0x660A0, 0x66180, 0x66366,
+    },
+}
+FLOAT_MODEL_READERS["1ND3B"] = FLOAT_MODEL_READERS["1ND0A"]
+# JK78C role -> (base literal word, displacement).
+FLOAT_MODEL_BASE_LITERALS = {
+    "timing_float_attenuation_axis_b": (0x59598, 16),
+    "timing_float_attenuation_factor_a": (0x5930C, 128),
+    "timing_float_attenuation_factor_b": (0x5930C, 144),
+    "timing_float_denominator_gain_axis": (0x59018, 484),
+    "timing_float_difference_product_auxiliary_factor": (0x598D8, 128),
+    "timing_float_difference_product_word_factor": (0x598D8, 64),
+    "timing_float_multi_product_auxiliary_factor": (0x59B00, 160),
+    "timing_float_multi_product_coordinate_a_curve": (0x59B00, 96),
+    "timing_float_multi_product_coordinate_b_curve": (0x59B00, 32),
+    "timing_float_multi_product_word_factor": (0x59B00, 64),
+    "timing_float_product_factor_curve": (0x5930C, 64),
+    "timing_float_ratio_numerator_curve": (0x59018, 176),
+}
 ROLES = (
     SELECTOR_ROLES
     | FUEL_TABLE_ROLES
@@ -206,6 +303,7 @@ ROLES = (
     | CONDITIONER_AXIS_ROLES
     | LIMITER_TABLE_ROLES
     | LIMITER_AXIS_ROLES
+    | FLOAT_MODEL_ROLES
 )
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
@@ -285,12 +383,12 @@ def test_registry_declares_every_role_on_every_target():
         assert tables <= (
             SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
             | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES | INJECTION_TABLE_ROLES
-            | CONDITIONER_TABLE_ROLES | LIMITER_TABLE_ROLES
+            | CONDITIONER_TABLE_ROLES | LIMITER_TABLE_ROLES | FLOAT_MODEL_TABLE_ROLES
         )
         assert axes <= (
             FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
             | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES | CONDITIONER_AXIS_ROLES
-            | LIMITER_AXIS_ROLES
+            | LIMITER_AXIS_ROLES | FLOAT_MODEL_AXIS_ROLES
         )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
@@ -426,6 +524,32 @@ def test_registry_publishes_the_limiter_threshold_curve_through_its_pool():
         assert (curve.units, curve.scale_expr, curve.scale_conf) == (
             "RPM", "x*0.78125", "candidate")
         assert axis.scale_conf is None
+
+
+def test_registry_publishes_the_float_model_through_its_pools():
+    for rom, target in vq37_native_tables.load_registry().items():
+        tables = {t.identifier: t for t in target.tables
+                  if t.identifier in FLOAT_MODEL_TABLE_ROLES}
+        axes = {a.identifier: a for a in target.axes
+                if a.identifier in FLOAT_MODEL_AXIS_ROLES}
+
+        assert set(tables) == FLOAT_MODEL_TABLE_ROLES, rom
+        assert set(axes) == FLOAT_MODEL_AXIS_ROLES, rom
+        displaced = {}
+        for name, entity in {**tables, **axes}.items():
+            assert {p.accessor for p in entity.pointer_bindings} <= FLOAT_MODEL_READERS[rom]
+            displaced.update({name: (p.site, p.offset)
+                              for p in entity.pointer_bindings if p.offset})
+        assert displaced == (FLOAT_MODEL_BASE_LITERALS if rom == "JK78C" else {}), rom
+        assert sorted(t.order for t in tables.values()) == list(range(3100, 3129))
+        assert {t.category for t in tables.values()} == {
+            "Ignition / Timing Model Corrections"}
+        # The difference-product factor holds one stored value in every cell.
+        curve = tables["timing_float_difference_product_factor_curve"]
+        data = romkit.load(rom).data[curve.address : curve.address + 2 * curve.width]
+        assert curve.height == 1
+        assert {int.from_bytes(data[i : i + 2], "big") for i in range(0, len(data), 2)} == {
+            21739}
 
 
 def test_registry_rejects_a_missing_role_declaration(tmp_path):

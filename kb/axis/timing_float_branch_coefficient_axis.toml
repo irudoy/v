@@ -1,12 +1,11 @@
 summary = """
-Explicit 16-point uint16 coordinate vector used by the reviewed JK78C \
+Explicit 16-point uint16 coordinate vector used by the reviewed float-model \
 readers. Its address and storage identity are separate from any numerically \
-equal axis."""
+equal axis. The issue #114 float model also reads this role."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,23 @@ quantity = "raw"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Timing Float Branch Coefficient Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014872"
+note = """
+Stock lookup status: active. Scheduler entry 00022200 calls the float model \
+root 0006452e; reader 0006452e reads this role without a calibration branch. \
+The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to \
+the consumer 00065918, whose output byte fffe93d0 \
+nonlinear_transition_controller and four other functions read. The issue \
+#114 float model also reads it at 00059154 and 0005f160. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -39,6 +52,24 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00014a2e"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00060756 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. The issue \
+#114 float model also reads it at 000552ec and 0005b2e8. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00060756 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. The issue \
+#114 float model also reads it at 000552ec and 0005b2e8. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -61,6 +92,14 @@ jk78c:00058636 loads 00014578, which reaches the call at 0005863a \
 layout = "jk78c"
 address = "00014578"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b80 calls the float model \
+root 00057782; reader 0005860c reads this role without a calibration branch. \
+The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to \
+the consumer 00058d98, whose output byte ffff2346 \
+nonlinear_transition_controller and seven other functions read. The issue \
+#114 float model also reads it at 0004d4d8 and 00051d9c. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -80,8 +119,20 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005863a"
-note = """
-The reviewed reader passes axis 00014578 in the x slot for table 00014458. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "jk78c:0005870c"
+
+[[link]]
+type = "reader"
+to = "timing_float_model_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064a7c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060ca4"

@@ -1,12 +1,11 @@
 summary = """
-First attenuation factor in FUN_00059204. Its scaled word multiplies the \
-second attenuation factor; the reader forms a bounded one-minus-product term \
-and applies it to the branch output."""
+First attenuation factor of the attenuated-product builder. Its scaled word \
+multiplies the second attenuation factor; the reader forms a bounded \
+one-minus-product term and applies it to the branch output."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,24 @@ cols = 8
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Attenuation Factor A"
+category = "Ignition / Timing Model Corrections"
+order = 3117
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00015006"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; reader \
+00065f84 reads this role without a calibration branch. The consumer \
+publishes byte fffe93d0, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -45,6 +59,22 @@ bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000151a2"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062194 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062194 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -70,6 +100,13 @@ stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00014c8c"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; reader \
+00059204 reads this role without a calibration branch. The consumer \
+publishes byte ffff2346, which nonlinear_transition_controller and seven \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -85,7 +122,7 @@ bounded one-minus-product term and applies it to the branch output."""
 type = "axis"
 to = "timing_float_attenuation_axis_a/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -93,18 +130,41 @@ supports = "identity"
 at = "jk78c:0005938a"
 note = "The reviewed lookup supplies axis 0001491c in slot x for table 00014c8c."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062254"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066044"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_attenuated_product_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005938a"
-note = """
-Reader 00059204 supplies this table to the reviewed interpolation path. \
-First attenuation factor in FUN_00059204. Its scaled word multiplies the \
-second attenuation factor; the reader forms a bounded one-minus-product term \
-and applies it to the branch output."""
+at = "1me3b:0006620c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006241c"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0005930c"
+value = 128
+mode = "base"

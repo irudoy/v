@@ -1,12 +1,11 @@
 summary = """
-Second float-coordinate factor of FUN_0005995C. Its coordinate is \
-independently bounded, and the scaled result multiplies the auxiliary factor \
-before the final product."""
+Second float-coordinate factor of the multi-product builder. Its coordinate \
+is independently bounded, and the scaled result multiplies the auxiliary \
+factor before the final product."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,24 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Multi Product Coordinate B Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3126
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00015046"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; reader \
+00066366 reads this role without a calibration branch. The consumer \
+publishes byte fffe93d0, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -44,6 +58,22 @@ jk78c:000599e2 forms 00014ccc from the GBR base, which reaches the call at \
 [[symbol]]
 layout = "1nd"
 address = "000151e2"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062576 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062576 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -69,6 +99,13 @@ the call at 000599e6 (blue-mouflon) in r4. Its 32 stock bytes equal JK78C on \
 layout = "jk78c"
 address = "00014ccc"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; reader \
+0005995c reads this role without a calibration branch. The consumer \
+publishes byte ffff2346, which nonlinear_transition_controller and seven \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -84,7 +121,7 @@ the auxiliary factor before the final product."""
 type = "axis"
 to = "timing_float_multi_product_coordinate_b_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -92,18 +129,41 @@ supports = "identity"
 at = "jk78c:000599e6"
 note = "The reviewed lookup supplies axis 0001495c in slot x for table 00014ccc."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000625ec"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000663dc"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_multi_product_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000599e6"
-note = """
-Reader 0005995c supplies this table to the reviewed interpolation path. \
-Second float-coordinate factor of FUN_0005995C. Its coordinate is \
-independently bounded, and the scaled result multiplies the auxiliary factor \
-before the final product."""
+at = "1me3b:0006651c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006272c"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00059b00"
+value = 32
+mode = "base"

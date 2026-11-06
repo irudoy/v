@@ -1,9 +1,50 @@
 summary = """
 Builds the JK78C float-model producer tree and publishes bounded words at \
-ffff3290, ffff3292 and ffff353a. Physical model interpretation and \
+ffff3290, ffff3292, ffff33ac and ffff353a. Physical model interpretation and \
 engineering conversions remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0006452e"
+level = "code"
+summary = """
+Builds the float-model producer tree and publishes the bounded words \
+fffea4fa, fffea4fc, fffea63c and fffea83e to the float consumer. On this \
+layout the lookups of the base, branch and scale coefficient curves are \
+inline in this function. Physical model interpretation and engineering \
+conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006452e"
+to = "jk78c:00057782"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "00060756"
+level = "code"
+summary = """
+Builds the float-model producer tree and publishes the bounded words \
+fffea43c, fffea43e, fffea566 and fffea752 to the float consumer. On this \
+layout the lookups of the base, branch and scale coefficient curves are \
+inline in this function. Physical model interpretation and engineering \
+conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00060756"
+to = "jk78c:00057782"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

@@ -1,12 +1,12 @@
 summary = """
-Word coefficient curve of FUN_0005860C. A bounded raw coordinate derived \
-from the float argument selects the word, which is converted to float and \
-multiplied by the reader's stored binary coefficient."""
+Word coefficient curve of the branch-coefficient lookup. A bounded raw \
+coordinate derived from the float argument selects the word, which is \
+converted to float and multiplied by the reader's stored binary \
+coefficient."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +17,25 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Branch Multiplier Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3108
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014752"
+note = """
+Stock lookup status: active. Scheduler entry 00022200 calls the float model \
+root 0006452e; reader 0006452e reads this role without a calibration branch. \
+The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to \
+the consumer 00065918, whose output byte fffe93d0 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +58,24 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "0001490e"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00060756 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00060756 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -64,6 +98,14 @@ jk78c:00058634 loads 00014458, which reaches the call at 0005863a \
 layout = "jk78c"
 address = "00014458"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b80 calls the float model \
+root 00057782; reader 0005860c reads this role without a calibration branch. \
+The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to \
+the consumer 00058d98, whose output byte ffff2346 \
+nonlinear_transition_controller and seven other functions read. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -80,13 +122,29 @@ coefficient."""
 type = "axis"
 to = "timing_float_branch_coefficient_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005863a"
 note = "The reviewed lookup supplies axis 00014578 in slot x for table 00014458."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060a56"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006482e"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
 
 [[link]]
 type = "reader"
@@ -97,9 +155,20 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005863a"
-note = """
-Reader 0005860c supplies this table to the reviewed interpolation path. Word \
-coefficient curve of FUN_0005860C. A bounded raw coordinate derived from the \
-float argument selects the word, which is converted to float and multiplied \
-by the reader's stored binary coefficient."""
+at = "jk78c:00058708"
+
+[[link]]
+type = "reader"
+to = "timing_float_model_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064a80"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00060ca8"

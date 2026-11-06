@@ -1,12 +1,11 @@
 summary = """
-Scaled word factor paired with the affine factor in FUN_00059204 and \
-FUN_00059620. Its own float-derived coordinate is bounded independently \
-before lookup."""
+Scaled word factor paired with the affine factor in the attenuated-product \
+and product-branch builders. Its own float-derived coordinate is bounded \
+independently before lookup."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,24 @@ cols = 32
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Product Factor Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3119
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014fc6"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; readers \
+00065918 and 00065f84 read this role without a calibration branch. The \
+consumer publishes byte fffe93d0, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -45,6 +59,22 @@ equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00015162"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; readers \
+00061b28 and 00062194 read this role without a calibration branch. The \
+consumer publishes byte fffe9400, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; readers \
+00061b28 and 00062194 read this role without a calibration branch. The \
+consumer publishes byte fffe9400, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -70,6 +100,13 @@ bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00014c4c"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; readers \
+00059204 and 00059620 read this role without a calibration branch. The \
+consumer publishes byte ffff2346, which nonlinear_transition_controller and \
+seven other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -85,7 +122,7 @@ bounded independently before lookup."""
 type = "axis"
 to = "timing_float_product_factor_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -93,21 +130,60 @@ supports = "identity"
 at = "jk78c:00059346"
 note = "The reviewed lookup supplies axis 000148dc in slot x for table 00014c4c."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006221c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006600c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_attenuated_product_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00059346"
-note = """
-Reader 00059204 supplies this table to the reviewed interpolation path. \
-Scaled word factor paired with the affine factor in FUN_00059204 and \
-FUN_00059620. Its own float-derived coordinate is bounded independently \
-before lookup."""
+at = "1me3b:000661f0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062400"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0005930c"
+value = 64
+mode = "base"
+
+[[link]]
+type = "reader"
+to = "timing_float_correction_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00065c08"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00061e18"
 
 [[link]]
 type = "reader"
@@ -118,9 +194,4 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005969c"
-note = """
-Reader 00059620 supplies this table to the reviewed interpolation path. \
-Scaled word factor paired with the affine factor in FUN_00059204 and \
-FUN_00059620. Its own float-derived coordinate is bounded independently \
-before lookup."""
+at = "jk78c:0005989c"

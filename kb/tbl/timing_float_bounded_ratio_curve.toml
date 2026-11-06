@@ -1,12 +1,11 @@
 summary = """
-Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
+Shared response curve of both bounded-ratio branches. Both readers form a \
 protected ratio, bound the float coordinate, and apply this curve in \
 separate producer-model branches."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,25 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Bounded Ratio Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3107
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00015ab0"
+note = """
+Stock lookup status: active. Scheduler entry 00022200 calls the float model \
+root 0006452e; readers 0006533c and 0006560a read this role without a \
+calibration branch. The root publishes the words fffea4fa, fffea4fc, \
+fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +58,24 @@ jk78c:00058540 loads 00015736, which reaches the call at 00058548 \
 [[symbol]]
 layout = "1nd"
 address = "00015c5c"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; readers 00061550 and 0006181a read this role without a \
+calibration branch. The root publishes the words fffea43c, fffea43e, \
+fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; readers 00061550 and 0006181a read this role without a \
+calibration branch. The root publishes the words fffea43c, fffea43e, \
+fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -67,6 +100,14 @@ jk78c:00058540 loads 00015736, which reaches the call at 00058548 \
 layout = "jk78c"
 address = "00015736"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b80 calls the float model \
+root 00057782; readers 000584bc and 000589e8 read this role without a \
+calibration branch. The root publishes the words ffff3290, ffff3292, \
+ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 \
+nonlinear_transition_controller and seven other functions read. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -82,7 +123,7 @@ coordinate, and apply this curve in separate producer-model branches."""
 type = "axis"
 to = "timing_float_bounded_ratio_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -90,34 +131,60 @@ supports = "identity"
 at = "jk78c:00058548"
 note = "The reviewed lookup supplies axis 0001544c in slot x for table 00015736."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000615d0"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000653bc"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_bounded_ratio_branch_a/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00058548"
-note = """
-Reader 000584bc supplies this table to the reviewed interpolation path. \
-Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
-protected ratio, bound the float coordinate, and apply this curve in \
-separate producer-model branches."""
+at = "1me3b:000655ac"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000617c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000586d0"
 
 [[link]]
 type = "reader"
 to = "timing_float_bounded_ratio_branch_b/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00058a76"
-note = """
-Reader 000589e8 supplies this table to the reviewed interpolation path. \
-Shared response curve in FUN_000584BC and FUN_000589E8. Both readers form a \
-protected ratio, bound the float coordinate, and apply this curve in \
-separate producer-model branches."""
+at = "1me3b:0006589c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00061aac"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058c3c"

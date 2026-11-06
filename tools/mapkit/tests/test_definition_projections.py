@@ -69,7 +69,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14
-    assert stats["JK78C"]["native_maps"] == 71
+    assert stats["JK78C"]["native_maps"] == 100
     assert stats["JK78C"]["rolling_configuration"] is None
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
@@ -78,14 +78,14 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 18
-        assert values["native_maps"] == 72
+        assert values["native_maps"] == 101
         assert values["rolling_configuration"] is None
     assert stats["1ME3B"]["mapped"] == 45
     assert stats["1ME3B"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
     assert stats["1ME3B"]["map_families"] == 18
-    assert stats["1ME3B"]["native_maps"] == 77
+    assert stats["1ME3B"]["native_maps"] == 106
     assert stats["1ME3B"]["rolling_configuration"] is None
 
 

@@ -1,12 +1,11 @@
 summary = """
-Base surface in the float producer tree rooted at FUN_00057782. FUN_00057D88 \
-applies nominal -300 + raw*0.01 and combines the result with a separately \
-looked-up gain and byte-scaled term."""
+Base surface of the affine-pair builder in the float producer tree. The \
+reader applies nominal -300 + raw*0.01 and combines the result with a \
+separately looked-up gain and byte-scaled term."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,25 @@ cols = 16
 rows = 16
 storage = "uint16"
 
+[editor]
+name = "Timing Float Affine Base Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3100
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000110fc"
+note = """
+Stock lookup status: active. Scheduler entry 00022200 calls the float model \
+root 0006452e; reader 00064e62 reads this role without a calibration branch. \
+The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to \
+the consumer 00065918, whose output byte fffe93d0 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +58,24 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000115c8"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00061076 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 00061076 reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -67,6 +100,14 @@ equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "0001124e"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b80 calls the float model \
+root 00057782; reader 00057d88 reads this role without a calibration branch. \
+The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to \
+the consumer 00058d98, whose output byte ffff2346 \
+nonlinear_transition_controller and seven other functions read. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -82,7 +123,7 @@ the result with a separately looked-up gain and byte-scaled term."""
 type = "axis"
 to = "timing_float_affine_pair_axis_x/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -90,11 +131,27 @@ supports = "identity"
 at = "jk78c:00057de0"
 note = "The reviewed lookup supplies axis 0001516c in slot x for table 0001124e."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000610bc"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064ea8"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "axis"
 to = "timing_float_affine_pair_axis_y/axis"
 slot = "y"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -102,18 +159,39 @@ supports = "identity"
 at = "jk78c:00057de0"
 note = "The reviewed lookup supplies axis 000145d8 in slot y for table 0001124e."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000610bc"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064ea8"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_affine_pair_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00057de0"
-note = """
-Reader 00057d88 supplies this table to the reviewed interpolation path. Base \
-surface in the float producer tree rooted at FUN_00057782. FUN_00057D88 \
-applies nominal -300 + raw*0.01 and combines the result with a separately \
-looked-up gain and byte-scaled term."""
+at = "1me3b:00064fc4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000611d8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057ef8"

@@ -2,7 +2,36 @@ summary = """
 Selects between the shared absolute-response curve and the alternative \
 response curve from its transformed float input."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00065c96"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065c96"
+to = "jk78c:00058eba"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "00061ea6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061ea6"
+to = "jk78c:00058eba"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

@@ -1,11 +1,10 @@
 summary = """
-Auxiliary word-indexed factor of FUN_0005995C. Its scaled result is one \
-independent factor of the final product."""
+Auxiliary word-indexed factor of the multi-product builder. Its scaled \
+result is one independent factor of the final product."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -16,9 +15,24 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Multi Product Auxiliary Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3124
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000150c6"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; reader \
+00066366 reads this role without a calibration branch. The consumer \
+publishes byte fffe93d0, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +57,22 @@ jk78c:00059a00 forms 00014d4c from the GBR base, which reaches the call at \
 [[symbol]]
 layout = "1nd"
 address = "00015262"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062576 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00062576 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -68,6 +98,13 @@ the call at 00059a04 (blue-mouflon) in r4. Its 32 stock bytes equal JK78C on \
 layout = "jk78c"
 address = "00014d4c"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; reader \
+0005995c reads this role without a calibration branch. The consumer \
+publishes byte ffff2346, which nonlinear_transition_controller and seven \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -82,7 +119,7 @@ Its scaled result is one independent factor of the final product."""
 type = "axis"
 to = "timing_float_auxiliary_input_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -90,17 +127,41 @@ supports = "identity"
 at = "jk78c:00059a04"
 note = "The reviewed lookup supplies axis 000171c4 in slot x for table 00014d4c."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062604"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000663f4"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_multi_product_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00059a04"
-note = """
-Reader 0005995c supplies this table to the reviewed interpolation path. \
-Auxiliary word-indexed factor of FUN_0005995C. Its scaled result is one \
-independent factor of the final product."""
+at = "1me3b:00066524"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062734"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00059b00"
+value = 160
+mode = "base"

@@ -2,7 +2,36 @@ summary = """
 Second consumer branch using the shared protected response divisor and \
 output curve with its own offset and count-derived term."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000660a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000660a0"
+to = "jk78c:00059498"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "000622b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000622b0"
+to = "jk78c:00059498"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

@@ -2,7 +2,36 @@ summary = """
 Second producer branch using the shared ratio-response curve, with its own \
 bounded float inputs."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0006560a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0006560a"
+to = "jk78c:000589e8"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "0006181a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0006181a"
+to = "jk78c:000589e8"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

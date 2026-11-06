@@ -2,7 +2,36 @@ summary = """
 Combines the separately converted affine base and gain surfaces with a \
 byte-scaled term in the producer model."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00064e62"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00064e62"
+to = "jk78c:00057d88"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "00061076"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061076"
+to = "jk78c:00057d88"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

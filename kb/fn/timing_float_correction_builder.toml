@@ -1,10 +1,53 @@
 summary = """
-Consumes the producer words ffff3290, ffff3292 and ffff353a through distinct \
-float branches and publishes the final float-derived value at ffff2346 with \
-a -128..127 clamp. The downstream timing consumer remains separately \
-represented."""
+Consumes the producer words ffff3290, ffff3292, ffff33ac and ffff353a \
+through distinct float branches and publishes the final float-derived value \
+at ffff2346 with a -128..127 clamp. The downstream timing consumer remains \
+separately represented."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00065918"
+level = "code"
+summary = """
+Consumes the producer words fffea4fa, fffea4fc, fffea63c and fffea83e \
+through distinct float branches and publishes the final float-derived value \
+at fffe93d0 with a -128..127 clamp. On this layout the lookups of the \
+input-weight curve, the normalized-multiplier curve and the product-branch \
+factors are inline in this function. The downstream timing consumer remains \
+separately represented."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00065918"
+to = "jk78c:00058d98"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
+
+[[symbol]]
+layout = "1nd"
+address = "00061b28"
+level = "code"
+summary = """
+Consumes the producer words fffea43c, fffea43e, fffea566 and fffea752 \
+through distinct float branches and publishes the final float-derived value \
+at fffe9400 with a -128..127 clamp. On this layout the lookups of the \
+input-weight curve, the normalized-multiplier curve and the product-branch \
+factors are inline in this function. The downstream timing consumer remains \
+separately represented."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00061b28"
+to = "jk78c:00058d98"
+note = """
+The reviewed call order, table and axis operands and lookup contracts \
+identify the layout-specific counterpart of this float-model function."""
 
 [[symbol]]
 layout = "jk78c"

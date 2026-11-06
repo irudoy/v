@@ -1,12 +1,11 @@
 summary = """
-Conditional multiplier curve of FUN_00058286. Its unsigned word is converted \
-to a float coefficient with nominal multiplier 0.00002 before further gated \
-arithmetic."""
+Conditional multiplier curve of the conditional-multiplier reader. Its \
+unsigned word is converted to a float coefficient with nominal multiplier \
+0.00002 before further gated arithmetic."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -17,9 +16,25 @@ cols = 16
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Conditional Multiplier Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3106
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00016244"
+note = """
+Stock lookup status: active. Scheduler entry 00022200 calls the float model \
+root 0006452e; reader 000651d8 reads this role without a calibration branch. \
+The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to \
+the consumer 00065918, whose output byte fffe93d0 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +57,24 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000162a0"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 000613ec reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 00022194 calls the float \
+model root 00060756; reader 000613ec reads this role without a calibration \
+branch. The root publishes the words fffea43c, fffea43e, fffea566 and \
+fffea752 to the consumer 00061b28, whose output byte fffe9400 \
+nonlinear_transition_controller and four other functions read. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -65,6 +98,14 @@ equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00015cd2"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b80 calls the float model \
+root 00057782; reader 00058286 reads this role without a calibration branch. \
+The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to \
+the consumer 00058d98, whose output byte ffff2346 \
+nonlinear_transition_controller and seven other functions read. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -80,7 +121,7 @@ multiplier 0.00002 before further gated arithmetic."""
 type = "axis"
 to = "timing_float_conditional_multiplier_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -88,18 +129,39 @@ supports = "identity"
 at = "jk78c:00058312"
 note = "The reviewed lookup supplies axis 0001550c in slot x for table 00015cd2."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00061470"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006525c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_conditional_multiplier_reader/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00058312"
-note = """
-Reader 00058286 supplies this table to the reviewed interpolation path. \
-Conditional multiplier curve of FUN_00058286. Its unsigned word is converted \
-to a float coefficient with nominal multiplier 0.00002 before further gated \
-arithmetic."""
+at = "1me3b:00065330"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00061544"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00058494"

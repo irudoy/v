@@ -1,12 +1,11 @@
 summary = """
-Explicit 32-point uint16 coordinate vector used by the reviewed JK78C \
+Explicit 32-point uint16 coordinate vector used by the reviewed float-model \
 readers. Its address and storage identity are separate from any numerically \
 equal axis."""
 note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,22 @@ quantity = "raw"
 points = 32
 storage = "uint16"
 
+[editor]
+name = "Timing Float Normalized Multiplier Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014bd6"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; reader \
+00065918 reads this role without a calibration branch. The consumer \
+publishes byte fffe93d0, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -40,6 +52,22 @@ MOV.L jk78c:00059438 loads 0001485c, which reaches the call at 0005943c \
 [[symbol]]
 layout = "1nd"
 address = "00014d72"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00061b28 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; reader \
+00061b28 reads this role without a calibration branch. The consumer \
+publishes byte fffe9400, which nonlinear_transition_controller and four \
+other functions read. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -64,6 +92,13 @@ stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "0001485c"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; readers \
+000593e8 and 000596d8 read this role without a calibration branch. The \
+consumer publishes byte ffff2346, which nonlinear_transition_controller and \
+seven other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -76,6 +111,22 @@ interpolation contract; no engineering conversion is inferred."""
 
 [[link]]
 type = "reader"
+to = "timing_float_correction_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00065bcc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00061ddc"
+
+[[link]]
+type = "reader"
 to = "timing_float_normalized_multiplier_branch_a/fn"
 layouts = ["jk78c"]
 role = "accessor"
@@ -83,11 +134,7 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005943c"
-note = """
-The reviewed reader passes axis 0001485c in the x slot for table 0001546c. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "jk78c:000595d0"
 
 [[link]]
 type = "reader"
@@ -98,8 +145,4 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0005972c"
-note = """
-The reviewed reader passes axis 0001485c in the x slot for table 0001546c. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "jk78c:000598d0"

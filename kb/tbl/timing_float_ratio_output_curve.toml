@@ -1,5 +1,5 @@
 summary = """
-Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
+Output curve shared by both ratio-output branches. Its bounded coordinate \
 follows division by the shared absolute-response curve, including explicit \
 zero-divisor alternatives. The scaled result is multiplied by a word \
 argument and combined with a separate count-derived term."""
@@ -7,7 +7,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -18,9 +17,24 @@ cols = 32
 rows = 1
 storage = "uint16"
 
+[editor]
+name = "Timing Float Ratio Output Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3115
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000178f6"
+note = """
+Stock lookup status: active. Scheduler entry 00022208 runs 00077680, which \
+calls the float consumer 00065918 unconditionally at 000777d6; readers \
+00065e10 and 000660a0 read this role without a calibration branch. The \
+consumer publishes byte fffe93d0, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -45,6 +59,22 @@ JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00017832"
+note = [
+    """
+1ND0A: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; readers \
+00062020 and 000622b0 read this role without a calibration branch. The \
+consumer publishes byte fffe9400, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Scheduler entry 0002219c runs 000736f4, \
+which calls the float consumer 00061b28 unconditionally at 00073806; readers \
+00062020 and 000622b0 read this role without a calibration branch. The \
+consumer publishes byte fffe9400, which nonlinear_transition_controller and \
+four other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -69,6 +99,13 @@ stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00017224"
 level = "code"
+note = """
+Stock lookup status: active. Scheduler entry 00021b88 runs 00068af8, which \
+calls the float consumer 00058d98 unconditionally at 00068b06; readers \
+00059110 and 00059498 read this role without a calibration branch. The \
+consumer publishes byte ffff2346, which nonlinear_transition_controller and \
+seven other functions read. Stored counts are retained. Physical quantities \
+and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -86,7 +123,7 @@ count-derived term."""
 type = "axis"
 to = "timing_float_ratio_output_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -94,36 +131,50 @@ supports = "identity"
 at = "jk78c:000591d6"
 note = "The reviewed lookup supplies axis 00014a5c in slot x for table 00017224."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00062164"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00065f54"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_float_ratio_output_branch_a/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000591d6"
-note = """
-Reader 00059110 supplies this table to the reviewed interpolation path. \
-Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
-follows division by the shared absolute-response curve, including explicit \
-zero-divisor alternatives. The scaled result is multiplied by a word \
-argument and combined with a separate count-derived term."""
+at = "1me3b:000661b0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000623c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00059300"
 
 [[link]]
 type = "reader"
 to = "timing_float_ratio_output_branch_b/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00059534"
-note = """
-Reader 00059498 supplies this table to the reviewed interpolation path. \
-Output curve shared by FUN_00059110 and FUN_00059498. Its bounded coordinate \
-follows division by the shared absolute-response curve, including explicit \
-zero-divisor alternatives. The scaled result is multiplied by a word \
-argument and combined with a separate count-derived term."""
+at = "jk78c:0005960c"
