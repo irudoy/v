@@ -51,6 +51,67 @@ def test_rolling_update_replaces_stale_locks_without_enabling_hold(tmp_path):
     assert len(changed) == len(units) + 1
 
 
+def redirected(tmp_path, monkeypatch):
+    """Point the rolling layout and manifest of the CLI at temporary files."""
+    layout_path = tmp_path / "rolling-launch-layout.toml"
+    manifest_path = tmp_path / "rolling-launch-payloads.toml"
+    layout_path.write_text("old layout\n", encoding="utf-8")
+    manifest_path.write_text("old manifest\n", encoding="utf-8")
+    monkeypatch.setattr(generator.rolling_launch_layout, "DEFAULT_MANIFEST", layout_path)
+    monkeypatch.setattr(generator.rolling_launch_assembly, "DEFAULT_PAYLOADS", manifest_path)
+    monkeypatch.setattr(generator.rolling_launch_layout, "load_layout", lambda path: path)
+    return layout_path, manifest_path
+
+
+def tracked_bytes():
+    return storage.DEFAULT_MANIFEST.read_bytes(), assembly.DEFAULT_PAYLOADS.read_bytes()
+
+
+def test_the_rolling_update_writes_the_layout_and_the_manifest(tmp_path, monkeypatch, capsys):
+    tracked_before = tracked_bytes()
+    layout_path, manifest_path = redirected(tmp_path, monkeypatch)
+
+    def update(layout, text):
+        assert layout == layout_path and text == "old layout\n"
+        return "new layout\n", "new manifest\n", [
+            ("spark_cut.sha256", "1" * 64, "2" * 64),
+            ("composition.sha256", "3" * 64, "4" * 64),
+        ]
+
+    monkeypatch.setattr(generator, "update_rolling", update)
+    assert generator.main(["--rolling", "--update"]) == 0
+    assert layout_path.read_text(encoding="utf-8") == "new layout\n"
+    assert manifest_path.read_text(encoding="utf-8") == "new manifest\n"
+    assert sorted(item.name for item in tmp_path.iterdir()) == sorted(
+        (layout_path.name, manifest_path.name)
+    )
+    output = capsys.readouterr().out
+    assert f"lock spark_cut.sha256: {'1' * 64} -> {'2' * 64}" in output
+    assert f"lock composition.sha256: {'3' * 64} -> {'4' * 64}" in output
+    assert (f"status=PASS output={manifest_path} layout={layout_path} "
+            "family=rolling changed_locks=2") in output
+    monkeypatch.undo()
+    assert tracked_bytes() == tracked_before
+
+
+def test_a_refused_rolling_update_writes_nothing(tmp_path, monkeypatch, capsys):
+    layout_path, manifest_path = redirected(tmp_path, monkeypatch)
+
+    def update(layout, text):
+        raise ValueError("spark_cut: JMP target disagrees with its machine word")
+
+    monkeypatch.setattr(generator, "update_rolling", update)
+    with pytest.raises(SystemExit) as refusal:
+        generator.main(["--rolling", "--update"])
+    assert refusal.value.code == 2
+    assert layout_path.read_text(encoding="utf-8") == "old layout\n"
+    assert manifest_path.read_text(encoding="utf-8") == "old manifest\n"
+    assert sorted(item.name for item in tmp_path.iterdir()) == sorted(
+        (layout_path.name, manifest_path.name)
+    )
+    assert "JMP target disagrees with its machine word" in capsys.readouterr().err
+
+
 def test_rolling_update_rejects_a_machine_jump_that_disagrees_with_source():
     layout, text, blobs = tracked()
     parsed = assembly.validate_assembly_sources(layout)["spark_cut"]
