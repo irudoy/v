@@ -6,9 +6,11 @@ min(uint16[ffff11a6],2240)*256/10. The lookup participates in the weighted \
 and saturated upward step published at ffff12f0."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a1cb8 / 1ME3B 000a7ca8 is reachable from the scheduler task table and \
+reads it without a disabling stock calibration. Runtime bits select the \
+mode. Physical input identities and engineering conversions require separate \
+evidence.""",
 ]
 level = "code"
 home = "jk78c"

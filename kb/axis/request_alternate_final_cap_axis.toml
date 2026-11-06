@@ -1,6 +1,13 @@
 summary = """
 Word ffff11bc coordinate of request_alternate_final_cap_curve. Physical \
 conversion remains unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a517c / 1ME3B 000ab61c is reachable from scheduler task-table entry 1ND \
+00022198 / 1ME3B 00022204 and reads it without a disabling stock \
+calibration.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "raw"

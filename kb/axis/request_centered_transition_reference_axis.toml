@@ -2,6 +2,12 @@ summary = """
 Word ffff1710 coordinate shared by native reference 15e82 in 95442 and \
 canonical blend reference 15ea2 in 9520e. Physical state and conversion \
 remain unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Readers 1ND \
+000a9554 and 000a936e / 1ME3B 000b04de and 000b0330 are reachable from the \
+scheduler task table and read it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "raw"

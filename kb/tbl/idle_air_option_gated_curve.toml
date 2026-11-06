@@ -8,7 +8,12 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. Reader 1ND \
+000648a4 / 1ME3B 00068e74 reads it, and no function reads its result 1ND \
+fffea709 / 1ME3B fffea7f5. Bit 0 of ROM8 1ND 00008655 / 1ME3B 0000865d, \
+stock 0x01 on every image, enables the read; the reader does not read the \
+result either.""",
 ]
 level = "code"
 home = "jk78c"

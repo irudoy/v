@@ -5,6 +5,12 @@ reader first indexes its bounded first difference, then the clamped sum of \
 that difference and a capped second difference at ffff17dc; each coordinate \
 is multiplied by four and capped to 255. The separate consumers retain \
 unresolved physical quantities."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Readers 1ND \
+0008ed74 and 000a46e8 / 1ME3B 000949e0 and 000aab88 are reachable from the \
+scheduler task table and read it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

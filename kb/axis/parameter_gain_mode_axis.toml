@@ -2,6 +2,12 @@ summary = """
 Four byte breakpoints for the selected state coordinate of \
 parameter_mode_selected_gain_surface. The state-to-physical-mode \
 correspondence remains unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+00090988 / 1ME3B 000964b8 is reachable from the scheduler task table and \
+reads it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "raw"

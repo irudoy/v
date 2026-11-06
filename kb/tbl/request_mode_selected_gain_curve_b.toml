@@ -2,6 +2,12 @@ summary = """
 Explicit byte curve in the alternate configuration branch of 00090664 over \
 axis 00014248. The selector and input preparation differ from the adjacent \
 word-curve stages. Physical gain and input units remain unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ME3B. Reader 1ME3B 000a8470 is \
+reachable from the scheduler task table and reads it without a disabling \
+stock calibration. RAM state bits select the curve.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

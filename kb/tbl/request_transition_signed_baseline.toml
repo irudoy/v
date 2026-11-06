@@ -5,9 +5,12 @@ filtered-coordinate difference is zero. The active path adds it after the \
 signed product is divided by 128 with truncation toward zero."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Native editor class (issue #129): active on 1ND0A and stock-inactive on \
+1ND3B. Conditioner 1ND 000abc6e reads it at 000ac134 when the dispatcher \
+selects the conditioner, which requires bit 7 of ROM8[00008a2e] clear: the \
+1ND0A byte 0x18 selects it, and the 1ND3B byte 0x80 disables it. The stock \
+baseline 0x0000 is neutral. Physical input identities and engineering \
+conversions require separate evidence.""",
 ]
 level = "code"
 home = "jk78c"

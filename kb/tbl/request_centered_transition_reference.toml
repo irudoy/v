@@ -3,6 +3,12 @@ Explicit word curve in 00095442 over word ffff1710 and axis 000151ac. Its \
 centered result participates in the enabled reference/blending path before \
 signed transition and rate limits. Physical quantity and conversion remain \
 unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a9554 / 1ME3B 000b04de is reachable from the scheduler task table and \
+reads it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

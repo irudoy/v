@@ -6,7 +6,11 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+0006a738 / 1ME3B 0006ea7c is reachable from the scheduler task table and \
+reads it without a disabling stock calibration. Code reads the result of the \
+lookup.""",
 ]
 level = "code"
 home = "jk78c"

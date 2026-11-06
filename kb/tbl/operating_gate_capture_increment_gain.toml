@@ -10,8 +10,13 @@ note = [
 Known BFS, coolant, battery-voltage and final-timing inputs retain their \
 tracked conversions. The enclosing physical subsystem, invocation period and \
 other input quantities remain unresolved. Curve-output conversions require \
-separate qualification. Native editor publication remains unresolved under \
-issue #129.""",
+separate qualification. Native editor class (issue #129): stock-inactive on \
+1ND and 1ME3B. The capture accumulator 1ND 000ddf52 / 1ME3B 000e8fda tests \
+bit 0 of ROM8 1ND 0001af22 / 1ME3B 0001affa at 1ND 000ddfbc / 1ME3B \
+000e9044, and bit 0 of operating_gate_capture_feature_flags, stock 0xf0 at \
+1ND 0001af22 / 1ME3B 0001affa on every image, is clear, so the capture \
+comparison and its flag updates do not run; the accumulator has no other \
+consumer.""",
 ]
 level = "code"
 home = "jk78c"

@@ -3,6 +3,13 @@ Coolant-index alternative of the settle count 0x00014230, selected while \
 ROM8[0x852A] bit 0 is clear and looked up over the axis 0x0001339A by byte \
 0xFFFF1067 in FUN_000E7FB4 and by coolant_index 0xFFFF106D in FUN_000E56D4. \
 The stock image does not select it. Every stock cell holds 5."""
+note = [
+    """
+Native editor class (issue #129): stock-inactive on 1ND and 1ME3B. Readers \
+1ND 0010db04 and 001110da / 1ME3B 001198b0 and 0011c9a6 select it only while \
+bit 0 of ROM8 1ND 00008561 / 1ME3B 00008576 is clear, and the stock bytes \
+0x05 on 1ND0A and 0x0d on 1ND3B and 1ME3B set it.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

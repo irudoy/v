@@ -3,6 +3,12 @@ Implicit byte gain in 8f9c4 indexed by the bounded engine-speed word \
 ffff11a6 divided by ten. It multiplies a selected hold byte with a seven-bit \
 shift and byte cap before the two hold states are loaded. No time unit is \
 established."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a1610 / 1ME3B 000a7600 is reachable from the scheduler task table and \
+reads it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

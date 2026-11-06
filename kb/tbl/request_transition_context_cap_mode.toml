@@ -5,9 +5,10 @@ transition request candidate is bounded. Other bits retain unresolved \
 meanings."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. Conditioner \
+1ND 000abc6e / 1ME3B 000b2f2c reads 1ND 000089fb / 1ME3B 00008a49 through a \
+GBR-relative access, and that access has no registry binding. Physical input \
+identities and engineering conversions require separate evidence.""",
 ]
 level = "code"
 home = "jk78c"

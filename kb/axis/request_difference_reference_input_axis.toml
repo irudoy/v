@@ -1,6 +1,13 @@
 summary = """
 First coordinate of request_difference_reference_surface, read from byte \
 ffff11a2. Physical conversion remains unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a46e8 / 1ME3B 000aab88 is reachable from scheduler task-table entry 1ND \
+000220f4 / 1ME3B 00022160 and reads it without a disabling stock \
+calibration.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "raw"

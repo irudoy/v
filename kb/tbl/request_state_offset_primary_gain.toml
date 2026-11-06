@@ -2,6 +2,12 @@ summary = """
 First implicit byte gain in 0008fd6c. It multiplies the centered \
 state-indexed word jointly with 0001317e before the signed-word result is \
 selected. The first coordinate's physical meaning remains unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a19f8 / 1ME3B 000a79e8 is reachable from the scheduler task table and \
+reads it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

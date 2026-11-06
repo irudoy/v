@@ -2,6 +2,13 @@ summary = """
 Load axis of the stock-inert idle-model reference phase 0x0000E4CE in \
 FUN_00057322, 8192..49152; the coordinate is the VVEL load word 0xFFFF238A. \
 The reader addresses it at offset 0x30 from the literal 0x00016EB4."""
+note = [
+    """
+Native editor class (issue #129): stock-inactive on 1ND and 1ME3B. Reader \
+1ND 00060244 / 1ME3B 00064042 skips the read while bit 5 of ROM8 1ND \
+00008a19 / 1ME3B 00008a6a is set, and the stock byte 0x3a on every image \
+sets it, as the JK78C byte 00008957 leaves the role stock-inert.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "load"

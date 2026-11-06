@@ -8,7 +8,11 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): stock-inactive on 1ND and 1ME3B. Reader \
+1ND 0004750e / 1ME3B 0004aa1a selects the secondary branch only while bit 1 \
+of ROM8 1ND 00008866 / 1ME3B 0000888a is set (tst.b at 1ND 0004757a and \
+00047704); the stock byte 0x34 on every image clears it.""",
 ]
 level = "code"
 home = "jk78c"

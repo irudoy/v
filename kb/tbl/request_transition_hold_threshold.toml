@@ -3,6 +3,12 @@ Implicit byte threshold in 0009832c. Its index comes from a bounded \
 normalized request difference; the result limits the hold threshold compared \
 with the saturating counter. Physical difference and time conversions remain \
 unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Readers 1ND \
+000ad954 and 000ae1fe / 1ME3B 000b4ce0 and 000b55ca are reachable from the \
+scheduler task table and read it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

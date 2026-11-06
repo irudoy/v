@@ -2,6 +2,12 @@ summary = """
 Word surface in 0009248a over ffff11a6 and the result of 00016864. The \
 enable path selects this result or 65535 as the subsequent conversion \
 ceiling. Physical output units remain unresolved."""
+note = [
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+000a4e5c / 1ME3B 000ab2fc is reachable from the scheduler task table and \
+reads it without a disabling stock calibration.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"

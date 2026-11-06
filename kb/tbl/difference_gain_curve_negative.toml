@@ -9,7 +9,11 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+00044802 / 1ME3B 00047e2a is reachable from scheduler task-table entry 1ND \
+00022118 / 1ME3B 00022184 and reads it without a disabling stock \
+calibration. A runtime bit selects its branch.""",
     """
 Reader FUN_000402E0 has no function meaning: its input ffff43de comes from \
 the deferred cylinder-fill model FUN_0004C2B2, and its output ffff1962 is an \

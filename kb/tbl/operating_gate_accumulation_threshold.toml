@@ -9,8 +9,13 @@ note = [
 Known BFS, coolant, battery-voltage and final-timing inputs retain their \
 tracked conversions. The enclosing physical subsystem, invocation period and \
 other input quantities remain unresolved. Curve-output conversions require \
-separate qualification. Native editor publication remains unresolved under \
-issue #129.""",
+separate qualification. Native editor class (issue #129): active on 1ND and \
+1ME3B. A stage of the operating-gate coordinator 1ND 000ddbe0 / 1ME3B \
+000e8c68 (1ND 000de120, 000de1f6 or 000de392 / 1ME3B 000e91a8, 000e927e or \
+000e941a) reads it without a disabling stock calibration; scheduler \
+task-table entry 1ND 00022048 / 1ME3B 000220b4 reaches the coordinator \
+through 1ND 000b68f0 / 1ME3B 000c0584. The coordinator output flags 1ND \
+fffeb8e0 / 1ME3B fffeba4b are read by 1ND 0008b328 and 000ddf52.""",
 ]
 level = "code"
 home = "jk78c"

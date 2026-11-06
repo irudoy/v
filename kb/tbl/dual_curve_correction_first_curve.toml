@@ -11,7 +11,11 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. The only \
+callers 1ND 00096374 / 1ME3B 0009c324 of reader 1ND 00095ed4 / 1ME3B \
+0009be84 have no static caller or pointer word, so its reachability is not \
+established.""",
 ]
 level = "code"
 home = "jk78c"

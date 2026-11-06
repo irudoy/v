@@ -1,6 +1,12 @@
 summary = """
 Explicit byte grid of request_mode_selected_gain_curve_b. Its normalized \
 state input has no qualified physical conversion."""
+note = [
+    """
+Native editor class (issue #129): active on 1ME3B. Reader 1ME3B 000a8470 is \
+reachable from the scheduler task table and reads it without a disabling \
+stock calibration. RAM state bits select the curve.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "raw"
