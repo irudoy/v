@@ -125,10 +125,13 @@ def test_the_update_writes_the_layout_and_the_manifest(tmp_path, monkeypatch, ca
     assert "changed_locks=1" in output
 
 
-@pytest.mark.parametrize(
-    "flags", (["--update"], ["--rolling", "--update"], ["--telemetry", "--update", "--check"])
-)
-def test_the_update_is_a_telemetry_write(flags):
+@pytest.mark.parametrize("flags", (
+    ["--update"],
+    ["--telemetry", "--update", "--check"],
+    ["--rolling", "--update", "--check"],
+    ["--rolling", "--telemetry", "--update"],
+))
+def test_an_update_names_one_family_and_excludes_check(flags):
     with pytest.raises(SystemExit):
         generator.main(flags)
 

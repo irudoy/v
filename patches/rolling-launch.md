@@ -769,7 +769,7 @@ creates no cut request.
 ### Cut selection
 
 The wrapper at `0x000D60C0` saves `r0..r7`, `PR` and `SR`. The event helper at
-`0x000D6780` services quiet events and the misfire latch and returns whether
+`0x000D6268` services quiet events and the misfire latch and returns whether
 the phase and mode select ACTIVE HOLD. The wrapper reads `q` once as an
 aligned word at base `+0x1A` (`0xFFFF5D5A`). These are its only Rolling Launch
 control inputs. It restores the caller's registers and SR before tail-calling
@@ -1001,10 +1001,10 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
 | `0x000D6000..0x000D6040` | 64 | removed fuel-cut wrapper span, erased |
 | `0x000D6040..0x000D6068` | 40 | retired schema-4 configuration span, erased |
-| `0x000D6068..0x000D60C0` | 88 | removed RPM ceiling span, erased |
-| `0x000D60C0..0x000D6220` | 352 | spark-cut actuator |
+| `0x000D6068..0x000D6080` | 24 | removed RPM ceiling span, erased |
+| `0x000D6080..0x000D6220` | 416 | spark-cut actuator, entry `0x000D60C0` |
 | `0x000D6220..0x000D6268` | 72 | retired schema-5 configuration span, erased |
-| `0x000D6268..0x000D6320` | 184 | removed schema-5 slot-validator and trim span, erased |
+| `0x000D6268..0x000D6320` | 184 | spark-event and accumulator-reset helpers |
 | `0x000D6320..0x000D6386` | 102 | configuration record |
 | `0x000D6386..0x000D6390` | 10 | padding, erased |
 | `0x000D6390..0x000D63E2` | 82 | efficiency table |
@@ -1015,6 +1015,7 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 | `0x000D6540..0x000D6580` | 64 | ignition publisher of the actuation |
 | `0x000D6580..0x000D6680` | 256 | common actuation body |
 | `0x000D6680..0x000D6780` | 256 | slot and efficiency-table validator |
+| `0x000D6780..0x000D67F0` | 112 | erased |
 | `0x000D7000..0x000D7200` | 512 | record check and wire views |
 | `0xFFFF5D40..0xFFFF5D6C` | 44 | runtime state |
 | `0xFFFF6100..0xFFFF6120` | 32 | runtime state extension |
@@ -1022,8 +1023,8 @@ Every range names an exclusive end, as `runtime-reservations.md` does.
 Schemas 1 through 3 kept a 32-byte record at `0x000D3F60`, schema 4 a 40-byte
 record with one integral gain for every map at `0x000D6040`, and schema 5 a
 72-byte record with 6-byte slots at `0x000D6220`. These spans, the removed
-fuel-cut wrapper, RPM ceiling, slot-validator, and trim spans, and the padding
-stay claimed and erased inside the current Rolling Launch write set. Each
+fuel-cut wrapper and RPM ceiling spans, and the erased padding stay claimed
+inside the current Rolling Launch write set. Each
 registered historical endpoint places its units, hook words, DID slots and
 record by its own addresses in `runtime_endpoints.py`, so classification and
 extraction of its images do not depend on the current layout. No historical
@@ -1160,9 +1161,9 @@ the builder refuses composition.
 
 The canonical runtime uses `0xFFFF5D40..0xFFFF5D6C` and
 `0xFFFF6100..0xFFFF6120` for active state and `0x000D40C0..0x000D4280`,
-`0x000D6000..0x000D6780`, and `0x000D7000..0x000D7200` for its claimed ROM
+`0x000D6000..0x000D67F0`, and `0x000D7000..0x000D7200` for its claimed ROM
 extensions. The cross-runtime ledger assigns
-`0x000D6780..0x000D6800`, `0xFFFF6120..0xFFFF6160`, and
+`0x000D67F0..0x000D6800`, `0xFFFF6120..0xFFFF6160`, and
 `0xFFFF6160..0xFFFF6200` exclusively to future Rolling Launch revisions; the
 first RAM span is the scratch budget of the veto delivery. These reserves are
 erased and outside every exact current write set. See

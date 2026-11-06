@@ -108,7 +108,7 @@ def test_abi_only_layout_still_checks_rom_bounds_and_writes(ledger, start, end, 
 
 
 def test_abi_only_layout_still_excludes_checksum_bytes(ledger, monkeypatch):
-    monkeypatch.setattr(reservations.checksums, "checksum_byte_offsets", lambda: (0xD6780,))
+    monkeypatch.setattr(reservations.checksums, "checksum_byte_offsets", lambda: (0xD67F0,))
     with pytest.raises(ValueError, match="ROM reserve overlaps a checksum"):
         reservations.validate_ledger(ledger)
 

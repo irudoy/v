@@ -704,7 +704,7 @@ mov #0x5,r1
         self.assertGreater(base_count, 0)
         self.assertGreater(launch_count, 0)
         self.assertGreater(telemetry_count, 0)
-        self.assertEqual(stubs, 11)
+        self.assertEqual(stubs, 10)
         self.assertEqual(
             fixture[
                 TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS :
