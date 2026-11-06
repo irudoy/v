@@ -68,7 +68,7 @@
     </table>
 
     <table type="Switch" name="Rolling Launch Require Accelerator Pedal"
-           category="Rolling Launch//Activation" storageaddress="0xD622E" storagetype="uint8"
+           category="Rolling Launch//Activation" storageaddress="0xD632E" storagetype="uint8"
            sizey="2" endian="big" userlevel="5">
       <description>Exact JK03A. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage.</description>
       <state name="Enabled" data="00 01"/>
@@ -818,7 +818,7 @@
     </table>
 
     <table type="BitwiseSwitch" name="Rolling Launch Enable by Map"
-           category="Rolling Launch//Map Enable" storageaddress="0xD6224" storagetype="uint8"
+           category="Rolling Launch//Map Enable" storageaddress="0xD6324" storagetype="uint8"
            endian="big" userlevel="5">
       <description>Exact JK03A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise.</description>
       <bit name="Map 1 - Rolling Launch Enable" position="0"/>
@@ -3804,14 +3804,14 @@
       </table>
     </table>
 
-    <!-- 0xD6226  1 uint8  map [code]
+    <!-- 0xD6326  1 uint8  map [code]
          scaling x*0.625-40 deg C [code]
          The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive
          minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the
          saturated hot endpoint.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Coolant Temperature"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6226"
+           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6326"
            sizex="1" endian="big">
       <scaling units="deg C" expression="x*0.625-40" to_byte="(x+40)/0.625" format="0.0"
                fineincrement="0.625" coarseincrement="10"/>
@@ -3820,13 +3820,14 @@
       </table>
     </table>
 
-    <!-- 0xD6228  1 uint16  map [code]
+    <!-- 0xD6328  1 uint16  map [code]
          scaling x/10 km/h [code]
          The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of
-         CAN 0x284. Activation requires the word at or above this inclusive bound.
+         CAN 0x284. Speed-hold activation requires the word at or above this inclusive bound;
+         launch-RPM activation ignores it.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Vehicle Speed"
-           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD6228"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD6328"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3835,14 +3836,14 @@
       </table>
     </table>
 
-    <!-- 0xD622A  1 uint16  map [code]
+    <!-- 0xD632A  1 uint16  map [code]
          scaling x/10 km/h [code]
          The runtime reads the vehicle-speed word 0xFFFF113C, km/h*10 by the firmware chain of
-         CAN 0x284. Activation requires the word at or below this inclusive bound; two nonzero
-         bounds must be ordered.
+         CAN 0x284. Speed-hold activation requires the word at or below this inclusive bound;
+         launch-RPM activation ignores it. Two nonzero bounds must be ordered.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Maximum Vehicle Speed"
-           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD622A"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD632A"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3851,13 +3852,13 @@
       </table>
     </table>
 
-    <!-- 0xD622C  1 uint16  map [code]
+    <!-- 0xD632C  1 uint16  map [code]
          scaling x*12.5 RPM [code]
          The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive
-         minimum.
+         minimum in both modes. Each map launch RPM must lie above it.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Engine Speed"
-           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD622C"
+           category="Rolling Launch//Activation" storagetype="uint16" storageaddress="0xD632C"
            sizex="1" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
                coarseincrement="100"/>
@@ -3866,7 +3867,7 @@
       </table>
     </table>
 
-    <!-- 0xD6242  1 uint8  map [code]
+    <!-- 0xD6342  1 uint8  map [code]
          scaling x*10.24 ms [code]
          The stock receive age 0xFFFF3B38 of CAN 0x284 advances once per 10.24 ms pass without a
          processed frame and saturates at 255; a 20 ms frame keeps it at 0..2 counts. Activation
@@ -3874,7 +3875,7 @@
          1..254 counts.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Speed Frame Age Limit"
-           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6242"
+           category="Rolling Launch//Activation" storagetype="uint8" storageaddress="0xD6342"
            sizex="1" endian="big">
       <scaling units="ms" expression="x*10.24" to_byte="x/10.24" format="0.00"
                fineincrement="10.24" coarseincrement="102.4"/>
@@ -3883,13 +3884,13 @@
       </table>
     </table>
 
-    <!-- 0xD6232  1 uint8  map [code]
+    <!-- 0xD6332  1 uint8  map [code]
          scaling x/10 km/h [code]
          With e = speed - target, the proportional fraction is clamp((window_top - e) * 1000 /
          width, 0, 1000) thousandths. The width must be nonzero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Speed Window Width"
-           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6232"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6332"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3898,13 +3899,13 @@
       </table>
     </table>
 
-    <!-- 0xD6233  1 uint8  map [code]
+    <!-- 0xD6333  1 uint8  map [code]
          scaling x/10 km/h [code]
          The proportional fraction is full at e <= window_top - width and zero at e >=
          window_top.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Speed Window Top"
-           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6233"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD6333"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3913,13 +3914,13 @@
       </table>
     </table>
 
-    <!-- 0xD6234  1 uint16  map [code]
+    <!-- 0xD6334  1 uint16  map [code]
          scaling x/10 % [code]
          The torque fraction moves toward the controller command by at most this many
          thousandths per 10.24 ms pass; the value must lie in 1..1000.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Torque Fraction Rate Limit"
-           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6234"
+           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6334"
            sizex="1" endian="big">
       <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3928,13 +3929,13 @@
       </table>
     </table>
 
-    <!-- 0xD6238  1 uint16  map [code]
+    <!-- 0xD6338  1 uint16  map [code]
          scaling x/10 % [code]
          The integrator contribution stays within plus or minus this many thousandths of the
          torque fraction; the value must not exceed 1000.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Integrator Limit"
-           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6238"
+           category="Rolling Launch//Speed Hold" storagetype="uint16" storageaddress="0xD6338"
            sizex="1" endian="big">
       <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3943,12 +3944,13 @@
       </table>
     </table>
 
-    <!-- 0xD623A  1 uint8  map [code]
+    <!-- 0xD633A  1 uint8  map [code]
          scaling x/10 km/h [code]
-         An ACTIVE pass with e above this nonzero bound aborts with SPEED_ABOVE_WINDOW.
+         An ACTIVE speed-hold pass with e above this nonzero bound aborts with
+         SPEED_ABOVE_WINDOW; speed-hold activation outside the window is refused.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Abort Above Target"
-           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD623A"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD633A"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3957,13 +3959,13 @@
       </table>
     </table>
 
-    <!-- 0xD623B  1 uint8  map [code]
+    <!-- 0xD633B  1 uint8  map [code]
          scaling x/10 km/h [code]
-         An ACTIVE pass with e below the negative of this nonzero bound aborts with
-         SPEED_BELOW_WINDOW.
+         An ACTIVE speed-hold pass with e below the negative of this nonzero bound aborts with
+         SPEED_BELOW_WINDOW; speed-hold activation outside the window is refused.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Abort Below Target"
-           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD623B"
+           category="Rolling Launch//Speed Hold" storagetype="uint8" storageaddress="0xD633B"
            sizex="1" endian="big">
       <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
                coarseincrement="1"/>
@@ -3972,44 +3974,77 @@
       </table>
     </table>
 
-    <!-- 0xD623C  1 uint16  map [code]
-         scaling x*12.5 RPM [code]
-         Hold mode latches the all-cylinder fuel-cut request when RPM exceeds the captured RPM
-         plus this nonzero offset.
+    <!-- 0xD6350  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         Activation selects launch-RPM regulation while the vehicle-speed word lies below this
+         threshold and speed hold at or above it. The selected mode stays latched for the run.
+         The value must lie in 0.1..6553.5 km/h.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Ceiling Offset"
-           category="Rolling Launch//RPM Ceiling" storagetype="uint16" storageaddress="0xD623C"
+    <table type="2D" name="Rolling Launch Map 1 Launch Speed Threshold"
+           category="Rolling Launch//Map 1" storagetype="uint16" storageaddress="0xD6350"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Speed Threshold</data>
+      </table>
+    </table>
+
+    <!-- 0xD634E  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Target engine speed of launch-RPM regulation. With soft width zero, every cylinder is
+         cut at or above it. The native value must lie above the minimum engine speed and must
+         not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 1 Launch RPM" category="Rolling Launch//Map 1"
+           storagetype="uint16" storageaddress="0xD634E" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch RPM</data>
+      </table>
+    </table>
+
+    <!-- 0xD6352  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Width of the launch-RPM cut ramp; zero is a hard two-step. With a nonzero width the
+         firing fraction falls linearly from full at launch RPM minus the width to zero at
+         launch RPM. The lower edge must stay above the minimum engine speed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 1 Launch Soft Width"
+           category="Rolling Launch//Map 1" storagetype="uint16" storageaddress="0xD6352"
            sizex="1" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>RPM ceiling offset</data>
+        <data>Launch Soft Width</data>
       </table>
     </table>
 
-    <!-- 0xD6243  1 uint8  map [code]
-         scaling x*12.5 RPM [code]
-         A latched ceiling request holds while RPM exceeds the cut threshold minus this
-         hysteresis and releases at or below it. The value must be nonzero and must not exceed
-         the ceiling offset.
+    <!-- 0xD634A  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim of launch-RPM regulation, 0..40 degrees. The trim is latched at
+         activation. The hidden efficiency table derives from the F table; after editing F,
+         refresh it with patches/refresh_rolling_launch.py as documented in patches/rolling-
+         launch.md. Preflash rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Ceiling Hysteresis"
-           category="Rolling Launch//RPM Ceiling" storagetype="uint8" storageaddress="0xD6243"
-           sizex="1" endian="big">
-      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
-               coarseincrement="100"/>
+    <table type="2D" name="Rolling Launch Map 1 RPM Trim" category="Rolling Launch//Map 1"
+           storagetype="uint8" storageaddress="0xD634A" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>RPM ceiling hysteresis</data>
+        <data>RPM Trim</data>
       </table>
     </table>
 
-    <!-- 0xD6248  1 uint16  map [code]
+    <!-- 0xD6348  1 uint16  map [code]
          scaling x raw [code]
-         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
-         integrator before its limit and anti-windup gates.
+         Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass adds -Ki * speed
+         error to the Q4 integrator before its limit and anti-windup gates. Launch-RPM
+         regulation has no integrator.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 1 Integral Gain" category="Rolling Launch//Map 1"
-           storagetype="uint16" storageaddress="0xD6248" sizex="1" endian="big">
+           storagetype="uint16" storageaddress="0xD6348" sizex="1" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4017,30 +4052,31 @@
       </table>
     </table>
 
-    <!-- 0xD624A  1 uint8  map [code]
+    <!-- 0xD634B  1 uint8  map [code]
          scaling x deg [code]
-         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
-         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
-         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
-         inconsistent efficiency.
+         Maximum retard trim of speed hold, 0..40 degrees. The trim is latched at activation.
+         The hidden efficiency table derives from the F table; after editing F, refresh it with
+         patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. Preflash
+         rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Map 1 Maximum Trim" category="Rolling Launch//Map 1"
-           storagetype="uint8" storageaddress="0xD624A" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Map 1 Speed-Hold Trim"
+           category="Rolling Launch//Map 1" storagetype="uint8" storageaddress="0xD634B"
+           sizex="1" endian="big">
       <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum Trim</data>
+        <data>Speed-Hold Trim</data>
       </table>
     </table>
 
-    <!-- 0xD624B  1 uint8  map [code]
+    <!-- 0xD634C  1 uint8  map [code]
          scaling x-110 deg ATDC [code]
-         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
-         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
-         when trim is zero.
+         Latest ignition command of the trim in both modes, command 0..120. Timing is 110 -
+         command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC
+         values are before TDC. Ignored when the latched trim is zero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 1 Timing Floor" category="Rolling Launch//Map 1"
-           storagetype="uint8" storageaddress="0xD624B" sizex="1" endian="big">
+           storagetype="uint8" storageaddress="0xD634C" sizex="1" endian="big">
       <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4048,13 +4084,77 @@
       </table>
     </table>
 
-    <!-- 0xD624E  1 uint16  map [code]
+    <!-- 0xD635C  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         Activation selects launch-RPM regulation while the vehicle-speed word lies below this
+         threshold and speed hold at or above it. The selected mode stays latched for the run.
+         The value must lie in 0.1..6553.5 km/h.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Launch Speed Threshold"
+           category="Rolling Launch//Map 2" storagetype="uint16" storageaddress="0xD635C"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Speed Threshold</data>
+      </table>
+    </table>
+
+    <!-- 0xD635A  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Target engine speed of launch-RPM regulation. With soft width zero, every cylinder is
+         cut at or above it. The native value must lie above the minimum engine speed and must
+         not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Launch RPM" category="Rolling Launch//Map 2"
+           storagetype="uint16" storageaddress="0xD635A" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch RPM</data>
+      </table>
+    </table>
+
+    <!-- 0xD635E  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Width of the launch-RPM cut ramp; zero is a hard two-step. With a nonzero width the
+         firing fraction falls linearly from full at launch RPM minus the width to zero at
+         launch RPM. The lower edge must stay above the minimum engine speed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 Launch Soft Width"
+           category="Rolling Launch//Map 2" storagetype="uint16" storageaddress="0xD635E"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Soft Width</data>
+      </table>
+    </table>
+
+    <!-- 0xD6356  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim of launch-RPM regulation, 0..40 degrees. The trim is latched at
+         activation. The hidden efficiency table derives from the F table; after editing F,
+         refresh it with patches/refresh_rolling_launch.py as documented in patches/rolling-
+         launch.md. Preflash rejects an efficiency table that differs from F of the image.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 2 RPM Trim" category="Rolling Launch//Map 2"
+           storagetype="uint8" storageaddress="0xD6356" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6354  1 uint16  map [code]
          scaling x raw [code]
-         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
-         integrator before its limit and anti-windup gates.
+         Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass adds -Ki * speed
+         error to the Q4 integrator before its limit and anti-windup gates. Launch-RPM
+         regulation has no integrator.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 2 Integral Gain" category="Rolling Launch//Map 2"
-           storagetype="uint16" storageaddress="0xD624E" sizex="1" endian="big">
+           storagetype="uint16" storageaddress="0xD6354" sizex="1" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4062,30 +4162,31 @@
       </table>
     </table>
 
-    <!-- 0xD6250  1 uint8  map [code]
+    <!-- 0xD6357  1 uint8  map [code]
          scaling x deg [code]
-         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
-         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
-         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
-         inconsistent efficiency.
+         Maximum retard trim of speed hold, 0..40 degrees. The trim is latched at activation.
+         The hidden efficiency table derives from the F table; after editing F, refresh it with
+         patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. Preflash
+         rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Map 2 Maximum Trim" category="Rolling Launch//Map 2"
-           storagetype="uint8" storageaddress="0xD6250" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Map 2 Speed-Hold Trim"
+           category="Rolling Launch//Map 2" storagetype="uint8" storageaddress="0xD6357"
+           sizex="1" endian="big">
       <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum Trim</data>
+        <data>Speed-Hold Trim</data>
       </table>
     </table>
 
-    <!-- 0xD6251  1 uint8  map [code]
+    <!-- 0xD6358  1 uint8  map [code]
          scaling x-110 deg ATDC [code]
-         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
-         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
-         when trim is zero.
+         Latest ignition command of the trim in both modes, command 0..120. Timing is 110 -
+         command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC
+         values are before TDC. Ignored when the latched trim is zero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 2 Timing Floor" category="Rolling Launch//Map 2"
-           storagetype="uint8" storageaddress="0xD6251" sizex="1" endian="big">
+           storagetype="uint8" storageaddress="0xD6358" sizex="1" endian="big">
       <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4093,13 +4194,77 @@
       </table>
     </table>
 
-    <!-- 0xD6254  1 uint16  map [code]
+    <!-- 0xD6368  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         Activation selects launch-RPM regulation while the vehicle-speed word lies below this
+         threshold and speed hold at or above it. The selected mode stays latched for the run.
+         The value must lie in 0.1..6553.5 km/h.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Launch Speed Threshold"
+           category="Rolling Launch//Map 3" storagetype="uint16" storageaddress="0xD6368"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Speed Threshold</data>
+      </table>
+    </table>
+
+    <!-- 0xD6366  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Target engine speed of launch-RPM regulation. With soft width zero, every cylinder is
+         cut at or above it. The native value must lie above the minimum engine speed and must
+         not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Launch RPM" category="Rolling Launch//Map 3"
+           storagetype="uint16" storageaddress="0xD6366" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch RPM</data>
+      </table>
+    </table>
+
+    <!-- 0xD636A  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Width of the launch-RPM cut ramp; zero is a hard two-step. With a nonzero width the
+         firing fraction falls linearly from full at launch RPM minus the width to zero at
+         launch RPM. The lower edge must stay above the minimum engine speed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 Launch Soft Width"
+           category="Rolling Launch//Map 3" storagetype="uint16" storageaddress="0xD636A"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Soft Width</data>
+      </table>
+    </table>
+
+    <!-- 0xD6362  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim of launch-RPM regulation, 0..40 degrees. The trim is latched at
+         activation. The hidden efficiency table derives from the F table; after editing F,
+         refresh it with patches/refresh_rolling_launch.py as documented in patches/rolling-
+         launch.md. Preflash rejects an efficiency table that differs from F of the image.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 3 RPM Trim" category="Rolling Launch//Map 3"
+           storagetype="uint8" storageaddress="0xD6362" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6360  1 uint16  map [code]
          scaling x raw [code]
-         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
-         integrator before its limit and anti-windup gates.
+         Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass adds -Ki * speed
+         error to the Q4 integrator before its limit and anti-windup gates. Launch-RPM
+         regulation has no integrator.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 3 Integral Gain" category="Rolling Launch//Map 3"
-           storagetype="uint16" storageaddress="0xD6254" sizex="1" endian="big">
+           storagetype="uint16" storageaddress="0xD6360" sizex="1" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4107,30 +4272,31 @@
       </table>
     </table>
 
-    <!-- 0xD6256  1 uint8  map [code]
+    <!-- 0xD6363  1 uint8  map [code]
          scaling x deg [code]
-         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
-         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
-         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
-         inconsistent efficiency.
+         Maximum retard trim of speed hold, 0..40 degrees. The trim is latched at activation.
+         The hidden efficiency table derives from the F table; after editing F, refresh it with
+         patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. Preflash
+         rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Map 3 Maximum Trim" category="Rolling Launch//Map 3"
-           storagetype="uint8" storageaddress="0xD6256" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Map 3 Speed-Hold Trim"
+           category="Rolling Launch//Map 3" storagetype="uint8" storageaddress="0xD6363"
+           sizex="1" endian="big">
       <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum Trim</data>
+        <data>Speed-Hold Trim</data>
       </table>
     </table>
 
-    <!-- 0xD6257  1 uint8  map [code]
+    <!-- 0xD6364  1 uint8  map [code]
          scaling x-110 deg ATDC [code]
-         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
-         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
-         when trim is zero.
+         Latest ignition command of the trim in both modes, command 0..120. Timing is 110 -
+         command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC
+         values are before TDC. Ignored when the latched trim is zero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 3 Timing Floor" category="Rolling Launch//Map 3"
-           storagetype="uint8" storageaddress="0xD6257" sizex="1" endian="big">
+           storagetype="uint8" storageaddress="0xD6364" sizex="1" endian="big">
       <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4138,13 +4304,77 @@
       </table>
     </table>
 
-    <!-- 0xD625A  1 uint16  map [code]
+    <!-- 0xD6374  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         Activation selects launch-RPM regulation while the vehicle-speed word lies below this
+         threshold and speed hold at or above it. The selected mode stays latched for the run.
+         The value must lie in 0.1..6553.5 km/h.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Launch Speed Threshold"
+           category="Rolling Launch//Map 4" storagetype="uint16" storageaddress="0xD6374"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Speed Threshold</data>
+      </table>
+    </table>
+
+    <!-- 0xD6372  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Target engine speed of launch-RPM regulation. With soft width zero, every cylinder is
+         cut at or above it. The native value must lie above the minimum engine speed and must
+         not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Launch RPM" category="Rolling Launch//Map 4"
+           storagetype="uint16" storageaddress="0xD6372" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch RPM</data>
+      </table>
+    </table>
+
+    <!-- 0xD6376  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Width of the launch-RPM cut ramp; zero is a hard two-step. With a nonzero width the
+         firing fraction falls linearly from full at launch RPM minus the width to zero at
+         launch RPM. The lower edge must stay above the minimum engine speed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 Launch Soft Width"
+           category="Rolling Launch//Map 4" storagetype="uint16" storageaddress="0xD6376"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Soft Width</data>
+      </table>
+    </table>
+
+    <!-- 0xD636E  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim of launch-RPM regulation, 0..40 degrees. The trim is latched at
+         activation. The hidden efficiency table derives from the F table; after editing F,
+         refresh it with patches/refresh_rolling_launch.py as documented in patches/rolling-
+         launch.md. Preflash rejects an efficiency table that differs from F of the image.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 4 RPM Trim" category="Rolling Launch//Map 4"
+           storagetype="uint8" storageaddress="0xD636E" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD636C  1 uint16  map [code]
          scaling x raw [code]
-         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
-         integrator before its limit and anti-windup gates.
+         Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass adds -Ki * speed
+         error to the Q4 integrator before its limit and anti-windup gates. Launch-RPM
+         regulation has no integrator.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 4 Integral Gain" category="Rolling Launch//Map 4"
-           storagetype="uint16" storageaddress="0xD625A" sizex="1" endian="big">
+           storagetype="uint16" storageaddress="0xD636C" sizex="1" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4152,30 +4382,31 @@
       </table>
     </table>
 
-    <!-- 0xD625C  1 uint8  map [code]
+    <!-- 0xD636F  1 uint8  map [code]
          scaling x deg [code]
-         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
-         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
-         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
-         inconsistent efficiency.
+         Maximum retard trim of speed hold, 0..40 degrees. The trim is latched at activation.
+         The hidden efficiency table derives from the F table; after editing F, refresh it with
+         patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. Preflash
+         rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Map 4 Maximum Trim" category="Rolling Launch//Map 4"
-           storagetype="uint8" storageaddress="0xD625C" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Map 4 Speed-Hold Trim"
+           category="Rolling Launch//Map 4" storagetype="uint8" storageaddress="0xD636F"
+           sizex="1" endian="big">
       <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum Trim</data>
+        <data>Speed-Hold Trim</data>
       </table>
     </table>
 
-    <!-- 0xD625D  1 uint8  map [code]
+    <!-- 0xD6370  1 uint8  map [code]
          scaling x-110 deg ATDC [code]
-         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
-         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
-         when trim is zero.
+         Latest ignition command of the trim in both modes, command 0..120. Timing is 110 -
+         command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC
+         values are before TDC. Ignored when the latched trim is zero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 4 Timing Floor" category="Rolling Launch//Map 4"
-           storagetype="uint8" storageaddress="0xD625D" sizex="1" endian="big">
+           storagetype="uint8" storageaddress="0xD6370" sizex="1" endian="big">
       <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4183,13 +4414,77 @@
       </table>
     </table>
 
-    <!-- 0xD6260  1 uint16  map [code]
+    <!-- 0xD6380  1 uint16  map [code]
+         scaling x/10 km/h [code]
+         Activation selects launch-RPM regulation while the vehicle-speed word lies below this
+         threshold and speed hold at or above it. The selected mode stays latched for the run.
+         The value must lie in 0.1..6553.5 km/h.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Launch Speed Threshold"
+           category="Rolling Launch//Map 5" storagetype="uint16" storageaddress="0xD6380"
+           sizex="1" endian="big">
+      <scaling units="km/h" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Speed Threshold</data>
+      </table>
+    </table>
+
+    <!-- 0xD637E  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Target engine speed of launch-RPM regulation. With soft width zero, every cylinder is
+         cut at or above it. The native value must lie above the minimum engine speed and must
+         not exceed 32767.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Launch RPM" category="Rolling Launch//Map 5"
+           storagetype="uint16" storageaddress="0xD637E" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch RPM</data>
+      </table>
+    </table>
+
+    <!-- 0xD6382  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         Width of the launch-RPM cut ramp; zero is a hard two-step. With a nonzero width the
+         firing fraction falls linearly from full at launch RPM minus the width to zero at
+         launch RPM. The lower edge must stay above the minimum engine speed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 Launch Soft Width"
+           category="Rolling Launch//Map 5" storagetype="uint16" storageaddress="0xD6382"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="12.5"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Launch Soft Width</data>
+      </table>
+    </table>
+
+    <!-- 0xD637A  1 uint8  map [code]
+         scaling x deg [code]
+         Maximum retard trim of launch-RPM regulation, 0..40 degrees. The trim is latched at
+         activation. The hidden efficiency table derives from the F table; after editing F,
+         refresh it with patches/refresh_rolling_launch.py as documented in patches/rolling-
+         launch.md. Preflash rejects an efficiency table that differs from F of the image.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Map 5 RPM Trim" category="Rolling Launch//Map 5"
+           storagetype="uint8" storageaddress="0xD637A" sizex="1" endian="big">
+      <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM Trim</data>
+      </table>
+    </table>
+
+    <!-- 0xD6378  1 uint16  map [code]
          scaling x raw [code]
-         Integral gain Ki, 0..32767. Each active pass adds -Ki * speed error to the Q4
-         integrator before its limit and anti-windup gates.
+         Speed-hold integral gain Ki, 0..32767. Each active speed-hold pass adds -Ki * speed
+         error to the Q4 integrator before its limit and anti-windup gates. Launch-RPM
+         regulation has no integrator.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 5 Integral Gain" category="Rolling Launch//Map 5"
-           storagetype="uint16" storageaddress="0xD6260" sizex="1" endian="big">
+           storagetype="uint16" storageaddress="0xD6378" sizex="1" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
@@ -4197,30 +4492,31 @@
       </table>
     </table>
 
-    <!-- 0xD6262  1 uint8  map [code]
+    <!-- 0xD637B  1 uint8  map [code]
          scaling x deg [code]
-         Maximum retard trim, 0..40 degrees. After editing this value or the F table, refresh
-         the hidden efficiency with patches/refresh_rolling_launch.py as documented in
-         patches/rolling-launch.md. The command uses F of the edited image; preflash rejects an
-         inconsistent efficiency.
+         Maximum retard trim of speed hold, 0..40 degrees. The trim is latched at activation.
+         The hidden efficiency table derives from the F table; after editing F, refresh it with
+         patches/refresh_rolling_launch.py as documented in patches/rolling-launch.md. Preflash
+         rejects an efficiency table that differs from F of the image.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Map 5 Maximum Trim" category="Rolling Launch//Map 5"
-           storagetype="uint8" storageaddress="0xD6262" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Map 5 Speed-Hold Trim"
+           category="Rolling Launch//Map 5" storagetype="uint8" storageaddress="0xD637B"
+           sizex="1" endian="big">
       <scaling units="deg" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Maximum Trim</data>
+        <data>Speed-Hold Trim</data>
       </table>
     </table>
 
-    <!-- 0xD6263  1 uint8  map [code]
+    <!-- 0xD637C  1 uint8  map [code]
          scaling x-110 deg ATDC [code]
-         Latest ignition command of the trim. Timing is 110 - command degrees BTDC, so the
-         editor shows command - 110 degrees ATDC. Negative ATDC values are before TDC. Ignored
-         when trim is zero.
+         Latest ignition command of the trim in both modes, command 0..120. Timing is 110 -
+         command degrees BTDC, so the editor shows command - 110 degrees ATDC. Negative ATDC
+         values are before TDC. Ignored when the latched trim is zero.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Map 5 Timing Floor" category="Rolling Launch//Map 5"
-           storagetype="uint8" storageaddress="0xD6263" sizex="1" endian="big">
+           storagetype="uint8" storageaddress="0xD637C" sizex="1" endian="big">
       <scaling units="deg ATDC" expression="x-110" to_byte="x+110" format="0" fineincrement="1"
                coarseincrement="5"/>
       <table type="Static X Axis" name="Configuration" sizex="1">

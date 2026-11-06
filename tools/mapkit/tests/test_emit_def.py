@@ -661,7 +661,10 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "Rolling Launch Map 1 Launch RPM": "0xD634E",
             "Rolling Launch Map 5 Timing Floor": "0xD637C",
         }
-        self.assertFalse(any("RPM Ceiling" in name for name in by_name))
+        self.assertFalse(any(
+            name.startswith("Rolling Launch") and "RPM Ceiling" in name
+            for name in by_name
+        ))
         for name, address in expected.items():
             with self.subTest(name=name):
                 self.assertEqual(by_name[name].get("storageaddress"), address)
