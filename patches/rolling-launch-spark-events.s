@@ -51,7 +51,7 @@ mov #0x0,r0
 mov.b r0,@r4
 mov.b r0,@(0x3,r4)
 mov #0x1,r2
-mov.l @(rl_cut_misfire_latch_address,pc),r3
+mov.l @(rl_event_misfire_latch_address,pc),r3
 stc sr,r7
 mov r7,r0
 or 0xf0,r0
@@ -90,7 +90,7 @@ extu.b r0,r0
 mov #0xd,r3
 cmp/hi r3,r0
 bf rl_event_return_lite
-mov.l @(rl_cut_misfire_latch_address,pc),r3
+mov.l @(rl_event_misfire_latch_address,pc),r3
 stc sr,r7
 mov r7,r0
 or 0xf0,r0
@@ -107,7 +107,7 @@ rts
 nop
 
 .align 4
-rl_cut_misfire_latch_address:
+rl_event_misfire_latch_address:
 .long 0xFFFF436F
 rl_event_offset_1:
 .word 250

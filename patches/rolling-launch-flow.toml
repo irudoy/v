@@ -137,11 +137,21 @@ reads = ["r0", "r1"]
 writes = ["r0", "r1", "t"]
 outputs = ["r0"]
 
+# The event service: r4 = quiet byte, r5 = state base, r6 = 0 for HOLD,
+# the phase plus one for a reset, or -1 for the IDLE latch; r2 = 1 only
+# for HOLD.
 [[function]]
 label = "rolling_launch_spark_events"
-reads = ["r5"]
-writes = ["r0", "r1", "r2", "r3", "r4", "r7", "t"]
-outputs = ["r2", "r4"]
+reads = ["r4", "r5", "r6"]
+writes = ["r0", "r2", "r3", "r7", "t"]
+outputs = ["r2"]
+
+# The accumulator reset, also entered by the HOLD q and accumulator checks
+# with r6 = 0.
+[[function]]
+label = "rolling_launch_spark_reset"
+reads = ["r4", "r5", "r6"]
+writes = ["r0", "r2", "r3", "r7", "t"]
 
 [[function]]
 label = "rolling_launch_state_check"

@@ -1164,7 +1164,7 @@ def _expected_long_literals():
             "rl_cut_quiet_address": 0xFFFF5D5C,
             "rl_cut_misfire_latch_address": 0xFFFF436F,
         },
-        "spark_events": {"rl_cut_misfire_latch_address": 0xFFFF436F},
+        "spark_events": {"rl_event_misfire_latch_address": 0xFFFF436F},
         "rpm": {
             "rl_rpm_input_address": 0xFFFF11BC,
             "rl_rpm_extension_address": 0xFFFF6100,

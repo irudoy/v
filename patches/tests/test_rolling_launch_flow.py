@@ -95,8 +95,8 @@ def test_historical_engine_defects_fail_the_check(layout, entries, old, new, mes
      r"T of a call at rolling-launch-engine\.s:\d+ reaches the branch of "
      r"rolling_launch_engine"),
     # A call into another unit names the address of an entry label.
-    ("spark_cut", "bsr 0x000D6780\n", "bsr 0x000D6782\n",
-     r"rolling-launch-spark-cut\.s:\d+: 0x000d6782 is no label"),
+    ("spark_cut", "bsr 0x000D6268\n", "bsr 0x000D626A\n",
+     r"rolling-launch-spark-cut\.s:\d+: 0x000d626a is no label"),
     # RTS takes its return address from PR before its slot restores PR.
     ("wrappers", "mov.l @(rolling_launch_engine_entry,pc),r0\njsr @r0\nnop\n"
      "lds.l @r15+,pr\nrts\nnop\n",
