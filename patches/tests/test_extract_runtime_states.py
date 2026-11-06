@@ -310,12 +310,17 @@ def edited_runtime(rom, *, rolling=False, telemetry=False):
     """Return a current build whose settings an editor changed."""
     edited = bytearray(built(rom))
     if rolling:
-        start = target(rom).rolling_layout.configuration.start
-        # Editor fields in the current 72-byte Rolling Launch record.
-        edited[start + 4] = 0x02  # Map 1 disabled, Map 2 enabled.
-        edited[start + 8 : start + 10] = (0).to_bytes(2, "big")  # No speed floor.
-        edited[start + 0x2E : start + 0x30] = (3).to_bytes(2, "big")  # Map 2 Ki.
-        edited[start + 30 : start + 32] = (301).to_bytes(2, "big")  # Run timeout.
+        span = target(rom).rolling_layout.configuration
+        record = rolling_launch.Calibration.from_bytes(edited[span.start : span.end])
+        slots = list(record.slots)
+        slots[1] = replace(slots[1], integral_gain=3)  # Map 2 Ki.
+        # Editor fields of the current Rolling Launch record: Map 1 disabled,
+        # Map 2 enabled, no speed floor, and a 301-tick run timeout.
+        record = replace(
+            record, enable_mask=0x02, min_speed=0, run_timeout_ticks=301,
+            slots=tuple(slots),
+        )
+        edited[span.start : span.end] = record.to_bytes()
     if telemetry:
         layout = target(rom).telemetry_layout
         start = layout.configuration.start
@@ -693,16 +698,16 @@ def test_editor_settings_need_their_profile_or_an_explicit_replacement(rom, comp
 
 
 @pytest.mark.parametrize("rom", ("JK08A", "JK00A"))
-def test_editor_disabling_only_map_1_travels_in_the_profile(rom):
-    start = target(rom).rolling_layout.configuration.start
+def test_editor_enabling_only_map_1_travels_in_the_profile(rom):
+    span = target(rom).rolling_layout.configuration
+    builtin = build_rom.builtin_profile(target(rom).family).calibration
     edited = bytearray(built(rom))
-    assert edited[start + 3] == rolling_launch.Mode.HOLD
-    assert edited[start + 4] & 1 == 1
-    edited[start + 4] &= ~1
+    # The built-in profile observes with every map disabled.
+    assert edited[span.start : span.end] == builtin.to_bytes()
+    assert builtin.mode == rolling_launch.Mode.OBSERVE and builtin.enable_mask == 0
+    edited[span.start + 4] |= 1  # The enable mask follows the mode byte.
     extraction = extract(edited, rom)
-    assert extraction.rolling == replace(
-        build_rom.builtin_profile(target(rom).family).calibration, enable_mask=0
-    )
+    assert extraction.rolling == replace(builtin, enable_mask=1)
     with pytest.raises(apply_calibration.ApplicationError, match="rolling_launch"):
         apply_calibration.apply(built(rom), extraction.calibration)
 
@@ -730,14 +735,17 @@ def schema_4_image(gain):
     return closed("JK08A", historical("JK08A", built("JK08A"), SCHEMA_4, bytes(record)))
 
 
-def test_schema_4_endpoint_maps_its_gain_to_every_map_slot():
+def test_schema_4_endpoint_reports_its_uniform_gain_without_a_profile():
+    # No schema 4 record states the launch RPM, threshold, and soft width of
+    # schema 6, so the extraction reports the record and writes no profile.
     extraction = extract(schema_4_image(3))
     assert state(extraction)["rolling_launch"] == "schema-4-uniform-gain"
     assert state(extraction)["can_telemetry"] == "current"
-    assert not extraction.unexpressed
-    assert extraction.rolling.slots == (
-        (rolling_launch.Slot(integral_gain=3),) * rolling_launch.SLOT_COUNT
-    )
+    assert extraction.rolling is None
+    assert not extraction.has_profile
+    ((component, record, schema_version, fields),) = extraction.unexpressed
+    assert (component, record, schema_version) == ("rolling_launch", SCHEMA_4, 4)
+    assert fields["integral_gain"] == 3
 
 
 @pytest.mark.parametrize("part", ("trim", "engine"))
