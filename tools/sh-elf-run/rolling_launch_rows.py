@@ -464,6 +464,17 @@ def build(variant=None):
     for name, speed in (("target-below-threshold", 119), ("target-at-threshold", 120),
                         ("target-above-threshold", 121)):
         rows.engine_row(name, records(idle), replace(good, speed=speed))
+    # The low-target pass leaves a nonzero capture word without its valid bit.
+    # A held CANCEL pass from that record refuses either kind by gate 11.
+    low_target = step(idle, replace(good, speed=119))
+    if low_target.input_status & 16 or not low_target.cancel_speed_capture:
+        raise ValueError("target-below: the pass keeps the valid bit or clears the word")
+    for name, speed in (("target-below-held", 119), ("target-below-held-slow", 80)):
+        held_low = step(low_target, replace(good, speed=speed))
+        if (held_low.phase != model.Phase.IDLE
+                or held_low.abort_reason != model.AbortReason.CANCEL_CAPTURE_INVALID):
+            raise ValueError(f"{name}: a held pass does not refuse the invalid capture")
+        rows.engine_row(name, records(low_target), replace(good, speed=speed))
     # A capture at a standstill or without a usable speed gives no activation
     # on the move, at either kind, until a new press captures again.
     released = replace(good, button=model.BUTTON_RELEASED)

@@ -187,7 +187,7 @@ of 0: the vehicle drives off with the stock torque, also when it slows below
 the threshold again while CANCEL stays held. A new press while moving captures
 the current speed. A press whose passes stay below the threshold activates the
 RPM regulator, and a SPEED target at or above the threshold activates the
-SPEED regulator, as without this rule.
+SPEED regulator.
 
 ## Scheduler timebase
 
