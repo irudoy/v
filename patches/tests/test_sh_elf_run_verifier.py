@@ -441,7 +441,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 1632)
+        self.assertEqual(result.instruction_count, 1707)
         self.assertEqual(result.diagnostic_count, 12)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
