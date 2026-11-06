@@ -31,8 +31,11 @@ def test_rolling_update_is_byte_identical_when_locks_match():
 def test_rolling_update_replaces_stale_locks_without_enabling_hold(tmp_path):
     layout, text, blobs = tracked()
     units = tuple(replace(unit, expected_sha256="0" * 64) for unit in layout.assembly_units)
-    stale = replace(layout, assembly_units=units, expected_composition_sha256="0" * 64)
-    stale_text = text.replace(layout.expected_composition_sha256, "0" * 64)
+    stale = replace(layout, assembly_units=units, expected_composition_sha256="0" * 64,
+                    hold_actuator=False)
+    assert text.count("hold_actuator = true") == 1
+    stale_text = text.replace(layout.expected_composition_sha256, "0" * 64).replace(
+        "hold_actuator = true", "hold_actuator = false")
     for unit in layout.assembly_units:
         stale_text = stale_text.replace(unit.expected_sha256, "0" * 64)
     rendered, payloads, changed = generator.update_rolling(
@@ -40,10 +43,12 @@ def test_rolling_update_replaces_stale_locks_without_enabling_hold(tmp_path):
     )
     path = tmp_path / "rolling-layout.toml"
     path.write_text(rendered)
-    assert storage.load_layout(path) == layout
+    # The generator rewrites the locks and leaves the actuator declaration unset.
+    updated = storage.load_layout(path)
+    assert updated == replace(layout, hold_actuator=False)
+    assert not updated.hold_actuator
     assert payloads == assembly.DEFAULT_PAYLOADS.read_text()
     assert len(changed) == len(units) + 1
-    assert not storage.load_layout(path).hold_actuator
 
 
 def test_rolling_update_rejects_a_machine_jump_that_disagrees_with_source():

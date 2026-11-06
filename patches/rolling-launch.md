@@ -24,8 +24,9 @@ The authoritative implementation sources are:
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
 The current runtime is configuration schema 6. Its layout declares the
-spark-cut hold actuator (`hold_actuator = true`), whose veto delivery the GNU
-gate qualifies; `make preflash` refuses an image that enables a map in hold
+spark-cut hold actuator (`hold_actuator = true`), whose veto path the GNU gate
+qualifies functionally; the GR11B timing margin and vehicle acceptance remain
+open in issue #150. `make preflash` refuses an image that enables a map in hold
 mode while that field is false. No schema 6 image has vehicle evidence.
 
 The target-vehicle evidence below comes from exact local images of registered
@@ -1266,9 +1267,9 @@ entries, release boundaries and tooth interrupts inside the periodic engine.
 Its H9/H32 windows bound the recorded scheduling defect; the compare and pin
 events are explicit simulator inputs. The narrow GNU README declares the
 excluded crank decoder and the fixture-only context and observation code.
-The native firmware pipeline requires this scope. Full image integration
-qualification and vehicle acceptance remain open in issue #150, so the
-image is ineligible for hardware testing.
+The native firmware pipeline requires this scope. It qualifies the veto path
+functionally; the GR11B timing margin and vehicle acceptance remain open in
+issue #150.
 
 Software verification does not authorize a flash. The CANCEL capture, both
 regulators, the actuation, the spark cut and its veto delivery, corrupt-state
