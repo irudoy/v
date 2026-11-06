@@ -552,7 +552,7 @@
                 "panel": "Temperatures and context"
               },
               "name": "rolling_launch_abort_reason",
-              "scale": "enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 SPEED_FRAME_STALE, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED, 19 SPEED_HIGH, 20 SPEED_ABOVE_WINDOW, 21 SPEED_BELOW_WINDOW",
+              "scale": "enumeration: 0 NONE, 1 CONFIG_INVALID, 2 MAP_INDEX_INVALID, 3 MAP_DISABLED, 4 SELECTOR_BUSY, 5 FEEDBACK_BUSY, 6 MAIN_PRESSED, 7 BUTTON_RELEASED, 8 BUTTON_INVALID, 9 SPEED_LOW, 10 RPM_LOW, 11 PEDAL_LOW, 12 COOLANT_OUTSIDE, 13 SPEED_FRAME_STALE, 14 TIMEOUT, 15 MAP_REQUEST, 16 STATE_CORRUPT, 17 MAP_CHANGED, 18 MODE_CHANGED, 19 SPEED_HIGH, 20 SPEED_ABOVE_WINDOW, 21 SPEED_BELOW_WINDOW, 22 SPEED_VALUE_INVALID, 23 SPEED_SOURCE_NOT_READY, 24 RPM_INPUT_INVALID, 25 CANCEL_CAPTURE_INVALID",
               "signed": false,
               "values": [
                 {
@@ -642,6 +642,22 @@
                 {
                   "name": "SPEED_BELOW_WINDOW",
                   "value": 21
+                },
+                {
+                  "name": "SPEED_VALUE_INVALID",
+                  "value": 22
+                },
+                {
+                  "name": "SPEED_SOURCE_NOT_READY",
+                  "value": 23
+                },
+                {
+                  "name": "RPM_INPUT_INVALID",
+                  "value": 24
+                },
+                {
+                  "name": "CANCEL_CAPTURE_INVALID",
+                  "value": 25
                 }
               ],
               "width": 1
