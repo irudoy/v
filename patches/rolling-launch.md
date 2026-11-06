@@ -136,7 +136,9 @@ CANCEL stores the current vehicle speed as the CANCEL capture when the
 configuration is valid and gates 8 to 10 pass; otherwise the capture is
 invalid until the next press. The capture is that of the stable code, not of
 the raw frame `0x239`, and any code other than CANCEL clears it. A press in
-`COOLDOWN` does not capture, so a capture never bypasses the rearm period.
+`COOLDOWN` does not capture, so a capture never bypasses the rearm period. A
+SPEED selection whose target lies below the speed threshold of the map also
+invalidates the capture (see Regulator selection).
 
 On JK08A, gate 6 follows the MAIN switch itself: the MAIN switch bit is set
 only while MAIN is pressed. The MAIN state that each press toggles,
@@ -173,6 +175,19 @@ activation on a later tick, so the offset applies once to the speed of the
 press. The captured RPM remains a diagnostic value of both kinds. The trim of
 the selected kind is copied into the state at activation, and the run uses
 that copy.
+
+A SPEED target must reach the speed threshold of the map. When an `IDLE` pass
+selects the SPEED regulator and the target lies below the threshold, the pass
+clears the valid bit of the CANCEL capture before the gates, whichever gate
+fails. Gate 11 then refuses the activation of either regulator, with
+`CANCEL_CAPTURE_INVALID` unless an earlier gate fails, until CANCEL is
+released and pressed again; the capture word remains as a diagnostic value.
+A press at a standstill therefore does not hold a moving vehicle at a target
+of 0: the vehicle drives off with the stock torque, also when it slows below
+the threshold again while CANCEL stays held. A new press while moving captures
+the current speed. A press whose passes stay below the threshold activates the
+RPM regulator, and a SPEED target at or above the threshold activates the
+SPEED regulator, as without this rule.
 
 ## Scheduler timebase
 

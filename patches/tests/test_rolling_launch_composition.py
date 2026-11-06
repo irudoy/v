@@ -208,7 +208,7 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         self.assertEqual(audit.instructions, 1707)
         self.assertEqual(audit.delayed_transfers, 105)
         self.assertEqual(audit.pc_relative_references, 102)
-        self.assertEqual(audit.direct_branches, 276)
+        self.assertEqual(audit.direct_branches, 277)
         self.assertEqual(audit.indirect_transfers, 40)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):

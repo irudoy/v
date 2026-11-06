@@ -252,12 +252,51 @@ def test_offset_bounds_admit_the_actual_negative_initial_error(calibration, inpu
     assert state.target_speed == inputs.speed+offset and state.speed_error == error
 
 
-@pytest.mark.parametrize("speed,offset,target", [(1, -149, 0), (65535, 99, 65535)])
-def test_speed_target_saturates_without_unsigned_wrap(calibration, inputs, table, speed, offset, target):
-    c = replace(calibration, min_speed=0, max_speed=0, target_speed_offset=offset,
+def test_speed_target_saturates_without_unsigned_wrap(calibration, inputs, table):
+    c = replace(calibration, min_speed=0, max_speed=0,
                 slots=tuple(replace(slot, launch_speed_threshold=1) for slot in calibration.slots))
-    state = activate(c, replace(inputs, speed=speed), table)
-    assert state.phase == rl.Phase.ACTIVE and state.target_speed == target
+    high = activate(replace(c, target_speed_offset=99), replace(inputs, speed=65535), table)
+    assert high.phase == rl.Phase.ACTIVE and high.target_speed == 65535
+    # A wrapped target of 1 - 149 would reach the threshold of 1; the
+    # saturated target 0 lies below it.
+    low = activate(replace(c, target_speed_offset=-149), replace(inputs, speed=1), table)
+    assert low.phase == rl.Phase.IDLE
+    assert low.abort_reason == rl.AbortReason.CANCEL_CAPTURE_INVALID
+
+
+@pytest.mark.parametrize("offset,active", [(-1, False), (0, True), (1, True)])
+def test_a_speed_target_needs_the_map_threshold(calibration, inputs, table, offset, active):
+    c = replace(calibration, min_speed=0, target_speed_offset=offset)
+    state = activate(c, replace(inputs, speed=50), table)
+    assert (state.phase == rl.Phase.ACTIVE) == active
+    if active:
+        assert state.regulator_kind == rl.RegulatorKind.SPEED and state.target_speed == 50 + offset
+    else:
+        assert state.abort_reason == rl.AbortReason.CANCEL_CAPTURE_INVALID
+        assert not state.input_status & 16 and state.cancel_speed_capture == 50
+
+
+def test_a_standing_capture_does_not_hold_a_moving_vehicle(calibration, inputs, table):
+    pressed = activate(calibration, replace(inputs, speed=0, pedal=0), table)
+    assert pressed.phase == rl.Phase.IDLE and pressed.input_status & 16
+    moving = rl.step(pressed, replace(inputs, speed=120), calibration, table).state
+    assert moving.phase == rl.Phase.IDLE
+    assert moving.abort_reason == rl.AbortReason.CANCEL_CAPTURE_INVALID
+    # Below the threshold again, the held press does not activate RPM either.
+    slow = rl.step(moving, replace(inputs, speed=30), calibration, table).state
+    assert slow.phase == rl.Phase.IDLE
+    assert slow.abort_reason == rl.AbortReason.CANCEL_CAPTURE_INVALID
+    released = rl.step(slow, replace(inputs, button=rl.BUTTON_RELEASED), calibration, table).state
+    held = rl.step(released, replace(inputs, speed=250), calibration, table).state
+    assert held.phase == rl.Phase.ACTIVE and held.regulator_kind == rl.RegulatorKind.SPEED
+    assert held.target_speed == 250
+
+
+def test_a_failing_gate_does_not_keep_a_low_target_capture(calibration, inputs, table):
+    pressed = activate(calibration, replace(inputs, speed=0, pedal=0), table)
+    moving = rl.step(pressed, replace(inputs, speed=120, ascd_status=0x80), calibration, table).state
+    assert moving.abort_reason == rl.AbortReason.MAIN_PRESSED
+    assert not moving.input_status & 16
 
 
 def test_invalid_cancel_capture_needs_a_new_press(calibration, inputs, table):

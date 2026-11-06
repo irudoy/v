@@ -20,8 +20,9 @@
 //      ready, bit3 RPM at most 32767, bit4 CANCEL capture valid.
 //   3. COOLDOWN rearms on a released button. IDLE and ACTIVE publish every
 //      satisfied gate and the first failure by priority. IDLE activates RPM
-//      below the map speed threshold and SPEED at or above it; ACTIVE keeps
-//      the latched regulator, map, mode and trim.
+//      below the map speed threshold and SPEED at or above it; a SPEED
+//      target below the threshold clears input_status bit4 before the gates.
+//      ACTIVE keeps the latched regulator, map, mode and trim.
 //   4. Every pass ends with the wire views of the extension, read, computed
 //      and stored with interrupts masked.
 // The validator at 0xD6680 returns 0 for an invalid configuration, and for a
@@ -239,19 +240,24 @@ rl_target_ready:
 mov #0x4,r0
 cmp/hi r0,r5
 bt rl_kind_ready
-mov r5,r0
-shll2 r0
-mov r0,r1
-shll r1
-add r0,r1
-add r10,r1
-add 0x28,r1
-mov.w @(0x8,r1),r0
+// The speed threshold of map r5 is the configuration word 0x30 + 12 * r5.
+mov #0xc,r0
+mulu.w r5,r0
+sts macl,r0
+add 0x30,r0
+mov.w @(r0,r10),r0
 extu.w r0,r0
 mov #0x1,r14
 cmp/hs r0,r4
 bf rl_kind_ready
 mov #0x2,r14
+// SPEED with a target below the threshold clears the capture bit, so gate
+// 11 refuses either kind until a new press captures again.
+cmp/hs r0,r6
+bt rl_kind_ready
+mov.b @(0x1,r9),r0
+and 0xef,r0
+mov.b r0,@(0x1,r9)
 bra rl_kind_ready
 nop
 rl_active_kind:
@@ -486,11 +492,9 @@ nop
 // error equals the cleared regulator error, and publishes ready P with the
 // law output 1000 and q = 0.
 rl_activate:
-mov r5,r0
-shll2 r0
-mov r0,r1
-shll r1
-add r0,r1
+mov #0xc,r0
+mulu.w r5,r0
+sts macl,r1
 add r10,r1
 add 0x28,r1
 mov #0x1,r0

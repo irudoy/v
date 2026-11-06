@@ -683,6 +683,10 @@ def engine_step(state, inputs, calibration, table):
             kind = RegulatorKind.RPM if inputs.speed < slot.launch_speed_threshold else RegulatorKind.SPEED
         target = (_clamp(state.cancel_speed_capture + calibration.target_speed_offset, 0, 65535)
                   if calibration.is_valid() else 0)
+        if kind == RegulatorKind.SPEED and target < slot.launch_speed_threshold:
+            # A SPEED target below the threshold of the map invalidates the
+            # capture, so only a new CANCEL press can activate either kind.
+            state = replace(state, input_status=state.input_status & ~16)
     flags, reason = evaluate_gates(inputs, calibration,
                                   target if state.phase == Phase.ACTIVE and kind == RegulatorKind.SPEED else None,
                                   regulator_kind=kind, capture_valid=bool(state.input_status & 16))

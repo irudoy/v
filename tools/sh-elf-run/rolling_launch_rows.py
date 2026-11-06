@@ -445,7 +445,7 @@ def build(variant=None):
     ):
         rows.engine_row(name, records(idle), inputs)
     rows.engine_row("gate-speed-min-off", records(idle), replace(good, active_index=2, speed=1),
-                    config=_config(min_speed=0))
+                    config=_config(min_speed=0, target_speed_offset=0))
     rows.engine_row("gate-speed-max-off", records(idle), replace(good, speed=65535),
                     config=_config(max_speed=0))
     rows.engine_row("gate-target-ceiling", records(idle),
@@ -458,6 +458,40 @@ def build(variant=None):
     lost = step(idle, replace(good, hcan1_state=0))
     rows.engine_row("capture-invalid", records(lost), good)
     rows.engine_row("capture-kept", records(held), replace(good, speed=310))
+
+    # A SPEED activation needs a target of at least the map 0 threshold of
+    # 10.0 km/h; the offset of -2.0 km/h places the boundary at 12.0 km/h.
+    for name, speed in (("target-below-threshold", 119), ("target-at-threshold", 120),
+                        ("target-above-threshold", 121)):
+        rows.engine_row(name, records(idle), replace(good, speed=speed))
+    # A capture at a standstill or without a usable speed gives no activation
+    # on the move, at either kind, until a new press captures again.
+    released = replace(good, button=model.BUTTON_RELEASED)
+    for prefix, edge in (("standing", replace(good, speed=0, pedal=0)),
+                         ("lost", replace(good, speed=0, hcan1_state=0))):
+        pressed = step(idle, edge)
+        moving = step(pressed, replace(good, speed=120))
+        if moving.phase != model.Phase.IDLE or moving.input_status & 16:
+            raise ValueError(f"{prefix}: a moving pass keeps the capture")
+        rows.engine_row(f"{prefix}-capture-moving", records(pressed), replace(good, speed=120))
+        rows.engine_row(f"{prefix}-refused-moving", records(moving), replace(good, speed=120))
+        rows.engine_row(f"{prefix}-refused-slow", records(moving), replace(good, speed=80))
+        rows.engine_row(f"{prefix}-refused-release", records(moving), released)
+        repressed = step(step(moving, released), replace(good, speed=150))
+        if (repressed.phase != model.Phase.ACTIVE
+                or repressed.regulator_kind != model.RegulatorKind.SPEED
+                or repressed.target_speed != 130):
+            raise ValueError(f"{prefix}: a new press does not activate SPEED at its capture")
+        rows.engine_row(f"{prefix}-repress-moving", records(step(moving, released)),
+                        replace(good, speed=150))
+    # The SPEED selection clears the capture before the gates, so a failing
+    # gate of either priority does not keep it.
+    pressed = step(idle, replace(good, speed=0, pedal=0))
+    for name, inputs in (("standing-moving-pedal-low", replace(good, speed=120, pedal=0)),
+                         ("standing-moving-main", replace(good, speed=120, ascd_status=0x80))):
+        if step(pressed, inputs).input_status & 16:
+            raise ValueError(f"{name}: a failing gate keeps the capture")
+        rows.engine_row(name, records(pressed), inputs)
     for name, speed in (("window-above", 431), ("window-above-edge", 430),
                         ("window-below", 179), ("window-below-edge", 180)):
         rows.engine_row(name, records(held), replace(good, speed=speed))
@@ -466,14 +500,15 @@ def build(variant=None):
     speed_hold = step(idle, good)
     rpm_hold = step(idle, replace(good, speed=80))
     zero_width = step(idle, replace(good, active_index=2, speed=0))
-    low_hold = step(idle, replace(good, speed=110))
+    low_hold = step(idle, replace(good, speed=120))
     observe_speed = step(idle, good, OBSERVE)
     observe_rpm = step(idle, replace(good, speed=80), OBSERVE)
     zero_gain = step(idle, replace(good, active_index=2, speed=300))
     for state, kind in ((speed_hold, model.RegulatorKind.SPEED),
                         (rpm_hold, model.RegulatorKind.RPM),
                         (zero_width, model.RegulatorKind.RPM),
-                        (zero_gain, model.RegulatorKind.SPEED)):
+                        (zero_gain, model.RegulatorKind.SPEED),
+                        (low_hold, model.RegulatorKind.SPEED)):
         if state.phase != model.Phase.ACTIVE or state.regulator_kind != kind:
             raise ValueError("an activation row does not reach its hold")
     for name, inputs in (
