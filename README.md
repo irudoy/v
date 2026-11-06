@@ -166,6 +166,11 @@ files: `tools/test-map.toml` maps the paths to test directories, the target
 prints the selected directories before it runs them, and a path that the map
 does not cover selects `make test`.
 
+A Python test without the `slow` marker runs under the `fast_test_timeout`
+limit of `pyproject.toml`. A test that exceeds it prints the stack of every
+thread, which names the test, and ends the pytest run with status 1
+(`tools/pytest_timeout_guard.py`). `slow` checks have no limit.
+
 `make verify` runs firmware qualification, source checks, and `make test-full`.
 It includes the repository-contained GNU SH-2E Docker gate and is required
 before closing an engineering track; a green `Verify` run of the exact commit

@@ -37,6 +37,7 @@ testpaths = [
     "tools/kb/tests",
 ]
 python_files = ["test_*.py"]
-addopts = ["--import-mode=importlib"]
+addopts = ["--import-mode=importlib", "-p", "tools.pytest_timeout_guard"]
 pythonpath = ["."]
+fast_test_timeout = 600
 markers = ["slow: integration checks included by full test entry points"]
