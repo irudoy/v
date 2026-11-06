@@ -27,7 +27,7 @@ def test_schema6_regions_state_and_payloads_are_declared(layout):
     assert (layout.efficiency.start, layout.efficiency.size) == (0xD6390, 82)
     assert [(x.start, x.end) for x in layout.ram.active_spans] == [
         (0xFFFF5D40, 0xFFFF5D6C), (0xFFFF6100, 0xFFFF6120)]
-    assert layout.payloads_ready and not layout.hold_actuator
+    assert layout.payloads_ready and layout.hold_actuator
     assert len(layout.expected_composition_sha256) == 64
     assert layout.default_configuration == rl.Calibration().to_bytes()
     assert layout.code_region_by_key["startup_wrapper"].entry == 0xD38A0

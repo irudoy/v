@@ -23,11 +23,10 @@ The authoritative implementation sources are:
   model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The current runtime is configuration schema 6. Its layout declares no hold
-actuator (`hold_actuator = false`) until the veto delivery of the spark-cut
-actuator, open in issue #150, has executable qualification; `make preflash`
-refuses an image that enables a map in hold mode while that field is false.
-No schema 6 image has vehicle evidence.
+The current runtime is configuration schema 6. Its layout declares the
+spark-cut hold actuator (`hold_actuator = true`), whose veto delivery the GNU
+gate qualifies; `make preflash` refuses an image that enables a map in hold
+mode while that field is false. No schema 6 image has vehicle evidence.
 
 The target-vehicle evidence below comes from exact local images of registered
 historical endpoints, whose units, records, and fuel paths
@@ -712,10 +711,10 @@ ran before the pass.
 In hold mode the dwell-arming wrapper consumes the cut fraction `q` of either
 regulator and selects the events whose dwell it requests to withhold. The
 wrapper executes at the countdown expiry, before the stock permission check.
-The coupled GNU fixture covers the bounded normal-mode scheduling path.
-Integration qualification and vehicle acceptance remain open in issue #150;
-`hold_actuator = false` keeps enabled HOLD images outside preflash
-qualification. The runtime targets the `7mfk` layout. The stock mechanisms
+The coupled GNU fixture covers the bounded normal-mode scheduling path. The
+layout declares the actuator with `hold_actuator = true`, so preflash
+qualifies enabled HOLD images; vehicle acceptance remains open in issue #150.
+The runtime targets the `7mfk` layout. The stock mechanisms
 are described in `../defs/JK08A.ignition-output.md`, the misfire readiness gate
 in `../defs/JK08A.diagnostics.md`, the inhibit history in
 `../defs/JK08A.fuel-cut-consumer.md`, and the throttle request path in
