@@ -718,7 +718,11 @@ its RMS.
   speed, and its width beyond that is the driveline response to the cut.
   At a speed target of 0, a window at 0 km/h has a speed error and a speed
   width of 0 by construction: the speed checks do not apply, so such a run
-  fails on the engine-speed width or reads `n/a`. The target is the
+  fails on the engine-speed width or reads `n/a`. Without `rpm_spread_rpm`
+  it has no judged check: it reads `n/a`, and its series stays
+  `INCOMPLETE`. The current runtime holds a standstill with the RPM
+  regulator, whose bounds judge it, because every slot has a launch speed
+  threshold of at least 0.1 km/h. The target is the
   selected target, or else the median of the targets that the speed and
   the published error of each snapshot imply, which reads 0 within
   0.5 km/h because the two values are sampled at different instants. At

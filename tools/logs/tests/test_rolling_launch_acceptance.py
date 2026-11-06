@@ -267,6 +267,20 @@ class RunAcceptanceTest(unittest.TestCase):
         self.assertEqual(item.verdict, "FAIL")
         self.assertTrue(item.reasons[0].startswith("RPM spread"))
 
+    def test_a_standing_speed_hold_without_an_rpm_bound_is_never_judged(self):
+        text = THRESHOLDS.format(steady=0.0, minimum=1.0).replace("rpm_spread_rpm = 200\n", "")
+        swinging = [
+            snapshot(5000 + index, 2000 + (3000 if index % 2 else 0), 0.0, control_error=0)
+            for index in range(120)
+        ]
+        item = accept(swinging, SPEED_SETTINGS, model.RegulatorKind.SPEED, thresholds(text=text))
+        self.assertTrue(item.standstill)
+        self.assertEqual(item.rpm.width, 3000)
+        self.assertEqual(item.verdict, "n/a")
+        self.assertEqual(item.reasons, ("speed checks do not apply at a standing target of 0",))
+        (series,) = audit.series_verdicts((item,) * 3, 3)
+        self.assertEqual((series.judged, series.verdict), (0, "INCOMPLETE"))
+
     def test_a_hold_that_leaves_a_target_of_0_keeps_its_speed_checks(self):
         samples = [
             snapshot(6000 + index, 3000, index / 40, control_error=round(index / 4))
