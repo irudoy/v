@@ -14,9 +14,11 @@ from patches import rolling_launch as model
 from tools.logs import rolling_launch_audit as audit
 from tools.logs.tests.test_rolling_launch_audit import (
     HISTORICAL,
+    RPM_CALIBRATION,
     RPM_SETTINGS,
     RPM_SLOT,
     SPEED_SETTINGS,
+    current_calibration,
     rpm_run,
     run_main,
 )
@@ -33,6 +35,7 @@ band_min_s = 2.0
 
 [rpm]
 p5_below_soft_rpm = 100
+p5_below_hard_rpm = 200
 p95_above_rpm = 200
 peak_above_rpm = 500
 
@@ -168,6 +171,24 @@ class RunAcceptanceTest(unittest.TestCase):
                 )
                 self.assertEqual(item.verdict, "FAIL")
                 self.assertTrue(any(text.startswith(reason) for text in item.reasons))
+
+    def test_a_hard_two_step_has_its_own_p5_bound(self):
+        hard = current_calibration(replace(
+            RPM_CALIBRATION,
+            slots=(replace(RPM_SLOT, launch_soft_width_native=0),) * model.SLOT_COUNT,
+        ))
+        values = thresholds(steady=0.0, minimum=0.5)
+        for dip, verdict in ((150, "PASS"), (250, "FAIL")):
+            with self.subTest(dip=dip):
+                item = accept(
+                    rpm_window([LAUNCH - dip] * 20 + [LAUNCH] * 80), hard,
+                    model.RegulatorKind.RPM, values,
+                )
+                self.assertEqual(item.verdict, verdict)
+                if verdict == "FAIL":
+                    self.assertEqual(
+                        item.reasons, (f"RPM P5 {LAUNCH - dip:.0f} below {LAUNCH - 200:.0f}",)
+                    )
 
     def test_a_short_window_has_no_verdict(self):
         item = accept(

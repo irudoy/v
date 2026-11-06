@@ -675,6 +675,7 @@ band_min_s = 2.0
 
 [rpm]
 p5_below_soft_rpm = 100
+p5_below_hard_rpm = 200
 p95_above_rpm = 200
 peak_above_rpm = 500
 
@@ -704,7 +705,9 @@ its RMS.
 - The RPM regulator: the peak and the mean of the engine speed less the
   launch RPM `Nt` of the map slot. The run passes when P5 >= `Nt - W -
   p5_below_soft_rpm` with the soft width `W` of the slot, P95 <= `Nt +
-  p95_above_rpm`, and the peak <= `Nt + peak_above_rpm`.
+  p95_above_rpm`, and the peak <= `Nt + peak_above_rpm`. A slot with
+  `W = 0` is a hard two-step whose cut saws the engine speed below `Nt`,
+  so its P5 bound is `Nt - p5_below_hard_rpm`.
 - The speed regulator: the percentiles of the speed and of the speed error,
   and the mean speed error. The error is the published control error or
   speed error, otherwise the `0x280` speed less the selected target. The

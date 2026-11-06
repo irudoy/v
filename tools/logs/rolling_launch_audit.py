@@ -1079,7 +1079,7 @@ THRESHOLD_SCHEMA_VERSION = 1
 BAND_MIN_SECONDS = 2.0
 THRESHOLD_KEYS = {
     "window": ("steady_after_s", "min_steady_s", "band_hz", "band_min_s"),
-    "rpm": ("p5_below_soft_rpm", "p95_above_rpm", "peak_above_rpm"),
+    "rpm": ("p5_below_soft_rpm", "p5_below_hard_rpm", "p95_above_rpm", "peak_above_rpm"),
     "speed": ("mean_error_kmh", "speed_spread_kmh", "rpm_spread_rpm"),
     "series": ("repeats",),
 }
@@ -1098,6 +1098,7 @@ class Thresholds:
     band_hz: tuple[float, float]
     band_min_s: float
     p5_below_soft_rpm: float
+    p5_below_hard_rpm: float
     p95_above_rpm: float
     peak_above_rpm: float
     mean_error_kmh: float
@@ -1399,7 +1400,12 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
             mean_error=statistics.fmean(rpm_values) - launch,
         )
         if result.rpm is not None:
-            bound = launch - width - thresholds.p5_below_soft_rpm
+            # A slot without a soft zone is a hard two-step, whose cut saws
+            # the engine speed below the launch RPM.
+            bound = launch - (
+                width + thresholds.p5_below_soft_rpm if width
+                else thresholds.p5_below_hard_rpm
+            )
             checks.append((
                 result.rpm.p5 >= bound,
                 f"RPM P5 {result.rpm.p5:.0f} below {bound:.0f}",
