@@ -238,8 +238,9 @@ The canonical JK08A Rolling Launch gate measures the regions
 `state_check` with the same host PC observer. Typed instruction statements of
 their units define this scope; pools and fill bytes do not count as
 instructions and must not execute. The gate does not execute the ignition
-adapter or the spark-cut actuator, so an image that contains them stays
-ineligible for hardware testing until their executable coverage exists.
+adapter, the spark-cut actuator, or the spark-event helpers; the
+`rolling_ignition` stage executes them functionally. The GR11B timing margin
+and vehicle acceptance remain open in issue #150.
 
 `rolling_launch_rows.py` derives every row from the schema 6 model in
 `patches/rolling_launch.py` and renders it as the C header that

@@ -9,9 +9,10 @@ conditional branch, every delay slot, every call site with its return, and
 every target that a register transfer loads. Three negative runs remove one
 covered path each and must fail coverage at exactly that path.
 
-The gate does not execute the ignition adapter or the spark-cut actuator.
-An image that contains them stays ineligible for hardware testing until
-their executable coverage exists.
+The gate does not execute the ignition adapter, the spark-cut actuator, or
+the spark-event helpers; the rolling_ignition stage executes them
+functionally. The GR11B timing margin and vehicle acceptance remain open in
+issue #150.
 """
 
 from __future__ import annotations
