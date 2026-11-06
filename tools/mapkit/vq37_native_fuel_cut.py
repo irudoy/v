@@ -375,7 +375,7 @@ def _address_key(address):
     return f"{address:08x}"
 
 
-def _model(target, address, width, height, semantics, note):
+def _model(target, address, width, height, semantics, note, axis_y=()):
     return {
         "addr": _address_key(address),
         "family": "direct-row-major" if height > 1 else "direct-indexed",
@@ -397,7 +397,7 @@ def _model(target, address, width, height, semantics, note):
         "accessors": [_address_key(target.function_address)],
         "resolver_kinds": ["reviewed-target"],
         "axis_x": [],
-        "axis_y": [],
+        "axis_y": [_address_key(address) for address in axis_y],
         "diagnostic_bindings": [],
     }
 
@@ -517,6 +517,7 @@ def apply_target(rom, maps, overrides, image, path=DEFAULT_REGISTRY):
         base_note
         + " The two rows are interpolated independently; "
         "no interpolation occurs between rows.",
+        axis_y=(target.axis_address,),
     )
     tables[caps_key] = {
         "name": "Engine Speed Limit - Fuel Cut Caps",
@@ -536,8 +537,6 @@ def apply_target(rom, maps, overrides, image, path=DEFAULT_REGISTRY):
         "format": "0.0",
         "fine": 12.5,
         "coarse": 125,
-        "static_axis_x_name": "Oil Thermistor Code",
-        "static_axis_x": list(target.axis_values),
         "static_axis_y_name": "Transition",
         "static_axis_y": ["Activation", "Release"],
     }

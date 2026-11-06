@@ -41,10 +41,11 @@
 # the r5 axis (graph :AXIS_X) defines rows and the r6 axis (:AXIS_Y) defines columns, while
 # RomRaider calls columns X Axis and rows Y Axis. The mapping crosses:
 # :AXIS_X -> Y Axis and :AXIS_Y -> X Axis. A one-dimensional map has one axis, which
-# RomRaider calls X Axis. The manual direct-row-major family stores X as the inner dimension
-# and has no axis edges: width -> sizex, height -> sizey, and overrides define both static
-# axes. For an implicit one-dimensional map, a reviewed static_axis override may replace
-# the generated raw input nodes with physical labels; the lookup step and geometry remain
+# RomRaider calls X Axis. The manual direct-row-major family stores X as the inner dimension:
+# width -> sizex, height -> sizey. Overrides define both static axes, or a ROM array on
+# :AXIS_Y indexes the columns as X Axis and a static_axis_y override labels the rows. For
+# an implicit one-dimensional map, a reviewed static_axis override may replace the
+# generated raw input nodes with physical labels; the lookup step and geometry remain
 # graph facts.
 #
 # Invocation:
@@ -881,6 +882,12 @@ def table_axes_xml(m, o, ovr, axes):
         if m["axis_x"] and m["axis_y"]:
             out += axis_xml("X Axis", axes[m["axis_y"][0]], ovr, "sizex")
             out += axis_xml("Y Axis", axes[m["axis_x"][0]], ovr, "sizey")
+        elif presentation.row_labelled(m, o):
+            out += axis_xml("X Axis", axes[m["axis_y"][0]], ovr, "sizex")
+            out += static_axis_xml(
+                o["static_axis_y"], o.get("static_axis_y_name", "Y Axis"),
+                "Static Y Axis", "sizey",
+            )
         else:
             out += static_axis_xml(
                 o["static_axis_x"], o.get("static_axis_x_name", "X Axis"),
@@ -1185,11 +1192,18 @@ def emittable(m, axes, ovr=None):
             return (f'branching selects the axis: {", ".join(hexa(a) for a in m[key])} '
                     f'- Stage 6 input')
         for a in m[key]:
+            if a not in axes:
+                return f'axis {hexa(a)} is absent from the editor model'
             if LEVELS.index(axes[a]["confidence"]) < LEVELS.index("candidate"):
                 return f'axis {hexa(a)} exists only as fallback evidence'
             if not axes[a]["kind"]:
                 return f'axis {hexa(a)} is not annotated'
     if m["dims"] == 2 and not (m["axis_x"] and m["axis_y"]):
+        if presentation.row_labelled(m, ovr):
+            if axes[m["axis_y"][0]]["len"] != m["width"]:
+                return (f'graph axis {hexa(m["axis_y"][0])} has '
+                        f'{axes[m["axis_y"][0]]["len"]} points for {m["width"]} columns')
+            return None
         if m["axis_x"] or m["axis_y"]:
             return "only one axis was recovered for a 2D map"
         if m["family"] != "direct-row-major":

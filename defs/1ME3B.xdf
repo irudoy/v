@@ -8173,22 +8173,15 @@
     <description>Exact 1ME3B. Address 0x172B6; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 1 uses the canonical stock storage. Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106. The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Oil Thermistor Code</units>
+      <EMBEDDEDDATA mmedaddress="0x17106" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
+      <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="15" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="17" />
-      <LABEL index="3" value="17" />
-      <LABEL index="4" value="18" />
-      <LABEL index="5" value="18" />
-      <LABEL index="6" value="19" />
-      <LABEL index="7" value="20" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -12091,22 +12084,15 @@
     <description>Exact 1ME3B. Address 0x13C6E0; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 2 storage is projected from 0x172B6. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106. The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Oil Thermistor Code</units>
+      <EMBEDDEDDATA mmedaddress="0x17106" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
+      <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="15" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="17" />
-      <LABEL index="3" value="17" />
-      <LABEL index="4" value="18" />
-      <LABEL index="5" value="18" />
-      <LABEL index="6" value="19" />
-      <LABEL index="7" value="20" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -16009,22 +15995,15 @@
     <description>Exact 1ME3B. Address 0x13C700; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 3 storage is projected from 0x172B6. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106. The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Oil Thermistor Code</units>
+      <EMBEDDEDDATA mmedaddress="0x17106" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
+      <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="15" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="17" />
-      <LABEL index="3" value="17" />
-      <LABEL index="4" value="18" />
-      <LABEL index="5" value="18" />
-      <LABEL index="6" value="19" />
-      <LABEL index="7" value="20" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -19927,22 +19906,15 @@
     <description>Exact 1ME3B. Address 0x13C720; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 4 storage is projected from 0x172B6. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106. The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Oil Thermistor Code</units>
+      <EMBEDDEDDATA mmedaddress="0x17106" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
+      <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="15" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="17" />
-      <LABEL index="3" value="17" />
-      <LABEL index="4" value="18" />
-      <LABEL index="5" value="18" />
-      <LABEL index="6" value="19" />
-      <LABEL index="7" value="20" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -23845,22 +23817,15 @@
     <description>Exact 1ME3B. Address 0x13C740; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 5 storage is projected from 0x172B6. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106. The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Oil Thermistor Code</units>
+      <EMBEDDEDDATA mmedaddress="0x17106" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
+      <embedinfo type="1" />
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="15" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="17" />
-      <LABEL index="3" value="17" />
-      <LABEL index="4" value="18" />
-      <LABEL index="5" value="18" />
-      <LABEL index="6" value="19" />
-      <LABEL index="7" value="20" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>

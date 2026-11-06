@@ -11,7 +11,7 @@ import sys
 import xml.etree.ElementTree as ET
 import zlib
 
-from .presentation import category_name
+from .presentation import category_name, row_labelled
 
 
 STORAGE_BITS = {"uint8": 8, "uint16": 16, "uint32": 32}
@@ -345,6 +345,16 @@ def add_table_axes(table, calibration, presentation, overrides, axes):
             add_embedded_axis(
                 table, "y", y_info,
                 overrides.get("axis", {}).get(y_info["addr"], {}),
+            )
+        elif row_labelled(calibration, presentation):
+            x_info = axes[calibration["axis_y"][0]]
+            add_embedded_axis(
+                table, "x", x_info,
+                overrides.get("axis", {}).get(x_info["addr"], {}),
+            )
+            add_static_axis(
+                table, "y", presentation["static_axis_y"],
+                presentation.get("static_axis_y_name", "Y Axis"),
             )
         else:
             add_static_axis(

@@ -21,3 +21,21 @@ def romraider_category_name(category):
         CATEGORY_PATH_SEPARATOR,
         ROMRAIDER_CATEGORY_SEPARATOR,
     )
+
+
+def row_labelled(calibration, override):
+    """Whether a direct row-major map has a graph column axis and declared row labels.
+
+    The ROM array indexes the columns (axis_y, the X axis of both editors),
+    and the presentation declares one static_axis_y label per row. A map
+    without both declarations, including a two-dimensional map with one
+    recovered axis of an interpolated pair, does not take this form.
+    """
+    return (
+        calibration["dims"] == 2
+        and calibration["family"] == "direct-row-major"
+        and not calibration["axis_x"]
+        and len(calibration["axis_y"]) == 1
+        and "static_axis_x" not in override
+        and len(override.get("static_axis_y", [])) == calibration["height"]
+    )

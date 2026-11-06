@@ -213,6 +213,10 @@ that a patch adds, removes, or replaces run in the GNU SH-2E gate of
 
 - A visible table must pass geometry, axis, scaling, and presentation gates.
 - A static axis cannot overlap a recovered graph axis.
+- A two-dimensional table has two graph axes, two static axes, or, for the
+  direct row-major family only, a graph column axis with a declared
+  `static_axis_y` label for every row; one recovered axis of an interpolated
+  pair does not pass the gate.
 - Target ROM identity, exact inheritance ranges, DTC stock bytes, and projected
   address bounds are validated before emission.
 - Relocated definitions retain canonical provenance while applying only

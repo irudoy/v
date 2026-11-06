@@ -3476,7 +3476,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x7B1A0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [code]
+         scaling x*12.5 RPM [code]; X Axis 0x17106 raw
          Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106.
          The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean
          predicate aggregated by the final fuel-mask coordinator behind periodic task-list word
@@ -3490,9 +3490,10 @@
            storageaddress="0x172B6" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
-        <data>15</data><data>16</data><data>17</data><data>17</data>
-        <data>18</data><data>18</data><data>19</data><data>20</data>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x17106" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Static Y Axis" name="Transition" sizey="2">
         <data>Activation</data><data>Release</data>
@@ -4067,7 +4068,7 @@
          project map-switching patch
          canonical accessor 0x7B1A0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [code]
+         scaling x*12.5 RPM [code]; X Axis 0x17106 raw
          Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106.
          The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean
          predicate aggregated by the final fuel-mask coordinator behind periodic task-list word
@@ -4081,9 +4082,10 @@
            storageaddress="0x13C6E0" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
-        <data>15</data><data>16</data><data>17</data><data>17</data>
-        <data>18</data><data>18</data><data>19</data><data>20</data>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x17106" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Static Y Axis" name="Transition" sizey="2">
         <data>Activation</data><data>Release</data>
@@ -4658,7 +4660,7 @@
          project map-switching patch
          canonical accessor 0x7B1A0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [code]
+         scaling x*12.5 RPM [code]; X Axis 0x17106 raw
          Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106.
          The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean
          predicate aggregated by the final fuel-mask coordinator behind periodic task-list word
@@ -4672,9 +4674,10 @@
            storageaddress="0x13C700" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
-        <data>15</data><data>16</data><data>17</data><data>17</data>
-        <data>18</data><data>18</data><data>19</data><data>20</data>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x17106" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Static Y Axis" name="Transition" sizey="2">
         <data>Activation</data><data>Release</data>
@@ -5249,7 +5252,7 @@
          project map-switching patch
          canonical accessor 0x7B1A0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [code]
+         scaling x*12.5 RPM [code]; X Axis 0x17106 raw
          Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106.
          The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean
          predicate aggregated by the final fuel-mask coordinator behind periodic task-list word
@@ -5263,9 +5266,10 @@
            storageaddress="0x13C720" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
-        <data>15</data><data>16</data><data>17</data><data>17</data>
-        <data>18</data><data>18</data><data>19</data><data>20</data>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x17106" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Static Y Axis" name="Transition" sizey="2">
         <data>Activation</data><data>Release</data>
@@ -5840,7 +5844,7 @@
          project map-switching patch
          canonical accessor 0x7B1A0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [code]
+         scaling x*12.5 RPM [code]; X Axis 0x17106 raw
          Exact 1ME3B native fuel-cut model at 0x7b1a0; selector 0xfffe80e5, shared axis 0x17106.
          The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean
          predicate aggregated by the final fuel-mask coordinator behind periodic task-list word
@@ -5854,9 +5858,10 @@
            storageaddress="0x13C740" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
-        <data>15</data><data>16</data><data>17</data><data>17</data>
-        <data>18</data><data>18</data><data>19</data><data>20</data>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x17106" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Static Y Axis" name="Transition" sizey="2">
         <data>Activation</data><data>Release</data>
