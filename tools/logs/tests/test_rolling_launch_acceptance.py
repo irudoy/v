@@ -79,6 +79,11 @@ class ThresholdFileTest(unittest.TestCase):
         self.assertEqual(values.repeats, 3)
         self.assertEqual(values.p95_above_rpm, 200.0)
 
+    def test_the_rpm_bound_of_a_speed_run_is_optional(self):
+        text = THRESHOLDS.format(steady=1.0, minimum=1.0).replace("rpm_spread_rpm = 200\n", "")
+        self.assertIsNone(thresholds(text=text).rpm_spread_rpm)
+        self.assertEqual(thresholds().rpm_spread_rpm, 200.0)
+
     def test_an_incomplete_or_invalid_file_is_refused(self):
         base = THRESHOLDS.format(steady=1.0, minimum=1.0)
         cases = {
@@ -193,6 +198,26 @@ class RunAcceptanceTest(unittest.TestCase):
         item = accept(drifting, SPEED_SETTINGS, model.RegulatorKind.SPEED, values)
         self.assertEqual(item.verdict, "FAIL")
         self.assertTrue(item.reasons[0].startswith("mean speed error +0.80"))
+
+    def test_a_speed_run_without_an_rpm_bound_reports_the_rpm_width(self):
+        # The engine speed alternates by 400 RPM while the speed holds.
+        speeds = [50.0 + value for value in sine(120, 0.3, 4)]
+        samples = [
+            snapshot(
+                2000 + index, 3000 + (400 if index % 2 else 0), speed,
+                control_error=round(speed * 10) - 500,
+            )
+            for index, speed in enumerate(speeds)
+        ]
+        bounded = thresholds(steady=0.0, minimum=1.0)
+        item = accept(samples, SPEED_SETTINGS, model.RegulatorKind.SPEED, bounded)
+        self.assertEqual(item.verdict, "FAIL")
+        self.assertEqual(item.reasons, ("RPM spread 400 above 200",))
+        text = THRESHOLDS.format(steady=0.0, minimum=1.0).replace("rpm_spread_rpm = 200\n", "")
+        item = accept(samples, SPEED_SETTINGS, model.RegulatorKind.SPEED, thresholds(text=text))
+        self.assertEqual(item.verdict, "PASS")
+        self.assertEqual(item.reasons, ())
+        self.assertEqual(item.rpm.width, 400)
 
     def test_a_standing_speed_hold_has_no_speed_check(self):
         # A neutral hold at a target of 0 reads a speed error and a speed

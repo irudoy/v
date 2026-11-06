@@ -660,9 +660,9 @@ prints. The veto check of a historical endpoint is informational.
 
 `--thresholds` adds the acceptance report of a hold session. Every window
 and threshold value comes from that local TOML file, which the session
-confirms before the image; the audit holds no default. All keys are
-mandatory, and unknown keys are refused. The values below show the format
-and are not recommended settings:
+confirms before the image; the audit holds no default. Every key except
+`rpm_spread_rpm` is mandatory, and unknown keys are refused. The values
+below show the format and are not recommended settings:
 
 ```toml
 schema_version = 1
@@ -710,6 +710,9 @@ its RMS.
   speed error, otherwise the `0x280` speed less the selected target. The
   run passes when the absolute mean error <= `mean_error_kmh`, the speed
   width <= `speed_spread_kmh`, and the engine-speed width <= `rpm_spread_rpm`.
+  A file without `rpm_spread_rpm` reports the engine-speed width and leaves
+  it out of the verdict: in a gear the engine speed follows the vehicle
+  speed, and its width beyond that is the driveline response to the cut.
   At a speed target of 0, a window at 0 km/h has a speed error and a speed
   width of 0 by construction: the speed checks do not apply, so such a run
   fails on the engine-speed width or reads `n/a`. The target is the

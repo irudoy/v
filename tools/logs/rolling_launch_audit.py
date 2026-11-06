@@ -1083,6 +1083,9 @@ THRESHOLD_KEYS = {
     "speed": ("mean_error_kmh", "speed_spread_kmh", "rpm_spread_rpm"),
     "series": ("repeats",),
 }
+# Keys that a file may leave out. Without `rpm_spread_rpm` the engine-speed
+# width of a speed run is reported and judges nothing.
+OPTIONAL_THRESHOLD_KEYS = frozenset(("rpm_spread_rpm",))
 
 
 @dataclass(frozen=True)
@@ -1099,7 +1102,7 @@ class Thresholds:
     peak_above_rpm: float
     mean_error_kmh: float
     speed_spread_kmh: float
-    rpm_spread_rpm: float
+    rpm_spread_rpm: float | None
     repeats: int
 
 
@@ -1130,14 +1133,15 @@ def load_thresholds(path: Path) -> Thresholds:
     values = {}
     for table, keys in THRESHOLD_KEYS.items():
         section = raw[table]
-        if not isinstance(section, dict) or set(section) != set(keys):
-            found = set(section) if isinstance(section, dict) else set()
+        found = set(section) if isinstance(section, dict) else set()
+        required = set(keys) - OPTIONAL_THRESHOLD_KEYS
+        if not isinstance(section, dict) or not required <= found <= set(keys):
             raise ValueError(
-                f"{path}: [{table}] keys differ; missing={sorted(set(keys) - found)};"
+                f"{path}: [{table}] keys differ; missing={sorted(required - found)};"
                 f" extra={sorted(found - set(keys))}"
             )
         for key in keys:
-            values[key] = section[key]
+            values[key] = section.get(key)
     band = values["band_hz"]
     if not isinstance(band, list) or len(band) != 2:
         raise ValueError(f"{path}: window.band_hz is not a pair of frequencies")
@@ -1151,7 +1155,7 @@ def load_thresholds(path: Path) -> Thresholds:
     if isinstance(repeats, bool) or not isinstance(repeats, int) or repeats < 1:
         raise ValueError(f"{path}: series.repeats is not an integer >= 1")
     for key, value in values.items():
-        if key not in ("band_hz", "repeats"):
+        if key not in ("band_hz", "repeats") and value is not None:
             values[key] = _threshold_number(value, f"{path}: {key}")
     if values["band_min_s"] < BAND_MIN_SECONDS:
         raise ValueError(
@@ -1455,12 +1459,14 @@ def run_acceptance(samples, start, end, calibration, kind, thresholds) -> Accept
                     f"speed spread {result.speed.width:.2f} km/h above"
                     f" {thresholds.speed_spread_kmh:.2f}",
                 ))
-        if result.rpm is None:
+        # Without a bound the engine-speed width is reported only.
+        limit = thresholds.rpm_spread_rpm
+        if limit is not None and result.rpm is None:
             checks.append((None, "no RPM spread"))
-        else:
+        elif limit is not None:
             checks.append((
-                result.rpm.width <= thresholds.rpm_spread_rpm,
-                f"RPM spread {result.rpm.width:.0f} above {thresholds.rpm_spread_rpm:.0f}",
+                result.rpm.width <= limit,
+                f"RPM spread {result.rpm.width:.0f} above {limit:.0f}",
             ))
     failed = tuple(reason for passed, reason in checks if passed is False)
     missing = tuple(reason for passed, reason in checks if passed is None)
