@@ -6,6 +6,18 @@ min(reference, max(reference - limit, corrected duration)) to 0xFFFFA0EC, \
 the second output of FUN_00055E78. The stock ratio bounds ROM16[0x921E] = \
 ROM16[0x9220] = 0 fix the corrected duration at 25.0, and every stock cell \
 holds 65535 = 327.675, so the stock output is min(reference, 25.0)."""
+note = [
+    """
+Native editor class (issue #129): stock-inactive on JK78C and absent on 1ND \
+and 1ME3B. The reader FUN_00055F2C is reachable without a calibration gate \
+through FUN_000557B2, FUN_00055A30, FUN_00055C46 and FUN_00055E78, and its \
+output is consumed: FUN_00055D72 takes it, and the stock decrease output is \
+min(reference, 25.0). The stock cells 65535 = 327.675 leave the clamp \
+non-binding: 65535 is the calibration value that removes the limit, and a \
+lower value bounds the decrease. On 1ND and 1ME3B the duration \
+characteristic has no ratio-correction reader, as the layout statuses \
+state.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"
@@ -28,33 +40,49 @@ at = "jk78c:00055faa"
 
 [[status]]
 layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "jk78c:00015c82"
-count = 0
-l0 = "7ed4ee54a3133ddd"
+state = "absent"
 note = """
-The role belongs to the JK78C ratio corrections FUN_00055F2C and \
-FUN_00055FF2, which look up the duration characteristic axis over the \
-characteristic. On this layout the duration reader FUN_0005B38E subtracts \
-the correction surface 0x0000CA7C instead, and the code graph records only \
-0x0005F814 as another reader of the characteristic axis 0x000176D6. No \
-counterpart is bound, and its absence is not established."""
+The JK78C ratio correction FUN_00055E78, FUN_00055F2C and FUN_00055FF2 reads \
+the duration characteristic beside FUN_0004EE30 and FUN_00052A64. On this \
+layout the characteristic 0x00015F54 and its axis 0x000176D6 have two \
+readers: FUN_0005B38E subtracts the correction surface 0x0000CA7C as \
+FUN_0004EE30 subtracts 0x0000C8CE, and FUN_0005F814 reads the characteristic \
+inversely as FUN_00052A64 does, with scalar bounds only. Neither reads an \
+engine-speed limit curve or bounds a ratio-corrected duration, so the ratio \
+correction and its limits do not exist on this layout."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005b38e"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005f814"
 
 [[status]]
 layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "jk78c:00015c82"
-count = 0
-l0 = "80899b88e0770eef"
+state = "absent"
 note = """
-The role belongs to the JK78C ratio corrections FUN_00055F2C and \
-FUN_00055FF2, which look up the duration characteristic axis over the \
-characteristic. On this layout the duration reader FUN_0005751E subtracts \
-the correction surface 0x0000CDC8 instead, and the code graph records only \
-0x0005B998 as another reader of the characteristic axis 0x00017612. No \
-counterpart is bound, and its absence is not established."""
+The JK78C ratio correction FUN_00055E78, FUN_00055F2C and FUN_00055FF2 reads \
+the duration characteristic beside FUN_0004EE30 and FUN_00052A64. On this \
+layout the characteristic 0x00016090 and its axis 0x00017612 have two \
+readers: FUN_0005751E subtracts the correction surface 0x0000CDC8 as \
+FUN_0004EE30 subtracts 0x0000C8CE, and FUN_0005B998 reads the characteristic \
+inversely as FUN_00052A64 does, with scalar bounds only. Neither reads an \
+engine-speed limit curve or bounds a ratio-corrected duration, so the ratio \
+correction and its limits do not exist on this layout."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005751e"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0005b998"
 
 [[link]]
 type = "axis"

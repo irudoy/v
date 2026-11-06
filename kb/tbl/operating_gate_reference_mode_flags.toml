@@ -18,7 +18,8 @@ separate qualification. Native editor class (issue #129): active on 1ND and \
 000e941a) reads it without a disabling stock calibration; scheduler \
 task-table entry 1ND 00022048 / 1ME3B 000220b4 reaches the coordinator \
 through 1ND 000b68f0 / 1ME3B 000c0584. The coordinator output flags 1ND \
-fffeb8e0 / 1ME3B fffeba4b are read by 1ND 0008b328 and 000ddf52.""",
+fffeb8e0 / 1ME3B fffeba4b are read by 1ND 0008b328 and 000ddf52 / 1ME3B \
+0008fc00 and 000e8fda.""",
 ]
 level = "code"
 home = "jk78c"
