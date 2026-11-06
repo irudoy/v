@@ -596,10 +596,22 @@ and its ratio to the wrapper addition is `M / W`.
 At 7650 RPM, the admitted-path allocations give
 `M1 = 71.7875 - 0.375 * H - A - P` and
 `M2 = 50.35 - 0.375 * H - A - P` us. At 5000 RPM, replace the constants
-by `186.9875` and `165.55`. These are conditional allocation equations,
-not observed margins. H, A and P remain unresolved, and the deliberately
-loose stock allocation is not an executed maximum. A positive complete
-margin or a tenfold `M / W` factor is not established.
+by `186.9875` and `165.55`.
+
+Outside ACTIVE HOLD, the cached path of a phase charges 27 instructions per
+call, so `W1 = 1.6875` and `W2 = 3.375` us. At 7650 RPM this gives
+`M1 = 79.6625 - 0.375 * H - A - P` and `M2 = 66.1 - 0.375 * H - A - P` us;
+at 5000 RPM the constants are `194.8625` and `181.3`. Two transients cost
+more: the first arming after a phase change, with 105 instructions, and the
+marker recheck, with 84 instructions while the marker of a hold waits for
+its 14th quiet event. Charging 105 on the first slot lowers M1 by
+`4.875 us`, and 105 plus 84 on the two slots lowers M2 by `8.4375 us`
+below the cached figures.
+
+These are conditional allocation equations, not observed margins. H, A
+and P remain unresolved, and the deliberately loose stock allocation is
+not an executed maximum. A positive complete margin or a tenfold `M / W`
+factor is not established.
 
 The model also needs a hardware bus-time qualification. Manual table 9.5
 allows 8..11 CPU states for an ATU/APC/PORT byte or word access and 16..19
