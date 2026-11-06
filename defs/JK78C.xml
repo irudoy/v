@@ -2675,6 +2675,29 @@
       </table>
     </table>
 
+    <!-- 0x16C14  8 uint16  map [code]
+         accessor 0x94D6C; r4 operand: reviewed-target
+         scaling x*0.78125 RPM [candidate]; axis 0x16A64 raw
+         Exact JK78C target-native table at 0x16c14 bound to accessor 0x94d6c through literal
+         0x95054. Stock JK78C applies the curve: bit 0 of ROM8[0000852a] enables the oil sensor,
+         producer 000bdf90 compares the code with ROM8[00008aef] = 20 and hysteresis
+         ROM8[00008af0] = 1, and the reader tests ffff4573.bit4. On the stock oil-thermistor
+         curve 000140c4, codes 15, 16, 17, 18, 19 and 20 read about 151, 147, 144, 141, 138 and
+         136 C [cand]; the stock curve lowers the threshold to 5632 at code 17 and below and to
+         7552 at codes 18 and 19, and holds 9600 at code 20.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Engine Speed Limit - Throttle Request - Oil Temperature"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0x16C14" sizex="8" endian="big">
+      <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
+               fineincrement="50" coarseincrement="250"/>
+      <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
+             storageaddress="0x16A64" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x084ED  2 uint8  map [candidate]
          scaling x*50 RPM [candidate]
          The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator
@@ -3172,7 +3195,7 @@
            storageaddress="0x16BF4" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector Code" sizex="8">
+      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
         <data>15</data><data>16</data><data>17</data><data>17</data>
         <data>18</data><data>18</data><data>19</data><data>20</data>
       </table>
@@ -3594,7 +3617,7 @@
            storageaddress="0x1E0E0" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector Code" sizex="8">
+      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
         <data>15</data><data>16</data><data>17</data><data>17</data>
         <data>18</data><data>18</data><data>19</data><data>20</data>
       </table>
@@ -4016,7 +4039,7 @@
            storageaddress="0x1E100" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector Code" sizex="8">
+      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
         <data>15</data><data>16</data><data>17</data><data>17</data>
         <data>18</data><data>18</data><data>19</data><data>20</data>
       </table>
@@ -4438,7 +4461,7 @@
            storageaddress="0x1E120" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector Code" sizex="8">
+      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
         <data>15</data><data>16</data><data>17</data><data>17</data>
         <data>18</data><data>18</data><data>19</data><data>20</data>
       </table>
@@ -4860,7 +4883,7 @@
            storageaddress="0x1E140" sizex="8" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector Code" sizex="8">
+      <table type="Static X Axis" name="Oil Thermistor Code" sizex="8">
         <data>15</data><data>16</data><data>17</data><data>17</data>
         <data>18</data><data>18</data><data>19</data><data>20</data>
       </table>

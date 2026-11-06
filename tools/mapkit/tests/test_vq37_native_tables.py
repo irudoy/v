@@ -176,6 +176,20 @@ CONDITIONER_BASE_OFFSETS = {
     "request_transition_error_correction_limit": 0xA,
     "request_transition_reference_floor": 0x10,
 }
+# The rotational-speed request limiter reads its oil-temperature threshold
+# curve and the shared oil-thermistor code axis through its literal pool.
+LIMITER_TABLE_ROLES = {"speed_limiter_state_threshold_curve"}
+LIMITER_AXIS_ROLES = {"oil_thermistor_code_axis"}
+LIMITER = {"JK78C": 0x94D6C, "1ND0A": 0xA8F02, "1ND3B": 0xA8F02, "1ME3B": 0xAFE8C}
+LIMITER_SITES = {
+    "JK78C": (0x95054, 0x95058),
+    "1ND0A": (0xA91DC, 0xA91D4),
+    "1ND3B": (0xA91DC, 0xA91D4),
+    "1ME3B": (0xB0064, 0xB006C),
+}
+# On JK78C the fuel-cut state machine and the two-stage limit builder also
+# load the axis through their own literal pools.
+LIMITER_AXIS_OTHER_BINDINGS = {"JK78C": {(0x6B074, 0x6AEB8, 0), (0x925DC, 0x9248A, 0)}}
 ROLES = (
     SELECTOR_ROLES
     | FUEL_TABLE_ROLES
@@ -190,6 +204,8 @@ ROLES = (
     | INJECTION_AXIS_ROLES
     | CONDITIONER_TABLE_ROLES
     | CONDITIONER_AXIS_ROLES
+    | LIMITER_TABLE_ROLES
+    | LIMITER_AXIS_ROLES
 )
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
@@ -269,11 +285,12 @@ def test_registry_declares_every_role_on_every_target():
         assert tables <= (
             SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
             | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES | INJECTION_TABLE_ROLES
-            | CONDITIONER_TABLE_ROLES
+            | CONDITIONER_TABLE_ROLES | LIMITER_TABLE_ROLES
         )
         assert axes <= (
             FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
             | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES | CONDITIONER_AXIS_ROLES
+            | LIMITER_AXIS_ROLES
         )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
@@ -385,6 +402,30 @@ def test_registry_publishes_the_conditioner_calibration_through_its_pool():
             "request_transition_input_byte_threshold",
             "request_transition_word_gate_threshold",
         }
+
+
+def test_registry_publishes_the_limiter_threshold_curve_through_its_pool():
+    for rom, target in vq37_native_tables.load_registry().items():
+        tables = {t.identifier: t for t in target.tables
+                  if t.identifier in LIMITER_TABLE_ROLES}
+        axes = {a.identifier: a for a in target.axes
+                if a.identifier in LIMITER_AXIS_ROLES}
+
+        assert set(tables) == LIMITER_TABLE_ROLES, rom
+        assert set(axes) == LIMITER_AXIS_ROLES, rom
+        curve = tables["speed_limiter_state_threshold_curve"]
+        axis = axes["oil_thermistor_code_axis"]
+        curve_site, axis_site = LIMITER_SITES[rom]
+        assert {(p.site, p.accessor, p.offset) for p in curve.pointer_bindings} == {
+            (curve_site, LIMITER[rom], 0)}
+        assert {(p.site, p.accessor, p.offset) for p in axis.pointer_bindings} == {
+            (axis_site, LIMITER[rom], 0)} | LIMITER_AXIS_OTHER_BINDINGS.get(rom, set())
+        assert (curve.width, curve.height, curve.axis_x) == (8, 1, (axis.address,))
+        # The curve lowers the base threshold, whose RPM scale it takes as a
+        # candidate; the axis shows stored oil-thermistor codes.
+        assert (curve.units, curve.scale_expr, curve.scale_conf) == (
+            "RPM", "x*0.78125", "candidate")
+        assert axis.scale_conf is None
 
 
 def test_registry_rejects_a_missing_role_declaration(tmp_path):

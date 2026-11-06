@@ -1,3 +1,13 @@
+title = "Oil thermistor code snapshot"
+summary = """
+Coherent snapshot of the filtered raw oil-thermistor code, the coordinate of \
+the fuel-cut curves and of the oil-temperature threshold curve of the \
+rotational-speed request limiter. On JK78C the snapshot block copy at \
+00020fb0 copies 0x80 bytes from ffff1104 to ffff1084, which carries \
+ffff1165, the filtered code that 000439c0 stores from the oil-thermistor \
+input. 1ND copies fffe816d, stored by 00048938, and 1ME3B copies fffe8159, \
+stored by 0004c338. The stock oil-thermistor curve decreases, so a lower \
+code is a higher oil temperature."""
 home = "jk78c"
 
 [[symbol]]

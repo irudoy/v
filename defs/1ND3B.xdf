@@ -3880,6 +3880,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xB906" flags="0x0">
+    <title>Engine Speed Limit - Throttle Request - Oil Temperature</title>
+    <description>Exact 1ND3B. Address 0x17222; 1 rows x 8 columns; uint16; map confidence code. Eight-word oil-temperature threshold of the rotational-speed request limiter, read through 000282f4 on the explicit word axis 00016a64, which it shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. While ffff4573.bit4 is set, the word published at ffff1a3c can lower the calibrated threshold, and it also bounds the downward threshold ramp. Producer 000bdf90 sets that bit by a hysteretic comparison of the code with ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor fault records are set. This curve has no scalar-to-curve binding to the canonical alternate threshold. Exact 1ND3B target-native table at 0x17222 bound to accessor 0xa8f02 through literal 0xa91dc. Stock 1ND0A and 1ND3B apply the curve: bit 0 of ROM8[00008561] enables the oil sensor, producer 000df018 compares selector fffe80ed with ROM8[00008bd1] = 20 and hysteresis ROM8[00008bd2] = 1 and copies the result to fffeb89d.bit2 while the oil-sensor fault records are clear, and the reader tests that bit at 000a904c. On the stock oil-thermistor curve 0001456a, codes 15 to 20 read about 151 to 136 C [cand], as on JK78C.</description>
+    <CATEGORYMEM index="0" category="16" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17072" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Stored count</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x17222" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x3350" flags="0x0">
     <title>Stationary Engine Speed Limit</title>
     <description>Exact 1ND3B. Address 0x8524; 1 rows x 2 columns; uint8; map confidence candidate. Stationary rev-limiter fuel-cut/restore hysteresis. Entry requires coarse vehicle speed ffff110e to equal zero. With readiness bit 4 of ffff247f set and state bit 5 clear, engine speed ffff11ae reaching cell 0 sets fuel cut. While bit 5 is set, speed below cell 1 restores fueling. FUN 0004ed88 includes the Boolean result in the aggregate fuel-output inhibit path. The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x284 vehicle speed through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and ffff2458 bit 5 remain physically unnamed. Definition address projected from JK08A 000085d9 through JK08A-1ND.definition-addresses.csv: homologous state machine preserves the 36 and 30 activation and release thresholds. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
@@ -7934,11 +7976,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xDB84" flags="0x0">
     <title>Map 1 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x17202; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x17202; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 1 uses the canonical stock storage. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Selector Code</units>
+      <units>Oil Thermistor Code</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11852,11 +11894,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xACF7" flags="0x0">
     <title>Map 2 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x1336E0; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 2 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x1336E0; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 2 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Selector Code</units>
+      <units>Oil Thermistor Code</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15770,11 +15812,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x6FD1" flags="0x0">
     <title>Map 3 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133700; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 3 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133700; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 3 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Selector Code</units>
+      <units>Oil Thermistor Code</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19688,11 +19730,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xD53" flags="0x0">
     <title>Map 4 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133720; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 4 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133720; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 4 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Selector Code</units>
+      <units>Oil Thermistor Code</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23606,11 +23648,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xAAD5" flags="0x0">
     <title>Map 5 - Engine Speed Limit - Fuel Cut Curves</title>
-    <description>Exact 1ND3B. Address 0x133740; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves. Common-definition Map 5 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
+    <description>Exact 1ND3B. Address 0x133740; 2 rows x 8 columns; uint16; map confidence code. Native VQ37 fuel-cut activation and release curves on the filtered raw oil-thermistor code; a lower code is a higher oil temperature. Common-definition Map 5 storage is projected from 0x17202. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact 1ND3B native fuel-cut model at 0x76ad2; selector 0xfffe80ed, shared axis 0x17072. The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state. The two rows are interpolated independently; no interpolation occurs between rows.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Selector Code</units>
+      <units>Oil Thermistor Code</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>

@@ -7,9 +7,10 @@ bit7 clear, ffff23af.bit0 or raw mode ffff2608=4 admits the comparison; mode \
 bit7 set requires ffff23af.bit0."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Active and unqualified for the editor. The stock limiter compares ffff10a8 \
+with it on every VQ37 image, with stock value 50; ffff10a8 and the admitting \
+conditions ffff23af.bit0 and ffff2608 have no established physical \
+identity.""",
 ]
 level = "code"
 home = "jk78c"

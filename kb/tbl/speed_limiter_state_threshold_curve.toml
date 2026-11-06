@@ -1,19 +1,23 @@
-title = "Speed limiter state threshold curve"
+title = "Oil-temperature engine speed threshold curve"
 summary = """
-Native eight-word dynamic threshold curve read through 000282f4 on explicit \
-word axis 00016a64, shared with rev_limit_fuel_cut_curves/tbl. Its input is \
-rev_fuel_cut_selector/ram at ffff10e5. The word is published at ffff1a3c and \
-can lower the calibrated threshold when ffff4573.bit4 is set. It also bounds \
-the downward threshold ramp. This curve has no scalar-to-curve binding to \
-the canonical alternate threshold. The existing shared axis contains \
-repeated breakpoints; its source and other readers are preserved. Editor \
-publication and behavior at those boundaries require separate \
-qualification."""
+Eight-word oil-temperature threshold of the rotational-speed request \
+limiter, read through 000282f4 on the explicit word axis 00016a64, which it \
+shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is \
+rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. \
+While ffff4573.bit4 is set, the word published at ffff1a3c can lower the \
+calibrated threshold, and it also bounds the downward threshold ramp. \
+Producer 000bdf90 sets that bit by a hysteretic comparison of the code with \
+ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor \
+fault records are set. This curve has no scalar-to-curve binding to the \
+canonical alternate threshold."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+The RPM scale x*0.78125 follows the base threshold \
+rev_limit_throttle_cut/tbl, which this curve lowers; it is a candidate on \
+the VQ37 layouts. The axis codes convert to oil temperature through the \
+stock oil-thermistor curve, a candidate conversion. The stock axis repeats \
+breakpoints 17 and 18, and the stock cells of each repeated pair are \
+equal.""",
 ]
 level = "code"
 home = "jk78c"
@@ -23,14 +27,30 @@ access = "explicit"
 cols = 8
 rows = 1
 storage = "uint16"
+unit = "RPM"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "candidate"
 
 [editor]
-emit = false
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
 
 [[symbol]]
 layout = "1me3b"
 address = "000172d6"
 level = "code"
+note = """
+Stock 1ME3B applies the curve: bit 0 of ROM8[00008576] enables the oil \
+sensor, the comparison at 000eae74 of selector fffe80e5 with ROM8[00008c23] \
+= 20 and hysteresis ROM8[00008c24] = 1 sets fffeba06.bit1, 000eaee8 copies \
+it to fffeba06.bit2 while the oil-sensor fault records are clear, and the \
+reader tests that bit at 000aff9e. The axis and curve stock bytes equal \
+JK78C."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -50,6 +70,13 @@ JK78C 00094d6c reads 00016c14 at 00094eac. Stock bytes equal JK78C."""
 layout = "1nd"
 address = "00017222"
 level = "code"
+note = """
+Stock 1ND0A and 1ND3B apply the curve: bit 0 of ROM8[00008561] enables the \
+oil sensor, producer 000df018 compares selector fffe80ed with ROM8[00008bd1] \
+= 20 and hysteresis ROM8[00008bd2] = 1 and copies the result to \
+fffeb89d.bit2 while the oil-sensor fault records are clear, and the reader \
+tests that bit at 000a904c. On the stock oil-thermistor curve 0001456a, \
+codes 15 to 20 read about 151 to 136 C [cand], as on JK78C."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -70,17 +97,34 @@ reads 00016c14 at 00094eac. 1ND0A and 1ND3B stock bytes equal JK78C."""
 layout = "jk78c"
 address = "00016c14"
 level = "code"
+note = """
+Stock JK78C applies the curve: bit 0 of ROM8[0000852a] enables the oil \
+sensor, producer 000bdf90 compares the code with ROM8[00008aef] = 20 and \
+hysteresis ROM8[00008af0] = 1, and the reader tests ffff4573.bit4. On the \
+stock oil-thermistor curve 000140c4, codes 15, 16, 17, 18, 19 and 20 read \
+about 151, 147, 144, 141, 138 and 136 C [cand]; the stock curve lowers the \
+threshold to 5632 at code 17 and below and to 7552 at codes 18 and 19, and \
+holds 9600 at code 20."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00094eac"
 
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk78c:00094eca"
+note = """
+While ffff4573.bit4 is set, the limiter takes the smaller of this word and \
+the base threshold ROM16[0000911e], rev_limit_throttle_cut/tbl, so the curve \
+shares its scale."""
+
 [[link]]
 type = "axis"
-to = "athletic-gharial/axis"
+to = "oil_thermistor_code_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -88,14 +132,34 @@ supports = "identity"
 at = "jk78c:00094eac"
 note = "The reviewed explicit wrapper call passes this axis in the x slot."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a903c"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000aff84"
+note = "The reviewed explicit wrapper call passes this axis in the x slot."
+
 [[link]]
 type = "reader"
 to = "rotational_speed_request_limiter/fn"
-layouts = ["jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00094eac"
-note = "The complete reader and literal-pool operand establish this access."
+at = "jk78c:00095054"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a91dc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b0064"

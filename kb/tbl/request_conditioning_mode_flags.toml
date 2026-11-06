@@ -7,9 +7,10 @@ context-gate branch and qualifies its held-transition neutral override with \
 ffff45ca.bit6. Other bit meanings remain unresolved."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Active and unqualified for the editor. Stock code reads bit 7 on every VQ37 \
+image, and the stock bytes 0x80 on JK78C and 1ND3B and 0x18 on 1ND0A and \
+1ME3B select different branches; the other bits have no established \
+meaning.""",
 ]
 level = "code"
 home = "jk78c"

@@ -512,7 +512,8 @@ def apply_target(rom, maps, overrides, image, path=DEFAULT_REGISTRY):
         target.curves_address,
         8,
         2,
-        "Native VQ37 fuel-cut activation and release curves.",
+        "Native VQ37 fuel-cut activation and release curves on the filtered raw "
+        "oil-thermistor code; a lower code is a higher oil temperature.",
         base_note
         + " The two rows are interpolated independently; "
         "no interpolation occurs between rows.",
@@ -535,7 +536,7 @@ def apply_target(rom, maps, overrides, image, path=DEFAULT_REGISTRY):
         "format": "0.0",
         "fine": 12.5,
         "coarse": 125,
-        "static_axis_x_name": "Selector Code",
+        "static_axis_x_name": "Oil Thermistor Code",
         "static_axis_x": list(target.axis_values),
         "static_axis_y_name": "Transition",
         "static_axis_y": ["Activation", "Release"],

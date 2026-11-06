@@ -362,6 +362,45 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000afe8c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000afe8c"
+to = "jk78c:00094d6c"
+note = """
+Reader 000afe8c follows the 1ND reader 000a8f02, which corresponds to the \
+JK78C rotational-speed request limiter 00094d6c. It gates the byte context \
+lookup on its eight-point axis, looks up the oil-temperature threshold curve \
+on the shared selector axis through the interpolation wrapper 0002aeac at \
+000aff90 as JK78C calls 000282f4 at 00094eb2, and tests the threshold gate \
+bit; it reads its word constants through GBR 00009264 and adds a \
+threshold-selected pair of filter rates and signed floors."""
+
+[[symbol]]
+layout = "1nd"
+address = "000a8f02"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a8f02"
+to = "jk78c:00094d6c"
+note = """
+Reader 000a8f02, called from 000a9968 with the pedal compensator 000a76d6, \
+corresponds to the JK78C rotational-speed request limiter 00094d6c, called \
+from 00095668 with 000948f0. Both take the neutral-output return, gate the \
+byte context lookup on its eight-point axis, look up the oil-temperature \
+threshold curve on the shared selector axis through the interpolation \
+wrapper, 1ND 00028910 at 000a903e as JK78C 000282f4 at 00094eb2, test the \
+threshold gate bit, and set the ramp flag and floor the ramp with one signed \
+word."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0007584e"
 

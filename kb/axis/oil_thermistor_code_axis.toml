@@ -1,0 +1,102 @@
+title = "Oil thermistor code axis"
+summary = """
+Eight unsigned word breakpoints of the filtered raw oil-thermistor code \
+rev_fuel_cut_selector/ram, shared by the fuel-cut curves and the \
+oil-temperature threshold curve of the rotational-speed request limiter. The \
+codes convert to oil temperature through the stock oil-thermistor curve; a \
+lower code is a higher temperature."""
+level = "code"
+home = "1me3b"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[editor]
+name = "Oil Thermistor Code"
+format = "0"
+fine = 1
+coarse = 1
+
+[[symbol]]
+layout = "1me3b"
+address = "00017106"
+former = ["athletic-gharial/axis/1me3b-00017106"]
+note = """
+The axis is shared with the Fuel Cut Curves. The stock breakpoints equal \
+JK78C, where they read about 151 to 136 C [cand] on the stock oil-thermistor \
+curve."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007b1ac"
+
+[[symbol]]
+layout = "1nd"
+address = "00017072"
+former = ["crystal-cheetah/axis/1nd-00017072"]
+note = """
+The axis is shared with the Fuel Cut Curves. On the stock oil-thermistor \
+curve 0001456a, the stock breakpoints 15, 16, 17, 18, 19 and 20 read about \
+151, 147, 144, 141, 138 and 136 C [cand]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00076ade"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016a64"
+former = ["statuesque-puma/axis/jk78c-00016a64"]
+note = """
+The axis is shared with the Fuel Cut Curves. On the stock oil-thermistor \
+curve 000140c4, the stock breakpoints 15, 16, 17, 18, 19 and 20 read about \
+151, 147, 144, 141, 138 and 136 C [cand]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006aee0"
+
+[[link]]
+type = "reader"
+to = "request_two_stage_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000925dc"
+
+[[link]]
+type = "reader"
+to = "rev_fuel_cut_state_machine/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b074"
+
+[[link]]
+type = "reader"
+to = "rotational_speed_request_limiter/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095058"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a91d4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b006c"

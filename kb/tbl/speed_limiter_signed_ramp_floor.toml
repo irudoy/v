@@ -5,9 +5,10 @@ request-rate update before the independently looked-up baseline and signed \
 upper cap."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Active and unqualified for the editor. The stock limiter reads it on JK78C, \
+1ND0A and 1ND3B, with stock value 0; the 1ME3B symbol is unresolved between \
+two candidates, and the request scale of the ramp has no established \
+conversion.""",
 ]
 level = "code"
 home = "jk78c"

@@ -1187,6 +1187,29 @@ semantics = "Per-pass decrement of the idle-model floor weight 0xFFFFA35C in FUN
 note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: the weight literal 10000 at 0x57068."
 
 [[target.JK78C.table]]
+id = "speed_limiter_state_threshold_curve"
+address = 0x00016C14
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "445841e49b3867bd9fe94b732015744138bdc13796eefddb01bfcdcb1478c30c"
+pointer_bindings = [{ site = 0x00095054, accessor = 0x00094D6C }]
+axis_x = 0x00016A64
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Eight-word oil-temperature threshold of the rotational-speed request limiter, read through 000282f4 on the explicit word axis 00016a64, which it shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. While ffff4573.bit4 is set, the word published at ffff1a3c can lower the calibrated threshold, and it also bounds the downward threshold ramp. Producer 000bdf90 sets that bit by a hysteretic comparison of the code with ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor fault records are set. This curve has no scalar-to-curve binding to the canonical alternate threshold."
+note = "Stock JK78C applies the curve: bit 0 of ROM8[0000852a] enables the oil sensor, producer 000bdf90 compares the code with ROM8[00008aef] = 20 and hysteresis ROM8[00008af0] = 1, and the reader tests ffff4573.bit4. On the stock oil-thermistor curve 000140c4, codes 15, 16, 17, 18, 19 and 20 read about 151, 147, 144, 141, 138 and 136 C [cand]; the stock curve lowers the threshold to 5632 at code 17 and below and to 7552 at codes 18 and 19, and holds 9600 at code 20."
+
+[[target.JK78C.table]]
 id = "vvel_idle_model_duration_floor"
 address = 0x00016C64
 width = 16
@@ -1619,6 +1642,21 @@ fine = 3.125
 coarse = 12.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000162CA and 0x000162EA in FUN_00057208, 256..2368; the coordinate is the engine-speed word 0xFFFF11A6. The reader addresses it at offset 0x40 from the literal 0x000162CA."
+
+[[target.JK78C.axis]]
+id = "oil_thermistor_code_axis"
+address = 0x00016A64
+length = 8
+storagetype = "uint16"
+values_sha256 = "643fda732242de458233c0d1d429f0fc4284d758175ef7f8784156bd35363a29"
+pointer_bindings = [{ site = 0x0006B074, accessor = 0x0006AEB8 }, { site = 0x000925DC, accessor = 0x0009248A }, { site = 0x00095058, accessor = 0x00094D6C }]
+name = "Oil Thermistor Code"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 1
+confidence = "code"
+note = "The axis is shared with the Fuel Cut Curves. On the stock oil-thermistor curve 000140c4, the stock breakpoints 15, 16, 17, 18, 19 and 20 read about 151, 147, 144, 141, 138 and 136 C [cand]."
 
 [[target.JK78C.axis]]
 id = "vvel_cold_axis"
@@ -3252,6 +3290,29 @@ semantics = "Per-pass decrement of the idle-model floor weight in FUN_0005FD88 a
 note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x000600A4, loaded at 0x0005FF76. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND0A.table]]
+id = "speed_limiter_state_threshold_curve"
+address = 0x00017222
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "445841e49b3867bd9fe94b732015744138bdc13796eefddb01bfcdcb1478c30c"
+pointer_bindings = [{ site = 0x000A91DC, accessor = 0x000A8F02 }]
+axis_x = 0x00017072
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Eight-word oil-temperature threshold of the rotational-speed request limiter, read through 000282f4 on the explicit word axis 00016a64, which it shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. While ffff4573.bit4 is set, the word published at ffff1a3c can lower the calibrated threshold, and it also bounds the downward threshold ramp. Producer 000bdf90 sets that bit by a hysteretic comparison of the code with ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor fault records are set. This curve has no scalar-to-curve binding to the canonical alternate threshold."
+note = "Stock 1ND0A and 1ND3B apply the curve: bit 0 of ROM8[00008561] enables the oil sensor, producer 000df018 compares selector fffe80ed with ROM8[00008bd1] = 20 and hysteresis ROM8[00008bd2] = 1 and copies the result to fffeb89d.bit2 while the oil-sensor fault records are clear, and the reader tests that bit at 000a904c. On the stock oil-thermistor curve 0001456a, codes 15 to 20 read about 151 to 136 C [cand], as on JK78C."
+
+[[target.1ND0A.table]]
 id = "vvel_idle_model_duration_floor"
 address = 0x00017272
 width = 16
@@ -3699,6 +3760,21 @@ fine = 3.125
 coarse = 12.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000168E8 and 0x000168C8 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060358, loaded at 0x0006017C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x0001630A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND0A.axis]]
+id = "oil_thermistor_code_axis"
+address = 0x00017072
+length = 8
+storagetype = "uint16"
+values_sha256 = "643fda732242de458233c0d1d429f0fc4284d758175ef7f8784156bd35363a29"
+pointer_bindings = [{ site = 0x000A91D4, accessor = 0x000A8F02 }]
+name = "Oil Thermistor Code"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 1
+confidence = "code"
+note = "The axis is shared with the Fuel Cut Curves. On the stock oil-thermistor curve 0001456a, the stock breakpoints 15, 16, 17, 18, 19 and 20 read about 151, 147, 144, 141, 138 and 136 C [cand]."
 
 [[target.1ND0A.axis]]
 id = "vvel_cold_axis"
@@ -5302,6 +5378,29 @@ semantics = "Per-pass decrement of the idle-model floor weight in FUN_0005FD88 a
 note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_0005FD88 through the literal-pool word 0x000600A4, loaded at 0x0005FF76. FUN_0005FD88 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
 
 [[target.1ND3B.table]]
+id = "speed_limiter_state_threshold_curve"
+address = 0x00017222
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "445841e49b3867bd9fe94b732015744138bdc13796eefddb01bfcdcb1478c30c"
+pointer_bindings = [{ site = 0x000A91DC, accessor = 0x000A8F02 }]
+axis_x = 0x00017072
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Eight-word oil-temperature threshold of the rotational-speed request limiter, read through 000282f4 on the explicit word axis 00016a64, which it shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. While ffff4573.bit4 is set, the word published at ffff1a3c can lower the calibrated threshold, and it also bounds the downward threshold ramp. Producer 000bdf90 sets that bit by a hysteretic comparison of the code with ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor fault records are set. This curve has no scalar-to-curve binding to the canonical alternate threshold."
+note = "Stock 1ND0A and 1ND3B apply the curve: bit 0 of ROM8[00008561] enables the oil sensor, producer 000df018 compares selector fffe80ed with ROM8[00008bd1] = 20 and hysteresis ROM8[00008bd2] = 1 and copies the result to fffeb89d.bit2 while the oil-sensor fault records are clear, and the reader tests that bit at 000a904c. On the stock oil-thermistor curve 0001456a, codes 15 to 20 read about 151 to 136 C [cand], as on JK78C."
+
+[[target.1ND3B.table]]
 id = "vvel_idle_model_duration_floor"
 address = 0x00017272
 width = 16
@@ -5749,6 +5848,21 @@ fine = 3.125
 coarse = 12.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x000168E8 and 0x000168C8 in FUN_00060146. Read by FUN_00060146 through the literal-pool word 0x00060358, loaded at 0x0006017C. FUN_00060146 holds the float literals of JK78C FUN_00057208. Stock bytes are identical to JK78C 0x0001630A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "oil_thermistor_code_axis"
+address = 0x00017072
+length = 8
+storagetype = "uint16"
+values_sha256 = "643fda732242de458233c0d1d429f0fc4284d758175ef7f8784156bd35363a29"
+pointer_bindings = [{ site = 0x000A91D4, accessor = 0x000A8F02 }]
+name = "Oil Thermistor Code"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 1
+confidence = "code"
+note = "The axis is shared with the Fuel Cut Curves. On the stock oil-thermistor curve 0001456a, the stock breakpoints 15, 16, 17, 18, 19 and 20 read about 151, 147, 144, 141, 138 and 136 C [cand]."
 
 [[target.1ND3B.axis]]
 id = "vvel_cold_axis"
@@ -7452,6 +7566,29 @@ semantics = "Per-pass decrement of the idle-model floor weight in FUN_00063CD4 a
 note = "Engineering conversion is unestablished. Retained hypothesis: x/10000 of the full weight; proposed editor-grid inverse x. Origin: on JK78C 0x00016BE4, the weight literal 10000 at 0x57068. Recorded code interpretation: Read by FUN_00063CD4 through the literal-pool word 0x00063F10, loaded at 0x00063E5A. FUN_00063CD4 holds the float literals of JK78C FUN_00056DCA. Stock bytes are identical to JK78C 0x00016BE4."
 
 [[target.1ME3B.table]]
+id = "speed_limiter_state_threshold_curve"
+address = 0x000172D6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "445841e49b3867bd9fe94b732015744138bdc13796eefddb01bfcdcb1478c30c"
+pointer_bindings = [{ site = 0x000B0064, accessor = 0x000AFE8C }]
+axis_x = 0x00017106
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Eight-word oil-temperature threshold of the rotational-speed request limiter, read through 000282f4 on the explicit word axis 00016a64, which it shares with rev_limit_fuel_cut_curves/tbl. Its coordinate is rev_fuel_cut_selector/ram at ffff10e5, the filtered raw oil-thermistor code. While ffff4573.bit4 is set, the word published at ffff1a3c can lower the calibrated threshold, and it also bounds the downward threshold ramp. Producer 000bdf90 sets that bit by a hysteretic comparison of the code with ROM8[00008aef] and ROM8[00008af0] and leaves it clear while the oil-sensor fault records are set. This curve has no scalar-to-curve binding to the canonical alternate threshold."
+note = "Stock 1ME3B applies the curve: bit 0 of ROM8[00008576] enables the oil sensor, the comparison at 000eae74 of selector fffe80e5 with ROM8[00008c23] = 20 and hysteresis ROM8[00008c24] = 1 sets fffeba06.bit1, 000eaee8 copies it to fffeba06.bit2 while the oil-sensor fault records are clear, and the reader tests that bit at 000aff9e. The axis and curve stock bytes equal JK78C."
+
+[[target.1ME3B.table]]
 id = "vvel_idle_model_duration_floor"
 address = 0x00017326
 width = 16
@@ -7933,6 +8070,21 @@ fine = 3.125
 coarse = 12.5
 confidence = "code"
 note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; proposed editor-grid inverse x/3.125. Origin: on JK78C 0x0001630A, the 0xFFFF11A6 coordinate of the resolver axes. Recorded code interpretation: Engine-speed axis of the high-load blend window curves 0x0001697C and 0x0001695C in FUN_000638C0. Read by FUN_000638C0 through the literal-pool word 0x00063A04, loaded at 0x0006394E. FUN_000638C0 holds the float literals of JK78C FUN_00057208 and forms the event center with the additional literals 450.0, -450.0 and -16384.0. Stock bytes are identical to JK78C 0x0001630A."
+
+[[target.1ME3B.axis]]
+id = "oil_thermistor_code_axis"
+address = 0x00017106
+length = 8
+storagetype = "uint16"
+values_sha256 = "643fda732242de458233c0d1d429f0fc4284d758175ef7f8784156bd35363a29"
+pointer_bindings = [{ site = 0x000B006C, accessor = 0x000AFE8C }]
+name = "Oil Thermistor Code"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 1
+confidence = "code"
+note = "The axis is shared with the Fuel Cut Curves. The stock breakpoints equal JK78C, where they read about 151 to 136 C [cand] on the stock oil-thermistor curve."
 
 [[target.1ME3B.axis]]
 id = "vvel_cold_axis"

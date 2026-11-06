@@ -56,7 +56,7 @@ at = "jk78c:0006b070"
 
 [[link]]
 type = "axis"
-to = "athletic-gharial/axis"
+to = "oil_thermistor_code_axis/axis"
 slot = "x"
 
 [[link.evidence]]

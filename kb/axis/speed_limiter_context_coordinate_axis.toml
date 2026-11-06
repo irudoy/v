@@ -6,9 +6,9 @@ nonnegative bounded sum of unsigned ffff10f1 and signed calibration \
 remain unresolved."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Active and unqualified for the editor. The stock limiter reads it on every \
+VQ37 image with stock breakpoints 30 to 170 in steps of 20; its coordinate \
+inputs ffff10f1 and ffff1069 have no established physical identity.""",
 ]
 level = "code"
 home = "jk78c"

@@ -4,9 +4,9 @@ Signed byte added to uint8[ffff10f1] before its minimum with uint8[ffff1069] \
 and lower clamp at zero. The result indexes the gated byte curve 00013c96."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Active and unqualified for the editor. The stock limiter reads it on every \
+VQ37 image, with stock value 0; the inputs ffff10f1 and ffff1069 of its \
+coordinate have no established physical identity.""",
 ]
 level = "code"
 home = "jk78c"
