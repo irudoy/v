@@ -161,7 +161,8 @@ STOP once the driver confirms the START transmission, and returns to START
 when the source is stopped or replaced.
 
 The button requires an active/ACK PCAN connection. The dashboard rejects the
-command in listen-only, demo, and replay modes. `sent` means the PCAN driver
+command in listen-only and replay modes, and the demo source reports it as an
+error. `sent` means the PCAN driver
 accepted the transmit request; the protocol has no response frame, so reception
 of new telemetry after START is the end-to-end confirmation.
 
@@ -179,8 +180,8 @@ a SET frame for every slot and a COMMIT frame. The frames go out at least
 20 ms apart because the ECU consumes one control frame per 10.24 ms tick.
 The frames come from `patches/can-telemetry-configurations.json`, the
 generated JK08A slot addresses; `--configurations` selects another file of
-the same form. The button requires an active/ACK PCAN connection, like
-`STREAM`.
+the same form. The button requires an active/ACK PCAN connection or the demo
+source.
 
 The protocol has no response frame. The `Page configuration` panel shows the
 configuration that the page echoes, the group of the snapshot, the requested
@@ -193,6 +194,21 @@ configuration change drops the values that only the previous configuration
 carried, and the `Dynamic page` panel shows the slots of every
 configuration. `Undecoded pages` counts snapshots whose page carries a
 configuration or group that the schema does not define.
+
+The demo source applies the page commands as the ECU does. It consumes one
+control frame per tick, DEFAULT installs configuration 0, and a COMMIT that
+matches the staged slot widths and the groups of the schema installs its
+configuration from the group of the same tick. The page echoes the
+configuration and alternates the groups of a two-group configuration. Near the
+top of its load wave the demo holds Rolling Launch ACTIVE with an RPM
+regulator at 3900 RPM, so a demo recording made with configuration 3, 4, 5,
+or 6 carries hold fields in every ACTIVE snapshot, and
+`tools/logs/rolling_launch_audit.py` audits its runs without a coverage gap.
+The values of one snapshot agree with each other but follow neither the
+regulator law nor the calibration of an image. The audit of a demo recording
+therefore reports law failures and exits with code 1; this is expected. A
+rehearsal of the post-session analysis exercises the audit path and its report
+on a demo recording, and a vehicle recording checks the law.
 
 ## Native macOS application
 

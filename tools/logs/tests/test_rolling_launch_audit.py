@@ -2,6 +2,7 @@ import contextlib
 from dataclasses import replace
 from functools import lru_cache
 import io
+import json
 from pathlib import Path
 import statistics
 import struct
@@ -16,7 +17,10 @@ from patches import rom_checksums
 from patches import runtime_endpoints
 from patches import runtime_targets
 from patches.tests import rolling_endpoint_images as endpoint_images
+from tools.can_dashboard import model as dashboard
+from tools.can_dashboard import raw_log
 from tools.logs import can_telemetry
+from tools.logs import can_telemetry_schema
 from tools.logs import rolling_launch_audit as audit
 
 
@@ -1416,6 +1420,57 @@ class EndpointCalibrationTest(unittest.TestCase):
             path.write_bytes(target.stock_image.data)
             with self.assertRaisesRegex(ValueError, "no Rolling Launch runtime"):
                 audit.read_calibration(path)
+
+
+# The demo source reaches the end of its first ACTIVE run by this tick.
+DEMO_TICKS = 215
+
+
+def demo_trc(directory, configuration_id):
+    """A TRC of the demo source whose page commands select a configuration
+    from tick 20, one frame per tick, or none for None."""
+    generator = dashboard.DemoGenerator()
+    commands = ()
+    if configuration_id is not None:
+        frames = json.loads(can_telemetry.DEFAULT_CONFIGURATION_FRAMES.read_text())
+        _can_id, commands = can_telemetry_schema.configuration_commands(
+            frames, generator.profile, generator.can_id, configuration_id
+        )
+    pending = [payload for _command, payload in commands]
+    path = Path(directory) / f"demo-{configuration_id}.trc"
+    number = 0
+    with path.open("w", encoding="ascii") as trc:
+        trc.write(raw_log.header(1_776_000_000))
+        for tick in range(1, DEMO_TICKS + 1):
+            if tick >= 20 and pending:
+                generator.control(pending.pop(0))
+            elapsed = tick * dashboard.BASE_TICK_SECONDS
+            context = (
+                generator.stock_context(tick, elapsed, bus_detail=True)
+                if tick % 10 == 0 else ()
+            )
+            for frame in (*generator.group(tick, elapsed), *context):
+                number += 1
+                trc.write(raw_log.row(number, elapsed, frame))
+    return path
+
+
+class DemoRecordingTest(unittest.TestCase):
+    def test_a_selected_hold_configuration_leaves_no_coverage_gap(self):
+        settings = current_calibration()
+        with tempfile.TemporaryDirectory() as directory:
+            for configuration_id in (None, 3, 4, 5, 6):
+                with self.subTest(configuration=configuration_id):
+                    capture = audit.read_trc(demo_trc(directory, configuration_id))
+                    (run,) = audit.audit_hold(
+                        capture.samples, settings, timing=capture.timing
+                    )
+                    if configuration_id is None:
+                        # The demo page stays on the default configuration.
+                        self.assertEqual(run.gap.configurations, (0,))
+                    else:
+                        self.assertIsNone(run.gap)
+                        self.assertGreater(run.checked_ticks, 0)
 
 
 class BusJoinTest(unittest.TestCase):

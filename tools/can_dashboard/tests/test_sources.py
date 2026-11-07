@@ -550,6 +550,158 @@ class PcanSourceTest(unittest.TestCase):
             app.build_parser().parse_args(["--active"])
 
 
+class DemoPageTest(unittest.TestCase):
+    """The demo source applies the page commands of the PAGE menu."""
+
+    FRAMES = app.load_configuration_frames(
+        app.can_telemetry.DEFAULT_CONFIGURATION_FRAMES
+    )
+
+    def commands(self, generator, configuration_id):
+        can_id, frames = app.can_telemetry_schema.configuration_commands(
+            self.FRAMES, generator.profile, generator.can_id, configuration_id
+        )
+        return [
+            sources.ControlRequest(command, can_id, payload, app.PAGE_FRAME_SPACING)
+            for command, payload in frames
+        ]
+
+    @staticmethod
+    def run_ticks(generator, requests, ticks, start=1):
+        """Step the demo source tick by tick and return (control events,
+        decoded snapshots)."""
+        dashboard = model.DashboardModel("tuning", generator.can_id, 1)
+        events = []
+        snapshots = []
+        for tick in range(start, start + ticks):
+            elapsed = tick * model.BASE_TICK_SECONDS
+            sources._demo_control(generator, requests, events.append)
+            for frame in generator.group(tick, elapsed):
+                snapshot = dashboard.process_frame(frame, now=elapsed)
+                if snapshot is not None:
+                    snapshots.append((
+                        dashboard.raw["telemetry_page_configuration"],
+                        dashboard.raw.get("rolling_launch_phase"),
+                        dict(snapshot.fields),
+                    ))
+        return events, snapshots
+
+    def queue(self, *requests):
+        pending = sources.queue.Queue()
+        for request in requests:
+            pending.put(request)
+        return pending
+
+    def test_a_committed_configuration_is_echoed_with_alternating_groups(self):
+        for configuration_id in (3, 4, 5, 6):
+            with self.subTest(configuration=configuration_id):
+                generator = model.DemoGenerator()
+                requests = self.commands(generator, configuration_id)
+                events, snapshots = self.run_ticks(
+                    generator, self.queue(*requests), len(requests) + 4
+                )
+                self.assertEqual(
+                    [(event.state, event.command) for event in events],
+                    [("sent", request.command) for request in requests],
+                )
+                # One frame per tick; the COMMIT applies to its own tick.
+                selectors = [selector for selector, _phase, _fields in snapshots]
+                groups = generator.dynamic.configurations[configuration_id]
+                self.assertEqual(selectors[: len(requests) - 1], [0] * (len(requests) - 1))
+                self.assertEqual(
+                    selectors[len(requests) - 1 :],
+                    [configuration_id | (index % len(groups)) << 7 for index in range(5)],
+                )
+                for selector, _phase, fields in snapshots[len(requests) - 1 :]:
+                    names = {field["name"] for field, _offset in groups[selector >> 7]}
+                    self.assertLessEqual(names, set(fields))
+
+    def test_default_reinstalls_configuration_zero(self):
+        generator = model.DemoGenerator()
+        requests = [*self.commands(generator, 4), *self.commands(generator, 0)]
+        _events, snapshots = self.run_ticks(generator, self.queue(*requests), len(requests) + 1)
+        self.assertEqual([selector for selector, *_rest in snapshots[-2:]], [0, 0])
+        self.assertEqual(generator.page_configuration, 0)
+
+    def test_a_rejected_frame_keeps_the_active_configuration(self):
+        generator = model.DemoGenerator()
+        for request in self.commands(generator, 3):
+            self.assertTrue(generator.control(request.payload))
+        set_frame, *_rest, commit = self.commands(generator, 4)
+        corrupt = bytearray(set_frame.payload)
+        corrupt[7] ^= 1
+        cases = {
+            "wrong CRC": [bytes(corrupt)],
+            "COMMIT without SET": [commit.payload],
+            "COMMIT of a partial staging": [set_frame.payload, commit.payload],
+        }
+        for name, payloads in cases.items():
+            with self.subTest(name):
+                accepted = [generator.control(payload) for payload in payloads]
+                self.assertFalse(accepted[-1])
+                self.assertEqual(generator.page_configuration, 3)
+
+    def test_a_set_of_another_id_restarts_the_staging(self):
+        generator = model.DemoGenerator()
+        *sets_3, commit_3 = self.commands(generator, 3)
+        *sets_4, commit_4 = self.commands(generator, 4)
+        for request in (*sets_3, *sets_4):
+            self.assertTrue(generator.control(request.payload))
+        self.assertFalse(generator.control(commit_3.payload))
+        self.assertEqual(generator.page_configuration, 0)
+        for request in (*sets_3, *sets_4):
+            generator.control(request.payload)
+        self.assertTrue(generator.control(commit_4.payload))
+        self.assertEqual(generator.page_configuration, 4)
+
+    def test_active_snapshots_carry_the_hold_fields(self):
+        generator = model.DemoGenerator()
+        requests = self.commands(generator, 5)
+        _events, snapshots = self.run_ticks(generator, self.queue(*requests), 215)
+        active = [
+            (selector, fields) for selector, phase, fields in snapshots if phase == 1
+        ]
+        self.assertGreater(len(active), 50)
+        for selector, fields in active:
+            if selector >> 7:
+                self.assertEqual(fields["rolling_launch_accepted_button_raw"], 0x02)
+                self.assertGreater(fields["rolling_launch_rpm_sample_raw"], 0)
+            else:
+                # RPM regulator, inputs valid, CANCEL, and actuation ready.
+                self.assertEqual(fields["rolling_launch_status"], 0xBD)
+                self.assertEqual(
+                    fields["rolling_launch_selected_target_raw"],
+                    model.DEMO_LAUNCH_TARGET,
+                )
+
+    def test_stream_commands_have_no_demo_counterpart(self):
+        generator = model.DemoGenerator()
+        events = []
+        requests = self.queue(sources.ControlRequest("stop", 0x6F1, bytes(8)))
+        sources._demo_control(generator, requests, events.append)
+        self.assertEqual(
+            events,
+            [sources.ControlStatus(
+                "error", "telemetry STOP has no demo counterpart", "stop"
+            )],
+        )
+
+    def test_the_demo_takes_page_control(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.args = types.SimpleNamespace(profile="tuning", schema=None)
+        dashboard.stop_source = mock.Mock()
+        dashboard._selected_can_id = lambda: 0x6F0
+        dashboard._new_model = mock.Mock()
+        dashboard._source_emitter = lambda: "emit"
+        dashboard._source_capture = lambda: "capture"
+        with mock.patch.object(app.threading, "Thread") as thread:
+            dashboard.start_demo()
+        args = thread.call_args.kwargs["args"]
+        self.assertIs(thread.call_args.kwargs["target"], app.run_demo)
+        self.assertIs(args[-1], dashboard.control_requests)
+        self.assertTrue(dashboard.control_active)
+
+
 class ControlPacingTest(unittest.TestCase):
     def test_spaced_frames_wait_for_their_spacing(self):
         now = [10.0]
@@ -621,7 +773,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard = app.DashboardApp.__new__(app.DashboardApp)
         dashboard.control_requests = sources.queue.Queue(maxsize=8)
         dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
-        dashboard.pcan_active = active
+        dashboard.control_active = active
         dashboard.model = types.SimpleNamespace(
             can_id=0x6F0,
             decoder=types.SimpleNamespace(
@@ -641,7 +793,7 @@ class DashboardPresentationTest(unittest.TestCase):
         for _index in range(queued):
             dashboard.control_requests.put_nowait(None)
         dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
-        dashboard.pcan_active = True
+        dashboard.control_active = True
         dashboard.model = model.DashboardModel("tuning", 0x6F0, 1)
         dashboard.configuration_frames = app.load_configuration_frames(
             app.can_telemetry.DEFAULT_CONFIGURATION_FRAMES

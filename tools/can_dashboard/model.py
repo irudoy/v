@@ -11,7 +11,7 @@ import time
 from tools.can_dashboard.acceleration import AccelerationTimer
 from tools.can_dashboard.selected_map import MAP_COUNT, MapTracker
 from tools.can_dashboard import stock
-from tools.logs import can_telemetry
+from tools.logs import can_telemetry, can_telemetry_schema
 
 
 TCM_GEAR_ID = 0x174
@@ -79,6 +79,16 @@ KNOCK_MARGIN_FIELDS = tuple(
 # surface, and one with bit 6 clear the high-octane surface.
 HIGH_DETONATION_MASK = 0x40
 FUEL_INHIBIT_ALL = 0x3F
+# The Rolling Launch hold of the demo source: an RPM regulator at 3900 RPM in
+# 12.5 RPM counts with a soft width of 200 RPM, a trim of 10 degrees, an
+# efficiency of 82 percent, and an APC command floor. The values are
+# plausible and belong to no image calibration.
+DEMO_LAUNCH_TARGET = 312
+DEMO_LAUNCH_SOFT_WIDTH = 16
+DEMO_LAUNCH_TRIM = 10
+DEMO_LAUNCH_EFFICIENCY = 820
+DEMO_LAUNCH_FLOOR = 120
+DEMO_SPARK_EVENTS_PER_REVOLUTION = 3
 
 
 def _set_bits(mask):
@@ -795,7 +805,8 @@ class DemoGenerator:
     """Generate wire-valid tuning groups with realistic changing values.
 
     A field without a curve of its own takes the default value of its schema,
-    so that a new telemetry field needs no demo value.
+    so that a new telemetry field needs no demo value. The page commands of
+    `control` select the configuration of the dynamic page.
     """
 
     def __init__(
@@ -818,6 +829,158 @@ class DemoGenerator:
             tag for _page, tag in self.context_by_page_and_tag
         )
         self.fields = can_telemetry.profile_fields(self.profile)
+        self.dynamic = self.profile["_layout"].dynamic
+        self.configuration_field = can_telemetry.configuration_field(self.profile)
+        self.page_configuration = 0
+        self.page_group = 0
+        self._staging = None
+        self.consumed_q_sum = 0
+
+    def control(self, payload):
+        """Apply one page command of the control ID as the runtime does and
+        report whether it is accepted.
+
+        DEFAULT installs configuration 0. SET stages the width of one slot of
+        a configuration ID; a SET of another ID restarts the staging. COMMIT
+        installs the staged ID when the profile defines it with exactly the
+        staged groups and slot widths, and the next snapshot carries its
+        first group. A rejected frame clears the staging and keeps the active
+        configuration. The demo has no RAM, so slot addresses go unchecked.
+        """
+        data = bytes(payload)
+        valid = (
+            self.dynamic is not None
+            and len(data) == 8
+            and can_telemetry_schema.crc16_ccitt_false(data[:6])
+            == int.from_bytes(data[6:], "big")
+        )
+        if valid and data[:6] == bytes((0xC0, 0, 0, 0, 0, 0)):
+            self._install(0)
+            return True
+        configuration_id = data[1] if valid else 0
+        if (
+            valid
+            and data[0] == 0xC1
+            and 1 <= configuration_id <= 0x7F
+            and data[2] >> 4 & 7 < 6
+            and data[2] & 0x0F in (1, 2, 4)
+        ):
+            if self._staging is None or self._staging[0] != configuration_id:
+                self._staging = (configuration_id, {})
+            self._staging[1][data[2] >> 7, data[2] >> 4 & 7] = data[2] & 0x0F
+            return True
+        if (
+            valid
+            and data[0] == 0xC2
+            and self._staging is not None
+            and self._staging[0] == configuration_id
+        ):
+            groups = self.dynamic.configurations.get(configuration_id, ())
+            counts = [len(placed) for placed in groups] + [0, 0]
+            widths = {
+                (group, slot): field["width"]
+                for group, placed in enumerate(groups)
+                for slot, (field, _offset) in enumerate(placed)
+            }
+            if (
+                groups
+                and data[2:6] == bytes((len(groups), *counts[:2], 0))
+                and self._staging[1] == widths
+            ):
+                self._install(configuration_id)
+                return True
+        self._staging = None
+        return False
+
+    def _install(self, configuration_id):
+        self.page_configuration = configuration_id
+        self.page_group = 0
+        self._staging = None
+
+    def _page_slots(self, values):
+        """Return the (field, offset) pairs of the group that the next
+        snapshot carries, or None for the default configuration, and set its
+        configuration byte. A two-group configuration alternates its groups
+        per snapshot."""
+        if not self.page_configuration:
+            return None
+        groups = self.dynamic.configurations[self.page_configuration]
+        group = self.page_group
+        self.page_group = (group + 1) % len(groups)
+        values[self.configuration_field] = self.page_configuration | group << 7
+        return groups[group]
+
+    @staticmethod
+    def _rolling_launch(rpm, speed_kmh, timing, launch):
+        """Return the views of the Rolling Launch engine.
+
+        ACTIVE holds the RPM regulator of the demo with the trim applied;
+        IDLE publishes the inputs with the button released. The views of one
+        snapshot agree with each other, but no image calibration produces
+        them.
+        """
+        rpm_sample = round(rpm / 12.5)
+        stock_command = 110 - timing
+        if not launch:
+            return {
+                "rolling_launch_control_error_raw": 0,
+                "rolling_launch_law_output_raw": 0,
+                "rolling_launch_mode_trim": 0,
+                "rolling_launch_cut_fraction_raw": 0,
+                "rolling_launch_efficiency": 1000,
+                "rolling_launch_speed_sample_raw": speed_kmh * 10,
+                "rolling_launch_selected_target_raw": 0,
+                # Inputs valid, frame age within the limit, source ready,
+                # and the button released.
+                "rolling_launch_status": 0x1C | 0x40,
+                "rolling_launch_rpm_sample_raw": rpm_sample,
+                "rolling_launch_stock_command_raw": stock_command,
+                "rolling_launch_effective_command_raw": stock_command,
+                "rolling_launch_accepted_button_raw": 0x20,
+                "rolling_launch_speed_age_raw": 2,
+                "ignition_dwell_angle_raw": 52,
+            }
+        error = rpm_sample - DEMO_LAUNCH_TARGET
+        # The firing permission p falls from 1000 at the soft-width edge to
+        # 0 at the target, and the cut fraction q is its complement.
+        law = 0 if error >= 0 else min(1000, -error * 1000 // DEMO_LAUNCH_SOFT_WIDTH)
+        return {
+            "rolling_launch_control_error_raw": error,
+            "rolling_launch_law_output_raw": law,
+            # The trim value with ACTUATION_READY in bit 7; RPM leaves the
+            # SPEED bit clear.
+            "rolling_launch_mode_trim": DEMO_LAUNCH_TRIM | 0x80,
+            "rolling_launch_cut_fraction_raw": 1000 - law,
+            "rolling_launch_efficiency": DEMO_LAUNCH_EFFICIENCY | 0x8000,
+            "rolling_launch_speed_sample_raw": speed_kmh * 10,
+            "rolling_launch_selected_target_raw": DEMO_LAUNCH_TARGET,
+            # RPM, the speed inputs valid, CANCEL accepted, and actuation
+            # ready.
+            "rolling_launch_status": 0x01 | 0x1C | 0x20 | 0x80,
+            "rolling_launch_rpm_sample_raw": rpm_sample,
+            "rolling_launch_stock_command_raw": stock_command,
+            "rolling_launch_effective_command_raw": max(
+                stock_command, min(stock_command + DEMO_LAUNCH_TRIM, DEMO_LAUNCH_FLOOR)
+            ),
+            "rolling_launch_accepted_button_raw": 0x02,
+            "rolling_launch_speed_age_raw": 2,
+            "ignition_dwell_angle_raw": 46,
+        }
+
+    def _consume_cuts(self, values):
+        """Advance the wrapping q sum over the spark events of one ACTIVE
+        tick and publish it with the count of cut requests it implies."""
+        if values["rolling_launch_phase"]:
+            events = (
+                values["stock_rpm"] / 60
+                * DEMO_SPARK_EVENTS_PER_REVOLUTION * BASE_TICK_SECONDS
+            )
+            self.consumed_q_sum = (
+                self.consumed_q_sum
+                + round(values["rolling_launch_cut_fraction_raw"] * events)
+            ) & 0xFFFFFFFF
+        values["rolling_launch_consumed_q_sum_raw"] = self.consumed_q_sum
+        values["rolling_launch_cut_counter"] = self.consumed_q_sum // 1000 & 0xFF
 
     @staticmethod
     def _default(field, wave):
@@ -944,6 +1107,7 @@ class DemoGenerator:
                 )
                 for index, name in enumerate(KNOCK_MARGIN_FIELDS)
             },
+            **self._rolling_launch(rpm, 55 * wave, timing, launch),
         }
         for field in self.fields:
             if field["name"] not in values:
@@ -954,15 +1118,29 @@ class DemoGenerator:
         elapsed = tick * BASE_TICK_SECONDS if elapsed is None else elapsed
         values = self._values(elapsed)
         values["tick16"] = tick & 0xFFFF
+        self._consume_cuts(values)
+        slots = self._page_slots(values)
         pages = [bytearray(8) for _ in range(self.profile["page_count"])]
         for page, payload in enumerate(pages):
             payload[0] = (((tick & 0x0F) << 4) | page) & 0xFF
         for field in self.profile["fields"]:
+            # The slots of a configuration replace the default fields of the
+            # data bytes, and the bytes after the last slot stay zero.
+            if (
+                slots is not None
+                and field["page"] == self.dynamic.page
+                and field["offset"] < self.dynamic.configuration_offset
+            ):
+                continue
             self._encode(
                 pages[field["page"]],
                 field["offset"],
                 field,
                 values[field["name"]],
+            )
+        for field, offset in slots or ():
+            self._encode(
+                pages[self.dynamic.page], offset, field, values[field["name"]]
             )
         context_tag = (tick - 1) % self.context_count
         for page in (9, 10):

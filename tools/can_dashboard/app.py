@@ -769,7 +769,9 @@ class DashboardApp:
         self.stop_event = None
         self.worker = None
         self.control_requests = None
-        self.pcan_active = False
+        # The source takes control frames: an active/ACK PCAN connection or
+        # the demo source.
+        self.control_active = False
         self.source_generation = 0
         self.closed = False
         self.source_state = "stopped"
@@ -1872,7 +1874,7 @@ class DashboardApp:
         )
         self.stop_event = threading.Event()
         self.control_requests = queue.Queue(maxsize=CONTROL_QUEUE_SIZE)
-        self.pcan_active = not config.listen_only
+        self.control_active = not config.listen_only
         self.worker = threading.Thread(
             target=run_pcan,
             args=(
@@ -1899,15 +1901,18 @@ class DashboardApp:
         )
 
     def _control_ready(self):
-        """Report whether an active PCAN connection takes control frames."""
+        """Report whether an active PCAN connection or the demo source
+        takes control frames."""
         if (
             self.control_requests is None
             or self.worker is None
             or not self.worker.is_alive()
         ):
-            self.control_var.set("Control error: connect PCAN first")
+            self.control_var.set(
+                "Control error: connect PCAN or start DEMO first"
+            )
             return False
-        if not self.pcan_active:
+        if not self.control_active:
             self.control_var.set(
                 "Control error: reconnect with ACK enabled"
             )
@@ -2058,6 +2063,8 @@ class DashboardApp:
             return
         self._new_model(can_id)
         self.stop_event = threading.Event()
+        self.control_requests = queue.Queue(maxsize=CONTROL_QUEUE_SIZE)
+        self.control_active = True
         self.worker = threading.Thread(
             target=run_demo,
             args=(
@@ -2067,6 +2074,7 @@ class DashboardApp:
                 self.args.profile,
                 self.args.schema,
                 self._source_capture(),
+                self.control_requests,
             ),
             daemon=True,
             name="telemetry-demo",
@@ -2421,7 +2429,7 @@ class DashboardApp:
         self.stop_event = None
         self.worker = None
         self.control_requests = None
-        self.pcan_active = False
+        self.control_active = False
         self._set_stream_command("start")
         if self.source_state not in {"stopped", "error"}:
             self._set_source_status("stopped", "source stopped")

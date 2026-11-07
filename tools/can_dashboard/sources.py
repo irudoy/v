@@ -15,6 +15,7 @@ from tools.can_dashboard.model import (
     DemoGenerator,
     FrameRecord,
 )
+from tools.logs.can_telemetry_schema import PAGE_COMMANDS
 
 
 # The application owns one PCAN source, including its asynchronous cleanup.
@@ -264,6 +265,36 @@ def _run_pcan(config, stop_event, emit, control_requests, capture=None):
             emit(SourceStatus("stopped", "PCAN channel closed"))
 
 
+def _demo_control(generator, requests, emit):
+    """Consume at most one queued control frame, as the ECU does per tick.
+
+    A page frame on the control ID reaches the page commands of the
+    generator and reports `sent`, as a PCAN transmission does; the demo,
+    like the ECU, answers no frame. START and STOP have no demo
+    counterpart and report an error.
+    """
+    if requests is None:
+        return
+    try:
+        request = requests.get_nowait()
+    except queue.Empty:
+        return
+    if request.command not in PAGE_COMMANDS.values():
+        emit(ControlStatus(
+            "error",
+            f"telemetry {request.command.upper()} has no demo counterpart",
+            request.command,
+        ))
+        return
+    if request.can_id == generator.can_id + 1:
+        generator.control(request.payload)
+    emit(ControlStatus(
+        "sent",
+        f"telemetry {request.command.upper()} sent to the demo source",
+        request.command,
+    ))
+
+
 def run_demo(
     can_id,
     stop_event,
@@ -271,6 +302,7 @@ def run_demo(
     profile="tuning",
     schema_path=None,
     capture=None,
+    control_requests=None,
 ):
     options = {"profile": profile}
     if schema_path is not None:
@@ -286,6 +318,8 @@ def run_demo(
             stop_event.wait(deadline - now)
             continue
         elapsed = now - started
+        # A COMMIT applies to the group of the same tick.
+        _demo_control(generator, control_requests, emit)
         for frame in generator.group(tick, elapsed):
             received = FrameRecord(
                 frame.arbitration_id,
