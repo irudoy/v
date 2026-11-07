@@ -133,6 +133,14 @@ class KinematicsTest(unittest.TestCase):
             [(0, 0, 65534), (2, 0, 65535), (3, 0, 65536), (4, 0, 65537), (5, 0, 70536), (6, 1, 3)],
         )
 
+    def test_new_tick_records_split_a_restart_that_the_recorded_time_reveals(self):
+        ticks = [0x2820, 0x2821, 0x0300, 0x0301]
+        times = [10.0, 10.01, 11.0, 11.01]
+        self.assertEqual(
+            list(audit.new_tick_records(ticks, times)),
+            [(0, 0, 0x2820), (1, 0, 0x2821), (2, 1, 0x0300), (3, 1, 0x0301)],
+        )
+
     def test_full_pedal_segments_keep_intervals_of_the_minimum_length(self):
         rows = [sample(index * STEP, app1=940 if index < 200 or 300 <= index < 400 else 150)
                 for index in range(500)]

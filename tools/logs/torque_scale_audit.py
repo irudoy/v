@@ -253,26 +253,32 @@ def _optional(value, kind):
     return kind(value)
 
 
-def new_tick_records(ticks):
+def new_tick_records(ticks, times=None):
     """Yield (index, run, unwrapped tick) for each record with a new tick.
 
     A bridge record repeats the preceding tick. A producer restart opens a new
-    run whose tick count starts again.
+    run whose tick count starts again; ``times``, the recorded seconds of the
+    records, lets can_telemetry.tick_step find a restart past the opening
+    window.
     """
     run = 0
     offset = 0
-    previous = None
+    previous = previous_time = None
     for index, value in enumerate(ticks):
         tick = int(value)
+        time = None if times is None else times[index]
         if previous is not None:
             if tick == previous:
                 continue
-            if can_telemetry.is_producer_restart(previous, tick):
+            step = can_telemetry.tick_step(
+                previous, tick, can_telemetry.receive_gap(previous_time, time)
+            )
+            if step is can_telemetry.TickStep.RESTART:
                 run += 1
                 offset = 0
             elif tick < previous:
                 offset += TICK_MODULUS
-        previous = tick
+        previous, previous_time = tick, time
         yield index, run, offset + tick
 
 
@@ -314,7 +320,7 @@ def read_mlg(path: Path) -> Capture:
     if missing:
         raise ValueError(f"{path}: missing channels {', '.join(missing)}")
     rows = []
-    for index, run, tick in new_tick_records(columns["tick16"]):
+    for index, run, tick in new_tick_records(columns["tick16"], columns["elapsed"]):
         if columns["schema_verified"][index] != 1 or rpm[index] is None:
             continue
         rows.append((run, tick, float(columns["elapsed"][index]), dict(

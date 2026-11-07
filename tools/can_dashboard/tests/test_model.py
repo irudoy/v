@@ -428,6 +428,23 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.stats(now=70.02).producer_restarts, 1)
         self.assertEqual(dashboard.decoder.completed_groups, 4)
 
+    def test_a_restart_past_the_opening_window_opens_a_run_live_and_recorded(self):
+        generator = model.DemoGenerator()
+        live = model.DashboardModel("tuning", 0x6F0, 1)
+        feed_group(live, generator.group(0x2820, 10.0), 10.0)
+        feed_group(live, generator.group(0x0300, 11.0), 11.0)
+        feed_group(live, generator.group(0x0301, 11.01), 11.01)
+        self.assertEqual(live.stats(now=11.02).producer_restarts, 1)
+        self.assertEqual(live.decoder.completed_groups, 3)
+        self.assertEqual(live.unexpected_tick_steps, 0)
+
+        recorded = model.DashboardModel("tuning", 0x6F0, 1)
+        for timestamp, tick in ((10.0, 0x2820), (11.0, 0x0300), (11.01, 0x0300)):
+            recorded.process_record(
+                model.SnapshotRecord(timestamp, {"tick16": tick}), now=timestamp
+            )
+        self.assertEqual(recorded.stats(now=11.02).producer_restarts, 1)
+
     def test_target_vehicle_selector_button_and_speed_codes(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for code, label in model.PRND_CODES.items():

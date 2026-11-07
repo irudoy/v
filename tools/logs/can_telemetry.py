@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import enum
 import json
+import math
 from pathlib import Path
 import re
 import sys
@@ -32,6 +34,16 @@ CANDUMP_COMPACT = re.compile(
 # stream late can miss the first groups of that run, so the opening window is
 # wider than one tick.
 PRODUCER_RUN_TICK_MAX = 0x00FF
+# The producer advances tick16 once per 10.24 ms task tick while it streams
+# and holds it while streaming is stopped, so the tick never advances faster
+# than the receive time.
+TICK_SECONDS = 0.01024
+# A group whose tick16 falls back after a receive pause longer than this
+# opens a new run; within it the group is a reordered or repeated one.
+RESTART_GAP_SECONDS = 0.5
+# The receive time of a group lags its capture by up to this host queue
+# delay, so a forward tick step may exceed the elapsed receive time by it.
+QUEUE_TOLERANCE_SECONDS = 1.0
 # The keys of the presentation of a field and of its live feed channel.
 DASHBOARD_KEYS = frozenset({
     "label", "digits", "unit", "hexadecimal", "group", "panel", "panel_label",
@@ -44,15 +56,65 @@ FEED_KEY = re.compile(r"[a-z][a-z0-9_]*")
 DISPLAY_UNITS = {"percent": "%", "ratio": "", "count": "cnt"}
 
 
-def is_producer_restart(previous_tick16, tick16):
-    """Report whether a tick pair crosses a producer reset rather than a wrap.
+class TickStep(enum.Enum):
+    """The relation of a group to the previous accepted group of a stream."""
 
-    A 16-bit wrap keeps the forward distance small, while a reset drops the
-    counter back to the opening window of a new run.
+    # The same run, `delta` ticks later.
+    FORWARD = "forward"
+    # The first group of a new producer run.
+    RESTART = "restart"
+    # A reordered or repeated group of the same run.
+    STALE = "stale"
+
+
+def tick_step(previous_tick16, tick16, elapsed=None):
+    """Classify the tick16 of a group against the previous accepted group.
+
+    ``elapsed`` is the receive time in seconds since that group, or None
+    when the input carries no receive times.
+
+    - A step back into the opening window `0..PRODUCER_RUN_TICK_MAX` opens a
+      new run: a reset drops the counter there, while a 16-bit wrap keeps the
+      forward distance small.
+    - A step back after a receive pause longer than RESTART_GAP_SECONDS opens
+      a new run whose first received group lies past the opening window;
+      within that pause the group is stale. A repeated tick stays stale,
+      since STOP holds the tick.
+    - A step forward that the elapsed receive time cannot explain, more than
+      (elapsed + QUEUE_TOLERANCE_SECONDS) / TICK_SECONDS + 1 ticks, opens a
+      new run.
+
+    A receive pause longer than the forward step of a new run cannot be told
+    from a continuation of the old run, so such a step stays FORWARD.
     """
-
     delta = (tick16 - previous_tick16) & 0xFFFF
-    return delta >= 0x8000 and tick16 <= PRODUCER_RUN_TICK_MAX
+    timed = (
+        elapsed is not None
+        and math.isfinite(elapsed)
+        and elapsed >= 0
+    )
+    if delta >= 0x8000:
+        if tick16 <= PRODUCER_RUN_TICK_MAX:
+            return TickStep.RESTART
+        if timed and elapsed > RESTART_GAP_SECONDS:
+            return TickStep.RESTART
+        return TickStep.STALE
+    if delta == 0:
+        return TickStep.STALE
+    if timed and delta > (elapsed + QUEUE_TOLERANCE_SECONDS) / TICK_SECONDS + 1:
+        return TickStep.RESTART
+    return TickStep.FORWARD
+
+
+def receive_gap(previous_time, time):
+    """The receive time between two groups, or None without both times."""
+    if previous_time is None or time is None:
+        return None
+    try:
+        gap = float(time) - float(previous_time)
+    except (TypeError, ValueError):
+        return None
+    return gap if math.isfinite(gap) else None
 
 
 # Consecutive snapshots of a running stream arrive one tick apart within the
@@ -667,6 +729,8 @@ class Decoder:
         self._pages = []
         self._sequence = None
         self._last_tick = None
+        # The receive time of the last accepted group, or None.
+        self._last_time = None
         self._unwrapped_tick = None
         self._run = 0
         self._schema_verified = False
@@ -753,15 +817,19 @@ class Decoder:
         if self._last_tick is None:
             unwrapped = tick16
         else:
-            delta = (tick16 - self._last_tick) & 0xFFFF
-            if delta == 0 or delta >= 0x8000:
-                if not is_producer_restart(self._last_tick, tick16):
-                    self.malformed_frames += 1
-                    return None
+            step = tick_step(
+                self._last_tick, tick16, receive_gap(self._last_time, timestamp)
+            )
+            if step is TickStep.STALE:
+                self.malformed_frames += 1
+                return None
+            if step is TickStep.RESTART:
                 run = self._run + 1
                 unwrapped = tick16
             else:
-                unwrapped = self._unwrapped_tick + delta
+                unwrapped = (
+                    self._unwrapped_tick + ((tick16 - self._last_tick) & 0xFFFF)
+                )
         if run != self._run:
             # A new run republishes its identity on the next health context.
             self._schema_verified = False
@@ -825,6 +893,7 @@ class Decoder:
             self._run = run
             self.producer_restarts += 1
         self._last_tick = tick16
+        self._last_time = timestamp
         self._unwrapped_tick = unwrapped
         self.completed_groups += 1
         return Snapshot(

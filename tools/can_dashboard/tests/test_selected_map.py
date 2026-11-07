@@ -94,6 +94,24 @@ class MapTrackerTest(unittest.TestCase):
         self.assertEqual(tracker.number, 1)
         self.assertEqual(tracker.since, 5.2)
 
+    def test_a_tick_step_the_receive_time_cannot_explain_is_a_controller_start(self):
+        for before in (0x4000, 0x9000):
+            with self.subTest(before=hex(before)):
+                tracker = MapTracker()
+                tracker.activity(5.0)
+                tracker.tick(5.0, before)
+                tracker.activity(5.8)
+                tracker.tick(5.8, 0x0300)
+                self.assertEqual(tracker.number, 1)
+                self.assertEqual(tracker.since, 5.8)
+
+    def test_a_reordered_group_is_not_a_controller_start(self):
+        tracker = MapTracker()
+        for time, tick in ((5.0, 0x4000), (5.01, 0x4001), (5.02, 0x4000)):
+            tracker.activity(time)
+            tracker.tick(time, tick)
+        self.assertIsNone(tracker.number)
+
     def test_the_first_run_after_a_silent_bus_restarts_the_map(self):
         tracker = started_tracker()
         released = gesture(tracker, 3.0, 3)

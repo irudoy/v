@@ -346,15 +346,29 @@ the header sequence against `tick16`, and discards incomplete, duplicate,
 reordered, or preempted groups. It never combines pages from different groups
 or fabricates a missing value.
 
-`tick16` lives in producer RAM and restarts with the controller, so a tick that
-drops back into the opening window `0x0000..0x00FF` from a larger value marks a
-new producer run rather than a stale group. The receiver opens a new run there,
-restarts the unwrapped tick, counts the restart, and waits for the next health
-context before it treats the wire contract as verified again. A backwards step
-that lands outside that window remains a rejected stale group, and a 16-bit
-wrap keeps the run because its forward distance stays small. Snapshots of
-different runs are never adjacent: the distance across a restart is a gap of
-unknown length, not a snapshot count.
+`tick16` lives in producer RAM and restarts with the controller. The receiver
+compares each group with the previous accepted group by tick and by receive
+time, and opens a new producer run on a group whose tick the current run cannot
+explain:
+
+- a tick that drops back into the opening window `0x0000..0x00FF` from a larger
+  value;
+- a tick that drops back after a receive pause longer than 0.5 s;
+- a tick that steps forward by more than `(elapsed + 1.0 s) / 10.24 ms + 1`
+  ticks, where `elapsed` is the receive time since the previous accepted group
+  and 1.0 s bounds the host queue delay of a group.
+
+A new run restarts the unwrapped tick, counts the restart, and waits for the
+next health context before the receiver treats the wire contract as verified
+again. A repeated tick, and a backwards step outside the opening window within
+0.5 s of the previous group, remain rejected stale groups. A 16-bit wrap keeps
+the run because its forward distance stays small, and STOP holds the tick, so
+the next tick after a pause of any length stays in the run. Without receive
+times only the opening window marks a new run. A restart whose first received
+tick lies ahead of the last tick of the old run by no more ticks than the
+receive pause allows cannot be told from a continuation, and the receiver keeps
+that group in the old run. Snapshots of different runs are never adjacent: the
+distance across a restart is a gap of unknown length, not a snapshot count.
 
 ### Page layout
 

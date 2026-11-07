@@ -268,7 +268,11 @@ def read_snapshots(path: Path) -> Snapshots:
             unverified += 1
             continue
         rows.append(index)
-    ticks = mlg_retime.unwrap_ticks(int(columns["tick16"][index]) for index in rows)
+    elapsed = columns.get("elapsed")
+    ticks = mlg_retime.unwrap_ticks(
+        (int(columns["tick16"][index]) for index in rows),
+        None if elapsed is None else [elapsed[index] for index in rows],
+    )
     kept = []
     kept_ticks = []
     bridges = 0

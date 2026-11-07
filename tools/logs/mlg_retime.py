@@ -77,26 +77,40 @@ def _read(data: bytes, base: int, channel: _Channel):
     return struct.unpack(channel.format, data[start : start + channel.size])[0]
 
 
-def unwrap_ticks(values) -> list[int]:
-    """Return the tick sequence unwrapped over its 16-bit modulus."""
+def unwrap_ticks(values, times=None) -> list[int]:
+    """Return the tick sequence unwrapped over its 16-bit modulus.
+
+    ``times`` holds the recorded seconds of the values. With them a tick
+    step that the recorded time cannot explain marks a producer restart as
+    well as a step back into the opening window (can_telemetry.tick_step).
+    """
 
     unwrapped = []
     offset = 0
-    previous = None
+    previous = previous_time = None
+    times = None if times is None else iter(times)
     for value in values:
+        time = None if times is None else next(times)
         tick = int(value)
         if not 0 <= tick < TICK_MODULUS:
             raise mlvlg.MlvlgError(f"telemetry tick is out of range: {value!r}")
-        if previous is not None and tick < previous:
-            if can_telemetry.is_producer_restart(previous, tick):
+        if previous is not None and tick != previous:
+            step = can_telemetry.tick_step(
+                previous, tick, can_telemetry.receive_gap(previous_time, time)
+            )
+            if step is can_telemetry.TickStep.RESTART:
                 raise mlvlg.MlvlgError(
                     "the telemetry tick restarts at "
                     f"{tick} after {previous}, so the recording spans more "
                     "than one producer run and the tick cannot order it"
                 )
-            offset += TICK_MODULUS
+            if tick < previous:
+                offset += TICK_MODULUS
         unwrapped.append(offset + tick)
-        previous = tick
+        if tick != previous:
+            # A bridge record repeats the tick; the step of the next tick
+            # counts from the record that carried it first.
+            previous, previous_time = tick, time
     return unwrapped
 
 
@@ -167,7 +181,8 @@ def retime(
     tick = channels[TICK_CHANNEL]
     elapsed = channels[ELAPSED_CHANNEL]
     date = channels[DATE_CHANNEL]
-    ticks = unwrap_ticks(_read(data, base, tick) for base in starts)
+    recorded = [_read(data, base, elapsed) for base in starts]
+    ticks = unwrap_ticks((_read(data, base, tick) for base in starts), recorded)
     repeats = sum(
         1 for before, after in zip(ticks, ticks[1:]) if after <= before
     )
@@ -176,7 +191,6 @@ def retime(
             f"{path}: {repeats} records repeat a telemetry tick, so the tick "
             "index cannot order them"
         )
-    recorded = [_read(data, base, elapsed) for base in starts]
     collapsed_before = sum(
         1 for before, after in zip(recorded, recorded[1:]) if after == before
     )

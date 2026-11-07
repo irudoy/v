@@ -680,7 +680,7 @@ def _recording_samples(recording, profile: str):
     samples = []
     event_records = 0
     bridge_records = 0
-    last_tick16 = None
+    last_tick16 = last_time = None
     run = 0
     tick = 0
     for index in range(recording.record_count):
@@ -696,13 +696,16 @@ def _recording_samples(recording, profile: str):
                 )
             bridge_records += 1
             continue
+        time = columns["elapsed"][index]
         if last_tick16 is None:
             tick = tick16
         else:
-            delta = (tick16 - last_tick16) & 0xFFFF
-            if delta < 0x8000:
-                tick += delta
-            elif can_telemetry.is_producer_restart(last_tick16, tick16):
+            step = can_telemetry.tick_step(
+                last_tick16, tick16, can_telemetry.receive_gap(last_time, time)
+            )
+            if step is can_telemetry.TickStep.FORWARD:
+                tick += (tick16 - last_tick16) & 0xFFFF
+            elif step is can_telemetry.TickStep.RESTART:
                 run += 1
                 tick = tick16
             else:
@@ -711,6 +714,7 @@ def _recording_samples(recording, profile: str):
                     f"{last_tick16} to {tick16}, which the decoder rejects"
                 )
         last_tick16 = tick16
+        last_time = time
         event_records += 1
         if columns["schema_verified"][index] != 1.0:
             continue

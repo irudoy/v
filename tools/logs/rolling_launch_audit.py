@@ -450,7 +450,7 @@ def read_mlg(path: Path) -> Capture:
         missing.append("engine speed")
     if missing:
         raise ValueError(f"{path}: missing channels {', '.join(missing)}")
-    ticks = mlg_retime.unwrap_ticks(columns["tick16"])
+    ticks = mlg_retime.unwrap_ticks(columns["tick16"], columns.get("elapsed"))
     page = DynamicPage.of(can_telemetry.load_schema()[1]["tuning"])
     samples = []
     previous = None

@@ -22,7 +22,7 @@ PRND_ID = 0x421
 DASHBOARD_STATE_ID = 0x551
 DEFAULT_CAN_ID = 0x6F0
 DEFAULT_BITRATE = 500_000
-BASE_TICK_SECONDS = 0.01024
+BASE_TICK_SECONDS = can_telemetry.TICK_SECONDS
 OBSERVED_IDS = (
     *stock.IDS,
     TCM_GEAR_ID,
@@ -432,6 +432,7 @@ class DashboardModel:
         self.clock = None
         self.recorded_groups = 0
         self._record_tick = None
+        self._record_time = None
         self._record_run = 0
         self._record_unwrapped = None
         fields = can_telemetry.profile_fields(self.decoder.profile)
@@ -529,17 +530,23 @@ class DashboardModel:
         if self._record_tick is None:
             unwrapped = tick16
         else:
-            delta = (tick16 - self._record_tick) & 0xFFFF
-            if delta == 0 or delta >= 0x8000:
-                if not can_telemetry.is_producer_restart(
-                    self._record_tick, tick16
-                ):
-                    return None
+            step = can_telemetry.tick_step(
+                self._record_tick,
+                tick16,
+                can_telemetry.receive_gap(self._record_time, record.timestamp),
+            )
+            if step is can_telemetry.TickStep.STALE:
+                return None
+            if step is can_telemetry.TickStep.RESTART:
                 self._record_run += 1
                 unwrapped = tick16
             else:
-                unwrapped = self._record_unwrapped + delta
+                unwrapped = (
+                    self._record_unwrapped
+                    + ((tick16 - self._record_tick) & 0xFFFF)
+                )
         self._record_tick = tick16
+        self._record_time = record.timestamp
         self._record_unwrapped = unwrapped
         verified = values.get("schema_verified") == 1
         profile_id = values.get("profile_id")

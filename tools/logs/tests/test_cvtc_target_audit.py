@@ -621,6 +621,16 @@ class CvtcRecordingInputTest(unittest.TestCase):
         rejected = recording_with(tick16=[900.0, 300.0, 301.0])
         with self.assertRaisesRegex(ValueError, "which the decoder rejects"):
             cvtc_target_audit._recording_samples(rejected, "tuning")
+        paused = recording_with(
+            tick16=[900.0, 901.0, 300.0], elapsed=[0.0, 0.01, 1.0]
+        )
+        _events, _bridges, samples = cvtc_target_audit._recording_samples(
+            paused, "tuning"
+        )
+        self.assertEqual(
+            [(sample.run, sample.tick) for sample in samples],
+            [(0, 900), (0, 901), (1, 300)],
+        )
 
     def test_recording_requires_the_replay_channels(self):
         recording = recording_with()

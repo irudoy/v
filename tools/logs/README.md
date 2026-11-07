@@ -90,14 +90,24 @@ whose neutral value is 100.00%. The engineering correction emitted by the
 decoder is therefore `raw / 256 - 100 percent`.
 
 The producer keeps `tick16` in RAM and restarts it with the controller, so a
-capture that spans an ignition cycle carries several producer runs. A tick that
-falls back into the opening window `0x0000..0x00FF` from a larger value opens a
-new run: the decoder keeps decoding, restarts the unwrapped tick, reports the
-run index on every snapshot, counts the restart, and requires a fresh health
-context before it reports the wire contract as verified again. A backwards step
-outside that window is still rejected as a stale group, and a 16-bit wrap stays
-inside the current run. Snapshots of different runs are never treated as
-adjacent, so the audits below skip pairs that cross a restart.
+capture that spans an ignition cycle carries several producer runs.
+`can_telemetry.tick_step` classifies each group against the previous accepted
+group by tick and receive time under the rule of
+[`../../patches/can-telemetry.md`](../../patches/can-telemetry.md): a tick
+that falls back into the opening window `0x0000..0x00FF`, falls back after a
+receive pause longer than 0.5 s, or steps forward further than the receive time
+allows opens a new run. The decoder keeps decoding, restarts the unwrapped
+tick, reports the run index on every snapshot, counts the restart, and requires
+a fresh health context before it reports the wire contract as verified again.
+A repeated tick and a backwards step outside the window within 0.5 s are
+rejected as stale groups, and a 16-bit wrap stays inside the current run. A
+restart whose first tick lies ahead of the old run by no more than the receive
+pause allows stays in the old run. The dashboard, its map tracker, and the
+offline tools below apply the same rule; the offline tools take the receive
+time from the `Elapsed` channel and time a step from the first record that
+carries a tick, since a bridge record repeats it. Snapshots of different runs
+are never treated as adjacent, so the audits below skip pairs that cross a
+restart.
 
 STOP disables the producer and holds `tick16`, so the snapshot after START
 carries the next tick and the tick does not count the time of the pause. The

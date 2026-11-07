@@ -19,7 +19,9 @@ the gesture, or that the tracker cannot count, makes the map unknown.
 
 from __future__ import annotations
 
-from tools.logs.can_telemetry import PRODUCER_RUN_TICK_MAX, is_producer_restart
+from tools.logs.can_telemetry import (
+    PRODUCER_RUN_TICK_MAX, TickStep, receive_gap, tick_step,
+)
 
 
 MAP_COUNT = 5
@@ -55,6 +57,7 @@ class MapTracker:
         self._last_activity = 0.0
         self._awaiting_tick = False
         self._tick = None
+        self._tick_time = None
         self._button = None
         self._gesture = None
         self._cancel_held = False
@@ -84,12 +87,14 @@ class MapTracker:
 
     def tick(self, time, tick16):
         """Consume the tick16 of one telemetry group."""
-        previous = self._tick
-        self._tick = tick16
+        previous, previous_time = self._tick, self._tick_time
+        self._tick, self._tick_time = tick16, time
         opening = self._awaiting_tick and tick16 <= PRODUCER_RUN_TICK_MAX
         self._awaiting_tick = False
         if opening or (
-            previous is not None and is_producer_restart(previous, tick16)
+            previous is not None
+            and tick_step(previous, tick16, receive_gap(previous_time, time))
+            is TickStep.RESTART
         ):
             self._clear_selector()
             self._select(1, "controller start observed", time)

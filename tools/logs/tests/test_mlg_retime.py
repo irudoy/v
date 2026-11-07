@@ -229,6 +229,32 @@ class MlgRetimeTest(unittest.TestCase):
             self.assertIn("repeat a telemetry tick", str(error.exception))
             self.assertFalse(output.exists())
 
+    def test_unwrap_refuses_a_restart_that_the_recorded_time_reveals(self):
+        self.assertEqual(
+            mlg_retime.unwrap_ticks([0x2820, 0x2821, 0x0300]),
+            [0x2820, 0x2821, 0x10300],
+        )
+        for ticks in ((0x2820, 0x2821, 0x0300), (0x9000, 0x9001, 0x0300)):
+            with self.subTest(ticks=ticks):
+                with self.assertRaisesRegex(
+                    mlvlg.MlvlgError, "more than one producer run"
+                ):
+                    mlg_retime.unwrap_ticks(ticks, [10.0, 10.01, 11.0])
+
+    def test_unwrap_times_a_step_from_the_first_record_of_a_tick(self):
+        # The bridge record repeats tick 0x2821 with a later time; the step
+        # back after it counts from the record that carried the tick first.
+        with self.assertRaisesRegex(mlvlg.MlvlgError, "more than one producer run"):
+            mlg_retime.unwrap_ticks(
+                [0x2820, 0x2821, 0x2821, 0x2810], [10.0, 10.01, 10.5, 10.52]
+            )
+        self.assertEqual(
+            mlg_retime.unwrap_ticks(
+                [0xFFFF, 0xFFFF, 0x0000, 0x0001], [10.0, 70.0, 70.01, 70.02]
+            ),
+            [0xFFFF, 0xFFFF, 0x10000, 0x10001],
+        )
+
     def test_dry_run_reports_without_writing(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "collapsed.mlg"

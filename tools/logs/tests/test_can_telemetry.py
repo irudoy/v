@@ -54,6 +54,16 @@ def feed_group(decoder, group):
     return snapshot
 
 
+def feed_timed(decoder, group, time):
+    """Feed one group whose frames all arrive at ``time``."""
+    snapshot = None
+    for payload in group:
+        result = decoder.feed(decoder.can_id, payload, time)
+        if result is not None:
+            snapshot = result
+    return snapshot
+
+
 TICK_SECONDS = 0.01024
 # Host queueing delays each frame by a few milliseconds and never advances it.
 QUEUE_DELAYS = (0.0, 0.004, 0.001, 0.007, 0.002)
@@ -406,6 +416,89 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertIsNone(stale)
         self.assertEqual(decoder.producer_restarts, 0)
         self.assertGreaterEqual(decoder.malformed_frames, 1)
+
+    def test_tick_step_classifies_steps_by_tick_and_receive_time(self):
+        step = can_telemetry.tick_step
+        forward = can_telemetry.TickStep.FORWARD
+        restart = can_telemetry.TickStep.RESTART
+        stale = can_telemetry.TickStep.STALE
+        cases = (
+            # Without receive times only the opening window marks a restart.
+            (0x2820, 0x0003, None, restart),
+            (0x2820, 0x0300, None, stale),
+            (0x9000, 0x0300, None, forward),
+            (0x2820, 0x2820, None, stale),
+            # A step back after a receive pause opens a new run.
+            (0x2820, 0x0300, 1.0, restart),
+            (0x2820, 0x281F, 0.6, restart),
+            (0x2820, 0x281F, 0.5, stale),
+            (0x2820, 0x2820, 60.0, stale),
+            # A forward step longer than the receive time opens a new run.
+            (0x9000, 0x0300, 1.0, restart),
+            # (1.0 + 1.0) / 0.01024 + 1 = 196.3 ticks.
+            (0x2820, 0x2820 + 197, 1.0, restart),
+            (0x2820, 0x2820 + 196, 1.0, forward),
+            (0xFFFF, 0x0000, 0.01, forward),
+            (0x2820, 0x2821, 60.0, forward),
+            # A pause longer than the step of a new run hides the restart.
+            (0x0100, 0x0180, 5.0, forward),
+            # A receive time that runs backwards or is not finite is unknown.
+            (0x2820, 0x0300, -1.0, stale),
+            (0x9000, 0x0300, float("nan"), forward),
+        )
+        for previous, tick16, elapsed, expected in cases:
+            with self.subTest(previous=previous, tick16=tick16, elapsed=elapsed):
+                self.assertIs(step(previous, tick16, elapsed), expected)
+        self.assertIsNone(can_telemetry.receive_gap(None, 1.0))
+        self.assertIsNone(can_telemetry.receive_gap(1.0, float("inf")))
+        self.assertEqual(can_telemetry.receive_gap(1.0, 1.5), 0.5)
+
+    def test_a_restart_past_the_opening_window_opens_a_new_run(self):
+        for before in (0x2820, 0x9000):
+            with self.subTest(before=hex(before)):
+                decoder = can_telemetry.Decoder("tuning")
+                feed_timed(decoder, frames("tuning", before - 1, context_tag=3), 9.99)
+                self.assertTrue(decoder.schema_verified)
+                feed_timed(decoder, frames("tuning", before), 10.0)
+                restarted = feed_timed(decoder, frames("tuning", 0x0300), 11.0)
+                self.assertIsNotNone(restarted)
+                self.assertEqual(restarted.run, 1)
+                self.assertEqual(restarted.unwrapped_tick, 0x0300)
+                self.assertFalse(restarted.schema_verified)
+                self.assertEqual(decoder.producer_restarts, 1)
+                following = feed_timed(
+                    decoder, frames("tuning", 0x0301, context_tag=3), 11.01
+                )
+                self.assertEqual(following.run, 1)
+                self.assertEqual(following.unwrapped_tick, 0x0301)
+                self.assertTrue(following.schema_verified)
+
+    def test_a_repeated_or_reordered_group_within_the_pause_is_rejected(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_timed(decoder, frames("tuning", 0x2820), 10.0)
+        feed_timed(decoder, frames("tuning", 0x2821), 10.01)
+        self.assertIsNone(feed_timed(decoder, frames("tuning", 0x2821), 10.02))
+        self.assertIsNone(feed_timed(decoder, frames("tuning", 0x2820), 10.03))
+        self.assertEqual(decoder.producer_restarts, 0)
+        self.assertGreaterEqual(decoder.malformed_frames, 2)
+        following = feed_timed(decoder, frames("tuning", 0x2822), 10.04)
+        self.assertEqual((following.run, following.unwrapped_tick), (0, 0x2822))
+
+    def test_wrap_pause_and_drained_stall_stay_in_one_run(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_timed(decoder, frames("tuning", 0xFFFF), 10.0)
+        wrapped = feed_timed(decoder, frames("tuning", 0x0000), 10.01)
+        self.assertEqual(wrapped.unwrapped_tick, 0x10000)
+        # STOP holds the tick for a minute.
+        resumed = feed_timed(decoder, frames("tuning", 0x0001), 70.0)
+        self.assertEqual(resumed.unwrapped_tick, 0x10001)
+        # A host stall drains 64 groups with one receive time.
+        for tick in range(0x0002, 0x0042):
+            drained = feed_timed(decoder, frames("tuning", tick), 70.7)
+            self.assertIsNotNone(drained)
+        self.assertEqual(drained.unwrapped_tick, 0x10041)
+        self.assertEqual(drained.run, 0)
+        self.assertEqual(decoder.producer_restarts, 0)
 
     def test_wrap_into_the_opening_window_is_not_a_restart(self):
         decoder = can_telemetry.Decoder("tuning")
