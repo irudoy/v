@@ -355,15 +355,23 @@ explain:
   value;
 - a tick that drops back after a receive pause longer than 0.5 s;
 - a tick that steps forward by more than `(elapsed + 1.0 s) / 10.24 ms + 1`
-  ticks, where `elapsed` is the receive time since the previous accepted group
-  and 1.0 s bounds the host queue delay of a group.
+  ticks, where `elapsed` is the receive time since the previous accepted
+  group and 1.0 s is the assumed largest host queue delay of a group.
+  Interface timestamps leave the queue delay out of `elapsed`. With host
+  receive times, a longer queue delay of a group followed by lost groups
+  opens a false new run.
 
 A new run restarts the unwrapped tick, counts the restart, and waits for the
 next health context before the receiver treats the wire contract as verified
 again. A repeated tick, and a backwards step outside the opening window within
 0.5 s of the previous group, remain rejected stale groups. A 16-bit wrap keeps
 the run because its forward distance stays small, and STOP holds the tick, so
-the next tick after a pause of any length stays in the run. Without receive
+the next tick after a STOP pause of any length stays in the run. A receive
+loss while the stream runs lets the tick advance: after a loss of more than
+half the tick period, about 335.5 s, the next step reads as a step back and
+opens a false new run, and after a loss of more than the full period, about
+671 s, it reads as a forward step that drops whole periods from the unwrapped
+tick. Without receive
 times only the opening window marks a new run. A restart whose first received
 tick lies ahead of the last tick of the old run by no more ticks than the
 receive pause allows cannot be told from a continuation, and the receiver keeps

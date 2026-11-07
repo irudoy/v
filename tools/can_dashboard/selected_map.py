@@ -88,14 +88,17 @@ class MapTracker:
     def tick(self, time, tick16):
         """Consume the tick16 of one telemetry group."""
         previous, previous_time = self._tick, self._tick_time
-        self._tick, self._tick_time = tick16, time
         opening = self._awaiting_tick and tick16 <= PRODUCER_RUN_TICK_MAX
         self._awaiting_tick = False
-        if opening or (
-            previous is not None
-            and tick_step(previous, tick16, receive_gap(previous_time, time))
-            is TickStep.RESTART
-        ):
+        step = None if previous is None else tick_step(
+            previous, tick16, receive_gap(previous_time, time)
+        )
+        if step is TickStep.STALE and not opening:
+            # The decoder rejects a repeated or reordered group and steps the
+            # next one from the last accepted group.
+            return
+        self._tick, self._tick_time = tick16, time
+        if opening or step is TickStep.RESTART:
             self._clear_selector()
             self._select(1, "controller start observed", time)
 

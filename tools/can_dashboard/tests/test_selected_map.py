@@ -112,6 +112,14 @@ class MapTrackerTest(unittest.TestCase):
             tracker.tick(time, tick)
         self.assertIsNone(tracker.number)
 
+    def test_the_step_after_a_stale_group_counts_from_the_accepted_group(self):
+        tracker = MapTracker()
+        for time, tick in ((5.0, 0x4000), (5.01, 0x4001), (5.02, 0x3F00),
+                           (5.03, 0x4002)):
+            tracker.activity(time)
+            tracker.tick(time, tick)
+        self.assertIsNone(tracker.number)
+
     def test_the_first_run_after_a_silent_bus_restarts_the_map(self):
         tracker = started_tracker()
         released = gesture(tracker, 3.0, 3)

@@ -41,8 +41,10 @@ TICK_SECONDS = 0.01024
 # A group whose tick16 falls back after a receive pause longer than this
 # opens a new run; within it the group is a reordered or repeated one.
 RESTART_GAP_SECONDS = 0.5
-# The receive time of a group lags its capture by up to this host queue
-# delay, so a forward tick step may exceed the elapsed receive time by it.
+# The assumed largest host queue delay of a group: a forward tick step may
+# exceed the elapsed receive time by it. Interface timestamps leave the queue
+# delay out of the receive time. With host receive times, a longer delay of a
+# group followed by lost groups reads as a new run.
 QUEUE_TOLERANCE_SECONDS = 1.0
 # The keys of the presentation of a field and of its live feed channel.
 DASHBOARD_KEYS = frozenset({
@@ -86,6 +88,13 @@ def tick_step(previous_tick16, tick16, elapsed=None):
 
     A receive pause longer than the forward step of a new run cannot be told
     from a continuation of the old run, so such a step stays FORWARD.
+
+    STOP holds the tick, so the next tick after a STOP pause of any length
+    stays in the run. A receive loss while the stream runs lets the tick
+    advance: after a loss of more than half the 16-bit tick period, about
+    335.5 s, the step reads as a step back and opens a false new run, and
+    after a loss of more than the full period, about 671 s, it reads as a
+    forward step that drops whole periods from the unwrapped tick.
     """
     delta = (tick16 - previous_tick16) & 0xFFFF
     timed = (
