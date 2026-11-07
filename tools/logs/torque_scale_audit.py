@@ -16,19 +16,29 @@ ratios scale it to the other gears. A point belongs to the gear whose turbine
 speed divided by the engine speed lies inside the coupling range, where the
 converter transmits torque without multiplication.
 
+`--consult-points` compares steady CONSULT-III readings of the TCM data
+monitor item ENGINE TORQUE with the 0x180 actual-torque word of a TRC
+capture, and optional ENG TORQUE D readings with the 0x180 request word.
+Each point names its capture and the local time or TRC offset of its
+reading; the audit takes the steady interval nearest to it and fits the
+readings against the raw counts of the words.
+
 The output is one `key = value` line per figure in TOML syntax.
 """
 
 from __future__ import annotations
 
 import argparse
+from collections import deque
 from dataclasses import dataclass, fields, replace
+from datetime import datetime, time, timedelta
 import hashlib
 import itertools
 import math
 from pathlib import Path
 import statistics
 import sys
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -89,6 +99,20 @@ COAST_MIN_SECONDS = 5.0
 COAST_WINDOW_SECONDS = 1.0
 RPM_BANDS = tuple(range(2500, 7500, 500))
 
+# Steady CONSULT points against the 0x180 words.
+CONSULT_TOLERANCE_S = 15.0
+CONSULT_MIN_SECONDS = 2.0
+CONSULT_WORD_SPREAD = 2
+CONSULT_RPM_SPREAD = 100.0
+CONSULT_APP1_SPREAD = 20
+CONSULT_RPM_MATCH = 100.0
+CONSULT_MIN_DEMAND_POINTS = 3
+CONSULT_POINT_KEYS = frozenset({
+    "capture", "time", "offset_s", "engine_torque_nm", "eng_torque_d_nm",
+    "engine_speed_rpm", "gear", "note",
+})
+OLE_AUTOMATION_EPOCH = datetime(1899, 12, 30)
+
 
 @dataclass(frozen=True)
 class Vehicle:
@@ -134,6 +158,9 @@ class Sample:
     # The snapshot follows a stream pause, so no sample covers the time since
     # the previous one.
     paused: bool = False
+    # TRC offset of the snapshot and the latest 0x180 request word.
+    offset_s: float | None = None
+    request_word: int | None = None
 
 
 @dataclass(frozen=True)
@@ -302,6 +329,11 @@ def actual_torque_word(data: bytes) -> int:
     return data[2] << 4 | data[3] >> 4
 
 
+def request_torque_word(data: bytes) -> int:
+    """0x180 low nibble of byte 3 and byte 4."""
+    return (data[3] & 0x0F) << 8 | data[4]
+
+
 def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> Capture:
     """Replay a PEAK TRC into snapshots with the latest 0x180 actual-torque word."""
     path = Path(path)
@@ -310,11 +342,13 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
              "fuel_inhibit_mask")
     rows = []
     word = None
+    request = None
     for frame in peak_trc_audit.iter_records(path):
         if isinstance(frame, peak_trc_audit.StatusRecord):
             continue
         if frame.can_id == ACTUAL_TORQUE_ID and not frame.remote and len(frame.data) >= 4:
             word = actual_torque_word(bytes(frame.data))
+            request = request_torque_word(bytes(frame.data)) if len(frame.data) >= 5 else None
         timestamp = frame.offset_ms / 1000.0
         snapshot = model.process_frame(
             FrameRecord(
@@ -345,6 +379,8 @@ def read_trc(path: Path, *, profile="tuning", can_id=0x6F0, tick_divisor=1) -> C
             selector=model.gear_raw,
             actual_word=word,
             fuel_inhibit_mask=int(model.raw["fuel_inhibit_mask"]),
+            offset_s=timestamp,
+            request_word=request,
         )))
     if not rows:
         raise ValueError(f"{path}: no verified snapshot of telemetry profile {profile!r}")
@@ -874,18 +910,298 @@ def result_lines(result):
     return [f"{key} = {_toml(value)}" for key, value in figures.items()]
 
 
+@dataclass(frozen=True)
+class ConsultPoint:
+    capture: Path
+    time: str | None
+    offset_s: float | None
+    engine_torque_nm: float
+    eng_torque_d_nm: float | None = None
+    engine_speed_rpm: float | None = None
+    gear: int | None = None
+    note: str = ""
+
+
+def load_consult_points(path: Path) -> tuple[float, list[ConsultPoint]]:
+    """The search radius and the points of a CONSULT point file.
+
+    A relative capture path resolves against the directory of the file.
+    """
+    path = Path(path)
+    with path.open("rb") as source:
+        data = tomllib.load(source)
+    unknown = set(data) - {"tolerance_s", "point"}
+    if unknown:
+        raise ValueError(f"{path}: unknown keys {', '.join(sorted(unknown))}")
+    tolerance = float(data.get("tolerance_s", CONSULT_TOLERANCE_S))
+    points = []
+    for index, row in enumerate(data.get("point", [])):
+        where = f"{path}: point {index + 1}"
+        unknown = set(row) - CONSULT_POINT_KEYS
+        if unknown:
+            raise ValueError(f"{where}: unknown keys {', '.join(sorted(unknown))}")
+        if "capture" not in row or "engine_torque_nm" not in row:
+            raise ValueError(f"{where}: capture and engine_torque_nm are required")
+        if ("time" in row) == ("offset_s" in row):
+            raise ValueError(f"{where}: state exactly one of time and offset_s")
+        capture = Path(row["capture"])
+        if not capture.is_absolute():
+            capture = path.parent / capture
+        points.append(ConsultPoint(
+            capture=capture,
+            time=str(row["time"]) if "time" in row else None,
+            offset_s=float(row["offset_s"]) if "offset_s" in row else None,
+            engine_torque_nm=float(row["engine_torque_nm"]),
+            eng_torque_d_nm=_optional(row.get("eng_torque_d_nm"), float),
+            engine_speed_rpm=_optional(row.get("engine_speed_rpm"), float),
+            gear=_optional(row.get("gear"), int),
+            note=str(row.get("note", "")),
+        ))
+    if not points:
+        raise ValueError(f"{path}: no [[point]]")
+    return tolerance, points
+
+
+def trace_start(path: Path) -> datetime:
+    """The local wall-clock start of a TRC from its OLE Automation $STARTTIME."""
+    header = peak_trc_audit.read_header(path)
+    if header.start_time is None:
+        raise ValueError(f"{path}: TRC does not declare $STARTTIME")
+    return OLE_AUTOMATION_EPOCH + timedelta(days=float(header.start_time))
+
+
+def hint_offset(point: ConsultPoint, start: datetime) -> float:
+    """TRC offset of a point: its offset, or its local time of day on the day
+    of the capture start, a later day when it precedes the start by more
+    than twelve hours."""
+    if point.offset_s is not None:
+        return point.offset_s
+    moment = datetime.combine(start.date(), time.fromisoformat(point.time))
+    offset = (moment - start).total_seconds()
+    return offset + 86400 if offset < -43200 else offset
+
+
+def steady_intervals(samples, rpm_target=None) -> list[tuple[int, int]]:
+    """Index ranges of the maximal steady intervals of samples that last
+    CONSULT_MIN_SECONDS or more.
+
+    A steady interval holds a valid 0x180 actual word within
+    CONSULT_WORD_SPREAD words, engine speed within CONSULT_RPM_SPREAD, APP1
+    within CONSULT_APP1_SPREAD raw and no fuel inhibit; a stream pause or a
+    new run starts a new interval. With `rpm_target`, every sample lies
+    within CONSULT_RPM_MATCH of it.
+    """
+    limits = (CONSULT_WORD_SPREAD, CONSULT_RPM_SPREAD, CONSULT_APP1_SPREAD)
+    highs = [deque() for _ in limits]
+    lows = [deque() for _ in limits]
+    starts: list[int | None] = []
+    start = 0
+
+    def values(sample):
+        return (sample.actual_word, sample.rpm_raw * RPM_PER_COUNT, sample.app1_raw)
+
+    for index, sample in enumerate(samples):
+        usable = (
+            sample.actual_word is not None
+            and sample.actual_word != CAN_TORQUE_INVALID
+            and not sample.fuel_inhibit_mask
+            and (rpm_target is None
+                 or abs(sample.rpm_raw * RPM_PER_COUNT - rpm_target) <= CONSULT_RPM_MATCH)
+        )
+        boundary = index and (sample.paused or sample.run != samples[index - 1].run)
+        if not usable or boundary:
+            for queue in (*highs, *lows):
+                queue.clear()
+            start = index
+        if not usable:
+            starts.append(None)
+            start = index + 1
+            continue
+        current = values(sample)
+        for position, value in enumerate(current):
+            high, low = highs[position], lows[position]
+            while high and values(samples[high[-1]])[position] <= value:
+                high.pop()
+            high.append(index)
+            while low and values(samples[low[-1]])[position] >= value:
+                low.pop()
+            low.append(index)
+        while any(
+            values(samples[highs[k][0]])[k] - values(samples[lows[k][0]])[k] > limits[k]
+            for k in range(len(limits))
+        ):
+            start += 1
+            for queue in (*highs, *lows):
+                while queue and queue[0] < start:
+                    queue.popleft()
+        starts.append(start)
+    intervals = []
+    for index, first in enumerate(starts):
+        if first is None:
+            continue
+        following = starts[index + 1] if index + 1 < len(starts) else None
+        if following == first:
+            continue
+        if samples[index].offset_s - samples[first].offset_s >= CONSULT_MIN_SECONDS:
+            intervals.append((first, index))
+    return intervals
+
+
+def nearest_steady(samples, hint: float, rpm_target=None) -> tuple[int, int] | None:
+    """The steady interval nearest to TRC offset `hint`, the longer on a tie."""
+    def rank(interval):
+        first, last = samples[interval[0]].offset_s, samples[interval[1]].offset_s
+        distance = max(0.0, first - hint, hint - last)
+        return distance, -(last - first)
+
+    intervals = steady_intervals(samples, rpm_target)
+    return min(intervals, key=rank) if intervals else None
+
+
+def scale_fit(pairs) -> dict | None:
+    """Least-squares Nm = slope * raw + intercept over (raw, Nm) pairs, the
+    fit through the origin, and the largest deviation of each candidate."""
+    if len(pairs) < 2:
+        return None
+    raws = [raw for raw, _ in pairs]
+    readings = [nm for _, nm in pairs]
+    mean_raw = statistics.fmean(raws)
+    mean_nm = statistics.fmean(readings)
+    spread = sum((raw - mean_raw) ** 2 for raw in raws)
+    if not spread:
+        return None
+    slope = sum((raw - mean_raw) * (nm - mean_nm) for raw, nm in pairs) / spread
+    intercept = mean_nm - slope * mean_raw
+    return {
+        "points": len(pairs),
+        "slope": slope,
+        "intercept": intercept,
+        "residual_max": max(abs(nm - slope * raw - intercept) for raw, nm in pairs),
+        "origin_slope": sum(raw * nm for raw, nm in pairs) / sum(raw * raw for raw in raws),
+        "candidate_residual_max": [
+            max(abs(nm - scale * raw) for raw, nm in pairs) for scale in CANDIDATE_SCALES_NM
+        ],
+    }
+
+
+def consult_audit(path: Path) -> dict:
+    """Per-point steady words of a CONSULT point file and the scale fits."""
+    tolerance, points = load_consult_points(path)
+    captures: dict[Path, tuple[Capture, datetime]] = {}
+    rows = []
+    for point in points:
+        if point.capture not in captures:
+            captures[point.capture] = (read_trc(point.capture), trace_start(point.capture))
+        capture, start = captures[point.capture]
+        hint = hint_offset(point, start)
+        nearby = [
+            sample for sample in capture.samples
+            if sample.offset_s is not None and abs(sample.offset_s - hint) <= tolerance
+        ]
+        found = nearest_steady(nearby, hint, point.engine_speed_rpm)
+        row = {"capture": point.capture.name, "hint_s": hint, "point": point}
+        if found is None:
+            rows.append({**row, "status": "no_steady_interval"})
+            continue
+        steady = nearby[found[0] : found[1] + 1]
+        word = statistics.median_low(sample.actual_word for sample in steady)
+        requests = [sample.request_word for sample in steady if sample.request_word is not None]
+        request = statistics.median_low(requests) if requests else None
+        rows.append({
+            **row,
+            "status": "ok",
+            "start_s": steady[0].offset_s,
+            "seconds": steady[-1].offset_s - steady[0].offset_s,
+            "word": word,
+            "raw": word_torque(word),
+            "request_word": request,
+            "request_raw": None if request is None else word_torque(request),
+            "rpm": statistics.median(sample.rpm_raw * RPM_PER_COUNT for sample in steady),
+            "app1": statistics.median_low(sample.app1_raw for sample in steady),
+        })
+    accepted = [row for row in rows if row["status"] == "ok"]
+    demand = [
+        (row["request_raw"], row["point"].eng_torque_d_nm) for row in accepted
+        if row["request_raw"] is not None and row["point"].eng_torque_d_nm is not None
+    ]
+    return {
+        "captures": {path.name: capture.sha256 for path, (capture, _) in captures.items()},
+        "rows": rows,
+        "fit": scale_fit([(row["raw"], row["point"].engine_torque_nm) for row in accepted]),
+        "demand_fit": scale_fit(demand) if len(demand) >= CONSULT_MIN_DEMAND_POINTS else None,
+    }
+
+
+def consult_lines(result: dict) -> list[str]:
+    """Figures of a CONSULT comparison as `key = value` lines in TOML syntax."""
+    rows = result["rows"]
+    accepted = [row for row in rows if row["status"] == "ok"]
+
+    def column(key, digits=None):
+        values = [row[key] for row in accepted]
+        if digits is not None:
+            values = [None if value is None else round(value, digits) for value in values]
+        return [-1 if value is None else value for value in values]
+
+    figures = {
+        "consult_capture_name": list(result["captures"]),
+        "consult_capture_sha256": list(result["captures"].values()),
+        "consult_point_count": len(rows),
+        "consult_point_status": [row["status"] for row in rows],
+        "consult_point_hint_seconds": [round(row["hint_s"], 2) for row in rows],
+        "consult_point_note": [row["point"].note for row in rows],
+        "consult_steady_capture": [row["capture"] for row in accepted],
+        "consult_steady_start_seconds": column("start_s", 2),
+        "consult_steady_seconds": column("seconds", 2),
+        "consult_steady_word": column("word"),
+        "consult_steady_raw": column("raw", 1),
+        "consult_steady_request_word": column("request_word"),
+        "consult_steady_rpm": column("rpm", 1),
+        "consult_steady_app1": column("app1"),
+        "consult_engine_torque_nm": [row["point"].engine_torque_nm for row in accepted],
+        "consult_candidate_scales_nm_per_raw": list(CANDIDATE_SCALES_NM),
+    }
+    for prefix, fit in (("consult_fit", result["fit"]), ("consult_demand_fit", result["demand_fit"])):
+        if fit is None:
+            figures[f"{prefix}_points"] = 0
+            continue
+        figures.update({
+            f"{prefix}_points": fit["points"],
+            f"{prefix}_slope_nm_per_raw": round(fit["slope"], 5),
+            f"{prefix}_intercept_nm": round(fit["intercept"], 2),
+            f"{prefix}_residual_max_nm": round(fit["residual_max"], 2),
+            f"{prefix}_origin_slope_nm_per_raw": round(fit["origin_slope"], 5),
+            f"{prefix}_candidate_residual_max_nm": [
+                round(value, 2) for value in fit["candidate_residual_max"]
+            ],
+        })
+    return [f"{key} = {mlg_relation_audit.format_value(value)}" for key, value in figures.items()]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("captures", nargs="+", type=Path)
-    parser.add_argument("--calibration-image", type=Path, required=True)
-    parser.add_argument("--cruise", type=Path, required=True,
+    parser.add_argument("captures", nargs="*", type=Path)
+    parser.add_argument("--calibration-image", type=Path)
+    parser.add_argument("--cruise", type=Path,
                         help="converter-locked top-gear cruise capture")
     parser.add_argument("--remainder", type=Path, action="append", default=[],
                         help="TRC capture with 0x180 frames for the net remainder")
+    parser.add_argument("--consult-points", type=Path,
+                        help="TOML file of steady CONSULT ENGINE TORQUE readings")
     args = parser.parse_args(argv)
-    result = audit(args.calibration_image, args.cruise, args.captures, args.remainder)
-    for line in result_lines(result):
-        print(line)
+    road = bool(args.captures or args.calibration_image or args.cruise or args.remainder)
+    if road and not (args.captures and args.calibration_image and args.cruise):
+        parser.error("road runs need captures, --calibration-image and --cruise")
+    if not road and args.consult_points is None:
+        parser.error("state road runs or --consult-points")
+    if road:
+        for line in result_lines(
+            audit(args.calibration_image, args.cruise, args.captures, args.remainder)
+        ):
+            print(line)
+    if args.consult_points is not None:
+        for line in consult_lines(consult_audit(args.consult_points)):
+            print(line)
     return 0
 
 

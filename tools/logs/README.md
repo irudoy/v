@@ -876,6 +876,49 @@ The output is one `key = value` line per figure in TOML syntax. The captures
 do not measure road grade, vehicle mass, tire radius, or true vehicle speed,
 so the audit bounds the scale and does not determine it.
 
+### CONSULT steady points
+
+`--consult-points` compares steady readings of the CONSULT-III TCM data
+monitor with the `0x180` words of TRC captures. It runs alone or after the
+road-run figures.
+
+```bash
+python3 tools/logs/torque_scale_audit.py --consult-points tmp/logs/consult-points.toml
+```
+
+```toml
+tolerance_s = 15                 # search radius around each point, default 15
+
+[[point]]
+capture = "block5.trc"           # relative to the directory of this file
+time = "14:32:10"                # local time of the reading, or offset_s
+engine_torque_nm = 182           # ENGINE TORQUE
+eng_torque_d_nm = 190            # optional ENG TORQUE D
+engine_speed_rpm = 2400          # optional, selects the steady interval
+gear = 4                         # optional
+note = "M4, 80 km/h"             # optional
+```
+
+- `time` is the wall-clock time of the computer that recorded the TRC: the
+  dashboard and PCAN-View store a local `$STARTTIME`, and the point lies on
+  the day of the capture start. `offset_s` gives the TRC offset instead.
+- A steady interval lasts 2 s or more, holds a valid `0x180` actual word
+  within 2 words, engine speed within 100 RPM, and APP1 within 20 raw, has no
+  fuel inhibit, and does not span a stream pause. With `engine_speed_rpm`,
+  every sample lies within 100 RPM of it. The point takes the steady interval
+  nearest to its time inside the search radius, the longer one on a tie; a
+  point without one is reported and left out of the fits.
+- The raw count of a word is the midpoint of its five-count interval. The
+  fit gives `ENGINE TORQUE = slope * raw + intercept`, the slope through the
+  origin, the largest residual, and the largest deviation of each candidate
+  scale. `ENG TORQUE D` is fitted against the `0x180` request word when three
+  or more points carry it. `-1` marks a request word that the interval does
+  not carry.
+
+Whether the RE5R05A TCM of the vehicle offers ENGINE TORQUE is not
+established; the readings establish only the scale of the value that the TCM
+displays.
+
 ## JK08A transmission interface audit
 
 `tcm_shift_audit.py` replays strict schema-2 `tuning` TRC captures against the
