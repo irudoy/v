@@ -1874,10 +1874,14 @@ security boundary: the gates validate every file whatever wrote it.
   [Claude Code hook contract](https://code.claude.com/docs/en/hooks). The
   tracked hook sets neither `timeout` nor `onFailure`, so the guard bounds
   its own decision: a decision checks at most `PATH_BUDGET` (10,000) shell
-  paths, counting each operand and each match of a file pattern, and runs
-  for at most `DECISION_SECONDS` (5 s). A call that exceeds either budget is
-  denied with a reason that names the budget. The time budget uses `SIGALRM`
-  in the main thread of the hook; without it only the path budget applies.
+  paths, counting each literal operand and each match of a file pattern, or
+  the pattern itself when it matches nothing, and runs for at most
+  `DECISION_SECONDS` (5 s). A call that exceeds either budget is denied with
+  a reason that names the budget. In the main thread of the hook, with no
+  other real-time timer, `SIGALRM` interrupts the decision at its time
+  budget. Elsewhere the decision checks its deadline at each shell path and
+  at its end: a call that runs past the deadline is denied, but a slow step
+  runs to its end.
 - The hook denies with `permissionDecision = "deny"` and a reason that names
   the command to use:
 

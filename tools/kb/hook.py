@@ -43,6 +43,7 @@ import signal
 import sys
 import tempfile
 import threading
+import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -180,10 +181,17 @@ class Overrun(BaseException):
         self.reason = reason
 
 
+def slow(seconds):
+    """The Overrun of a decision that runs longer than `seconds`."""
+    return Overrun(f"the call takes more than {seconds:g} s to inspect; "
+                   "use explicit file operands.")
+
+
 @contextlib.contextmanager
 def time_budget(seconds):
-    """Raise Overrun once `seconds` pass. The limit needs SIGALRM in the main
-    thread and no other real-time timer; elsewhere no time limit applies."""
+    """Raise Overrun once `seconds` pass. The interruption needs SIGALRM in
+    the main thread and no other real-time timer; elsewhere the decision
+    checks its deadline at each shell path and at its end."""
     if (not hasattr(signal, "setitimer")
             or threading.current_thread() is not threading.main_thread()
             or signal.getitimer(signal.ITIMER_REAL)[0]):
@@ -193,8 +201,7 @@ def time_budget(seconds):
 
     def expire(_signum, _frame):
         if armed:
-            raise Overrun(f"the call takes more than {seconds:g} s to inspect; "
-                          "use explicit file operands.")
+            raise slow(seconds)
 
     previous = signal.signal(signal.SIGALRM, expire)
     signal.setitimer(signal.ITIMER_REAL, seconds)
@@ -252,8 +259,10 @@ class Guard:
         self.root = Path(root).resolve()
         self.cwd = Path(cwd) if cwd else self.root
         self.trees, self.git, self.projections = load(self.root)
-        # The paths that the current decision has checked.
+        # The paths that the current decision has checked, and the monotonic
+        # time by which it ends.
         self.checked = 0
+        self.deadline = float("inf")
 
     # Paths ---------------------------------------------------------------
 
@@ -305,11 +314,22 @@ class Guard:
         """The reason to deny a tool call, or None to let it pass. A call
         whose inspection exceeds PATH_BUDGET or DECISION_SECONDS is denied."""
         self.checked = 0
+        self.deadline = time.monotonic() + DECISION_SECONDS
         try:
             with time_budget(DECISION_SECONDS):
-                return self._decide(tool, arguments)
+                reason = self._decide(tool, arguments)
+                if reason is None:
+                    self.overdue()
+                return reason
         except Overrun as overrun:
             return overrun.reason
+        finally:
+            self.deadline = float("inf")
+
+    def overdue(self):
+        """Raise Overrun once the decision passes its deadline."""
+        if time.monotonic() > self.deadline:
+            raise slow(DECISION_SECONDS)
 
     def _decide(self, tool, arguments):
         if tool in EDITS:
@@ -697,6 +717,7 @@ class Guard:
 
     def path_check(self, path, mode):
         """The reason to deny one shell path, counted against PATH_BUDGET."""
+        self.overdue()
         self.checked += 1
         if self.checked > PATH_BUDGET:
             raise Overrun(f"the call names more than {PATH_BUDGET} paths; "

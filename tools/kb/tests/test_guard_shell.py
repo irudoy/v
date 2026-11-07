@@ -7,7 +7,9 @@ import signal
 import subprocess
 import sys
 import tempfile
+import threading
 import time
+import unittest
 from unittest import mock
 
 from kb import project
@@ -625,6 +627,18 @@ class DecisionBudgetTest(GuardCase):
         self.assertIn("more than 10 paths", reason)
         self.assertIsNone(self.denied("Bash", command=f"ls {self.outside}/**/*.txt"))
 
+    def test_the_path_budget_counts_literal_operands_and_matches(self):
+        # A pattern counts its matches, not itself; a literal operand counts once.
+        literals = " ".join(f"open{index}.txt" for index in range(11))
+        with mock.patch.object(project.hook, "PATH_BUDGET", 10):
+            self.assertIsNone(self.denied(
+                "Bash", command=f"ls {self.outside}/a/*.txt {self.outside}/b/c/[0-3].txt"))
+            self.assertIn("more than 10 paths", self.denied(
+                "Bash", command=f"ls {self.outside}/a/*.txt {self.outside}/b/c/[0-4].txt"))
+            self.assertIsNone(self.denied("Bash", command=f"ls {literals.rsplit(' ', 1)[0]}"))
+            self.assertIn("more than 10 paths", self.denied("Bash", command=f"ls {literals}"))
+
+    @unittest.skipUnless(hasattr(signal, "setitimer"), "the time budget interrupts by SIGALRM")
     def test_a_recursive_pattern_over_the_time_budget_is_denied(self):
         def stalled(_pattern, recursive=False):
             # A recursive pattern over a large tree outside the repository
@@ -645,6 +659,45 @@ class DecisionBudgetTest(GuardCase):
         self.assertEqual(signal.getitimer(signal.ITIMER_REAL)[0], 0)
         self.assertIs(signal.getsignal(signal.SIGALRM), handler)
         self.assertIsNone(self.denied("Bash", command=command.replace("**/", "")))
+
+    def test_a_decision_outside_the_main_thread_checks_its_deadline_at_each_path(self):
+        match = str(self.outside / "a" / "0.txt")
+
+        def slow(_pattern, recursive=False):
+            # Each match takes 0.05 s; the pattern ends after 2 s.
+            for _ in range(40):
+                time.sleep(0.05)
+                yield match
+
+        outcome = {}
+        command = f"ls {self.outside}/**/*.txt"
+        with mock.patch.object(project.hook, "DECISION_SECONDS", 0.2), \
+                mock.patch.object(project.hook.glob, "iglob", slow):
+            worker = threading.Thread(
+                target=lambda: outcome.update(reason=self.denied("Bash", command=command)))
+            started = time.monotonic()
+            worker.start()
+            worker.join(5)
+            elapsed = time.monotonic() - started
+        self.assertIn("more than 0.2 s to inspect", outcome["reason"])
+        self.assertLess(elapsed, 1.0)
+
+    @unittest.skipUnless(hasattr(signal, "setitimer"), "the case needs a real-time timer")
+    def test_a_decision_under_another_timer_is_denied_after_its_deadline(self):
+        calls = []
+        handler = signal.signal(signal.SIGALRM, lambda *_: calls.append("outer"))
+        self.addCleanup(signal.signal, signal.SIGALRM, handler)
+        signal.setitimer(signal.ITIMER_REAL, 30)
+        self.addCleanup(signal.setitimer, signal.ITIMER_REAL, 0)
+        outer = signal.getsignal(signal.SIGALRM)
+        with mock.patch.object(project.hook, "DECISION_SECONDS", 0.2), \
+                mock.patch.object(self.guard, "_decide", lambda *_: time.sleep(0.3)):
+            reason = self.denied("Bash", command="cat open.txt")
+        self.assertIn("more than 0.2 s to inspect", reason)
+        self.assertGreater(signal.getitimer(signal.ITIMER_REAL)[0], 0)
+        self.assertIs(signal.getsignal(signal.SIGALRM), outer)
+        self.assertEqual(calls, [])
+        self.assertIsNone(self.denied("Bash", command="cat open.txt"))
 
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):
