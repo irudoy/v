@@ -399,6 +399,14 @@ occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_isr_helper = "stock_isr_helper/fn"
 stock_sle1_isr = "stock_sle1_isr/fn"
 
+[[target.unsupported]]
+note = """
+Bit 1 of FFFF4353 carries the neutralization pulse, and this layout keeps \
+the bit 7 flag of the 7mfk byte in FFFF4352. The shared profile decodes bit \
+0 and has no conversion for this source, so this field is unavailable on \
+JK00C."""
+symbol = "ltft_publication_neutral_control/ram"
+
 [[target]]
 layout = "jk00d"
 status = "supported"
@@ -466,6 +474,14 @@ mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_isr_helper = "stock_isr_helper/fn"
 stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target.unsupported]]
+note = """
+Bit 1 of FFFF4367 carries the neutralization pulse, and this layout keeps \
+the bit 7 flag of the 7mfk byte in FFFF4366. The shared profile decodes bit \
+0 and has no conversion for this source, so this field is unavailable on \
+JK00D."""
+symbol = "ltft_publication_neutral_control/ram"
 
 [[target]]
 layout = "jk78c"

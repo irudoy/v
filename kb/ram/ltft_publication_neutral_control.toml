@@ -104,8 +104,14 @@ target = "7mfk:ffff41b5"
 count = 2
 l0 = "3a1f5258d7d21e9c"
 note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
+Bit 1 of FFFF4353 carries the neutralization pulse: FUN 00059820 produces it \
+as the rising-request pulse of FFFF99E8.bit5 before FFFF43A4.bit7 latches \
+it, and the LTFT publisher 00059A46 neutralizes its output on mask 0x02 \
+where the 7mfk publisher tests bit 0. The 7mfk store 0009C1D4 sets bit 7 of \
+FFFF41B5 and aligns with the JK00C store 000A149C, which sets bit 1 of the \
+adjacent byte FFFF4352, so this layout keeps that flag of the 7mfk byte in \
+FFFF4352. The shared profile decodes bit 0 of one byte and has no conversion \
+for this source, so this field is unavailable on JK00C."""
 
 [[status]]
 layout = "jk00d"
@@ -115,8 +121,14 @@ target = "7mfk:ffff41b5"
 count = 2
 l0 = "cccf723af9ae4f77"
 note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
+Bit 1 of FFFF4367 carries the neutralization pulse: FUN 0005981C produces it \
+as the rising-request pulse of FFFF99E8.bit5 before FFFF43B8.bit7 latches \
+it, and the LTFT publisher 00059A42 neutralizes its output on mask 0x02 \
+where the 7mfk publisher tests bit 0. The 7mfk store 0009C1D4 sets bit 7 of \
+FFFF41B5 and aligns with the JK00D store 000A1488, which sets bit 1 of the \
+adjacent byte FFFF4366, so this layout keeps that flag of the 7mfk byte in \
+FFFF4366. The shared profile decodes bit 0 of one byte and has no conversion \
+for this source, so this field is unavailable on JK00D."""
 
 [[link]]
 type = "reader"

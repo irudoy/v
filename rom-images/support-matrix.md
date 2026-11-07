@@ -32,8 +32,8 @@ required meanings without a symbol there, each by the state of its status.
 | `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 7 fields unavailable (1 absent, 3 unresolved, 3 unsupported) | supported; 16 meanings without a symbol (16 absent) |
 | `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 5 fields unavailable (2 unresolved, 3 unsupported) | supported; 13 meanings without a symbol (13 absent) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |
-| `jk00c` | JK00C | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
-| `jk00d` | JK00D | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unresolved) | supported; 2 meanings without a symbol (2 absent) |
+| `jk00c` | JK00C | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unsupported) | supported; 2 meanings without a symbol (2 absent) |
+| `jk00d` | JK00D | supported; ROM `0xDE808..0xE2700`, RAM `0xFFFF6000..0xFFFF6300` | supported; 13 switched families | planned | supported; mailbox 26; 1 field unavailable (1 unsupported) | supported; 2 meanings without a symbol (2 absent) |
 | `jk78c` | JK78C | supported; ROM `0x1CB08..0x20000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 14 switched families, 4 unsupported | planned | supported; mailbox 26; 5 fields unavailable (1 unresolved, 4 unsupported) | supported; 13 meanings without a symbol (13 absent) |
 
 | Feature | Summary | Specifications |
