@@ -365,8 +365,19 @@ class AuditInputTest(unittest.TestCase):
     def test_remainder_without_a_pair_is_rejected(self):
         locked = [sample(index * 0.01, speed=80.0, rpm=80.0 * LOCKED_RPM_PER_KMH)
                   for index in range(300)]
-        with self.assertRaisesRegex(ValueError, "the remainder needs --remainder TRC"):
+        with self.assertRaisesRegex(
+            ValueError, "remainder.trc: no valid 0x180 actual-torque word"
+        ):
             self.run_audit(locked, ["remainder.trc"])
+
+    def test_road_runs_need_remainder_captures(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit) as raised:
+            audit.main(["--calibration-image", "image.bin", "--cruise", "cruise.mlg",
+                        "run.mlg"])
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("road runs need captures, --calibration-image, --cruise and --remainder",
+                      stderr.getvalue())
 
 
 

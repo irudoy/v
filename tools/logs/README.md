@@ -406,8 +406,9 @@ sources through the recorder field table, so any recording with the schema-2
 read from the calibration image. `LEGACY_CHANNEL_SOURCES` maps the channel
 names of earlier recordings to the sources they record, so the audits that
 read MLG recordings through this table accept those recordings too; an audit
-that lacks a channel names the channel it expects. Engine speed in every relation is the RPM/12.5
-coordinate `0xFFFF11F4`, which the audit takes from stock CAN RPM as
+that lacks a channel names the channel it expects. Engine speed in every
+relation is the RPM/12.5 coordinate `0xFFFF11F4`, which the audit takes from
+stock CAN RPM as
 `(round(8 * rpm) // 25) >> 2`, because frame `0x180` carries `25 * 0xFFFF11EE`
 and the coordinate is `0xFFFF11EE >> 2`. The relations are:
 

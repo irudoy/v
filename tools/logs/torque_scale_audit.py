@@ -798,9 +798,10 @@ def audit(image: Path, cruise: Path, captures: list[Path], remainder_captures: l
         loaded[path] = read_capture(path)
         pairs.extend(remainder_pairs(loaded[path].samples, base_term))
     if not pairs:
+        named = ", ".join(str(path) for path in remainder_captures)
         raise ValueError(
-            "the remainder needs --remainder TRC captures with valid 0x180 "
-            "actual-torque words at open pedal outside torque reduction"
+            f"{named}: no valid 0x180 actual-torque word at open pedal outside "
+            "torque reduction, so the remainder has no pair"
         )
     remainder = statistics.median(value for _, value in pairs)
     points = []
@@ -1343,8 +1344,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="TOML file of steady CONSULT ENGINE TORQUE readings")
     args = parser.parse_args(argv)
     road = bool(args.captures or args.calibration_image or args.cruise or args.remainder)
-    if road and not (args.captures and args.calibration_image and args.cruise):
-        parser.error("road runs need captures, --calibration-image and --cruise")
+    if road and not (args.captures and args.calibration_image and args.cruise
+                     and args.remainder):
+        parser.error("road runs need captures, --calibration-image, --cruise and --remainder")
     if not road and args.consult_points is None:
         parser.error("state road runs or --consult-points")
     if road:
