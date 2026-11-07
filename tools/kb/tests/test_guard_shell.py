@@ -3,9 +3,12 @@
 from pathlib import Path
 import json
 import os
+import signal
 import subprocess
 import sys
+import tempfile
 import time
+from unittest import mock
 
 from kb import project
 from tools.kb.tests.test_guard import GuardCase, PROJECTIONS
@@ -602,6 +605,46 @@ read = "open"
         ):
             with self.subTest(command=command):
                 self.assertIsNotNone(self.denied("Bash", command=command))
+
+
+class DecisionBudgetTest(GuardCase):
+    def setUp(self):
+        super().setUp()
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        self.outside = Path(outside.name).resolve()
+        for directory in ("a", "b/c"):
+            (self.outside / directory).mkdir(parents=True)
+            for index in range(6):
+                (self.outside / directory / f"{index}.txt").write_text("")
+
+    def test_a_pattern_over_the_path_budget_is_denied(self):
+        with mock.patch.object(project.hook, "PATH_BUDGET", 10):
+            self.assertIsNone(self.denied("Bash", command=f"ls {self.outside}/a/*.txt"))
+            reason = self.denied("Bash", command=f"ls {self.outside}/**/*.txt; cat open.txt")
+        self.assertIn("more than 10 paths", reason)
+        self.assertIsNone(self.denied("Bash", command=f"ls {self.outside}/**/*.txt"))
+
+    def test_a_recursive_pattern_over_the_time_budget_is_denied(self):
+        def stalled(_pattern, recursive=False):
+            # A recursive pattern over a large tree outside the repository
+            # scans for a long time before it yields a match.
+            while True:
+                time.sleep(0.01)
+            yield
+
+        command = f"ls {self.outside}/{{a,b,c,d,e,f}}/**/zz; cat open.txt"
+        handler = signal.getsignal(signal.SIGALRM)
+        with mock.patch.object(project.hook, "DECISION_SECONDS", 0.2), \
+                mock.patch.object(project.hook.glob, "iglob", stalled):
+            started = time.monotonic()
+            reason = self.denied("Bash", command=command)
+            elapsed = time.monotonic() - started
+        self.assertIn("more than 0.2 s to inspect", reason)
+        self.assertLess(elapsed, 2.0)
+        self.assertEqual(signal.getitimer(signal.ITIMER_REAL)[0], 0)
+        self.assertIs(signal.getsignal(signal.SIGALRM), handler)
+        self.assertIsNone(self.denied("Bash", command=command.replace("**/", "")))
 
 
 def test_unsupported_fallback_python_returns_a_deliberate_denial(tmp_path):

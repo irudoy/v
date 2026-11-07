@@ -31,6 +31,7 @@ call with exit status 2.
 
 import ast
 from collections import Counter
+import contextlib
 import fnmatch
 import glob
 import hashlib
@@ -38,8 +39,10 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import sys
 import tempfile
+import threading
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -91,6 +94,11 @@ JQ_FILES = {"--slurpfile", "--rawfile", "--argfile"}
 JQ_MODULES = re.compile(r"(?<![.\w$])(?:import|include)\b|\bmodulemeta\b")
 # An edit reason lists the inputs of a projection up to this many.
 LISTED_INPUTS = 4
+# The budget of one decision. Claude Code lets a PreToolUse call proceed when
+# its hook times out, so the guard denies a call whose inspection checks more
+# paths or takes longer instead of running into that timeout.
+PATH_BUDGET = 10_000
+DECISION_SECONDS = 5.0
 
 
 def session_key(session_id):
@@ -161,6 +169,43 @@ def load(root=ROOT):
             tuple(config.get("git", ())), projections)
 
 
+class Overrun(BaseException):
+    """A decision that exceeds its path or time budget.
+
+    It derives from BaseException so that no handler of an inspection step
+    takes it for an ordinary failure of that step."""
+
+    def __init__(self, reason):
+        super().__init__(reason)
+        self.reason = reason
+
+
+@contextlib.contextmanager
+def time_budget(seconds):
+    """Raise Overrun once `seconds` pass. The limit needs SIGALRM in the main
+    thread and no other real-time timer; elsewhere no time limit applies."""
+    if (not hasattr(signal, "setitimer")
+            or threading.current_thread() is not threading.main_thread()
+            or signal.getitimer(signal.ITIMER_REAL)[0]):
+        yield
+        return
+    armed = True
+
+    def expire(_signum, _frame):
+        if armed:
+            raise Overrun(f"the call takes more than {seconds:g} s to inspect; "
+                          "use explicit file operands.")
+
+    previous = signal.signal(signal.SIGALRM, expire)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        armed = False
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
+
+
 def split(path):
     """(file, section) of a projection path `<file>#<section>`."""
     file, _, section = path.partition("#")
@@ -207,6 +252,8 @@ class Guard:
         self.root = Path(root).resolve()
         self.cwd = Path(cwd) if cwd else self.root
         self.trees, self.git, self.projections = load(self.root)
+        # The paths that the current decision has checked.
+        self.checked = 0
 
     # Paths ---------------------------------------------------------------
 
@@ -255,7 +302,16 @@ class Guard:
     # Decisions -----------------------------------------------------------
 
     def decide(self, tool, arguments):
-        """The reason to deny a tool call, or None to let it pass."""
+        """The reason to deny a tool call, or None to let it pass. A call
+        whose inspection exceeds PATH_BUDGET or DECISION_SECONDS is denied."""
+        self.checked = 0
+        try:
+            with time_budget(DECISION_SECONDS):
+                return self._decide(tool, arguments)
+        except Overrun as overrun:
+            return overrun.reason
+
+    def _decide(self, tool, arguments):
         if tool in EDITS:
             return self.edit(arguments)
         if tool == "Read":
@@ -625,16 +681,31 @@ class Guard:
                     prefix = Path(absolute[:first]).parent if not absolute[:first].endswith("/") else Path(absolute[:first])
                     if self.root.is_relative_to(prefix.resolve()):
                         return "a recursive file pattern can enter protected paths; use explicit KB references."
-                paths = glob.glob(absolute, recursive=True) if glob.has_magic(absolute) else [absolute]
-                for path in paths or [absolute]:
-                    if mode in {"edit", "unknown"}:
-                        reason = self.edit({"file_path": path, "content": ""})
-                        if reason:
-                            return reason
-                    reason = self.read(path)
+                matched = False
+                # A pattern yields its matches lazily, so the path budget
+                # ends a large match before the pattern lists it.
+                for path in glob.iglob(absolute, recursive=True) if glob.has_magic(absolute) else ():
+                    matched = True
+                    reason = self.path_check(path, mode)
+                    if reason:
+                        return reason
+                if not matched:
+                    reason = self.path_check(absolute, mode)
                     if reason:
                         return reason
         return None
+
+    def path_check(self, path, mode):
+        """The reason to deny one shell path, counted against PATH_BUDGET."""
+        self.checked += 1
+        if self.checked > PATH_BUDGET:
+            raise Overrun(f"the call names more than {PATH_BUDGET} paths; "
+                          "use explicit file operands.")
+        if mode in {"edit", "unknown"}:
+            reason = self.edit({"file_path": path, "content": ""})
+            if reason:
+                return reason
+        return self.read(path)
 
     def git_operation(self, words, cwd):
         index = 0

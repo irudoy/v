@@ -1865,6 +1865,19 @@ security boundary: the gates validate every file whatever wrote it.
   a deliberate denial that names the required interpreter. Any other
   failure denies the call with exit status 2 and a reason that names the
   error and `KB_GUARD=off`.
+- Claude Code cancels a command hook that reaches its timeout, 600 s by
+  default, and discards its output. A `PreToolUse` call whose hook times out
+  continues through the normal permission flow unless the hook sets
+  `onFailure: "block"` (Claude Code 2.1.295 or later); a hook that fails to
+  start, or exits with a status other than 0 or 2, also lets the call
+  proceed. These rules follow the
+  [Claude Code hook contract](https://code.claude.com/docs/en/hooks). The
+  tracked hook sets neither `timeout` nor `onFailure`, so the guard bounds
+  its own decision: a decision checks at most `PATH_BUDGET` (10,000) shell
+  paths, counting each operand and each match of a file pattern, and runs
+  for at most `DECISION_SECONDS` (5 s). A call that exceeds either budget is
+  denied with a reason that names the budget. The time budget uses `SIGALRM`
+  in the main thread of the hook; without it only the path budget applies.
 - The hook denies with `permissionDecision = "deny"` and a reason that names
   the command to use:
 
@@ -1941,6 +1954,31 @@ security boundary: the gates validate every file whatever wrote it.
   involving protected references are conservatively denied. The hook does not execute Python
   programs or provide general Python analysis. Unknown shell operations use
   conservative checks of their possible file operands.
+- The guard decides before the call runs and from the call text alone, so
+  forms that hide a protected path or create it during the call lie outside
+  the convenience boundary. The guard admits:
+  - a Python program without a protected constant that builds a protected
+    path at run time, such as
+    `open(''.join(['k', 'b', '/names.csv']))`;
+  - a Python script file such as `python3 tmp/script.py`, whose text the
+    guard does not read;
+  - a link that Python creates with a relative target, which resolves
+    against the link directory while the guard checks it against the working
+    directory, such as `os.symlink('../kb/names.csv', 'tmp/zz.txt')`;
+  - the value of a long option that holds a brace pattern, such as
+    `base64 --input=l{x,0}/7mfk/funcs.csv`, since such a value is not
+    checked as a path;
+  - a jq program file that the decision reads before the call writes it:
+    `jq -f /dev/stdin` with a here-document reads the empty standard input
+    of the hook, and a program file that the same command rewrites is
+    checked in its prior state;
+  - the combined GNU form `ln -st <directory> <target>`, since only a
+    separate `-t` names the target directory;
+  - a link that an earlier part of the same compound command moves or
+    reaches through another link, such as
+    `ln -s ../kb/names.csv tmp/x/zz.txt && mv tmp/x/zz.txt tmp/zz.txt && cat tmp/zz.txt`
+    or `ln -s .. tmp/up && ln -s up/kb/names.csv tmp/zz.txt && cat tmp/zz.txt`,
+    since the link does not exist when the guard resolves the later operand.
 - An edit of a file with a marked section is an edit of the projection when
   it changes the section or its markers.
 - A Codex patch checks every source and move destination. For an update of
