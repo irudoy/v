@@ -22,12 +22,13 @@ values of the same scheduler pass. Per capture it reports:
   the target gear;
 - the shared throttle target in closed-pedal downshifts;
 - the pedal class of each downshift: closed, pressed, or full pedal in D and
-  DS, and manual in M1..M5;
+  DS, and manual in M1..M5, with the 0x180 pedal word that the TCM receives;
 - the effective transmission reduction state 0xFFFF1866 against the 0x177
   byte 4 of the TCM groups before each snapshot, and the runs in which it
   holds another value;
-- the runs of the Q8 transition state 0xFFFF23C2 with their source, peak, and
-  final-timing dip, and how far the dynamic page covers each burst window.
+- the runs of the Q8 transition state 0xFFFF23C2 with the burst or reduction
+  run that precedes them in time, their peak, and final-timing dip, and how
+  far the dynamic page covers each burst window.
 
 A shift event starts where the 0x174 target nibble changes to a gear that
 differs from the current nibble, ends where the current nibble reaches it or
@@ -123,9 +124,10 @@ BURST_REFERENCE_S = 0.3
 BINDING_WINDOW_S = 0.03
 BINDING_FRAMES = 4
 CLOSED_PEDAL_APP1 = 160
-# A transition run takes as its source a burst or a nonzero reduction state
-# that starts at most this long before it.
-TRANSITION_SOURCE_S = 0.5
+# A transition run follows a burst or a nonzero reduction run that starts by
+# its start and ends at most this long before it. The relation is temporal:
+# 0xFFFF23C2 also has inputs that no stream carries.
+TRANSITION_GAP_S = BINDING_WINDOW_S
 # 0x421 byte 0 codes of the drive and manual positions (defs/JK08A.can.md).
 DRIVE_SELECTORS = {0x20: "D", 0x28: "DS"}
 MANUAL_SELECTORS = {0x80: 1, 0x88: 2, 0x90: 3, 0x98: 4, 0xA0: 5}
@@ -316,6 +318,9 @@ class Pass:
     request_word: int
     limited_word: int
     parallel_word: int
+    # 0x180 byte 5 and bits 7..6 of byte 6: the pedal word that the TCM
+    # receives.
+    pedal_word: int | None = None
 
     @property
     def seconds(self) -> float:
@@ -688,6 +693,7 @@ def join_passes(snapshots, ecu) -> tuple[Pass, ...]:
                 request_word=(actual[3] & 0x0F) << 8 | actual[4],
                 limited_word=limited[0] << 4 | limited[1] >> 4,
                 parallel_word=(limited[1] & 0x0F) << 8 | limited[2],
+                pedal_word=actual[5] << 2 | actual[6] >> 6 if len(actual) >= 7 else None,
             )
         )
     return tuple(passes)
@@ -1135,7 +1141,7 @@ def audit_capture(path: Path, code: dict) -> dict:
         closed_max.append(peak)
 
     # Reduction state 0xFFFF1866 against 0x177 byte 4, and transition state
-    # 0xFFFF23C2 with its source and final-timing dip.
+    # 0xFFFF23C2 with the run that precedes it and its final-timing dip.
     def window_indices(start, end):
         return range(bisect.bisect_left(snapshot_starts, start),
                      bisect.bisect_right(snapshot_starts, end))
@@ -1181,14 +1187,14 @@ def audit_capture(path: Path, code: dict) -> dict:
     ]
     burst_spans = [(tcm[start].seconds, tcm[end].seconds) for start, end in bursts]
 
-    def source_of(spans, seconds):
-        """Start of the latest span that begins by `seconds` and ends at most
-        TRANSITION_SOURCE_S before it."""
-        starts = [
-            start for start, end in spans
-            if start <= seconds and end >= seconds - TRANSITION_SOURCE_S
+    def preceding(spans, seconds):
+        """The latest span that begins by `seconds` and ends at most
+        TRANSITION_GAP_S before it, or None."""
+        found = [
+            (start, end) for start, end in spans
+            if start <= seconds and end >= seconds - TRANSITION_GAP_S
         ]
-        return starts[-1] if starts else None
+        return found[-1] if found else None
 
     transition_rows = []
     for start, end in snapshot_runs(snapshots, lambda index: bool(snapshots[index].transition_raw)):
@@ -1201,14 +1207,16 @@ def audit_capture(path: Path, code: dict) -> dict:
             ending = "unobserved"
         else:
             ending = "zero"
-        burst_start = source_of(burst_spans, first_s)
-        reduction_start = source_of(reduction_spans, first_s)
-        if burst_start is not None:
-            source, onset = "burst", first_s - burst_start
-        elif reduction_start is not None:
-            source, onset = "reduction", first_s - reduction_start
+        burst = preceding(burst_spans, first_s)
+        reduction = preceding(reduction_spans, first_s)
+        if burst is not None:
+            name, span = "burst", burst
+        elif reduction is not None:
+            name, span = "reduction", reduction
         else:
-            source, onset = "other", -1.0
+            name, span = "none", None
+        onset = -1.0 if span is None else first_s - span[0]
+        gap = -1.0 if span is None else max(0.0, first_s - span[1])
         reference = _before(snapshots, snapshot_starts, first_s - BURST_REFERENCE_S, first_s)
         transition_rows.append(
             {
@@ -1216,8 +1224,9 @@ def audit_capture(path: Path, code: dict) -> dict:
                 "passes": len(run),
                 "peak_high": max(snapshot.transition_raw for snapshot in run) >> 8,
                 "end": ending,
-                "source": source,
+                "preceding": name,
                 "onset_lag_s": onset,
+                "preceding_gap_s": gap,
                 "timing_base": statistics.median_low(
                     snapshot.timing_raw for snapshot in (reference or run[:1])
                 ),
@@ -1250,6 +1259,17 @@ def audit_capture(path: Path, code: dict) -> dict:
         )
         reductions = [item.reduction_raw for item in inside if item.reduction_raw is not None]
         transitions = [item.transition_raw for item in inside if item.transition_raw is not None]
+        pass_index = _frame_at(pass_times, start_s)
+        start_pass = (
+            passes[pass_index]
+            if pass_index >= 0 and start_s - passes[pass_index].seconds <= BINDING_WINDOW_S
+            else None
+        )
+        pedal_words = [
+            item.pedal_word
+            for item in _between(passes, pass_times, start_s, tcm[event.window_end_index].seconds)
+            if item.pedal_word is not None
+        ]
         event_rows.append(
             {
                 "start_s": _rounded(start_s),
@@ -1262,6 +1282,8 @@ def audit_capture(path: Path, code: dict) -> dict:
                 "app1_max": max(
                     (item.app1_raw for item in shift_window), default=snapshot.app1_raw
                 ),
+                "pedal_word_start": None if start_pass is None else start_pass.pedal_word,
+                "pedal_word_max": max(pedal_words, default=None),
                 "shift_code": shift_code_index(target.shift_code),
                 "burst_frames": sum(
                     row["frames"] for row in burst_rows if row["event"] is event
@@ -1411,11 +1433,15 @@ def audit_capture(path: Path, code: dict) -> dict:
             1 for snapshot in snapshots if snapshot.transition_raw is None
         ),
         "transition_run_count": len(transition_rows),
-        "transition_burst_runs": sum(1 for row in transition_rows if row["source"] == "burst"),
-        "transition_reduction_runs": sum(
-            1 for row in transition_rows if row["source"] == "reduction"
+        "transition_after_burst_runs": sum(
+            1 for row in transition_rows if row["preceding"] == "burst"
         ),
-        "transition_other_runs": sum(1 for row in transition_rows if row["source"] == "other"),
+        "transition_after_reduction_runs": sum(
+            1 for row in transition_rows if row["preceding"] == "reduction"
+        ),
+        "transition_unpreceded_runs": sum(
+            1 for row in transition_rows if row["preceding"] == "none"
+        ),
         "transition_peak_high_max": max((row["peak_high"] for row in transition_rows), default=0),
         "burst_transition_full_count": burst_coverage.count("full"),
         "burst_transition_partial_count": burst_coverage.count("partial"),
@@ -1525,9 +1551,9 @@ STATE_KEYS = (
     "transition_observed_snapshots",
     "transition_unobserved_snapshots",
     "transition_run_count",
-    "transition_burst_runs",
-    "transition_reduction_runs",
-    "transition_other_runs",
+    "transition_after_burst_runs",
+    "transition_after_reduction_runs",
+    "transition_unpreceded_runs",
     "transition_peak_high_max",
     "burst_transition_full_count",
     "burst_transition_partial_count",
@@ -1549,8 +1575,9 @@ TRANSITION_RUN_KEYS = (
     "passes",
     "peak_high",
     "end",
-    "source",
+    "preceding",
     "onset_lag_s",
+    "preceding_gap_s",
     "timing_base",
     "timing_min",
 )
@@ -1564,6 +1591,8 @@ EVENT_COLUMNS = (
     "rpm",
     "app1_start",
     "app1_max",
+    "pedal_word_start",
+    "pedal_word_max",
     "shift_code",
     "burst_frames",
     "episode",

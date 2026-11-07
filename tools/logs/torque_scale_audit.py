@@ -21,7 +21,10 @@ monitor item ENGINE TORQUE with the 0x180 actual-torque word of a TRC
 capture, and optional ENG TORQUE D readings with the 0x180 request word.
 Each point names its capture and the local time or TRC offset of its
 reading; the audit takes the steady interval nearest to it and fits the
-readings against the raw counts of the words.
+readings against the raw counts of the words. Top-level keys of the point
+file override the search radius and the steadiness thresholds; a point
+without a steady interval reports the window that the thresholds reject by
+the least.
 
 The output is one `key = value` line per figure in TOML syntax.
 """
@@ -107,6 +110,11 @@ CONSULT_RPM_SPREAD = 100.0
 CONSULT_APP1_SPREAD = 20
 CONSULT_RPM_MATCH = 100.0
 CONSULT_MIN_DEMAND_POINTS = 3
+# Top-level keys of a point file that override the radius and thresholds.
+CONSULT_LIMIT_KEYS = {
+    "tolerance_s": float, "min_seconds": float, "word_spread": int,
+    "rpm_spread": float, "app1_spread": int,
+}
 CONSULT_POINT_KEYS = frozenset({
     "capture", "time", "offset_s", "engine_torque_nm", "eng_torque_d_nm",
     "engine_speed_rpm", "gear", "note",
@@ -911,6 +919,21 @@ def result_lines(result):
 
 
 @dataclass(frozen=True)
+class ConsultLimits:
+    """Search radius and steadiness thresholds of a CONSULT point file."""
+
+    tolerance_s: float = CONSULT_TOLERANCE_S
+    min_seconds: float = CONSULT_MIN_SECONDS
+    word_spread: int = CONSULT_WORD_SPREAD
+    rpm_spread: float = CONSULT_RPM_SPREAD
+    app1_spread: int = CONSULT_APP1_SPREAD
+
+    @property
+    def spreads(self) -> tuple[float, float, float]:
+        return (self.word_spread, self.rpm_spread, self.app1_spread)
+
+
+@dataclass(frozen=True)
 class ConsultPoint:
     capture: Path
     time: str | None
@@ -922,18 +945,24 @@ class ConsultPoint:
     note: str = ""
 
 
-def load_consult_points(path: Path) -> tuple[float, list[ConsultPoint]]:
-    """The search radius and the points of a CONSULT point file.
+def load_consult_points(path: Path) -> tuple[ConsultLimits, list[ConsultPoint]]:
+    """The search radius, the steadiness thresholds, and the points of a
+    CONSULT point file.
 
     A relative capture path resolves against the directory of the file.
     """
     path = Path(path)
     with path.open("rb") as source:
         data = tomllib.load(source)
-    unknown = set(data) - {"tolerance_s", "point"}
+    unknown = set(data) - {*CONSULT_LIMIT_KEYS, "point"}
     if unknown:
         raise ValueError(f"{path}: unknown keys {', '.join(sorted(unknown))}")
-    tolerance = float(data.get("tolerance_s", CONSULT_TOLERANCE_S))
+    limits = ConsultLimits(**{
+        key: kind(data[key]) for key, kind in CONSULT_LIMIT_KEYS.items() if key in data
+    })
+    if limits.tolerance_s <= 0 or limits.min_seconds <= 0 or min(limits.spreads) < 0:
+        raise ValueError(f"{path}: tolerance_s and min_seconds must be positive, "
+                         "spreads non-negative")
     points = []
     for index, row in enumerate(data.get("point", [])):
         where = f"{path}: point {index + 1}"
@@ -959,7 +988,7 @@ def load_consult_points(path: Path) -> tuple[float, list[ConsultPoint]]:
         ))
     if not points:
         raise ValueError(f"{path}: no [[point]]")
-    return tolerance, points
+    return limits, points
 
 
 def trace_start(path: Path) -> datetime:
@@ -981,33 +1010,39 @@ def hint_offset(point: ConsultPoint, start: datetime) -> float:
     return offset + 86400 if offset < -43200 else offset
 
 
-def steady_intervals(samples, rpm_target=None) -> list[tuple[int, int]]:
-    """Index ranges of the maximal steady intervals of samples that last
-    CONSULT_MIN_SECONDS or more.
+def _steady_values(sample) -> tuple[int, float, int]:
+    return (sample.actual_word, sample.rpm_raw * RPM_PER_COUNT, sample.app1_raw)
 
-    A steady interval holds a valid 0x180 actual word within
-    CONSULT_WORD_SPREAD words, engine speed within CONSULT_RPM_SPREAD, APP1
-    within CONSULT_APP1_SPREAD raw and no fuel inhibit; a stream pause or a
+
+def _steady_usable(sample, rpm_target=None) -> bool:
+    return (
+        sample.actual_word is not None
+        and sample.actual_word != CAN_TORQUE_INVALID
+        and not sample.fuel_inhibit_mask
+        and (rpm_target is None
+             or abs(sample.rpm_raw * RPM_PER_COUNT - rpm_target) <= CONSULT_RPM_MATCH)
+    )
+
+
+def steady_intervals(samples, rpm_target=None,
+                     limits: ConsultLimits = ConsultLimits()) -> list[tuple[int, int]]:
+    """Index ranges of the maximal steady intervals of samples that last
+    `limits.min_seconds` or more.
+
+    A steady interval holds a valid 0x180 actual word, engine speed, and APP1
+    within the spreads of `limits`, and no fuel inhibit; a stream pause or a
     new run starts a new interval. With `rpm_target`, every sample lies
     within CONSULT_RPM_MATCH of it.
     """
-    limits = (CONSULT_WORD_SPREAD, CONSULT_RPM_SPREAD, CONSULT_APP1_SPREAD)
-    highs = [deque() for _ in limits]
-    lows = [deque() for _ in limits]
+    spreads = limits.spreads
+    highs = [deque() for _ in spreads]
+    lows = [deque() for _ in spreads]
     starts: list[int | None] = []
     start = 0
-
-    def values(sample):
-        return (sample.actual_word, sample.rpm_raw * RPM_PER_COUNT, sample.app1_raw)
+    values = _steady_values
 
     for index, sample in enumerate(samples):
-        usable = (
-            sample.actual_word is not None
-            and sample.actual_word != CAN_TORQUE_INVALID
-            and not sample.fuel_inhibit_mask
-            and (rpm_target is None
-                 or abs(sample.rpm_raw * RPM_PER_COUNT - rpm_target) <= CONSULT_RPM_MATCH)
-        )
+        usable = _steady_usable(sample, rpm_target)
         boundary = index and (sample.paused or sample.run != samples[index - 1].run)
         if not usable or boundary:
             for queue in (*highs, *lows):
@@ -1027,8 +1062,8 @@ def steady_intervals(samples, rpm_target=None) -> list[tuple[int, int]]:
                 low.pop()
             low.append(index)
         while any(
-            values(samples[highs[k][0]])[k] - values(samples[lows[k][0]])[k] > limits[k]
-            for k in range(len(limits))
+            values(samples[highs[k][0]])[k] - values(samples[lows[k][0]])[k] > spreads[k]
+            for k in range(len(spreads))
         ):
             start += 1
             for queue in (*highs, *lows):
@@ -1042,20 +1077,95 @@ def steady_intervals(samples, rpm_target=None) -> list[tuple[int, int]]:
         following = starts[index + 1] if index + 1 < len(starts) else None
         if following == first:
             continue
-        if samples[index].offset_s - samples[first].offset_s >= CONSULT_MIN_SECONDS:
+        if samples[index].offset_s - samples[first].offset_s >= limits.min_seconds:
             intervals.append((first, index))
     return intervals
 
 
-def nearest_steady(samples, hint: float, rpm_target=None) -> tuple[int, int] | None:
+def nearest_steady(samples, hint: float, rpm_target=None,
+                   limits: ConsultLimits = ConsultLimits()) -> tuple[int, int] | None:
     """The steady interval nearest to TRC offset `hint`, the longer on a tie."""
     def rank(interval):
         first, last = samples[interval[0]].offset_s, samples[interval[1]].offset_s
         distance = max(0.0, first - hint, hint - last)
         return distance, -(last - first)
 
-    intervals = steady_intervals(samples, rpm_target)
+    intervals = steady_intervals(samples, rpm_target, limits)
     return min(intervals, key=rank) if intervals else None
+
+
+def steady_candidate(samples, hint: float,
+                     limits: ConsultLimits = ConsultLimits()) -> dict | None:
+    """The window of `limits.min_seconds` that the thresholds reject by the
+    least, without the engine speed of the point.
+
+    Windows hold consecutive usable samples without a stream pause or a new
+    run. The candidate has the smallest largest ratio of a spread to its
+    threshold, a zero threshold making any spread infinite, and among equal
+    ratios lies nearest to TRC offset `hint`.
+    """
+    segments: list[list] = []
+    current: list = []
+    for index, sample in enumerate(samples):
+        if index and (sample.paused or sample.run != samples[index - 1].run):
+            segments.append(current)
+            current = []
+        if _steady_usable(sample):
+            current.append(sample)
+        else:
+            segments.append(current)
+            current = []
+    segments.append(current)
+
+    def ratio(spread, limit):
+        if limit:
+            return spread / limit
+        return math.inf if spread else 0.0
+
+    best = None
+    for segment in segments:
+        values = [_steady_values(sample) for sample in segment]
+        highs = [deque() for _ in range(3)]
+        lows = [deque() for _ in range(3)]
+        last = -1
+        for first in range(len(segment)):
+            for queue in (*highs, *lows):
+                while queue and queue[0] < first:
+                    queue.popleft()
+            while last < first or (
+                segment[last].offset_s - segment[first].offset_s < limits.min_seconds
+                and last + 1 < len(segment)
+            ):
+                last += 1
+                for k in range(3):
+                    while highs[k] and values[highs[k][-1]][k] <= values[last][k]:
+                        highs[k].pop()
+                    highs[k].append(last)
+                    while lows[k] and values[lows[k][-1]][k] >= values[last][k]:
+                        lows[k].pop()
+                    lows[k].append(last)
+            if segment[last].offset_s - segment[first].offset_s < limits.min_seconds:
+                break
+            spreads = [values[highs[k][0]][k] - values[lows[k][0]][k] for k in range(3)]
+            start_s, end_s = segment[first].offset_s, segment[last].offset_s
+            score = (
+                max(ratio(spread, limit) for spread, limit in zip(spreads, limits.spreads)),
+                max(0.0, start_s - hint, hint - end_s),
+            )
+            if best is None or score < best[0]:
+                best = (score, segment[first : last + 1], spreads)
+    if best is None:
+        return None
+    _, window, spreads = best
+    return {
+        "start_s": window[0].offset_s,
+        "seconds": window[-1].offset_s - window[0].offset_s,
+        "word_spread": spreads[0],
+        "rpm_spread": spreads[1],
+        "app1_spread": spreads[2],
+        "word": statistics.median_low(sample.actual_word for sample in window),
+        "rpm": statistics.median(sample.rpm_raw * RPM_PER_COUNT for sample in window),
+    }
 
 
 def scale_fit(pairs) -> dict | None:
@@ -1086,7 +1196,7 @@ def scale_fit(pairs) -> dict | None:
 
 def consult_audit(path: Path) -> dict:
     """Per-point steady words of a CONSULT point file and the scale fits."""
-    tolerance, points = load_consult_points(path)
+    limits, points = load_consult_points(path)
     captures: dict[Path, tuple[Capture, datetime]] = {}
     rows = []
     for point in points:
@@ -1096,12 +1206,16 @@ def consult_audit(path: Path) -> dict:
         hint = hint_offset(point, start)
         nearby = [
             sample for sample in capture.samples
-            if sample.offset_s is not None and abs(sample.offset_s - hint) <= tolerance
+            if sample.offset_s is not None and abs(sample.offset_s - hint) <= limits.tolerance_s
         ]
-        found = nearest_steady(nearby, hint, point.engine_speed_rpm)
+        found = nearest_steady(nearby, hint, point.engine_speed_rpm, limits)
         row = {"capture": point.capture.name, "hint_s": hint, "point": point}
         if found is None:
-            rows.append({**row, "status": "no_steady_interval"})
+            rows.append({
+                **row,
+                "status": "no_steady_interval",
+                "candidate": steady_candidate(nearby, hint, limits),
+            })
             continue
         steady = nearby[found[0] : found[1] + 1]
         word = statistics.median_low(sample.actual_word for sample in steady)
@@ -1126,6 +1240,7 @@ def consult_audit(path: Path) -> dict:
     ]
     return {
         "captures": {path.name: capture.sha256 for path, (capture, _) in captures.items()},
+        "limits": limits,
         "rows": rows,
         "fit": scale_fit([(row["raw"], row["point"].engine_torque_nm) for row in accepted]),
         "demand_fit": scale_fit(demand) if len(demand) >= CONSULT_MIN_DEMAND_POINTS else None,
@@ -1143,6 +1258,15 @@ def consult_lines(result: dict) -> list[str]:
             values = [None if value is None else round(value, digits) for value in values]
         return [-1 if value is None else value for value in values]
 
+    def candidate(key, digits=None):
+        values = []
+        for row in rows:
+            found = row.get("candidate")
+            value = -1 if found is None else found[key]
+            values.append(round(value, digits) if digits is not None and value != -1 else value)
+        return values
+
+    limits = result["limits"]
     figures = {
         "consult_capture_name": list(result["captures"]),
         "consult_capture_sha256": list(result["captures"].values()),
@@ -1150,6 +1274,18 @@ def consult_lines(result: dict) -> list[str]:
         "consult_point_status": [row["status"] for row in rows],
         "consult_point_hint_seconds": [round(row["hint_s"], 2) for row in rows],
         "consult_point_note": [row["point"].note for row in rows],
+        "consult_tolerance_seconds": limits.tolerance_s,
+        "consult_min_seconds": limits.min_seconds,
+        "consult_word_spread": limits.word_spread,
+        "consult_rpm_spread": limits.rpm_spread,
+        "consult_app1_spread": limits.app1_spread,
+        "consult_candidate_start_seconds": candidate("start_s", 2),
+        "consult_candidate_seconds": candidate("seconds", 2),
+        "consult_candidate_word_spread": candidate("word_spread"),
+        "consult_candidate_rpm_spread": candidate("rpm_spread", 1),
+        "consult_candidate_app1_spread": candidate("app1_spread"),
+        "consult_candidate_word": candidate("word"),
+        "consult_candidate_rpm": candidate("rpm", 1),
         "consult_steady_capture": [row["capture"] for row in accepted],
         "consult_steady_start_seconds": column("start_s", 2),
         "consult_steady_seconds": column("seconds", 2),

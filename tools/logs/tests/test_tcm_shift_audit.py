@@ -32,7 +32,7 @@ REDUCTION_LAG = 2
 CLEARED_TICK = 125
 DECAY = {131: 0x2080, 132: 0x1800, 133: 0x1000, 134: 0x0800}
 # 0xFFFF23C2: a run after the burst with a timing dip, one cut short by
-# another page configuration, and one without a source.
+# another page configuration, and one that follows no run.
 TRANSITION_BURST = range(124, 132)
 TIMING_DIP = range(125, 129)
 OTHER_CONFIGURATION = range(188, 193)
@@ -109,8 +109,11 @@ DRIVE_TICKS = 160
 # Downshifts in D: pressed pedal 4-3, full pedal 3-2, closed pedal 2-1, each
 # as (target change, current reaches the target, idle code, APP1, code).
 DRIVE_SHIFTS = ((30, 40, 45, 500, 9), (80, 90, 95, 950, 6), (130, 138, 142, 100, 4))
-DRIVE_REDUCTION = range(110, 116)
-DRIVE_TRANSITION = range(112, 117)
+# Reduction runs without byte 4, and transition runs two passes after the
+# first, inside the second, and four passes after the third: only the first
+# two lie within the binding window.
+DRIVE_REDUCTIONS = (range(60, 63), range(110, 116), range(150, 152))
+DRIVE_TRANSITIONS = (range(64, 66), range(112, 117), range(155, 157))
 
 
 def drive_row(tick):
@@ -134,8 +137,10 @@ def drive_row(tick):
         "throttle_target_shared_raw": 600,
         "final_timing_raw": 25,
         "fuel_inhibit_mask": 0,
-        "transmission_reduction_state_raw": 0x0500 if tick in DRIVE_REDUCTION else 0,
-        "torque_transition_state_raw": 0x0200 if tick in DRIVE_TRANSITION else 0,
+        "transmission_reduction_state_raw":
+            0x0500 if any(tick in run for run in DRIVE_REDUCTIONS) else 0,
+        "torque_transition_state_raw":
+            0x0200 if any(tick in run for run in DRIVE_TRANSITIONS) else 0,
         "telemetry_page_configuration": 0,
         "target": target,
         "current": current,
@@ -177,9 +182,11 @@ def ecu_frames(tick, values):
     actual = audit.pack(1000)
     parallel = actual + 50 if tick in DIVERGED_PASSES else actual
     request = audit.pack(PRE_LIMITER)
+    # The pedal word that the TCM receives follows APP1 in the scenarios.
+    pedal = values["app1_raw"]
     return (
         (audit.ACTUAL_ID, bytes([0, 0, actual >> 4, (actual & 0x0F) << 4 | request >> 8,
-                                 request & 0xFF, 0, 0, 0])),
+                                 request & 0xFF, pedal >> 2, (pedal & 0x03) << 6, 0])),
         (audit.LIMITED_ID, bytes([request >> 4, (request & 0x0F) << 4 | parallel >> 8,
                                   parallel & 0xFF, 0, 0, 0, 0, 0])),
     )
@@ -428,7 +435,7 @@ class CaptureTest(unittest.TestCase):
         self.assertEqual(values["shift_code_values"], [[2], [9]])
         self.assertEqual(values["scalar_source"], 0x942C)
         self.assertEqual(values["reduction_lag_counts"], [[1, 6, 0, 0]])
-        self.assertEqual(values["transition_run_source"], ["burst", "other", "other"])
+        self.assertEqual(values["transition_run_preceding"], ["burst", "none", "none"])
         self.assertEqual(values["reduction_run_peak"], [0x2080])
         self.assertEqual(values["manual_downshift_count"], 1)
 
@@ -458,22 +465,23 @@ class CaptureTest(unittest.TestCase):
         self.assertEqual(result["transition_observed_snapshots"], result["snapshot_count"] - hidden)
         self.assertEqual(result["transition_run_count"], 3)
         self.assertEqual(
-            (result["transition_burst_runs"], result["transition_reduction_runs"],
-             result["transition_other_runs"]),
+            (result["transition_after_burst_runs"], result["transition_after_reduction_runs"],
+             result["transition_unpreceded_runs"]),
             (1, 0, 2),
         )
         self.assertEqual(result["transition_peak_high_max"], len(TRANSITION_BURST))
         burst, cut, other = result["transition_runs"]
-        self.assertEqual((burst["passes"], burst["end"], burst["source"]),
+        self.assertEqual((burst["passes"], burst["end"], burst["preceding"]),
                          (len(TRANSITION_BURST), "zero", "burst"))
+        self.assertEqual(burst["preceding_gap_s"], 0.0)
         self.assertAlmostEqual(
             burst["onset_lag_s"],
             ((TRANSITION_BURST[0] - BURST_TICKS[0]) * TICK_MS - GROUP_OFFSET_MS) / 1000,
         )
         self.assertEqual((burst["timing_base"], burst["timing_min"]), (25, 20))
-        self.assertEqual((cut["passes"], cut["end"], cut["source"]),
-                         (len(TRANSITION_CUT), "unobserved", "other"))
-        self.assertEqual(cut["onset_lag_s"], -1.0)
+        self.assertEqual((cut["passes"], cut["end"], cut["preceding"]),
+                         (len(TRANSITION_CUT), "unobserved", "none"))
+        self.assertEqual((cut["onset_lag_s"], cut["preceding_gap_s"]), (-1.0, -1.0))
         self.assertEqual((other["passes"], other["end"]), (len(TRANSITION_OTHER), "zero"))
         self.assertEqual(result["burst_transition_full_count"], 1)
         self.assertEqual(result["burst_transition_none_count"], 0)
@@ -481,6 +489,7 @@ class CaptureTest(unittest.TestCase):
     def test_event_rows(self):
         down, up = self.result["events"]
         self.assertEqual((down["shift"], down["class"], down["selector"]), ("4-3", "manual", "M3"))
+        self.assertEqual((down["pedal_word_start"], down["pedal_word_max"]), (100, 100))
         self.assertTrue(down["episode"])
         self.assertEqual((up["shift"], up["class"]), ("3-4", "upshift"))
         self.assertEqual(up["burst_frames"], len(BURST_TICKS))
@@ -523,6 +532,8 @@ class DriveCaptureTest(unittest.TestCase):
         self.assertEqual([row["selector"] for row in events], ["D", "D", "D"])
         self.assertEqual([row["app1_start"] for row in events], [500, 950, 100])
         self.assertEqual([row["app1_max"] for row in events], [500, 950, 100])
+        self.assertEqual([row["pedal_word_start"] for row in events], [500, 950, 100])
+        self.assertEqual([row["pedal_word_max"] for row in events], [500, 950, 100])
         result = audit.combine([self.result])
         self.assertEqual(
             (result["drive_downshift_pressed_count"], result["drive_downshift_full_count"],
@@ -530,17 +541,33 @@ class DriveCaptureTest(unittest.TestCase):
             (1, 1, 1, 0),
         )
 
-    def test_reduction_without_byte_4_sources_a_transition(self):
+    def test_transitions_follow_reduction_runs_within_the_binding_window(self):
         result = self.result
-        self.assertEqual(result["reduction_other_snapshots"], len(DRIVE_REDUCTION))
-        (run,) = result["reduction_runs"]
-        self.assertFalse(run["burst"])
-        self.assertEqual((run["selector"], run["peak"]), ("D", 0x0500))
-        (transition,) = result["transition_runs"]
-        self.assertEqual(transition["source"], "reduction")
-        self.assertAlmostEqual(
-            transition["onset_lag_s"],
-            (DRIVE_TRANSITION[0] - DRIVE_REDUCTION[0]) * TICK_MS / 1000,
+        self.assertEqual(result["reduction_other_snapshots"],
+                         sum(len(run) for run in DRIVE_REDUCTIONS))
+        runs = result["reduction_runs"]
+        self.assertEqual(len(runs), len(DRIVE_REDUCTIONS))
+        self.assertFalse(any(run["burst"] for run in runs))
+        self.assertEqual({(run["selector"], run["peak"]) for run in runs}, {("D", 0x0500)})
+        transitions = result["transition_runs"]
+        self.assertEqual([row["preceding"] for row in transitions],
+                         ["reduction", "reduction", "none"])
+        for row, reduction, transition in zip(transitions[:2], DRIVE_REDUCTIONS,
+                                               DRIVE_TRANSITIONS):
+            self.assertAlmostEqual(row["onset_lag_s"],
+                                   (transition[0] - reduction[0]) * TICK_MS / 1000)
+            self.assertAlmostEqual(
+                row["preceding_gap_s"],
+                max(0, transition[0] - reduction[-1]) * TICK_MS / 1000,
+            )
+        self.assertGreater((DRIVE_TRANSITIONS[2][0] - DRIVE_REDUCTIONS[2][-1]) * TICK_MS / 1000,
+                           audit.TRANSITION_GAP_S)
+        self.assertEqual((transitions[2]["onset_lag_s"], transitions[2]["preceding_gap_s"]),
+                         (-1.0, -1.0))
+        result = audit.combine([self.result])
+        self.assertEqual(
+            (result["transition_after_reduction_runs"], result["transition_unpreceded_runs"]),
+            ([2], [1]),
         )
 
     def test_events_file(self):

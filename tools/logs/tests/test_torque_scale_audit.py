@@ -474,12 +474,53 @@ class ConsultTest(unittest.TestCase):
              "unknown keys rpm"),
             ("timezone = 'UTC'\n", "unknown keys timezone"),
             ("tolerance_s = 5\n", "no \\[\\[point\\]\\]"),
+            ("min_seconds = 0\n", "must be positive"),
+            ("word_spread = -1\n", "spreads non-negative"),
         )
         for index, (text, message) in enumerate(cases):
             with self.subTest(message=message):
                 path = self.points_file(text, f"bad-{index}.toml")
                 with self.assertRaisesRegex(ValueError, message):
                     audit.load_consult_points(path)
+
+    def test_file_thresholds_and_the_candidate_of_a_rejected_point(self):
+        text = self.standard_points().read_text(encoding="utf-8")
+        relaxed = self.points_file(
+            text.replace("tolerance_s = 15\n", "tolerance_s = 15\nmin_seconds = 0.8\n"),
+            "relaxed.toml",
+        )
+        rows = audit.consult_audit(relaxed)["rows"]
+        self.assertEqual([row["status"] for row in rows], ["ok"] * len(LEVELS))
+        self.assertEqual(rows[-1]["word"], LEVELS[-1][2])
+        # Under the default 2 s the short last level fails; its candidate is
+        # the steady end of the previous level at another engine speed.
+        rows = audit.consult_audit(self.standard_points())["rows"]
+        self.assertNotIn("candidate", rows[0])
+        candidate = rows[-1]["candidate"]
+        self.assertEqual((candidate["word"], candidate["rpm"]), (LEVELS[2][2], LEVELS[2][1]))
+        self.assertEqual(
+            (candidate["word_spread"], candidate["rpm_spread"], candidate["app1_spread"]),
+            (0, 0, 0),
+        )
+        self.assertGreaterEqual(candidate["seconds"], audit.CONSULT_MIN_SECONDS)
+        self.assertAlmostEqual(candidate["start_s"] + candidate["seconds"],
+                               self.starts[3] - RAMP_S, delta=0.03)
+
+    def test_candidate_reports_the_spread_that_the_thresholds_reject(self):
+        # No level lasts 3.5 s, so every window reaches into a ramp.
+        middle = self.starts[1] + LEVELS[1][0] / 2
+        path = self.points_file(
+            f'min_seconds = 3.5\n\n[[point]]\ncapture = "block5.trc"\n'
+            f"offset_s = {middle:.3f}\nengine_torque_nm = 80\n",
+            "long.toml",
+        )
+        (row,) = audit.consult_audit(path)["rows"]
+        self.assertEqual(row["status"], "no_steady_interval")
+        candidate = row["candidate"]
+        self.assertGreaterEqual(candidate["seconds"], 3.5)
+        self.assertLessEqual(candidate["start_s"], middle)
+        self.assertGreaterEqual(candidate["start_s"] + candidate["seconds"], middle)
+        self.assertGreater(candidate["word_spread"], 2 * audit.CONSULT_WORD_SPREAD)
 
     def test_steady_intervals_break_at_fuel_cut_and_spread(self):
         def steady(count, word, *, mask=0, start=0.0, rpm=2000):
@@ -503,6 +544,8 @@ class ConsultTest(unittest.TestCase):
         self.assertAlmostEqual(values["consult_fit_slope_nm_per_raw"], SCALE, places=4)
         self.assertEqual(values["consult_demand_fit_points"], 3)
         self.assertEqual(values["consult_capture_name"], ["block5.trc"])
+        self.assertEqual(values["consult_min_seconds"], audit.CONSULT_MIN_SECONDS)
+        self.assertEqual(values["consult_candidate_word"], [-1, -1, -1, LEVELS[2][2]])
         self.assertNotIn("locked_rpm_per_kmh", values)
 
     def test_command_line_needs_road_runs_or_points(self):

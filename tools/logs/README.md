@@ -888,6 +888,10 @@ python3 tools/logs/torque_scale_audit.py --consult-points tmp/logs/consult-point
 
 ```toml
 tolerance_s = 15                 # search radius around each point, default 15
+min_seconds = 2                  # optional thresholds of a steady interval,
+word_spread = 2                  # shown with their defaults
+rpm_spread = 100
+app1_spread = 20
 
 [[point]]
 capture = "block5.trc"           # relative to the directory of this file
@@ -902,12 +906,22 @@ note = "M4, 80 km/h"             # optional
 - `time` is the wall-clock time of the computer that recorded the TRC: the
   dashboard and PCAN-View store a local `$STARTTIME`, and the point lies on
   the day of the capture start. `offset_s` gives the TRC offset instead.
-- A steady interval lasts 2 s or more, holds a valid `0x180` actual word
-  within 2 words, engine speed within 100 RPM, and APP1 within 20 raw, has no
-  fuel inhibit, and does not span a stream pause. With `engine_speed_rpm`,
-  every sample lies within 100 RPM of it. The point takes the steady interval
-  nearest to its time inside the search radius, the longer one on a tie; a
-  point without one is reported and left out of the fits.
+- A steady interval lasts `min_seconds` or more, holds a valid `0x180`
+  actual word within `word_spread` words, engine speed within `rpm_spread`
+  RPM, and APP1 within `app1_spread` raw, has no fuel inhibit, and does not
+  span a stream pause. With `engine_speed_rpm`, every sample lies within
+  100 RPM of it. The point takes the steady interval nearest to its time
+  inside the search radius, the longer one on a tie; a point without one is
+  reported and left out of the fits. The output repeats the radius and the
+  thresholds.
+- A point without a steady interval reports a candidate: among the windows
+  of `min_seconds` inside the search radius, regardless of
+  `engine_speed_rpm`, the one whose largest ratio of a spread to its
+  threshold is smallest, the nearest to the point among equals. The
+  `consult_candidate_*` lists follow the point order with its start, length,
+  spreads, median word, and engine speed, and `-1` for a point that has a
+  steady interval or no window. Spreads within the thresholds trace the
+  rejection to the engine speed or the time of the point.
 - The raw count of a word is the midpoint of its five-count interval. The
   fit gives `ENGINE TORQUE = slope * raw + intercept`, the slope through the
   origin, the largest residual, and the largest deviation of each candidate
@@ -992,16 +1006,23 @@ python3 tools/logs/tcm_shift_audit.py \
   nonzero byte 4 is cleared, and any other nonzero state is other. Runs of
   other states report their peak, a nonzero low byte, monotonic decrease,
   and the burst, shift event, selector, and gear at their start.
-- A run of nonzero `0xFFFF23C2` takes as its source the latest burst, else
-  the latest nonzero `0xFFFF1866` run, that starts by the run start and ends
-  at most 0.5 s before it; the onset lag is measured from that start, and
-  `-1` marks a run without a source. The final-timing reference is the
-  median of the 0.3 s before the run. Each burst window is covered fully,
-  partly, or not at all by snapshots that carry the field.
+- A run of nonzero `0xFFFF23C2` follows the latest burst, else the latest
+  nonzero `0xFFFF1866` run, that starts by the run start and ends at most
+  0.03 s, the binding window, before it. `preceding` names that run;
+  `onset_lag_s` is measured from its start and `preceding_gap_s` from its
+  end, and `none` with `-1` marks a run that follows neither. The relation
+  is temporal, not causal: `0xFFFF23C2` also depends on `0xFFFF186E`,
+  `0xFFFF186C`, and the difference of `0xFFFF23F1` and `0xFFFF2404`, which no
+  stream carries, so runs that follow neither are expected. The final-timing
+  reference is the median of the 0.3 s before the run. Each burst window is
+  covered fully, partly, or not at all by snapshots that carry the field.
 - `--events PATH` writes one CSV row per shift event to a new file. The event
   window runs from 0.03 s before the target change to 0.5 s after its shift
-  window closes; APP1 maximum covers the shift window only. A blank cell
-  marks a quantity that the window does not observe.
+  window closes; APP1 maximum covers the shift window only. `pedal_word_start`
+  is the pedal word that the TCM receives in `0x180`, byte 5 and bits 7..6
+  of byte 6, in the pass at the target change, and `pedal_word_max` its
+  maximum over the shift window. A blank cell marks a quantity that the
+  window does not observe.
 
 The analysis of a drive needs a TRC: the TCM and `0x160`/`0x180` frames are
 not part of an MLG recording. The dashboard writes it beside the MLG while it
