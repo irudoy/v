@@ -1,0 +1,26 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff29d4"
+name = "pastel-kittiwake"
+level = "code"
+width = 8
+signed = false
+unit = "bitfield"
+summary = """
+Per-bank exclusion bits of the LTFT idle mode. 00058740 requires bit b clear \
+for the idle mode of bank b."""
+note = ["The physical meaning is open: L0 records no writer."]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058838"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058838"

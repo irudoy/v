@@ -1,0 +1,35 @@
+title = "Bank 2 LTFT idle learning episode count output"
+summary = "00058740 stores the bank 2 idle episode count here."
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "episodes"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00059076"
+
+[[link]]
+type = "copy"
+to = "ltft_idle_episode_count_b2/ram"
+via = ["ltft_learning_permit_producer/fn"]
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00059076"

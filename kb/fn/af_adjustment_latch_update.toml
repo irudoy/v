@@ -1,0 +1,18 @@
+title = "Latch af_adjustment for the LTFT composite gate"
+summary = """
+Bank-indexed by R4. Advances counter ffff12ee+b and, when it reaches \
+ROM8[000082c4], copies af_adjustment ffff45a0+2*b to ffff12f0+2*b and clears \
+the counter. 0005911c calls it for both banks before the LTFT learning \
+stages."""
+level = "code"
+role = "driver"
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00057c34"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057c34"

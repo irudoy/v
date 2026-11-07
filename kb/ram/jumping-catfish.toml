@@ -1,0 +1,38 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2eae"
+name = "jumping-catfish"
+level = "code"
+width = 8
+signed = false
+summary = """
+Second bank 2 exclusion byte of the LTFT idle mode. 00058740 requires it to \
+be zero for the bank 2 idle mode."""
+note = [
+    """
+The physical meaning is open: the writer amphibian-prawn at 0009caaa is not \
+reviewed.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009caaa"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058ae0"
+
+[[link]]
+type = "writer"
+to = "amphibian-prawn/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009caaa"

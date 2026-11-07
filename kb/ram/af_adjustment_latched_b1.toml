@@ -1,0 +1,46 @@
+title = "Latched bank 1 af_adjustment of the LTFT composite gate"
+summary = """
+00057c34 copies af_adjustment_b1 ffff45a0 here every ROM8[000082c4] calls. \
+00058740 compares it with its copy ffff87ec of the previous call; a decrease \
+fails the bank 1 composite gate for one call."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff12f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057c6a"
+
+[[link]]
+type = "copy"
+to = "af_adjustment_b1/ram"
+via = ["af_adjustment_latch_update/fn"]
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058b28"
+
+[[link]]
+type = "writer"
+to = "af_adjustment_latch_update/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057c6a"

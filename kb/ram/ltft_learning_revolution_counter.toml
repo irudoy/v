@@ -1,0 +1,46 @@
+title = "LTFT learning tick revolution counter"
+summary = """
+00057c78 sets the learning tick when the counter is zero and reloads it with \
+the immediate of 00057ca0. 000208f8 decrements the five counters from \
+ffff25f6 once per crank revolution; fuel_trim_init clears it."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "revolutions"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff25fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057ca2"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_tick_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057c8c"
+
+[[link]]
+type = "writer"
+to = "fuel_trim_init/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005961c"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_tick_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057ca2"

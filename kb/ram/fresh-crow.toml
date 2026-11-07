@@ -9,6 +9,16 @@ supports = "identity"
 at = "7mfk:00041f58"
 
 [[link]]
+type = "input"
+to = "magenta-agama/ram"
+note = "Bit 7 copies ffff90f0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
 type = "lookup"
 to = "colorful-dormouse/tbl"
 layouts = ["7mfk"]

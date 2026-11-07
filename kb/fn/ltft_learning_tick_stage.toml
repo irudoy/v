@@ -1,0 +1,20 @@
+title = "Advance the LTFT learning tick and run the permit producer"
+summary = """
+Called by 0005911c while ffff41ad.bit4 is set. Sets tick bit ffff249d.bit1 \
+when start bit ffff4184.bit6 is clear and revolution counter ffff25fa is \
+zero, and reloads the counter with the immediate of 00057ca0; while the \
+start bit is set it reloads the counter without a tick. Stores ffff2474.bit5 \
+from the dual-bank MAF diagnostic record 0x129 through 00025d02, calls the \
+permit producer 00058740 and clears the tick bit."""
+level = "code"
+role = "driver"
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00057c78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057c78"

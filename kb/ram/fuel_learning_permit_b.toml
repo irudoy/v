@@ -74,9 +74,10 @@ level = "code"
 width = 8
 signed = false
 note = """
-FUN 00058740 writes bits 0 and 1 from the composite bank gates at \
-FFFF8868/FFFF886C and preserves other bits. Physical causes of all \
-contributing conditions remain unreviewed."""
+FUN 00058740 writes bits 0 and 1 from the composite predicates at \
+FFFF8868/FFFF886C, set on learning-tick passes with eligibility ffff131c and \
+composite gate ffff1620, and preserves other bits. A bit is set for one call \
+per tick."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -198,8 +199,63 @@ kind = "l0"
 at = "1me3b:000856fc"
 
 [[link]]
+type = "selector"
+to = "ltft_composite_gate/ram"
+slot = "bit0"
+note = "Bit 0 requires the bank 1 composite gate."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_composite_gate/ram"
+slot = "bit1"
+note = "Bit 1 requires the bank 2 composite gate."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_learning_eligibility/ram"
+slot = "bit0"
+note = "Bit 0 requires bank 1 eligibility."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_learning_eligibility/ram"
+slot = "bit1"
+note = "Bit 1 requires bank 2 eligibility."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "polite-kudu/ram"
+slot = "bit1"
+note = "Both bits require the learning tick ffff249d.bit1."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
 type = "writer"
-to = "juicy-panther/fn"
+to = "ltft_learning_permit_producer/fn"
 layouts = ["1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

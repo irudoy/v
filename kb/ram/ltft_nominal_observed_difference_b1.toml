@@ -1,0 +1,55 @@
+title = "Bank 1 nominal minus observed word of the LTFT stability permit"
+summary = """
+0005911c stores sat16(ffff28b8 - ffff29e2). 00058740 requires its absolute \
+value to stay within ROM16[00008f52] for bit 0 of ffff1458."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff28fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005914c"
+
+[[link]]
+type = "input"
+to = "closed_loop_feedback_nominal_b1/ram"
+note = "Minuend of sat16(ffff28b8 - ffff29e2)."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "input"
+to = "ruddy-reindeer/ram"
+note = "Subtrahend of sat16(ffff28b8 - ffff29e2)."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058f6c"
+
+[[link]]
+type = "writer"
+to = "unique-aardwolf/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005914c"

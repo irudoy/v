@@ -1,0 +1,344 @@
+title = "LTFT composite learning gate C_b of both banks"
+summary = """
+00058740 writes bank bits 0 and 1 from the composite gate C_b and preserves \
+bits 2..7. C_b feeds the eligibility count ffff87fe+b and ffff1457."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[bit]]
+bit = 0
+name = "bank_1_composite_gate"
+
+[[bit]]
+bit = 1
+name = "bank_2_composite_gate"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1620"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058eba"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058e8a"
+
+[[link]]
+type = "selector"
+to = "af_adjustment_b1/ram"
+note = "Bank 1 requires ROM16[00008ecc] < int16(ffff45a0) <= ROM16[00008ece]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "af_adjustment_b2/ram"
+note = "Bank 2 requires ROM16[00008ecc] < int16(ffff45a2) <= ROM16[00008ece]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "af_adjustment_latched_b1/ram"
+note = """
+Bank 1 requires |d| <= ROM16[00008fa4] / 500 for the change of the latched \
+copy since the previous call."""
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "af_adjustment_latched_b2/ram"
+note = """
+Bank 2 requires |d| <= ROM16[00008fa4] / 500 for the change of the latched \
+copy since the previous call."""
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "amorphous-ape/ram"
+note = "The off-idle mode requires ffff23bc < 2."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "beige-ermine/ram"
+slot = "bit5"
+note = "ffff24d0.bit5 opens the mode condition of both banks."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "capable-cockatoo/ram"
+note = "The bank 1 idle mode requires ffff2ead == 0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "charming-skunk/ram"
+slot = "bit2"
+note = "Both banks require ffff41be.bit2 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "cornflower-moth/ram"
+note = "Both banks require ffff15ce == 0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "efficient-toad/ram"
+slot = "bit4"
+note = "Both banks require ffff2486.bit4 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "enchanted-heron/ram"
+slot = "bit0"
+note = "The bank 1 idle mode requires ffff29d5.bit0 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "enchanted-heron/ram"
+slot = "bit1"
+note = "The bank 2 idle mode requires ffff29d5.bit1 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "expert-pillbug/ram"
+slot = "bit0"
+note = "Bank 1 requires ffff22e1.bit0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "expert-pillbug/ram"
+slot = "bit1"
+note = "Bank 2 requires ffff22e1.bit1."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "fresh-crow/ram"
+slot = "bit7"
+note = "The off-idle and idle modes require ffff24d1.bit7."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "greedy-rottweiler/ram"
+slot = "bit1"
+note = "ffff24ce.bit1 opens the mode condition of both banks."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "interesting-butterfly/ram"
+note = "The bank 1 idle mode requires ffff2eab == 0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "jumping-catfish/ram"
+note = "The bank 2 idle mode requires ffff2eae == 0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_idle_episode_limit/ram"
+slot = "bit0"
+note = "The bank 1 idle mode requires ffff1552.bit0 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_idle_episode_limit/ram"
+slot = "bit1"
+note = "The bank 2 idle mode requires ffff1552.bit1 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_idle_qualification_count/ram"
+note = "The idle mode requires ffff881a / 5 > ROM8[00008704]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "macho-weasel/ram"
+slot = "bit2"
+note = "Both banks require ffff4250.bit2 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "outgoing-ostrich/ram"
+note = "The bank 2 idle mode requires ffff2eac == 0."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "pastel-kittiwake/ram"
+slot = "bit0"
+note = "The bank 1 idle mode requires ffff29d4.bit0 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "pastel-kittiwake/ram"
+slot = "bit1"
+note = "The bank 2 idle mode requires ffff29d4.bit1 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "raspberry-dragon/ram"
+note = "Both banks require ffff1071 >= ROM8[00008cfd]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "spiked-bear/ram"
+slot = "bit5"
+note = "Both banks require ffff2474.bit5 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "wisteria-sheep/ram"
+slot = "bit5"
+note = "The off-idle mode requires ffff2459.bit5 clear."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058eba"

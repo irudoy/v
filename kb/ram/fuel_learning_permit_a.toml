@@ -72,9 +72,10 @@ level = "code"
 width = 8
 signed = false
 note = """
-FUN 00058740 writes bits 0 and 1 from the bounded change/derivative \
-predicates at FFFF8860/FFFF8864 and preserves other bits. Raw signal \
-identities, physical permission and hardware cadence remain unreviewed."""
+FUN 00058740 writes bits 0 and 1 from the stability predicates at \
+FFFF8860/FFFF8864, which require eligibility ffff131c, the tick-to-tick STFT \
+and nominal product bound and the nominal minus observed bound, and \
+preserves other bits. The bits hold between learning ticks."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -208,8 +209,74 @@ MOV.B @(r0,r5) at 0007428e reads ffff144b (r5 = ffff1274, r0 = 0x1d7), and \
 TST r6,r2 tests the bank bit, as 1ND 00080db2 and 1ME3B 000856e6 do."""
 
 [[link]]
+type = "selector"
+to = "ltft_learning_eligibility/ram"
+slot = "bit0"
+note = "Bit 0 requires bank 1 eligibility."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_learning_eligibility/ram"
+slot = "bit1"
+note = "Bit 1 requires bank 2 eligibility."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_nominal_observed_difference_b1/ram"
+note = "Bit 0 requires |int16(ffff28fa)| <= ROM16[00008f52]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "ltft_nominal_observed_difference_b2/ram"
+note = "Bit 1 requires |int16(ffff28fc)| <= ROM16[00008f52]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "stft_b1/ram"
+note = """
+Bit 0 bounds the tick-to-tick change of the bank 1 STFT and nominal product \
+by ROM8[000082eb]."""
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "selector"
+to = "stft_b2/ram"
+note = """
+Bit 1 bounds the tick-to-tick change of the bank 2 STFT and nominal product \
+by ROM8[000082eb]."""
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
 type = "writer"
-to = "juicy-panther/fn"
+to = "ltft_learning_permit_producer/fn"
 layouts = ["jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

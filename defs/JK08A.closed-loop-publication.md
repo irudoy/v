@@ -67,13 +67,97 @@ bank predicates at `ffff8868` and `ffff886c`. The store at `0005906c` publishes
 `ffff1458` from the independent predicates at `ffff8860` and `ffff8864`.
 Bank 1 uses bit 0 and bank 2 uses bit 1 in each byte.
 
-The latter predicates require the per-bank eligibility counter to exceed one,
-then bound a saturated signed signal difference and a separate absolute
-derivative word. The high byte of the absolute difference must not exceed
-`ROM8[000082eb]`; the absolute word at `ffff28fa+2*b` must not exceed
-`ROM16[00008f52]`. The raw signal identities and the physical causes of every
-composite gate remain unreviewed. A set permission bit alone establishes no
-physical learning rate.
+### Learning tick
+
+`unique-aardwolf/fn` at `0005911c` calls `FUN 00057c78` only while
+`ffff41ad.bit4` is set. `FUN 00057c78` sets tick bit `ffff249d.bit1` when start
+bit `ffff4184.bit6` is clear and counter `ffff25fa` is zero, and then reloads
+the counter with the immediate of `00057ca0`. While the start bit is set it
+reloads the counter without a tick. `FUN 000208f8` decrements the five counters
+from `ffff25f6` once per three cylinder events, one crank revolution, so a tick
+occurs once per reload count of revolutions. `FUN 00057c78` stores
+`ffff2474.bit5 = (FUN 00025d02(0x0129) != 0)`, the dual-bank MAF diagnostic
+record, calls `FUN 00058740`, and clears the tick bit. The scheduler entry of
+`0005911c` is indirect, so the call period is not established.
+
+Before that stage `FUN 00057c34(b)` advances counter `ffff12ee+b` and, when it
+reaches `ROM8[000082c4]`, copies `af_adjustment` `ffff45a0+2*b` to
+`ffff12f0+2*b` and clears the counter. `0005911c` stores
+`ffff28fa+2*b = sat16(ffff28b8+2*b - ffff29e2+2*b)`, the nominal word minus
+the observed word.
+
+### Composite gate
+
+`FUN 00058740` evaluates, for bank `b`:
+
+```text
+C_b = ffff22e1.bit(b)
+      && ffff1071 >= ROM8[00008cfd]
+      && |d_b| <= ROM16[00008fa4] / 500
+      && ROM16[00008ecc] < int16(ffff45a0+2*b) <= ROM16[00008ece]
+      && ffff15ce == 0
+      && MODE_b
+      && !ffff4250.bit2 && !ffff2474.bit5 && !ffff41be.bit2 && !ffff2486.bit4
+d_b = int16(((33*ffff12f0+2*b - 33*ffff87ec+2*b) & 0x3fffffff) >> 14)
+MODE_b = (T26_b && !T58_b) || T22 || ffff24d0.bit5 || ffff24ce.bit1
+T22   = !ffff2459.bit5 && ffff24d1.bit7 && ffff23bc < 2
+T26_b = ffff2eab+b == 0 && ffff2ead+b == 0 && T24 && ffff24d1.bit7
+        && !ffff29d5.bit(b) && !ffff29d4.bit(b)
+T24   = ffff881a / 5 > ROM8[00008704]
+```
+
+Each call ends by storing `ffff12f0+2*b` in `ffff87ec+2*b`. A bound below one
+admits an increase of the latched copy below 16384/33 raw and fails on any
+decrease, so a decrease fails `C_b` for one call. `ffff2459.bit5` is the
+closed-throttle bit; `T22` is the off-idle mode and `T26_b` the idle mode.
+
+`ffff881a = min(0xffdc, ffff87f0 + 1)` while `ffff110e <= ROM8[00008706]`,
+`ffff3140 / 40 <= ROM8[00008705]` and `ffff2459.bit5` hold, else 0;
+`ffff87f0` keeps the value of the previous call. `T58_b` is set while the
+episode counter `ffff8800+b` exceeds `ROM8[000083ba]`. The counter advances
+when the composite predicate of the previous call rises with the stability
+predicate of the previous call set, and `ffff13ab+b` receives its value.
+
+### Published predicates
+
+```text
+cnt_b = C_b ? min(255, ffff87fe+b + tick) : 0        stored in ffff87fe+b
+P_b   = cnt_b > 1
+ffff1457.bit(b) = tick && P_b && C_b
+ffff1458.bit(b) = P_b && (|X_b - X'_b| >> 8) <= ROM8[000082eb]
+                  && |int16(ffff28fa+2*b)| <= ROM16[00008f52]
+X_b   = (min(65535, ffff22dc+2*b * ffff28b8+2*b / 8000) * 0x8b51 >> 14) >> 1
+```
+
+`X_b` is sampled on tick calls into `ffff87f6+2*b`, and `X'_b` is the sample of
+the previous tick at `ffff8828+2*b`. `ffff1620`, `ffff131c` and `ffff1552`
+publish `C_b`, `P_b` and `T58_b` in bit `b`. One failing call of `C_b` clears
+`cnt_b`, so a permit returns after two further ticks. `ffff1457` is set for one
+call per tick; `ffff1458` holds between ticks. A set permission bit alone
+establishes no physical learning rate.
+
+### Inputs with open meaning
+
+The code fixes the conditions above; the physical meaning of these inputs
+remains open:
+
+- `ffff22e1.bit(b)`: the feedback calculation `0005cbec` sets it at `0005d612`
+  when `ffff894e+b` is nonzero. `ffff894e` is the OR of `ffff893d`,
+  `ffff8943`, `ffff894c` and elapsed flag `ffff8969`, stored at `0005d1b2`;
+  bank 2 uses `ffff893e`, `ffff8944`, `ffff894d` and `ffff896a`, stored at
+  `0005d1ce`. The sources are not reviewed.
+- `ffff24d1.bit7`: `FUN 00069374` stores `ffff90f0` there at `0006d4c8`, with
+  `ffff90f0 = ffff90ec || (ffff48a8 >> 16) >= ROM16[000090c0]`. `ffff48a8` is
+  a saturating 32-bit sum that `00069374` advances at `0006ced2`; its operands
+  and reset are not reviewed.
+- `ffff3140` and `ffff23bc`: idle-air words that `00069374` stores at
+  `0006cbf4`/`0006cc2e` and `0006db90`.
+- `ffff15ce`: the composite output of `FUN 00055098`.
+- `ffff24d0.bit5`, `ffff24ce.bit1`, `ffff4250.bit2`, `ffff41be.bit2`,
+  `ffff2486.bit4`, `ffff41ad.bit4`, `ffff2eab..ffff2eae` and
+  `ffff29d4`/`ffff29d5`: the writers of these bits are not reviewed; L0
+  records no writer of `ffff29d4` or `ffff29d5`.
+- The reset of the episode counters `ffff8800+b` is not traced.
 
 `FUN 00057900` produces `ffff41b5.bit0` from request `ffff99d8.bit5` and latch
 `ffff4201.bit6`. A set request with a clear latch sets both the pulse and the

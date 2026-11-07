@@ -1,0 +1,39 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff48a8"
+name = "savvy-hummingbird"
+level = "code"
+width = 32
+signed = false
+summary = """
+Saturating idle-air sum of the LTFT after-start flag. The idle-air function \
+00069374 adds a product to it at 0006ced2 and saturates it at 0006ced6. \
+ffff90f0 compares its upper half with ROM16[000090c0]."""
+note = [
+    """
+The physical meaning is open: the added product and the reset are not \
+reviewed; it is a candidate after-start quantity.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006ced2"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006cefa"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006ced2"

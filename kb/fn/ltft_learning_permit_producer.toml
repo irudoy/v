@@ -1,10 +1,23 @@
+title = "Produce the per-bank LTFT learning permits"
+summary = """
+Called by 00057c78 on every pass of the fuel-trim coordinator. Evaluates the \
+composite gate C_b of each bank from the feedback state ffff22e1, coolant \
+ffff1071, the latched and live af_adjustment, ffff15ce, the idle and \
+off-idle modes and four exclusion bits; counts the ticks with C_b in \
+ffff87fe+b; publishes C_b, P_b = count > 1 and the idle episode limit in \
+ffff1620, ffff131c and ffff1552; sets ffff1457.bit(b) on tick passes with \
+P_b and C_b and ffff1458.bit(b) while P_b and the STFT and nominal stability \
+bounds hold. The formula is stated in \
+defs/JK08A.closed-loop-publication.md."""
+level = "code"
+role = "driver"
 block = "fuel_closed_loop/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "000862ec"
-name = "idealistic-rottweiler"
 level = "code"
+former = ["idealistic-rottweiler/fn/1me3b-000862ec"]
 note = """
 The reviewed 1ME3B publisher slices update bank bits 0 and 1 while \
 preserving bits 2..7. The loop at 000869a6..000869d0 reads uint32 composite \
@@ -33,8 +46,8 @@ at = "1me3b:00086b1e"
 [[symbol]]
 layout = "1nd"
 address = "000819b8"
-name = "chirpy-saluki"
 level = "code"
+former = ["chirpy-saluki/fn/1nd-000819b8"]
 note = """
 The reviewed 1ND publisher slices update bank bits 0 and 1 while preserving \
 bits 2..7. The loop at 00082072..0008209c reads uint32 composite predicates \
@@ -63,7 +76,7 @@ at = "1nd:000821ea"
 [[symbol]]
 layout = "7mfk"
 address = "00058740"
-name = "juicy-panther"
+former = ["juicy-panther/fn/7mfk-00058740"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -73,8 +86,8 @@ at = "7mfk:00058740"
 [[symbol]]
 layout = "jk78c"
 address = "00074d04"
-name = "primitive-turkey"
 level = "code"
+former = ["primitive-turkey/fn/jk78c-00074d04"]
 note = """
 Publishes the bank permission bits. The final loop reads predicates at \
 ffff88c8 and ffff88cc and updates only bits 0 and 1 of ffff144b at 00075628. \

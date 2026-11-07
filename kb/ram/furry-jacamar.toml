@@ -1,0 +1,39 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff3140"
+name = "furry-jacamar"
+level = "code"
+width = 16
+signed = false
+summary = """
+Idle-air word of the LTFT idle qualification. The idle-air function 00069374 \
+stores it at 0006cbf4 and 0006cc2e. 00058740 requires ffff3140 / 40 <= \
+ROM8[00008705] to advance the idle qualification count ffff881a."""
+note = [
+    """
+The physical meaning is open: the operands of the two stores are not \
+reviewed.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006cbf4"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000589e2"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006cbf4"

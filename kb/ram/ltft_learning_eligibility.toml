@@ -1,0 +1,64 @@
+title = "LTFT learning eligibility P_b of both banks"
+summary = """
+00058740 sets bank bit b while the eligibility count ffff87fe+b exceeds one \
+and preserves bits 2..7. Both permit bytes require it."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[bit]]
+bit = 0
+name = "bank_1_eligibility"
+
+[[bit]]
+bit = 1
+name = "bank_2_eligibility"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff131c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058f00"
+
+[[link]]
+type = "input"
+to = "ltft_eligibility_count_b1/ram"
+note = "Bit 0 is count > 1."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "input"
+to = "ltft_eligibility_count_b2/ram"
+note = "Bit 1 is count > 1."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058ec0"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058f00"

@@ -1,0 +1,26 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff894f"
+name = "opalescent-puma"
+level = "code"
+width = 8
+signed = false
+summary = """
+Bank 2 feedback state of the LTFT composite gate. The feedback calculation \
+0005cbec stores the OR of ffff893e, ffff8944, ffff894d and elapsed flag \
+ffff896a at 0005d1ce and sets ffff22e1.bit1 from it at 0005d612."""
+note = ["The physical meaning is open: the four sources are not reviewed."]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d1ce"
+
+[[link]]
+type = "writer"
+to = "strong-tarsier/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d1ce"

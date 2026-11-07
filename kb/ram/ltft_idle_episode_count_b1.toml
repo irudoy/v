@@ -1,0 +1,38 @@
+title = "Bank 1 LTFT idle learning episode count"
+summary = """
+00058740 advances it when the bank 1 composite predicate of the previous \
+call rises with the stability predicate of the previous call set. Bit 0 of \
+ffff1552 is count > ROM8[000083ba]."""
+note = ["The reset of the count is not traced."]
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "episodes"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff8800"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058bd8"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058bc2"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058bd8"

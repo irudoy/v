@@ -1,0 +1,38 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2ead"
+name = "capable-cockatoo"
+level = "code"
+width = 8
+signed = false
+summary = """
+Second bank 1 exclusion byte of the LTFT idle mode. 00058740 requires it to \
+be zero for the bank 1 idle mode."""
+note = [
+    """
+The physical meaning is open: the writer amphibian-prawn at 0009caa2 is not \
+reviewed.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009caa2"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058a98"
+
+[[link]]
+type = "writer"
+to = "amphibian-prawn/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009caa2"

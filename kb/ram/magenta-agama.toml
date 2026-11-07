@@ -1,0 +1,49 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff90f0"
+name = "magenta-agama"
+level = "code"
+width = 32
+signed = false
+summary = """
+Idle-air after-start flag of the LTFT modes. The idle-air function 00069374 \
+stores ffff90ec || (ffff48a8 >> 16) >= ROM16[000090c0] at 0006d4a6 and \
+copies it to ffff24d1.bit7 at 0006d4c8."""
+note = [
+    """
+The physical meaning is open: ffff90ec and the sum ffff48a8 are not \
+reviewed.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006d4a6"
+
+[[link]]
+type = "input"
+to = "savvy-hummingbird/ram"
+note = "Set when (ffff48a8 >> 16) >= ROM16[000090c0] or ffff90ec is set."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006dfba"
+
+[[link]]
+type = "writer"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006d4a6"

@@ -1,0 +1,35 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff894e"
+name = "radical-ocelot"
+level = "code"
+width = 8
+signed = false
+summary = """
+Bank 1 feedback state of the LTFT composite gate. The feedback calculation \
+0005cbec stores the OR of ffff893d, ffff8943, ffff894c and elapsed flag \
+ffff8969 at 0005d1b2 and sets ffff22e1.bit0 from it at 0005d612."""
+note = ["The physical meaning is open: the four sources are not reviewed."]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d1b2"
+
+[[link]]
+type = "reader"
+to = "strong-tarsier/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d5f6"
+
+[[link]]
+type = "writer"
+to = "strong-tarsier/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005d1b2"

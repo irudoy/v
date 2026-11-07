@@ -1,0 +1,38 @@
+[[symbol]]
+layout = "7mfk"
+address = "ffff2eab"
+name = "interesting-butterfly"
+level = "code"
+width = 8
+signed = false
+summary = """
+First bank 1 exclusion byte of the LTFT idle mode. 00058740 requires it to \
+be zero for the bank 1 idle mode."""
+note = [
+    """
+The physical meaning is open: the writer funny-toucan at 0009d810 is not \
+reviewed.""",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009d810"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058a8c"
+
+[[link]]
+type = "writer"
+to = "funny-toucan/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0009d810"

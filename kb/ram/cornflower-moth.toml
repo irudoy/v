@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "juicy-panther/fn"
+to = "ltft_learning_permit_producer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -136,7 +136,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "juicy-panther/fn"
+to = "ltft_learning_permit_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

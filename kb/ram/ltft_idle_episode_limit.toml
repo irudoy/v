@@ -1,0 +1,73 @@
+title = "LTFT idle learning episode limit of both banks"
+summary = """
+00058740 sets bank bit b while the idle episode count ffff8800+b exceeds \
+ROM8[000083ba]; the set bit closes the idle mode of the bank."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[bit]]
+bit = 0
+name = "bank_1_idle_episode_limit"
+
+[[bit]]
+bit = 1
+name = "bank_2_idle_episode_limit"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff1552"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058e86"
+
+[[link]]
+type = "input"
+to = "ltft_idle_episode_count_b1/ram"
+note = "Bit 0 is count > ROM8[000083ba]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "input"
+to = "ltft_idle_episode_count_b2/ram"
+note = "Bit 1 is count > ROM8[000083ba]."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058e56"
+
+[[link]]
+type = "reader"
+to = "stoic-dogfish/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00069bae"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058e86"

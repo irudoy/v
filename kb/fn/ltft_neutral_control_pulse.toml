@@ -1,0 +1,18 @@
+title = "Produce the LTFT neutralization pulse ffff41b5.bit0"
+summary = """
+Sets ffff41b5.bit0 and latch ffff4201.bit6 when request ffff99d8.bit5 is set \
+and the latch is clear, and clears the pulse on the next call while the \
+latch is set. A clear request clears both and ffff424f.bit4. The diagnostic \
+request identity is open."""
+level = "code"
+role = "driver"
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00057900"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00057900"

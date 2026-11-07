@@ -1,0 +1,46 @@
+title = "Bank 1 LTFT eligibility tick count"
+summary = """
+00058740 adds the learning tick while the bank 1 composite gate holds, \
+saturating at 255, and clears it otherwise. Bit 0 of ffff131c is count > 1."""
+level = "code"
+block = "fuel_closed_loop/block"
+width = 8
+signed = false
+unit = "ticks"
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff87fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005907e"
+
+[[link]]
+type = "input"
+to = "ltft_composite_gate/ram"
+note = "The count adds the tick while bit 0 holds and clears otherwise."
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK08A.closed-loop-publication.md"
+
+[[link]]
+type = "reader"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058d6c"
+
+[[link]]
+type = "writer"
+to = "ltft_learning_permit_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0005907e"
