@@ -654,7 +654,7 @@ def _recording_samples(recording, profile: str):
     """
     columns = recording.columns
     required = ("elapsed", "schema_verified", "tick16", *CVTC_INPUT_FIELDS)
-    missing = [name for name in required if name not in columns]
+    missing = mlg_relation_audit.missing_channels(recording, required)
     rpm = mlg_relation_audit.engine_speed_counts(recording)
     if rpm is None:
         missing.append("engine speed")

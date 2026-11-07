@@ -656,7 +656,7 @@ def _discrimination(band, rows, samples, points, inputs, app1_released_max, cell
 
 def _state_inputs(recording, samples) -> list[StateInput]:
     columns = recording.columns
-    missing = [name for name in STATE_FIELDS if name not in columns]
+    missing = mlg_relation_audit.missing_channels(recording, STATE_FIELDS)
     if missing:
         raise ValueError(f"{recording.path}: MLG lacks {', '.join(missing)}")
     inputs = []

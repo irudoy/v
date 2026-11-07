@@ -6,9 +6,10 @@ from pathlib import Path
 import tempfile
 import tomllib
 import unittest
+from unittest import mock
 
 from tools.can_dashboard import model as dashboard
-from tools.logs import torque_scale_audit as audit
+from tools.logs import mlvlg, torque_scale_audit as audit
 from tools.mapkit import rom as romkit
 
 STOCK_AXIS = (64, 128, 192, 256, 320, 416, 512, 608)
@@ -325,6 +326,47 @@ class TraceTest(unittest.TestCase):
                 ValueError, "no verified snapshot of telemetry profile 'tuning'"
             ):
                 audit.read_trc(trace)
+
+    def test_recording_without_a_channel_names_the_channel_it_expects(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "bare.mlg"
+            specs = [
+                mlvlg.FieldSpec("Date", "sec", "Time", mlvlg.MLG_U32, mlvlg.MLG_DATE),
+                mlvlg.FieldSpec("Elapsed", "s", "Time"),
+            ]
+            with log.open("wb") as stream:
+                writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
+                writer.write((1_789_600_000, 0.0), 0.0)
+            with self.assertRaisesRegex(
+                ValueError,
+                'engine_torque_state_raw \\(channel "Gross torque-model count"\\)',
+            ):
+                audit.read_mlg(log)
+
+
+class AuditInputTest(unittest.TestCase):
+    def run_audit(self, cruise_samples, remainder_paths=()):
+        captures = {"cruise.mlg": cruise_samples}
+
+        def read_capture(path):
+            return audit.Capture(Path(path), "0" * 64, tuple(captures.get(str(path), ())))
+
+        with mock.patch.object(audit, "read_capture", read_capture), \
+                mock.patch.object(audit.BaseTerm, "from_image", return_value=BASE):
+            audit.audit(Path("image.bin"), Path("cruise.mlg"), [Path("run.mlg")],
+                        [Path(path) for path in remainder_paths])
+
+    def test_cruise_without_a_locked_window_is_rejected(self):
+        slow = [sample(index * 0.01, speed=40.0, rpm=40.0 * LOCKED_RPM_PER_KMH)
+                for index in range(300)]
+        with self.assertRaisesRegex(ValueError, "cruise.mlg: no converter-locked cruise"):
+            self.run_audit(slow)
+
+    def test_remainder_without_a_pair_is_rejected(self):
+        locked = [sample(index * 0.01, speed=80.0, rpm=80.0 * LOCKED_RPM_PER_KMH)
+                  for index in range(300)]
+        with self.assertRaisesRegex(ValueError, "the remainder needs --remainder TRC"):
+            self.run_audit(locked, ["remainder.trc"])
 
 
 

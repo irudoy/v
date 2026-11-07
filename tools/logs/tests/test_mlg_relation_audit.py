@@ -334,6 +334,53 @@ class MlgRelationAuditTest(unittest.TestCase):
         self.assertEqual(decoded.columns["stock_rpm"], [1000.0] * 4)
         self.assertEqual(mlg_relation_audit.engine_speed_counts(decoded), [80] * 4)
 
+    def test_earlier_channel_labels_resolve_to_their_current_sources(self):
+        values = {
+            "Engine torque state": 2700.0,
+            "Bounded throttle request": -136.0,
+            "Shared throttle target": 26117.0,
+            "QH0 flow potential": 842.0,
+            "QH0 flow quantity": 27.0,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "earlier.mlg"
+            specs = [
+                mlvlg.FieldSpec("Date", "sec", "Time", mlvlg.MLG_U32, mlvlg.MLG_DATE),
+                *(
+                    mlvlg.FieldSpec(name, "Nm*", "Engine", scale=0.1)
+                    for name in values
+                ),
+            ]
+            with log.open("wb") as stream:
+                writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
+                for index in range(3):
+                    writer.write((1_789_600_000, *values.values()), index / 100)
+            decoded = mlg_relation_audit.read_recording(log)
+        current = {binding.source for binding in recording.build_bindings("tuning")}
+        for name, value in values.items():
+            source = mlg_relation_audit.LEGACY_CHANNEL_SOURCES[name]
+            with self.subTest(name=name):
+                self.assertIn(source, current)
+                self.assertEqual(decoded.columns[source], [value] * 3)
+
+    def test_a_missing_channel_names_the_channel_it_expects(self):
+        source = mlg_relation_audit.Recording(
+            Path("bare.mlg"), "0" * 64, (), {"tick16": [1.0]}, 1,
+        )
+        self.assertEqual(
+            mlg_relation_audit.missing_channels(
+                source,
+                ("tick16", "engine_torque_state_raw",
+                 "intake_cvtc_duty_command_b1_raw", "unknown_raw"),
+            ),
+            [
+                'engine_torque_state_raw (channel "Gross torque-model count")',
+                'intake_cvtc_duty_command_b1_raw '
+                '(channel "Intake CVTC duty command B1")',
+                "unknown_raw",
+            ],
+        )
+
     def test_the_stock_frame_supplies_the_count_of_the_current_profile(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "current.mlg"

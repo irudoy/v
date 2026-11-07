@@ -313,7 +313,7 @@ def read_mlg(path: Path) -> Capture:
         "engine_torque_state_raw", "bfs_raw", "vehicle_speed_kmh", "stock_rpm",
         "gear_raw", "fuel_inhibit_mask",
     )
-    missing = [name for name in required if name not in columns]
+    missing = mlg_relation_audit.missing_channels(recording_, required)
     rpm = mlg_relation_audit.engine_speed_counts(recording_)
     if rpm is None:
         missing.append("engine speed")
@@ -785,12 +785,23 @@ def audit(image: Path, cruise: Path, captures: list[Path], remainder_captures: l
     base_term = BaseTerm.from_image(image)
     cruise_capture = read_capture(cruise)
     locked = locked_ratio(cruise_capture.samples)
+    if locked is None:
+        raise ValueError(
+            f"{cruise}: no converter-locked cruise: no {LOCKED_WINDOW_SECONDS:g} s "
+            f"window at {LOCKED_MIN_SPEED_KMH:g} km/h or more keeps the stock RPM "
+            f"per km/h within {LOCKED_RATIO_TOLERANCE:.1%}"
+        )
     rpm_per_kmh = gear_speed_ratios(locked["median"])
     pairs = []
     loaded = {}
     for path in remainder_captures:
         loaded[path] = read_capture(path)
         pairs.extend(remainder_pairs(loaded[path].samples, base_term))
+    if not pairs:
+        raise ValueError(
+            "the remainder needs --remainder TRC captures with valid 0x180 "
+            "actual-torque words at open pedal outside torque reduction"
+        )
     remainder = statistics.median(value for _, value in pairs)
     points = []
     segments = []

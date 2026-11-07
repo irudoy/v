@@ -444,7 +444,7 @@ def read_mlg(path: Path) -> Capture:
     recording_ = mlg_relation_audit.read_recording(path)
     columns = recording_.columns
     required = ("tick16", "schema_verified", *TELEMETRY_SOURCES, *CONTEXT_SOURCES)
-    missing = [name for name in required if name not in columns]
+    missing = mlg_relation_audit.missing_channels(recording_, required)
     rpm = mlg_relation_audit.engine_speed_counts(recording_)
     if rpm is None:
         missing.append("engine speed")

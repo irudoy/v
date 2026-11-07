@@ -304,14 +304,46 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+# Channel names that earlier recordings carry, by the source they record.
+LEGACY_CHANNEL_SOURCES = {
+    # Profile 5 recordings retain the scheduler-latch channels.
+    "Intake CVTC duty command B1": "intake_cvtc_duty_command_b1_raw",
+    "Intake CVTC duty command B2": "intake_cvtc_duty_command_b2_raw",
+    # Recordings made before commit 693ac83c name these fields by their
+    # earlier labels. The channels hold the same raw words under another
+    # label and header scale.
+    "Engine torque state": "engine_torque_state_raw",
+    "Bounded throttle request": "throttle_request_bounded_raw",
+    "Shared throttle target": "throttle_target_shared_raw",
+    "QH0 flow potential": "request_flow_raw",
+    "QH0 flow quantity": "alpha_n_flow_raw",
+}
+
+
 def _source_by_channel_name() -> dict[str, str]:
     return {
-        # Profile 5 recordings retain the scheduler-latch channels.
-        "Intake CVTC duty command B1": "intake_cvtc_duty_command_b1_raw",
-        "Intake CVTC duty command B2": "intake_cvtc_duty_command_b2_raw",
+        **LEGACY_CHANNEL_SOURCES,
         **{binding.spec.name: binding.source
            for binding in recording.build_bindings("tuning")},
     }
+
+
+def missing_channels(recording_: Recording, sources) -> list[str]:
+    """Name each source that a recording lacks with its expected channel.
+
+    The channel is the current label of the source, or the earlier label
+    for a source that only earlier recordings carry.
+    """
+    labels = {source: name for name, source in LEGACY_CHANNEL_SOURCES.items()}
+    labels.update(
+        (binding.source, binding.spec.name)
+        for binding in recording.build_bindings("tuning")
+    )
+    return [
+        f'{source} (channel "{labels[source]}")' if source in labels else source
+        for source in sources
+        if source not in recording_.columns
+    ]
 
 
 def read_recording(path: Path) -> Recording:
