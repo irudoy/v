@@ -770,6 +770,11 @@ class Decoder:
         """The identities of the selected profile and its historical forms."""
         return frozenset(self._profiles)
 
+    @property
+    def pending_page_count(self):
+        """Pages of an unfinished group at the current capture boundary."""
+        return len(self._pages)
+
     def _discard(self):
         if self._pages:
             self.incomplete_groups += 1

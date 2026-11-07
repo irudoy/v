@@ -47,6 +47,47 @@ diagnostic states. PCAN-View records error frames only when that optional trace
 content is enabled, as described by the official
 [PCAN-View trace documentation](https://www.peak-system.com/products/software/analysis-software/pcan-view/?no_cache=1&sword_list%5B0%5D=flexible&sword_list%5B1%5D=data&sword_list%5B2%5D=rate).
 
+## Paired telemetry transport acceptance
+
+`telemetry_acceptance.py` reports the transport criteria of #27 from the TRC
+and MLG of one dashboard recording. Its target is the registered
+`schema2-profile9` endpoint in `patches/can-telemetry-history.toml`, independent
+of the identities that the host decoder accepts. It reports ordered pages,
+tick continuity, producer restarts, reconstructed stream pauses, the overrun
+and abort counters, CAN Warning/Error records, stock RX period distributions
+and bus-load bounds.
+
+```bash
+uv run python tools/logs/telemetry_acceptance.py drive.trc drive.mlg \
+  --bitrate 500000
+```
+
+`--json` emits the same observations as structured data. The pairing check
+uses the shared recording clock of the dashboard: TRC offset milliseconds
+divided by 1000 equals the MLG Elapsed channel at the final page of a group.
+It compares the recorded raw channels and attributes, accounts for the
+recorder's held-value bridge rows, and checks Date against `$STARTTIME` in
+`--timezone` (default `Asia/Vladivostok`). It does not fit a clock offset to
+make unrelated recordings match. The unfinished group at the capture tail
+and initial synchronization frames are reported separately from interior
+group failures. An excluded cut TRC row leaves the recording incomplete.
+
+Without a cadence reference the command reports periods with
+`cadence=NOT_ASSESSED`. Supply a distinct `--baseline reference.trc` and an
+explicit `--cadence-tolerance-ms` to assess the absolute median drift and
+the increase of p99 and maximum periods of every observed stock RX ID.
+The caller selects a reference recorded in comparable vehicle states and
+the acceptable comparison limit. Unreferenced IDs remain unassessed.
+
+Exit status 0 means all transport sections pass, 1 reports an observed
+failure, and 2 reports invalid input or incomplete coverage, including a
+missing bitrate or cadence assessment. A counter whose first value is
+nonzero, or that has fewer than two health observations, remains incomplete
+unless an observed increment establishes a failure. File parsing cannot
+establish the physical ECU, the flashed image, enabled driver error capture
+or an operator-confirmed clean stop; record those observations with the
+hardware result.
+
 ## Custom CAN telemetry decoder
 
 `can_telemetry.py` strictly reconstructs custom telemetry groups from a selected
