@@ -7,7 +7,12 @@ fuel-inhibit, timing, pedal, BFS, knock-surface, and exhaust-CVTC telemetry
 sources, and the Rolling Launch phase and abort reason. The other Rolling
 Launch fields are slots of the page configurations of the dynamic page: a
 snapshot carries the slots that the configuration and group of its
-configuration byte name, and the others read None.
+configuration byte name, and the others read None. A run with a snapshot
+that carries none of the hold fields of the endpoint, such as a snapshot of
+the default configuration 0 that the ECU installs at every start, is a
+coverage gap: the audit reports the configurations of those snapshots and
+the abort reason, checks nothing in the run, and continues with the other
+runs.
 
 The hold audit replays the runtime of `patches/rolling_launch.py` with the
 Rolling Launch record of the flashed image through every ACTIVE run: the
@@ -184,6 +189,8 @@ CURRENT_VIEWS = (
     "rpm_sample", "stock_command", "effective_command", "accepted_button",
     "speed_age",
 )
+# The sample attributes of the hold fields of a historical endpoint.
+HISTORICAL_VIEWS = ("speed_error", "integrator")
 # The packed views of the runtime extension: wire_mode_trim, wire_efficiency
 # and wire_status of patches/rolling_launch.py.
 MODE_TRIM_VALUE_MASK = 0x3F
@@ -641,6 +648,17 @@ class Regulation:
 
 
 @dataclass(frozen=True)
+class CoverageGap:
+    """The ACTIVE snapshots of a run that carry none of the hold fields of
+    the endpoint: their count, the snapshots of the run, and the page
+    configuration IDs that they carry, None without a configuration byte."""
+
+    ticks: int
+    snapshots: int
+    configurations: tuple[int | None, ...]
+
+
+@dataclass(frozen=True)
 class HoldRun:
     """One ACTIVE run of contiguous snapshots and its audit results.
 
@@ -672,7 +690,9 @@ class HoldRun:
     it lies between the speed samples of the snapshots around an edge
     without its own, and "unchecked" when the capture lacks that evidence.
     `speed_source_ticks` counts the speed samples checked against the 0x284
-    frames of a TRC, or is None without them.
+    frames of a TRC, or is None without them. `gap` is the CoverageGap of a
+    run with a snapshot that carries none of the hold fields, whose audit
+    checks nothing, or None.
     """
 
     start_tick: int
@@ -692,6 +712,7 @@ class HoldRun:
     target_check: str | None = None
     speed_source_ticks: int | None = None
     regulation: dict | None = None
+    gap: CoverageGap | None = None
 
     @property
     def requested_cuts_inside(self) -> bool | None:
@@ -1704,9 +1725,11 @@ def audit_hold(samples, calibration, timing=None) -> tuple[HoldRun, ...]:
         )
     if calibration.table is None:
         audit_run = _run
+        views = HISTORICAL_VIEWS
     else:
         def audit_run(samples, start, end, calibration):
             return _current_run(samples, start, end, calibration, timing)
+        views = CURRENT_VIEWS
     active = rolling_launch.Phase.ACTIVE
     runs = []
     index = 0
@@ -1721,20 +1744,48 @@ def audit_hold(samples, calibration, timing=None) -> tuple[HoldRun, ...]:
             and samples[index + 1].tick == samples[index].tick + 1
         ):
             index += 1
-        runs.append(audit_run(samples, start, index, calibration))
+        runs.append(
+            _gap_run(samples, start, index, views)
+            or audit_run(samples, start, index, calibration)
+        )
         index += 1
     return tuple(runs)
+
+
+def _gap_run(samples, start, end, views):
+    """The run `start`..`end` as a coverage gap when one of its snapshots
+    carries none of the hold `views`, or None."""
+    lacking = [
+        sample for sample in samples[start : end + 1]
+        if all(getattr(sample, name) is None for name in views)
+    ]
+    if not lacking:
+        return None
+    configurations = {
+        None if sample.configuration is None
+        else sample.configuration & CONFIGURATION_ID_MASK
+        for sample in lacking
+    }
+    return HoldRun(
+        start_tick=samples[start].tick,
+        end_tick=samples[end].tick,
+        abort_reason=_abort_reason(samples, end),
+        law_ticks=0,
+        failures=(),
+        target_speed=None,
+        requested_cuts=None,
+        owed=None,
+        gap=CoverageGap(
+            len(lacking),
+            end - start + 1,
+            tuple(sorted(configurations, key=lambda item: -1 if item is None else item)),
+        ),
+    )
 
 
 def _run(samples, start, end, calibration):
     """Audit one run of a historical speed-hold endpoint."""
     run = samples[start : end + 1]
-    for sample in run:
-        if sample.speed_error is None and sample.integrator is None:
-            raise ValueError(
-                f"tick {sample.tick}: the capture lacks the Rolling Launch"
-                " hold fields"
-            )
     slot = run_slot(samples, start, end, calibration)
     failures, law_ticks, bounds = _replay(samples, start, end, calibration, slot)
     targets = [
@@ -2003,12 +2054,6 @@ def _current_run(samples, start, end, calibration, timing=None):
     """Audit one run of the current runtime by the views that its snapshots
     carry; see the module description."""
     run = samples[start : end + 1]
-    for sample in run:
-        if all(getattr(sample, name) is None for name in CURRENT_VIEWS):
-            raise ValueError(
-                f"tick {sample.tick}: the capture lacks the Rolling Launch"
-                " hold fields"
-            )
     failures = []
     kinds = set().union(*(_published_kinds(sample) for sample in run))
     if 0 in kinds:
@@ -2624,6 +2669,17 @@ def _regulation_summary(run: HoldRun) -> str:
     return "regulation " + "; ".join(parts)
 
 
+def _gap_summary(gap: CoverageGap) -> str:
+    """One line of the coverage gap of a run."""
+    configurations = ",".join(
+        "none" if item is None else str(item) for item in gap.configurations
+    )
+    return (
+        f"coverage gap: {gap.ticks} of {gap.snapshots} ACTIVE snapshots carry"
+        f" no hold field, configuration {configurations}; the run is unchecked"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -2686,6 +2742,8 @@ def main(argv: list[str] | None = None) -> int:
                 f" floor_ticks={run.floor_ticks}"
                 f" release_cuts={release}"
             )
+            if run.gap is not None:
+                print(f"    {_gap_summary(run.gap)}")
             for tick, failure in run.failures:
                 print(f"    tick {tick}: {failure}")
             if run.veto is not None:

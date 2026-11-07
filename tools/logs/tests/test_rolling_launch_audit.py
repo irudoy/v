@@ -208,6 +208,8 @@ RL6_INPUTS = (
 RL6_RELEASE = (
     (6, {"cut_fraction", "cut_requests", "accepted_button", "status", "speed_age"}),
 )
+# The default configuration 0, whose page carries no Rolling Launch slot.
+DEFAULT_PAGE = (0, set())
 
 
 def launch_law(samples):
@@ -387,13 +389,16 @@ class HoldAuditTest(unittest.TestCase):
         self.assertIsNone(run.requested_cuts)
         self.assertIsNone(run.requested_cuts_inside)
 
-    def test_a_capture_without_the_hold_fields_is_refused(self):
+    def test_a_run_without_the_hold_fields_is_a_coverage_gap(self):
         samples = [
             replace(s, integrator=None, speed_error=None)
             for s in simulate(SPEEDS)
         ]
-        with self.assertRaisesRegex(ValueError, "hold fields"):
-            audit.audit_hold(samples, HISTORICAL)
+        (run,) = audit.audit_hold(samples, HISTORICAL)
+        active = len(active_indices(samples))
+        self.assertEqual(run.gap, audit.CoverageGap(active, active, (None,)))
+        self.assertEqual(run.checked_ticks, 0)
+        self.assertEqual(run.failures, ())
         samples = [replace(s, phase=None) for s in samples]
         with self.assertRaisesRegex(ValueError, "no Rolling Launch phase"):
             audit.audit_hold(samples, HISTORICAL)
@@ -419,6 +424,9 @@ class HoldAuditTest(unittest.TestCase):
             # configuration is a coverage gap of the classification.
             "current runtime without the veto geometry": (
                 configure(simulate(SPEEDS), *RL6_LAW), CALIBRATION, 0,
+            ),
+            "current runtime under the default configuration": (
+                configure(simulate(SPEEDS), DEFAULT_PAGE), CALIBRATION, 1,
             ),
         }
         for name, (samples, calibration, status) in cases.items():
@@ -949,10 +957,68 @@ class CurrentRunTest(unittest.TestCase):
         (run,) = audit.audit_hold(changed(samples, index, status=status), SPEED_SETTINGS)
         self.assertIn(samples[index].tick, failed_ticks(run))
 
-    def test_a_current_run_without_its_views_is_refused(self):
-        samples = launch_law(speed_run())
-        with self.assertRaisesRegex(ValueError, "hold fields"):
-            audit.audit_hold(samples, SPEED_SETTINGS)
+    def test_a_run_without_the_hold_views_is_a_coverage_gap(self):
+        # The ECU installs configuration 0 at every start; a run before the
+        # host selects a hold configuration again carries no hold view.
+        default = configure(speed_run(), DEFAULT_PAGE)
+        audited = configure(speed_run(), *RL6_INPUTS)
+        active = active_indices(default)
+        (reference,) = audit.audit_hold(audited, SPEED_SETTINGS)
+        shift = default[-1].tick + 1
+        cases = {
+            "default configuration before an audited run": (
+                default + [replace(s, tick=s.tick + shift) for s in audited],
+                audit.CoverageGap(len(active), len(active), (0,)),
+                1,
+            ),
+            "historical configuration": (
+                launch_law(speed_run()),
+                audit.CoverageGap(len(active), len(active), (1,)),
+                0,
+            ),
+            "page change inside the run": (
+                default[: active[3]] + audited[active[3]:],
+                audit.CoverageGap(3, len(active), (0,)),
+                0,
+            ),
+        }
+        for name, (samples, gap, audited_runs) in cases.items():
+            with self.subTest(name):
+                run, *others = audit.audit_hold(samples, SPEED_SETTINGS)
+                self.assertEqual(run.gap, gap)
+                self.assertEqual(run.checked_ticks, 0)
+                self.assertEqual(run.failures, ())
+                self.assertIsNotNone(run.abort_reason)
+                self.assertEqual(run.abort_reason, reference.abort_reason)
+                self.assertEqual(len(others), audited_runs)
+                for other in others:
+                    self.assertIsNone(other.gap)
+                    self.assertEqual(other.failures, ())
+                    self.assertEqual(other.input_ticks, reference.input_ticks)
+
+    def test_the_report_continues_after_a_coverage_gap(self):
+        default = audit.Capture(
+            Path("default.mlg"), "0" * 64, tuple(configure(speed_run(), DEFAULT_PAGE))
+        )
+        hold = audit.Capture(
+            Path("hold.mlg"), "1" * 64, tuple(configure(speed_run(), *RL6_INPUTS))
+        )
+        with (
+            mock.patch.object(audit, "read_calibration", return_value=SPEED_SETTINGS),
+            mock.patch.object(audit, "read_capture", side_effect=[default, hold]),
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            status = audit.main(["--image", "image.bin", "default.mlg", "hold.mlg"])
+        active = len(active_indices(default.samples))
+        text = output.getvalue()
+        self.assertEqual(status, 1)
+        self.assertIn(
+            f"coverage gap: {active} of {active} ACTIVE snapshots carry no hold"
+            " field, configuration 0; the run is unchecked",
+            text,
+        )
+        self.assertIn(f"hold.mlg sha256={'1' * 64} runs=1", text)
+        self.assertEqual(text.count("coverage gap:"), 1)
 
 
 def active_indices(samples):

@@ -682,9 +682,15 @@ publish q for the other class.
 
 The replay steps the controller once per snapshot, so the audit refuses a
 capture whose snapshots do not step by one tick, which a tick divisor above 1
-produces. A law failure, a requested-cut count outside its bounds, a run
-without a checked snapshot, or a capture without an `ACTIVE` run makes the
-exit status 1; the cut-request bounds of configuration 4 are the verdict of
+produces. A run with an `ACTIVE` snapshot that carries none of the hold
+fields of the endpoint is a coverage gap: the ECU installs configuration 0
+at every start, so a run before the host selects a hold configuration
+again carries none of them. The audit prints the count of such snapshots
+and their configuration IDs, checks nothing in the run, and continues with
+the other runs and captures. A law failure, a requested-cut count outside
+its bounds, a run without a checked snapshot, which includes such a run, or
+a capture without an `ACTIVE` run makes the exit status 1; the cut-request
+bounds of configuration 4 are the verdict of
 the actuation. The classification and the regulation of the current runtime
 are reports without thresholds: a missing pair or a capture without an
 `ACTIVE` snapshot of configuration 5 is a coverage gap, which the audit
