@@ -598,8 +598,8 @@ and STOP parse unchanged.
   group fits six bytes. The capture of the same tick uses it.
 - The handler rejects a wrong CRC, an unknown opcode, ID 0 or an ID above 127,
   a group, slot, or width out of range, a word or long at an unaligned
-  address, an address outside the RAM window, a SET or COMMIT with an ID other
-  than the staging ID, and a COMMIT that does not match the staging. A
+  address, an address outside the RAM window, a COMMIT with an ID other than
+  the staging ID, and a COMMIT that does not match the staging. A
   rejection consumes the frame, clears the staging, and advances a saturating
   reject counter; the active configuration stays unchanged.
 
