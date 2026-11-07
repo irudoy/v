@@ -9,8 +9,9 @@ from collections import Counter, defaultdict
 import csv
 from itertools import combinations
 import re
+import tomllib
 
-from kb import derive, repo
+from kb import derive, l0, repo, sites
 from kb.values import properties
 
 CALL_REFERENCES = ("unconditional_call", "computed_call")
@@ -18,6 +19,7 @@ POINTER_REFERENCES = ("data", "param")
 WIDTH = {"b": 1, "w": 2, "l": 4}
 SUFFIX = re.compile(r"\.([bwl])$")
 DERIVED_SRC = "literal-pairs"
+CENSUS_SRC = "census-copies"
 RAM_ACCESS_MODES = frozenset({'read', 'write', 'read_write', 'load', 'store', 'update'})
 
 
@@ -61,6 +63,33 @@ def shared_ram(functions, locations, accesses):
             for (first, second), weight in sorted(weights.items())]
 
 
+def census_copies(layout, spaces, root=repo.ROOT):
+    """{(function, ROM address): sites} of the census copy operands.
+
+    A census `copy` operand names the ROM source of a reviewed byte copy into
+    the stack buffer that a census call passes. The function whose body holds
+    the call reads that source through the copy; its site is the census call,
+    because the export records the operand there and not at the copy-helper
+    call. Only operands that `sites.census_operands` trusts qualify.
+    """
+    base = root / repo.L0 / layout.id
+    manifest = tomllib.loads((base / l0.MANIFEST).read_text(encoding="utf-8"))
+    data = derive.image_bytes(layout, root)
+    owned = sites.owners(layout.id, root)
+    found = defaultdict(list)
+    for kernel in manifest["census"]["kernels"]:
+        for row in _read(base / l0.Census.file(kernel)):
+            site = int(row["callsite"], 16)
+            for column, address in sites.census_operands(row, data):
+                if row[f"k{column[-1]}"] != "copy" or space_of(spaces, address) != "rom":
+                    continue
+                for func in owned.get(site, ()):
+                    found[(func, address)].append({
+                        "site": site, "mode": "copy", "operand": column[-2:],
+                        "kernel": int(row["kernel"], 16), "wrapper": int(row["wrapper"], 16)})
+    return found
+
+
 def l0_rows(layout, spaces, root=repo.ROOT):
     """Nodes and relationships of one layout's L0 and its literal pairs.
 
@@ -71,6 +100,8 @@ def l0_rows(layout, spaces, root=repo.ROOT):
       parameter reference to ROM, and every pool literal that names RAM or a
       register, with mode `literal` and the pool address.
     - `ACCESS` with producer `derived` from the literal pairs of kb.derive.
+    - `ACCESS` with producer `census` and mode `copy` from the census copy
+      operands of `census_copies`.
     - `Location` at every accessed address inside the spaces of the MCU.
     """
     base = root / repo.L0 / layout.id
@@ -131,7 +162,9 @@ def l0_rows(layout, spaces, root=repo.ROOT):
     locations = {}
     accesses = []
     for producer, found, origin in (("l0", direct, src["function_references.csv"]),
-                                    ("derived", derived, DERIVED_SRC)):
+                                    ("derived", derived, DERIVED_SRC),
+                                    ("census", census_copies(layout, spaces, root),
+                                     CENSUS_SRC)):
         for (func, address), sites in sorted(found.items()):
             if address not in locations or producer == "l0" and \
                     locations[address]["producer"] != "l0":

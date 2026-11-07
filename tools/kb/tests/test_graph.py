@@ -50,6 +50,19 @@ class L0RowsTest(unittest.TestCase):
         found = accesses(l0("7mfk"), "7mfk:0004d2a6", "7mfk:0000a4aa")
         self.assertIn({"site": 0x4D464, "mode": "param"}, found["l0"]["sites"])
 
+    def test_a_census_copy_operand_is_a_copy_access_of_the_calling_function(self):
+        found = accesses(l0("7mfk"), "7mfk:00068cb8", "7mfk:000237ac")
+        self.assertEqual(set(found), {"census"})
+        self.assertEqual((found["census"]["modes"], found["census"]["src"]),
+                         (["copy"], "census-copies"))
+        site = found["census"]["sites"][0]
+        self.assertEqual((site["site"], site["mode"], site["operand"], site["wrapper"]),
+                         (0x68D3A, "copy", "r4", 0x26370))
+
+    def test_a_census_operand_of_another_kind_is_no_census_access(self):
+        found = accesses(l0("7mfk"), "7mfk:0004d2a6", "7mfk:0000a4aa")
+        self.assertNotIn("census", found)
+
     def test_every_access_ends_at_a_location_of_a_space(self):
         rows = l0("7mfk")
         locations = {row["key"]: row for row in rows["locations"]}

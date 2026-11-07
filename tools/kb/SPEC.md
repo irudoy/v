@@ -1263,7 +1263,7 @@ writes carries the label `:Kb` in addition to its own label.
 | `STATUS` | `Meaning` | `Layout` | `state`, `method`, `target`, `count`, `l0`, `stale` | `claim`; `derived` for `unknown` |
 | `CALL` | `Function` | `Function` | `sites`, `weight` (1 for block suggestions) | `l0` |
 | `SHARED_RAM` | `Function` | `Function` | `weight` (distinct RAM locations read or written by both functions; pointer-only literals excluded) | `derived` |
-| `ACCESS` | `Function` | `Location` | `modes`, `sites` | `l0`, `derived` for paired literals |
+| `ACCESS` | `Function` | `Location` | `modes`, `sites` | `l0`, `derived` for paired literals, `census` for census copy operands |
 | `WRITER`, `READER`, `INPUT`, `COPY`, `INDEX`, `AXIS`, `LOOKUP`, `SELECTOR`, `THRESHOLD`, `BASE`, `TARGET`, `SOURCE`, `MONITOR`, `DEPENDS` | `Meaning` | `Meaning` | the link keys | `claim` |
 | the same types | `Symbol` | `Symbol` | `layout`, `verified`, and the link's `role`, `slot`, and `offset` | `derived` |
 | `CITES` | `Meaning`, `Symbol` | `Meaning`, `Symbol`, `Entity` | `kind`, `supports`, `relies` | `claim` |
@@ -1288,14 +1288,21 @@ writes carries the label `:Kb` in addition to its own label.
   joins a function and a location, so path queries see one edge per pair.
   `sites` of a `CALL` lists the call instructions. `sites` of an `ACCESS`
   holds one map per instruction with `site`, `mode`, `width`, and for a pool
-  literal `pool`, and for a paired literal also `literal`, `base`, and
-  `indexed`; `modes` lists the distinct modes.
+  literal `pool`, for a paired literal also `literal`, `base`, and
+  `indexed`, and for a census copy operand `operand`, `kernel`, and `wrapper`;
+  `modes` lists the distinct modes.
 - `ACCESS` with producer `l0` records every reference of an instruction to RAM
   or a register, with the reference type of L0 as mode, every data or
   parameter reference to ROM, and every pool literal that names RAM or a
   register, with mode `literal`. `ACCESS` with producer `derived` records the
   literal pairs of [Derivations](#85-derivations), with modes `load`, `store`,
   and `update`, and `literal` for a `stc gbr` that takes the literal of GBR.
+  `ACCESS` with producer `census` and mode `copy` records the ROM source of a
+  census copy operand, which a reviewed copy helper copies into the stack
+  buffer that a census call passes: the function whose body holds the census
+  call reads that source, at the census call, because the export records the
+  operand there. Only an operand at a complete delayed call qualifies, as for
+  the `site:` evidence of the ledgers.
 
 ### 10.3 Constraints and indexes
 

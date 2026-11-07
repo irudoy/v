@@ -50,7 +50,7 @@ SYMMETRIC_ROLES = {"homolog", "match"}
 # attest shows one mode.
 MODE_NAMES = {"read": "load", "write": "store", "read_write": "update"}
 STORE_MODES = {"store", "update"}
-LOAD_MODES = {"load", "update", "data", "param"}
+LOAD_MODES = {"load", "update", "data", "param", "copy"}
 SHAPE_KEYS = {
     "ram": ("width", "signed", "unit"), "reg": ("width", "signed", "unit"),
     "tbl": ("cols", "rows", "storage"), "axis": ("points", "storage", "quantity"),

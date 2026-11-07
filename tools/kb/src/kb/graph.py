@@ -38,10 +38,10 @@ INDEXES = (
 )
 CLAIM_LABELS = ("Meaning", "Symbol", "Entity", "Step", "Retired")
 STORE_MODES = ("store", "update", "write", "read_write")
-LOAD_MODES = ("load", "update", "read", "read_write", "literal", "data", "param")
+LOAD_MODES = ("load", "update", "read", "read_write", "literal", "data", "param", "copy")
 L0_VERIFIED = {"WRITER": STORE_MODES, "READER": LOAD_MODES}
 # Modules whose change reloads the L0 part of every layout.
-L0_CODE = ("derive.py", "l0graph.py", "sh2.py", "values.py")
+L0_CODE = ("derive.py", "l0.py", "l0graph.py", "sh2.py", "sites.py", "values.py")
 # Clauses and commands that change a graph; `kb cypher` refuses them.
 WRITES = re.compile(
     r"(?<![.$:\w])(CREATE|MERGE|DELETE|DETACH|SET|REMOVE|DROP|FOREACH|LOAD\s+\w+|"

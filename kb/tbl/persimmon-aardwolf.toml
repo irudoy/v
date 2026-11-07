@@ -13,9 +13,9 @@ Geometry from the code: the call at 00068cc8 copies r0 = 8 bytes from r2 = \
 are unknown; the offset -128 applies to this lookup alone, and the factor 8 \
 to its sum with the lookup of 000120ce.""",
     """
-The census copy operand shows FUN_00068CB8 (finicky-capybara) reading this \
-curve. The reader link remains unresolved under issue #138: the L0 access \
-index does not hold the ROM source of a census copy operand.""",
+The census records the stack copy as the r4 operand of the lookup at \
+00068d3a, so the L0 access index holds the read of FUN_00068CB8 \
+(finicky-capybara) as a census copy access.""",
 ]
 level = "candidate"
 role = "table"
@@ -75,3 +75,13 @@ at = "jk00d:0006af88"
 to = "7mfk:00068cac"
 count = 1
 value = 58
+
+[[link]]
+type = "reader"
+to = "finicky-capybara/fn"
+layouts = ["7mfk"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00068d3a"
