@@ -467,6 +467,15 @@ layout = "jk00c"
 address = "000099de"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004fea8"
+note = """
+The lookup call at instruction 426 of 0x0004FB18 passes this surface, as the \
+JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 \
+passes 0x0000991A at 0x0004E550."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0004fea8"
@@ -480,6 +489,15 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "000099ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004fea4"
+note = """
+The lookup call at instruction 426 of 0x0004FB14 passes this surface, as the \
+JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 \
+passes 0x0000991A at 0x0004E550."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

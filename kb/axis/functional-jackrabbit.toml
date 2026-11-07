@@ -161,6 +161,14 @@ address = "00016f1c"
 name = "maroon-peccary"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00067c4e"
+note = """
+The lookup call at instruction 51 of 0x00067BE8 passes this axis, as the \
+JK08A call at instruction 51 of 0x00065928 passes 0x00014B4A at 0x0006598E."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:00067c4e"
@@ -175,6 +183,14 @@ interpolation operands"""
 layout = "jk00d"
 address = "00016f3c"
 name = "tested-boar"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00067c4e"
+note = """
+The lookup call at instruction 51 of 0x00067BE8 passes this axis, as the \
+JK08A call at instruction 51 of 0x00065928 passes 0x00014B4A at 0x0006598E."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

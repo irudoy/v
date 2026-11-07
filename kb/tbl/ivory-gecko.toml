@@ -517,6 +517,15 @@ address = "000165d6"
 name = "hypnotic-collie"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003b6fa"
+note = """
+The lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the \
+JK08A call at instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes \
+0x000141F4 at 0x0003A946."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0003b6fa"
@@ -531,6 +540,15 @@ interpolation operands"""
 layout = "jk00d"
 address = "000165f6"
 name = "calm-stoat"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003b6fa"
+note = """
+The lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the \
+JK08A call at instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes \
+0x000141F4 at 0x0003A946."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

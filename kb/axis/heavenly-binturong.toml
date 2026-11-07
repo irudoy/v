@@ -155,6 +155,14 @@ address = "0001b694"
 name = "notorious-marmoset"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007627a"
+note = """
+The lookup call at instruction 77 of 0x000761E0 passes this axis, as the \
+JK08A call at instruction 77 of 0x00073A44 passes 0x00018716 at 0x00073ADE."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0007627a"
@@ -169,6 +177,14 @@ interpolation operands"""
 layout = "jk00d"
 address = "0001b6b6"
 name = "cream-cassowary"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007627a"
+note = """
+The lookup call at instruction 77 of 0x000761E0 passes this axis, as the \
+JK08A call at instruction 77 of 0x00073A44 passes 0x00018716 at 0x00073ADE."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

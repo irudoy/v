@@ -128,6 +128,14 @@ address = "00016ecc"
 name = "rigorous-hamster"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00067b78"
+note = """
+The lookup call at instruction 10 of 0x00067B64 passes this axis, as the \
+JK08A call at instruction 10 of 0x000658A4 passes 0x00014ABA at 0x000658B8."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:00067b78"
@@ -142,6 +150,14 @@ interpolation operands"""
 layout = "jk00d"
 address = "00016eec"
 name = "lime-leech"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00067b78"
+note = """
+The lookup call at instruction 10 of 0x00067B64 passes this axis, as the \
+JK08A call at instruction 10 of 0x000658A4 passes 0x00014ABA at 0x000658B8."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

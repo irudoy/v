@@ -1346,11 +1346,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x7A0" flags="0x0">
     <title>Ignition Timing Surface - Cold State</title>
-    <description>Exact JK00D. Address 0x99EE; 16 rows x 16 columns; uint8; map confidence candidate. Cold timing-state surface. Selector 0004e1c0 uses it for both the active sample ffff160f and high-octane reference sample ffff1610 below coolant raw 107, then blends it into both samples through raw 131. The low seven bits feed timing state; bit 7 independently enables a knock-state path. This view edits mask 0x7F and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the lower-left selected cell. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 0000991a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x99EE; 16 rows x 16 columns; uint8; map confidence code. Cold timing-state surface. Selector 0004e1c0 uses it for both the active sample ffff160f and high-octane reference sample ffff1610 below coolant raw 107, then blends it into both samples through raw 131. The low seven bits feed timing state; bit 7 independently enables a knock-state path. This view edits mask 0x7F and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the lower-left selected cell. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 0000991a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 426 of 0x0004FB14 passes this surface, as the JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 passes 0x0000991A at 0x0004E550.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -1364,7 +1364,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -1378,7 +1378,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x99EE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -2412,11 +2412,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1606" flags="0x0">
     <title>Knock-State Path Enable - Cold State</title>
-    <description>Exact JK00D. Address 0x99EE; 16 rows x 16 columns; uint8; map confidence candidate. Cold timing-state surface. Selector 0004e1c0 uses it for both the active sample ffff160f and high-octane reference sample ffff1610 below coolant raw 107, then blends it into both samples through raw 131. The low seven bits feed timing state; bit 7 independently enables a knock-state path. This view edits mask 0x80 and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the lower-left selected cell. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 0000991a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x99EE; 16 rows x 16 columns; uint8; map confidence code. Cold timing-state surface. Selector 0004e1c0 uses it for both the active sample ffff160f and high-octane reference sample ffff1610 below coolant raw 107, then blends it into both samples through raw 131. The low seven bits feed timing state; bit 7 independently enables a knock-state path. This view edits mask 0x80 and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the lower-left selected cell. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 0000991a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 426 of 0x0004FB14 passes this surface, as the JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 passes 0x0000991A at 0x0004E550.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -2430,7 +2430,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -2444,7 +2444,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x99EE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -3558,7 +3558,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13FE9" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3600,7 +3600,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1B6B6" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3628,7 +3628,7 @@
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x17AC2" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>Throttle Valve Opening [%] [cand]</units>
+      <units>Throttle Valve Opening [%]</units>
       <indexcount>32</indexcount>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
@@ -3708,7 +3708,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x94AF" flags="0x0">
     <title>MAF Sensor Transfer - Bank 2</title>
-    <description>Exact JK00D. Address 0x165F6; 1 rows x 64 columns; uint16; map confidence candidate. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 000141f4 through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
+    <description>Exact JK00D. Address 0x165F6; 1 rows x 64 columns; uint16; map confidence code. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 000141f4 through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes 0x000141F4 at 0x0003A946. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
     <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3803,7 +3803,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x165F6" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="64" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>g/s [cand]</units>
+      <units>g/s</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.0041015625">
@@ -3813,7 +3813,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x46E3" flags="0x0">
     <title>MAF Sensor Transfer - Bank 1</title>
-    <description>Exact JK00D. Address 0x16676; 1 rows x 64 columns; uint16; map confidence candidate. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 00014274 through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
+    <description>Exact JK00D. Address 0x16676; 1 rows x 64 columns; uint16; map confidence code. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 00014274 through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes 0x00014274 at 0x0003A930. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
     <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3908,7 +3908,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x16676" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="64" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>g/s [cand]</units>
+      <units>g/s</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.0041015625">
@@ -3994,7 +3994,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16F3C" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -4022,7 +4022,7 @@
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16EEC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -4064,7 +4064,7 @@
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16EEC" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -4456,11 +4456,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x78A8" flags="0x0">
     <title>Map 1 - Ignition Timing Surface - High-Octane State</title>
-    <description>Exact JK00D. Address 0x9AEE; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x9AEE; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -4474,7 +4474,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -4488,7 +4488,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9AEE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -5522,11 +5522,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x589C" flags="0x0">
     <title>Map 1 - Knock-State Path Enable - High-Octane State</title>
-    <description>Exact JK00D. Address 0x9AEE; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x9AEE; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -5540,7 +5540,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -5554,7 +5554,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9AEE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -6588,11 +6588,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xC6F1" flags="0x0">
     <title>Map 1 - Ignition Timing Surface - High-Detonation State</title>
-    <description>Exact JK00D. Address 0x9BEE; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x9BEE; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -6606,7 +6606,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -6620,7 +6620,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9BEE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -7654,11 +7654,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x105D" flags="0x0">
     <title>Map 1 - Knock-State Path Enable - High-Detonation State</title>
-    <description>Exact JK00D. Address 0x9BEE; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0x9BEE; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -7672,7 +7672,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -7686,7 +7686,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9BEE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -9258,11 +9258,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x79BD" flags="0x0">
     <title>Map 2 - Ignition Timing Surface - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEC00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 2 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEC00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 2 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -9276,7 +9276,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -9290,7 +9290,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEC00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -10324,11 +10324,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x393C" flags="0x0">
     <title>Map 2 - Knock-State Path Enable - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEC00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 2 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEC00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 2 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -10342,7 +10342,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -10356,7 +10356,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEC00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -11390,11 +11390,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x46BA" flags="0x0">
     <title>Map 2 - Ignition Timing Surface - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF000; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 2 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF000; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 2 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11408,7 +11408,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11422,7 +11422,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF000" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -12456,11 +12456,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x55EB" flags="0x0">
     <title>Map 2 - Knock-State Path Enable - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF000; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 2 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF000; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 2 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -12474,7 +12474,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -12488,7 +12488,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF000" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -14060,11 +14060,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x6F38" flags="0x0">
     <title>Map 3 - Ignition Timing Surface - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDED00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 3 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDED00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 3 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -14078,7 +14078,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -14092,7 +14092,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDED00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -15126,11 +15126,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1AE1" flags="0x0">
     <title>Map 3 - Knock-State Path Enable - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDED00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 3 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDED00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 3 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15144,7 +15144,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15158,7 +15158,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDED00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -16192,11 +16192,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x2C8D" flags="0x0">
     <title>Map 3 - Ignition Timing Surface - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF100; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 3 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF100; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 3 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -16210,7 +16210,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -16224,7 +16224,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF100" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -17258,11 +17258,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x4608" flags="0x0">
     <title>Map 3 - Knock-State Path Enable - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF100; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 3 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF100; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 3 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -17276,7 +17276,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -17290,7 +17290,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF100" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -18862,11 +18862,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x50F" flags="0x0">
     <title>Map 4 - Ignition Timing Surface - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEE00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 4 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEE00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 4 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -18880,7 +18880,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -18894,7 +18894,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEE00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -19928,11 +19928,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x2308" flags="0x0">
     <title>Map 4 - Knock-State Path Enable - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEE00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 4 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEE00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 4 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19946,7 +19946,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19960,7 +19960,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEE00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -20994,11 +20994,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x92D4" flags="0x0">
     <title>Map 4 - Ignition Timing Surface - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF200; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 4 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF200; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 4 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -21012,7 +21012,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -21026,7 +21026,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF200" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -22060,11 +22060,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xB0E3" flags="0x0">
     <title>Map 4 - Knock-State Path Enable - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF200; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 4 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF200; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 4 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -22078,7 +22078,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -22092,7 +22092,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF200" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -23664,11 +23664,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xBB56" flags="0x0">
     <title>Map 5 - Ignition Timing Surface - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEF00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 5 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEF00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 5 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23682,7 +23682,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23696,7 +23696,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEF00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -24730,11 +24730,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x38D8" flags="0x0">
     <title>Map 5 - Knock-State Path Enable - High-Octane State</title>
-    <description>Exact JK00D. Address 0xDEF00; 16 rows x 16 columns; uint8; map confidence candidate. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 5 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDEF00; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. It supplies active sample ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that selector is set. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference against 0x9B1A. Common-definition Map 5 storage is projected from 0x9AEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle; coordinator 000493e8 also forms the conditional signed Q8 difference against 0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009a1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -24748,7 +24748,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -24762,7 +24762,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDEF00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -25796,11 +25796,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xF8E3" flags="0x0">
     <title>Map 5 - Ignition Timing Surface - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF300; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 5 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF300; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 5 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -25814,7 +25814,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -25828,7 +25828,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF300" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg [cand]</units>
+      <units>deg</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
@@ -26862,11 +26862,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xA300" flags="0x0">
     <title>Map 5 - Knock-State Path Enable - High-Detonation State</title>
-    <description>Exact JK00D. Address 0xDF300; 16 rows x 16 columns; uint8; map confidence candidate. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 5 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: unique call-ordinal operands through reviewed interpolation-wrapper correspondence.</description>
+    <description>Exact JK00D. Address 0xDF300; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. It supplies active sample ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface 0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed Q8 difference from 0x9A1A. Common-definition Map 5 storage is projected from 0x9BEE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318; ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c; ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every coefficient is 1, so one raw count is one crank degree while the field stays above threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains a hardware item. Definition address projected from JK08A 00009b1a through JK08A-JK00D.definition-addresses.csv: The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Normalized BFS [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -26880,7 +26880,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141BB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
+      <units>RPM</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -26894,7 +26894,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF300" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Enable flag (0: Off | 1: On) [cand]</units>
+      <units>Enable flag (0: Off | 1: On)</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">

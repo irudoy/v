@@ -18,11 +18,11 @@ Axis,00011bfb,00013eb8,,homologous,2,call-ordinal,unique call-ordinal operands t
 Axis,00011cc0,00013f95,,reviewed-target,2,l0,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Axis,00011cd8,00013fad,,reviewed-target,2,l0,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Axis,00011cf0,00013fc5,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011d0c,00013fe9,,homologous,25,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00011d0c,00013fe9,,reviewed-target,25,l0,"The lookup call at instruction 77 of 0x000760E4 passes this axis, as the JK08A call at instruction 77 of 0x00073948 passes 0x00011D0C at 0x000739E2."
 Axis,00011d24,00014001,,homologous,22,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011d4c,00014029,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011ebe,000141ab,,homologous,46,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00011ece,000141bb,,homologous,10,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00011ebe,000141ab,,reviewed-target,46,l0,"The lookup call at instruction 264 of knock_function 0x0004A430 passes this axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00011EBE at 0x000495FA."
+Axis,00011ece,000141bb,,reviewed-target,10,l0,"The lookup call at instruction 264 of knock_function 0x0004A430 passes this axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00011ECE at 0x000495FA."
 Axis,00012778,00014b05,,homologous,7,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00012ea2,0001524f,,reviewed-target,8,l0,load axis operand at the cold exhaust-target interpolation callsite
 Axis,00012eaa,00015257,,reviewed-target,8,l0,load axis operand at the cold intake-target interpolation callsite
@@ -63,17 +63,17 @@ Axis,000146da,00016afc,,homologous,2,call-ordinal,unique call-ordinal operands t
 Axis,0001498a,00016dbc,,homologous,6,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000149aa,00016ddc,,homologous,6,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000149ca,00016dfc,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00014aba,00016eec,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00014aba,00016eec,,reviewed-target,4,l0,"The lookup call at instruction 10 of 0x00067B64 passes this axis, as the JK08A call at instruction 10 of 0x000658A4 passes 0x00014ABA at 0x000658B8."
 Axis,00014ada,00016f0c,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00014aea,00016f1c,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00014b4a,00016f3c,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00014b4a,00016f3c,,reviewed-target,2,l0,"The lookup call at instruction 51 of 0x00067BE8 passes this axis, as the JK08A call at instruction 51 of 0x00065928 passes 0x00014B4A at 0x0006598E."
 Axis,00014baa,00016f9c,,homologous,3,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00014f82,000173f4,,homologous,12,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015286,00017798,,homologous,3,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015340,00017862,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015500,00017a22,,homologous,14,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015540,00017a62,,homologous,10,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,000155a0,00017ac2,,homologous,41,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,000155a0,00017ac2,,reviewed-target,41,l0,"The lookup call at instruction 79 of 0x0003F2A0 passes this axis, as the JK08A call at instruction 79 of 0x0003E548 passes 0x000155A0 at 0x0003E5E6."
 Axis,00015690,00017bb2,,homologous,15,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000156d0,00017bf2,,homologous,10,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015ce0,00018192,,homologous,6,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -81,7 +81,7 @@ Axis,00015d60,00018212,,homologous,4,call-ordinal,unique call-ordinal operands t
 Axis,00015d70,00018222,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015da0,00018252,,homologous,4,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00015db0,00018262,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Axis,00018716,0001b6b6,,homologous,12,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00018716,0001b6b6,,reviewed-target,12,l0,"The lookup call at instruction 77 of 0x000761E0 passes this axis, as the JK08A call at instruction 77 of 0x00073A44 passes 0x00018716 at 0x00073ADE."
 Axis,00018766,0001b716,,homologous,17,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00018846,0001b7f6,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00018866,0001b816,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -106,9 +106,9 @@ Map,00009284,0000931c,,reviewed-target,10,l0,target literals and reviewed homolo
 Map,0000934e,000093f4,,reviewed-target,7,l0,target literals and reviewed homologous consumer topology
 Map,0000942c,000094e4,,reviewed-target,5,l0,target literals and reviewed homologous consumer topology
 Map,00009534,000095f6,,reviewed-target,16,l0,target literals and reviewed homologous consumer topology
-Map,0000991a,000099ee,,homologous,7,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,00009a1a,00009aee,,homologous,12,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,00009b1a,00009bee,,homologous,5,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,0000991a,000099ee,,reviewed-target,7,l0,"The lookup call at instruction 426 of 0x0004FB14 passes this surface, as the JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 passes 0x0000991A at 0x0004E550."
+Map,00009a1a,00009aee,,reviewed-target,12,l0,"The lookup call at instruction 264 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA."
+Map,00009b1a,00009bee,,reviewed-target,5,l0,"The lookup call at instruction 275 of knock_function 0x0004A430 passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610."
 Map,00009c5a,00009d2e,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0000a09a,0000a1ee,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0000a29a,0000a3ee,,reviewed-target,4,l0,target literals and reviewed homologous consumer topology
@@ -233,8 +233,8 @@ Map,00013202,000155b4,,homologous,48,call-ordinal,unique call-ordinal operands t
 Map,000133d2,000157a4,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00013528,000158fa,,homologous,1,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00014114,00016506,,homologous,26,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,000141f4,000165f6,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
-Map,00014274,00016676,,homologous,2,call-ordinal,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Map,000141f4,000165f6,,reviewed-target,2,l0,"The lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes 0x000141F4 at 0x0003A946."
+Map,00014274,00016676,,reviewed-target,2,l0,"The lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes 0x00014274 at 0x0003A930."
 Map,00014304,00016716,,homologous,3,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,00014314,00016726,,homologous,1,masked-match,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Map,0001459a,000169bc,,homologous,2,literal-pool,unique call-ordinal operands through reviewed interpolation-wrapper correspondence

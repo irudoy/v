@@ -184,6 +184,14 @@ address = "00017aa2"
 name = "enlightened-cougar"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003f33e"
+note = """
+The lookup call at instruction 79 of 0x0003F2A0 passes this axis, as the \
+JK08A call at instruction 79 of 0x0003E548 passes 0x000155A0 at 0x0003E5E6."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0003f33e"
@@ -198,6 +206,14 @@ interpolation operands"""
 layout = "jk00d"
 address = "00017ac2"
 name = "weightless-jellyfish"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003f33e"
+note = """
+The lookup call at instruction 79 of 0x0003F2A0 passes this axis, as the \
+JK08A call at instruction 79 of 0x0003E548 passes 0x000155A0 at 0x0003E5E6."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

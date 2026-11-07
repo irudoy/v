@@ -106,6 +106,15 @@ address = "000141ab"
 name = "intelligent-armadillo"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004a63e"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A42C passes this \
+axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00011ECE at 0x000495FA."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0004a63e"
@@ -120,6 +129,15 @@ interpolation operands"""
 layout = "jk00d"
 address = "000141bb"
 name = "complex-caracal"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004a642"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A430 passes this \
+axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00011ECE at 0x000495FA."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

@@ -168,6 +168,14 @@ address = "00013fd9"
 name = "brown-bullfinch"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007617e"
+note = """
+The lookup call at instruction 77 of 0x000760E4 passes this axis, as the \
+JK08A call at instruction 77 of 0x00073948 passes 0x00011D0C at 0x000739E2."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0007617e"
@@ -182,6 +190,14 @@ interpolation operands"""
 layout = "jk00d"
 address = "00013fe9"
 name = "qualified-bustard"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007617e"
+note = """
+The lookup call at instruction 77 of 0x000760E4 passes this axis, as the \
+JK08A call at instruction 77 of 0x00073948 passes 0x00011D0C at 0x000739E2."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

@@ -18,11 +18,11 @@ Axis,00011bfb,00013ea8,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operan
 Axis,00011cc0,00013f85,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Axis,00011cd8,00013f9d,,reviewed-target,2,l0,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Axis,00011cf0,00013fb5,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011d0c,00013fd9,,homologous,25,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011d0c,00013fd9,,reviewed-target,25,l0,"The lookup call at instruction 77 of 0x000760E4 passes this axis, as the JK08A call at instruction 77 of 0x00073948 passes 0x00011D0C at 0x000739E2."
 Axis,00011d24,00013ff1,,homologous,22,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011d4c,00014019,,reviewed-target,4,l0,target-specific interpolation operands and bank topology
-Axis,00011ebe,0001419b,,homologous,46,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00011ece,000141ab,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011ebe,0001419b,,reviewed-target,46,l0,"The lookup call at instruction 264 of knock_function 0x0004A42C passes this axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00011EBE at 0x000495FA."
+Axis,00011ece,000141ab,,reviewed-target,10,l0,"The lookup call at instruction 264 of knock_function 0x0004A42C passes this axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00011ECE at 0x000495FA."
 Axis,00012778,00014ae5,,homologous,7,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00012ea2,0001522f,,reviewed-target,8,l0,load axis operand at the cold exhaust-target interpolation callsite
 Axis,00012eaa,00015237,,reviewed-target,8,l0,load axis operand at the cold intake-target interpolation callsite
@@ -63,17 +63,17 @@ Axis,000146da,00016adc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operan
 Axis,0001498a,00016d9c,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000149aa,00016dbc,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000149ca,00016ddc,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014aba,00016ecc,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014aba,00016ecc,,reviewed-target,4,l0,"The lookup call at instruction 10 of 0x00067B64 passes this axis, as the JK08A call at instruction 10 of 0x000658A4 passes 0x00014ABA at 0x000658B8."
 Axis,00014ada,00016eec,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00014aea,00016efc,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00014b4a,00016f1c,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00014b4a,00016f1c,,reviewed-target,2,l0,"The lookup call at instruction 51 of 0x00067BE8 passes this axis, as the JK08A call at instruction 51 of 0x00065928 passes 0x00014B4A at 0x0006598E."
 Axis,00014baa,00016f7c,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00014f82,000173d4,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015286,00017778,,homologous,3,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015340,00017842,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015500,00017a02,,homologous,14,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015540,00017a42,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,000155a0,00017aa2,,homologous,41,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,000155a0,00017aa2,,reviewed-target,41,l0,"The lookup call at instruction 79 of 0x0003F2A0 passes this axis, as the JK08A call at instruction 79 of 0x0003E548 passes 0x000155A0 at 0x0003E5E6."
 Axis,00015690,00017b92,,homologous,15,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000156d0,00017bd2,,homologous,10,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015ce0,00018172,,homologous,6,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -81,7 +81,7 @@ Axis,00015d60,000181f2,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operan
 Axis,00015d70,00018202,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015da0,00018232,,homologous,4,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00015db0,00018242,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Axis,00018716,0001b694,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00018716,0001b694,,reviewed-target,12,l0,"The lookup call at instruction 77 of 0x000761E0 passes this axis, as the JK08A call at instruction 77 of 0x00073A44 passes 0x00018716 at 0x00073ADE."
 Axis,00018766,0001b6f4,,homologous,17,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00018846,0001b7d4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00018866,0001b7f4,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -106,9 +106,9 @@ Map,00009284,0000930e,,reviewed-target,10,l0,target literals and reviewed homolo
 Map,0000934e,000093e6,,reviewed-target,7,l0,target literals and reviewed homologous consumer topology
 Map,0000942c,000094d6,,reviewed-target,5,l0,target literals and reviewed homologous consumer topology
 Map,00009534,000095e8,,reviewed-target,16,l0,target literals and reviewed homologous consumer topology
-Map,0000991a,000099de,,homologous,7,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00009a1a,00009ade,,homologous,12,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00009b1a,00009bde,,homologous,5,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,0000991a,000099de,,reviewed-target,7,l0,"The lookup call at instruction 426 of 0x0004FB18 passes this surface, as the JK08A call at instruction 426 of cold_hot_timing_map_selector 0x0004E1C0 passes 0x0000991A at 0x0004E550."
+Map,00009a1a,00009ade,,reviewed-target,12,l0,"The lookup call at instruction 264 of knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA."
+Map,00009b1a,00009bde,,reviewed-target,5,l0,"The lookup call at instruction 275 of knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of knock_function 0x000493E8 passes 0x00009B1A at 0x00049610."
 Map,00009c5a,00009d1e,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0000a09a,0000a1de,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0000a29a,0000a3de,,reviewed-target,4,l0,target literals and reviewed homologous consumer topology
@@ -232,8 +232,8 @@ Map,00013202,00015594,,homologous,48,call-ordinal,reviewed JK08A-to-JK00D operan
 Map,000133d2,00015784,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00013528,000158da,,homologous,1,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00014114,000164e6,,homologous,26,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,000141f4,000165d6,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
-Map,00014274,00016656,,homologous,2,call-ordinal,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Map,000141f4,000165d6,,reviewed-target,2,l0,"The lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes 0x000141F4 at 0x0003A946."
+Map,00014274,00016656,,reviewed-target,2,l0,"The lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the JK08A call at instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes 0x00014274 at 0x0003A930."
 Map,00014304,000166f6,,homologous,3,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,00014314,00016706,,homologous,1,masked-match,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Map,0001459a,0001699c,,homologous,2,literal-pool,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands

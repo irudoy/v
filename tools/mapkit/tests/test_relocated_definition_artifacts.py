@@ -203,6 +203,39 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
         assert "flashmethod" not in text
 
 
+def _scale_confidence_and_logger_bindings(table):
+    parts = [table, *table.findall("table")]
+    candidate = {
+        part.get("type"): part.find("scaling").get("units").endswith(" [cand]")
+        for part in parts
+        if part.find("scaling") is not None
+    }
+    # A relocated static axis has no target storage to log against.
+    bindings = {
+        (part.get("type"), part.get("logparam"))
+        for part in parts
+        if part.get("logparam") and not part.get("type").startswith("Static")
+    }
+    return candidate, bindings
+
+
+def test_8mfk_artifacts_keep_jk08a_scale_confidence_and_logger_bindings():
+    _, source = _xml_tables("JK08A")
+    for rom in TARGETS:
+        _, tables = _xml_tables(rom)
+        for name in sorted(set(source) & set(tables)):
+            candidate, bindings = _scale_confidence_and_logger_bindings(tables[name])
+            expected, expected_bindings = _scale_confidence_and_logger_bindings(
+                source[name]
+            )
+            # A target-native table may store an axis that JK08A leaves implicit.
+            parts = candidate.keys() & expected.keys()
+            assert {part: candidate[part] for part in parts} == {
+                part: expected[part] for part in parts
+            }, (rom, name)
+            assert bindings == expected_bindings, (rom, name)
+
+
 def test_relocated_tunerpro_artifacts_match_romraider_projection():
     for rom, expected in TARGETS.items():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()

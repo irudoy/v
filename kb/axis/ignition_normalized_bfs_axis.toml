@@ -156,6 +156,15 @@ address = "0001419b"
 former = ["abstract-firefly/axis/jk00c-0001419b"]
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004a63e"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A42C passes this \
+axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00011EBE at 0x000495FA."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0004a63e"
@@ -170,6 +179,15 @@ interpolation operands"""
 layout = "jk00d"
 address = "000141ab"
 former = ["dazzling-crow/axis/jk00d-000141ab"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004a642"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A430 passes this \
+axis, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00011EBE at 0x000495FA."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

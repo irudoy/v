@@ -490,6 +490,15 @@ layout = "jk00c"
 address = "00009ade"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0004a63e"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A42C passes this \
+surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00009A1A at 0x000495FA."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0004a63e"
@@ -503,6 +512,15 @@ interpolation operands"""
 [[symbol]]
 layout = "jk00d"
 address = "00009aee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0004a642"
+note = """
+The lookup call at instruction 264 of knock_function 0x0004A430 passes this \
+surface, as the JK08A call at instruction 264 of knock_function 0x000493E8 \
+passes 0x00009A1A at 0x000495FA."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

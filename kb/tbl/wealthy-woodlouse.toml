@@ -517,6 +517,15 @@ address = "00016656"
 name = "purple-tortoise"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003b6e4"
+note = """
+The lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the \
+JK08A call at instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes \
+0x00014274 at 0x0003A930."""
+
+[[symbol.evidence]]
 kind = "call-ordinal"
 supports = "homology"
 at = "jk00c:0003b6e4"
@@ -531,6 +540,15 @@ interpolation operands"""
 layout = "jk00d"
 address = "00016676"
 name = "imaginary-nautilus"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003b6e4"
+note = """
+The lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the \
+JK08A call at instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes \
+0x00014274 at 0x0003A930."""
 
 [[symbol.evidence]]
 kind = "call-ordinal"

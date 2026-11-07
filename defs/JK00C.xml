@@ -1240,9 +1240,8 @@
       </table>
     </table>
 
-    <!-- 0x099DE  16x16 uint8  map [candidate]
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+    <!-- 0x099DE  16x16 uint8  map [code]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
          the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the
          lower-left selected cell. The low-seven field is a crank-degree adjustment added to the
@@ -1258,26 +1257,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 0000991a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 426 of 0x0004FB18
+         passes this surface, as the JK08A call at instruction 426 of
+         cold_hot_timing_map_selector 0x0004E1C0 passes 0x0000991A at 0x0004E550.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Ignition Timing Surface - Cold State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x099DE" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x099DE  16x16 uint8  masked view 0x80 [candidate]
+    <!-- 0x099DE  16x16 uint8  masked view 0x80 [code]
          Semantics source: Cold timing-state surface. Selector 0004e1c0 uses it for both the
          active sample ffff160f and high-octane reference sample ffff1610 below coolant raw 107,
          then blends it into both samples through raw 131. The low seven bits feed timing state;
@@ -1286,16 +1286,16 @@
     <table type="3D" name="Knock-State Path Enable - Cold State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0x099DE" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1331,8 +1331,8 @@
     </table>
 
     <!-- 0x10492  16x16 uint16  map [candidate]
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x13FD9 rpm [candidate];
-         X Axis 0x164E6 load [candidate]
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x13FD9 rpm [code]; X
+         Axis 0x164E6 load [candidate]
          All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic.
          The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to
          trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional
@@ -1355,14 +1355,14 @@
                  to_byte="x/0.00152588" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FD9" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x13FD9" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x1A2B8  16x16 uint16  map [candidate]
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x1B694 rpm [candidate];
-         X Axis 0x1BB14 load [candidate]
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x1B694 rpm [code]; X
+         Axis 0x1BB14 load [candidate]
          Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The
          stock contents and both axes are byte-identical to primary family
          0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps
@@ -1382,13 +1382,13 @@
                  to_byte="x/0.00152588" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x1B694" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x1B694" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x15594  32 uint16  map [candidate]
-         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x17AA2 raw [candidate]
+         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x17AA2 raw [code]
          The 32 values are monotonic and byte-identical to trustful table 00018766; axis
          000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair
          matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the
@@ -1404,8 +1404,8 @@
       <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
                to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
       <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x17AA2"
-             sizex="32" endian="big">
-        <scaling units="Throttle Valve Opening [%] [cand]" expression="x*34285/1114112"
+             sizex="32" endian="big" logparam="X_VQ_Throttle_Target">
+        <scaling units="Throttle Valve Opening [%]" expression="x*34285/1114112"
                  to_byte="x*1114112/34285" format="0.0"/>
       </table>
     </table>
@@ -1432,8 +1432,8 @@
       </table>
     </table>
 
-    <!-- 0x165D6  64 uint16  map [candidate]
-         scaling x*0.0041015625 g/s [candidate]
+    <!-- 0x165D6  64 uint16  map [code]
+         scaling x*0.0041015625 g/s [code]
          Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
          ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS
          A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous
@@ -1443,14 +1443,14 @@
          One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
          ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
          the stock factor 105; a changed factor changes the declared conversion. Definition
-         address projected from JK08A 000141f4 through JK08A-JK00C.definition-addresses.csv:
-         reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation
-         operands.
+         address projected from JK08A 000141f4 through JK08A-JK00C.definition-addresses.csv: The
+         lookup call at instruction 33 of 0x0003B6B8 passes this curve, as the JK08A call at
+         instruction 33 of dual_bank_maf_coordinator 0x0003A904 passes 0x000141F4 at 0x0003A946.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 2" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x165D6" sizex="64" endian="big">
-      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
-               format="0" fineincrement="1" coarseincrement="256"/>
+      <scaling units="g/s" expression="x*0.0041015625" to_byte="x/0.0041015625" format="0"
+               fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
@@ -1471,8 +1471,8 @@
       </table>
     </table>
 
-    <!-- 0x16656  64 uint16  map [candidate]
-         scaling x*0.0041015625 g/s [candidate]
+    <!-- 0x16656  64 uint16  map [code]
+         scaling x*0.0041015625 g/s [code]
          Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
          ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS
          A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous
@@ -1482,14 +1482,14 @@
          One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
          ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
          the stock factor 105; a changed factor changes the declared conversion. Definition
-         address projected from JK08A 00014274 through JK08A-JK00C.definition-addresses.csv:
-         reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation
-         operands.
+         address projected from JK08A 00014274 through JK08A-JK00C.definition-addresses.csv: The
+         lookup call at instruction 22 of 0x0003B6B8 passes this curve, as the JK08A call at
+         instruction 22 of dual_bank_maf_coordinator 0x0003A904 passes 0x00014274 at 0x0003A930.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 1" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x16656" sizex="64" endian="big">
-      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
-               format="0" fineincrement="1" coarseincrement="256"/>
+      <scaling units="g/s" expression="x*0.0041015625" to_byte="x/0.0041015625" format="0"
+               fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
@@ -1532,8 +1532,8 @@
     </table>
 
     <!-- 0x12912  16x16 uint16  map [candidate]
-         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x16F1C rpm [candidate]; X
-         Axis 0x23884 load [candidate]
+         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x16F1C rpm [code]; X Axis
+         0x23884 load [candidate]
          FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated
          multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08
          consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map
@@ -1561,13 +1561,13 @@
         <data>120</data><data>130</data><data>140</data><data>150</data>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
-             storageaddress="0x16F1C" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"/>
+             storageaddress="0x16F1C" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"/>
       </table>
     </table>
 
     <!-- 0x179A2  8 uint16  map [candidate]
-         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x16ECC rpm [candidate]
+         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x16ECC rpm [code]
          FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine
          Torque Map 00010b8e. This continuous path establishes a common internal torque domain.
          In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows
@@ -1582,13 +1582,13 @@
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
                fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
-             storageaddress="0x16ECC" sizex="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0"/>
+             storageaddress="0x16ECC" sizex="8" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
       </table>
     </table>
 
     <!-- 0x1700C  8 uint16  map [candidate]
-         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x16ECC rpm [candidate]
+         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x16ECC rpm [code]
          The direct scratch copy ffff14e4 has no external reader, but the same live lookup
          result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN
          00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-
@@ -1605,8 +1605,8 @@
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
                fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
-             storageaddress="0x16ECC" sizex="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0"/>
+             storageaddress="0x16ECC" sizex="8" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
       </table>
     </table>
 
@@ -1823,12 +1823,10 @@
       </table>
     </table>
 
-    <!-- 0x09ADE  16x16 uint8  common-definition Map 1 storage projected from 0x09ADE
-         [candidate]
+    <!-- 0x09ADE  16x16 uint8  common-definition Map 1 storage projected from 0x09ADE [code]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
          adjustment added to the computed base angle ffff23f1, not a direct absolute spark
          angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
@@ -1844,26 +1842,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009a1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 264 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of
+         knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x09ADE" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x09ADE  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 1 storage
+    <!-- 0x09ADE  16x16 uint8  masked view 0x80 [code]; common-definition Map 1 storage
          projected from 0x09ADE
          Semantics source: High-octane hot timing-state surface. It supplies active sample
          ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that
@@ -1873,25 +1872,23 @@
     <table type="3D" name="Map 1 - Knock-State Path Enable - High-Octane State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0x09ADE" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x09BDE  16x16 uint8  common-definition Map 1 storage projected from 0x09BDE
-         [candidate]
+    <!-- 0x09BDE  16x16 uint8  common-definition Map 1 storage projected from 0x09BDE [code]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
          seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
@@ -1907,26 +1904,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009b1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 275 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of
+         knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x09BDE" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x09BDE  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 1 storage
+    <!-- 0x09BDE  16x16 uint8  masked view 0x80 [code]; common-definition Map 1 storage
          projected from 0x09BDE
          Semantics source: High-detonation hot timing-state surface. It supplies active sample
          ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface
@@ -1936,16 +1934,16 @@
     <table type="3D" name="Map 1 - Knock-State Path Enable - High-Detonation State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0x09BDE" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2292,13 +2290,11 @@
       </table>
     </table>
 
-    <!-- 0xDEC00  16x16 uint8  common-definition Map 2 storage projected from 0x09ADE
-         [candidate]
+    <!-- 0xDEC00  16x16 uint8  common-definition Map 2 storage projected from 0x09ADE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
          adjustment added to the computed base angle ffff23f1, not a direct absolute spark
          angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
@@ -2314,26 +2310,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009a1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 264 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of
+         knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDEC00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDEC00  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 2 storage
+    <!-- 0xDEC00  16x16 uint8  masked view 0x80 [code]; common-definition Map 2 storage
          projected from 0x09ADE
          Semantics source: High-octane hot timing-state surface. It supplies active sample
          ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that
@@ -2343,26 +2340,24 @@
     <table type="3D" name="Map 2 - Knock-State Path Enable - High-Octane State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDEC00" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF000  16x16 uint8  common-definition Map 2 storage projected from 0x09BDE
-         [candidate]
+    <!-- 0xDF000  16x16 uint8  common-definition Map 2 storage projected from 0x09BDE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
          seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
@@ -2378,26 +2373,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009b1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 275 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of
+         knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDF000" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF000  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 2 storage
+    <!-- 0xDF000  16x16 uint8  masked view 0x80 [code]; common-definition Map 2 storage
          projected from 0x09BDE
          Semantics source: High-detonation hot timing-state surface. It supplies active sample
          ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface
@@ -2407,16 +2403,16 @@
     <table type="3D" name="Map 2 - Knock-State Path Enable - High-Detonation State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDF000" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2767,13 +2763,11 @@
       </table>
     </table>
 
-    <!-- 0xDED00  16x16 uint8  common-definition Map 3 storage projected from 0x09ADE
-         [candidate]
+    <!-- 0xDED00  16x16 uint8  common-definition Map 3 storage projected from 0x09ADE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
          adjustment added to the computed base angle ffff23f1, not a direct absolute spark
          angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
@@ -2789,26 +2783,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009a1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 264 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of
+         knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDED00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDED00  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 3 storage
+    <!-- 0xDED00  16x16 uint8  masked view 0x80 [code]; common-definition Map 3 storage
          projected from 0x09ADE
          Semantics source: High-octane hot timing-state surface. It supplies active sample
          ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that
@@ -2818,26 +2813,24 @@
     <table type="3D" name="Map 3 - Knock-State Path Enable - High-Octane State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDED00" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF100  16x16 uint8  common-definition Map 3 storage projected from 0x09BDE
-         [candidate]
+    <!-- 0xDF100  16x16 uint8  common-definition Map 3 storage projected from 0x09BDE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
          seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
@@ -2853,26 +2846,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009b1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 275 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of
+         knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDF100" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF100  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 3 storage
+    <!-- 0xDF100  16x16 uint8  masked view 0x80 [code]; common-definition Map 3 storage
          projected from 0x09BDE
          Semantics source: High-detonation hot timing-state surface. It supplies active sample
          ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface
@@ -2882,16 +2876,16 @@
     <table type="3D" name="Map 3 - Knock-State Path Enable - High-Detonation State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDF100" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -3242,13 +3236,11 @@
       </table>
     </table>
 
-    <!-- 0xDEE00  16x16 uint8  common-definition Map 4 storage projected from 0x09ADE
-         [candidate]
+    <!-- 0xDEE00  16x16 uint8  common-definition Map 4 storage projected from 0x09ADE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
          adjustment added to the computed base angle ffff23f1, not a direct absolute spark
          angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
@@ -3264,26 +3256,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009a1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 264 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of
+         knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDEE00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDEE00  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 4 storage
+    <!-- 0xDEE00  16x16 uint8  masked view 0x80 [code]; common-definition Map 4 storage
          projected from 0x09ADE
          Semantics source: High-octane hot timing-state surface. It supplies active sample
          ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that
@@ -3293,26 +3286,24 @@
     <table type="3D" name="Map 4 - Knock-State Path Enable - High-Octane State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDEE00" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF200  16x16 uint8  common-definition Map 4 storage projected from 0x09BDE
-         [candidate]
+    <!-- 0xDF200  16x16 uint8  common-definition Map 4 storage projected from 0x09BDE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
          seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
@@ -3328,26 +3319,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009b1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 275 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of
+         knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDF200" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF200  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 4 storage
+    <!-- 0xDF200  16x16 uint8  masked view 0x80 [code]; common-definition Map 4 storage
          projected from 0x09BDE
          Semantics source: High-detonation hot timing-state surface. It supplies active sample
          ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface
@@ -3357,16 +3349,16 @@
     <table type="3D" name="Map 4 - Knock-State Path Enable - High-Detonation State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDF200" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -3717,13 +3709,11 @@
       </table>
     </table>
 
-    <!-- 0xDEF00  16x16 uint8  common-definition Map 5 storage projected from 0x09ADE
-         [candidate]
+    <!-- 0xDEF00  16x16 uint8  common-definition Map 5 storage projected from 0x09ADE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
          adjustment added to the computed base angle ffff23f1, not a direct absolute spark
          angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
@@ -3739,26 +3729,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009a1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 264 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 264 of
+         knock_function 0x000493E8 passes 0x00009A1A at 0x000495FA.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDEF00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDEF00  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 5 storage
+    <!-- 0xDEF00  16x16 uint8  masked view 0x80 [code]; common-definition Map 5 storage
          projected from 0x09ADE
          Semantics source: High-octane hot timing-state surface. It supplies active sample
          ffff160f when ffff2466.bit6 is clear and remains reference sample ffff1610 when that
@@ -3768,26 +3759,24 @@
     <table type="3D" name="Map 5 - Knock-State Path Enable - High-Octane State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDEF00" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF300  16x16 uint8  common-definition Map 5 storage projected from 0x09BDE
-         [candidate]
+    <!-- 0xDF300  16x16 uint8  common-definition Map 5 storage projected from 0x09BDE [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 deg [candidate]; Y Axis 0x141AB rpm [candidate]; X Axis 0x1419B load
-         [candidate]
+         scaling x-64 deg [code]; Y Axis 0x141AB rpm [code]; X Axis 0x1419B load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
          seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
@@ -3803,26 +3792,27 @@
          coefficient is 1, so one raw count is one crank degree while the field stays above
          threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
          a hardware item. Definition address projected from JK08A 00009b1a through
-         JK08A-JK00C.definition-addresses.csv: reviewed JK08A-to-JK00D operands composed with
-         unique JK00D-to-JK00C interpolation operands.
+         JK08A-JK00C.definition-addresses.csv: The lookup call at instruction 275 of
+         knock_function 0x0004A42C passes this surface, as the JK08A call at instruction 275 of
+         knock_function 0x000493E8 passes 0x00009B1A at 0x00049610.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0xDF300" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+      <scaling units="deg" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
                coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0xDF300  16x16 uint8  masked view 0x80 [candidate]; common-definition Map 5 storage
+    <!-- 0xDF300  16x16 uint8  masked view 0x80 [code]; common-definition Map 5 storage
          projected from 0x09BDE
          Semantics source: High-detonation hot timing-state surface. It supplies active sample
          ffff160f only when ffff2466.bit6 is set; the reference remains high-octane surface
@@ -3832,16 +3822,16 @@
     <table type="3D" name="Map 5 - Knock-State Path Enable - High-Detonation State"
            category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xDF300" sizex="16" sizey="16" endian="big" mask="80">
-      <scaling units="Enable flag (0: Off | 1: On) [cand]" expression="x" to_byte="x" format="0"
+      <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1419B"
-             sizex="16" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x141AB" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+             storageaddress="0x141AB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
