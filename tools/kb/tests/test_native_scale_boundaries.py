@@ -25,6 +25,8 @@ UNASSERTED = (
     "vvel_shaft_angle_monitor_floor_b_second_axis/axis",
     "vvel_shaft_angle_second_axis/axis",
     "fuel_compensation_alternate/tbl",
+    "fuel_compensation_coefficient_curve/tbl",
+    "fuel_compensation_coefficient_axis/axis",
     "ignition_surface_cold/tbl",
     "ignition_surface_hot/tbl",
     "ignition_surface_state_3/tbl",
@@ -56,7 +58,7 @@ UNASSERTED = (
 
 
 @pytest.mark.parametrize("ref", UNASSERTED)
-def test_unasserted_native_conversion_preserves_identity_and_hypothesis(ref):
+def test_unasserted_native_conversion_preserves_identity_and_conversion_boundary(ref):
     meaning = next(item for item in compile.cached(repo.ROOT).meanings if item.key == ref)
     assert not {"unit", "scale", "to_raw", "scale_level"} & meaning.props.keys()
     assert meaning.props["level"] == "code"
@@ -70,10 +72,25 @@ def test_unasserted_native_conversion_preserves_identity_and_hypothesis(ref):
         notes = [notes] if isinstance(notes, str) else notes
         assert notes
         for note in notes:
-            assert "Engineering conversion is unestablished" in note
-            assert "Retained hypothesis:" in note
-            assert "proposed editor-grid inverse" in note
-            assert "Origin:" in note
+            if ref in {
+                "fuel_compensation_alternate/tbl",
+                "fuel_compensation_coefficient_curve/tbl",
+            }:
+                assert "Editor values are stored counts" in note
+                assert "neutral value are unestablished" in note
+                assert "raw 128 is not qualified as neutral" in note
+                assert "unconfirmed on every image" in note
+            elif ref == "fuel_compensation_coefficient_axis/axis":
+                assert (
+                    "physical input and its engineering conversion remain unestablished"
+                    in note
+                )
+                assert "Values are stored counts" in note
+            else:
+                assert "Engineering conversion is unestablished" in note
+                assert "Retained hypothesis:" in note
+                assert "proposed editor-grid inverse" in note
+                assert "Origin:" in note
 
 
 @pytest.mark.slow

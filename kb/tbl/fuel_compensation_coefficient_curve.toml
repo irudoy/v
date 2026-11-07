@@ -1,16 +1,14 @@
 summary = """
-Explicit byte curve over axis 00013b08. Initialization reads input zero; \
-00040958 refreshes ffff1e90 from min(uint16[ffff11e0]>>2,255). Its \
-fuel-compensation context is established; coefficient meaning and conversion \
-remain unresolved."""
+Fuel-compensation curve selected by state code 8, derived from VVEL input \
+mode 15. The selected channel replaces the default surface at full \
+current-state weight. The physical unit, engineering conversion and neutral \
+value are unestablished."""
 note = [
     """
-Editor publication is withheld on jk78c, 1nd and 1me3b. The coordinator \
-publishes this curve channel only while the current or previous state code \
-is 8. On jk78c coherent_snapshot (00020f1a) copies the current code ffff43ee \
-from the pair ffff43f0/ffff43f2, and the producer of codes 2 and 8 is \
-unestablished, so the stock path does not qualify the curve for \
-publication.""",
+Published as stored counts on JK78C, 1ND0A, 1ND3B and 1ME3B. State code 8 \
+derives from VVEL input mode 15; stock driving reachability remains \
+unconfirmed on every image. The physical unit, engineering conversion and \
+neutral value are unestablished.""",
 ]
 level = "code"
 home = "jk78c"
@@ -21,12 +19,29 @@ rows = 1
 storage = "uint8"
 
 [editor]
-emit = false
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
 
 [[symbol]]
 layout = "1me3b"
 address = "00013cf6"
 level = "code"
+note = """
+Coordinator 0x00048564 selects this curve instead of the default \
+fuel-compensation surface for state code 8 (VVEL input mode 15). At full \
+current-state weight, changes to the default surface are replaced by this \
+channel. During a transition, the coordinator mixes current_channel*w with \
+previous_channel*(0x8000-w), using the held previous output during an \
+interrupted transition, then normalizes by 0x8000 and clamps the result to \
+0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
+5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
+physical unit, engineering conversion and neutral value are unestablished; \
+raw 128 is not qualified as neutral. No engine-bank identity is \
+established."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +58,18 @@ position where MOV.L jk78c:00040e16 loads 00013ae8 for call 6 of 9 at \
 layout = "1nd"
 address = "00013f1a"
 level = "code"
+note = """
+Coordinator 0x00044f1c selects this curve instead of the default \
+fuel-compensation surface for state code 8 (VVEL input mode 15). At full \
+current-state weight, changes to the default surface are replaced by this \
+channel. During a transition, the coordinator mixes current_channel*w with \
+previous_channel*(0x8000-w), using the held previous output during an \
+interrupted transition, then normalizes by 0x8000 and clamps the result to \
+0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
+5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
+physical unit, engineering conversion and neutral value are unestablished; \
+raw 128 is not qualified as neutral. No engine-bank identity is \
+established."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -59,6 +86,18 @@ position where MOV.L jk78c:00040e16 loads 00013ae8 for call 6 of 9 at \
 layout = "jk78c"
 address = "00013ae8"
 level = "code"
+note = """
+Coordinator 0x00040958 selects this curve instead of the default \
+fuel-compensation surface for state code 8 (VVEL input mode 15). At full \
+current-state weight, changes to the default surface are replaced by this \
+channel. During a transition, the coordinator mixes current_channel*w with \
+previous_channel*(0x8000-w), using the held previous output during an \
+interrupted transition, then normalizes by 0x8000 and clamps the result to \
+0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
+5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
+physical unit, engineering conversion and neutral value are unestablished; \
+raw 128 is not qualified as neutral. No engine-bank identity is \
+established."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -121,23 +160,26 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00040e16"
+at = "jk78c:00040f74"
+note = """
+Literal-pool word loaded by MOV.L at 00040e16 in coordinator 00040958 points \
+to curve 00013ae8; lookup call is 00040e1e."""
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1nd:000453ae"
+at = "1nd:00045500"
 note = """
-The coordinator passes this curve in r4 to fortunate-adder at 000453b2 and \
-stores the result in curve channel fffe8f28."""
+Literal-pool word loaded by MOV.L at 000453ae in coordinator 00044f1c points \
+to curve 00013f1a; lookup call is 000453b2."""
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1me3b:00048a2c"
+at = "1me3b:00048b84"
 note = """
-The coordinator passes this curve in r4 to groovy-lynx at 00048a30 and \
-stores the result in curve channel fffe8ed5."""
+Literal-pool word loaded by MOV.L at 00048a2c in coordinator 00048564 points \
+to curve 00013cf6; lookup call is 00048a30."""
 
 [[link]]
 type = "reader"
@@ -148,19 +190,17 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0002fd3c"
+at = "jk78c:0002fec0"
+note = "Exact literal-pool word used by the startup reader of the curve channel."
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1nd:00030f84"
-note = """
-The startup initializer passes this curve in r4 to fortunate-adder at \
-00030f8a."""
+at = "1nd:0003116c"
+note = "Exact literal-pool word used by the startup reader of the curve channel."
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1me3b:00033cf4"
-note = """
-The startup initializer passes this curve in r4 to groovy-lynx at 00033cfa."""
+at = "1me3b:00033ee0"
+note = "Exact literal-pool word used by the startup reader of the curve channel."

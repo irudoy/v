@@ -1481,6 +1481,34 @@
       </table>
     </table>
 
+    <!-- 0x13AE8  16 uint8  map [code]
+         accessor 0x2F596, 0x40958; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13B08 raw
+         Exact JK78C target-native table at 0x13ae8 bound to accessor 0x2f596 through literal
+         0x2fec0, accessor 0x40958 through literal 0x40f74. Coordinator 0x00040958 selects this
+         curve instead of the default fuel-compensation surface for state code 8 (VVEL input
+         mode 15). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Fuel Compensation - Coefficient Curve [stored count]"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13AE8"
+           sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Fuel Compensation - Coefficient Input Axis [stored count]"
+             storagetype="uint8" storageaddress="0x13B08" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
     <!-- 0x13E86  6 uint8  map [candidate]
          scaling x/128 ratio [candidate]
          All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
@@ -3526,21 +3554,17 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x Stored count; Y Axis 0x13AF8 rpm [candidate]; X Axis 0x13B18 load [candidate]
          Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal
-         0x2febc, accessor 0x40958 through literal 0x40f70. Engineering conversion is
-         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
-         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
-         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
-         candidate interpretation, not code-level physical unity. The default registry record
-         does not name the alternate table. It must not be copied as if it did. No engine-bank
-         identity follows from the table pair. Recorded code and catalog interpretation: The two
-         16x16 surfaces are read with the same index byte, the same axis pair, and the same
-         interpolator in both accessors, so neither surface carries an engine-bank identity. The
-         accessors publish four parallel compensation channels and the consumer selects one by a
-         state code, then crossfades the value of the current state with the value of the
-         previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of
-         that selector reads the projected canonical surface; this table is the arm the state
-         code selects instead. Editor values are stored counts; no engineering conversion is
-         established.
+         0x2febc, accessor 0x40958 through literal 0x40f70. Coordinator 0x00040958 selects this
+         surface instead of the default fuel-compensation surface for state code 2 (VVEL input
+         mode 5). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x09FBA"
@@ -3937,21 +3961,17 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x Stored count; Y Axis 0x13AF8 rpm [candidate]; X Axis 0x13B18 load [candidate]
          Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal
-         0x2febc, accessor 0x40958 through literal 0x40f70. Engineering conversion is
-         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
-         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
-         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
-         candidate interpretation, not code-level physical unity. The default registry record
-         does not name the alternate table. It must not be copied as if it did. No engine-bank
-         identity follows from the table pair. Recorded code and catalog interpretation: The two
-         16x16 surfaces are read with the same index byte, the same axis pair, and the same
-         interpolator in both accessors, so neither surface carries an engine-bank identity. The
-         accessors publish four parallel compensation channels and the consumer selects one by a
-         state code, then crossfades the value of the current state with the value of the
-         previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of
-         that selector reads the projected canonical surface; this table is the arm the state
-         code selects instead. Editor values are stored counts; no engineering conversion is
-         established.
+         0x2febc, accessor 0x40958 through literal 0x40f70. Coordinator 0x00040958 selects this
+         surface instead of the default fuel-compensation surface for state code 2 (VVEL input
+         mode 5). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D700"
@@ -4360,21 +4380,17 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x Stored count; Y Axis 0x13AF8 rpm [candidate]; X Axis 0x13B18 load [candidate]
          Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal
-         0x2febc, accessor 0x40958 through literal 0x40f70. Engineering conversion is
-         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
-         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
-         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
-         candidate interpretation, not code-level physical unity. The default registry record
-         does not name the alternate table. It must not be copied as if it did. No engine-bank
-         identity follows from the table pair. Recorded code and catalog interpretation: The two
-         16x16 surfaces are read with the same index byte, the same axis pair, and the same
-         interpolator in both accessors, so neither surface carries an engine-bank identity. The
-         accessors publish four parallel compensation channels and the consumer selects one by a
-         state code, then crossfades the value of the current state with the value of the
-         previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of
-         that selector reads the projected canonical surface; this table is the arm the state
-         code selects instead. Editor values are stored counts; no engineering conversion is
-         established.
+         0x2febc, accessor 0x40958 through literal 0x40f70. Coordinator 0x00040958 selects this
+         surface instead of the default fuel-compensation surface for state code 2 (VVEL input
+         mode 5). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D800"
@@ -4783,21 +4799,17 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x Stored count; Y Axis 0x13AF8 rpm [candidate]; X Axis 0x13B18 load [candidate]
          Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal
-         0x2febc, accessor 0x40958 through literal 0x40f70. Engineering conversion is
-         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
-         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
-         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
-         candidate interpretation, not code-level physical unity. The default registry record
-         does not name the alternate table. It must not be copied as if it did. No engine-bank
-         identity follows from the table pair. Recorded code and catalog interpretation: The two
-         16x16 surfaces are read with the same index byte, the same axis pair, and the same
-         interpolator in both accessors, so neither surface carries an engine-bank identity. The
-         accessors publish four parallel compensation channels and the consumer selects one by a
-         state code, then crossfades the value of the current state with the value of the
-         previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of
-         that selector reads the projected canonical surface; this table is the arm the state
-         code selects instead. Editor values are stored counts; no engineering conversion is
-         established.
+         0x2febc, accessor 0x40958 through literal 0x40f70. Coordinator 0x00040958 selects this
+         surface instead of the default fuel-compensation surface for state code 2 (VVEL input
+         mode 5). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D900"
@@ -5206,21 +5218,17 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x Stored count; Y Axis 0x13AF8 rpm [candidate]; X Axis 0x13B18 load [candidate]
          Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal
-         0x2febc, accessor 0x40958 through literal 0x40f70. Engineering conversion is
-         unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse
-         x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57,
-         fuel_compensation_main/tbl. The alternate role and common channel supply a bounded
-         candidate interpretation, not code-level physical unity. The default registry record
-         does not name the alternate table. It must not be copied as if it did. No engine-bank
-         identity follows from the table pair. Recorded code and catalog interpretation: The two
-         16x16 surfaces are read with the same index byte, the same axis pair, and the same
-         interpolator in both accessors, so neither surface carries an engine-bank identity. The
-         accessors publish four parallel compensation channels and the consumer selects one by a
-         state code, then crossfades the value of the current state with the value of the
-         previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of
-         that selector reads the projected canonical surface; this table is the arm the state
-         code selects instead. Editor values are stored counts; no engineering conversion is
-         established.
+         0x2febc, accessor 0x40958 through literal 0x40f70. Coordinator 0x00040958 selects this
+         surface instead of the default fuel-compensation surface for state code 2 (VVEL input
+         mode 5). At full current-state weight, changes to the default surface are replaced by
+         this channel. During a transition, the coordinator mixes current_channel*w with
+         previous_channel*(0x8000-w), using the held previous output during an interrupted
+         transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
+         0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
+         every image. Editor values are stored counts. The physical unit, engineering conversion
+         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
+         bank identity is established. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1DA00"

@@ -7,10 +7,21 @@ quantity = "raw"
 points = 16
 storage = "uint8"
 
+[editor]
+name = "Fuel Compensation - Coefficient Input Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00013d16"
 level = "code"
+note = """
+Input breakpoints for the fuel-compensation curve selected by state code 8 \
+(VVEL input mode 15). The lookup uses a word shifted right by two bits and \
+bounded at 255; the physical input and its engineering conversion remain \
+unestablished. Values are stored counts."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -27,6 +38,11 @@ where MOV.L jk78c:00040e18 loads 00013b08 for call 6 of 9 at 00040e1e \
 layout = "1nd"
 address = "00013f3a"
 level = "code"
+note = """
+Input breakpoints for the fuel-compensation curve selected by state code 8 \
+(VVEL input mode 15). The lookup uses a word shifted right by two bits and \
+bounded at 255; the physical input and its engineering conversion remain \
+unestablished. Values are stored counts."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +59,11 @@ position where MOV.L jk78c:00040e18 loads 00013b08 for call 6 of 9 at \
 layout = "jk78c"
 address = "00013b08"
 level = "code"
+note = """
+Input breakpoints for the fuel-compensation curve selected by state code 8 \
+(VVEL input mode 15). The lookup uses a word shifted right by two bits and \
+bounded at 255; the physical input and its engineering conversion remain \
+unestablished. Values are stored counts."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -58,19 +79,26 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00040e18"
+at = "jk78c:00040f78"
+note = """
+Exact literal-pool word used by the running coordinator of the curve \
+channel."""
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1nd:000453ac"
-note = "The coordinator passes this axis in r5 to fortunate-adder at 000453b2."
+at = "1nd:000454fc"
+note = """
+Exact literal-pool word used by the running coordinator of the curve \
+channel."""
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1me3b:00048a2a"
-note = "The coordinator passes this axis in r5 to groovy-lynx at 00048a30."
+at = "1me3b:00048b80"
+note = """
+Exact literal-pool word used by the running coordinator of the curve \
+channel."""
 
 [[link]]
 type = "reader"
@@ -81,19 +109,17 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0002fd40"
+at = "jk78c:0002fec4"
+note = "Exact literal-pool word used by the startup reader of the curve channel."
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1nd:00030f82"
-note = """
-The startup initializer passes this axis in r5 to fortunate-adder at \
-00030f8a."""
+at = "1nd:00031168"
+note = "Exact literal-pool word used by the startup reader of the curve channel."
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "1me3b:00033cf2"
-note = """
-The startup initializer passes this axis in r5 to groovy-lynx at 00033cfa."""
+at = "1me3b:00033edc"
+note = "Exact literal-pool word used by the startup reader of the curve channel."

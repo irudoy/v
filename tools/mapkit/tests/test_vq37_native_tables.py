@@ -10,6 +10,7 @@ from tools.mapkit import vq37_native_tables
 TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
 SELECTOR_ROLES = {
     "fuel_compensation_alternate",
+    "fuel_compensation_coefficient_curve",
     "timing_state_addend_alternate",
 }
 FUEL_TABLE_ROLES = {
@@ -18,6 +19,7 @@ FUEL_TABLE_ROLES = {
     "fuel_four_factor_surface",
 }
 FUEL_AXIS_ROLES = {
+    "fuel_compensation_coefficient_axis",
     "fuel_composite_surface_x_axis",
     "fuel_composite_surface_y_axis",
     "transient_fuel_multiplier_x_axis",

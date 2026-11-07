@@ -158,12 +158,12 @@ axis_y = 0x00013B18
 name = "Fuel Compensation - Main - Alternate"
 category = "Fuelling / Compensation"
 order = 21
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
+format = "0"
+fine = 1
+coarse = 10
 confidence = "code"
-semantics = "Alternate multiplicative fuel-correction surface. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. The proposed raw-128 unity normalization has no independent reference."
-note = "Engineering conversion is unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57, fuel_compensation_main/tbl. The alternate role and common channel supply a bounded candidate interpretation, not code-level physical unity. The default registry record does not name the alternate table. It must not be copied as if it did. No engine-bank identity follows from the table pair. Recorded code and catalog interpretation: The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+semantics = "Alternate fuel-compensation surface selected by state code 2, derived from VVEL input mode 5. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00040958 selects this surface instead of the default fuel-compensation surface for state code 2 (VVEL input mode 5). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.JK78C.table]]
 id = "ignition_surface_hot"
@@ -814,6 +814,25 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
+
+[[target.JK78C.table]]
+id = "fuel_compensation_coefficient_curve"
+address = 0x00013AE8
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "ca2e11094b4b8726c9a016da6810d6fe6cc23224fabc91b32ee092067aed09f8"
+pointer_bindings = [{ site = 0x0002FEC0, accessor = 0x0002F596 }, { site = 0x00040F74, accessor = 0x00040958 }]
+axis_x = 0x00013B08
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel-compensation curve selected by state code 8, derived from VVEL input mode 15. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00040958 selects this curve instead of the default fuel-compensation surface for state code 8 (VVEL input mode 15). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.JK78C.table]]
 id = "vvel_hot_intake_threshold"
@@ -2015,6 +2034,21 @@ confidence = "code"
 note = "The x coordinate is the bounded raw result derived from word ffff33a6 through helper 00021ce8 and offset 220. The explicit byte-axis resolver bounds the final index at 7. Physical quantity and conversion remain unresolved."
 
 [[target.JK78C.axis]]
+id = "fuel_compensation_coefficient_axis"
+address = 0x00013B08
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x0002FEC4, accessor = 0x0002F596 }, { site = 0x00040F78, accessor = 0x00040958 }]
+name = "Fuel Compensation - Coefficient Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Input breakpoints for the fuel-compensation curve selected by state code 8 (VVEL input mode 15). The lookup uses a word shifted right by two bits and bounded at 255; the physical input and its engineering conversion remain unestablished. Values are stored counts."
+
+[[target.JK78C.axis]]
 id = "fuel_composite_surface_y_axis"
 address = 0x00013B98
 length = 8
@@ -3210,12 +3244,12 @@ axis_y = 0x00013F4A
 name = "Fuel Compensation - Main - Alternate"
 category = "Fuelling / Compensation"
 order = 21
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
+format = "0"
+fine = 1
+coarse = 10
 confidence = "code"
-semantics = "Alternate multiplicative fuel-correction surface. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. The proposed raw-128 unity normalization has no independent reference."
-note = "Engineering conversion is unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57, fuel_compensation_main/tbl. The alternate role and common channel supply a bounded candidate interpretation, not code-level physical unity. The default registry record does not name the alternate table. It must not be copied as if it did. No engine-bank identity follows from the table pair. Recorded code and catalog interpretation: The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+semantics = "Alternate fuel-compensation surface selected by state code 2, derived from VVEL input mode 5. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00044f1c selects this surface instead of the default fuel-compensation surface for state code 2 (VVEL input mode 5). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ND0A.table]]
 id = "ignition_surface_hot"
@@ -3930,6 +3964,25 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
+
+[[target.1ND0A.table]]
+id = "fuel_compensation_coefficient_curve"
+address = 0x00013F1A
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "ca2e11094b4b8726c9a016da6810d6fe6cc23224fabc91b32ee092067aed09f8"
+pointer_bindings = [{ site = 0x0003116C, accessor = 0x00030810 }, { site = 0x00045500, accessor = 0x00044F1C }]
+axis_x = 0x00013F3A
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel-compensation curve selected by state code 8, derived from VVEL input mode 15. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00044f1c selects this curve instead of the default fuel-compensation surface for state code 8 (VVEL input mode 15). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ND0A.table]]
 id = "vvel_hot_intake_threshold"
@@ -5091,6 +5144,21 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Reader 0007a73a passes this uint8 axis to 000284fc as the row coordinate axis. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8 points. The final index is bounded at 7; physical quantity and conversion remain unresolved."
+
+[[target.1ND0A.axis]]
+id = "fuel_compensation_coefficient_axis"
+address = 0x00013F3A
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x00031168, accessor = 0x00030810 }, { site = 0x000454FC, accessor = 0x00044F1C }]
+name = "Fuel Compensation - Coefficient Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Input breakpoints for the fuel-compensation curve selected by state code 8 (VVEL input mode 15). The lookup uses a word shifted right by two bits and bounded at 255; the physical input and its engineering conversion remain unestablished. Values are stored counts."
 
 [[target.1ND0A.axis]]
 id = "ignition_state_surface_axis_y"
@@ -6273,12 +6341,12 @@ axis_y = 0x00013F4A
 name = "Fuel Compensation - Main - Alternate"
 category = "Fuelling / Compensation"
 order = 21
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
+format = "0"
+fine = 1
+coarse = 10
 confidence = "code"
-semantics = "Alternate multiplicative fuel-correction surface. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. The proposed raw-128 unity normalization has no independent reference."
-note = "Engineering conversion is unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57, fuel_compensation_main/tbl. The alternate role and common channel supply a bounded candidate interpretation, not code-level physical unity. The default registry record does not name the alternate table. It must not be copied as if it did. No engine-bank identity follows from the table pair. Recorded code and catalog interpretation: The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+semantics = "Alternate fuel-compensation surface selected by state code 2, derived from VVEL input mode 5. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00044f1c selects this surface instead of the default fuel-compensation surface for state code 2 (VVEL input mode 5). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ND3B.table]]
 id = "ignition_surface_hot"
@@ -6993,6 +7061,25 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
+
+[[target.1ND3B.table]]
+id = "fuel_compensation_coefficient_curve"
+address = 0x00013F1A
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "ca2e11094b4b8726c9a016da6810d6fe6cc23224fabc91b32ee092067aed09f8"
+pointer_bindings = [{ site = 0x0003116C, accessor = 0x00030810 }, { site = 0x00045500, accessor = 0x00044F1C }]
+axis_x = 0x00013F3A
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel-compensation curve selected by state code 8, derived from VVEL input mode 15. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00044f1c selects this curve instead of the default fuel-compensation surface for state code 8 (VVEL input mode 15). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ND3B.table]]
 id = "vvel_hot_intake_threshold"
@@ -8154,6 +8241,21 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Reader 0007a73a passes this uint8 axis to 000284fc as the row coordinate axis. The raw row coordinate is clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains eight uint8 points. The final index is bounded at 7; physical quantity and conversion remain unresolved."
+
+[[target.1ND3B.axis]]
+id = "fuel_compensation_coefficient_axis"
+address = 0x00013F3A
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x00031168, accessor = 0x00030810 }, { site = 0x000454FC, accessor = 0x00044F1C }]
+name = "Fuel Compensation - Coefficient Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Input breakpoints for the fuel-compensation curve selected by state code 8 (VVEL input mode 15). The lookup uses a word shifted right by two bits and bounded at 255; the physical input and its engineering conversion remain unestablished. Values are stored counts."
 
 [[target.1ND3B.axis]]
 id = "ignition_state_surface_axis_y"
@@ -9336,12 +9438,12 @@ axis_y = 0x00013D26
 name = "Fuel Compensation - Main - Alternate"
 category = "Fuelling / Compensation"
 order = 21
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
+format = "0"
+fine = 1
+coarse = 10
 confidence = "code"
-semantics = "Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares both coordinates, both axes, and the interpolator of the projected default surface 0x0000A0F4, and the state selector in FUN_000486E0 reads it in place of that surface for state code 2."
-note = "Engineering conversion is unestablished. Retained hypothesis: x*0.78125 %; proposed editor-grid inverse x/0.78125. Origin: the retained layout interpretation and defs/JK08A.findings.csv:57, fuel_compensation_main/tbl. The alternate role and common channel supply a bounded candidate interpretation, not code-level physical unity. The default registry record does not name the alternate table. It must not be copied as if it did. No engine-bank identity follows from the table pair. Recorded code and catalog interpretation: Read by FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a state code, where code 2 selects this surface, code 8 selects the curve, and every other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte 0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from the JK78C surface 0x00009FBA."
+semantics = "Alternate fuel-compensation surface selected by state code 2, derived from VVEL input mode 5. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00048564 selects this surface instead of the default fuel-compensation surface for state code 2 (VVEL input mode 5). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ME3B.table]]
 id = "ignition_surface_hot"
@@ -10076,6 +10178,25 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table 0x00013A26 and is selected when the transition-completion latch is set."
 note = "Read by the coordinator FUN_0007323E at callsite 0x73378 through the implicit eight-point uint8 leaf 0x2A9F4 with the index byte 0xFFFE8194, the byte that indexes the default table 0x00013A26 at 0x73334, so neither branch carries an engine-bank identity. The selector is the latch 0xFFFEB9A4.bit2: it sets when the progress word 0xFFFEB8DA reaches ROM8[0x854E] * 256 = 0x8000 and releases below 0x8000 - ROM8[0x854F] * 256 = 0x7300. Stock bytes are identical to JK78C 0x000137F0."
+
+[[target.1ME3B.table]]
+id = "fuel_compensation_coefficient_curve"
+address = 0x00013CF6
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "3f07584982bf60b842e5aa586729a7850fdfc13aef0ae86bdca3504fb5f848dd"
+pointer_bindings = [{ site = 0x00033EE0, accessor = 0x0003357C }, { site = 0x00048B84, accessor = 0x00048564 }]
+axis_x = 0x00013D16
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel-compensation curve selected by state code 8, derived from VVEL input mode 15. The selected channel replaces the default surface at full current-state weight. The physical unit, engineering conversion and neutral value are unestablished."
+note = "Coordinator 0x00048564 selects this curve instead of the default fuel-compensation surface for state code 8 (VVEL input mode 15). At full current-state weight, changes to the default surface are replaced by this channel. During a transition, the coordinator mixes current_channel*w with previous_channel*(0x8000-w), using the held previous output during an interrupted transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on every image. Editor values are stored counts. The physical unit, engineering conversion and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-bank identity is established."
 
 [[target.1ME3B.table]]
 id = "vvel_hot_intake_threshold"
@@ -11317,6 +11438,21 @@ fine = 1
 coarse = 10
 confidence = "code"
 note = "Reader 0007f0d0 passes this uint8 axis to 00028e10 as the row coordinate axis. The raw row coordinate is clamp(floor(uint16[fffea634]/20)-220,0,255). The explicit axis contains eight uint8 points. The final index is bounded at 7; physical quantity and conversion remain unresolved."
+
+[[target.1ME3B.axis]]
+id = "fuel_compensation_coefficient_axis"
+address = 0x00013D16
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x00033EDC, accessor = 0x0003357C }, { site = 0x00048B80, accessor = 0x00048564 }]
+name = "Fuel Compensation - Coefficient Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "Input breakpoints for the fuel-compensation curve selected by state code 8 (VVEL input mode 15). The lookup uses a word shifted right by two bits and bounded at 255; the physical input and its engineering conversion remain unestablished. Values are stored counts."
 
 [[target.1ME3B.axis]]
 id = "ignition_state_surface_axis_y"

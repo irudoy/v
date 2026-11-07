@@ -1,3 +1,10 @@
+summary = """
+Publishes the current and retained previous mode-derived channel codes and \
+the word interpolation weight. Modes 5 and 15 map to codes 2 and 8, which \
+select the alternate fuel-compensation surface and coefficient curve. The \
+conditional code path does not establish stock driving reachability."""
+home = "jk78c"
+
 [[source]]
 layout = "jk78c"
 path = "defs/JK78C.vvel.md"
@@ -6,9 +13,102 @@ sections = ["Target surfaces and scales"]
 anchor = "FUN_0004678C"
 
 [[symbol]]
+layout = "1me3b"
+address = "00050110"
+name = "cheerful-moth"
+level = "code"
+note = """
+Mapper 00050310, called at 00050122, maps VVEL input mode 5 to code 2 and \
+mode 15 to code 8 from RAM byte fffe99c2. Retention helper 000503cc at \
+00050134 preserves the previous mapped code, stored to fffeb8dc at 00050140. \
+Store 0005014a writes the current byte code to fffeb826; store 0005024e \
+writes the word weight to fffeb824. Snapshot 00021240 copies the current \
+pair at 00021812/00021814 to fffeb820/fffeb822 and copies fffeb8dc to \
+fffeb850 through the 0002182a block-copy call. Coordinator 00048564 weights \
+the current channel by the snapshot weight and the previous or held channel \
+by 0x8000 minus that weight. Stock driving reachability of modes 5 and 15 \
+remains unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00050110"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00050122"
+to = "jk78c:0004678c"
+note = """
+Calls mode mapper 00050310, corresponding to mapper 0004692a called at \
+jk78c:000467a4; both map modes 5 and 15 to codes 2 and 8."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0005014a"
+to = "jk78c:0004678c"
+note = """
+Stores the mapped current byte to fffeb826, corresponding to the ffff43f2 \
+byte store at jk78c:000467c2. Previous-code store 00050140 and word-weight \
+store 0005024e preserve the producer contract."""
+
+[[symbol]]
+layout = "1nd"
+address = "0004c2b8"
+name = "white-cougar"
+level = "code"
+note = """
+Mapper 0004c4b8, called at 0004c2ca, maps VVEL input mode 5 to code 2 and \
+mode 15 to code 8 from RAM byte fffe992c. Retention helper 0004c574 at \
+0004c2dc preserves the previous mapped code, stored to fffeb786 at 0004c2e8. \
+Store 0004c2f2 writes the current byte code to fffeb6de; store 0004c3f6 \
+writes the word weight to fffeb6dc. Snapshot 00021218 copies the current \
+pair at 000217a6/000217ae to fffeb6d8/fffeb6da and copies fffeb786 to \
+fffeb706 through the 000217c6 block-copy call. Coordinator 00044f1c weights \
+the current channel by the snapshot weight and the previous or held channel \
+by 0x8000 minus that weight. 1ND0A and 1ND3B share this code layout. Stock \
+driving reachability of modes 5 and 15 remains unqualified on both images."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004c2b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004c2ca"
+to = "jk78c:0004678c"
+note = """
+Calls mode mapper 0004c4b8, corresponding to mapper 0004692a called at \
+jk78c:000467a4; both map modes 5 and 15 to codes 2 and 8."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0004c2f2"
+to = "jk78c:0004678c"
+note = """
+Stores the mapped current byte to fffeb6de, corresponding to the ffff43f2 \
+byte store at jk78c:000467c2. Previous-code store 0004c2e8 and word-weight \
+store 0004c3f6 preserve the producer contract."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0004678c"
 name = "carmine-cockatoo"
+note = """
+Mapper 0004692a, called at 000467a4, maps VVEL input mode 5 to code 2 and \
+mode 15 to code 8 from RAM byte ffff2808. Retention helper 00046978 at \
+000467b2 preserves the previous mapped code in ffff4480. Store 000467c2 \
+writes the current byte code to ffff43f2; store 0004687a writes the word \
+weight to ffff43f0. Snapshot 00020f1a copies the current pair at \
+00021356/0002135e to ffff43ec/ffff43ee and copies ffff4480 to ffff4414 \
+through the 00021362 block-copy call. Coordinator 00040958 weights the \
+current channel by the snapshot weight and the previous or held channel by \
+0x8000 minus that weight. Stock driving reachability of modes 5 and 15 \
+remains unqualified."""
 
 [[symbol.evidence]]
 kind = "l0"
