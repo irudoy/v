@@ -6,8 +6,11 @@ import os
 from pathlib import Path
 import subprocess
 import shlex
+import shutil
+import signal
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -86,6 +89,51 @@ AGENTS = """\
 """
 
 
+def _git(root, *arguments, timeout=30):
+    """Run fixture Git through native POSIX spawn and bound its lifetime.
+
+    Popen's fork/exec error-pipe wait precedes subprocess.run's timeout.
+    Native spawn avoids that path while pytest's watchdog thread is armed.
+    """
+    executable = shutil.which("git")
+    if executable is None:
+        raise FileNotFoundError("make_repo requires the git executable")
+    executable = os.path.abspath(executable)
+    command = [executable, "-C", os.fspath(root), *arguments]
+    message = f"make_repo: git timed out after {timeout:g} seconds: {shlex.join(command)}"
+    spawn = getattr(os, "posix_spawn", None)
+    if spawn is None:
+        try:
+            subprocess.run(command, check=True, timeout=timeout)
+        except subprocess.TimeoutExpired as error:
+            raise TimeoutError(message) from error
+        return
+    deadline = time.monotonic() + timeout
+    restored_signals = [getattr(signal, name) for name in ("SIGPIPE", "SIGXFZ", "SIGXFSZ")
+                        if hasattr(signal, name)]
+    child = spawn(executable, command, dict(os.environ), setsigdef=restored_signals)
+    try:
+        while time.monotonic() < deadline:
+            ended, status = os.waitpid(child, os.WNOHANG)
+            if ended:
+                child = None
+                code = os.waitstatus_to_exitcode(status)
+                if code:
+                    raise subprocess.CalledProcessError(code, command)
+                return
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                time.sleep(min(0.01, remaining))
+        raise TimeoutError(message)
+    finally:
+        if child is not None:
+            try:
+                os.kill(child, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            os.waitpid(child, 0)
+
+
 def make_repo(root, files=None):
     defaults = {
         "tools/kb/contracts.toml": CONTRACTS,
@@ -105,8 +153,8 @@ def make_repo(root, files=None):
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
-    subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-    subprocess.run(["git", "add", "-A", "-f"], cwd=root, check=True)
+    _git(root, "init", "-q")
+    _git(root, "add", "-A", "-f")
     return root
 
 
@@ -140,6 +188,63 @@ class RepoCase(unittest.TestCase):
 
     def repo(self, name, files=None):
         return make_repo(self.base / name, files)
+
+
+class GitFixtureTest(RepoCase):
+    @unittest.skipUnless(hasattr(os, "posix_spawn"), "native POSIX spawn is unavailable")
+    def test_repository_setup_avoids_the_popen_error_pipe(self):
+        with mock.patch.object(subprocess, "run", side_effect=AssertionError("unexpected Popen path")):
+            root = make_repo(self.base / "repository with spaces")
+        self.assertTrue((root / ".git" / "index").is_file())
+
+    def executable(self, body):
+        path = self.base / "git"
+        path.write_text("#!/bin/sh\nexec " + shlex.quote(sys.executable) + " -c " + shlex.quote(body) + "\n",
+                        encoding="utf-8")
+        path.chmod(0o755)
+        return path
+
+    @unittest.skipUnless(hasattr(os, "posix_spawn"), "native POSIX spawn is unavailable")
+    def test_a_stalled_git_names_the_command_and_is_killed_and_reaped(self):
+        executable = self.executable("import time\ntime.sleep(60)")
+        spawn = os.posix_spawn
+        children = []
+
+        def remember(*args, **kwargs):
+            child = spawn(*args, **kwargs)
+            children.append(child)
+            return child
+
+        started = time.monotonic()
+        with mock.patch.object(shutil, "which", return_value=str(executable)), \
+                mock.patch.object(os, "posix_spawn", side_effect=remember):
+            with self.assertRaises(TimeoutError) as caught:
+                _git(self.base, "add", "-A", "-f", timeout=2)
+        self.assertLess(time.monotonic() - started, 10)
+        self.assertIn("make_repo: git timed out after 2 seconds", str(caught.exception))
+        self.assertIn(shlex.join([str(executable), "-C", str(self.base), "add", "-A", "-f"]),
+                      str(caught.exception))
+        self.assertEqual(len(children), 1)
+        with self.assertRaises(ChildProcessError):
+            os.waitpid(children[0], os.WNOHANG)
+
+    @unittest.skipUnless(hasattr(os, "posix_spawn"), "native POSIX spawn is unavailable")
+    def test_a_failed_git_keeps_its_exit_code_and_command(self):
+        executable = self.executable("raise SystemExit(7)")
+        with mock.patch.object(shutil, "which", return_value=str(executable)):
+            with self.assertRaises(subprocess.CalledProcessError) as caught:
+                _git(self.base, "init", "-q")
+        self.assertEqual(caught.exception.returncode, 7)
+        self.assertEqual(caught.exception.cmd, [str(executable), "-C", str(self.base), "init", "-q"])
+
+    def test_the_non_posix_timeout_names_the_command(self):
+        command = ["git", "-C", str(self.base), "init", "-q"]
+        with mock.patch.object(os, "posix_spawn", None, create=True), \
+                mock.patch.object(subprocess, "run", side_effect=subprocess.TimeoutExpired(command, 2)):
+            with self.assertRaises(TimeoutError) as caught:
+                _git(self.base, "init", "-q", timeout=2)
+        self.assertIn("git timed out after 2 seconds", str(caught.exception))
+        self.assertIn("init -q", str(caught.exception))
 
 
 class WriteTest(RepoCase):
