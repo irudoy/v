@@ -11,7 +11,11 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
+    """
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. Reader 1ND \
+0006a738 / 1ME3B 0006ea7c selects one of two curve pairs by flags without an \
+established correspondence to the JK78C selector ffff45c7.bit2 or \
+ffff23ff.bit3, so no target curve has a one-to-one role.""",
 ]
 level = "code"
 role = "table"

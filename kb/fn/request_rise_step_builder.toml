@@ -13,14 +13,47 @@ retains the processor's 32-bit products. Physical input and output units \
 remain unresolved."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Later-layout \
-correspondence remains unresolved. Only the reviewed JK78C reader qualifies \
-this operational role; physical input identities and engineering conversions \
-require separate evidence.""",
+Physical input identities and engineering conversions require separate \
+evidence.""",
 ]
 level = "code"
+home = "jk78c"
 role = "consumer"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a7ca8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a7ca8"
+to = "jk78c:0008ff76"
+note = """
+Builder 000a7ca8 corresponds to the JK78C rise-step builder 0008ff76: it \
+clamps its two word inputs at 672 and 2240, reads surface 0000bc74 through \
+its literal pool, multiplies by byte array 0001321c indexed by min(byte, 7) \
+and by bytes 000082df and 000082e0 gated by bits 7 and 4 with fallback 128, \
+shifts right by 8 and 13 and saturates to uint16."""
+
+[[symbol]]
+layout = "1nd"
+address = "000a1cb8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000a1cb8"
+to = "jk78c:0008ff76"
+note = """
+Builder 000a1cb8 corresponds to the JK78C rise-step builder 0008ff76: it \
+clamps its two word inputs at 672 and 2240, reads surface 0000bdc0 through \
+its literal pool, multiplies by byte array 000134e8 indexed by min(byte, 7) \
+and by bytes 000082e3 and 000082e4 gated by bits 7 and 4 with fallback 128, \
+shifts right by 8 and 13 and saturates to uint16."""
 
 [[symbol]]
 layout = "jk78c"

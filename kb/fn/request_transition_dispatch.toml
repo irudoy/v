@@ -8,14 +8,47 @@ mechanism; physical interpretation of the alternative stages remains \
 unresolved."""
 note = [
     """
-Editor publication and later-layout correspondence remain unresolved under \
-issue #129. Only the reviewed JK78C reader qualifies this operational role; \
-physical input identities and engineering conversions require separate \
-evidence.""",
+Physical input identities of the branch conditions and engineering \
+conversions of the alternative stages require separate evidence.""",
 ]
 level = "code"
+home = "jk78c"
 role = "dispatch"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000b218e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000b218e"
+to = "jk78c:0009679a"
+note = """
+Dispatcher 000b218e corresponds to the JK78C request-conditioning dispatcher \
+0009679a: while bit 0 of ROM8[000083a6] is clear, it calls conditioner \
+000b2f2c when bit 7 of 00008a7f is clear and the alternative stage 000b35d8 \
+when it is set, as JK78C 0009679a selects 00096ce0 or 00097298 by bit 0 of \
+00008383 and bit 7 of 00008968."""
+
+[[symbol]]
+layout = "1nd"
+address = "000ab184"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000ab184"
+to = "jk78c:0009679a"
+note = """
+Dispatcher 000ab184 corresponds to the JK78C request-conditioning dispatcher \
+0009679a: while bit 0 of ROM8[0000839f] is clear, it calls conditioner \
+000abc6e when bit 7 of 00008a2e is clear and the alternative stage 000ac294 \
+when it is set, as JK78C 0009679a selects 00096ce0 or 00097298 by bit 0 of \
+00008383 and bit 7 of 00008968."""
 
 [[symbol]]
 layout = "jk78c"

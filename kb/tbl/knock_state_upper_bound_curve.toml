@@ -6,11 +6,12 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
     """
-The 1ME3B upper bound uses a scalar and a selected surface. No one-to-one \
-role of this curve is qualified there, so the shared native catalog cannot \
-emit the role.""",
+Native editor class (issue #129): active on 1ND and JK78C, hidden. The stock \
+curve is flat, and neither the quantity of its axis input (JK78C byte \
+ffff119d) nor its own physical quantity is established. The 1ME3B upper \
+bound uses a scalar and a selected surface, so no one-to-one role of this \
+curve is qualified there.""",
 ]
 level = "code"
 home = "jk78c"

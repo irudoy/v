@@ -8,10 +8,10 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
     """
-The target branches select multiple endpoint candidates; no unique \
-counterpart of JK78C endpoint A is qualified.""",
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. The target \
+branches select multiple endpoint candidates; no unique counterpart of JK78C \
+endpoint A is qualified.""",
 ]
 level = "code"
 role = "table"

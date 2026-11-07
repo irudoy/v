@@ -6,11 +6,10 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
     """
-This coordinate belongs to event_timing_subtraction_amplitude, whose VQ37 \
-presentation is hidden. The coordinate has no standalone native editor \
-entry.""",
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. This \
+coordinate belongs to event_timing_subtraction_amplitude, whose VQ37 \
+presentation is hidden, and has no standalone native editor entry.""",
 ]
 level = "code"
 home = "jk78c"

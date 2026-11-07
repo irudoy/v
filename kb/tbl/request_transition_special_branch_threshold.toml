@@ -5,9 +5,11 @@ and the input above this word, the offset-duration gate is disabled and the \
 special rate surface 0000b39a is selected."""
 note = [
     """
-Editor publication remains unresolved under issue #129. Only the reviewed \
-JK78C reader qualifies this operational role; physical input identities and \
-engineering conversions require separate evidence.""",
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. The 1ND \
+conditioner 000abc6e and the 1ME3B conditioner 000b2f2c select one of two \
+words by a RAM bit where JK78C 00096ce0 compares this single word, so no \
+target word has a one-to-one role. Physical input identities and engineering \
+conversions require separate evidence.""",
 ]
 level = "code"
 role = "threshold"

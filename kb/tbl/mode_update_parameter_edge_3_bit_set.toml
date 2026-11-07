@@ -9,7 +9,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
     """
 The computed operand 00014054+8 is visible in the complete reader listing at \
 00082866..0008286a, but normalized L0 has no corresponding access for \
@@ -17,9 +16,9 @@ The computed operand 00014054+8 is visible in the complete reader listing at \
 declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
 remains a candidate.""",
     """
-The computed JK78C operand lacks a normalized L0 access and a qualified \
-typed reader. Its candidate identity does not qualify native editor \
-publication.""",
+Native editor class (issue #129): unqualified on 1ND and 1ME3B. The computed \
+JK78C operand lacks a normalized L0 access and a qualified typed reader, so \
+its candidate identity does not qualify native editor publication.""",
 ]
 level = "candidate"
 home = "jk78c"

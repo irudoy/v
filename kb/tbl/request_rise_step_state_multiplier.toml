@@ -78,7 +78,7 @@ at = "jk78c:0008ffce"
 [[link]]
 type = "reader"
 to = "request_rise_step_builder/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1me3b", "1nd"]
 role = "accessor"
 
 [[link.evidence]]
@@ -86,3 +86,13 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0008ffce"
 note = "The complete reader and literal-pool operand establish this access."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a1d14"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a7d04"
