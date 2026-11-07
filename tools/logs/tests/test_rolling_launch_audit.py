@@ -1387,9 +1387,35 @@ class BusJoinTest(unittest.TestCase):
             path = Path(directory) / "bus.trc"
             path.write_bytes(b"")
             with mock.patch.object(audit.peak_trc_audit, "load_trace",
-                                   return_value=SimpleNamespace(frames=frames)):
+                                   return_value=SimpleNamespace(
+                                       frames=frames, incomplete_tail=None)):
                 capture = audit.read_trc(path)
         self.assertEqual(capture.timing.bus_frames[0x284], ((10, b"\x00" * 8),))
+
+    def test_a_cut_last_trc_row_is_excluded_and_reported(self):
+        rows = [";$FILEVERSION=1.1", ";$STARTTIME=46250.0", ";"] + [
+            f"{number:6d}) {number * 10.0:11.1f}  Rx         0284  8  00 00 00 00 00 00 00 00"
+            for number in (1, 2)
+        ]
+        cut = "     3)        30.0  Rx         0284  8  00 0"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bus.trc"
+            path.write_text("\n".join(rows) + "\n" + cut, encoding="ascii")
+            with self.assertWarns(audit.peak_trc_audit.IncompleteTailWarning):
+                capture = audit.read_trc(path)
+        self.assertEqual(len(capture.timing.bus_frames[0x284]), 2)
+        self.assertEqual(
+            (capture.incomplete_tail.line_number, capture.incomplete_tail.size), (6, len(cut))
+        )
+        capture = replace(self.capture(), incomplete_tail=capture.incomplete_tail)
+        with (
+            mock.patch.object(audit, "read_calibration", return_value=CALIBRATION),
+            mock.patch.object(audit, "read_capture", return_value=capture),
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            audit.main(["--image", "image.bin", "test.trc"])
+        self.assertIn(f"  incomplete last row 6 of {len(cut)} bytes excluded\n",
+                      output.getvalue())
 
     def test_equal_estimates_do_not_establish_physical_torque_recovery(self):
         capture = self.capture()

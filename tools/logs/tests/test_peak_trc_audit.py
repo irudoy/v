@@ -2,6 +2,7 @@ from pathlib import Path
 import tempfile
 import tracemalloc
 import unittest
+import warnings
 
 import pytest
 
@@ -18,6 +19,13 @@ TRACE = """;$FILEVERSION=1.1
      3)        20.0  Tx         06F0  3  AA BB CC
      4)        30.0  Rx         0160  8  00 01 02 03 04 05 06 08
 """
+# Row 5 cut inside its data bytes, inside its offset, and followed by the
+# zero bytes that a power loss can leave.
+CUT_ROWS = (
+    "     5)        40.0  Rx         0160  8  00 01 0",
+    "     5)        4",
+    "     5)        40.0  Rx         0160  8  00 01 02\x00\x00",
+)
 
 
 class PeakTrcAuditTest(unittest.TestCase):
@@ -144,6 +152,52 @@ class PeakTrcAuditTest(unittest.TestCase):
             peak_trc_audit.TraceError, "capture.trc:10: unsupported TRC row"
         ):
             next(records)
+
+    def test_a_cut_last_row_ends_the_records_and_is_reported(self):
+        for cut in CUT_ROWS:
+            with self.subTest(cut=cut):
+                path = self.write((TRACE + cut).encode("ascii"))
+                with self.assertWarnsRegex(
+                    peak_trc_audit.IncompleteTailWarning,
+                    rf"capture.trc:10: incomplete last row of {len(cut)} bytes",
+                ):
+                    trace = peak_trc_audit.load_trace(path)
+                self.assertEqual(len(trace.frames), 4)
+                tail = trace.incomplete_tail
+                self.assertEqual((tail.line_number, tail.size), (10, len(cut)))
+                records = peak_trc_audit.iter_records(path)
+                with self.assertWarns(peak_trc_audit.IncompleteTailWarning):
+                    numbers = [record.number for record in records]
+                self.assertEqual(numbers, [1, 2, 3, 4])
+                self.assertEqual(records.incomplete_tail, tail)
+
+    def test_an_unterminated_complete_last_row_is_a_record(self):
+        path = self.write(TRACE.rstrip("\n").encode("ascii"))
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            trace = peak_trc_audit.load_trace(path)
+        self.assertEqual(len(trace.frames), 4)
+        self.assertIsNone(trace.incomplete_tail)
+
+    def test_a_malformed_inner_or_terminated_last_row_is_refused(self):
+        cut = CUT_ROWS[0]
+        cases = (
+            (TRACE + cut + "\n", 10),
+            (TRACE.replace("     4)", cut + "\n     4)"), 9),
+            (TRACE + cut + "\n" + CUT_ROWS[1], 10),
+        )
+        for text, line in cases:
+            with self.subTest(line=line, text=text[-60:]):
+                with self.assertRaisesRegex(
+                    peak_trc_audit.TraceError, rf"capture.trc:{line}: unsupported TRC row"
+                ):
+                    peak_trc_audit.load_trace(self.write(text.encode("ascii")))
+
+    def test_a_trace_of_only_a_cut_row_has_no_frames(self):
+        path = self.write((TRACE.split("     1)")[0] + CUT_ROWS[0]).encode("ascii"))
+        with self.assertWarns(peak_trc_audit.IncompleteTailWarning):
+            with self.assertRaisesRegex(peak_trc_audit.TraceError, "no supported CAN frames"):
+                peak_trc_audit.load_trace(path)
 
     @pytest.mark.slow
     def test_streaming_memory_does_not_grow_with_the_capture(self):

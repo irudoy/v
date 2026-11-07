@@ -15,6 +15,15 @@ with the capture. Record rows are strict ASCII. Comment rows are decoded as
 CP1251, the Windows code page that PCAN-View writes on a Cyrillic system, and
 an undecodable comment byte never rejects the capture.
 
+A last row that ends without a line terminator and does not parse is a cut
+tail, which an operating-system crash, a power loss, a full disk, or a copy of
+a capture still being written leaves behind. The reader stops before it,
+emits an `IncompleteTailWarning` that names its line and size, and records it
+as `incomplete_tail` of the record stream and of `load_trace`. A row that
+does not parse anywhere else, including a last row with its terminator,
+rejects the capture. The Rolling Launch audit prints the excluded row under
+its capture line.
+
 TRC 1.1 does not record the configured nominal bitrate. Load calculation is
 therefore disabled unless the bitrate is supplied explicitly:
 

@@ -62,6 +62,8 @@ class Timeline:
     """
 
     kind = ""
+    # The cut last row that a TRC reader excluded, if any.
+    incomplete_tail = None
 
     def __init__(self, path, times, can_id):
         self.path = Path(path)
@@ -194,7 +196,8 @@ class _FrameColumns:
 def _load_trc(path, can_id):
     kept = {can_id, *OBSERVED_IDS}
     columns = _FrameColumns()
-    for record in peak_trc_audit.iter_records(path):
+    records = peak_trc_audit.iter_records(path)
+    for record in records:
         time = record.offset_ms / 1000.0
         if isinstance(record, peak_trc_audit.StatusRecord):
             if record.kind == "Error":
@@ -203,7 +206,9 @@ def _load_trc(path, can_id):
         if record.extended or record.remote or record.can_id not in kept:
             continue
         columns.append(time, record.can_id, 0, bytes(record.data))
-    return columns.timeline(path, "TRC", can_id)
+    timeline = columns.timeline(path, "TRC", can_id)
+    timeline.incomplete_tail = records.incomplete_tail
+    return timeline
 
 
 def _load_candump(path, can_id):

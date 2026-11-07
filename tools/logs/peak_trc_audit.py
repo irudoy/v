@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import statistics
+import warnings
 
 
 FRAME_RE = re.compile(
@@ -57,6 +58,24 @@ KNOWN_JK08A_ECM_IDS = (
 
 class TraceError(ValueError):
     """Raised when a trace is malformed or outside the supported contract."""
+
+
+class IncompleteTailWarning(UserWarning):
+    """A capture ends in a cut row that the reader excludes."""
+
+
+@dataclass(frozen=True)
+class IncompleteTail:
+    """A last row without a line terminator that does not parse.
+
+    An operating-system crash, a power loss, a full disk, or a copy of a
+    capture that is still being written leaves such a row; the reader stops
+    before it.
+    """
+
+    line_number: int
+    size: int
+    reason: str
 
 
 @dataclass(frozen=True)
@@ -107,6 +126,7 @@ class Trace:
     generator: str | None
     frames: tuple[Frame, ...]
     status_records: tuple[StatusRecord, ...]
+    incomplete_tail: IncompleteTail | None = None
 
 
 @dataclass(frozen=True)
@@ -170,8 +190,10 @@ def _comment_text(raw):
 
 
 def _rows(stream):
+    """Yield the number, the content, and whether a line terminator ends it,
+    of each row; only the last row of a file can lack one."""
     for line_number, raw in enumerate(stream, start=1):
-        yield line_number, raw.rstrip(b"\r\n")
+        yield line_number, raw.rstrip(b"\r\n"), raw.endswith(b"\n")
 
 
 def _read_header(path, rows):
@@ -184,11 +206,11 @@ def _read_header(path, rows):
     start_description = None
     generator = None
     pending = None
-    for line_number, raw in rows:
+    for line_number, raw, terminated in rows:
         if not raw.strip():
             continue
         if not raw.startswith(b";"):
-            pending = line_number, raw
+            pending = line_number, raw, terminated
             break
         line = _comment_text(raw)
         header = HEADER_RE.match(line)
@@ -286,47 +308,83 @@ def read_header(path):
     return header
 
 
-def iter_records(path):
-    """Yield the frames and status records of one capture in file order.
+class RecordStream:
+    """The frames and status records of one capture in file order.
 
     The reader holds one row at a time and checks message numbering and
     timestamp order as the rows arrive, so memory does not grow with the
-    capture.
+    capture. A last row without a line terminator that does not parse is a
+    cut tail: the stream ends before it, sets `incomplete_tail`, and warns
+    with IncompleteTailWarning. A row that does not parse anywhere else is
+    a TraceError.
     """
-    path = Path(path)
-    frames = 0
-    try:
-        with path.open("rb") as stream:
-            rows = _rows(stream)
-            _header, pending = _read_header(path, rows)
-            expected = 1
-            previous_offset = None
-            for line_number, raw in itertools.chain(
-                () if pending is None else (pending,), rows
-            ):
-                if not raw.strip() or raw.startswith(b";"):
-                    continue
-                record = _parse_record(path, line_number, raw)
-                if record.number != expected:
-                    raise TraceError(
-                        f"{path}: message number {record.number} follows "
-                        f"{expected - 1}"
-                    )
-                if (
-                    previous_offset is not None
-                    and record.offset_ms < previous_offset
+
+    def __init__(self, path):
+        self.path = Path(path)
+        self.incomplete_tail: IncompleteTail | None = None
+        self._records = self._read()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self._records)
+
+    def _read(self):
+        path = self.path
+        frames = 0
+        try:
+            with path.open("rb") as stream:
+                rows = _rows(stream)
+                _header, pending = _read_header(path, rows)
+                expected = 1
+                previous_offset = None
+                for line_number, raw, terminated in itertools.chain(
+                    () if pending is None else (pending,), rows
                 ):
-                    raise TraceError(
-                        f"{path}: timestamp decreases at message {record.number}"
-                    )
-                expected += 1
-                previous_offset = record.offset_ms
-                frames += isinstance(record, Frame)
-                yield record
-    except OSError as error:
-        raise TraceError(f"cannot read {path}: {error}") from error
-    if not frames:
-        raise TraceError(f"{path}: trace contains no supported CAN frames")
+                    if not raw.strip() or raw.startswith(b";"):
+                        continue
+                    try:
+                        record = _parse_record(path, line_number, raw)
+                    except TraceError as error:
+                        if terminated:
+                            raise
+                        self.incomplete_tail = IncompleteTail(
+                            line_number, len(raw), str(error)
+                        )
+                        warnings.warn(
+                            f"{path}:{line_number}: incomplete last row "
+                            f"of {len(raw)} bytes excluded",
+                            IncompleteTailWarning,
+                            stacklevel=3,
+                        )
+                        break
+                    if record.number != expected:
+                        raise TraceError(
+                            f"{path}: message number {record.number} follows "
+                            f"{expected - 1}"
+                        )
+                    if (
+                        previous_offset is not None
+                        and record.offset_ms < previous_offset
+                    ):
+                        raise TraceError(
+                            f"{path}: timestamp decreases at message "
+                            f"{record.number}"
+                        )
+                    expected += 1
+                    previous_offset = record.offset_ms
+                    frames += isinstance(record, Frame)
+                    yield record
+        except OSError as error:
+            raise TraceError(f"cannot read {path}: {error}") from error
+        if not frames:
+            raise TraceError(f"{path}: trace contains no supported CAN frames")
+
+
+def iter_records(path):
+    """Stream the frames and status records of one capture; see RecordStream."""
+    return RecordStream(path)
 
 
 def load_trace(path):
@@ -335,7 +393,8 @@ def load_trace(path):
     header = read_header(path)
     frames = []
     status_records = []
-    for record in iter_records(path):
+    records = iter_records(path)
+    for record in records:
         if isinstance(record, StatusRecord):
             status_records.append(record)
         else:
@@ -348,6 +407,7 @@ def load_trace(path):
         generator=header.generator,
         frames=tuple(frames),
         status_records=tuple(status_records),
+        incomplete_tail=records.incomplete_tail,
     )
 
 

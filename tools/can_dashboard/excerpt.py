@@ -142,9 +142,14 @@ def _write_trc(timeline, start, stop, stream):
     first = last = None
     in_records = False
     # Latin-1 maps every byte to one character, so header comments in the
-    # code page of the capturing PC pass through unchanged.
-    with timeline.path.open("r", encoding=TRC_ENCODING, newline="") as source:
-        for line in source:
+    # code page of the capturing PC pass through unchanged. Rows end at "\n"
+    # only, as the TRC reader splits them, so line numbers agree with it.
+    tail = timeline.incomplete_tail
+    with timeline.path.open("r", encoding=TRC_ENCODING, newline="\n") as source:
+        for line_number, line in enumerate(source, start=1):
+            if tail is not None and line_number == tail.line_number:
+                # The cut last row that the replay excluded.
+                break
             match = TRC_RECORD.match(line)
             if match is None:
                 if not in_records:

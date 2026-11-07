@@ -19,6 +19,7 @@ from tools.can_dashboard import selected_map
 from tools.can_dashboard import settings
 from tools.can_dashboard import widgets
 from tools.logs import can_telemetry
+from tools.logs import peak_trc_audit
 
 
 try:
@@ -586,6 +587,18 @@ class DashboardReplayWindowTest(unittest.TestCase):
         self.dashboard._open_replay(timeline)
         self.window.update_idletasks()
         return timeline
+
+    def test_the_source_status_names_an_excluded_cut_row(self):
+        path = speed_trace(self.directory / "cut.trc", (0.0, 10.0))
+        with path.open("a", encoding="ascii") as stream:
+            stream.write("     3)       300.0  Rx         0280  8  00 0")
+        with self.assertWarns(peak_trc_audit.IncompleteTailWarning):
+            timeline = replay.load_timeline(path, self.dashboard.model.can_id)
+        self.dashboard._open_replay(timeline)
+        self.assertTrue(self.dashboard.source_detail.startswith("replay cut.trc, TRC, "))
+        self.assertTrue(
+            self.dashboard.source_detail.endswith(", incomplete last row 6 excluded")
+        )
 
     def panel_value(self, key):
         for panel, _metrics in self.dashboard.data_panels:

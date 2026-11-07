@@ -606,7 +606,10 @@ compact candump log with lines such as
 `(12.500000) can0 6F0#A001020304050607`; the suffix selects the reader, and
 `--replay PATH` opens a file at start. The file is read completely in the
 background before playback. A trace keeps the telemetry frames, the stock
-frames the dashboard reads, and the PEAK error records. An MLG recording keeps
+frames the dashboard reads, and the PEAK error records. A trace that ends in a
+cut row, as a power loss or an operating-system crash leaves, replays up to
+it; the source status names the excluded row, and an excerpt leaves it out.
+An MLG recording keeps
 one record per snapshot, skips the hold-last bridge records, and requires the
 `Elapsed` and telemetry tick channels of a dashboard recording.
 

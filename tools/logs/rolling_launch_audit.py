@@ -358,6 +358,7 @@ class Capture:
     sha256: str
     samples: tuple[Sample, ...]
     timing: TraceTiming | None = None
+    incomplete_tail: peak_trc_audit.IncompleteTail | None = None
 
 
 def _sha256_file(path: Path) -> str:
@@ -537,7 +538,9 @@ def read_trc(
         tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard),
         {can_id: tuple(frames) for can_id, frames in bus.items()},
     )
-    return Capture(path, digest, tuple(_stock_speed_bounds(samples)), timing)
+    return Capture(
+        path, digest, tuple(_stock_speed_bounds(samples)), timing, trace.incomplete_tail
+    )
 
 
 def read_capture(path: Path, **options) -> Capture:
@@ -2647,6 +2650,9 @@ def main(argv: list[str] | None = None) -> int:
         capture = read_capture(path)
         runs = audit_hold(capture.samples, calibration, timing=capture.timing)
         print(f"{capture.path.name} sha256={capture.sha256} runs={len(runs)}")
+        if capture.incomplete_tail is not None:
+            tail = capture.incomplete_tail
+            print(f"  incomplete last row {tail.line_number} of {tail.size} bytes excluded")
         # A capture without a run, or a run without a checked fraction,
         # checks nothing and cannot pass.
         failed |= not runs

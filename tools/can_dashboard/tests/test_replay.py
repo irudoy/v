@@ -7,7 +7,7 @@ from unittest import mock
 
 from tools.can_dashboard import excerpt, model, recording, replay, sources
 from tools.can_dashboard.replay import ReplayError, ReplayPlayer
-from tools.logs import mlvlg
+from tools.logs import mlvlg, peak_trc_audit
 
 
 PEAK_TRC = """;$FILEVERSION=1.1
@@ -81,6 +81,23 @@ class LoadTimelineTest(unittest.TestCase):
             saved = excerpt.save_excerpt(timeline, 0.0, 0.0128, output)
             self.assertEqual(saved.records, 3)
             self.assertIn(comment.encode("cp1251"), output.read_bytes())
+
+    def test_a_cut_last_trc_row_is_excluded_reported_and_left_out_of_an_excerpt(self):
+        cut = "     5)        14.0  Rx         06F0  8  08 01 0"
+        # A lone carriage return inside a comment row does not end the row.
+        content = PEAK_TRC.replace(";\n", ";\r;\n", 1) + cut
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.trc"
+            path.write_bytes(content.encode("ascii"))
+            with self.assertWarns(peak_trc_audit.IncompleteTailWarning):
+                timeline = replay.load_timeline(path, 0x6F0)
+            self.assertEqual(list(timeline.ids), [0x180, 0x6F0, 0])
+            self.assertEqual(timeline.incomplete_tail.line_number, 9)
+            output = Path(directory) / "excerpt.trc"
+            saved = excerpt.save_excerpt(timeline, 0.0, 1.0, output)
+            self.assertEqual(saved.records, 4)
+            self.assertNotIn(b"08 01 0\n", output.read_bytes())
+            self.assertIsNone(peak_trc_audit.load_trace(output).incomplete_tail)
 
     def test_candump_times_start_at_the_first_line(self):
         timeline = self.load(

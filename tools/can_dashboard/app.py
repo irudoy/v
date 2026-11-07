@@ -2115,10 +2115,13 @@ class DashboardApp:
         self._sync_replay_note()
         self._replay_seek(0.0, keep_recording=True)
         self.player.play(time.monotonic())
+        tail = timeline.incomplete_tail
         self._set_source_status(
             "connected",
             f"replay {timeline.path.name}, {timeline.kind}, "
-            f"{format_replay_time(timeline.duration)}",
+            f"{format_replay_time(timeline.duration)}"
+            + ("" if tail is None else
+               f", incomplete last row {tail.line_number} excluded"),
         )
         self._sync_replay_bar()
 
