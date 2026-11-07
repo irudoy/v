@@ -10,6 +10,7 @@ import zipfile
 
 from tools.can_dashboard import __version__
 from tools.can_dashboard import package_macos
+from tools.logs import can_telemetry
 
 
 class MacosPackageTest(unittest.TestCase):
@@ -101,14 +102,25 @@ class MacosPackageTest(unittest.TestCase):
             run.assert_not_called()
             self.assertTrue((target / "keep.txt").is_file())
 
-    def test_the_bundle_carries_the_wire_schema_and_configuration_frames_only(self):
+    def test_the_bundle_carries_the_wire_schemas_and_configuration_frames_only(self):
+        # The decoder loads every historical schema when it starts.
+        historical = [
+            path.relative_to(package_macos.ROOT).as_posix()
+            for path in can_telemetry.HISTORICAL_SCHEMAS
+        ]
         self.assertEqual(
             [source.relative_to(package_macos.ROOT).as_posix() for source, _ in package_macos.DATA_FILES],
             [
                 "patches/can-telemetry-schema.json",
+                *historical,
                 "patches/can-telemetry-configurations.json",
             ],
         )
+        # The frozen modules find each file at its repository path.
+        for source, destination in package_macos.DATA_FILES:
+            self.assertEqual(
+                destination, source.parent.relative_to(package_macos.ROOT).as_posix()
+            )
 
     def test_archive_preserves_bundle_modes_and_symlinks(self):
         with tempfile.TemporaryDirectory() as directory:

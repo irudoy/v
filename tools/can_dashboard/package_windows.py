@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
 from tools.can_dashboard.package_locks import TARGET_BY_NAME, bootstrap_text
+from tools.logs import can_telemetry
 from tools.version_index import python_version
 
 PYTHON_VERSION = python_version()
@@ -23,17 +24,21 @@ LOCK_TARGET = TARGET_BY_NAME["windows"]
 SOURCE_BUILDS = ",".join(LOCK_TARGET.sources)
 
 PACKAGE_ROOT = f"{PRODUCT_SLUG}-v{__version__}"
-# The modules that the two launchers import, the wire schema and the
-# configuration frames they read, and the dashboard documentation.
+# The modules that the two launchers import, the wire schemas and the
+# configuration frames they read, and the dashboard documentation. The
+# decoder loads the frozen schema of every historical endpoint at start.
 ENTRY_POINTS = ("tools/can_dashboard/app.py", "tools/logs/trc_to_mlg.py")
 DATA_FILES = (
     "patches/can-telemetry-schema.json",
+    *(
+        path.relative_to(ROOT).as_posix()
+        for path in can_telemetry.HISTORICAL_SCHEMAS
+    ),
     "patches/can-telemetry-configurations.json",
 )
 DOCUMENTATION = ("tools/can_dashboard/README.md",)
 SOURCE_FILES = (
-    "patches/can-telemetry-schema.json",
-    "patches/can-telemetry-configurations.json",
+    *DATA_FILES,
     "tools/logs/__init__.py",
     "tools/logs/can_telemetry.py",
     "tools/logs/can_telemetry_schema.py",

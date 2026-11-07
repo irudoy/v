@@ -7,6 +7,7 @@ import zipfile
 from tools.can_dashboard import package_locks
 from tools.can_dashboard import package_windows
 from tools.can_dashboard import __version__
+from tools.logs import can_telemetry
 
 
 def repository_imports(entries):
@@ -47,7 +48,12 @@ class WindowsPackageTest(unittest.TestCase):
             with zipfile.ZipFile(output) as archive:
                 names = set(archive.namelist())
                 prefix = package_windows.PACKAGE_ROOT + "/"
-                expected = {
+                # The decoder loads every historical schema when it starts.
+                historical = {
+                    prefix + path.relative_to(package_windows.ROOT).as_posix()
+                    for path in can_telemetry.HISTORICAL_SCHEMAS
+                }
+                expected = historical | {
                     prefix + "install.cmd",
                     prefix + "run-dashboard.cmd",
                     prefix + "convert-trc-to-mlg.cmd",

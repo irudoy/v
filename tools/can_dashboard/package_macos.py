@@ -27,6 +27,7 @@ from tools.can_dashboard.package_locks import (
     normalize,
     parse_lock,
 )
+from tools.logs import can_telemetry
 from tools.version_index import python_version, requirement_pin
 
 
@@ -38,8 +39,13 @@ LOCK_TARGET = TARGET_BY_NAME["macos-build"]
 BUILD_REQUIREMENTS = LOCK_TARGET.requirements
 PYINSTALLER_VERSION = requirement_pin(BUILD_REQUIREMENTS, "pyinstaller")
 ENTRY_POINT = ROOT / "tools/can_dashboard/app.py"
+# The decoder loads the frozen schema of every historical endpoint at start.
 DATA_FILES = (
     (ROOT / "patches/can-telemetry-schema.json", "patches"),
+    *(
+        (path, path.parent.relative_to(ROOT).as_posix())
+        for path in can_telemetry.HISTORICAL_SCHEMAS
+    ),
     (ROOT / "patches/can-telemetry-configurations.json", "patches"),
 )
 
