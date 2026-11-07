@@ -702,6 +702,162 @@ class DemoPageTest(unittest.TestCase):
         self.assertTrue(dashboard.control_active)
 
 
+class PageResendTest(unittest.TestCase):
+    """The dashboard sends the confirmed configuration of the dynamic page
+    again after an ECU restart of the demo source."""
+
+    def setUp(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.control_requests = sources.queue.Queue(
+            maxsize=app.CONTROL_QUEUE_SIZE
+        )
+        dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
+        dashboard.control_active = True
+        dashboard.model = model.DashboardModel("tuning", 0x6F0, 1)
+        dashboard.configuration_frames = app.load_configuration_frames(
+            app.can_telemetry.DEFAULT_CONFIGURATION_FRAMES
+        )
+        dashboard.settings = app.dashboard_settings.Settings()
+        dashboard.settings_path = None
+        self.values = []
+        dashboard.control_var = types.SimpleNamespace(set=self.values.append)
+        self.dashboard = dashboard
+        self.generator = model.DemoGenerator()
+        self.tick = 0
+        self.now = 0.0
+        self.commands = []
+
+    def run_ticks(self, ticks):
+        """Step the demo source and the dashboard handling of its control
+        reports and snapshots."""
+        dashboard = self.dashboard
+        for _index in range(ticks):
+            self.tick += 1
+            self.now += model.BASE_TICK_SECONDS
+            events = []
+            sources._demo_control(self.generator, dashboard.control_requests, events.append)
+            for event in events:
+                self.commands.append(event.command)
+                dashboard._note_page_frame(event.command, event.state == "sent")
+            for frame in self.generator.group(self.tick, self.now):
+                snapshot = dashboard.model.process_frame(frame, now=self.now)
+                if snapshot is not None:
+                    dashboard._note_page_snapshot()
+                    dashboard._note_page_restart(snapshot)
+
+    def restart(self):
+        """Restart the ECU: Default on the page and a tick from the start."""
+        self.generator = model.DemoGenerator()
+        self.tick = 0
+
+    def select(self, configuration_id):
+        self.dashboard.send_page_configuration(configuration_id)
+        self.run_ticks(20)
+
+    def test_an_ecu_restart_sends_the_confirmed_configuration_once(self):
+        dashboard = self.dashboard
+        self.select(5)
+        self.assertEqual(dashboard.page_memory, 5)
+        self.assertEqual(dashboard._page_metric("page_resend"), "on: Rolling Launch inputs")
+
+        self.restart()
+        self.run_ticks(40)
+
+        self.assertIn(
+            "Control: an ECU restart reset the page to Default;"
+            " page configuration Rolling Launch inputs resent",
+            self.values,
+        )
+        self.assertEqual(self.commands.count("page-commit"), 2)
+        self.assertEqual(dashboard.model.page_configuration_id, 5)
+        self.assertEqual(dashboard.page_echo(app.time.monotonic()), "confirmed")
+        self.assertEqual(
+            dashboard._page_metric("page_request"),
+            "Rolling Launch inputs, resent after restart",
+        )
+        dashboard._report_page_echo(app.time.monotonic())
+        self.assertEqual(
+            self.values[-1],
+            "Control: page configuration Rolling Launch inputs (resent) echoed",
+        )
+
+    def test_a_default_selection_sends_nothing_after_a_restart(self):
+        self.select(4)
+        self.select(0)
+        self.assertIsNone(self.dashboard.page_memory)
+        self.restart()
+        self.run_ticks(40)
+        self.assertEqual(self.commands.count("page-commit"), 1)
+        self.assertEqual(self.commands.count("page-default"), 1)
+        self.assertEqual(self.dashboard.model.page_configuration_id, 0)
+        self.assertEqual(self.dashboard._page_metric("page_resend"), "on")
+
+    def test_a_disabled_resend_reports_the_reset(self):
+        self.dashboard.set_page_resend(False)
+        self.assertEqual(self.values[-1], "Control: restart resend off")
+        self.select(4)
+        self.restart()
+        self.run_ticks(40)
+        self.assertEqual(self.commands.count("page-commit"), 1)
+        self.assertEqual(
+            self.values[-1],
+            "Control: an ECU restart reset the page to Default;"
+            " restart resend is off",
+        )
+        self.assertEqual(self.dashboard._page_metric("page_resend"), "off")
+
+    def test_default_without_a_restart_is_reported_and_not_resent(self):
+        self.select(3)
+        # A failing slot clears the configuration within the run, as a
+        # DEFAULT that the host did not send does.
+        _can_id, ((_command, default),) = (
+            app.can_telemetry_schema.configuration_commands(
+                self.dashboard.configuration_frames,
+                self.generator.profile, 0x6F0, 0,
+            )
+        )
+        self.generator.control(default)
+        self.run_ticks(20)
+        self.assertEqual(self.dashboard.model.page_configuration_id, 0)
+        self.assertEqual(self.commands.count("page-commit"), 1)
+        self.assertIn(
+            "Control error: the ECU reset the page to Default without a"
+            " restart; Rolling Launch regulator is not resent",
+            self.values,
+        )
+
+    def test_the_page_menu_toggles_the_resend(self):
+        dashboard = self.dashboard
+        dashboard.root = None
+        dashboard.page_button = types.SimpleNamespace(
+            winfo_rootx=lambda: 0, winfo_rooty=lambda: 0, winfo_height=lambda: 0
+        )
+        with (
+            mock.patch.object(app.tk, "Menu") as menu,
+            mock.patch.object(app.tk, "BooleanVar") as variable,
+        ):
+            variable.return_value.get.return_value = False
+            dashboard.open_page_menu()
+        variable.assert_called_once_with(master=None, value=True)
+        options = menu.return_value.add_checkbutton.call_args.kwargs
+        self.assertEqual(options["label"], "Resend after ECU restart")
+        options["command"]()
+        self.assertFalse(dashboard.settings.page_resend)
+        self.assertEqual(dashboard._page_metric("page_resend"), "off")
+
+    def test_an_unechoed_request_keeps_the_confirmed_configuration(self):
+        self.select(3)
+        self.dashboard.send_page_configuration(4)
+        # The frames never reach the ECU, so the page keeps configuration 3.
+        while not self.dashboard.control_requests.empty():
+            self.dashboard.control_requests.get_nowait()
+        self.run_ticks(20)
+        self.assertEqual(self.dashboard.page_memory, 3)
+        self.restart()
+        self.run_ticks(40)
+        self.assertEqual(self.dashboard.model.page_configuration_id, 3)
+
+
 class ControlPacingTest(unittest.TestCase):
     def test_spaced_frames_wait_for_their_spacing(self):
         now = [10.0]

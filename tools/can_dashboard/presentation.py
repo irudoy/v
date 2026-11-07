@@ -86,6 +86,7 @@ PANEL_CODE_METRICS = {
         (20, Metric("page_group", "Group", "", 0)),
         (30, Metric("page_request", "Requested configuration")),
         (40, Metric("page_echo", "Echo")),
+        (45, Metric("page_resend", "Restart resend")),
         (50, Metric("page_undecoded", "Undecoded pages", "", 0)),
     ),
 }

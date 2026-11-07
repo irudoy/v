@@ -133,6 +133,18 @@ class NormalizeTest(unittest.TestCase):
                 )
                 self.assertIs(result.timer, shown)
 
+    def test_the_restart_resend_is_on_unless_stored_as_off(self):
+        self.assertTrue(settings.Settings().page_resend)
+        for stored, enabled in ((True, True), (False, False), ("no", True),
+                                (0, True), (None, True)):
+            with self.subTest(stored=stored):
+                result = settings.normalize(
+                    {"page_resend": stored},
+                    catalog=CATALOG,
+                    default_hero=DEFAULT_HERO,
+                )
+                self.assertIs(result.page_resend, enabled)
+
     def test_the_feed_is_off_on_loopback_by_default(self):
         self.assertEqual(
             settings.FeedSettings(),
@@ -209,6 +221,7 @@ class FileTest(unittest.TestCase):
             ("gear", "rpm"),
             settings.FeedSettings(True, "127.0.0.1", 5000),
             timer=True,
+            page_resend=False,
         )
 
         self.assertEqual(settings.save(path, chosen), path)
@@ -227,6 +240,7 @@ class FileTest(unittest.TestCase):
                     "port": 5000,
                 },
                 "timer": True,
+                "page_resend": False,
             },
         )
 

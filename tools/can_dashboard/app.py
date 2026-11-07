@@ -257,7 +257,7 @@ RUN_METRICS = {"zero_to_100_s": "0-100", "hundred_to_200_s": "100-200"}
 # The code metrics of the configuration of the dynamic page.
 PAGE_METRICS = frozenset({
     "page_configuration", "page_group", "page_request", "page_echo",
-    "page_undecoded",
+    "page_resend", "page_undecoded",
 })
 TELEMETRY_MAP_SOURCE = "the map index of the telemetry stream"
 
@@ -713,7 +713,8 @@ class PageRequest:
     ``final_index`` places its final frame among the final page frames that
     the connection queues. ``committed`` marks that frame sent, and
     ``echoed`` a snapshot after it whose configuration byte names the
-    configuration.
+    configuration. ``resent`` marks the dashboard sending it again after an
+    ECU restart.
     """
 
     configuration_id: int
@@ -721,6 +722,7 @@ class PageRequest:
     final_index: int = 0
     committed: bool = False
     echoed: bool = False
+    resent: bool = False
 
 
 def load_configuration_frames(path):
@@ -756,6 +758,13 @@ class DashboardApp:
     player = None
     page_request = None
     page_echo_reported = None
+    # The last nonzero configuration that the page echoed for a request of
+    # the operator on this source, the producer run and the configuration
+    # of the previous snapshot, and a restart whose page is not verified.
+    page_memory = None
+    page_run = None
+    page_echoed = None
+    page_restart = False
     # The final page frames that the connection queued and that its source
     # consumed, sent or failed.
     page_finals_queued = 0
@@ -1601,6 +1610,7 @@ class DashboardApp:
             "hero": self.settings.hero,
             "feed": self.settings.feed,
             "timer": self.settings.timer,
+            "page_resend": self.settings.page_resend,
             **changes,
         })
         if self.settings_path is None:
@@ -1826,6 +1836,10 @@ class DashboardApp:
         self.page_echo_reported = None
         self.page_finals_queued = 0
         self.page_finals_done = 0
+        self.page_memory = None
+        self.page_run = None
+        self.page_echoed = None
+        self.page_restart = False
 
     def toggle_source(self):
         if self.source_is_active():
@@ -1932,6 +1946,15 @@ class DashboardApp:
                     self.send_page_configuration(value)
                 ),
             )
+        menu.add_separator()
+        self.page_resend_var = tk.BooleanVar(
+            master=self.root, value=self.settings.page_resend
+        )
+        menu.add_checkbutton(
+            label="Resend after ECU restart",
+            variable=self.page_resend_var,
+            command=lambda: self.set_page_resend(self.page_resend_var.get()),
+        )
         button = self.page_button
         try:
             menu.tk_popup(
@@ -1941,9 +1964,21 @@ class DashboardApp:
         finally:
             menu.grab_release()
 
-    def send_page_configuration(self, configuration_id):
+    def set_page_resend(self, enabled):
+        """Store whether an ECU restart sends the remembered configuration
+        again."""
+        self._store_settings(page_resend=bool(enabled))
+        state = "on" if enabled else "off"
+        self.control_var.set(f"Control: restart resend {state}")
+
+    def send_page_configuration(self, configuration_id, *, resent=False):
         """Queue the frames that install one configuration of the dynamic
-        page; the configuration byte of the page confirms it."""
+        page; the configuration byte of the page confirms it. ``resent``
+        marks the configuration that an ECU restart reset."""
+        if configuration_id == 0:
+            # The operator chose the default page, so a restart restores
+            # nothing.
+            self.page_memory = None
         if not self._control_ready():
             return
         try:
@@ -1973,10 +2008,17 @@ class DashboardApp:
             + len(frames) * PAGE_FRAME_SPACING
             + PAGE_ECHO_TIMEOUT,
             self.page_finals_queued,
+            resent=resent,
         )
         self.page_echo_reported = None
         label = self.model.configuration_labels[configuration_id]
-        self.control_var.set(f"Control: page configuration {label} queued")
+        if resent:
+            self.control_var.set(
+                f"Control: an ECU restart reset the page to Default;"
+                f" page configuration {label} resent"
+            )
+        else:
+            self.control_var.set(f"Control: page configuration {label} queued")
 
     def page_echo(self, now):
         """The state of the requested configuration: confirmed once a
@@ -2018,6 +2060,42 @@ class DashboardApp:
             and self.model.page_configuration_id == request.configuration_id
         ):
             self.page_request = replace(request, echoed=True)
+            if request.configuration_id:
+                self.page_memory = request.configuration_id
+
+    def _note_page_restart(self, snapshot):
+        """Send the remembered configuration again when the first verified
+        snapshot after an ECU restart echoes Default.
+
+        The ECU installs Default at every start, and a new producer run of
+        the stream marks the restart. Default within a run, which a failing
+        slot causes, is reported and not sent again.
+        """
+        run, self.page_run = self.page_run, snapshot.run
+        if run is not None and snapshot.run != run:
+            self.page_restart = True
+        echoed = self.model.page_configuration_id
+        if echoed is None:
+            return
+        restarted, self.page_restart = self.page_restart, False
+        previous, self.page_echoed = self.page_echoed, echoed
+        if echoed != 0 or self.page_memory is None:
+            return
+        label = self.model.configuration_labels[self.page_memory]
+        if not restarted:
+            if previous:
+                self.control_var.set(
+                    "Control error: the ECU reset the page to Default"
+                    f" without a restart; {label} is not resent"
+                )
+            return
+        if not self.settings.page_resend:
+            self.control_var.set(
+                "Control: an ECU restart reset the page to Default;"
+                " restart resend is off"
+            )
+            return
+        self.send_page_configuration(self.page_memory, resent=True)
 
     def _report_page_echo(self, now):
         state = self.page_echo(now)
@@ -2027,6 +2105,8 @@ class DashboardApp:
         label = self.model.configuration_labels[
             self.page_request.configuration_id
         ]
+        if self.page_request.resent:
+            label = f"{label} (resent)"
         if state == "confirmed":
             self.control_var.set(f"Control: page configuration {label} echoed")
         else:
@@ -2502,9 +2582,11 @@ class DashboardApp:
             elif isinstance(event, ReplayLoaded):
                 self._open_replay(event.timeline)
             elif isinstance(event, FrameRecord):
-                if self.model.process_frame(event) is not None:
+                snapshot = self.model.process_frame(event)
+                if snapshot is not None:
                     new_snapshot = True
                     self._note_page_snapshot()
+                    self._note_page_restart(snapshot)
                     self._record_snapshot(event, now)
         if self.player is not None:
             new_snapshot = self._advance_replay(now) or new_snapshot
@@ -2603,9 +2685,18 @@ class DashboardApp:
         if key == "page_request":
             if self.page_request is None:
                 return None
-            return model.configuration_labels[
+            label = model.configuration_labels[
                 self.page_request.configuration_id
             ]
+            if self.page_request.resent:
+                return f"{label}, resent after restart"
+            return label
+        if key == "page_resend":
+            if not self.settings.page_resend:
+                return "off"
+            if self.page_memory is None:
+                return "on"
+            return f"on: {model.configuration_labels[self.page_memory]}"
         if key == "page_echo":
             return self.page_echo(time.monotonic())
         return model.decoder.unknown_configurations

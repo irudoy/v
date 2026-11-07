@@ -95,6 +95,14 @@ DESCRIPTIONS = {
         "keeps the active configuration, so a rejected request is not "
         "echoed."
     ),
+    "page_resend": (
+        "Whether an ECU restart sends the configuration again, and which. "
+        "The dashboard remembers the last configuration that the page "
+        "echoed for a PAGE request; Default clears it. The ECU installs "
+        "Default at every start, so the first verified snapshot of a new "
+        "run that echoes Default sends the remembered configuration once. "
+        "The PAGE menu turns this off."
+    ),
     "page_undecoded": (
         "Snapshots whose dynamic page carries a configuration ID or group "
         "that the schema does not define, or nonzero bytes after its slots. "

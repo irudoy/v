@@ -104,6 +104,8 @@ class Settings:
     hero: tuple[str, ...] = ()
     feed: FeedSettings = FeedSettings()
     timer: bool = False
+    # An ECU restart sends the remembered page configuration again.
+    page_resend: bool = True
 
 
 def default_path(product_name, product_slug, *, platform=None, environ=None):
@@ -167,6 +169,7 @@ def normalize(document, *, catalog, default_hero, limit=HERO_LIMIT):
         normalize_hero(hero, catalog, limit=limit),
         normalize_feed(document.get("feed")),
         timer=document.get("timer") is True,
+        page_resend=document.get("page_resend") is not False,
     )
 
 
@@ -200,6 +203,7 @@ def save(path, settings):
             "port": settings.feed.port,
         },
         "timer": settings.timer,
+        "page_resend": settings.page_resend,
     }
     handle, temporary = tempfile.mkstemp(
         prefix=path.name + ".",

@@ -195,6 +195,18 @@ carried, and the `Dynamic page` panel shows the slots of every
 configuration. `Undecoded pages` counts snapshots whose page carries a
 configuration or group that the schema does not define.
 
+The ECU installs Default at every start. The dashboard remembers the last
+configuration other than Default that the page echoed for a request on the
+current source. A Default request clears it, and a request that the page does
+not echo keeps it. A new producer run of the stream marks an ECU restart: when
+the first verified snapshot after it echoes Default, the dashboard sends the
+remembered configuration once more and reports its echo. The control status
+names the reset, `Requested configuration` marks the configuration
+`resent after restart`, and `Restart resend` shows `off`, `on`, or the
+configuration that a restart sends. Default within a run, which a failing slot
+causes, is reported and not sent again. The `Resend after ECU restart` item of
+the PAGE menu turns the resend off, and the settings file keeps the choice.
+
 The demo source applies the page commands as the ECU does. It consumes one
 control frame per tick, DEFAULT installs configuration 0, and a COMMIT that
 matches the staged slot widths and the groups of the schema installs its
@@ -837,7 +849,7 @@ parent and draws it across the text.
 | `0-100` | `stopwatch` | shows or hides the acceleration timer bar | timer bar shown |
 | `RESET TIMES` | `circular-arrow` | on the timer bar, clears the last and best 0-100 and 100-200 km/h times | never |
 | `LIGHT` / `DARK` | `sun` / `moon` | switches to the named color theme | never |
-| `PAGE` | `download` | on the tab row, lists the dynamic page configurations and sends the selected one | never |
+| `PAGE` | `download` | on the tab row, lists the dynamic page configurations and sends the selected one; its `Resend after ECU restart` item turns the restart resend on or off | never |
 
 A transport button shows the icon of the action it takes next. The replay bar
 uses `play` for `PLAY`, `pause` for `PAUSE`, `repeat` for `LOOP`, `mark-in`
