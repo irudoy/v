@@ -8,7 +8,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -19,9 +18,25 @@ cols = 8
 rows = 8
 storage = "uint8"
 
+[editor]
+name = "Event Timing Conditional Centered Upper Bound"
+category = "Ignition / State and Event Corrections"
+order = 3000
+format = "0"
+fine = 1
+coarse = 10
+static_axis_x = [0, 32, 64, 96, 128, 160, 192, 224]
+static_axis_x_name = "Event timing coordinate [stored count]"
+static_axis_y = [0, 32, 64, 96, 128, 160, 192, 224]
+static_axis_y_name = "Doubled state coordinate [stored count]"
+
 [[symbol]]
 layout = "1me3b"
 address = "00009d54"
+note = """
+Stock lookup status: stock-inactive. ROM8[00008a7f] = 0x18 has bit 7 clear, \
+so the event-timing reader skips this upper-bound lookup. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -44,6 +59,18 @@ bytes differ from JK78C in 56 bytes."""
 [[symbol]]
 layout = "1nd"
 address = "00009de0"
+note = [
+    """
+1ND0A: Stock lookup status: stock-inactive. ROM8[00008a2e] = 0x18 has bit 7 \
+clear, so the event-timing reader skips this upper-bound lookup. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: active. ROM8[00008a2e] = 0x80 has bit 7 set, so \
+the event-timing reader samples this upper bound. Applying the sampled bound \
+to the result still depends on its RAM state flag. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -67,6 +94,11 @@ bytes differ from JK78C in 56 bytes on 1ND0A and equal JK78C on 1ND3B."""
 layout = "jk78c"
 address = "00009ada"
 level = "code"
+note = """
+Stock lookup status: active. ROM8[00008968] = 0x80 has bit 7 set, so the \
+event-timing reader samples this upper bound. Applying the sampled bound to \
+the result still depends on its RAM state flag. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -83,17 +115,20 @@ ROM8[00008968]=0x80 enables the calibration gate."""
 [[link]]
 type = "reader"
 to = "event_timing_correction_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:0006937e"
-note = """
-Reader 000690ac supplies this table to the reviewed interpolation path. \
-Implicit 8x8 byte upper-bound surface of FUN_000690AC. ROM8[00008968].bit7 \
-and ffff241f.bit1 gate the lookup by byte ffff11d7 and \
-min(255,2*uint8[ffff1042]); result-128 is cached at ffff1f78 and limits the \
-signed intermediate before ffff12be is written. Stock ROM8[00008968]=0x80 \
-enables the calibration gate."""
+at = "1me3b:000788cc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007466c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006951c"

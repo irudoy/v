@@ -111,16 +111,6 @@ mode = "base"
 
 [[link]]
 type = "reader"
-to = "calm-wombat/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1nd:00071294"
-
-[[link]]
-type = "reader"
 to = "glaring-llama/fn"
 role = "accessor"
 
@@ -140,6 +130,17 @@ supports = "identity"
 at = "jk78c:00056678"
 value = 224
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071294"
 
 [[link]]
 type = "reader"

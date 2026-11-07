@@ -7,6 +7,10 @@ note = [
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
     "Native editor publication remains unresolved under issue #129.",
+    """
+This coordinate belongs to event_timing_subtraction_amplitude, whose VQ37 \
+presentation is hidden. The coordinate has no standalone native editor \
+entry.""",
 ]
 level = "code"
 home = "jk78c"
@@ -17,6 +21,13 @@ storage = "uint16"
 [[symbol]]
 layout = "1me3b"
 address = "00015366"
+note = """
+Stock lookup status: unqualified. This is the coordinate of the hidden \
+event_timing_subtraction_amplitude table. Its stock lookup admission is not \
+requalified by publishing a coordinate, and it has no standalone editor \
+entry. Stock activation remains unqualified under issue #129. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -38,6 +49,22 @@ Its 16 stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000154f2"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. This is the coordinate of the \
+hidden event_timing_subtraction_amplitude table. Its stock lookup admission \
+is not requalified by publishing a coordinate, and it has no standalone \
+editor entry. Stock activation remains unqualified under issue #129. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. This is the coordinate of the \
+hidden event_timing_subtraction_amplitude table. Its stock lookup admission \
+is not requalified by publishing a coordinate, and it has no standalone \
+editor entry. Stock activation remains unqualified under issue #129. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -60,6 +87,13 @@ Its 16 stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00014fbc"
 level = "code"
+note = """
+Stock lookup status: unqualified. This is the coordinate of the hidden \
+event_timing_subtraction_amplitude table. Its stock lookup admission is not \
+requalified by publishing a coordinate, and it has no standalone editor \
+entry. Stock activation remains unqualified under issue #129. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

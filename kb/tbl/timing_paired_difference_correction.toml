@@ -6,14 +6,32 @@ unresolved."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "ignition_timing/block"
 access = "explicit"
 cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Timing Paired Difference Correction"
+category = "Ignition / State and Event Corrections"
+order = 3033
+format = "0"
+fine = 1
+coarse = 10
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+static_axis_name = "Lookup coordinate [stored count]"
+
 [[symbol]]
 layout = "1me3b"
 address = "00014626"
+note = """
+Stock lookup status: unqualified. The periodic reader has independent \
+paired-state fallbacks before these difference or excess lookups. Their \
+calibration identities are qualified, while the stock state producers \
+admitting the lookup remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -33,6 +51,22 @@ bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "0001476a"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. The periodic reader has independent \
+paired-state fallbacks before these difference or excess lookups. Their \
+calibration identities are qualified, while the stock state producers \
+admitting the lookup remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. The periodic reader has independent \
+paired-state fallbacks before these difference or excess lookups. Their \
+calibration identities are qualified, while the stock state producers \
+admitting the lookup remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -53,6 +87,13 @@ bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "000142d4"
 level = "code"
+note = """
+Stock lookup status: unqualified. The periodic reader has independent \
+paired-state fallbacks before these difference or excess lookups. Their \
+calibration identities are qualified, while the stock state producers \
+admitting the lookup remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -62,15 +103,30 @@ at = "jk78c:000687f4"
 [[link]]
 type = "reader"
 to = "timing_paired_difference_correction_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000687f4"
+at = "1me3b:00077514"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00068882"
+at = "1nd:00073484"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000736c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068878"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068ac0"

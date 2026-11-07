@@ -7,6 +7,10 @@ note = [
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
     "Native editor publication remains unresolved under issue #129.",
+    """
+The 1ME3B upper bound uses a scalar and a selected surface. No one-to-one \
+role of this curve is qualified there, so the shared native catalog cannot \
+emit the role.""",
 ]
 level = "code"
 home = "jk78c"
@@ -20,6 +24,18 @@ storage = "uint16"
 [[symbol]]
 layout = "1nd"
 address = "00016af2"
+note = [
+    """
+1ND0A: Stock lookup status: active. The native knock branch is enabled by \
+ROM8[00008a2b] = 0xBA, bit 5 set, and looks up the upper bound. This does \
+not establish a counterpart on 1ME3B. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. The native knock branch is enabled by \
+ROM8[00008a2b] = 0xBA, bit 5 set, and looks up the upper bound. This does \
+not establish a counterpart on 1ME3B. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -41,6 +57,11 @@ address plus 0x61c. MOV.L 0006d974 loads this table for the call at 0006d978 \
 layout = "jk78c"
 address = "000164e4"
 level = "code"
+note = """
+Stock lookup status: active. The native knock branch is enabled by \
+ROM8[00008965] = 0xBA, bit 5 set, and looks up the upper bound. This does \
+not establish a counterpart on 1ME3B. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

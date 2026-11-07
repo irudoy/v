@@ -7,7 +7,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -18,9 +17,23 @@ cols = 16
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Knock Selector Hysteresis Curve"
+category = "Ignition / State and Event Corrections"
+order = 3002
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000141aa"
+note = """
+Stock lookup status: active. The periodic 1ME3B native knock reader samples \
+this calibration without the JK78C/1ND bit-5 entry selector. State-update \
+and selector effects retain their separate runtime conditions. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +55,18 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "0001433e"
+note = [
+    """
+1ND0A: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -63,6 +88,11 @@ address plus 0x61c. MOV.L 0006e0c2 loads this table for the call at 0006e0c8 \
 layout = "jk78c"
 address = "00013ea0"
 level = "code"
+note = """
+Stock lookup status: active. ROM8[00008965] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -79,7 +109,7 @@ the separately calibrated threshold. Stock output is 45."""
 type = "axis"
 to = "knock_selector_state_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -87,19 +117,45 @@ supports = "identity"
 at = "jk78c:00063204"
 note = "The reviewed lookup supplies axis 00013ec0 in slot x for table 00013ea0."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006e0c8"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00072158"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "knock_function/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00063204"
-note = """
-Reader 00062780 supplies this table to the reviewed interpolation path. \
-Selector hysteresis-width curve in FUN_00062780. Byte ffff119d selects the \
-output cached at ffff17c4; lookup*256 sets the hysteresis span of the \
-ffff23fc.bit3 comparison around the separately calibrated threshold. Stock \
-output is 45."""
+at = "1me3b:00072210"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000633c0"
+
+[[link]]
+type = "reader"
+to = "knock_state_update_continuation/fn"
+layouts = ["1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006e2e8"

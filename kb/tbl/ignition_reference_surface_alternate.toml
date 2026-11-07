@@ -5,12 +5,21 @@ both set, the coordinator writes 0xFFFF1632 from this 8x8 surface through \
 the kernel 0x00027F98; otherwise it looks up the hot-coolant surface \
 0x0000A10A. Stock ROM8[0x8605] = 0x42 keeps bit 0 clear, and every stock \
 cell holds 0x40."""
-note = """
+note = [
+    """
 Stock bytes equal 1ND 0x0000A650. The surface carries no editor entry \
-because the stock configuration never reads it."""
+because the stock configuration never reads it.""",
+    """
+The stock bit-0 ROM gate skips the alternate reference lookup on every \
+image. The 1ND reader entry also has an unqualified reachability context; \
+address correspondence alone does not qualify an active reference \
+calibration. This surface remains outside the common native editor catalog \
+under issue #129.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"
+block = "ignition_timing/block"
 cols = 8
 rows = 8
 storage = "uint8"
@@ -18,6 +27,12 @@ storage = "uint8"
 [[symbol]]
 layout = "1me3b"
 address = "0000a584"
+note = """
+Stock lookup status: stock-inactive. ROM8[00008659] = 0x42 has bit 0 clear, \
+so the reviewed coordinator skips this alternate reference lookup. \
+Reader-entry reachability is a separate question; the 1ND entry is not \
+qualified as reachable. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -38,6 +53,20 @@ jk78c:0006a0f6 loads 0000a30a, which reaches the call at jk78c:0006a106 \
 [[symbol]]
 layout = "1nd"
 address = "0000a650"
+note = [
+    """
+1ND0A: Stock lookup status: stock-inactive. ROM8[00008651] = 0x42 has bit 0 \
+clear, so the reviewed coordinator skips this alternate reference lookup. \
+Reader-entry reachability is a separate question; the 1ND entry is not \
+qualified as reachable. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: stock-inactive. ROM8[00008651] = 0x42 has bit 0 \
+clear, so the reviewed coordinator skips this alternate reference lookup. \
+Reader-entry reachability is a separate question; the 1ND entry is not \
+qualified as reachable. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -58,6 +87,12 @@ jk78c:0006a0f6 loads 0000a30a, which reaches the call at jk78c:0006a106 \
 [[symbol]]
 layout = "jk78c"
 address = "0000a30a"
+note = """
+Stock lookup status: stock-inactive. ROM8[00008605] = 0x42 has bit 0 clear, \
+so the reviewed coordinator skips this alternate reference lookup. \
+Reader-entry reachability is a separate question; the 1ND entry is not \
+qualified as reachable. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

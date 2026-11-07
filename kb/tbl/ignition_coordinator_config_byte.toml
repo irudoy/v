@@ -1,3 +1,23 @@
+title = "Native ignition coordinator configuration byte"
+summary = """
+Internal 1ME3B ignition configuration byte at 0x00008A7D, separate from \
+knock_selector_config at 0x00008A7C. The map_switching role uses this byte \
+on 1ME3B and knock_selector_config on JK78C and 1ND. Its startup and \
+coordinator consumers retain their layout-specific bit meanings."""
+note = [
+    """
+Classified as internal configuration. The whole byte has no editor \
+presentation; it combines layout-specific controls consumed by startup and \
+multiple timing functions.""",
+]
+level = "code"
+role = "table"
+block = "ignition_timing/block"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
 [[symbol]]
 layout = "1me3b"
 address = "00008a7d"

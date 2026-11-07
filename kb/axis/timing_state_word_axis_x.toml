@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,21 @@ quantity = "raw"
 points = 16
 storage = "uint16"
 
+[editor]
+name = "Timing State Word Axis X"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00015dc4"
+note = """
+Stock lookup status: active. The periodic 1ME3B compositor passes this \
+shared coordinate to the paired word lookups for either bank without the \
+JK78C/1ND outer bit-5 entry selector. Stock activation of an individual \
+bank-specific table remains unqualified. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +53,20 @@ equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00015f20"
+note = [
+    """
+1ND0A: Stock lookup status: active. The ROM-bit-5-enabled periodic \
+compositor passes this shared coordinate to the paired word lookups for \
+either bank. Stock activation of an individual bank-specific table remains \
+unqualified. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. The ROM-bit-5-enabled periodic \
+compositor passes this shared coordinate to the paired word lookups for \
+either bank. Stock activation of an individual bank-specific table remains \
+unqualified. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -68,6 +93,12 @@ JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00015932"
 level = "code"
+note = """
+Stock lookup status: active. The ROM-bit-5-enabled periodic compositor \
+passes this shared coordinate to the paired word lookups for either bank. \
+Stock activation of an individual bank-specific table remains unqualified. \
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -144,77 +175,20 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "timing_vvel_state_compositor/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00066134"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000e6ce. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00074f94"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000661b8"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000e8ce. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1nd:00070fe8"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000660f8"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000eace. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066116"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000ecce. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066256"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000d14e. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066280"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000d34e. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:0006621c"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000d54e. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:00066238"
-note = """
-The reviewed reader passes axis 00015932 in the x slot for table 0000d74e. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "jk78c:00066198"

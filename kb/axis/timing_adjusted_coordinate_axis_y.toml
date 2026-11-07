@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,20 @@ quantity = "raw"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Timing Adjusted Coordinate Axis Y"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00013308"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_adjusted_coordinate_upper_bound/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -35,6 +45,18 @@ JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000135dc"
+note = [
+    """
+1ND0A: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_adjusted_coordinate_upper_bound/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_adjusted_coordinate_upper_bound/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -54,6 +76,11 @@ JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "0001325a"
 level = "code"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_adjusted_coordinate_upper_bound/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -67,14 +94,20 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "final_timing_coordinate_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000694b0"
-note = """
-The reviewed reader passes axis 0001325a in the y slot for table 0000958a. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00078ac8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00074698"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006955c"

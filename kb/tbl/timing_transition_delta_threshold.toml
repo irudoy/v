@@ -6,14 +6,48 @@ unresolved."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "ignition_timing/block"
 access = "explicit"
 cols = 16
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Timing Transition Delta Threshold"
+category = "Ignition / State and Event Corrections"
+order = 3056
+format = "0"
+fine = 1
+coarse = 10
+static_axis = [
+    0,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    144,
+    160,
+    176,
+    192,
+    208,
+    224,
+    240,
+]
+static_axis_name = "Lookup coordinate [stored count]"
+
 [[symbol]]
 layout = "1me3b"
 address = "0001398e"
+note = """
+Stock lookup status: stock-inactive. ROM8[000085AA] = 255 makes the strict \
+byte-input > 255 entry comparison impossible; the additional word threshold \
+is ROM16[0000903e] = 65534. The curve is not read. Every stock cell in this \
+image holds zero. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -31,6 +65,21 @@ Its 16 stock bytes differ from JK78C in 16 bytes."""
 [[symbol]]
 layout = "1nd"
 address = "00013b92"
+note = [
+    """
+1ND0A: Stock lookup status: stock-inactive. ROM8[000085AA] = 255 makes the \
+strict byte-input > 255 entry comparison impossible; the additional word \
+threshold is ROM16[00008fe2] = 65534. The curve is not read. Every stock \
+cell in this image holds zero. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. The stock entry thresholds allow \
+the comparison path (byte threshold 110 and word threshold 320), but the \
+capture, hold and transition-state producers required to reach the curve \
+lookup remain unqualified. Stock activation remains unqualified under issue \
+#129. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -50,6 +99,13 @@ Its 16 stock bytes differ from JK78C in 16 bytes on 1ND0A and in 9 bytes on \
 layout = "jk78c"
 address = "00013760"
 level = "code"
+note = """
+Stock lookup status: unqualified. The stock entry thresholds allow the \
+comparison path (byte threshold 110 and word threshold 320), but the \
+capture, hold and transition-state producers required to reach the curve \
+lookup remain unqualified. Stock activation remains unqualified under issue \
+#129. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -59,10 +115,20 @@ at = "jk78c:00068f8c"
 [[link]]
 type = "reader"
 to = "timing_transition_delta_gate/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00068f8c"
+at = "1me3b:00078160"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000741d0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00069078"

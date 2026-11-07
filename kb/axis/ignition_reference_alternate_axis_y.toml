@@ -3,6 +3,11 @@ Load axis of the alternate ignition reference surface 0x0000A30A. The \
 coordinator FUN_00069AB8 passes it as the second axis of the lookup at \
 0x0006A106 with the load byte 0xFFFF1032 as its coordinate, the byte that \
 indexes the hot-coolant surface 0x0000A10A over 0x000135B8."""
+note = [
+    """
+The alternate reference surface remains outside the shared native editor \
+catalog; its dedicated coordinate has no standalone editor entry.""",
+]
 level = "code"
 home = "jk78c"
 quantity = "load"
@@ -12,6 +17,11 @@ storage = "uint8"
 [[symbol]]
 layout = "1me3b"
 address = "000136fe"
+note = """
+Stock lookup status: stock-inactive. Stock lookup status follows the \
+reviewed consumers: ignition_reference_surface_alternate/tbl. The stock ROM \
+gates disable every package consumer. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,6 +42,18 @@ jk78c:0006a106 (helper 00027f98) in r6. Its 8 stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00013972"
+note = [
+    """
+1ND0A: Stock lookup status: stock-inactive. Stock lookup status follows the \
+reviewed consumers: ignition_reference_surface_alternate/tbl. The stock ROM \
+gates disable every package consumer. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: stock-inactive. Stock lookup status follows the \
+reviewed consumers: ignition_reference_surface_alternate/tbl. The stock ROM \
+gates disable every package consumer. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -53,6 +75,11 @@ jk78c:0006a106 (helper 00027f98) in r6. Its 8 stock bytes equal JK78C on \
 [[symbol]]
 layout = "jk78c"
 address = "000135a0"
+note = """
+Stock lookup status: stock-inactive. Stock lookup status follows the \
+reviewed consumers: ignition_reference_surface_alternate/tbl. The stock ROM \
+gates disable every package consumer. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

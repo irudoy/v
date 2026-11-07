@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,20 @@ quantity = "raw"
 points = 16
 storage = "uint8"
 
+[editor]
+name = "Timing Positive Difference Gain Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000133b4"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_state_positive_difference_gain/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +52,18 @@ jk78c:00065852 loads 000132de, which reaches the call at 00065856 \
 [[symbol]]
 layout = "1nd"
 address = "00013670"
+note = [
+    """
+1ND0A: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_state_positive_difference_gain/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_state_positive_difference_gain/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -68,6 +90,11 @@ the call at 00065856 (speedy-guan) in r5. Its 16 stock bytes equal JK78C on \
 layout = "jk78c"
 address = "000132de"
 level = "code"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_state_positive_difference_gain/tbl. At least one consumer \
+reads this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -81,14 +108,20 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "timing_vvel_state_compositor/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00065856"
-note = """
-The reviewed reader passes axis 000132de in the x slot for table 00013b48. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00074608"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070768"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065a68"

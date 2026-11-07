@@ -170,6 +170,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000788d8"
+level = "code"
+summary = """
+Native final internal timing-coordinate builder. It samples the \
+adjusted-coordinate upper-bound surface, combines and bounds the \
+intermediate, and applies subsequent slew and mode handling. It is called \
+from the secondary call-list coordinator. Its raw coordinate is not \
+qualified here as a hardware ignition angle."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000788d8"
+to = "jk78c:000693b8"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "00074498"
+level = "code"
+summary = """
+Native final internal timing-coordinate builder. It samples the \
+adjusted-coordinate upper-bound surface, combines and bounds the \
+intermediate, and applies subsequent slew and mode handling. It is called \
+from the secondary call-list coordinator. Its raw coordinate is not \
+qualified here as a hardware ignition angle."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00074498"
+to = "jk78c:000693b8"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0004dbe8"
 

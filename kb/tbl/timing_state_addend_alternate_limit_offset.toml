@@ -9,20 +9,45 @@ signed8(0xFFFF1980) + (curve - 0x80) + high8(0xFFFF233E), saturates it to \
 addend and the limit to 0xFFFF14E5. With bit 0 clear, it writes the centered \
 alternate addend unchanged. Stock ROM8[0x8966] = 0x50 keeps bit 0 clear, and \
 every stock cell holds 0x80."""
-note = """
-JK08A FUN_0004AFDC has no counterpart of this limit. The curve carries no \
-editor entry because the stock configuration never reads it."""
+note = [
+    """
+The JK78C DFCO-transition reader gates the lookup with ROM8[0x8966].bit0, \
+clear in stock. The timing-state compositor also reads the same calibration \
+bytes.""",
+]
 level = "code"
 home = "jk78c"
 role = "table"
+block = "ignition_timing/block"
 former = ["timing_state_addend_alternate_load_trim"]
 cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Timing State Addend Alternate Limit Offset"
+category = "Ignition / State and Event Corrections"
+order = 3036
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00013776"
+summary = """
+Second centered limit-offset curve of the layout-specific timing-state \
+compositor. The explicit coordinate is shared with the paired limit-offset \
+curve. Stored integers retain their code identity; physical timing \
+conversion is unresolved."""
+note = """
+Stock lookup status: unqualified. The periodic timing-state compositor reads \
+this offset only on its RAM-selected branch, whose stock state producer \
+remains unqualified. On JK78C the separate DFCO-transition reader has \
+ROM8[00008966].bit0 clear in stock; that disabled caller does not establish \
+inactivity of the shared calibration. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +67,29 @@ jk78c:0006722a loads 000135f8, which reaches the call at jk78c:00067236 \
 [[symbol]]
 layout = "1nd"
 address = "000139ca"
+summary = """
+Second centered limit-offset curve of the layout-specific timing-state \
+compositor. The explicit coordinate is shared with the paired limit-offset \
+curve. Stored integers retain their code identity; physical timing \
+conversion is unresolved."""
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. The periodic timing-state \
+compositor reads this offset only on its RAM-selected branch, whose stock \
+state producer remains unqualified. On JK78C the separate DFCO-transition \
+reader has ROM8[00008966].bit0 clear in stock; that disabled caller does not \
+establish inactivity of the shared calibration. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. The periodic timing-state \
+compositor reads this offset only on its RAM-selected branch, whose stock \
+state producer remains unqualified. On JK78C the separate DFCO-transition \
+reader has ROM8[00008966].bit0 clear in stock; that disabled caller does not \
+establish inactivity of the shared calibration. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -62,6 +110,14 @@ jk78c:0006722a loads 000135f8, which reaches the call at jk78c:00067236 \
 layout = "jk78c"
 address = "000135f8"
 former = ["timing_state_addend_alternate_load_trim/tbl/jk78c-000135f8"]
+note = """
+Stock lookup status: unqualified. The periodic timing-state compositor reads \
+this offset only on its RAM-selected branch, whose stock state producer \
+remains unqualified. On JK78C the separate DFCO-transition reader has \
+ROM8[00008966].bit0 clear in stock; that disabled caller does not establish \
+inactivity of the shared calibration. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -72,18 +128,57 @@ at = "jk78c:000646e8"
 type = "axis"
 to = "timing_state_addend_limit_offset_axis/axis"
 slot = "x"
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:000646f0"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071d3e"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075d7e"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "signed_timing_state_accumulator/fn"
+layouts = ["jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000646e8"
+at = "jk78c:00064850"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["1me3b", "1nd", "jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075f20"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071f1c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000673bc"

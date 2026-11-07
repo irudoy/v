@@ -236,6 +236,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00095f8c"
+name = "careful-turtle"
+level = "code"
+summary = """
+Mode-selected byte-parameter builder with explicit and implicit calibration \
+lookups and a ROM-bit-4-selected copy branch. Its stock caller or its own \
+copy branch skips the calibration lookups on every VQ37 image. The branch \
+and bank codes do not establish a physical gear or engineering parameter \
+identity."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00095f8c"
+to = "jk78c:000826d2"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "000903f6"
+name = "outgoing-mussel"
+level = "code"
+summary = """
+Mode-selected byte-parameter builder with explicit and implicit calibration \
+lookups and a ROM-bit-4-selected copy branch. Its stock caller or its own \
+copy branch skips the calibration lookups on every VQ37 image. The branch \
+and bank codes do not establish a physical gear or engineering parameter \
+identity."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000903f6"
+to = "jk78c:000826d2"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0006425a"
 name = "daring-koala"

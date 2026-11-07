@@ -7,6 +7,7 @@ samples. Raw timing channels use their own centered and bounded arithmetic. \
 The bit5-clear indirect branch and physical conversions of the raw timing \
 terms remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
 
 [[source]]
@@ -15,6 +16,72 @@ path = "defs/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Target surfaces and scales"]
 anchor = "FUN_000657E4"
+
+[[source]]
+layout = "1nd"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_00070514"
+
+[[source]]
+layout = "1me3b"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_0007448C"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007448c"
+former = ["spotted-ibex/fn/1me3b-0007448c"]
+summary = """
+Native state-code compositor of the timing byte and word channels with \
+VVEL-duration and CVTC-target channels. Its entry samples the gains and \
+paired word tables directly, without the JK78C/1ND outer bit-5 selector. \
+Bank, flag and state-code selections retain their target operands and \
+combination paths. Stored timing quantities retain their raw interpretation; \
+an individual selection has no qualified stock lifecycle here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00074eda"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007448c"
+to = "jk78c:000657e4"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "00070514"
+former = ["calm-wombat/fn/1nd-00070514"]
+summary = """
+Native state-code compositor of the timing byte and word channels with \
+VVEL-duration and CVTC-target channels. Its ROM-bit-5-enabled path samples \
+the qualified gains and paired word tables, selects calibration banks and \
+state-code surfaces, and combines current and saved samples. Stored timing \
+quantities retain their raw interpretation; an individual bank or state code \
+has no qualified stock lifecycle here."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070eae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00070514"
+to = "jk78c:000657e4"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
 
 [[symbol]]
 layout = "jk78c"

@@ -238,6 +238,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00078560"
+level = "code"
+summary = """
+Native event-correction builder with bounded intermediates, the \
+subtraction-amplitude lookup and a ROM-bit-7-gated centered upper-bound \
+surface. The upper-bound lookup is enabled on 1ND3B and skipped on 1ND0A and \
+1ME3B; applying the sampled bound also depends on a separate RAM flag. \
+Source-layout addresses and engineering timing conversions do not transfer \
+from the canonical reader."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00078560"
+to = "jk78c:000690ac"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "000741d8"
+level = "code"
+summary = """
+Native event-correction builder with bounded intermediates, the \
+subtraction-amplitude lookup and a ROM-bit-7-gated centered upper-bound \
+surface. The upper-bound lookup is enabled on 1ND3B and skipped on 1ND0A and \
+1ME3B; applying the sampled bound also depends on a separate RAM flag. \
+Source-layout addresses and engineering timing conversions do not transfer \
+from the canonical reader."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000741d8"
+to = "jk78c:000690ac"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0004d99c"
 summary = """

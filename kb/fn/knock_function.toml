@@ -164,6 +164,12 @@ anchor = "FUN_00062780"
 [[symbol]]
 layout = "1me3b"
 address = "00071d64"
+summary = """
+Native periodic knock and timing-state coordinator. It samples the native \
+lower bound, quiet increment, event decrement factor and selector threshold \
+and hysteresis curves without the JK78C/1ND bit-5 entry selector. Its \
+RAM-selected upper surface and scalar differ from the source upper-bound \
+curve. Physical state conversion remains unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -174,6 +180,13 @@ note = "Target coordinator clears the saturating event count at 0x720d8"
 [[symbol]]
 layout = "1nd"
 address = "0006d948"
+summary = """
+Native periodic knock and timing-state coordinator. The stock \
+ROM-bit-5-enabled branch reads the native lower bound, quiet increment, \
+event decrement factor and selector threshold and hysteresis curves. The 1ND \
+normalized L0 split has a separately represented continuation. Upper-bound \
+correspondence and physical state conversion retain their layout-specific \
+qualifications."""
 
 [[symbol.evidence]]
 kind = "l0"

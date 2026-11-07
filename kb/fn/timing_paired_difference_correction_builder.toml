@@ -16,7 +16,46 @@ mechanisms do not establish one function meaning; the JK78C function and \
 calibration owners remain native.""",
 ]
 level = "code"
+home = "jk78c"
 block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000772c4"
+level = "code"
+summary = """
+Native paired-correction builder. It samples the explicit reference curve \
+and uses independent paired-state conditions and fallbacks for the implicit \
+difference and excess curves. The physical sample sources and the stock \
+lifecycle of those admitting conditions remain unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000772c4"
+to = "jk78c:000686e0"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "000732de"
+level = "code"
+summary = """
+Native paired-correction builder. It samples the explicit reference curve \
+and uses independent paired-state conditions and fallbacks for the implicit \
+difference and excess curves. The physical sample sources and the stock \
+lifecycle of those admitting conditions remain unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000732de"
+to = "jk78c:000686e0"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
 
 [[symbol]]
 layout = "jk78c"

@@ -7,9 +7,20 @@ quantity = "raw"
 points = 16
 storage = "uint8"
 
+[editor]
+name = "Timing Paired Sample Reference Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014646"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_paired_sample_reference/tbl. At least one consumer reads \
+this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -29,6 +40,18 @@ JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "00014792"
+note = [
+    """
+1ND0A: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_paired_sample_reference/tbl. At least one consumer reads \
+this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_paired_sample_reference/tbl. At least one consumer reads \
+this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -49,6 +72,11 @@ JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "000142fc"
 level = "code"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: timing_paired_sample_reference/tbl. At least one consumer reads \
+this coordinate on its stock-enabled path. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -58,10 +86,20 @@ at = "jk78c:00068752"
 [[link]]
 type = "reader"
 to = "timing_paired_difference_correction_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00068752"
+at = "1me3b:000774f8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00073468"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00068864"

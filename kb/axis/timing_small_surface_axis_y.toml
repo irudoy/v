@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,25 @@ quantity = "raw"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Timing Small Surface Axis Y"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000136f6"
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_centered_state_code_4_bit_clear/tbl, \
+timing_centered_state_code_4_bit_set/tbl, timing_centered_state_code_5/tbl, \
+timing_centered_state_code_6_7/tbl, timing_state_code_4_bit_clear/tbl, \
+timing_state_code_4_bit_set/tbl, timing_state_code_5/tbl, \
+timing_state_code_6_7/tbl. The selecting states or counterpart identities of \
+these consumers remain unqualified. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -42,6 +57,28 @@ the call at 000755b4 (dashing-badger) in r6, as MOV.L jk78c:00066a9a loads \
 [[symbol]]
 layout = "1nd"
 address = "0001396a"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_centered_state_code_4_bit_clear/tbl, \
+timing_centered_state_code_4_bit_set/tbl, timing_centered_state_code_5/tbl, \
+timing_centered_state_code_6_7/tbl, timing_state_code_4_bit_clear/tbl, \
+timing_state_code_4_bit_set/tbl, timing_state_code_5/tbl, \
+timing_state_code_6_7/tbl. The selecting states or counterpart identities of \
+these consumers remain unqualified. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_centered_state_code_4_bit_clear/tbl, \
+timing_centered_state_code_4_bit_set/tbl, timing_centered_state_code_5/tbl, \
+timing_centered_state_code_6_7/tbl, timing_state_code_4_bit_clear/tbl, \
+timing_state_code_4_bit_set/tbl, timing_state_code_5/tbl, \
+timing_state_code_6_7/tbl. The selecting states or counterpart identities of \
+these consumers remain unqualified. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -68,6 +105,16 @@ and 1ND3B."""
 layout = "jk78c"
 address = "00013598"
 level = "code"
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_centered_state_code_4_bit_clear/tbl, \
+timing_centered_state_code_4_bit_set/tbl, timing_centered_state_code_5/tbl, \
+timing_centered_state_code_6_7/tbl, timing_state_code_4_bit_clear/tbl, \
+timing_state_code_4_bit_set/tbl, timing_state_code_5/tbl, \
+timing_state_code_6_7/tbl. The selecting states or counterpart identities of \
+these consumers remain unqualified. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -99,32 +146,65 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "timing_vvel_state_compositor/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00065c0a"
-note = """
-The reviewed reader passes axis 00013598 in the y slot for table 0000a6ca. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00074890"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00066a9e"
-note = """
-The reviewed reader passes axis 00013598 in the y slot for table 000098da. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00074a88"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00066b0a"
-note = """
-The reviewed reader passes axis 00013598 in the y slot for table 0000991a. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00075790"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075a2c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000709bc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070c30"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000715a8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071828"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065c8c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065edc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066bf0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066e30"

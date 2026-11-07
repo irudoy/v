@@ -9,6 +9,9 @@ note = [
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
     "Native editor publication remains unresolved under issue #129.",
+    """
+The target branches select multiple endpoint candidates; no unique \
+counterpart of JK78C endpoint A is qualified.""",
 ]
 level = "code"
 role = "table"
@@ -22,6 +25,12 @@ storage = "uint8"
 layout = "jk78c"
 address = "00009a5a"
 level = "code"
+note = """
+Stock lookup status: unqualified. The reader selects multiple endpoint \
+candidates on the targets. No unique target counterpart of JK78C endpoint A \
+is qualified; the bypass-state lifecycle also remains unqualified. Stock \
+activation remains unqualified under issue #129. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

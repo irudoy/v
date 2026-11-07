@@ -7,7 +7,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -18,9 +17,23 @@ cols = 16
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Timing State Centered Difference Gain"
+category = "Ignition / State and Event Corrections"
+order = 3038
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00014452"
+note = """
+Stock lookup status: active. The periodic 1ME3B state compositor samples \
+this gain before its state-code dispatch. The JK78C/1ND outer bit-5 selector \
+is absent from this target entry. The gain is not evidence of a physical \
+timing conversion. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -46,6 +59,18 @@ jk78c:00065824 loads 00014120, which reaches the call at 00065830 \
 [[symbol]]
 layout = "1nd"
 address = "000145c6"
+note = [
+    """
+1ND0A: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic state compositor samples this gain before its state-code dispatch; \
+the gain is not evidence of a physical timing conversion. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic state compositor samples this gain before its state-code dispatch; \
+the gain is not evidence of a physical timing conversion. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -72,6 +97,11 @@ stock bytes equal JK78C on 1ND0A and 1ND3B."""
 layout = "jk78c"
 address = "00014120"
 level = "code"
+note = """
+Stock lookup status: active. ROM8[00008965] = 0xBA has bit 5 set. The \
+periodic state compositor samples this gain before its state-code dispatch; \
+the gain is not evidence of a physical timing conversion. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -89,7 +119,7 @@ unit."""
 type = "axis"
 to = "able-butterfly/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -97,19 +127,39 @@ supports = "identity"
 at = "jk78c:00065830"
 note = "The reviewed lookup supplies axis 000135c8 in slot x for table 00014120."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070556"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000744be"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_vvel_state_compositor/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00065830"
-note = """
-Reader 000657e4 supplies this table to the reviewed interpolation path. Gain \
-curve of FUN_000657E4 indexed by byte ffff119d and cached at ffff1387. It \
-scales the wide signed difference in the state path that is centered at raw \
-64, followed by slew and byte bounds. The coefficient is an operational \
-gain, without an inferred engineering timing unit."""
+at = "1me3b:000745f8"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00070758"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00065a58"

@@ -16,6 +16,10 @@ The computed operand 00014054+8 is visible in the complete reader listing at \
 0001405c. The typed reader relation to 000826d2 is unresolved and is not \
 declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
 remains a candidate.""",
+    """
+The computed JK78C operand lacks a normalized L0 access and a qualified \
+typed reader. Its candidate identity does not qualify native editor \
+publication.""",
 ]
 level = "candidate"
 home = "jk78c"
@@ -28,6 +32,13 @@ storage = "uint8"
 [[symbol]]
 layout = "1me3b"
 address = "0001436e"
+note = """
+Stock lookup status: unqualified. The proposed edge-mode-3 identity has no \
+qualified JK78C typed reader. Its candidate reader path is disabled by the \
+stock mode gates, but that does not qualify the role identity. Every stock \
+cell in this image holds zero. Stock activation remains unqualified under \
+issue #129. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -52,6 +63,21 @@ in 7 bytes."""
 [[symbol]]
 layout = "1nd"
 address = "000144fa"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. The proposed edge-mode-3 identity \
+has no qualified JK78C typed reader. Its candidate reader path is disabled \
+by the stock mode gates, but that does not qualify the role identity. Every \
+stock cell in this image holds zero. Stock activation remains unqualified \
+under issue #129. Stored counts are retained. Physical quantities and \
+engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. The proposed edge-mode-3 identity \
+has no qualified JK78C typed reader. Its candidate reader path is disabled \
+by the stock mode gates, but that does not qualify the role identity. Stock \
+activation remains unqualified under issue #129. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -77,14 +103,12 @@ in 7 bytes on 1ND0A and equal JK78C on 1ND3B."""
 layout = "jk78c"
 address = "0001405c"
 level = "candidate"
-note = [
-    """
-The computed operand 00014054+8 is visible in the complete reader listing at \
-00082866..0008286a, but normalized L0 has no corresponding access for \
-0001405c. The typed reader relation to 000826d2 is unresolved and is not \
-declared. Its interpretation as the bank-set edge-mode-3 curve therefore \
-remains a candidate.""",
-]
+note = """
+Stock lookup status: unqualified. The proposed edge-mode-3 identity has no \
+qualified JK78C typed reader. Its candidate reader path is disabled by the \
+stock mode gates, but that does not qualify the role identity. Stock \
+activation remains unqualified under issue #129. Stored counts are retained. \
+Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "indirect"

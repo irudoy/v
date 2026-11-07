@@ -187,6 +187,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00075c4c"
+level = "code"
+summary = """
+Native timing-state compositor with a RAM-selected branch that reads the two \
+centered limit-offset curves on their shared explicit coordinate. Its \
+selecting-state producer remains unqualified. These target reads do not \
+inherit the separate JK78C DFCO-transition reader mechanism or the canonical \
+reader physical-unit claims."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00075c4c"
+to = "jk78c:00067122"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
+layout = "1nd"
+address = "00071bc4"
+level = "code"
+summary = """
+Native timing-state compositor with a RAM-selected branch that reads the two \
+centered limit-offset curves on their shared explicit coordinate. Its \
+selecting-state producer remains unqualified. These target reads do not \
+inherit the separate JK78C DFCO-transition reader mechanism or the canonical \
+reader physical-unit claims."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00071bc4"
+to = "jk78c:00067122"
+note = """
+The reviewed table and axis operands, selecting branches and lookup \
+contracts identify the layout-specific reader of the same timing mechanism."""
+
+[[symbol]]
 layout = "7mfk"
 address = "0004bdc2"
 

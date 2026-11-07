@@ -8,7 +8,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -19,9 +18,23 @@ cols = 16
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Knock State Event Decrement Factor"
+category = "Ignition / State and Event Corrections"
+order = 3004
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "0001419a"
+note = """
+Stock lookup status: active. The periodic 1ME3B native knock reader samples \
+this calibration without the JK78C/1ND bit-5 entry selector. State-update \
+and selector effects retain their separate runtime conditions. Stored counts \
+are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +56,18 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "0001432e"
+note = [
+    """
+1ND0A: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. ROM8[00008a2b] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -64,6 +89,11 @@ address plus 0x61c. MOV.L 0006de9c loads this table for the call at 0006de9e \
 layout = "jk78c"
 address = "00013e90"
 level = "code"
+note = """
+Stock lookup status: active. ROM8[00008965] = 0xBA has bit 5 set. The \
+periodic native knock branch samples this calibration; state-update and \
+selector effects retain their separate runtime conditions. Stored counts are \
+retained. Physical quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -81,7 +111,7 @@ count, without a physical degree conversion."""
 type = "axis"
 to = "able-butterfly/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -89,20 +119,45 @@ supports = "identity"
 at = "jk78c:00062fd0"
 note = "The reviewed lookup supplies axis 000135c8 in slot x for table 00013e90."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006de9e"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007201c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "knock_function/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00062fd0"
-note = """
-Reader 00062780 supplies this table to the reviewed interpolation path. \
-Event-decrement factor of JK78C state ffff17bc in FUN_00062780. Coordinate \
-min(255,uint16[ffff11ac]>>2) selects the byte cached at ffff1792; the \
-decrement is lookup*200*uint8[ffff2096], with lower saturation and \
-subsequent bounds. Stock seven gives 1400 times the event count, without a \
-physical degree conversion."""
+at = "1me3b:000721f0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006315c"
+
+[[link]]
+type = "reader"
+to = "knock_state_update_continuation/fn"
+layouts = ["1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006e078"

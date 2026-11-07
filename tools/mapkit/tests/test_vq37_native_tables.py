@@ -125,6 +125,77 @@ IGNITION_STATE_AXIS_ROLES = {
 }
 IGNITION_STATE_ROLES = IGNITION_STATE_TABLE_ROLES | IGNITION_STATE_AXIS_ROLES
 IGNITION_TABLE_ROLES = IGNITION_PAIR_ROLES | IGNITION_STATE_TABLE_ROLES
+# State, event, knock and mode-parameter calibrations retain stored-count views.
+IGNITION_CORRECTION_TABLE_ROLES = {
+    "event_timing_conditional_centered_upper_bound",
+    "knock_selector_hysteresis_curve",
+    "knock_selector_threshold_curve",
+    "knock_state_event_decrement_factor",
+    "knock_state_lower_bound_curve",
+    "knock_state_quiet_increment_curve",
+    "mode_update_parameter_edge_1_bit_clear",
+    "mode_update_parameter_edge_1_bit_set",
+    "mode_update_parameter_edge_2_bit_clear",
+    "mode_update_parameter_edge_2_bit_set",
+    "mode_update_parameter_edge_3_bit_clear",
+    "mode_update_parameter_normal_1_bit_clear",
+    "mode_update_parameter_normal_1_bit_set",
+    "mode_update_parameter_normal_2_3_bit_clear",
+    "mode_update_parameter_normal_2_3_bit_set",
+    "timing_adjusted_coordinate_upper_bound",
+    "timing_centered_code_1_3_bank_0_flag_clear",
+    "timing_centered_code_1_3_bank_0_flag_set",
+    "timing_centered_code_1_3_bank_1_flag_clear",
+    "timing_centered_code_1_3_bank_1_flag_set",
+    "timing_centered_code_2_8_bank_0_flag_clear",
+    "timing_centered_code_2_8_bank_0_flag_set",
+    "timing_centered_code_2_8_bank_1_flag_clear",
+    "timing_centered_code_2_8_bank_1_flag_set",
+    "timing_centered_state_code_4_bit_clear",
+    "timing_centered_state_code_4_bit_set",
+    "timing_centered_state_code_5",
+    "timing_centered_state_code_6_7",
+    "timing_pair_ramp_endpoint_b",
+    "timing_paired_difference_correction",
+    "timing_paired_excess_correction",
+    "timing_paired_sample_reference",
+    "timing_state_addend_alternate_limit_offset",
+    "timing_state_addend_limit_offset",
+    "timing_state_centered_difference_gain",
+    "timing_state_code_1_3_bit_clear",
+    "timing_state_code_1_3_bit_set",
+    "timing_state_code_2_8_bit_clear",
+    "timing_state_code_2_8_bit_set",
+    "timing_state_code_4_bit_clear",
+    "timing_state_code_4_bit_set",
+    "timing_state_code_5",
+    "timing_state_code_6_7",
+    "timing_state_positive_difference_gain",
+    "timing_state_word_a_base_bit_clear",
+    "timing_state_word_a_base_bit_set",
+    "timing_state_word_a_reference_bit_clear",
+    "timing_state_word_a_reference_bit_set",
+    "timing_state_word_b_base_bit_clear",
+    "timing_state_word_b_base_bit_set",
+    "timing_state_word_b_reference_bit_clear",
+    "timing_state_word_b_reference_bit_set",
+    "timing_transition_delta_threshold",
+}
+IGNITION_CORRECTION_AXIS_ROLES = {
+    "knock_selector_state_axis",
+    "knock_state_bound_axis",
+    "timing_adjusted_coordinate_axis_x",
+    "timing_adjusted_coordinate_axis_y",
+    "timing_pair_ramp_axis_x",
+    "timing_pair_ramp_axis_y",
+    "timing_paired_sample_reference_axis",
+    "timing_positive_difference_gain_axis",
+    "timing_small_surface_axis_x",
+    "timing_small_surface_axis_y",
+    "timing_state_addend_limit_offset_axis",
+    "timing_state_word_axis_x",
+    "timing_state_word_axis_y",
+}
 CVTC_TABLE_ROLES = {
     "intake_cvtc_duty_hold",
     "intake_cvtc_duty_offset",
@@ -300,6 +371,8 @@ ROLES = (
     | VVEL_AXIS_ROLES
     | IGNITION_TABLE_ROLES
     | IGNITION_STATE_AXIS_ROLES
+    | IGNITION_CORRECTION_TABLE_ROLES
+    | IGNITION_CORRECTION_AXIS_ROLES
     | CVTC_TABLE_ROLES
     | CVTC_AXIS_ROLES
     | INJECTION_TABLE_ROLES
@@ -395,11 +468,13 @@ def test_registry_declares_every_role_on_every_target():
             SELECTOR_ROLES | FUEL_TABLE_ROLES | VVEL_TABLE_ROLES
             | IGNITION_TABLE_ROLES | CVTC_TABLE_ROLES | INJECTION_TABLE_ROLES
             | CONDITIONER_TABLE_ROLES | LIMITER_TABLE_ROLES | FLOAT_MODEL_TABLE_ROLES
+            | IGNITION_CORRECTION_TABLE_ROLES
         )
         assert axes <= (
             FUEL_AXIS_ROLES | VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
             | CVTC_AXIS_ROLES | INJECTION_AXIS_ROLES | CONDITIONER_AXIS_ROLES
             | LIMITER_AXIS_ROLES | FLOAT_MODEL_AXIS_ROLES
+            | IGNITION_CORRECTION_AXIS_ROLES
         )
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
@@ -769,6 +844,8 @@ def test_apply_target_publishes_every_registered_table_and_axis():
             assert model["storagetype"] == table.storagetype
             assert model["confidence"] == table.confidence
             assert model["scale_conf"] == table.scale_conf
+            if table.identifier in IGNITION_CORRECTION_TABLE_ROLES:
+                assert table.scale_conf not in vq37_native_tables.EVIDENCE_LEVELS
             assert model["note"].startswith(
                 f"Exact {rom} target-native table at {table.address:#x}"
             )
@@ -792,6 +869,8 @@ def test_apply_target_publishes_every_registered_table_and_axis():
             assert model["values"] == sorted(model["values"])
             assert model["confidence"] == axis.confidence
             established_view = axis.scale_conf in {"code", "candidate"}
+            if axis.identifier in IGNITION_CORRECTION_AXIS_ROLES:
+                assert axis.scale_conf not in vq37_native_tables.EVIDENCE_LEVELS
             assert model["scale_expr"] == (axis.scale_expr if established_view else "x")
             assert model["scale_evidence"] == ("registry:target-native" if established_view else "")
             assert model["note"].startswith(

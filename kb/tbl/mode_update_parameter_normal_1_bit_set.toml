@@ -10,7 +10,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -20,9 +19,25 @@ cols = 8
 rows = 1
 storage = "uint8"
 
+[editor]
+name = "Mode Update Parameter Normal 1 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3015
+format = "0"
+fine = 1
+coarse = 10
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+static_axis_name = "Lookup coordinate [stored count]"
+
 [[symbol]]
 layout = "1me3b"
 address = "00014336"
+note = """
+Stock lookup status: stock-inactive. The reader takes its copy branch at \
+00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its \
+calibration curves is read. Every stock cell in this image holds zero. \
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -46,6 +61,19 @@ jk78c:000828a4 loads 00014024, which reaches the call at jk78c:000828d0 \
 [[symbol]]
 layout = "1nd"
 address = "000144c2"
+note = [
+    """
+1ND0A: Stock lookup status: stock-inactive. The reader takes its copy branch \
+at 00090406 because ROM8[00008a2e] = 0x18 has bit 4 set; none of its \
+calibration curves is read. Every stock cell in this image holds zero. \
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved.""",
+    """
+1ND3B: Stock lookup status: stock-inactive. The reviewed caller skips the \
+mode-parameter reader at 000911b4 because ROM8[00008a2e] = 0x80 has bit 7 \
+set. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -71,6 +99,11 @@ jk78c:000828a4 loads 00014024, which reaches the call at jk78c:000828d0 \
 layout = "jk78c"
 address = "00014024"
 level = "code"
+note = """
+Stock lookup status: stock-inactive. The reviewed caller skips the \
+mode-parameter reader at 000835f6 because ROM8[00008968] = 0x80 has bit 7 \
+set. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -90,19 +123,20 @@ unresolved."""
 [[link]]
 type = "reader"
 to = "daring-koala/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000828a4"
-note = """
-Reader 000826d2 supplies this table to the reviewed interpolation path. \
-Normal update branch selected with ffff23b4.bit5 clear and ffff23b0.bit5 \
-set. Mode 1, ffff23c6.bit6 set. FUN_000826D2 derives the implicit-curve \
-input as clamp(((0x2d0e*uint16[ffff43dc])>>15)-32,0,255). The registered \
-primitive 00028198 reads eight uint8 points on implicit coordinates \
-0,32,...,224. The result is written as byte ffff3517. The branch selector is \
-uint8[ffff1077]; the bank selector is ffff23c6.bit6. Physical parameter and \
-conversion remain unresolved."""
+at = "1me3b:000960fc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009053c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082a24"

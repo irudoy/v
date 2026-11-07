@@ -70,18 +70,14 @@ at = "1nd:00070514"
 
 [[link]]
 type = "reader"
-to = "spotted-ibex/fn"
+to = "timing_vvel_state_compositor/fn"
+layouts = ["1me3b", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "1me3b:00075240"
-
-[[link]]
-type = "reader"
-to = "timing_vvel_state_compositor/fn"
-role = "accessor"
 
 [[link.evidence]]
 kind = "l0"

@@ -3,6 +3,12 @@ Axis of the two upper-limit offsets of the warm DFCO-transition timing-state \
 addends in FUN_000644D0. Both lookups take the engine-speed byte 0xFFFF11A3 \
 as the coordinate; `JK78C.vvel.md` reads that byte at 25 RPM per count, so \
 the stock points 32..128 span 800..3200 RPM."""
+note = [
+    """
+The JK78C DFCO-transition reader gates the lookup with ROM8[0x8966].bit0, \
+clear in stock. The timing-state compositor also reads the same calibration \
+bytes.""",
+]
 level = "code"
 home = "jk78c"
 former = ["timing_state_addend_load_trim_axis"]
@@ -10,9 +16,22 @@ quantity = "raw"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Timing State Addend Limit Offset Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "00013ee8"
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_state_addend_alternate_limit_offset/tbl, \
+timing_state_addend_limit_offset/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -32,6 +51,22 @@ jk78c:000671c2 (helper 0002829c) in r5. Its 8 stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "000140d4"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_state_addend_alternate_limit_offset/tbl, \
+timing_state_addend_limit_offset/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_state_addend_alternate_limit_offset/tbl, \
+timing_state_addend_limit_offset/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -53,8 +88,47 @@ jk78c:000671c2 (helper 0002829c) in r5. Its 8 stock bytes equal JK78C on \
 layout = "jk78c"
 address = "00013c6a"
 former = ["timing_state_addend_load_trim_axis/axis/jk78c-00013c6a"]
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_state_addend_alternate_limit_offset/tbl, \
+timing_state_addend_limit_offset/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00064644"
+
+[[link]]
+type = "reader"
+to = "signed_timing_state_accumulator/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00064840"
+
+[[link]]
+type = "reader"
+to = "timing_state_compositor/fn"
+layouts = ["1me3b", "1nd", "jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075eec"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071f00"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000673b0"

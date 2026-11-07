@@ -2953,6 +2953,1376 @@
       </table>
     </table>
 
+    <!-- 0x09D54  8x8 uint8  map [code]
+         accessor 0x78560; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x9d54 bound to accessor 0x78560 through literal
+         0x788cc. Stock lookup status: stock-inactive. ROM8[00008a7f] = 0x18 has bit 7 clear, so
+         the event-timing reader skips this upper-bound lookup. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Event Timing Conditional Centered Upper Bound [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09D54" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Event timing coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+      <table type="Static Y Axis" name="Doubled state coordinate [stored count]" sizey="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x141AA  16 uint8  map [code]
+         accessor 0x71D64; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x141CA raw
+         Exact 1ME3B target-native table at 0x141aa bound to accessor 0x71d64 through literal
+         0x72210. Stock lookup status: active. The periodic 1ME3B native knock reader samples
+         this calibration without the JK78C/1ND bit-5 entry selector. State-update and selector
+         effects retain their separate runtime conditions. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Knock Selector Hysteresis Curve [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x141AA" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Knock Selector State Axis [stored count]" storagetype="uint8"
+             storageaddress="0x141CA" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x141BA  16 uint8  map [code]
+         accessor 0x71D64; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x141CA raw
+         Exact 1ME3B target-native table at 0x141ba bound to accessor 0x71d64 through literal
+         0x7220c. Stock lookup status: active. The periodic 1ME3B native knock reader samples
+         this calibration without the JK78C/1ND bit-5 entry selector. State-update and selector
+         effects retain their separate runtime conditions. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Knock Selector Threshold Curve [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x141BA" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Knock Selector State Axis [stored count]" storagetype="uint8"
+             storageaddress="0x141CA" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1419A  16 uint8  map [code]
+         accessor 0x71D64; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13726 rpm [candidate]
+         Exact 1ME3B target-native table at 0x1419a bound to accessor 0x71d64 through literal
+         0x721f0. Stock lookup status: active. The periodic 1ME3B native knock reader samples
+         this calibration without the JK78C/1ND bit-5 entry selector. State-update and selector
+         effects retain their separate runtime conditions. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Knock State Event Decrement Factor [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1419A" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizex="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x16B86  16 uint16  map [code]
+         accessor 0x71D64; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x15AF4 raw
+         Exact 1ME3B target-native table at 0x16b86 bound to accessor 0x71d64 through literal
+         0x71f98. Stock lookup status: active. The periodic 1ME3B native knock reader samples
+         this calibration without the JK78C/1ND bit-5 entry selector. State-update and selector
+         effects retain their separate runtime conditions. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Knock State Lower Bound Curve [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x16B86" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Knock State Bound Axis [stored count]" storagetype="uint16"
+             storageaddress="0x15AF4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14028  16 uint8  map [code]
+         accessor 0x71D64; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13726 rpm [candidate]
+         Exact 1ME3B target-native table at 0x14028 bound to accessor 0x71d64 through literal
+         0x721e4. Stock lookup status: active. The periodic 1ME3B native knock reader samples
+         this calibration without the JK78C/1ND bit-5 entry selector. State-update and selector
+         effects retain their separate runtime conditions. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Knock State Quiet Increment Curve [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14028" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizex="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x14346  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14346 bound to accessor 0x95f8c through literal
+         0x96110. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Edge 1 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14346" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1435E  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x1435e bound to accessor 0x95f8c through literal
+         0x9611c. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Edge 1 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1435E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1434E  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x1434e bound to accessor 0x95f8c through literal
+         0x9610c. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Edge 2 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1434E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14366  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14366 bound to accessor 0x95f8c through literal
+         0x96118. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Edge 2 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14366" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14356  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14356 bound to accessor 0x95f8c through literal
+         0x96108. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Edge 3 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14356" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14326  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14326 bound to accessor 0x95f8c through literal
+         0x960f4. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Normal 1 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14326" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14336  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14336 bound to accessor 0x95f8c through literal
+         0x960fc. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Normal 1 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14336" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1432E  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x1432e bound to accessor 0x95f8c through literal
+         0x960f0. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Normal 2 3 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1432E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1433E  8 uint8  map [code]
+         accessor 0x95F8C; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x1433e bound to accessor 0x95f8c through literal
+         0x960f8. Stock lookup status: stock-inactive. The reader takes its copy branch at
+         00095f9c because ROM8[00008a7f] = 0x18 has bit 4 set; none of its calibration curves is
+         read. Every stock cell in this image holds zero. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Mode Update Parameter Normal 2 3 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1433E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x09924  8x8 uint8  map [code]
+         accessor 0x788D8; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13310 raw; X Axis 0x13308 raw
+         Exact 1ME3B target-native table at 0x9924 bound to accessor 0x788d8 through literal
+         0x78ad0. Stock lookup status: active. The final-coordinate reader samples this bound in
+         the secondary nine-entry call list. Its lookup does not depend on the event-upper-bound
+         ROM gate; subsequent result handling has its own state conditions. Stored counts are
+         retained. Physical quantities and engineering conversions are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Adjusted Coordinate Upper Bound [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09924" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Adjusted Coordinate Axis Y [stored count]"
+             storagetype="uint8" storageaddress="0x13308" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Adjusted Coordinate Axis X [stored count]"
+             storagetype="uint8" storageaddress="0x13310" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0B184  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb184 bound to accessor 0x7448c through literal
+         0x7550c, accessor 0x7448c through literal 0x757c8, accessor 0x7448c through literal
+         0x75a60. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 1/3 Bank 0 Flag Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B184" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0B084  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb084 bound to accessor 0x7448c through literal
+         0x75508, accessor 0x7448c through literal 0x757cc, accessor 0x7448c through literal
+         0x75a64. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 1/3 Bank 0 Flag Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B084" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0B584  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb584 bound to accessor 0x7448c through literal
+         0x75778, accessor 0x7448c through literal 0x75a68. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 1/3 Bank 1 Flag Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B584" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0B484  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb484 bound to accessor 0x7448c through literal
+         0x75774, accessor 0x7448c through literal 0x75a6c. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 1/3 Bank 1 Flag Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B484" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AF84  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xaf84 bound to accessor 0x7448c through literal
+         0x754f4, accessor 0x7448c through literal 0x757b4, accessor 0x7448c through literal
+         0x75a50. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 2/8 Bank 0 Flag Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AF84" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AE84  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xae84 bound to accessor 0x7448c through literal
+         0x754f8, accessor 0x7448c through literal 0x757bc, accessor 0x7448c through literal
+         0x75a54. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 2/8 Bank 0 Flag Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AE84" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0B384  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb384 bound to accessor 0x7448c through literal
+         0x754fc, accessor 0x7448c through literal 0x757c0, accessor 0x7448c through literal
+         0x75a58. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 2/8 Bank 1 Flag Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B384" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0B284  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xb284 bound to accessor 0x7448c through literal
+         0x75500, accessor 0x7448c through literal 0x757c4, accessor 0x7448c through literal
+         0x75a5c. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered Code 2/8 Bank 1 Flag Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0B284" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x099E4  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0x99e4 bound to accessor 0x7448c through literal
+         0x75798. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered State Code 4 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x099E4" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09A24  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0x9a24 bound to accessor 0x7448c through literal
+         0x757a0. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered State Code 4 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09A24" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09A64  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0x9a64 bound to accessor 0x7448c through literal
+         0x757a4, accessor 0x7448c through literal 0x75a34. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered State Code 5 [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09A64" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09AA4  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0x9aa4 bound to accessor 0x7448c through literal
+         0x757a8, accessor 0x7448c through literal 0x75a3c. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Centered State Code 6/7 [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09AA4" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x09C94  8x8 uint8  map [code]
+         accessor 0x73C6A; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x133CC raw; X Axis 0x133D4 raw
+         Exact 1ME3B target-native table at 0x9c94 bound to accessor 0x73c6a through literal
+         0x73dcc. Stock lookup status: unqualified. The periodic ramp reader has a RAM-
+         controlled lookup bypass. Its table and axis bindings are qualified, while the stock
+         producer of that bypass state remains unqualified. Stock activation remains unqualified
+         under issue #129. Stored counts are retained. Physical quantities and engineering
+         conversions are unresolved. Editor values are stored counts; no engineering conversion
+         is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing Pair Ramp Endpoint B [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x09C94" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Pair Ramp Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x133D4" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Pair Ramp Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x133CC" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14626  8 uint8  map [code]
+         accessor 0x772C4; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14626 bound to accessor 0x772c4 through literal
+         0x77514. Stock lookup status: unqualified. The periodic reader has independent paired-
+         state fallbacks before these difference or excess lookups. Their calibration identities
+         are qualified, while the stock state producers admitting the lookup remain unqualified.
+         Stock activation remains unqualified under issue #129. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Paired Difference Correction [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14626" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14612  4 uint8  map [code]
+         accessor 0x772C4; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x14612 bound to accessor 0x772c4 through literal
+         0x77524. Stock lookup status: unqualified. The periodic reader has independent paired-
+         state fallbacks before these difference or excess lookups. Their calibration identities
+         are qualified, while the stock state producers admitting the lookup remain unqualified.
+         Stock activation remains unqualified under issue #129. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Paired Excess Correction [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14612" sizex="4" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="4">
+        <data>0</data><data>64</data><data>128</data><data>192</data>
+      </table>
+    </table>
+
+    <!-- 0x14656  16 uint8  map [code]
+         accessor 0x772C4; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x14646 raw
+         Exact 1ME3B target-native table at 0x14656 bound to accessor 0x772c4 through literal
+         0x774fc. Stock lookup status: active. The periodic paired-correction reader samples the
+         reference curve before the independently gated difference and excess paths. Physical
+         source and conversion remain unresolved. Stored counts are retained. Physical
+         quantities and engineering conversions are unresolved. Editor values are stored counts;
+         no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Paired Sample Reference [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14656" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Paired Sample Reference Axis [stored count]"
+             storagetype="uint8" storageaddress="0x14646" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x13776  8 uint8  map [code]
+         accessor 0x75C4C; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13EE8 raw
+         Exact 1ME3B target-native table at 0x13776 bound to accessor 0x75c4c through literal
+         0x75f20. Stock lookup status: unqualified. The periodic timing-state compositor reads
+         this offset only on its RAM-selected branch, whose stock state producer remains
+         unqualified. On JK78C the separate DFCO-transition reader has ROM8[00008966].bit0 clear
+         in stock; that disabled caller does not establish inactivity of the shared calibration.
+         Stock activation remains unqualified under issue #129. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing State Addend Alternate Limit Offset [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x13776" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Addend Limit Offset Axis [stored count]"
+             storagetype="uint8" storageaddress="0x13EE8" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1376E  8 uint8  map [code]
+         accessor 0x75C4C; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13EE8 raw
+         Exact 1ME3B target-native table at 0x1376e bound to accessor 0x75c4c through literal
+         0x75ef0. Stock lookup status: unqualified. The periodic timing-state compositor reads
+         this offset only on its RAM-selected branch, whose stock state producer remains
+         unqualified. On JK78C the separate DFCO-transition reader has ROM8[00008966].bit0 clear
+         in stock; that disabled caller does not establish inactivity of the shared calibration.
+         Stock activation remains unqualified under issue #129. Stored counts are retained.
+         Physical quantities and engineering conversions are unresolved. Editor values are
+         stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing State Addend Limit Offset [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1376E" sizex="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Addend Limit Offset Axis [stored count]"
+             storagetype="uint8" storageaddress="0x13EE8" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x14452  16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x13726 rpm [candidate]
+         Exact 1ME3B target-native table at 0x14452 bound to accessor 0x7448c through literal
+         0x745f8. Stock lookup status: active. The periodic 1ME3B state compositor samples this
+         gain before its state-code dispatch. The JK78C/1ND outer bit-5 selector is absent from
+         this target entry. The gain is not evidence of a physical timing conversion. Stored
+         counts are retained. Physical quantities and engineering conversions are unresolved.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing State Centered Difference Gain [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x14452" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizex="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AA84  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xaa84 bound to accessor 0x7448c through literal
+         0x74624, accessor 0x7448c through literal 0x74aa0. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 1/3 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AA84" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AD84  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xad84 bound to accessor 0x7448c through literal
+         0x7486c, accessor 0x7448c through literal 0x74aa4. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 1/3 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AD84" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0A984  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xa984 bound to accessor 0x7448c through literal
+         0x74618, accessor 0x7448c through literal 0x74a98. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 2/8 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0A984" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AC84  16x16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load [candidate]
+         Exact 1ME3B target-native table at 0xac84 bound to accessor 0x7448c through literal
+         0x74860, accessor 0x7448c through literal 0x74a9c. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 2/8 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AC84" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AB84  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0xab84 bound to accessor 0x7448c through literal
+         0x74898, accessor 0x7448c through literal 0x74aac. Stock lookup status: unqualified.
+         The periodic 1ME3B state compositor has no JK78C/1ND outer bit-5 entry selector. The
+         table identity and lookup operands are qualified; the stock lifecycle of the selecting
+         bank, flag or state code is not qualified for this individual calibration. Lookup
+         correspondence alone does not establish stock activation. Stock activation remains
+         unqualified under issue #129. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 4 Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AB84" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0ABC4  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0xabc4 bound to accessor 0x7448c through literal
+         0x74a80. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 4 Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0ABC4" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0AC04  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0xac04 bound to accessor 0x7448c through literal
+         0x74a90. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 5 [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AC04" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0AC44  8x8 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x1370E raw; X Axis 0x136F6 raw
+         Exact 1ME3B target-native table at 0xac44 bound to accessor 0x7448c through literal
+         0x74a94. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Code 6/7 [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x0AC44" sizex="8" sizey="8" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Small Surface Axis Y [stored count]" storagetype="uint8"
+             storageaddress="0x136F6" sizex="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing Small Surface Axis X [stored count]" storagetype="uint8"
+             storageaddress="0x1370E" sizey="8" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x13D56  16 uint8  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; axis 0x133B4 raw
+         Exact 1ME3B target-native table at 0x13d56 bound to accessor 0x7448c through literal
+         0x7460c. Stock lookup status: active. The periodic 1ME3B state compositor samples this
+         gain before its state-code dispatch. The JK78C/1ND outer bit-5 selector is absent from
+         this target entry. The gain is not evidence of a physical timing conversion. Stored
+         counts are retained. Physical quantities and engineering conversions are unresolved.
+         Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing State Positive Difference Gain [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x13D56" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing Positive Difference Gain Axis [stored count]"
+             storagetype="uint8" storageaddress="0x133B4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0E67C  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xe67c bound to accessor 0x7448c through literal
+         0x74fac. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word A Base Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0E67C" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0E87C  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xe87c bound to accessor 0x7448c through literal
+         0x74fa8. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word A Base Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0E87C" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0EA7C  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xea7c bound to accessor 0x7448c through literal
+         0x74f9c. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word A Reference Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0EA7C" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0EC7C  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xec7c bound to accessor 0x7448c through literal
+         0x74f98. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word A Reference Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0EC7C" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0D0FC  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xd0fc bound to accessor 0x7448c through literal
+         0x74fc4. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word B Base Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0D0FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0D2FC  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xd2fc bound to accessor 0x7448c through literal
+         0x74fc0. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word B Base Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0D2FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0D4FC  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xd4fc bound to accessor 0x7448c through literal
+         0x74fb8. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word B Reference Bit Clear [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0D4FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x0D6FC  16x16 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x Stored count; Y Axis 0x15DC4 raw; X Axis 0x15DA4 raw
+         Exact 1ME3B target-native table at 0xd6fc bound to accessor 0x7448c through literal
+         0x74fb4. Stock lookup status: unqualified. The periodic 1ME3B state compositor has no
+         JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands are
+         qualified; the stock lifecycle of the selecting bank, flag or state code is not
+         qualified for this individual calibration. Lookup correspondence alone does not
+         establish stock activation. Stock activation remains unqualified under issue #129.
+         Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Timing State Word B Reference Bit Set [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint16"
+           storageaddress="0x0D6FC" sizex="16" sizey="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+             storageaddress="0x15DA4" sizex="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+      <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
+             storageaddress="0x15DC4" sizey="16" endian="big">
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
+      </table>
+    </table>
+
+    <!-- 0x1398E  16 uint8  map [code]
+         accessor 0x77F38; r4 operand: reviewed-target
+         scaling x Stored count
+         Exact 1ME3B target-native table at 0x1398e bound to accessor 0x77f38 through literal
+         0x78160. Stock lookup status: stock-inactive. ROM8[000085AA] = 255 makes the strict
+         byte-input > 255 entry comparison impossible; the additional word threshold is
+         ROM16[0000903e] = 65534. The curve is not read. Every stock cell in this image holds
+         zero. Stored counts are retained. Physical quantities and engineering conversions are
+         unresolved. Editor values are stored counts; no engineering conversion is established.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Timing Transition Delta Threshold [stored count]"
+           category="Ignition//State and Event Corrections" storagetype="uint8"
+           storageaddress="0x1398E" sizex="16" endian="big">
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Lookup coordinate [stored count]" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
+      </table>
+    </table>
+
     <!-- 0x110FC  16x16 uint16  map [code]
          accessor 0x64E62; r4 operand: reviewed-target
          scaling x Stored count; Y Axis 0x15516 raw; X Axis 0x148D2 raw

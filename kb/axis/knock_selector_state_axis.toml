@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,21 @@ quantity = "raw"
 points = 16
 storage = "uint8"
 
+[editor]
+name = "Knock Selector State Axis"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000141ca"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: knock_selector_hysteresis_curve/tbl, \
+knock_selector_threshold_curve/tbl. At least one consumer reads this \
+coordinate on its stock-enabled path. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -38,6 +49,20 @@ stock bytes equal JK78C."""
 [[symbol]]
 layout = "1nd"
 address = "0001435e"
+note = [
+    """
+1ND0A: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: knock_selector_hysteresis_curve/tbl, \
+knock_selector_threshold_curve/tbl. At least one consumer reads this \
+coordinate on its stock-enabled path. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: knock_selector_hysteresis_curve/tbl, \
+knock_selector_threshold_curve/tbl. At least one consumer reads this \
+coordinate on its stock-enabled path. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -59,6 +84,12 @@ address plus 0x61c. MOV.L 0006e0ac loads this axis for the call at 0006e0b0 \
 layout = "jk78c"
 address = "00013ec0"
 level = "code"
+note = """
+Stock lookup status: active. Stock lookup status follows the reviewed \
+consumers: knock_selector_hysteresis_curve/tbl, \
+knock_selector_threshold_curve/tbl. At least one consumer reads this \
+coordinate on its stock-enabled path. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -81,23 +112,26 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "knock_function/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:000631e4"
-note = """
-The reviewed reader passes axis 00013ec0 in the x slot for table 00013eb0. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00072208"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00063204"
-note = """
-The reviewed reader passes axis 00013ec0 in the x slot for table 00013ea0. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "jk78c:000633bc"
+
+[[link]]
+type = "reader"
+to = "knock_state_update_continuation/fn"
+layouts = ["1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006e2dc"

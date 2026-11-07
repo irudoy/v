@@ -8,7 +8,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -19,9 +18,25 @@ cols = 16
 rows = 16
 storage = "uint8"
 
+[editor]
+name = "Timing Centered Code 2/8 Bank 1 Flag Clear"
+category = "Ignition / State and Event Corrections"
+order = 3025
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "0000b384"
+note = """
+Stock lookup status: unqualified. The periodic 1ME3B state compositor has no \
+JK78C/1ND outer bit-5 entry selector. The table identity and lookup operands \
+are qualified; the stock lifecycle of the selecting bank, flag or state code \
+is not qualified for this individual calibration. Lookup correspondence \
+alone does not establish stock activation. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -47,6 +62,24 @@ as MOV.L jk78c:000668ea loads 0000aeca, which reaches the call at 00066962 \
 [[symbol]]
 layout = "1nd"
 address = "0000b310"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. ROM8[00008a2b] = 0xBA enables the \
+state compositor. The table identity and lookup operands are qualified; the \
+stock lifecycle of the selecting bank, flag or state code is not qualified \
+for this individual calibration. Lookup correspondence alone does not \
+establish stock activation. Stock activation remains unqualified under issue \
+#129. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. ROM8[00008a2b] = 0xBA enables the \
+state compositor. The table identity and lookup operands are qualified; the \
+stock lifecycle of the selecting bank, flag or state code is not qualified \
+for this individual calibration. Lookup correspondence alone does not \
+establish stock activation. Stock activation remains unqualified under issue \
+#129. Stored counts are retained. Physical quantities and engineering \
+conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -74,6 +107,14 @@ and 1ND3B."""
 layout = "jk78c"
 address = "0000aeca"
 level = "code"
+note = """
+Stock lookup status: unqualified. ROM8[00008965] = 0xBA enables the state \
+compositor. The table identity and lookup operands are qualified; the stock \
+lifecycle of the selecting bank, flag or state code is not qualified for \
+this individual calibration. Lookup correspondence alone does not establish \
+stock activation. Stock activation remains unqualified under issue #129. \
+Stored counts are retained. Physical quantities and engineering conversions \
+are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -91,7 +132,7 @@ center 128. Physical output conversion remains unresolved."""
 type = "axis"
 to = "able-butterfly/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -99,11 +140,27 @@ supports = "identity"
 at = "jk78c:00066962"
 note = "The reviewed lookup supplies axis 000135c8 in slot x for table 0000aeca."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007143a"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007547c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "axis"
 to = "ignition_normalized_bfs_axis/axis"
 slot = "y"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1nd", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
@@ -111,20 +168,64 @@ supports = "identity"
 at = "jk78c:00066962"
 note = "The reviewed lookup supplies axis 000135b8 in slot y for table 0000aeca."
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007143a"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007547c"
+note = """
+The reviewed lookup passes this table and the coordinate of the declared \
+axis slot."""
+
 [[link]]
 type = "reader"
 to = "timing_vvel_state_compositor/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00066962"
-note = """
-Reader 000657e4 supplies this table to the reviewed interpolation path. \
-Centered byte surface of FUN_000657E4: bank 1 means ffff23c6.bit6 set, and \
-flag means ffff23cb.bit7 clear. On the state-dispatch path it supplies codes \
-2 and 8; the parallel path caches this sample at ffff1385. Samples enter the \
-secondary state blend around raw center 128. Physical output conversion \
-remains unresolved."""
+at = "1me3b:000754fc"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000757c0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00075a58"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071584"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00071854"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066944"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066c10"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00066e58"

@@ -6,7 +6,6 @@ note = [
     """
 Stored counts are retained. Physical quantities and engineering conversions \
 are unresolved.""",
-    "Native editor publication remains unresolved under issue #129.",
 ]
 level = "code"
 home = "jk78c"
@@ -14,9 +13,22 @@ quantity = "raw"
 points = 8
 storage = "uint8"
 
+[editor]
+name = "Timing Pair Ramp Axis Y"
+format = "0"
+fine = 1
+coarse = 10
+
 [[symbol]]
 layout = "1me3b"
 address = "000133d4"
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_pair_ramp_endpoint_a/tbl, timing_pair_ramp_endpoint_b/tbl. \
+The selecting states or counterpart identities of these consumers remain \
+unqualified. Stock activation remains unqualified under issue #129. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -39,6 +51,22 @@ from JK78C in 5 bytes."""
 [[symbol]]
 layout = "1nd"
 address = "00013690"
+note = [
+    """
+1ND0A: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_pair_ramp_endpoint_a/tbl, \
+timing_pair_ramp_endpoint_b/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+    """
+1ND3B: Stock lookup status: unqualified. Stock lookup status follows the \
+reviewed consumers: timing_pair_ramp_endpoint_a/tbl, \
+timing_pair_ramp_endpoint_b/tbl. The selecting states or counterpart \
+identities of these consumers remain unqualified. Stock activation remains \
+unqualified under issue #129. Stored counts are retained. Physical \
+quantities and engineering conversions are unresolved.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -62,6 +90,13 @@ from JK78C in 5 bytes on 1ND0A and 1ND3B, which agree."""
 layout = "jk78c"
 address = "000132f6"
 level = "code"
+note = """
+Stock lookup status: unqualified. Stock lookup status follows the reviewed \
+consumers: timing_pair_ramp_endpoint_a/tbl, timing_pair_ramp_endpoint_b/tbl. \
+The selecting states or counterpart identities of these consumers remain \
+unqualified. Stock activation remains unqualified under issue #129. Stored \
+counts are retained. Physical quantities and engineering conversions are \
+unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -84,23 +119,22 @@ interpolation contract; no engineering conversion is inferred."""
 [[link]]
 type = "reader"
 to = "timing_pair_ramp_builder/fn"
-layouts = ["jk78c"]
+layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00065040"
-note = """
-The reviewed reader passes axis 000132f6 in the y slot for table 00009a5a. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1me3b:00073db4"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
-at = "jk78c:00065060"
-note = """
-The reviewed reader passes axis 000132f6 in the y slot for table 00009a9a. \
-The stored-axis geometry is independently recorded by the explicit \
-interpolation contract; no engineering conversion is inferred."""
+at = "1nd:0006ff24"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:00065244"
+value = 8
+mode = "base"

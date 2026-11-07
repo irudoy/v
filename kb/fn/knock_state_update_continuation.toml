@@ -1,0 +1,18 @@
+title = "Knock-state update continuation at the 1ND L0 boundary"
+summary = """
+Continuation of the 1ND knock coordinator after the normalized L0 split of \
+1nd:0006d948. It retains the preceding frame and reads the quiet increment, \
+event decrement and selector curves. Its L0 entry does not define a \
+standalone callable ABI."""
+role = "consumer"
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "1nd"
+address = "0006ddd0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006ddd0"

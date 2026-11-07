@@ -4,13 +4,16 @@ Bit7 selects the request-conditioning mechanism in caller 0009679a: when \
 ROM8[00008383].bit0 is clear, a clear bit7 calls 00096ce0, while a set bit7 \
 calls 00097298 and 000978d6. The same bit selects the native limiter \
 context-gate branch and qualifies its held-transition neutral override with \
-ffff45ca.bit6. Other bit meanings remain unresolved."""
+ffff45ca.bit6. In the ignition mode-parameter reader, bit 4 selects the copy \
+branch; its caller admits that reader only while bit 7 is clear. Other bit \
+meanings remain unresolved."""
 note = [
     """
 Active and unqualified for the editor. Stock code reads bit 7 on every VQ37 \
 image, and the stock bytes 0x80 on JK78C and 1ND3B and 0x18 on 1ND0A and \
-1ME3B select different branches; the other bits have no established \
-meaning.""",
+1ME3B select different branches; bit 4 selects the copy branch in the \
+ignition mode-parameter reader, and the meanings of the remaining bits are \
+unresolved.""",
 ]
 level = "code"
 home = "jk78c"
@@ -82,6 +85,39 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00094e26"
+
+[[link]]
+type = "reader"
+to = "daring-koala/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008281c"
+note = """
+The reader loads the shared mode byte through this literal-pool word and \
+tests bit 4 for its copy branch. Its caller tests bit 7 of the same byte at \
+000835f6 before admitting this reader."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090524"
+note = """
+The reader loads the shared mode byte through this literal-pool word and \
+tests bit 4 for its copy branch. Its caller tests bit 7 of the same byte at \
+000911b4 before admitting this reader."""
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000960e4"
+note = """
+The reader loads the shared mode byte through this literal-pool word and \
+tests bit 4 for its copy branch. Its caller tests bit 7 of the same byte at \
+00096e4c before admitting this reader."""
 
 [[link]]
 type = "reader"
