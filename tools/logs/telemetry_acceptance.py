@@ -249,7 +249,8 @@ def _cadence(periods, baseline, tolerance):
             row["status"] = "FAIL"
             row["reason"] = "ID present in baseline is missing from the recording"
         elif right["median_period_ms"] is None:
-            row["status"] = "NOT_ASSESSED"
+            row["status"] = "FAIL"
+            row["reason"] = "fewer than two frames of an ID with a baseline period"
         else:
             deltas = {
                 name: right[name] - left[name] for name in (
@@ -270,10 +271,21 @@ def _cadence(periods, baseline, tolerance):
     return {"status": status, "tolerance_ms": tolerance, "identifiers": rows}
 
 
+def _capture_source(trace, declared):
+    if declared not in ("auto", "pcan-view"):
+        raise ValueError("TRC source must be auto or pcan-view")
+    generator = "".join(char for char in (trace.generator or "").casefold() if char.isalnum())
+    if declared == "pcan-view" or "pcanview" in generator:
+        return "pcan-view"
+    if trace.unix_start_seconds is None:
+        return "independent-or-unknown"
+    return "unix-anchored"
+
+
 def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms=None,
                   can_id=0x6F0, tick_divisor=1, timezone="Asia/Vladivostok",
                   schema_path=can_telemetry.DEFAULT_SCHEMA, can_capture_evidence=None,
-                  expected_configurations=(), expected_maps=()):
+                  expected_configurations=(), expected_maps=(), trc_source="auto"):
     """Audit observed transport; hardware identity and lamps need operator evidence."""
     if cadence_tolerance_ms is not None and (
         not math.isfinite(cadence_tolerance_ms) or cadence_tolerance_ms < 0
@@ -400,13 +412,15 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
         trace.unix_start_seconds is not None
     ) else "$STARTTIME and timezone" if trace.start_time else "missing"
     pairing["trc_generator"] = trace.generator
-    if trace.generator and "PCAN-View" in trace.generator and pairing["status"] == "FAIL":
+    pairing["trc_source_declaration"] = trc_source
+    pairing["trc_source"] = _capture_source(trace, trc_source)
+    if pairing["trc_source"] != "unix-anchored":
         pairing["unshifted_comparison_status"] = pairing["status"]
         pairing["status"] = "NOT_ASSESSED"
         pairing["clock_limitation"] = (
-            "PCAN-View TRC and historical MLG 10.1.1 have independent recorder clocks. "
-            "The dashboard 11 shared-clock comparison cannot qualify this pairing; "
-            "its mismatch does not establish a transport defect. No offset was fitted."
+            "A shared recording clock has not been established for these inputs. "
+            "Independent captures cannot qualify pairing by coincident timestamps "
+            "and payloads. The unshifted comparison is diagnostic only; no offset was fitted."
         )
     can_failed = bus.warning_count or bus.error_count
     report = {
@@ -518,6 +532,8 @@ def main(argv=None):
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=0x6F0)
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument("--timezone", default="Asia/Vladivostok")
+    parser.add_argument("--trc-source", choices=("auto", "pcan-view"), default="auto",
+                        help="declare a separate PCAN-View capture when its headers omit the source")
     parser.add_argument("--schema", type=Path, default=can_telemetry.DEFAULT_SCHEMA)
     parser.add_argument("--can-capture-evidence",
                         help="operator evidence that error/status notification capture was enabled and supported")
@@ -532,7 +548,8 @@ def main(argv=None):
                                baseline=args.baseline, cadence_tolerance_ms=args.cadence_tolerance_ms,
                                can_id=args.can_id, tick_divisor=args.tick_divisor, timezone=args.timezone,
                                schema_path=args.schema, can_capture_evidence=args.can_capture_evidence,
-                               expected_configurations=args.expect_configuration, expected_maps=args.expect_map)
+                               expected_configurations=args.expect_configuration, expected_maps=args.expect_map,
+                               trc_source=args.trc_source)
     except (ValueError, OSError) as error:
         print(json.dumps({"status": "ERROR", "error": str(error)}) if args.json else
               f"Transport acceptance: ERROR: {error}")

@@ -104,9 +104,12 @@ to the PCAN-View `$STARTTIME` fallback. It does not fit a clock offset to
 make unrelated recordings match. The unfinished group at the capture tail
 and initial synchronization frames are reported separately from interior
 group failures. An excluded cut TRC row leaves the recording incomplete.
-Historical PCAN-View TRC and MLG 10.1.1 use independent recorder clocks. A
-failed common-clock comparison of such inputs is `NOT_ASSESSED`, with its
-raw mismatch diagnostics retained; it does not establish a transport defect.
+PCAN-View TRC and the MLG recorder use independent clocks. Pairing of a
+PCAN-View capture is `NOT_ASSESSED` even when its timestamps and payloads
+match. `--trc-source pcan-view` declares that source when its header omits
+the generator; automatic classification also leaves an unknown source
+without a Unix anchor unassessed. The unshifted comparison remains in the
+report as diagnostic data, and does not establish a shared recording clock.
 
 Zero Warning/Error counts leave the CAN section `NOT_ASSESSED` unless
 `--can-capture-evidence` records the operator's evidence that error/status
@@ -139,7 +142,8 @@ Without a cadence reference the command reports periods with
 explicit `--cadence-tolerance-ms` to assess the absolute median drift and
 the increase of p99 and maximum periods of every observed stock RX ID.
 The caller selects a reference recorded in comparable vehicle states and
-the acceptable comparison limit. Unreferenced IDs remain unassessed.
+the acceptable comparison limit. A baseline ID with fewer than two frames
+in the recording fails cadence assessment. Unreferenced IDs remain unassessed.
 
 Exit status 0 means all reported sections pass, 1 reports an observed
 failure, and 2 reports invalid input or incomplete coverage, including a
