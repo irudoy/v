@@ -21,6 +21,7 @@ from patches import can_telemetry_history
 from tools.can_dashboard import recording
 from tools.can_dashboard.model import BASE_TICK_SECONDS, DashboardModel, FrameRecord
 from tools.logs import can_telemetry, mlg_relation_audit, peak_trc_audit, trc_to_mlg
+from tools.logs.map_selection_audit import MapSelectionAudit
 
 
 TARGET_ENDPOINT = "schema2-profile9"
@@ -186,6 +187,40 @@ class Pairing:
         }
 
 
+class DynamicCoverage:
+    def __init__(self, profile):
+        self.field = can_telemetry.configuration_field(profile)
+        self.counts = can_telemetry.configuration_group_counts(profile)
+        self.labels = can_telemetry.configuration_labels(profile)
+        self.observed = Counter()
+
+    def snapshot(self, snapshot):
+        selector = snapshot.fields.get(self.field)
+        if selector is not None:
+            self.observed[(selector & 0x7F, selector >> 7)] += 1
+
+    def result(self, expected):
+        expected = set(expected) | {0}
+        if expected - self.counts.keys():
+            raise ValueError("expected configuration is not defined by the host schema")
+        selected = expected | {key for key, _group in self.observed}
+        missing = []
+        rows = []
+        invalid = [(key, group) for key, group in self.observed
+                   if group >= self.counts.get(key, 0)]
+        for key in sorted(selected):
+            groups = []
+            for group in range(self.counts.get(key, 0)):
+                count = self.observed[(key, group)]
+                groups.append({"group": group, "snapshots": count})
+                if not count:
+                    missing.append([key, group])
+            rows.append({"configuration_id": key, "label": self.labels.get(key), "groups": groups})
+        return {"status": "FAIL" if invalid else "INCOMPLETE" if missing else "PASS",
+                "expected_configuration_ids": sorted(expected), "configurations": rows,
+                "missing_groups": missing, "invalid_groups": [list(item) for item in invalid]}
+
+
 def _stock_periods(trace, can_id):
     frames = tuple(
         frame for frame in trace.frames
@@ -237,7 +272,8 @@ def _cadence(periods, baseline, tolerance):
 
 def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms=None,
                   can_id=0x6F0, tick_divisor=1, timezone="Asia/Vladivostok",
-                  schema_path=can_telemetry.DEFAULT_SCHEMA, can_capture_evidence=None):
+                  schema_path=can_telemetry.DEFAULT_SCHEMA, can_capture_evidence=None,
+                  expected_configurations=(), expected_maps=()):
     """Audit observed transport; hardware identity and lamps need operator evidence."""
     if cadence_tolerance_ms is not None and (
         not math.isfinite(cadence_tolerance_ms) or cadence_tolerance_ms < 0
@@ -259,6 +295,8 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
     ) else None
     pair = Pairing(mlg, start_epoch, schema_path)
     model = DashboardModel("tuning", can_id, tick_divisor, schema_path)
+    map_selection = MapSelectionAudit(expected, model.decoder.profile, tick_divisor)
+    configurations = DynamicCoverage(model.decoder.profile)
     pages = Counter()
     identities = Counter()
     health = defaultdict(list)
@@ -287,10 +325,14 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
             arbitration_id=frame.can_id, data=frame.data, timestamp=time,
             received_monotonic=time,
         ), now=time)
+        map_selection.frame(frame)
         if model.decoder.schema_mismatches > mismatches:
             identities[model.decoder.reported_identity] += 1
         if snapshot is None:
             continue
+        map_selection.snapshot(snapshot, model.decoder.reported_identity)
+        if snapshot.schema_verified and model.decoder.reported_identity == expected:
+            configurations.snapshot(snapshot)
         if "protocol_version" in snapshot.fields:
             identity = tuple(snapshot.fields[name] for name in (
                 "protocol_version", "profile_id", "profile_crc16"
@@ -368,7 +410,7 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
         )
     can_failed = bus.warning_count or bus.error_count
     report = {
-        "scope": "telemetry_transport",
+        "scope": "telemetry_transport_and_map_selection",
         "target": {"endpoint": TARGET_ENDPOINT, "identity": list(expected),
                    "page_count": target.page_count},
         "inputs": {"trc": str(trc), "trc_sha256": _sha256(trc),
@@ -425,12 +467,19 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
             "boundary": "Parsed files do not establish operator-confirmed clean shutdown.",
         },
         "stock_frames": periods, "cadence": cadence,
+        "dynamic_configurations": configurations.result(expected_configurations),
+        "map_selection": map_selection.result(trace, expected_maps),
     }
     statuses = {report[name]["status"] for name in (
-        "identity", "groups", "health_counters", "pairing", "can", "recording", "cadence"
+        "identity", "groups", "health_counters", "pairing", "can", "recording", "cadence",
+        "dynamic_configurations",
     )}
-    report["status"] = "FAIL" if "FAIL" in statuses else (
+    report["transport_status"] = "FAIL" if "FAIL" in statuses else (
         "PASS" if statuses == {"PASS"} and bitrate is not None else "INCOMPLETE"
+    )
+    statuses = {report["transport_status"], report["map_selection"]["status"]}
+    report["status"] = "FAIL" if "FAIL" in statuses else (
+        "PASS" if statuses == {"PASS"} else "INCOMPLETE"
     )
     return report
 
@@ -439,8 +488,17 @@ def format_report(report):
     target = report["target"]["identity"]
     lines = [f"Transport acceptance: {report['status']}",
              f"Registered target: {target[0]}/{target[1]}/0x{target[2]:04X}"]
-    for name in ("identity", "groups", "health_counters", "pairing", "can", "recording", "cadence"):
+    lines.append(f"Transport: {report['transport_status']}")
+    for name in ("identity", "groups", "health_counters", "pairing", "can", "recording", "cadence",
+                 "dynamic_configurations"):
         lines.append(f"{name}: {json.dumps(report[name], allow_nan=False, sort_keys=True)}")
+    selection = report["map_selection"]
+    lines.append(f"Map selection: {selection['status']}; covered maps {selection['covered_maps']}")
+    lines.append("Map gestures: released requested before-index after-indices pulses outcome")
+    for row in selection["gestures"]:
+        pulses = row["feedback"]["pulses"] if row["feedback"] else "n/a"
+        lines.append(f"{row['released_elapsed']:.6f} {row['requested_map']} "
+                     f"{row['before_index']} {row['after_indices']} {pulses} {row['outcome']}")
     lines.append("Stock RX periods (ms): ID count median p99 max")
     for row in report["stock_frames"]:
         values = " ".join("n/a" if row[name] is None else f"{row[name]:.4f}"
@@ -463,13 +521,18 @@ def main(argv=None):
     parser.add_argument("--schema", type=Path, default=can_telemetry.DEFAULT_SCHEMA)
     parser.add_argument("--can-capture-evidence",
                         help="operator evidence that error/status notification capture was enabled and supported")
+    parser.add_argument("--expect-configuration", action="append", type=int, default=[],
+                        help="planned dynamic configuration ID; repeat for each selected configuration")
+    parser.add_argument("--expect-map", action="append", type=int, default=[],
+                        help="map number whose confirmed selector gesture must be observed; repeat as needed")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     try:
         report = audit_capture(args.trc, args.mlg, bitrate=args.bitrate,
                                baseline=args.baseline, cadence_tolerance_ms=args.cadence_tolerance_ms,
                                can_id=args.can_id, tick_divisor=args.tick_divisor, timezone=args.timezone,
-                               schema_path=args.schema, can_capture_evidence=args.can_capture_evidence)
+                               schema_path=args.schema, can_capture_evidence=args.can_capture_evidence,
+                               expected_configurations=args.expect_configuration, expected_maps=args.expect_map)
     except (ValueError, OSError) as error:
         print(json.dumps({"status": "ERROR", "error": str(error)}) if args.json else
               f"Transport acceptance: ERROR: {error}")

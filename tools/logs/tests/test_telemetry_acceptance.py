@@ -80,7 +80,8 @@ class TelemetryAcceptanceTest(unittest.TestCase):
 
     def test_registered_identity_and_paired_capture(self):
         report = self.qualified(self.capture())
-        self.assertEqual(report["status"], "PASS")
+        self.assertEqual(report["transport_status"], "PASS")
+        self.assertEqual(report["status"], "INCOMPLETE")
         self.assertEqual(report["target"]["identity"], [2, 9, 0x5DEF])
         self.assertEqual(report["groups"]["completed"], 30)
         self.assertEqual(set(report["groups"]["page_frames"]), set(range(11)))
@@ -272,9 +273,9 @@ class TelemetryAcceptanceTest(unittest.TestCase):
             status = audit.main([str(trc), str(mlg), "--json", "--bitrate", "500000",
                                  "--baseline", str(baseline), "--cadence-tolerance-ms", "0.001",
                                  "--can-capture-evidence", "Synthetic fixture captures CAN notifications"])
-        self.assertEqual(status, 0)
+        self.assertEqual(status, 2)
         report = json.loads(output.getvalue())
-        self.assertEqual(report["status"], "PASS")
+        self.assertEqual(report["transport_status"], "PASS")
         self.assertIn("0x5DEF", audit.format_report(report))
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(audit.main([str(trc), str(mlg)]), 2)

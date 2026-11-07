@@ -19,6 +19,8 @@ the gesture, or that the tracker cannot count, makes the map unknown.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from tools.logs.can_telemetry import (
     PRODUCER_RUN_TICK_MAX, TickStep, receive_gap, tick_step,
 )
@@ -47,10 +49,21 @@ def display_state(code):
     return (code >> 4) & 0x07
 
 
+@dataclass(frozen=True)
+class SelectionObservation:
+    requested_map: int
+    released: float
+    observed_at: float
+    status: str
+    pulses: int
+    first_pulse: float | None
+
+
 class MapTracker:
     """Infer the one-based active map, or None while it is unknown."""
 
-    def __init__(self):
+    def __init__(self, on_selection=None):
+        self.on_selection = on_selection
         self.number = None
         self.reason = UNKNOWN_REASON
         self.since = None
@@ -65,6 +78,14 @@ class MapTracker:
         self._pulses = 0
         self._phase_on = False
         self._phase_since = None
+        self._first_pulse = None
+
+    def _report(self, status, time):
+        if self.on_selection is not None and self._commit is not None:
+            count, released = self._commit
+            self.on_selection(SelectionObservation(
+                count, released, time, status, self._pulses, self._first_pulse
+            ))
 
     def _select(self, number, reason, time):
         self.number = number
@@ -78,6 +99,7 @@ class MapTracker:
         self._pulses = 0
         self._phase_on = False
         self._phase_since = None
+        self._first_pulse = None
 
     def activity(self, time):
         """Record one frame or record of any kind at its source time."""
@@ -99,6 +121,7 @@ class MapTracker:
             return
         self._tick, self._tick_time = tick16, time
         if opening or step is TickStep.RESTART:
+            self._report("interrupted", time)
             self._clear_selector()
             self._select(1, "controller start observed", time)
 
@@ -134,6 +157,8 @@ class MapTracker:
             self._pulses = 0
             self._phase_on = False
             self._phase_since = None
+            self._first_pulse = None
+            self._report("requested", time)
         self._gesture = None
 
     def dashboard(self, time, code):
@@ -148,8 +173,10 @@ class MapTracker:
                 self._pulses = 1
                 self._phase_on = True
                 self._phase_since = time
+                self._first_pulse = time
             elif time - released > FEEDBACK_START_SECONDS:
                 # The runtime did not commit the gesture.
+                self._report("not_observed", time)
                 self._clear_selector()
             return
         if self._phase_on:
@@ -177,6 +204,7 @@ class MapTracker:
 
     def _finish(self, count, time):
         pulses = self._pulses
+        self._report("confirmed" if pulses == count else "mismatched", time)
         self._clear_selector()
         if pulses == count:
             noun = "pulse" if pulses == 1 else "pulses"
@@ -193,6 +221,7 @@ class MapTracker:
             )
 
     def _unconfirmed(self, count, time):
+        self._report("uncountable", time)
         self._clear_selector()
         self._select(
             None,

@@ -47,7 +47,7 @@ diagnostic states. PCAN-View records error frames only when that optional trace
 content is enabled, as described by the official
 [PCAN-View trace documentation](https://www.peak-system.com/products/software/analysis-software/pcan-view/?no_cache=1&sword_list%5B0%5D=flexible&sword_list%5B1%5D=data&sword_list%5B2%5D=rate).
 
-## Paired telemetry transport acceptance
+## Paired telemetry acceptance
 
 `telemetry_acceptance.py` reports the transport criteria of #27 from the TRC
 and MLG of one dashboard recording. Its target is the registered
@@ -56,11 +56,43 @@ of the identities that the host decoder accepts. It reports ordered pages,
 tick continuity, producer restarts, reconstructed stream pauses, the overrun
 and abort counters, CAN Warning/Error records, stock RX period distributions
 and bus-load bounds.
+The report also correlates completed map-selection requests and reports
+dynamic-page configuration coverage.
 
 ```bash
 uv run python tools/logs/telemetry_acceptance.py drive.trc drive.mlg \
   --bitrate 500000
 ```
+
+The map table joins completed SET/CANCEL gestures from `0x239`, feedback
+observations from the existing `MapTracker` on `0x551`, and fresh verified
+`active_map_index` fields. The dashboard's inferred map does not establish
+the ECU index. Rows distinguish a confirmed selection, an unchanged index
+without feedback, missing feedback, mismatched indices or pulses, and
+insufficient coverage. Sampling gaps that can hide a default feedback phase,
+uncountable shared display states, a cut feedback sequence or a controller
+restart leave correlation incomplete. Physical lamp behavior remains an
+operator observation.
+
+`--expect-map NUMBER` declares each planned selector case. Without any
+complete request the map section remains incomplete; `covered_maps` names
+only the cases confirmed by both observations. Unmatched index transitions
+are reported separately.
+
+The dynamic-page table counts snapshots for each configuration ID and group
+from the selector byte. DEFAULT and every observed configuration require all
+their schema-defined groups. Repeat `--expect-configuration ID` for planned
+configurations, including ones that a failed page command never selected:
+
+```bash
+uv run python tools/logs/telemetry_acceptance.py drive.trc drive.mlg \
+  --bitrate 500000 --expect-map 2 \
+  --expect-configuration 0 --expect-configuration 4 --json
+```
+
+The transport result is available separately as `transport_status`. The
+overall status also requires the declared map cases and configuration
+coverage; it does not imply coverage of undeclared cases.
 
 `--json` emits the same observations as structured data. The pairing check
 uses the shared recording clock of the dashboard: TRC offset milliseconds
@@ -109,9 +141,11 @@ the increase of p99 and maximum periods of every observed stock RX ID.
 The caller selects a reference recorded in comparable vehicle states and
 the acceptable comparison limit. Unreferenced IDs remain unassessed.
 
-Exit status 0 means all transport sections pass, 1 reports an observed
+Exit status 0 means all reported sections pass, 1 reports an observed
 failure, and 2 reports invalid input or incomplete coverage, including a
-missing bitrate or cadence assessment. A counter whose first value is
+missing bitrate, cadence reference or CAN capture evidence, or an unobserved
+declared case.
+A counter whose first value is
 nonzero, or that has fewer than two health observations, remains incomplete
 unless an observed increment establishes a failure. File parsing cannot
 establish the physical ECU, the flashed image, enabled driver error capture

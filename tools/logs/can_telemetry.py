@@ -1018,6 +1018,14 @@ def configuration_labels(profile):
     }
 
 
+def configuration_group_counts(profile):
+    """The group count of every configuration understood by a parsed profile."""
+    dynamic = profile["_layout"].dynamic
+    if dynamic is None:
+        return {}
+    return {0: 1, **{key: len(groups) for key, groups in dynamic.configurations.items()}}
+
+
 def calibrations(profile):
     """The calibration of every field whose scale states a conversion, by
     field name."""

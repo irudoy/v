@@ -64,6 +64,27 @@ def feedback(tracker, released, pulses, **options):
 
 
 class MapTrackerTest(unittest.TestCase):
+    def test_observer_reports_requests_and_resolution_without_parsing_reasons(self):
+        events = []
+        tracker = MapTracker(on_selection=events.append)
+        released = gesture(tracker, 3.0, 3)
+        feedback(tracker, released, 3)
+        self.assertEqual([event.status for event in events], ["requested", "confirmed"])
+        self.assertEqual(events[-1].requested_map, 3)
+        self.assertEqual(events[-1].pulses, 3)
+        self.assertEqual(events[-1].released, released)
+        self.assertGreater(events[-1].first_pulse, released)
+
+    def test_observer_names_a_request_interrupted_by_a_controller_restart(self):
+        events = []
+        tracker = MapTracker(on_selection=events.append)
+        tracker.tick(2, 300)
+        released = gesture(tracker, 3, 2)
+        tracker.tick(released + 0.01, 1)
+        self.assertEqual([event.status for event in events], ["requested", "interrupted"])
+        self.assertEqual(events[-1].requested_map, 2)
+        self.assertEqual(tracker.number, 1)
+
     def test_the_map_is_unknown_before_any_observation(self):
         tracker = MapTracker()
         self.assertIsNone(tracker.number)
