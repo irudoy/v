@@ -1307,7 +1307,9 @@ both curves with their word storage, the explicit axis in RPM/12.5 counts
 and that conversion on JK78C, 1ND (`00016540`, `00016560`, axis
 `00016550`) and 1ME3B (`000164E4`, `00016504`, axis `000164F4`); the
 canonical-address projection leaves the byte curves unsupported there. The
-JK00C and JK00D word curves remain unpublished under #139.
+JK00C and JK00D definitions publish the same word curves, axis scale and
+conversion: JK00C `0001715C`, `0001717C`, axis `0001716C`; JK00D
+`0001717C`, `0001719C`, axis `0001718C`.
 
 Additional target-native candidates remain in the subsystem review:
 `00013780`, `00013800` and `00013AE8` in reader `00040958`;
