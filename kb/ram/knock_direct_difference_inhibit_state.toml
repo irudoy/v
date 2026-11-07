@@ -21,10 +21,10 @@ read at 0006dd04 inhibits the direct map-difference path when bit 6 is set; \
 with that bit clear, snapshot fffe9489.bit6 must be set at 0006dd0c. The \
 store at 0006dd98 preserves the other bits and copies snapshot.bit6 through \
 the 0xbf/0x40 paths. Independent function 000a254a updates bit 7 at 000a2728 \
-through 0x7f/0x80 and preserves bit 6. The byte has independent bit roles \
-and does not match the canonical bit-7 encoding of \
-knock_branch_state_raw/field. Physical switching conditions and other bit \
-roles remain unreviewed."""
+through 0x7f/0x80 and preserves bit 6. knock_branch_state_raw/field carries \
+bit 6, which the capture moves into wire bit 7 while it clears the other \
+bits of the wire byte. Physical switching conditions and other bit roles \
+remain unreviewed."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -51,10 +51,10 @@ with that bit clear, snapshot ffff23c7.bit6 must be set at 00062e7a. The \
 read at 00062eb8 and shared delay-slot store at 00062ec2 preserve the other \
 bits and copy snapshot.bit6 into this bit through the 0xbf/0x40 paths. \
 Independent function 00090790 changes bit 7 through the store at 00090856 \
-and preserves bit 6; the byte is not a single-purpose boolean. This \
-target-specific byte is distinct from the canonical bit-7 encoding required \
-by knock_branch_state_raw/field. Other bit roles and physical causes remain \
-unreviewed."""
+and preserves bit 6; the byte is not a single-purpose boolean. \
+knock_branch_state_raw/field carries bit 6, which the capture moves into \
+wire bit 7 while it clears the other bits of the wire byte. Other bit roles \
+and physical causes remain unreviewed."""
 
 [[symbol.evidence]]
 kind = "l0"
