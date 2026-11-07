@@ -9,7 +9,7 @@ import unittest
 import warnings
 
 from patches import can_telemetry_history
-from tools.can_dashboard import model, recording, raw_log
+from tools.can_dashboard import excerpt, model, recording, raw_log
 from tools.logs import can_telemetry, telemetry_acceptance as audit
 from tools.logs import trc_to_mlg
 from tools.logs.tests import test_can_telemetry
@@ -75,7 +75,8 @@ class TelemetryAcceptanceTest(unittest.TestCase):
     def qualified(self, files):
         trc, mlg, baseline = files
         return audit.audit_capture(trc, mlg, bitrate=500000, baseline=baseline,
-                                   cadence_tolerance_ms=0.001)
+                                   cadence_tolerance_ms=0.001,
+                                   can_capture_evidence="Synthetic fixture captures CAN notifications")
 
     def test_registered_identity_and_paired_capture(self):
         report = self.qualified(self.capture())
@@ -136,6 +137,10 @@ class TelemetryAcceptanceTest(unittest.TestCase):
         restarted = self.qualified(self.capture("restart", ticks=[*range(300, 315), *range(1, 16)]))
         self.assertEqual(restarted["groups"]["producer_restarts"], 1)
         self.assertEqual(restarted["groups"]["status"], "FAIL")
+        event = restarted["groups"]["restart_examples"][0]
+        self.assertEqual(event["last_tick"], 314)
+        self.assertEqual(event["new_tick"], 1)
+        self.assertGreater(event["elapsed"], 1)
 
     def test_counter_increment_and_wrap_are_reported(self):
         def mutate(tick, frames):
@@ -237,13 +242,15 @@ class TelemetryAcceptanceTest(unittest.TestCase):
         report = self.qualified((trc, mlg, baseline))
         self.assertEqual(report["cadence"]["status"], "FAIL")
 
-    def test_missing_period_coverage_and_faulty_baseline_are_unassessed(self):
+    def test_missing_baseline_id_fails_and_faulty_baseline_is_incomplete(self):
         _trc, _mlg, baseline = self.capture()
         def without_lamps(_tick, frames):
             return [frame for frame in frames if frame.arbitration_id != 0x551]
         trc, mlg, _ = self.capture("without_lamps", mutate=without_lamps)
         report = self.qualified((trc, mlg, baseline))
-        self.assertEqual(report["cadence"]["status"], "NOT_ASSESSED")
+        self.assertEqual(report["cadence"]["status"], "FAIL")
+        missing = next(row for row in report["cadence"]["identifiers"] if row["can_id"] == 0x551)
+        self.assertEqual(missing["status"], "FAIL")
         lines = baseline.read_text().splitlines()
         number = int(lines[-1].split(")")[0]) + 1
         with baseline.open("a") as stream:
@@ -263,7 +270,8 @@ class TelemetryAcceptanceTest(unittest.TestCase):
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             status = audit.main([str(trc), str(mlg), "--json", "--bitrate", "500000",
-                                 "--baseline", str(baseline), "--cadence-tolerance-ms", "0.001"])
+                                 "--baseline", str(baseline), "--cadence-tolerance-ms", "0.001",
+                                 "--can-capture-evidence", "Synthetic fixture captures CAN notifications"])
         self.assertEqual(status, 0)
         report = json.loads(output.getvalue())
         self.assertEqual(report["status"], "PASS")
@@ -273,3 +281,57 @@ class TelemetryAcceptanceTest(unittest.TestCase):
             self.assertEqual(audit.main([str(trc), str(mlg) + ".missing", "--json"]), 2)
             _, wrong_mlg, _ = self.capture("wrong", ticks=range(40, 70))
             self.assertEqual(audit.main([str(trc), str(wrong_mlg), "--json"]), 1)
+
+    def test_zero_notifications_without_capture_evidence_are_unassessed(self):
+        trc, mlg, baseline = self.capture()
+        result = audit.audit_capture(trc, mlg, bitrate=500000, baseline=baseline,
+                                    cadence_tolerance_ms=0.001)
+        self.assertEqual(result["can"]["error_count"], 0)
+        self.assertEqual(result["can"]["status"], "NOT_ASSESSED")
+        self.assertEqual(result["status"], "INCOMPLETE")
+
+    def test_unix_anchor_avoids_timezone_interpretation(self):
+        files = self.capture()
+        source = files[0]
+        source.write_text(source.read_text().replace(
+            ";$FILEVERSION=1.1\n", f";$FILEVERSION=1.1\n; Unix start seconds: {EPOCH:.9f}\n"
+        ))
+        result = audit.audit_capture(source, files[1], timezone="Invalid/Timezone")
+        self.assertEqual(result["pairing"]["status"], "PASS")
+        self.assertEqual(result["pairing"]["absolute_clock_source"], "Unix start seconds")
+
+    def test_paired_excerpt_reacquires_rotating_context_and_keeps_unix_clock(self):
+        trc, mlg, _baseline = self.capture()
+        trc.write_text(trc.read_text().replace(
+            ";$FILEVERSION=1.1\n", f";$FILEVERSION=1.1\n; Unix start seconds: {EPOCH:.9f}\n"
+        ))
+        out = self.root / "excerpt"
+        # Open inside tick 13's raw group, after its first pages.
+        with contextlib.redirect_stdout(io.StringIO()):
+            status = excerpt.main([str(mlg), str(trc), "1.1232", "1.29", "-o", str(out)])
+        self.assertEqual(status, 0)
+        result = audit.audit_capture(next(out.glob("*.trc")), next(out.glob("*.mlg")),
+                                    timezone="Invalid/Timezone")
+        self.assertEqual(result["pairing"]["status"], "PASS")
+        self.assertEqual(result["pairing"]["synchronization_prefix_records"], 1)
+        self.assertGreater(result["pairing"]["bootstrap_records"], 0)
+        self.assertGreater(result["pairing"]["matched_snapshots"], 0)
+        self.assertEqual(result["pairing"]["absolute_clock_source"], "Unix start seconds")
+
+    def test_historical_pcan_clock_mismatch_is_a_coverage_limitation(self):
+        files = self.capture(epoch=EPOCH + 1)
+        source = files[0]
+        source.write_text(source.read_text().replace(
+            ";$FILEVERSION=1.1\n", ";$FILEVERSION=1.1\n; Generated by PCAN-View v5.3\n"
+        ))
+        result = self.qualified(files)
+        self.assertEqual(result["pairing"]["status"], "NOT_ASSESSED")
+        self.assertEqual(result["pairing"]["unshifted_comparison_status"], "FAIL")
+        self.assertEqual(result["status"], "INCOMPLETE")
+
+    def test_single_stock_frame_does_not_establish_a_period_failure(self):
+        baseline = [{"can_id": 0x551, "median_period_ms": 100,
+                     "p99_period_ms": 100, "maximum_period_ms": 100}]
+        observed = [{"can_id": 0x551, "median_period_ms": None}]
+        result = audit._cadence(observed, baseline, 1)
+        self.assertEqual(result["status"], "NOT_ASSESSED")

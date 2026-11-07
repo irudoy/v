@@ -29,6 +29,20 @@ CUT_ROWS = (
 
 
 class PeakTrcAuditTest(unittest.TestCase):
+    def test_dashboard_unix_clock_is_retained_and_validated(self):
+        trace = self.load(TRACE.replace(
+            ";$FILEVERSION=1.1\n", ";$FILEVERSION=1.1\n; Unix start seconds: 1700000000.123456\n"
+        ))
+        self.assertEqual(trace.unix_start_seconds, 1700000000.123456)
+        self.assertEqual(peak_trc_audit.read_header(trace.path).unix_start_seconds,
+                         trace.unix_start_seconds)
+        for value in ("nan", "inf", "-1", "4294967296", "bad"):
+            with self.subTest(value=value), self.assertRaisesRegex(
+                peak_trc_audit.TraceError, "invalid Unix start"
+            ):
+                self.load(TRACE.replace(";$FILEVERSION=1.1\n",
+                                        f";$FILEVERSION=1.1\n; Unix start seconds: {value}\n"))
+
     def load(self, text=TRACE):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)

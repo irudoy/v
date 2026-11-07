@@ -74,6 +74,9 @@ class Pairing:
         self.matched = self.time_matches = self.bridges = self.missing_mlg = self.missing_trc = 0
         self.value_mismatches = self.date_mismatches = 0
         self.examples = []
+        self.bootstrapping = True
+        self.bootstrap_records = self.prefix_records = 0
+        self.bootstrap_missing = set()
 
     def _example(self, **example):
         if len(self.examples) < EXAMPLE_LIMIT:
@@ -99,11 +102,15 @@ class Pairing:
             <= math.floor(self.start_epoch + time + tolerance)
         )
 
-    def snapshot(self, model, time):
+    def snapshot(self, model, time, *, synchronization_prefix=False):
         while self.index < self.log.record_count and (
             self.times[self.index] < time and not _time_matches(self.times[self.index], time)
         ):
-            if self._bridge(self.index):
+            if synchronization_prefix and self.time_matches == 0 and self.prefix_records == 0:
+                # A paired excerpt can open inside the first raw group, whose
+                # final-page snapshot the MLG retains but TRC cannot reconstruct.
+                self.prefix_records += 1
+            elif self._bridge(self.index):
                 self.bridges += 1
                 self.previous = self.index
             else:
@@ -119,12 +126,19 @@ class Pairing:
         index = self.index
         self.time_matches += 1
         previous_errors = self.value_mismatches + self.date_mismatches
+        missing = set()
         for name, binding in self.bindings.items():
             expected = (
                 getattr(model, name, None) if binding.source_kind == "attribute"
                 else model.raw.get(name)
             )
             actual = self.columns[name][index]
+            if self.bootstrapping and (
+                expected is None and math.isfinite(actual)
+                or name == "schema_verified" and expected is False and actual == 1
+            ):
+                missing.add(name)
+                continue
             if not _same_value(actual, expected):
                 self.value_mismatches += 1
                 self._example(
@@ -135,7 +149,12 @@ class Pairing:
         if not self._date_valid(index, time):
             self.date_mismatches += 1
             self._example(kind="date_mismatch", elapsed=time)
-        if previous_errors == self.value_mismatches + self.date_mismatches:
+        if missing:
+            self.bootstrap_records += 1
+        self.bootstrap_missing = missing
+        if not missing and model.schema_verified:
+            self.bootstrapping = False
+        if not missing and previous_errors == self.value_mismatches + self.date_mismatches:
             self.matched += 1
         self.previous = index
         self.index += 1
@@ -146,7 +165,8 @@ class Pairing:
                       self.value_mismatches, self.date_mismatches))
         return {
             "status": "FAIL" if failed else (
-                "PASS" if self.matched and self.start_epoch is not None else "INCOMPLETE"
+                "PASS" if self.matched and self.start_epoch is not None
+                and not self.bootstrap_missing else "INCOMPLETE"
             ),
             "clock": "TRC offset / 1000 = MLG Elapsed; no fitted offset",
             "absolute_clock_available": self.start_epoch is not None,
@@ -155,6 +175,9 @@ class Pairing:
             "matched_snapshots": self.matched,
             "time_matches": self.time_matches,
             "bridge_records": self.bridges,
+            "synchronization_prefix_records": self.prefix_records,
+            "bootstrap_records": self.bootstrap_records,
+            "bootstrap_missing_channels": sorted(self.bootstrap_missing),
             "snapshots_without_mlg": self.missing_mlg,
             "mlg_without_snapshot": self.missing_trc,
             "value_mismatches": self.value_mismatches,
@@ -187,7 +210,10 @@ def _cadence(periods, baseline, tolerance):
         row = {"can_id": can_id}
         if left is None or left["median_period_ms"] is None:
             row["status"] = "NOT_ASSESSED"
-        elif right is None or right["median_period_ms"] is None:
+        elif right is None:
+            row["status"] = "FAIL"
+            row["reason"] = "ID present in baseline is missing from the recording"
+        elif right["median_period_ms"] is None:
             row["status"] = "NOT_ASSESSED"
         else:
             deltas = {
@@ -211,20 +237,26 @@ def _cadence(periods, baseline, tolerance):
 
 def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms=None,
                   can_id=0x6F0, tick_divisor=1, timezone="Asia/Vladivostok",
-                  schema_path=can_telemetry.DEFAULT_SCHEMA):
+                  schema_path=can_telemetry.DEFAULT_SCHEMA, can_capture_evidence=None):
     """Audit observed transport; hardware identity and lamps need operator evidence."""
     if cadence_tolerance_ms is not None and (
         not math.isfinite(cadence_tolerance_ms) or cadence_tolerance_ms < 0
         or baseline is None
     ):
         raise ValueError("cadence tolerance requires a baseline and must be finite and nonnegative")
+    if can_capture_evidence is not None:
+        can_capture_evidence = can_capture_evidence.strip()
+        if not can_capture_evidence:
+            raise ValueError("CAN capture evidence must not be empty")
     target = can_telemetry_history.endpoint(TARGET_ENDPOINT)
     if target is None:
         raise ValueError(f"unregistered target endpoint {TARGET_ENDPOINT}")
     expected = (target.protocol_version, target.profile_id, target.profile_crc16)
     trace = peak_trc_audit.load_trace(trc)
     bus = peak_trc_audit.audit_trace(trace, candidate_id=can_id, bitrate=bitrate)
-    start_epoch = trc_to_mlg.trace_start_epoch(trace, timezone) if trace.start_time else None
+    start_epoch = trc_to_mlg.trace_start_epoch(trace, timezone) if (
+        trace.unix_start_seconds is not None or trace.start_time
+    ) else None
     pair = Pairing(mlg, start_epoch, schema_path)
     model = DashboardModel("tuning", can_id, tick_divisor, schema_path)
     pages = Counter()
@@ -233,6 +265,8 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
     runs = defaultdict(lambda: ([], []))
     prefix = non_rx = verified = 0
     tick_steps = []
+    restarts = []
+    previous_snapshot = None
     seen_zero = False
     for frame in trace.frames:
         if frame.extended or frame.remote:
@@ -265,6 +299,11 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
             for name in COUNTERS:
                 health[(snapshot.run, name)].append(snapshot.fields[name])
         verified += snapshot.schema_verified
+        if previous_snapshot is not None and previous_snapshot.run != snapshot.run:
+            if len(restarts) < EXAMPLE_LIMIT:
+                restarts.append({"elapsed": time, "last_tick": previous_snapshot.tick16,
+                                 "new_tick": snapshot.tick16, "run": snapshot.run})
+        previous_snapshot = snapshot
         ticks, times = runs[snapshot.run]
         if ticks and snapshot.unwrapped_tick - ticks[-1] != tick_divisor:
             if len(tick_steps) < EXAMPLE_LIMIT:
@@ -272,7 +311,7 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
                                    "to_tick": snapshot.unwrapped_tick, "elapsed": time})
         ticks.append(snapshot.unwrapped_tick)
         times.append(time)
-        pair.snapshot(model, time)
+        pair.snapshot(model, time, synchronization_prefix=prefix > 0)
     decoder = model.decoder
     pauses = []
     for run, (ticks, times) in runs.items():
@@ -314,6 +353,20 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
         if baseline_trace.incomplete_tail is not None or baseline_warnings or baseline_errors:
             cadence["status"] = "INCOMPLETE"
             cadence["reason"] = "baseline contains CAN notifications or an excluded cut tail"
+    pairing = pair.result()
+    pairing["absolute_clock_source"] = "Unix start seconds" if (
+        trace.unix_start_seconds is not None
+    ) else "$STARTTIME and timezone" if trace.start_time else "missing"
+    pairing["trc_generator"] = trace.generator
+    if trace.generator and "PCAN-View" in trace.generator and pairing["status"] == "FAIL":
+        pairing["unshifted_comparison_status"] = pairing["status"]
+        pairing["status"] = "NOT_ASSESSED"
+        pairing["clock_limitation"] = (
+            "PCAN-View TRC and historical MLG 10.1.1 have independent recorder clocks. "
+            "The dashboard 11 shared-clock comparison cannot qualify this pairing; "
+            "its mismatch does not establish a transport defect. No offset was fitted."
+        )
+    can_failed = bus.warning_count or bus.error_count
     report = {
         "scope": "telemetry_transport",
         "target": {"endpoint": TARGET_ENDPOINT, "identity": list(expected),
@@ -336,6 +389,7 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
             "tick_divisor": tick_divisor, "page_frames": dict(sorted(pages.items())),
             **group_errors, "pauses": pauses,
             "tick_step_examples": tick_steps,
+            "restart_examples": restarts,
             "synchronization_prefix_frames": prefix,
             "incomplete_tail_pages": decoder.pending_page_count,
         },
@@ -346,8 +400,16 @@ def audit_capture(trc, mlg, *, bitrate=None, baseline=None, cadence_tolerance_ms
                 ) else "INCOMPLETE"
             ), "observations": counter_rows,
         },
-        "pairing": pair.result(),
-        "can": {"status": "FAIL" if bus.warning_count or bus.error_count else "PASS",
+        "pairing": pairing,
+        "can": {"status": "FAIL" if can_failed else (
+                    "PASS" if can_capture_evidence is not None else "NOT_ASSESSED"
+                ),
+                "capture_evidence": can_capture_evidence,
+                "assessment_basis": "operator-declared capture capability; file counts alone do not prove coverage",
+                "reason": "Recorded notifications establish a failure." if can_failed else (
+                    "No notifications under the declared capture coverage." if can_capture_evidence else
+                    "Zero counts do not prove that the driver delivered CAN errors or status notifications."
+                ),
                 "warning_count": bus.warning_count, "error_count": bus.error_count,
                 "notifications": [
                     {"record": row.number, "elapsed": row.offset_ms / 1000,
@@ -399,13 +461,15 @@ def main(argv=None):
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument("--timezone", default="Asia/Vladivostok")
     parser.add_argument("--schema", type=Path, default=can_telemetry.DEFAULT_SCHEMA)
+    parser.add_argument("--can-capture-evidence",
+                        help="operator evidence that error/status notification capture was enabled and supported")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     try:
         report = audit_capture(args.trc, args.mlg, bitrate=args.bitrate,
                                baseline=args.baseline, cadence_tolerance_ms=args.cadence_tolerance_ms,
                                can_id=args.can_id, tick_divisor=args.tick_divisor, timezone=args.timezone,
-                               schema_path=args.schema)
+                               schema_path=args.schema, can_capture_evidence=args.can_capture_evidence)
     except (ValueError, OSError) as error:
         print(json.dumps({"status": "ERROR", "error": str(error)}) if args.json else
               f"Transport acceptance: ERROR: {error}")

@@ -66,11 +66,41 @@ uv run python tools/logs/telemetry_acceptance.py drive.trc drive.mlg \
 uses the shared recording clock of the dashboard: TRC offset milliseconds
 divided by 1000 equals the MLG Elapsed channel at the final page of a group.
 It compares the recorded raw channels and attributes, accounts for the
-recorder's held-value bridge rows, and checks Date against `$STARTTIME` in
-`--timezone` (default `Asia/Vladivostok`). It does not fit a clock offset to
+recorder's held-value bridge rows, and checks Date against the dashboard's
+`Unix start seconds` anchor. `--timezone` (default `Asia/Vladivostok`) applies
+to the PCAN-View `$STARTTIME` fallback. It does not fit a clock offset to
 make unrelated recordings match. The unfinished group at the capture tail
 and initial synchronization frames are reported separately from interior
 group failures. An excluded cut TRC row leaves the recording incomplete.
+Historical PCAN-View TRC and MLG 10.1.1 use independent recorder clocks. A
+failed common-clock comparison of such inputs is `NOT_ASSESSED`, with its
+raw mismatch diagnostics retained; it does not establish a transport defect.
+
+Zero Warning/Error counts leave the CAN section `NOT_ASSESSED` unless
+`--can-capture-evidence` records the operator's evidence that error/status
+notification capture is enabled and supported. Merely requesting capture
+does not establish delivery: the pinned
+[python-can 4.6.1 PCAN backend](https://python-can.readthedocs.io/en/v4.6.1/_modules/can/interfaces/pcan/pcan.html)
+ignores failure of `PCAN_ALLOW_ERROR_FRAMES` on Darwin. The dashboard TRC
+writer preserves delivered error frames as Error rows and emits no Warng
+rows. Delivery by the installed MacCAN library requires separate evidence.
+Observed notifications fail the section regardless of the declaration.
+
+Restart examples name the elapsed time and the old and new ticks. Select
+one engine run from a longer recording with the paired excerpt command:
+
+```bash
+uv run python -m tools.can_dashboard.excerpt drive.mlg drive.trc 1:20 2:05.5
+```
+
+The command shifts both files by the same origin and moves the TRC Unix
+anchor with it. Apply the report to the resulting pair to assess that
+interval without treating another ignition cycle as an interior failure.
+At an excerpt's synchronization prefix, the report identifies the MLG row
+whose raw group opens before the cut and reacquires held rotating and stock
+context before comparing those channels. Known values and dates remain
+checked during this bootstrap; a prefix without a fully comparable snapshot
+does not pass pairing.
 
 Without a cadence reference the command reports periods with
 `cadence=NOT_ASSESSED`. Supply a distinct `--baseline reference.trc` and an

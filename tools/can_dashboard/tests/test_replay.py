@@ -252,6 +252,15 @@ def write_pair(directory):
 
 
 class ExcerptCommandTest(unittest.TestCase):
+    def test_excerpt_moves_the_dashboard_unix_anchor(self):
+        self.trc.write_text(self.trc.read_text().replace(
+            ";$FILEVERSION=1.1\n", ";$FILEVERSION=1.1\n; Unix start seconds: 1700000000.123456789\n"
+        ))
+        out = self.directory / "unix.trc"
+        status, _output, _errors = self.run_main(self.trc, "0.25", "0.75", "-o", out)
+        self.assertEqual(status, 0)
+        self.assertIn("; Unix start seconds: 1700000000.373456789", out.read_text())
+
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)

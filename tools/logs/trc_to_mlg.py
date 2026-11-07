@@ -44,7 +44,12 @@ class ConversionSummary:
 
 
 def trace_start_epoch(trace, timezone_name: str) -> float:
-    """Return the UTC epoch of the $STARTTIME of a trace or its header."""
+    """Prefer the dashboard's Unix anchor; interpret PCAN-View OLE in its zone."""
+    unix_start = getattr(trace, "unix_start_seconds", None)
+    if unix_start is not None:
+        if not math.isfinite(unix_start) or not 0 <= unix_start <= 0xFFFFFFFF:
+            raise ConversionError(f"{trace.path}: invalid Unix start seconds")
+        return unix_start
     if trace.start_time is None:
         raise ConversionError(
             f"{trace.path}: TRC does not declare $STARTTIME"
