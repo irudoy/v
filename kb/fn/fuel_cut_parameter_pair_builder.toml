@@ -1,10 +1,65 @@
 summary = """
-Select the native parameter pair from gated fixed values or the \
-surface/curve path, retaining the hysteretic selectors and pair assembly. \
-Curve 00013738 supplies the secondary lookup component; physical component \
-conversions remain unresolved."""
+Builds the two-byte parameter pair that fuel_cut_coordinator passes to the \
+fuel-cut entry sequence 0006c444. In priority order it derives the pair from \
+the held pair ffff1490/ffff1491 while ffff1494 is nonzero, takes the \
+override pair ROM8[0000834f..00008352] while ffff477c is positive and no \
+byte is 0xff, returns zero while bit 3 of ffff23ff is set, and takes the \
+fixed pair ROM8[000089a8..000089a9] when ffff1069 is below ROM8[00008a80] or \
+bit 1 of ffff2425 is set. Otherwise the first byte comes from \
+fuel_cut_pair_primary_surface or fuel_cut_pair_primary_alternate_surface by \
+the hysteretic ratio bit 1 of ffff4525, and the second byte from \
+fuel_cut_pair_secondary_curve. Physical component conversions remain \
+unresolved."""
 level = "code"
+home = "jk78c"
 block = "fuel_quantity/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007bf3c"
+level = "code"
+note = """
+fuel_cut_coordinator 0007a740 calls this builder at 0007ac2e. It selects \
+0000b8d4 or 0000b914 by bit 3 of fffeb9a4 and reads \
+fuel_cut_pair_secondary_curve after each. The override pair \
+ROM8[00008365..00008368] applies while fffebc78 is nonzero; its stock bytes \
+0a 14 00 00 enable it. The fixed pair ROM8[00008ac3..00008ac4] holds 40, 0."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007bf3c"
+to = "jk78c:0006be58"
+note = """
+The same branch order as JK78C 0006be58: a hysteretic selector from fffeb8da \
+against ROM8[0000854e] << 8 with release ROM8[0000854f] << 8, a held-pair \
+branch on fffe81fc, the override pair, the fixed pair under ROM8[00008bac] \
+and bit 6 of fffe94be, and the surface and curve lookups over \
+min(2*u8[fffe818e], 0xe0) and min(2*normalized_load, 0xe0)."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007765c"
+level = "code"
+note = """
+fuel_cut_coordinator 000760cc calls this builder at 000765c2. It selects \
+0000b820 or 0000b860 by bit 2 of fffeb83f and reads \
+fuel_cut_pair_secondary_curve after each. The override pair \
+ROM8[00008360..00008363] applies while fffebaf5 is nonzero: stock 0a 14 00 \
+00 on 1ND0A enables it, 0xff bytes on 1ND3B disable it. The fixed pair \
+ROM8[00008a71..00008a72] holds 40, 0 on 1ND0A and 75, 0 on 1ND3B."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007765c"
+to = "jk78c:0006be58"
+note = """
+The same branch order as JK78C 0006be58: a hysteretic selector from fffeb784 \
+against ROM8[0000853a] << 8 with release ROM8[0000853b] << 8, a held-pair \
+branch on fffe84cc, the override pair, the fixed pair under ROM8[00008b5b] \
+and bit 6 of fffe94ed, and the surface and curve lookups over \
+min(2*u8[fffe81a8], 0xe0) and min(2*normalized_load, 0xe0)."""
 
 [[symbol]]
 layout = "jk78c"

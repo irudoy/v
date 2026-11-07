@@ -1,0 +1,119 @@
+summary = """
+Implicit 8x8 byte surface of fuel_cut_parameter_pair_builder for the first \
+byte of the fuel-cut parameter pair once the selector ratio reaches its \
+threshold; fuel_cut_pair_primary_surface serves below it. The inputs, the \
+pair and the fuel-cut entry sequence that loads this byte into its first \
+countdown are those of fuel_cut_pair_primary_surface."""
+note = [
+    """
+Selector: bit 1 of ffff4525 (1ND bit 2 of fffeb83f, 1ME3B bit 3 of fffeb9a4) \
+is set while the word ffff447e (1ND fffeb784, 1ME3B fffeb8da) has reached \
+0x8000 and has not fallen below 0x7300, the stock threshold and release on \
+every image. Its physical quantity is unresolved.""",
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. Reader 1ND \
+0007765c / 1ME3B 0007bf3c runs from fuel_cut_coordinator 000760cc / \
+0007a740, every stock image passes the ROM8 gate of its surface path, and a \
+run-time bit selects between the two surfaces. The surfaces set the entry \
+countdown of the deceleration fuel cut, not an ignition-timing or limiter \
+role, and stay out of the editor.""",
+]
+home = "jk78c"
+role = "table"
+block = "fuel_quantity/block"
+access = "implicit-2d"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0000b914"
+level = "code"
+note = """
+MOV.L 0007c058 loads this surface for the call through 000288b4 at 0007c05e \
+when bit 3 of fffeb9a4 is set. Stock: the first 16 bytes hold 60, the next 8 \
+hold 50 and the rest 40."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007c058"
+to = "jk78c:0000b41a"
+note = """
+Target function 0007bf3c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder). This MOV.L loads the surface of the set \
+selector bit, as jk78c:0006bf58 loads 0000b41a."""
+
+[[symbol]]
+layout = "1nd"
+address = "0000b860"
+level = "code"
+note = """
+MOV.L 0007773c loads this surface for the call through 00028390 at 00077742 \
+when bit 2 of fffeb83f is set. Stock on 1ND0A: the first 16 bytes hold 60, \
+the next 8 hold 50 and the rest 40; 1ND3B holds the 64 bytes of JK78C \
+0000b41a."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007773c"
+to = "jk78c:0000b41a"
+note = """
+Target function 0007765c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder). This MOV.L loads the surface of the set \
+selector bit, as jk78c:0006bf58 loads 0000b41a."""
+
+[[symbol]]
+layout = "jk78c"
+address = "0000b41a"
+level = "code"
+note = """
+MOV.L 0006bf58 replaces 0000b3da with this surface for the call through \
+00027d74 at 0006bf5e when bit 1 of ffff4525 is set. Stock: values from 12 to \
+75; the first 29 stored bytes hold 75 and the last byte holds 12."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006bf58"
+note = """
+fuel_cut_parameter_pair_builder 0006be58 tests bit 1 of ffff4525 at 0006bf54 \
+and, when it is set, loads this base into r4 in place of 0000b3da for the \
+same 2D implicit-axis call at 0006bf5e."""
+
+[[link]]
+type = "index"
+to = "normalized_load/ram"
+layouts = ["jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006bf3a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00077722"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007c03e"
+
+[[link]]
+type = "reader"
+to = "fuel_cut_parameter_pair_builder/fn"
+layouts = ["jk78c", "1nd", "1me3b"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006bf58"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0007773c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007c058"
