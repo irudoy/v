@@ -2,26 +2,32 @@ summary = """
 Cylinder volume over the crank angle from top dead center: 32 explicit \
 points from 0 to 360 degrees, read by the float ignition model root at |360 \
 - X| of its crank-angle input X and multiplied by 2e-8 there. The curve is \
-engine geometry and changes only with another stroke or compression ratio."""
+engine geometry: bore, stroke, compression ratio and the connecting-rod and \
+crank geometry set its values."""
 note = [
     """
 Stock values: 3080 counts (61.60 cm3) at 0 degrees and 33880 counts (677.60 \
 cm3) at 180 degrees, so 616.00 cm3 swept volume and compression ratio 11.0, \
-the VQ37VHR figures of the factory manual. A slider-crank volume with a \
-connecting-rod to crank-radius ratio of 3.5 matches every point within 0.1 \
-percent of the swept volume; the manual states a 149.45-149.55 mm rod center \
-distance (EM-298) and a 42.96-43.04 mm crank radius (EM-300). The stored \
-curve is asymmetric about 180 degrees by up to 0.6 cm3; its cause is \
-unresolved.""",
+the VQ37VHR figures of the factory manual. A symmetric slider-crank volume \
+with a connecting-rod to crank-radius ratio of 3.5 matches every point \
+within 0.63 cm3, under 0.11 percent of the swept volume; the manual states a \
+149.45-149.55 mm rod center distance (EM-298) and a 42.96-43.04 mm crank \
+radius (EM-300). Mirrored points of the stored curve differ by up to 33 \
+counts (0.66 cm3), at 108/252 and 120/240 degrees; the cause of this \
+asymmetry is unresolved.""",
     """
 The scale x*0.02 cm3 reads the code factor 2e-8 as cubic meters. The unit \
 rests on the factory geometry, so the scale stays a candidate.""",
     """
-The crank-angle input X is unresolved. On 1ND, 000612a0 selects \
-min(fffea2b0/64, fffea066/128) degrees and flags the choice in bit 5 of \
-fffeb8a1; on JK78C and 1ME3B the root passes the word pairs ffff3112 / \
-ffff2ee2 and fffea36c / fffea12a in the same registers to 00057fd4 and \
-0006508c. The engine event that X describes is unestablished.""",
+The crank-angle input X is unresolved. On 1ND, 000612a0 compares \
+u16(fffea2b0) with u16(fffea066) >> 1: below it, X is fffea2b0/64 degrees \
+and bit 5 of fffeb8a1 is set; otherwise X is fffea066/128 degrees and the \
+bit is clear. This follows min(fffea2b0/64, fffea066/128) except where \
+fffea066 is odd and its half rounded down equals fffea2b0; there X is \
+fffea066/128, 1/128 degree above the minimum. On JK78C and 1ME3B the root \
+passes the word pairs ffff3112 / ffff2ee2 and fffea36c / fffea12a in the \
+same registers to 00057fd4 and 0006508c. The engine event that X describes \
+is unestablished.""",
     """
 The 1ND root stores the volume at fffef610 and uses it in a quotient of the \
 form a*V/(b*c) at 000608b0 and 00060b58; the physical model of that quotient \
