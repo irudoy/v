@@ -659,6 +659,27 @@ by the validator of its format, and then renamed, so a failed save leaves no
 partial file. The note beside the replay time names the saved file or the
 reason a save failed, and the next replay clears it.
 
+The same excerpt runs from the command line on one or more files without the
+window:
+
+```bash
+python -m tools.can_dashboard.excerpt drive.mlg drive.trc 1:20 2:05.5
+```
+
+`START` and `STOP` are replay times in seconds, `m:ss`, or `h:mm:ss`, each
+with a fraction. The command line takes `START` as the origin: the TRC
+offsets and the MLG `Elapsed` drop by `START` instead of by the time of the
+first kept record, the trace start moves forward by `START`, and the MLG
+header by its whole seconds. The dashboard writes the TRC of a recording
+with offset milliseconds / 1000 equal to the `Elapsed` of its MLG, so one
+region cuts both files of the pair consistently and the excerpts stay
+paired. Each
+output takes the default name beside its source, such as
+`drive_80.0-125.5s.mlg`; `-o` names the output file of a single source or
+an output directory, and `--force` replaces existing outputs. A failed
+source is reported on stderr, leaves no output, and makes the exit status
+1 after the other sources are cut.
+
 A position change rebuilds the model at the target. The model replays the
 3 s before the target, so rotating contexts and stock frames are current when
 playback continues, and the selected map and the acceleration timers resume

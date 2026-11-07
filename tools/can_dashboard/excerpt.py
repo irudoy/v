@@ -18,10 +18,20 @@ at zero where its first record lies:
 
 The region selects records by the replay time the loader assigns, so an
 excerpt holds the items that the replay plays between the two points.
+
+With an origin, the TRC and MLG time drops by that replay time instead of the
+time of the first kept record. The dashboard writes a TRC whose offset in
+milliseconds divided by 1000 equals the `Elapsed` channel of its MLG, so one
+region and one origin cut both files of such a pair consistently.
+
+The command line cuts one or more files with the region start as the origin:
+
+    python -m tools.can_dashboard.excerpt drive.mlg drive.trc 1:20 2:05.5
 """
 
 from __future__ import annotations
 
+import argparse
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
@@ -30,6 +40,7 @@ import os
 from pathlib import Path
 import re
 import struct
+import sys
 import tempfile
 
 from tools.logs import can_telemetry, mlvlg, peak_trc_audit
@@ -69,6 +80,37 @@ class Excerpt:
     output: Path
     records: int
     duration: float
+
+
+@dataclass(frozen=True)
+class SourceFile:
+    """A replay file that the suffix of its path assigns to a reader."""
+
+    path: Path
+    kind: str
+    incomplete_tail: peak_trc_audit.IncompleteTail | None = None
+
+
+def source_file(path):
+    """The source of an excerpt without loading it for replay.
+
+    A TRC is read once in full, which validates it as the replay does and
+    finds a cut last row.
+    """
+    path = Path(path)
+    kind = _reader_kind(path)
+    tail = None
+    if kind == "TRC":
+        try:
+            records = peak_trc_audit.iter_records(path)
+            for _record in records:
+                pass
+        except peak_trc_audit.TraceError as error:
+            raise ExcerptError(str(error)) from error
+        tail = records.incomplete_tail
+    elif not path.is_file():
+        raise ExcerptError(f"{path} is not a file")
+    return SourceFile(path, kind, tail)
 
 
 def default_name(path, start, stop):
@@ -136,7 +178,7 @@ def _shift_trace_header(lines, shift_ms, note):
     return shifted
 
 
-def _write_trc(timeline, start, stop, stream):
+def _write_trc(timeline, start, stop, stream, origin=None):
     header = []
     records = []
     first = last = None
@@ -164,8 +206,14 @@ def _write_trc(timeline, start, stop, stream):
                 break
             if first is None:
                 first = offset
+                base = first if origin is None else Decimal(str(origin)) * 1000
             last = offset
-            shifted = offset - first
+            shifted = offset - base
+            # Keep the decimals of the source offset when the origin adds
+            # only trailing zeros.
+            kept = shifted.quantize(offset)
+            if kept == shifted:
+                shifted = kept
             records.append(
                 f"{len(records) + 1:>{len(match['number'])}})"
                 f"{shifted:>{len(match['offset'])}}{match['rest']}"
@@ -174,12 +222,14 @@ def _write_trc(timeline, start, stop, stream):
         return 0, 0.0
     name = timeline.path.name.encode("ascii", "replace").decode("ascii")
     note = f"Excerpt of {name}: source offsets {first}..{last} ms"
-    stream.write("".join(_shift_trace_header(header, first, note)))
+    if origin is not None:
+        note += f", offset 0 at source offset {base} ms"
+    stream.write("".join(_shift_trace_header(header, base, note)))
     stream.write("".join(records))
-    return len(records), float(last - first) / 1000.0
+    return len(records), float(last - base) / 1000.0
 
 
-def _write_candump(timeline, start, stop, stream):
+def _write_candump(timeline, start, stop, stream, origin=None):
     kept = 0
     first = None
     last = 0.0
@@ -208,7 +258,7 @@ def _write_candump(timeline, start, stop, stream):
     return kept, last_kept - first_kept
 
 
-def _write_mlg(timeline, start, stop, stream):
+def _write_mlg(timeline, start, stop, stream, origin=None):
     path = timeline.path
     mlvlg.validate_mlg(path)
     fields = mlvlg.read_fields(path)
@@ -260,11 +310,12 @@ def _write_mlg(timeline, start, stop, stream):
             break
         if first is None:
             first = time
+            base = first if origin is None else origin
         last = time
         moved = bytearray(payload)
-        struct.pack_into(">f", moved, elapsed_offset, time - first)
+        struct.pack_into(">f", moved, elapsed_offset, time - base)
         blocks.append(
-            mlvlg.encode_payload_block(bytes(moved), len(blocks), time - first)
+            mlvlg.encode_payload_block(bytes(moved), len(blocks), time - base)
         )
     if not blocks:
         return 0, 0.0
@@ -273,11 +324,11 @@ def _write_mlg(timeline, start, stop, stream):
         ">I",
         moved_header,
         MLG_TIMESTAMP_OFFSET,
-        start_timestamp + math.floor(first),
+        start_timestamp + math.floor(base),
     )
     stream.write(bytes(moved_header))
     stream.write(b"".join(blocks))
-    return len(blocks), last - first
+    return len(blocks), last - base
 
 
 def _validate(kind, path):
@@ -288,12 +339,16 @@ def _validate(kind, path):
         mlvlg.validate_mlg(path)
 
 
-def save_excerpt(timeline, start, stop, output, force=False):
+def save_excerpt(timeline, start, stop, output, force=False, origin=None):
     """Write the records of the replay time region start..stop to output.
 
     The output keeps the format of the timeline source and is replaced only
-    with force; a failed excerpt leaves no file behind.
+    with force; a failed excerpt leaves no file behind. TRC and MLG time
+    drops by `origin`, by default the time of the first kept record; a
+    candump excerpt keeps its lines.
     """
+    if origin is not None and origin > start:
+        raise ExcerptError("the origin lies after the region start")
     output = Path(output)
     source = timeline.path
     if output.resolve() == source.resolve():
@@ -322,7 +377,7 @@ def save_excerpt(timeline, start, stop, output, force=False):
             stream = os.fdopen(descriptor, "w", encoding=encoding, newline="")
         with stream:
             records, duration = writers[timeline.kind](
-                timeline, start, stop, stream
+                timeline, start, stop, stream, origin
             )
         if not records:
             raise ExcerptError("the region holds no records")
@@ -341,3 +396,73 @@ def save_excerpt(timeline, start, stop, output, force=False):
         temporary.unlink(missing_ok=True)
         raise
     return Excerpt(output, records, duration)
+
+
+def parse_time(text):
+    """Replay seconds from `s`, `m:ss`, or `h:mm:ss`, each with a fraction."""
+    parts = text.split(":")
+    try:
+        values = [float(part) for part in parts]
+    except ValueError:
+        values = []
+    if not 1 <= len(values) <= 3 or any(
+        not math.isfinite(value) or value < 0 for value in values
+    ) or any(value >= 60 for value in values[1:]):
+        raise argparse.ArgumentTypeError(f"invalid replay time {text!r}")
+    seconds = 0.0
+    for value in values:
+        seconds = seconds * 60 + value
+    return seconds
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        prog="python -m tools.can_dashboard.excerpt",
+        description="Cut the replay time region START..STOP out of TRC, MLG, "
+        "or candump files. TRC and MLG time drops by START, so the TRC and MLG "
+        "of one dashboard recording stay paired.",
+    )
+    parser.add_argument("sources", nargs="+", type=Path, metavar="SRC")
+    parser.add_argument("start", type=parse_time, metavar="START",
+                        help="replay time: seconds, m:ss, or h:mm:ss")
+    parser.add_argument("stop", type=parse_time, metavar="STOP")
+    parser.add_argument(
+        "-o", "--output", type=Path,
+        help="output file of one source, or output directory; by default "
+        "SRC_START-STOPs beside each source",
+    )
+    parser.add_argument("--force", action="store_true",
+                        help="replace existing outputs")
+    args = parser.parse_args(argv)
+    if args.stop <= args.start:
+        parser.error("STOP must lie after START")
+    if len(set(path.resolve() for path in args.sources)) != len(args.sources):
+        parser.error("a source is named twice")
+    directory = args.output is not None and (
+        len(args.sources) > 1 or args.output.is_dir()
+    )
+    failed = False
+    for path in args.sources:
+        name = default_name(path, args.start, args.stop)
+        if args.output is None:
+            output = path.with_name(name)
+        elif directory:
+            output = args.output / name
+        else:
+            output = args.output
+        try:
+            saved = save_excerpt(
+                source_file(path), args.start, args.stop, output,
+                force=args.force, origin=args.start,
+            )
+        except ExcerptError as error:
+            print(f"{path}: not saved: {error}", file=sys.stderr)
+            failed = True
+            continue
+        print(f"{saved.output}: {saved.records} records, "
+              f"{saved.duration:.3f} s from {path.name}")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

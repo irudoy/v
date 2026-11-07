@@ -1,5 +1,8 @@
 from array import array
+import argparse
+import contextlib
 from dataclasses import replace
+import io
 from pathlib import Path
 import tempfile
 import unittest
@@ -220,6 +223,121 @@ class RecordingReplayTest(unittest.TestCase):
 
         record = timeline.item(0, 10.0)
         self.assertEqual(record.values["af_adjustment_b1_raw"], -2)
+
+
+# Elapsed times of a dashboard recording pair, one snapshot per 100 ms.
+PAIR_ELAPSED = tuple(index * 0.1 for index in range(10))
+
+
+def write_pair(directory):
+    """An MLG and a TRC whose offset / 1000 equals Elapsed, as the dashboard
+    writes them."""
+    generator = model.DemoGenerator()
+    source = model.DashboardModel("tuning", 0x6F0, 1)
+    mlg = Path(directory) / "drive.mlg"
+    recorder = recording.TelemetryMlgRecorder(mlg, "tuning", 1_776_000_000)
+    for tick, elapsed in enumerate(PAIR_ELAPSED, start=1):
+        for frame in generator.stock_context(tick, elapsed):
+            source.process_frame(frame, now=elapsed)
+        feed_group(source, generator.group(tick, elapsed), elapsed)
+        recorder.append(source, elapsed)
+    recorder.close()
+    rows = [";$FILEVERSION=1.1", ";$STARTTIME=46250.5", ";"] + [
+        f"{number:6d}) {elapsed * 1000:11.1f}  Rx         0280  8  00 00 00 00 00 10 00 00"
+        for number, elapsed in enumerate(PAIR_ELAPSED, start=1)
+    ]
+    trc = mlg.with_suffix(".trc")
+    trc.write_text("\n".join(rows) + "\n", encoding="ascii")
+    return mlg, trc
+
+
+class ExcerptCommandTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.directory = Path(directory.name)
+        self.mlg, self.trc = write_pair(self.directory)
+
+    def run_main(self, *args):
+        output, errors = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(errors):
+            status = excerpt.main([str(arg) for arg in args])
+        return status, output.getvalue(), errors.getvalue()
+
+    def test_replay_times_parse_as_seconds_minutes_or_hours(self):
+        for text, seconds in (("12.5", 12.5), ("1:02.5", 62.5), ("1:00:00", 3600.0),
+                              ("90", 90.0)):
+            with self.subTest(text=text):
+                self.assertEqual(excerpt.parse_time(text), seconds)
+        for text in ("", "-1", "1:60", "1:2:3:4", "nan", "a:00"):
+            with self.subTest(text=text), self.assertRaises(argparse.ArgumentTypeError):
+                excerpt.parse_time(text)
+
+    def test_one_region_cuts_a_dashboard_pair_consistently(self):
+        out = self.directory / "cut"
+        status, output, _errors = self.run_main(self.mlg, self.trc, "0.25", "0.75", "-o", out)
+        self.assertEqual(status, 0)
+        self.assertEqual(len(output.splitlines()), 2)
+        mlg = replay.load_timeline(out / "drive_0.2-0.8s.mlg", 0x6F0)
+        trc = replay.load_timeline(out / "drive_0.2-0.8s.trc", 0x6F0)
+        kept = [elapsed - 0.25 for elapsed in PAIR_ELAPSED if 0.25 <= elapsed <= 0.75]
+        self.assertEqual(len(mlg), len(kept))
+        self.assertEqual(len(trc), len(kept))
+        for mlg_time, trc_time, expected in zip(mlg.times, trc.times, kept):
+            self.assertAlmostEqual(mlg_time, expected, places=5)
+            self.assertAlmostEqual(trc_time, expected, places=5)
+        text = (out / "drive_0.2-0.8s.trc").read_text(encoding="ascii")
+        self.assertIn("source offsets 300.0..700.0 ms, offset 0 at source offset 250", text)
+        offsets = [line.split()[1] for line in text.splitlines() if not line.startswith(";")]
+        self.assertEqual(offsets, ["50.0", "150.0", "250.0", "350.0", "450.0"])
+        self.assertIn(";$STARTTIME=46250.5000028935", text)
+
+    def test_an_origin_finer_than_the_offsets_keeps_its_decimals(self):
+        status, _output, _errors = self.run_main(
+            self.trc, "0.12345", "0.35", "-o", self.directory / "fine.trc"
+        )
+        self.assertEqual(status, 0)
+        text = (self.directory / "fine.trc").read_text(encoding="ascii")
+        offsets = [line.split()[1] for line in text.splitlines() if not line.startswith(";")]
+        self.assertEqual(offsets, ["76.55000", "176.55000"])
+
+    def test_outputs_default_beside_the_source_and_need_force_to_be_replaced(self):
+        status, _output, _errors = self.run_main(self.trc, "0:00.25", "0:00.75")
+        self.assertEqual(status, 0)
+        self.assertTrue((self.directory / "drive_0.2-0.8s.trc").is_file())
+        status, _output, errors = self.run_main(self.trc, "0.25", "0.75")
+        self.assertEqual(status, 1)
+        self.assertIn("already exists", errors)
+        status, _output, _errors = self.run_main(self.trc, "0.25", "0.75", "--force")
+        self.assertEqual(status, 0)
+
+    def test_one_source_takes_an_output_file(self):
+        out = self.directory / "region.mlg"
+        status, output, _errors = self.run_main(self.mlg, "0.25", "0.75", "-o", out)
+        self.assertEqual(status, 0)
+        self.assertTrue(output.startswith(f"{out}: 5 records"))
+        status, _output, errors = self.run_main(
+            self.mlg, "0.25", "0.75", "-o", self.directory / "region.trc"
+        )
+        self.assertEqual(status, 1)
+        self.assertIn("keep the .mlg suffix", errors)
+
+    def test_an_empty_region_or_a_bad_source_fails_without_an_output(self):
+        status, _output, errors = self.run_main(self.trc, "5", "6")
+        self.assertEqual(status, 1)
+        self.assertIn("the region holds no records", errors)
+        broken = self.directory / "broken.trc"
+        broken.write_text(";$FILEVERSION=1.1\nnot a row\n", encoding="ascii")
+        status, _output, errors = self.run_main(broken, "0", "1")
+        self.assertEqual(status, 1)
+        self.assertIn("unsupported TRC row", errors)
+        self.assertEqual(sorted(path.name for path in self.directory.iterdir()),
+                         ["broken.trc", "drive.mlg", "drive.trc"])
+
+    def test_arguments_need_an_ordered_region_and_distinct_sources(self):
+        for args in ((self.trc, "2", "1"), (self.trc, self.trc, "0", "1")):
+            with self.subTest(args=args), self.assertRaises(SystemExit):
+                self.run_main(*args)
 
 
 class CheckpointTest(unittest.TestCase):
