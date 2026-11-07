@@ -41,6 +41,23 @@ coordinator publish the full mask while MAF diagnostic summary snapshot bit
 RPM/12.5 word reaches 0xC0 is a snapshot in which that bit is clear. Runtime
 record 0x129 behind that bit also resets the learned grid in FUN 0005796C and
 neutralizes the publication in FUN 00057B26.
+
+Profile 8 also carries the permit bytes 0xFFFF1458 and 0xFFFF1457 and the
+neutralization byte 0xFFFF41B5 in every snapshot. FUN 00057C78 sets the tick
+flag on one coordinator pass when revolution counter 0xFFFF25FA reaches zero
+and reloads it with the immediate at 0x57CA0; FUN 000208F8 decrements the
+counter once per crank revolution. FUN 00058740 sets bit b of 0xFFFF1457 only
+on tick passes and holds bit b of 0xFFFF1458 while its eligibility counter
+exceeds one and the stability bounds hold. A permit interval therefore
+expects one 0xFFFF1457 pulse per tick, counted from the stock engine-speed
+word; fewer pulses mean that snapshots miss the one-pass pulse. Bit b of
+0xFFFF1458 requires coolant at ROM8[0x8CFD] or above and af_adjustment
+0xFFFF45A0+2b inside the bounds ROM16[0x8ECC] < value <= ROM16[0x8ECE]. A
+decrease of the latched af_adjustment copy fails the composite gate for one
+pass, which clears the eligibility counter and bit b of 0xFFFF1458. The
+updater FUN 00057D1E requires bit b of both bytes, so an in-visit update
+expects bit b of 0xFFFF1458 between its two tag-0 samples. A pulse of
+0xFFFF41B5.bit0 refills the learned grid with 0x6400 in FUN 0005796C.
 """
 
 from __future__ import annotations
@@ -54,6 +71,7 @@ import itertools
 import math
 from pathlib import Path
 import statistics
+import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -93,6 +111,15 @@ RPM_AXIS_ADDRESS = 0x126DC
 AXIS_POINTS = 8
 BFS_HYSTERESIS_ADDRESS = 0x881B
 RPM_HYSTERESIS_ADDRESS = 0x881A
+TICK_RELOAD_ADDRESS = 0x57CA0
+MOV_IMMEDIATE_R0 = 0xE0
+AF_ADJUSTMENT_LOW_ADDRESS = 0x8ECC
+AF_ADJUSTMENT_HIGH_ADDRESS = 0x8ECE
+RPM_RAW_SCALE = 12.5
+STABILITY_PERMIT = "fuel_learning_permit_a_raw"
+COMPOSITE_PERMIT = "fuel_learning_permit_b_raw"
+NEUTRAL_CONTROL = "ltft_publication_neutral_control_raw"
+AF_ADJUSTMENT_TAGS = {1: PUBLISHED_TAG, 2: AF_ADJUSTMENT_B2_TAG}
 COLUMNS = (
     "date",
     "elapsed",
@@ -136,6 +163,9 @@ class Calibration:
     rpm_axis: tuple[int, ...]
     bfs_hysteresis: int
     rpm_hysteresis: int
+    tick_revolutions: int
+    af_adjustment_low: int
+    af_adjustment_high: int
 
 
 @dataclass(frozen=True)
@@ -194,6 +224,9 @@ def load_calibration(rom: str = "JK08A", image: Path | None = None) -> Calibrati
     Without an explicit image the hash-verified registered ROM is used.
     """
     data = romkit.load(rom).data if image is None else Path(image).read_bytes()
+    if data[TICK_RELOAD_ADDRESS] != MOV_IMMEDIATE_R0:
+        raise ValueError(f"no mov #imm,r0 tick reload at {TICK_RELOAD_ADDRESS:#x}")
+    af_low, af_high = struct.unpack_from(">hh", data, AF_ADJUSTMENT_LOW_ADDRESS)
     return Calibration(
         image_sha256=hashlib.sha256(data).hexdigest(),
         publication_low=data[PUBLICATION_LOW_ADDRESS] << 8,
@@ -207,6 +240,9 @@ def load_calibration(rom: str = "JK08A", image: Path | None = None) -> Calibrati
         rpm_axis=tuple(data[RPM_AXIS_ADDRESS : RPM_AXIS_ADDRESS + AXIS_POINTS]),
         bfs_hysteresis=data[BFS_HYSTERESIS_ADDRESS],
         rpm_hysteresis=data[RPM_HYSTERESIS_ADDRESS] >> 2,
+        tick_revolutions=data[TICK_RELOAD_ADDRESS + 1],
+        af_adjustment_low=af_low,
+        af_adjustment_high=af_high,
     )
 
 
@@ -393,6 +429,35 @@ def update_bound(snapshots: Snapshots, calibration: Calibration, bank: int = 1) 
     return (max(deviations, default=0) * gain) >> 8
 
 
+def visit_changes(
+    snapshots: Snapshots, phase: dict[int, int], cells: list[int | None], bank: int
+) -> list[tuple[int, int]]:
+    """Return the tag-0 sample pairs of one replayed cell visit whose word changes."""
+    ticks = snapshots.ticks
+    segments = snapshots.segments
+    learned = snapshots.columns[f"ltft_learned_b{bank}_raw"]
+    stable = []
+    visit_start = 0
+    for index in range(len(snapshots)):
+        if index and (cells[index] != cells[index - 1] or not snapshots.contiguous(index)):
+            visit_start = index
+        if (
+            ticks[index] % TAG_COUNT == phase[LEARNED_TAG]
+            and learned[index] is not None
+            and cells[index] is not None
+            and index - visit_start + 1 >= STABLE_VISIT
+        ):
+            stable.append(index)
+    return [
+        (first, second)
+        for first, second in zip(stable, stable[1:])
+        if cells[first] == cells[second]
+        and ticks[second] - ticks[first] == TAG_COUNT
+        and segments[second] == segments[first]
+        and learned[first] != learned[second]
+    ]
+
+
 def learning_changes(
     snapshots: Snapshots, phase: dict[int, int], calibration: Calibration, bank: int = 1
 ) -> dict:
@@ -412,28 +477,9 @@ def learning_changes(
                 park_pairs += 1
                 park_changes += learned[first] != learned[second]
     cells = replay_cells(snapshots, calibration)
-    stable = []
-    visit_start = 0
-    for index in range(len(snapshots)):
-        if index and (cells[index] != cells[index - 1] or not snapshots.contiguous(index)):
-            visit_start = index
-        if (
-            ticks[index] % TAG_COUNT == phase[LEARNED_TAG]
-            and learned[index] is not None
-            and cells[index] is not None
-            and index - visit_start + 1 >= STABLE_VISIT
-        ):
-            stable.append(index)
     bound = update_bound(snapshots, calibration, bank)
     in_visit = updates = row0 = agree = neutral_stft = 0
-    for first, second in zip(stable, stable[1:]):
-        if (
-            cells[first] != cells[second]
-            or ticks[second] - ticks[first] != TAG_COUNT
-            or segments[second] != segments[first]
-            or learned[first] == learned[second]
-        ):
-            continue
+    for first, second in visit_changes(snapshots, phase, cells, bank):
         in_visit += 1
         step = learned[second] - learned[first]
         if abs(step) > bound:
@@ -602,6 +648,152 @@ def learning_controls(snapshots: Snapshots) -> dict:
     return result
 
 
+def _since(snapshots: Snapshots, first: int, last: int) -> float:
+    """Elapsed time from the tick of snapshot first to the tick of snapshot last."""
+    return round(
+        (snapshots.ticks[last] - snapshots.ticks[first]) * TICK_SECONDS
+        + snapshots.pause_offsets[last]
+        - snapshots.pause_offsets[first],
+        3,
+    )
+
+
+def _bits(values: list, mask: int) -> list[bool]:
+    return [value is not None and bool(value & mask) for value in values]
+
+
+def _rising(flags: list[bool], snapshots: Snapshots) -> list[int]:
+    return [
+        index
+        for index, flag in enumerate(flags)
+        if flag and (not snapshots.contiguous(index) or not flags[index - 1])
+    ]
+
+
+def permit_behavior(
+    snapshots: Snapshots, phase: dict[int, int], calibration: Calibration
+) -> dict:
+    """Relate the permit bits of each bank to ticks, gates, and learned updates."""
+    columns = snapshots.columns
+    stability = columns[STABILITY_PERMIT]
+    composite = columns[COMPOSITE_PERMIT]
+    if all(value is None for value in stability) or all(value is None for value in composite):
+        return {}
+    count = len(snapshots)
+    ticks = snapshots.ticks
+    segments = snapshots.segments
+    rpm = columns["rpm_raw"]
+    speed = columns["vehicle_speed_kmh"]
+    coolant = columns["coolant_raw"]
+    threshold = calibration.coolant_threshold_raw
+    warm = next(
+        (
+            index
+            for index in refreshes(snapshots, phase, LEARNED_TAG)
+            if coolant[index] is not None and coolant[index] >= threshold
+        ),
+        None,
+    )
+    cells = replay_cells(snapshots, calibration)
+    result = {}
+    for bank in (1, 2):
+        held = _bits(stability, 1 << (bank - 1))
+        pulse = _bits(composite, 1 << (bank - 1))
+        runs = _intervals(held, snapshots)
+        prefix = f"stability_permit_b{bank}_"
+        result[prefix + "interval_count"] = len(runs)
+        result[prefix + "seconds"] = round(sum(_seconds(run, snapshots) for run in runs), 3)
+        result[prefix + "longest_seconds"] = max(
+            (_seconds(run, snapshots) for run in runs), default=0.0
+        )
+        result[prefix + "standstill_seconds"] = round(
+            TICK_SECONDS * sum(held[i] and speed[i] == 0 for i in range(count)), 3
+        )
+        result[prefix + "moving_seconds"] = round(
+            TICK_SECONDS
+            * sum(held[i] and speed[i] is not None and speed[i] > 0 for i in range(count)),
+            3,
+        )
+        revolutions = sum(
+            rpm[i] * RPM_RAW_SCALE / 60 * TICK_SECONDS
+            for i in range(count)
+            if held[i] and rpm[i] is not None
+        )
+        result[prefix + "expected_tick_count"] = round(
+            revolutions / calibration.tick_revolutions, 1
+        )
+        edges = _rising(pulse, snapshots)
+        result[f"composite_permit_b{bank}_pulse_count"] = len(edges)
+        result[f"composite_permit_b{bank}_pulse_with_stability_count"] = sum(
+            held[index] for index in edges
+        )
+        first = None if warm is None else next(
+            (index for index in range(warm, count) if held[index]), None
+        )
+        result[prefix + "first_warm_seconds"] = (
+            None if first is None else _since(snapshots, warm, first)
+        )
+        result[prefix + "below_coolant_threshold_count"] = sum(
+            held[i] and coolant[i] is not None and coolant[i] < threshold for i in range(count)
+        )
+        af = columns[f"af_adjustment_b{bank}_raw"]
+        result[prefix + "af_adjustment_out_of_bounds_count"] = sum(
+            held[i]
+            and af[i] is not None
+            and not calibration.af_adjustment_low < af[i] <= calibration.af_adjustment_high
+            for i in range(count)
+        )
+        samples = [
+            index
+            for index in refreshes(snapshots, phase, AF_ADJUSTMENT_TAGS[bank])
+            if af[index] is not None
+        ]
+        drops = cleared = 0
+        for before, after in zip(samples, samples[1:]):
+            if (
+                ticks[after] - ticks[before] != TAG_COUNT
+                or segments[after] != segments[before]
+                or af[after] >= af[before]
+                or not held[before]
+            ):
+                continue
+            drops += 1
+            # The latch follows within three coordinator passes; the context
+            # sample can lag the change by one tag period.
+            window = range(before + 1, min(count, after + TAG_COUNT + 1))
+            cleared += any(
+                not held[i] for i in window if segments[i] == segments[before]
+            )
+        result[f"af_adjustment_b{bank}_drop_with_stability_count"] = drops
+        result[f"af_adjustment_b{bank}_drop_with_clear_count"] = cleared
+        learned = columns[f"ltft_learned_b{bank}_raw"]
+        bound = update_bound(snapshots, calibration, bank)
+        updates = [
+            (before, after)
+            for before, after in visit_changes(snapshots, phase, cells, bank)
+            if abs(learned[after] - learned[before]) <= bound
+        ]
+        result[f"in_visit_update_b{bank}_with_stability_count"] = sum(
+            any(held[before + 1 : after + 1]) for before, after in updates
+        )
+        result[f"in_visit_update_b{bank}_with_pulse_count"] = sum(
+            any(pulse[before + 1 : after + 1]) for before, after in updates
+        )
+    neutral = _bits(columns[NEUTRAL_CONTROL], 1)
+    edges = _rising(neutral, snapshots)
+    learned_refreshes = refreshes(snapshots, phase, LEARNED_TAG)
+    refilled = 0
+    for edge in edges:
+        following = next((index for index in learned_refreshes if index > edge), None)
+        if following is None or segments[following] != segments[edge]:
+            continue
+        words = [columns[f"ltft_learned_b{bank}_raw"][following] for bank in (1, 2)]
+        refilled += all(word in (None, NEUTRAL) for word in words)
+    result["neutral_control_pulse_count"] = len(edges)
+    result["neutral_control_pulse_learned_neutral_count"] = refilled
+    return result
+
+
 def audit(
     path: Path, calibration: Calibration, band: tuple[float, float] = (80.0, 100.0)
 ) -> dict:
@@ -659,6 +851,7 @@ def audit(
         result.update({prefix + key: value for key, value in
                        learning_changes(snapshots, phase, calibration, bank).items()})
     result.update(learning_controls(snapshots))
+    result.update(permit_behavior(snapshots, phase, calibration))
     result.update(warm_window(snapshots, phase, calibration))
     result.update(drive_profile(snapshots, band))
     return result

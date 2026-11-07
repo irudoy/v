@@ -462,6 +462,20 @@ closed composite gate and do not infer a learning rate from a permission bit.
   tag-0 samples of one replayed cell visit of at least five snapshots is an
   in-visit change, and an update when it stays within
   `max|STFT - 0x6400| * max(gain) >> 8` of the capture.
+- Permits: for each bank, the intervals of bit `b` of `0xFFFF1458` with
+  their standstill and moving seconds, and the ticks they expect at one tick
+  per `ROM8[0x57CA1]` revolutions of the stock engine-speed word, the reload
+  immediate of `FUN 00057C78`. The `0xFFFF1457` pulses are rising edges of
+  bit `b`, with the share inside a `0xFFFF1458` interval; fewer pulses than
+  expected ticks mean that snapshots miss the one-pass pulse. The audit
+  counts permit snapshots below `ROM8[0x8CFD]` coolant or with af_adjustment
+  outside `ROM16[0x8ECC] < value <= ROM16[0x8ECE]`, the seconds from the
+  warm window start to the first permit, and af_adjustment decreases under a
+  permit with the share whose permit clears before one tag period after the
+  later sample. An in-visit update counts with the permit or the pulse when
+  that bit is set between its two tag-0 samples. A `0xFFFF41B5.bit0` pulse
+  counts as a refill when both learned words read `0x6400` at the next tag-0
+  refresh. A recording without the permit bytes emits none of these figures.
 - Warm window: the part of the capture after coolant reaches `ROM8[0x8CFD]`,
   with its D, P, and closed-loop proxy seconds and the fueled snapshots whose
   RPM/12.5 word reaches the `0xC0` MAF summary gate of `FUN 0004F736`.
@@ -480,9 +494,10 @@ JK08A stock ROM. `--speed-band` sets the speed band in km/h (default 80 100).
 The output is one `key = value` line per statistic in TOML syntax.
 
 Every relation is evaluated in raw software units. The closed-loop proxy and
-the replayed cell are software constructions, not recorded ECU states. The
-stream carries the bank 2 published word without its summands, and it carries
-neither `0xFFFF41B5` nor the remaining permit terms of `FUN 00057D1E`.
+the replayed cell are software constructions, not recorded ECU states.
+Profiles before 8 carry the bank 2 published word without its summands and
+none of the permit bytes. Profile 8 carries the summands of both banks and
+the three control bytes, but not the composite gate terms of `FUN 00058740`.
 
 ## JK08A Rolling Launch captures
 

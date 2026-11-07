@@ -257,6 +257,84 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(result["both_permits_b2_set_count"], len(rows))
         self.assertEqual(result["neutral_control_bit0_set_count"], len(rows) // 2)
 
+    def test_tick_and_af_adjustment_constants_are_read_from_the_image(self):
+        data = romkit.load("JK08A").data
+        # FUN 00057C78 reloads revolution counter 0xFFFF25FA with mov #0x10,r0.
+        self.assertEqual(struct.unpack_from(">H", data, audit.TICK_RELOAD_ADDRESS)[0], 0xE010)
+        self.assertEqual(self.calibration.tick_revolutions, 16)
+        self.assertEqual(
+            (self.calibration.af_adjustment_low, self.calibration.af_adjustment_high),
+            (-250, 250),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            image = Path(directory) / "image.bin"
+            patched = bytearray(data)
+            patched[audit.TICK_RELOAD_ADDRESS] = 0
+            image.write_bytes(bytes(patched))
+            with self.assertRaises(ValueError):
+                audit.load_calibration(image=image)
+
+    def test_permit_behavior_relates_bits_to_ticks_gates_and_updates(self):
+        held = set(range(117, 119)) | set(range(124, 134)) | set(range(142, 156))
+        pulses = {118, 126, 130, 136, 145}
+        rows = []
+        for row in self.rows:
+            tick = row["tick16"]
+            # af_adjustment b1 refreshes with tag 2 on residue 3.
+            af_tick = last_refresh(tick, PUBLISHED_RESIDUE)
+            if af_tick == 113:
+                af = 300
+            elif af_tick >= 148:
+                af = -20
+            elif af_tick >= 133:
+                af = -10
+            else:
+                af = 0
+            learned = row["ltft_learned_b1_raw"]
+            if last_refresh(tick, PUBLISHED_RESIDUE - 2) >= 141:
+                learned = NEUTRAL
+            rows.append(dict(
+                row,
+                fuel_learning_permit_a_raw=0x80 | int(tick in held),
+                fuel_learning_permit_b_raw=0x80 | int(tick in pulses),
+                ltft_publication_neutral_control_raw=int(tick == 137),
+                af_adjustment_b1_raw=af,
+                ltft_learned_b1_raw=learned,
+            ))
+        snapshots = snapshots_from(rows)
+        phase = audit.refresh_phase(snapshots)
+        result = audit.permit_behavior(snapshots, phase, self.calibration)
+        tick = audit.TICK_SECONDS
+        self.assertEqual(result["stability_permit_b1_interval_count"], 3)
+        # Interval seconds are rounded per interval, as in the drive profile.
+        self.assertEqual(
+            result["stability_permit_b1_seconds"],
+            round(sum(round(length * tick, 3) for length in (2, 10, 14)), 3),
+        )
+        self.assertEqual(result["stability_permit_b1_longest_seconds"], round(14 * tick, 3))
+        self.assertEqual(result["stability_permit_b1_standstill_seconds"], round(14 * tick, 3))
+        self.assertEqual(result["stability_permit_b1_moving_seconds"], round(12 * tick, 3))
+        # 20 held snapshots at 2250 rpm and 6 at 2500 rpm, 16 revolutions per tick.
+        revolutions = (20 * 2250 + 6 * 2500) / 60 * tick
+        self.assertEqual(result["stability_permit_b1_expected_tick_count"], round(revolutions / 16, 1))
+        self.assertEqual(result["composite_permit_b1_pulse_count"], 5)
+        self.assertEqual(result["composite_permit_b1_pulse_with_stability_count"], 4)
+        self.assertEqual(result["stability_permit_b1_first_warm_seconds"], round(3 * tick, 3))
+        self.assertEqual(result["stability_permit_b1_below_coolant_threshold_count"], 2)
+        self.assertEqual(result["stability_permit_b1_af_adjustment_out_of_bounds_count"], 1)
+        self.assertEqual(result["af_adjustment_b1_drop_with_stability_count"], 2)
+        self.assertEqual(result["af_adjustment_b1_drop_with_clear_count"], 1)
+        self.assertEqual(result["in_visit_update_b1_with_stability_count"], 1)
+        self.assertEqual(result["in_visit_update_b1_with_pulse_count"], 1)
+        self.assertEqual(result["neutral_control_pulse_count"], 1)
+        self.assertEqual(result["neutral_control_pulse_learned_neutral_count"], 1)
+        # Bank 2 bits stay clear and its learned word stays neutral.
+        self.assertEqual(result["stability_permit_b2_interval_count"], 0)
+        self.assertEqual(result["stability_permit_b2_expected_tick_count"], 0.0)
+        self.assertEqual(result["composite_permit_b2_pulse_count"], 0)
+        self.assertIsNone(result["stability_permit_b2_first_warm_seconds"])
+        self.assertEqual(result["in_visit_update_b2_with_stability_count"], 0)
+
     def test_earlier_recording_reports_missing_bank_2_summands(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "earlier.mlg"
@@ -265,6 +343,8 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertTrue(result["summands_b1_available"])
         self.assertFalse(result["summands_b2_available"])
         self.assertNotIn("b2_relation_exact_count", result)
+        self.assertFalse(result["learning_permits_available"])
+        self.assertNotIn("stability_permit_b1_seconds", result)
 
     def test_audit_reads_a_synthetic_mlg(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -282,6 +362,9 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(result["b2_relation_other_count"], 0)
         self.assertTrue(result["learning_permits_available"])
         self.assertEqual(result["both_permits_b2_set_count"], len(self.rows))
+        self.assertEqual(result["stability_permit_b2_interval_count"], 1)
+        self.assertEqual(result["composite_permit_b2_pulse_count"], 1)
+        self.assertEqual(result["stability_permit_b1_first_warm_seconds"], 0.0)
         self.assertEqual(
             result["relation_bracketed_count"] + result["relation_transition_count"],
             result["learned_pair_count"],
