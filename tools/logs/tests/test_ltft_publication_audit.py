@@ -274,7 +274,8 @@ class LtftPublicationAuditTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 audit.load_calibration(image=image)
 
-    def test_permit_behavior_relates_bits_to_ticks_gates_and_updates(self):
+    def permit_rows(self, gaps=()):
+        """Rows of the permit scenario; a gap tick carries no page 3 bytes."""
         held = set(range(117, 119)) | set(range(124, 134)) | set(range(142, 156))
         pulses = {118, 126, 130, 136, 145}
         rows = []
@@ -301,10 +302,20 @@ class LtftPublicationAuditTest(unittest.TestCase):
                 af_adjustment_b1_raw=af,
                 ltft_learned_b1_raw=learned,
             ))
+            if tick in gaps:
+                for name in audit.OPTIONAL_COLUMNS[2:]:
+                    rows[-1][name] = None
         snapshots = snapshots_from(rows)
         phase = audit.refresh_phase(snapshots)
-        result = audit.permit_behavior(snapshots, phase, self.calibration)
+        return audit.permit_behavior(snapshots, phase, self.calibration)
+
+    def test_permit_behavior_relates_bits_to_ticks_gates_and_updates(self):
+        result = self.permit_rows()
         tick = audit.TICK_SECONDS
+        self.assertEqual(result["permit_unobserved_snapshot_count"], 0)
+        self.assertEqual(result["stability_permit_b1_first_warm_unobserved_count"], 0)
+        self.assertEqual(result["af_adjustment_b1_drop_unobserved_count"], 0)
+        self.assertEqual(result["in_visit_update_b1_unobserved_count"], 0)
         self.assertEqual(result["stability_permit_b1_interval_count"], 3)
         # Interval seconds are rounded per interval, as in the drive profile.
         self.assertEqual(
@@ -334,6 +345,36 @@ class LtftPublicationAuditTest(unittest.TestCase):
         self.assertEqual(result["composite_permit_b2_pulse_count"], 0)
         self.assertIsNone(result["stability_permit_b2_first_warm_seconds"])
         self.assertEqual(result["in_visit_update_b2_with_stability_count"], 0)
+
+    def test_missing_permit_bytes_are_unknown(self):
+        # Another dynamic-page configuration leaves page 3 without the bytes.
+        gaps = set(range(128, 132)) | set(range(138, 142)) | set(range(145, 150))
+        result = self.permit_rows(gaps)
+        tick = audit.TICK_SECONDS
+        self.assertEqual(result["permit_unobserved_snapshot_count"], len(gaps))
+        # A gap ends an interval; only observed permit snapshots count.
+        self.assertEqual(result["stability_permit_b1_interval_count"], 5)
+        self.assertEqual(
+            result["stability_permit_b1_seconds"],
+            round(sum(round(length * tick, 3) for length in (2, 4, 2, 3, 6)), 3),
+        )
+        self.assertEqual(result["stability_permit_b1_standstill_seconds"], round(9 * tick, 3))
+        self.assertEqual(result["stability_permit_b1_moving_seconds"], round(8 * tick, 3))
+        # The pulses at 130 and 145 fall into gaps.
+        self.assertEqual(result["composite_permit_b1_pulse_count"], 3)
+        self.assertEqual(result["composite_permit_b1_pulse_with_stability_count"], 2)
+        # The drop before 128 starts in a gap; the drop at 148 sees the gap,
+        # not a clear permit.
+        self.assertEqual(result["af_adjustment_b1_drop_with_stability_count"], 1)
+        self.assertEqual(result["af_adjustment_b1_drop_with_clear_count"], 0)
+        self.assertEqual(result["af_adjustment_b1_drop_unobserved_count"], 1)
+        # The update between the samples at 136 and 141 sees no set permit
+        # through the gap.
+        self.assertEqual(result["in_visit_update_b1_with_stability_count"], 1)
+        self.assertEqual(result["in_visit_update_b1_unobserved_count"], 1)
+        self.assertEqual(result["stability_permit_b1_first_warm_seconds"], round(3 * tick, 3))
+        self.assertEqual(result["stability_permit_b1_first_warm_unobserved_count"], 0)
+        self.assertEqual(result["neutral_control_pulse_count"], 1)
 
     def test_earlier_recording_reports_missing_bank_2_summands(self):
         with tempfile.TemporaryDirectory() as directory:

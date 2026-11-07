@@ -42,8 +42,13 @@ RPM/12.5 word reaches 0xC0 is a snapshot in which that bit is clear. Runtime
 record 0x129 behind that bit also resets the learned grid in FUN 0005796C and
 neutralizes the publication in FUN 00057B26.
 
-Profile 8 also carries the permit bytes 0xFFFF1458 and 0xFFFF1457 and the
-neutralization byte 0xFFFF41B5 in every snapshot. FUN 00057C78 sets the tick
+Profile 8 carries the permit bytes 0xFFFF1458 and 0xFFFF1457 and the
+neutralization byte 0xFFFF41B5 on page 3 of every snapshot. Profile 9 makes
+page 3 dynamic: only its default configuration 0 carries the three bytes, and
+a snapshot of another configuration leaves them unobserved. The audit treats
+a missing byte as unknown, never as a clear bit: a missing byte ends a permit
+interval, and the figures that look for a set or a clear bit inside a window
+count a window without the byte separately. FUN 00057C78 sets the tick
 flag on one coordinator pass when revolution counter 0xFFFF25FA reaches zero
 and reloads it with the immediate at 0x57CA0; FUN 000208F8 decrements the
 counter once per crank revolution. FUN 00058740 sets bit b of 0xFFFF1457 only
@@ -658,16 +663,22 @@ def _since(snapshots: Snapshots, first: int, last: int) -> float:
     )
 
 
-def _bits(values: list, mask: int) -> list[bool]:
-    return [value is not None and bool(value & mask) for value in values]
+def _bits(values: list, mask: int) -> list[bool | None]:
+    """Bit of each snapshot; None where the snapshot does not carry the byte."""
+    return [None if value is None else bool(value & mask) for value in values]
 
 
-def _rising(flags: list[bool], snapshots: Snapshots) -> list[int]:
+def _rising(flags: list[bool | None], snapshots: Snapshots) -> list[int]:
     return [
         index
         for index, flag in enumerate(flags)
-        if flag and (not snapshots.contiguous(index) or not flags[index - 1])
+        if flag and (not snapshots.contiguous(index) or flags[index - 1] is not True)
     ]
+
+
+def _seen(flags: list[bool | None], indices) -> set:
+    """The bit states that a window of snapshots observes; None marks a gap."""
+    return {flags[index] for index in indices}
 
 
 def permit_behavior(
@@ -695,11 +706,15 @@ def permit_behavior(
         None,
     )
     cells = replay_cells(snapshots, calibration)
-    result = {}
+    observed = [
+        first is not None and second is not None for first, second in zip(stability, composite)
+    ]
+    result = {"permit_unobserved_snapshot_count": observed.count(False)}
     for bank in (1, 2):
         held = _bits(stability, 1 << (bank - 1))
         pulse = _bits(composite, 1 << (bank - 1))
-        runs = _intervals(held, snapshots)
+        on = [flag is True for flag in held]
+        runs = _intervals(on, snapshots)
         prefix = f"stability_permit_b{bank}_"
         result[prefix + "interval_count"] = len(runs)
         result[prefix + "seconds"] = round(sum(_seconds(run, snapshots) for run in runs), 3)
@@ -707,17 +722,17 @@ def permit_behavior(
             (_seconds(run, snapshots) for run in runs), default=0.0
         )
         result[prefix + "standstill_seconds"] = round(
-            TICK_SECONDS * sum(held[i] and speed[i] == 0 for i in range(count)), 3
+            TICK_SECONDS * sum(on[i] and speed[i] == 0 for i in range(count)), 3
         )
         result[prefix + "moving_seconds"] = round(
             TICK_SECONDS
-            * sum(held[i] and speed[i] is not None and speed[i] > 0 for i in range(count)),
+            * sum(on[i] and speed[i] is not None and speed[i] > 0 for i in range(count)),
             3,
         )
         revolutions = sum(
             rpm[i] * RPM_RAW_SCALE / 60 * TICK_SECONDS
             for i in range(count)
-            if held[i] and rpm[i] is not None
+            if on[i] and rpm[i] is not None
         )
         result[prefix + "expected_tick_count"] = round(
             revolutions / calibration.tick_revolutions, 1
@@ -725,20 +740,24 @@ def permit_behavior(
         edges = _rising(pulse, snapshots)
         result[f"composite_permit_b{bank}_pulse_count"] = len(edges)
         result[f"composite_permit_b{bank}_pulse_with_stability_count"] = sum(
-            held[index] for index in edges
+            on[index] for index in edges
         )
         first = None if warm is None else next(
-            (index for index in range(warm, count) if held[index]), None
+            (index for index in range(warm, count) if on[index]), None
         )
         result[prefix + "first_warm_seconds"] = (
             None if first is None else _since(snapshots, warm, first)
         )
+        # Unobserved snapshots before the first permit make its time an upper bound.
+        result[prefix + "first_warm_unobserved_count"] = (
+            None if first is None else held[warm:first].count(None)
+        )
         result[prefix + "below_coolant_threshold_count"] = sum(
-            held[i] and coolant[i] is not None and coolant[i] < threshold for i in range(count)
+            on[i] and coolant[i] is not None and coolant[i] < threshold for i in range(count)
         )
         af = columns[f"af_adjustment_b{bank}_raw"]
         result[prefix + "af_adjustment_out_of_bounds_count"] = sum(
-            held[i]
+            on[i]
             and af[i] is not None
             and not calibration.af_adjustment_low < af[i] <= calibration.af_adjustment_high
             for i in range(count)
@@ -748,37 +767,45 @@ def permit_behavior(
             for index in refreshes(snapshots, phase, AF_ADJUSTMENT_TAGS[bank])
             if af[index] is not None
         ]
-        drops = cleared = 0
+        drops = Counter()
         for before, after in zip(samples, samples[1:]):
             if (
                 ticks[after] - ticks[before] != TAG_COUNT
                 or segments[after] != segments[before]
                 or af[after] >= af[before]
-                or not held[before]
+                or not on[before]
             ):
                 continue
-            drops += 1
             # The latch follows within three coordinator passes; the context
             # sample can lag the change by one tag period.
-            window = range(before + 1, min(count, after + TAG_COUNT + 1))
-            cleared += any(
-                not held[i] for i in window if segments[i] == segments[before]
-            )
-        result[f"af_adjustment_b{bank}_drop_with_stability_count"] = drops
-        result[f"af_adjustment_b{bank}_drop_with_clear_count"] = cleared
+            window = [
+                i
+                for i in range(before + 1, min(count, after + TAG_COUNT + 1))
+                if segments[i] == segments[before]
+            ]
+            seen = _seen(held, window)
+            drops["with_clear" if False in seen else
+                  "unobserved" if None in seen else "held"] += 1
+        result[f"af_adjustment_b{bank}_drop_with_stability_count"] = sum(drops.values())
+        result[f"af_adjustment_b{bank}_drop_with_clear_count"] = drops["with_clear"]
+        result[f"af_adjustment_b{bank}_drop_unobserved_count"] = drops["unobserved"]
         learned = columns[f"ltft_learned_b{bank}_raw"]
         bound = update_bound(snapshots, calibration, bank)
-        updates = [
-            (before, after)
-            for before, after in visit_changes(snapshots, phase, cells, bank)
-            if abs(learned[after] - learned[before]) <= bound
-        ]
-        result[f"in_visit_update_b{bank}_with_stability_count"] = sum(
-            any(held[before + 1 : after + 1]) for before, after in updates
-        )
-        result[f"in_visit_update_b{bank}_with_pulse_count"] = sum(
-            any(pulse[before + 1 : after + 1]) for before, after in updates
-        )
+        updates = Counter()
+        for before, after in visit_changes(snapshots, phase, cells, bank):
+            if abs(learned[after] - learned[before]) > bound:
+                continue
+            window = range(before + 1, after + 1)
+            stable = _seen(held, window)
+            pulsed = _seen(pulse, window)
+            if True in stable:
+                updates["with_stability"] += 1
+            elif None in stable:
+                updates["unobserved"] += 1
+            updates["with_pulse"] += True in pulsed
+        result[f"in_visit_update_b{bank}_with_stability_count"] = updates["with_stability"]
+        result[f"in_visit_update_b{bank}_with_pulse_count"] = updates["with_pulse"]
+        result[f"in_visit_update_b{bank}_unobserved_count"] = updates["unobserved"]
     neutral = _bits(columns[NEUTRAL_CONTROL], 1)
     edges = _rising(neutral, snapshots)
     learned_refreshes = refreshes(snapshots, phase, LEARNED_TAG)

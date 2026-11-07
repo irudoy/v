@@ -463,7 +463,8 @@ closed composite gate and do not infer a learning rate from a permission bit.
   in-visit change, and an update when it stays within
   `max|STFT - 0x6400| * max(gain) >> 8` of the capture.
 - Permits: for each bank, the intervals of bit `b` of `0xFFFF1458` with
-  their standstill and moving seconds, and the ticks they expect at one tick
+  their standstill and moving seconds by the dashboard `0x280` speed, and
+  the ticks they expect at one tick
   per `ROM8[0x57CA1]` revolutions of the stock engine-speed word, the reload
   immediate of `FUN 00057C78`. The `0xFFFF1457` pulses are rising edges of
   bit `b`, with the share inside a `0xFFFF1458` interval; fewer pulses than
@@ -476,6 +477,11 @@ closed composite gate and do not infer a learning rate from a permission bit.
   that bit is set between its two tag-0 samples. A `0xFFFF41B5.bit0` pulse
   counts as a refill when both learned words read `0x6400` at the next tag-0
   refresh. A recording without the permit bytes emits none of these figures.
+  A snapshot that lacks a permit byte is unobserved, not clear: it ends an
+  interval, and a drop or an update whose window shows neither the sought bit
+  nor the opposite bit counts as unobserved. The figures also report the
+  unobserved snapshots of the capture and those between the warm window start
+  and the first permit, which make its time an upper bound.
 - Warm window: the part of the capture after coolant reaches `ROM8[0x8CFD]`,
   with its D, P, and closed-loop proxy seconds and the fueled snapshots whose
   RPM/12.5 word reaches the `0xC0` MAF summary gate of `FUN 0004F736`.
@@ -496,8 +502,10 @@ The output is one `key = value` line per statistic in TOML syntax.
 Every relation is evaluated in raw software units. The closed-loop proxy and
 the replayed cell are software constructions, not recorded ECU states.
 Profiles before 8 carry the bank 2 published word without its summands and
-none of the permit bytes. Profile 8 carries the summands of both banks and
-the three control bytes, but not the composite gate terms of `FUN 00058740`.
+none of the permit bytes. Profiles 8 and 9 carry the summands of both banks
+but not the composite gate terms of `FUN 00058740`. Profile 8 carries the three
+control bytes on page 3 of every snapshot; profile 9 carries them only while
+its dynamic page 3 holds configuration 0.
 
 ## JK08A Rolling Launch captures
 
