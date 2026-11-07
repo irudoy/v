@@ -439,6 +439,16 @@ def links(model):
     return issues
 
 
+def mixed_layouts(model):
+    """The links whose entries both carry and lack `layouts`. Such a link
+    claims the restricted union, so its unrestricted entries claim no other
+    layout; the narrowing is reported and does not fail."""
+    return [Issue("links", ";".join(sorted(link.sources)), _subject(link.owner),
+                  f"{link.type} link to {_subject(link.to)} joins entries with and without "
+                  f"layouts and claims only {', '.join(link.props['layouts'])}")
+            for link in model.mixed_links]
+
+
 def _claimed(link):
     """The layouts where both ends of a link have symbols, within `layouts`."""
     allowed = link.props.get("layouts")
@@ -1041,6 +1051,7 @@ CHECKS = {
 # Reports of a check that do not fail it.
 NOTES = {
     "statuses": stale,
+    "links": mixed_layouts,
 }
 
 

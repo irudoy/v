@@ -346,6 +346,34 @@ def _listed(value):
     return value if isinstance(value, list) else [value]
 
 
+def _retains(link, stated, unset):
+    """Whether a link of a result holds the entry that an operation stated:
+    each scalar key agrees, each list keeps its items, and an unset key stays
+    absent. A later join of the link may add list items."""
+    if any(key in link for key in unset):
+        return False
+    for key, value in stated.items():
+        if key not in link:
+            return False
+        if isinstance(value, list):
+            held = _listed(link[key])
+            if any(item not in held for item in value):
+                return False
+        elif link[key] != value:
+            return False
+    return True
+
+
+def _contained(items, within):
+    """Whether `within` holds every item of `items`, counted with repeats."""
+    remaining = list(within)
+    for item in items:
+        if item not in remaining:
+            return False
+        remaining.remove(item)
+    return True
+
+
 def _link_key(link):
     return link.get("type"), link.get("to"), link.get("slot"), link.get("offset")
 
@@ -371,13 +399,23 @@ def _widen(link):
         link["layouts"] = _union(held, sorted(store.evidence_layouts(link) - set(held)))
 
 
-def joined_links(links):
+def joined_links(links, where="a file"):
     """Links with one entry for each type, target, slot, and offset whose
     other keys agree: the evidence of the entries joins in the order of its
     locations, their lists join, and the `layouts` of a joined link extend to
-    its evidence layouts."""
+    its evidence layouts. Entries of one link with and without `layouts` are
+    refused: their link would claim only the restricted union."""
     found = []
     for link in links:
+        mixed = next((held for held in found if _link_key(held) == _link_key(link)
+                      and ("layouts" in held) != ("layouts" in link)), None)
+        if mixed is not None:
+            restricted = mixed if "layouts" in mixed else link
+            raise KbError(
+                f"{where}: the {link.get('type')} link to {link.get('to')} joins an entry "
+                f"without layouts and an entry with layouts = {restricted['layouts']!r}; "
+                "a `kb set-link` before this operation gives both entries layouts or neither",
+                code=3)
         held = next((held for held in found if _link_key(held) == _link_key(link)
                      and all(held[key] == value for key, value in link.items()
                              if key in held and not isinstance(value, list))), None)
@@ -508,6 +546,12 @@ class Change:
         # {meaning key: new key} of the unnamed meanings whose file a change of
         # `home` moves; their references stay.
         self.rehomed = {}
+        # The reference rewrites of the renames and merges in their order
+        # ((names, kind, target name)), {meaning key: survivor key} of the
+        # merged meanings, and {removed file: file that takes its entries}.
+        self.rewrites = []
+        self.joined = {}
+        self.moved = {}
         self.created, self.started = set(), set()
         # Private objects for meanings created in the change. The source
         # model stays intact until the complete rendered change is checked.
@@ -954,6 +998,10 @@ class Change:
             _widen(entry)
             links.append(entry)
         else:
+            if "layouts" in keys and "layouts" not in held:
+                raise KbError(f"the {type_} link of {meaning.key} to {to.key} has no layouts and "
+                              "claims every layout where both ends have symbols; `kb set-link` "
+                              "restricts it", code=3)
             added = {}
             for name, value in keys.items():
                 if name not in held:
@@ -1012,7 +1060,9 @@ class Change:
             raise KbError(f"{meaning.key}: set-link needs an existing owned file", code=3)
         entry = {"type": type_, "to": to.key, **selector}
         source = store.load(self.root, path, self.model.overlay)
-        original = [link for link in source.get("link", ())
+        # A link of the working tree names its target as the earlier renames
+        # and merges of the change rewrite it.
+        original = [link for link in self._rewritten(source.get("link", []))
                     if self._same_link(link, entry, to)]
         if len(original) != 1:
             raise KbError(f"{meaning.key}: set-link needs one existing native relation; "
@@ -1067,7 +1117,7 @@ class Change:
                     other = to if owner is meaning else meaning
                     end = "owner" if owner is meaning else "to"
                     if (item.get("type") == type_ and item.get("end") == end
-                            and self.resolve(item.get("to"))[0] is other
+                            and self._final_key(self.resolve(item.get("to"))[0].key) == other.key
                             and item.get("offset", 0 if type_ == "base" else None)
                             == held.get("offset", 0 if type_ == "base" else None)):
                         claim = (owner.key, marker["registry"], marker["order"],
@@ -1083,26 +1133,38 @@ class Change:
             del held[key]
         held.update(keys)
         expected = copy.deepcopy(held)
-        identity = _link_key(expected)
+
+        def rewritten(claim):
+            key, registry, order, item = claim
+            return self._rewritten(key), registry, order, self._rewritten(item)
 
         def retained(result):
+            # The renames and merges of the whole change rewrite the expected
+            # references and files; a later join of the link keeps the update
+            # and may add list items.
             try:
-                final = store.load(self.root, path, result.overlay)
-                found = [link for link in final.get("link", ()) if _link_key(link) == identity]
-                if found != [expected]:
+                final = store.load(self.root, self._final_path(path), result.overlay)
+                stated = self._rewritten(expected)
+                found = [link for link in final.get("link", ())
+                         if _link_key(link) == _link_key(stated)]
+                if len(found) != 1 or not _retains(found[0], stated, unset):
                     return f"{meaning.key}: updated native link is not retained"
                 for claim in claims:
-                    _selection(result, *claim)
+                    _selection(result, *rewritten(claim))
                 for claim, projected in archive_claims:
+                    claim = rewritten(claim)
                     _, symbol, _, _ = _selection_row(result, *claim[:3])
                     if ledger_projection.dependency(result, symbol, claim[3]) != projected:
                         return f"{meaning.key}: set-link does not retain ledger claims"
                 for src, before in selectors.items():
-                    current = store.load(self.root, src, result.overlay)
-                    if dependencies(current) != before:
+                    current = store.load(self.root, self._final_path(src), result.overlay)
+                    if not _contained([(registry, order, binding, self._rewritten(item))
+                                       for registry, order, binding, item in before],
+                                      dependencies(current)):
                         return f"{meaning.key}: set-link does not retain ledger dependencies"
                     if archive:
-                        previous, updated = owned[src].get("link", []), current.get("link", [])
+                        previous = self._rewritten(owned[src].get("link", []))
+                        updated = current.get("link", [])
                         if len(previous) != len(updated) or any(
                             set(old) != set(new) or not evidence_ref.archive_equivalent(
                                 {**old, "evidence": old.get("evidence", [])},
@@ -1336,6 +1398,8 @@ class Change:
                      meaning.name, f"{meaning.key} and {other.key}")
         if other_path is not None:
             self._remove(other_path)
+            self.moved[other_path] = path
+        self.joined[other.key] = meaning.key
         others = {other.name, *(symbol.generated for symbol in other.symbols.values()),
                   *(entry.get("name") for entry in source.get("symbol", ()))}
         count = self._rename(others - {None, meaning.name}, meaning.kind, meaning.name, path)
@@ -1509,10 +1573,30 @@ class Change:
                             (found := REFERENCE.fullmatch(str(link.get("to"))))
                             and found.group("name") == target and found.group("kind") == kind)]
             if count or path == own:
-                document["link"] = joined_links(document.get("link", ()))
+                document["link"] = joined_links(document.get("link", ()), path.as_posix())
                 self.documents[path] = document
             total += count
+        self.rewrites.append((frozenset(others), kind, target))
         return total
+
+    def _rewritten(self, value):
+        """A value of an entity file with the references that the renames and
+        merges of the change rewrite, as the files of the change state them."""
+        for others, kind, target in self.rewrites:
+            value, _ = renamed(value, others, kind, target)
+        return value
+
+    def _final_key(self, key):
+        """The key of the meaning that holds `key` after the merges of the change."""
+        while key in self.joined:
+            key = self.joined[key]
+        return key
+
+    def _final_path(self, path):
+        """The file that holds the entries of `path` after the change."""
+        while path in self.moved:
+            path = self.moved[path]
+        return path
 
     @staticmethod
     def _renames(count):
@@ -1687,6 +1771,7 @@ class Change:
         if target != path:
             self._remove(path)
             self.documents[target] = document
+            self.moved[path] = target
         self.renamed[old] = f"{name}/{kind}"
         count = self._rename(others - {None, name}, kind, name, target, keep_self_links=True)
         self.lines.append(f"rename {old} to {name}/{kind}{self._renames(count)}")
@@ -1835,6 +1920,10 @@ class Change:
         if new is not None:
             raise KbError(f"{meaning.key} takes the name {new} earlier in this change; a batch "
                           "renames a meaning after its other operations", code=3)
+        new = self.joined.get(meaning.key)
+        if new is not None:
+            raise KbError(f"{meaning.key} joins {new} earlier in this change; a later operation "
+                          f"names {new}", code=3)
         new = self.rehomed.get(meaning.key)
         if new is not None:
             raise KbError(f"{meaning.key} moves to {new} by a change of its home earlier in this "

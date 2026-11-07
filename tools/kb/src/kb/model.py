@@ -684,7 +684,7 @@ class Builder:
                                           if other != name})
 
     def _links(self, by_node, model, resolver):
-        lifted = {}
+        lifted, forms = {}, {}
         for fact in self.link_facts:
             owner = by_node.get(fact.owner)
             to = resolver.meaning(fact.to) if isinstance(fact.to, Ref) else by_node.get(fact.to)
@@ -704,6 +704,7 @@ class Builder:
                 link = lifted[key] = Link(owner, fact.type, to, slot, offset)
                 owner.links.append(link)
             link.sources.add(fact.src)
+            forms.setdefault(key, set()).add("layouts" in fact.props)
             link.evidence.extend(item for item in fact.evidence if item not in link.evidence)
             if fact.layouts is not None:
                 link.stated |= fact.layouts
@@ -738,6 +739,9 @@ class Builder:
                     # Each entry of the link states its own layouts.
                     link.props[name] = [*current, *(item for item in value if item not in current)]
         model.links = [link for meaning in model.meanings for link in meaning.links]
+        # An entry without `layouts` joins a restricted entry of its link into
+        # the restricted union; the `links` check notes such a link.
+        model.mixed_links = [lifted[key] for key, found in forms.items() if len(found) == 2]
 
 
 def _listed(value):
@@ -888,6 +892,8 @@ class Model:
         self.meanings = []
         self.links = []
         self.self_links = []
+        # The links whose entries both carry and lack `layouts` (`_links`).
+        self.mixed_links = []
         self.by_node = {}
         # {(kind, name): (meaning, file)} of the meaning files, the names that
         # files give symbols (`Builder.file_names`), and the symbols whose file

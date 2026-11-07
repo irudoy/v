@@ -604,6 +604,16 @@ A link is stored at one end and read in both directions.
   that `layouts` lists every stated layout. Several entries of one link join
   their `layouts` in their order, and the `links` check fails on a link whose
   evidence lies outside its `layouts`.
+- Entries of one link that both carry and lack `layouts`, in one file or in a
+  file and a registry, lift into one link restricted to the union of the
+  listed layouts: an entry without `layouts` claims no other layout. The
+  `links` check notes such a link without failing. An unrestricted claim
+  leaves `layouts` off every entry of its link, and a restriction states it
+  on every entry. The writer makes no such entries: `kb link` refuses
+  `layouts` for a held link without them, and a rewrite of `kb merge` or
+  `kb rename` that makes such entries entries of one link is refused, also
+  when their other keys differ. A `kb set-link` earlier in the batch states
+  or removes the restriction.
 - A `selector` whose `to` is a function states the result condition in its
   note and has no `slot`; bit slots describe a datum, not a return register.
 - On each claimed layout a link holds when its verifier reproduces it, when
@@ -1553,7 +1563,10 @@ references.
   the merge is refused. The other file leaves the store, every reference and
   `[[...]]` citation of the entity files to a name of the other meaning names
   the meaning, links of one type, target, slot, and offset whose keys agree
-  join, and a link of the meaning to itself leaves its file.
+  join, and a link of the meaning to itself leaves its file. Links of one
+  type, target, slot, and offset with and without `layouts` are refused
+  ([Links](#75-links)). A later operation of the batch that names the other
+  meaning is refused and names the meaning instead.
 - The `[[source]]` entries ([Feature tables](#78-feature-tables-in-meanings))
   of the two files join: an entry equal to a held entry appears once, and
   every entry keeps its keys, its `layout` among them. The merge is refused
@@ -1570,15 +1583,18 @@ references.
   the reference of its meaning. A link of the file with the same type,
   target, `slot`, and `offset` takes the new keys and evidence: `via`,
   `layouts`, `supports`, and `reverse_supports` join, and another key agrees
-  with the held value or the link is refused. A link that adds nothing is
-  refused.
+  with the held value or the link is refused. `layouts` for a held link
+  without them is refused, since it would narrow the claim of that link;
+  `kb set-link` restricts it. A link that adds nothing is refused.
 - `kb unlink <from> <type> <to>` removes a link of that type and target from
   the file of `<from>`; `slot=` and `offset=` choose among several, and more
   than one match exits with 4. A link that only a registry states is
   refused, since the registry owns its facts until its conversion.
 - `kb set-link <from> <type> <to>` replaces mutable properties of exactly one
   native relation in an existing owned source file. The source model must
-  hold that file and relation before the batch. Exact `--slot` and
+  hold that file and relation before the batch; the relation names its
+  target as the earlier merges of the batch rewrite it. Exact
+  `--slot` and
   `--offset` selectors identify it; omitted selectors require absent keys,
   and an explicit zero offset differs from an absent offset. Offsets are
   nonnegative integers, excluding booleans. Type, target, slot, offset, and
@@ -1591,8 +1607,11 @@ references.
   idempotent. The command changes no other link or ledger selector. The
   complete batch retains the resulting native link, its original evidence,
   and the original ledger dependencies of both ends with the native claims
-  they select. Different edits to the same link belong in one operation;
-  a conflicting later edit refuses the complete batch.
+  they select. A later merge or rename of the batch rewrites their
+  references and moves them with the entries of a merged file; a later join
+  of the link keeps each replaced value and may add array items. Different
+  edits to the same link belong in one operation; a conflicting later edit
+  refuses the complete batch.
 - `kb select <meaning> <registry> <order>` adds one `ledger.dependency`
   selector with required string keys `role`, `to`, `type`, `end`, `relies`,
   and `supports`, and optional `link_role`, numeric `offset`, and

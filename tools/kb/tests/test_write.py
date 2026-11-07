@@ -1073,14 +1073,20 @@ class LinkTest(unittest.TestCase):
 
     def test_link_joins_the_keys_and_the_evidence_of_the_held_link(self):
         change, texts, _ = self.plan(
-            link(self.RPM, "reader", self.MACHINE, keys={"layouts": ["1nd"]}),
+            link(self.RPM, "reader", self.MACHINE, cmd="set-link", keys={"layouts": ["1nd"]}),
             link(self.RPM, "reader", self.MACHINE, keys={"layouts": ["1me3b"]}, evidence=[SPEC]))
         [held] = [item for item in self.held["link"] if item["to"] == self.MACHINE]
         self.assertEqual(self.links(texts, self.MACHINE), [
             {**held, "layouts": ["1nd", "1me3b"], "evidence": [*held["evidence"], SPEC]}])
         self.assertEqual(change.lines, [
-            f"link {self.RPM} reader {self.MACHINE}: no evidence",
+            f"set-link {self.RPM} reader {self.MACHINE}",
             f"link {self.RPM} reader {self.MACHINE}: spec path tools/kb/SPEC.md"])
+
+    def test_link_does_not_restrict_a_held_link_without_layouts(self):
+        # The held link claims every layout where both ends have symbols.
+        self.assertIn(f"op 1: the reader link of {self.RPM} to {self.MACHINE} has no layouts",
+                      self.refused(link(self.RPM, "reader", self.MACHINE,
+                                        keys={"layouts": ["1nd"]})))
 
     def test_a_link_names_its_target_by_any_of_its_names(self):
         _, texts, result = self.plan(link(self.RPM, "reader", self.KERNEL, evidence=[SPEC]))
@@ -1569,6 +1575,20 @@ class RenameTest(unittest.TestCase):
              "evidence": [{"kind": "l0", "at": "jk00c:1"}, {"kind": "l0", "at": "jk00d:1"}]},
             other])
 
+    def test_links_of_one_key_with_and_without_layouts_are_refused(self):
+        # The model would lift such entries into the restricted union.
+        free = {"type": "reader", "to": "x/fn", "evidence": [{"kind": "l0", "at": "jk78c:1"}]}
+        restricted = {"type": "reader", "to": "x/fn", "layouts": ["7mfk"]}
+        for links in ([free, restricted], [restricted, free],
+                      [{**free, "note": "other"}, restricted]):
+            with self.assertRaises(KbError) as caught:
+                write.joined_links(links, "kb/tbl/probe.toml")
+            self.assertEqual(caught.exception.code, 3)
+            self.assertIn("kb/tbl/probe.toml: the reader link to x/fn joins an entry without "
+                          "layouts and an entry with layouts = ['7mfk']", str(caught.exception))
+        self.assertEqual(write.joined_links([free, {**free, "to": "y/fn", "layouts": ["7mfk"]}]),
+                         [free, {**free, "to": "y/fn", "layouts": ["7mfk"]}])
+
 
 class HomeTest(unittest.TestCase):
     def test_a_second_symbol_states_the_current_home(self):
@@ -1799,19 +1819,75 @@ def test_a_move_refuses_a_target_anchor_at_another_address(probe_store):
 
 def test_a_merge_joins_layouts_and_evidence_layouts_of_one_link(probe_store):
     # RPM states its writer link to the snapshot on 7mfk by `layouts`, and a
-    # ledger depends on that 7mfk claim.
+    # ledger depends on that 7mfk claim. The link of the absorbed meaning has
+    # no `layouts`, so the merge alone would narrow its claim.
     at = {**SPEC, "at": "jk78c:ffff1300"}
     base = probe_store(probe_source=probe("jk78c:ffff1300", link=[
         {"type": "writer", "to": "coherent_snapshot/fn", "relies": "structure",
          "supports": "identity", "reverse_relies": "structure", "reverse_supports": "identity",
          "evidence": [at]}]))
-    _, texts, result = planned(base, merge("rpm/ram", "probe_source/ram", evidence=[SPEC]))
+    with pytest.raises(KbError, match="joins an entry without layouts and an entry with "
+                                      r"layouts = \['7mfk'\]") as caught:
+        planned(base, merge("rpm/ram", "probe_source/ram", evidence=[SPEC]))
+    assert caught.value.code == 3
+    restrict = link("probe_source/ram", "writer", "coherent_snapshot/fn", cmd="set-link",
+                    keys={"layouts": ["jk78c"]})
+    _, texts, result = planned(base, restrict,
+                               merge("rpm/ram", "probe_source/ram", evidence=[SPEC]))
     [joined] = [item for item in stored(texts, "rpm")["link"]
                 if item["to"] == "coherent_snapshot/fn"]
     assert (joined["layouts"], joined["evidence"]) == (["7mfk", "jk78c"], [at])
     [link_] = [item for item in result.meaning_of(SymbolKey("7mfk", "ram", 0xffff11bc)).links
                if item.to.key == "coherent_snapshot/fn"]
     assert link_.stated == {"7mfk", "jk78c"}
+
+
+def test_a_set_link_on_a_link_to_a_merged_meaning_joins_the_merge_batch(probe_store):
+    # The input link of the reader names the meaning that the merge absorbs,
+    # and its restriction joins the batch of the merge in either order.
+    base = probe_store(probe_target=probe("1me3b:ffff4000"),
+                       probe_source=probe("jk78c:ffff4100"),
+                       probe_reader=probe("7mfk:ffff4300", link=[
+                           {"type": "input", "to": "probe_source/ram", "evidence": [SPEC]}]))
+    joining = merge("probe_target/ram", "probe_source/ram", evidence=[SPEC])
+    before = link("probe_reader/ram", "input", "probe_source/ram", cmd="set-link",
+                  keys={"layouts": ["jk78c"]})
+    after = {**before, "to": "probe_target/ram"}
+    _, first, between = planned(base, before)
+    _, second, _ = planned(between, joining)
+    for ops in ((before, joining), (joining, after)):
+        _, texts, _ = planned(base, *ops)
+        assert texts == {**first, **second}
+    assert stored(texts, "probe_reader")["link"] == [
+        {"type": "input", "to": "probe_target/ram", "layouts": ["jk78c"], "evidence": [SPEC]}]
+    with pytest.raises(KbError, match="op 2: probe_source/ram joins probe_target/ram earlier "
+                                      "in this change; a later operation names "
+                                      "probe_target/ram") as caught:
+        planned(base, joining, before)
+    assert caught.value.code == 3
+
+
+def test_entries_of_one_link_with_and_without_layouts_lift_the_restricted_union(probe_store):
+    # Either order of the entries restricts the link to the listed layouts,
+    # and the links check notes the narrowing without failing.
+    free = {"type": "input", "to": "probe_source/ram", "evidence": [SPEC]}
+    restricted = {"type": "input", "to": "probe_source/ram", "layouts": ["1me3b"],
+                  "note": "Restricted."}
+    for entries in ([free, restricted], [restricted, free]):
+        base = probe_store(probe_source=probe("1me3b:ffff4100", "jk78c:ffff4100"),
+                           probe_reader=probe("1me3b:ffff4300", "jk78c:ffff4300", link=entries))
+        [lifted] = [item for item in base.links if item.owner.key == "probe_reader/ram"]
+        assert lifted.props["layouts"] == ["1me3b"]
+        assert checks._claimed(lifted) == ["1me3b"]
+        assert base.mixed_links == [lifted]
+        assert [issue.message for issue in checks.mixed_layouts(base)] == [
+            "input link to probe_source/ram joins entries with and without layouts and claims "
+            "only 1me3b"]
+        assert not [issue for issue in checks.links(base)
+                    if issue.subject == "probe_reader/ram"]
+    base = probe_store(probe_source=probe("1me3b:ffff4100", "jk78c:ffff4100"),
+                       probe_reader=probe("1me3b:ffff4300", "jk78c:ffff4300", link=[free]))
+    assert base.mixed_links == [] and checks.mixed_layouts(base) == []
 
 
 def test_link_evidence_outside_layouts_extends_them(probe_store):
