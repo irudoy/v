@@ -60,7 +60,7 @@ supports = "homology"
 at = "1me3b:00033cca"
 to = "7mfk:0000a29a"
 note = """
-both target compensation accessors 0003357c and 000486e0 read the exact \
+both target compensation accessors 0003357c and 00048564 read the exact \
 surface on the first selector arm and 0000a1f4 on the second with the exact \
 axes 00013d06 and 00013d26 through the 16x16 uint8 leaf 000298b4 as 1ND0A \
 00030810 and 00044f1c read 0000a1c0 and 0000a2c0 through 000285f4"""

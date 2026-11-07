@@ -38,10 +38,9 @@ channel. During a transition, the coordinator mixes current_channel*w with \
 previous_channel*(0x8000-w), using the held previous output during an \
 interrupted transition, then normalizes by 0x8000 and clamps the result to \
 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
-5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
-physical unit, engineering conversion and neutral value are unestablished; \
-raw 128 is not qualified as neutral. No engine-bank identity is \
-established."""
+5 and 15 is unconfirmed on every image. The physical unit, engineering \
+conversion and neutral value are unestablished; raw 128 is not qualified as \
+neutral. No engine-bank identity is established."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -66,10 +65,9 @@ channel. During a transition, the coordinator mixes current_channel*w with \
 previous_channel*(0x8000-w), using the held previous output during an \
 interrupted transition, then normalizes by 0x8000 and clamps the result to \
 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
-5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
-physical unit, engineering conversion and neutral value are unestablished; \
-raw 128 is not qualified as neutral. No engine-bank identity is \
-established."""
+5 and 15 is unconfirmed on every image. The physical unit, engineering \
+conversion and neutral value are unestablished; raw 128 is not qualified as \
+neutral. No engine-bank identity is established."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -94,10 +92,9 @@ channel. During a transition, the coordinator mixes current_channel*w with \
 previous_channel*(0x8000-w), using the held previous output during an \
 interrupted transition, then normalizes by 0x8000 and clamps the result to \
 0..255. The weight 0x8000 is 1.0. Stock driving reachability of input modes \
-5 and 15 is unconfirmed on every image. Editor values are stored counts. The \
-physical unit, engineering conversion and neutral value are unestablished; \
-raw 128 is not qualified as neutral. No engine-bank identity is \
-established."""
+5 and 15 is unconfirmed on every image. The physical unit, engineering \
+conversion and neutral value are unestablished; raw 128 is not qualified as \
+neutral. No engine-bank identity is established."""
 
 [[symbol.evidence]]
 kind = "l0"

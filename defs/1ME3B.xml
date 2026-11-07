@@ -1548,10 +1548,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Fuel Compensation - Coefficient Curve [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13CF6"
@@ -3657,7 +3656,7 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1ME3B.definition-addresses.csv: both target
-         compensation accessors 0003357c and 000486e0 read the exact surface on the first
+         compensation accessors 0003357c and 00048564 read the exact surface on the first
          selector arm and 0000a1f4 on the second with the exact axes 00013d06 and 00013d26
          through the 16x16 uint8 leaf 000298b4 as 1ND0A 00030810 and 00044f1c read 0000a1c0 and
          0000a2c0 through 000285f4.
@@ -3691,10 +3690,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A1F4"
@@ -4221,7 +4219,7 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1ME3B.definition-addresses.csv: both target
-         compensation accessors 0003357c and 000486e0 read the exact surface on the first
+         compensation accessors 0003357c and 00048564 read the exact surface on the first
          selector arm and 0000a1f4 on the second with the exact axes 00013d06 and 00013d26
          through the 16x16 uint8 leaf 000298b4 as 1ND0A 00030810 and 00044f1c read 0000a1c0 and
          0000a2c0 through 000285f4.
@@ -4256,10 +4254,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BD00"
@@ -4802,7 +4799,7 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1ME3B.definition-addresses.csv: both target
-         compensation accessors 0003357c and 000486e0 read the exact surface on the first
+         compensation accessors 0003357c and 00048564 read the exact surface on the first
          selector arm and 0000a1f4 on the second with the exact axes 00013d06 and 00013d26
          through the 16x16 uint8 leaf 000298b4 as 1ND0A 00030810 and 00044f1c read 0000a1c0 and
          0000a2c0 through 000285f4.
@@ -4837,10 +4834,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BE00"
@@ -5383,7 +5379,7 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1ME3B.definition-addresses.csv: both target
-         compensation accessors 0003357c and 000486e0 read the exact surface on the first
+         compensation accessors 0003357c and 00048564 read the exact surface on the first
          selector arm and 0000a1f4 on the second with the exact axes 00013d06 and 00013d26
          through the 16x16 uint8 leaf 000298b4 as 1ND0A 00030810 and 00044f1c read 0000a1c0 and
          0000a2c0 through 000285f4.
@@ -5418,10 +5414,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13BF00"
@@ -5964,7 +5959,7 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1ME3B.definition-addresses.csv: both target
-         compensation accessors 0003357c and 000486e0 read the exact surface on the first
+         compensation accessors 0003357c and 00048564 read the exact surface on the first
          selector arm and 0000a1f4 on the second with the exact axes 00013d06 and 00013d26
          through the 16x16 uint8 leaf 000298b4 as 1ND0A 00030810 and 00044f1c read 0000a1c0 and
          0000a2c0 through 000285f4.
@@ -5999,10 +5994,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13C000"

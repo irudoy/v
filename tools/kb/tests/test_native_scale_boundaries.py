@@ -76,7 +76,6 @@ def test_unasserted_native_conversion_preserves_identity_and_conversion_boundary
                 "fuel_compensation_alternate/tbl",
                 "fuel_compensation_coefficient_curve/tbl",
             }:
-                assert "Editor values are stored counts" in note
                 assert "neutral value are unestablished" in note
                 assert "raw 128 is not qualified as neutral" in note
                 assert "unconfirmed on every image" in note

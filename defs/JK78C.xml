@@ -1492,10 +1492,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Fuel Compensation - Coefficient Curve [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x13AE8"
@@ -3561,10 +3560,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x09FBA"
@@ -3968,10 +3966,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D700"
@@ -4387,10 +4384,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D800"
@@ -4806,10 +4802,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1D900"
@@ -5225,10 +5220,9 @@
          previous_channel*(0x8000-w), using the held previous output during an interrupted
          transition, then normalizes by 0x8000 and clamps the result to 0..255. The weight
          0x8000 is 1.0. Stock driving reachability of input modes 5 and 15 is unconfirmed on
-         every image. Editor values are stored counts. The physical unit, engineering conversion
-         and neutral value are unestablished; raw 128 is not qualified as neutral. No engine-
-         bank identity is established. Editor values are stored counts; no engineering
-         conversion is established.
+         every image. The physical unit, engineering conversion and neutral value are
+         unestablished; raw 128 is not qualified as neutral. No engine-bank identity is
+         established. Editor values are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate [stored count]"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x1DA00"
