@@ -127,20 +127,22 @@ correspondence does not establish hardware behavior."""
 
 [[status]]
 layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff2469"
-count = 0
-l0 = "7ed4ee54a3133ddd"
+state = "absent"
 note = """
-The reviewed 1ME3B knock coordinator 00071d64 has no canonical direct Q8 \
-timing-map difference block or corresponding inhibit-history update. Its \
-fffe945b.bit7 is the independently reviewed high-detonation surface selector \
-of knock_surface_state/ram, not the canonical inhibit role. Neither that \
-selector nor the nearby periodic state-copy cells establishes the required \
-producer-consumer binding. This field remains unresolved; the 1ND bit-6 \
-inhibit address and role are not inherited, and a missing match does not \
-establish whole-image absence."""
+Knock function 00071d64 has no direct Q8 timing-map difference block and no \
+inhibit-history update, so the inhibit of that branch does not exist on this \
+layout. Its fffe945b.bit7 is the high-detonation surface selector of \
+knock_surface_state/ram, not the inhibit role, and the layout keeps no \
+snapshot of the knock surface byte that the branch would read."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00071d64"
+note = """
+The knock function keeps no block gated by bit 5 of 00008a7c and no \
+inhibit-history store, which 1nd:0006dd04/0006dd98 and \
+jk78c:00062e74/00062ec2 perform."""
 
 [[status]]
 layout = "1nd"

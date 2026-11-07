@@ -116,6 +116,7 @@ THROTTLE, THROTTLE_HOME, THROTTLE_JK78C = "throttle_runtime/ram", 0xFFFF1796, 0x
 INHIBIT, INHIBIT_HOME = "fuel_inhibit/ram", 0xFFFF2497
 # Named data whose status on 1ND records a search without matches and a note.
 FLOW, FLOW_HOME = "alpha_n_flow/ram", 0xFFFF1170
+BRANCH, BRANCH_HOME = "masked-inchworm/ram", 0xFFFF2469
 # A converted curated function: the search from its 7mfk symbol finds one
 # counterpart on JK78C.
 SELECTOR, SELECTOR_HOME, SELECTOR_JK78C = "accelerator_pedal_pair_selector/fn", 0x6EC68, 0x8D384
@@ -224,13 +225,13 @@ class PlanTest(unittest.TestCase):
 
     @pytest.mark.slow
     def test_a_repeated_search_keeps_the_note_of_its_status(self):
-        path = Path("kb/ram/alpha_n_flow.toml")
+        path = Path("kb/ram/masked-inchworm.toml")
         held = next(entry for entry in tomllib.loads((repo.ROOT / path).read_text())["status"]
                     if entry["layout"] == "1nd")
         self.assertTrue(held["note"])
 
         def status(**keys):
-            _, texts, _ = self.plan({"cmd": "unresolved", "meaning": FLOW, "layout": "1nd",
+            _, texts, _ = self.plan({"cmd": "unresolved", "meaning": BRANCH, "layout": "1nd",
                                      **keys})
             # A repeat on the L0 of the held digest leaves the file unchanged.
             text = texts[path] if path in texts else (repo.ROOT / path).read_text()
@@ -240,10 +241,10 @@ class PlanTest(unittest.TestCase):
         repeated = status()
         self.assertEqual((repeated["method"], repeated["target"], repeated["count"],
                           repeated["l0"], repeated["note"]),
-                         ("masked-match", f"7mfk:{FLOW_HOME:08x}", 0, match.search_digest("1nd"),
+                         ("masked-match", f"7mfk:{BRANCH_HOME:08x}", 0, match.search_digest("1nd"),
                           held["note"]))
         self.assertEqual(status(note="probe")["note"], "probe")
-        self.assertNotIn("note", status(method="masked-match", target=f"7mfk:{FLOW_HOME:08x}",
+        self.assertNotIn("note", status(method="masked-match", target=f"7mfk:{BRANCH_HOME:08x}",
                                         count=2))
 
     @pytest.mark.slow
@@ -294,26 +295,14 @@ class PlanTest(unittest.TestCase):
     def test_a_status_of_a_registry_refuses_a_symbol_on_its_layout(self):
         # The compiler with the adapter of the address profiles, whose
         # correspondence rows state the statuses of the telemetry sources.
+        # The 1ME3B row states that the knock branch inhibit is absent.
         order = tuple(adapter for adapter in adapters.ORDER
                       if adapter not in adapters.CONVERTED or adapter is profiles)
-        profile_facts = profiles.Profiles
-
-        def unresolved_profile_facts(*args, **kwargs):
-            facts = profile_facts(*args, **kwargs)
-            # The compatibility adapter classifies legacy status prose. Give
-            # the registry fixture an explicit unresolved search result.
-            for row in facts.rows["1me3b"][1]:
-                if (row["domain"], row["key"]) == (
-                        "telemetry", "knock_branch_state_raw"):
-                    row["evidence"] = "No homolog is established for this fixture source."
-            return facts
-
-        with mock.patch.object(adapters, "ADAPTERS", order), \
-                mock.patch.object(profiles, "Profiles", side_effect=unresolved_profile_facts):
+        with mock.patch.object(adapters, "ADAPTERS", order):
             base = compile.build(repo.ROOT)
             meaning = next(meaning for meaning in base.meanings
                            if meaning.key == "knock_branch_state/ram")
-            self.assertEqual(meaning.statuses["1me3b"].state, "unresolved")
+            self.assertEqual(meaning.statuses["1me3b"].state, "absent")
             with self.assertRaises(KbError) as caught:
                 write.plan([bind("knock_branch_state/ram", "1me3b:fffec000", evidence=[
                     {"kind": "registry", "path": "patches/rom-address-profiles.toml"}])],
@@ -322,7 +311,7 @@ class PlanTest(unittest.TestCase):
         message = str(caught.exception)
         self.assertIn("symbols: patches/1me3b-runtime-correspondence.csv: "
                       "knock_branch_state/ram: "
-                      "status unresolved on 1me3b, where the meaning has 1me3b-fffec000/ram", message)
+                      "status absent on 1me3b, where the meaning has 1me3b-fffec000/ram", message)
 
     def test_operations_refuse_what_the_model_contradicts(self):
         self.assertIn("finds jk00c:000142d3 on jk00c, not jk00c:000142d4",

@@ -6,9 +6,11 @@ note = [
 On JK78C, producer 0004726c forms the uint16 coordinate at ffff238a. FUN \
 00040958 reads the snapshot ffff22f8 at 00040dac and 00040dd8, and its high \
 byte is the column of fuel_compensation_main/tbl 00009eba and \
-fuel_compensation_alternate/tbl 00009fba. The JK78C byte-producer homolog of \
-alpha_n_flow/ram at ffff115c indexes the 4x4 surface 00009a1a. Physical \
-engineering conversion of this target coordinate remains unestablished.""",
+fuel_compensation_alternate/tbl 00009fba. The byte-producer homologs of \
+alpha_n_flow/ram index only 4x4 surfaces: ffff115c the surface 00009a1a on \
+JK78C, fffe8164 the surface 00009ce0 on 1ND, and fffe8150 the surface \
+00009bd4 on 1ME3B. Physical engineering conversion of this target coordinate \
+remains unestablished.""",
 ]
 home = "jk78c"
 width = 16
@@ -25,8 +27,9 @@ R2=fffe939c, R1=fffe9300 and R0=0x9c; offset 0x7a transfers live fffe9416 to \
 fffe937a without conversion. Consumer 00048564 reads this word at 000489d4 \
 and 000489f8, shifts it right by eight and passes that byte as the column of \
 0000a0f4 and 0000a1f4 through 000298b4. Startup 0003357c also reads the live \
-word directly at 00033cac and 00033cd0 for these surfaces. The live-word \
-producer, physical conversion and JK08A byte-producer homolog remain \
+word directly at 00033cac and 00033cd0 for these surfaces. The JK08A \
+byte-producer homolog is alpha_n_flow/ram at fffe8150, which indexes only \
+4x4 surface 00009bd4. The live-word producer and physical conversion remain \
 unresolved."""
 
 [[symbol.evidence]]
@@ -62,8 +65,9 @@ copier 00021218 calls byte copier 00022870 at 00021746 with R2=fffe93cc, \
 R1=fffe9330 and R0=0x9c; offset 0x7a transfers fffe9446 to fffe93aa. FUN \
 00044f1c reads this word at 00045356 and 0004537a, shifts it right by eight, \
 and uses the resulting byte as the column of Fuel Compensation tables \
-0000a1c0 and 0000a2c0. This is the target telemetry source role; it does not \
-establish the JK08A byte-producer homolog or a physical percentage."""
+0000a1c0 and 0000a2c0. This is the target telemetry source role. The JK08A \
+byte-producer homolog is alpha_n_flow/ram at fffe8164, which indexes only \
+4x4 surface 00009ce0; no physical percentage is established."""
 
 [[symbol.evidence]]
 kind = "l0"

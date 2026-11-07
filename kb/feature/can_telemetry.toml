@@ -85,8 +85,9 @@ mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
 note = """
 The high byte of snapshot word fffe937a is the target Fuel Compensation \
 table column. Its direct consumer and periodic-copy path are recorded in \
-diamond-macaque/ram; the live-word producer and JK08A byte-producer homolog \
-remain unresolved."""
+diamond-macaque/ram; the live-word producer remains unresolved. The JK08A \
+byte-producer homolog, alpha_n_flow/ram at fffe8150, indexes only 4x4 \
+surface 00009bd4."""
 symbol = "diamond-macaque/ram"
 
 [target.symbols]
@@ -196,8 +197,8 @@ mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
 note = """
 The high byte of snapshot word fffe93aa is the column of the target Fuel \
 Compensation surfaces. Its independent producer and periodic-copy path are \
-recorded in diamond-macaque/ram; the JK08A byte-producer homolog remains \
-unresolved."""
+recorded in diamond-macaque/ram. The JK08A byte-producer homolog, \
+alpha_n_flow/ram at fffe8164, indexes only 4x4 surface 00009ce0."""
 symbol = "diamond-macaque/ram"
 
 [target.roles.knock_branch_state_raw]

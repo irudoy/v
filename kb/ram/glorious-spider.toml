@@ -186,20 +186,46 @@ at = "jk78c:00062e7a"
 
 [[status]]
 layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff2467"
-count = 0
-l0 = "7ed4ee54a3133ddd"
+state = "absent"
 note = """
-The 1ME3B state copier 00021240 copies fffe9458 to fffe9459 at \
-000215fc/000215fe. The direct-access index lists readers 00094ea8 and \
-00096e2c. The reviewed knock coordinator 00071d64 does not contain the \
-canonical direct Q8 map-difference and inhibit-history block and has no \
-decoded read of fffe9459. The nearby byte copy alone does not establish the \
-required snapshot.bit6 role; that candidate remains unbound pending an \
-independently reviewed equivalent producer-consumer path. The 1ND snapshot \
-source is not inherited."""
+1ME3B keeps no periodic snapshot of its knock surface byte and no consumer \
+of a snapshot bit 6. State copier 00021240 copies fffe9458 to fffe9459 at \
+000215fc/000215fe, the position of the 1ND copy of fffe9488, but the knock \
+surface byte of this layout is fffe945b, which no copier reads. Only \
+00096e2c writes fffe9458, setting bit 7 at 0009736a and clearing it at \
+000973ce, and readers 00094ea8 and 00096e2c test only bit 7 of fffe9459 at \
+000950b4 and 000973f0. Knock function 00071d64 has no direct Q8 timing-map \
+difference block, which the snapshot bit 6 enables on 7mfk, 1nd and jk78c."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000215fe"
+note = """
+The state copier transfers fffe9458 to fffe9459; the knock surface byte \
+fffe945b has no copier access, and the copied byte carries only the bit 7 \
+that 00096e2c writes."""
+
+[[status.evidence]]
+kind = "l0"
+at = "1me3b:0009736a"
+
+[[status.evidence]]
+kind = "l0"
+at = "1me3b:000973ce"
+
+[[status.evidence]]
+kind = "l0"
+at = "1me3b:000950b4"
+
+[[status.evidence]]
+kind = "l0"
+at = "1me3b:000973f0"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00071d64"
 
 [[link]]
 type = "depends"

@@ -109,6 +109,66 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffe8150"
+level = "code"
+note = """
+Function 000473ec forms the coordinate of the JK08A producer 0003b498, u = \
+min(65535, (r*a>>9) + (r*b>>11)), takes the lower branch at 4*u while u < \
+0x3c00 from curve 0001690c and the upper branch at u-0x3c00 from curve \
+000168ec, and stores the high byte of the curve lookup at this cell at \
+000474c6. Coordinator 00048564 reads the cell at 00048746 as the column of \
+4x4 surface 00009bd4 only; the target Fuel Compensation surfaces take their \
+column from fffe937a in the role of the telemetry field."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000474c6"
+note = """
+Producer 000473ec stores here the high byte of the lookup of curves 0001690c \
+and 000168ec, the homologs of the JK08A curves 00015042 and 00015022; \
+coordinator 00048564 reads it as the column of 4x4 surface 00009bd4."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00047472"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00048746"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8164"
+level = "code"
+note = """
+Function 00043dc8 forms the coordinate of the JK08A producer 0003b498, u = \
+min(65535, (r*a>>9) + (r*b>>11)), takes the lower branch at 4*u while u < \
+0x3c00 from curve 00016878 and the upper branch at u-0x3c00 from curve \
+00016858, and stores the high byte of the curve lookup at this cell at \
+00043ea0. Coordinator 00044f1c reads the cell at 00045084 as the column of \
+4x4 surface 00009ce0 only; the target Fuel Compensation surfaces take their \
+column from fffe93aa in the role of the telemetry field."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043ea0"
+note = """
+Producer 00043dc8 stores here the high byte of the lookup of curves 00016878 \
+and 00016858, the homologs of the JK08A curves 00015042 and 00015022; \
+coordinator 00044f1c reads it as the column of 4x4 surface 00009ce0."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00043e4a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00045084"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1170"
 former = ["military-puffin/ram/7mfk-ffff1170"]
@@ -248,34 +308,6 @@ at = "jk78c:0003c8e0"
 to = "7mfk:000392b2"
 count = 1
 value = 49
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1170"
-count = 0
-l0 = "7ed4ee54a3133ddd"
-note = """
-The homolog of the JK08A byte producer 0003b498 remains unresolved. The \
-target Fuel Compensation surfaces use the high byte of diamond-macaque/ram \
-at fffe937a, copied from fffe9416; can_telemetry binds that reviewed \
-table-coordinate role independently. The live-word producer and common \
-physical flow scale remain unresolved."""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff1170"
-count = 0
-l0 = "80899b88e0770eef"
-note = """
-The homolog of the JK08A byte producer 0003b498 remains unresolved. The \
-target Fuel Compensation surfaces use the high byte of diamond-macaque/ram \
-at fffe93aa; can_telemetry binds that reviewed source role independently. No \
-byte-producer homolog or common physical flow scale is inferred from the \
-target table role."""
 
 [[link]]
 type = "input"
