@@ -1,12 +1,11 @@
 summary = """
-Conditionally selected end-of-injection angle over the engine-speed axis \
-00015f32: eight uint16 cells that writer 000730cc reads through wrapper \
-000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, \
-209) from the interpolated value y without correction bytes, the delay in 2 \
-crank degrees per count from the reference tooth of the scheduled channel to \
-the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees \
-after the following intake TDC, as a cell of JK08A 0001230a does; the stock \
-cells 133..175 give 58 degrees before to 110 degrees after intake TDC."""
+Conditionally selected end-of-injection angle over the engine-speed axis of \
+the base curve. The injection writer interpolates the eight uint16 cells and \
+stores 2*min(y, 209) of the interpolated value y, without correction bytes, \
+to the end-of-injection word, the delay in 2 crank degrees per count from \
+the reference tooth of the scheduled channel to the end of the pulse. A cell \
+of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, \
+as a cell of JK08A 0001230a does."""
 level = "code"
 home = "jk78c"
 role = "table"
@@ -56,13 +55,74 @@ supports = "identity"
 at = "1nd:0007f9d0"
 
 [[symbol]]
+layout = "jk00c"
+address = "0001717c"
+level = "code"
+note = """
+Writer 00058ae4 loads the curve from literal 00058d10 for the call at \
+00058bd2 to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca \
+while ffff436f.bit0 and ffff250a bits 3 and 4 are set. It clamps the \
+interpolated value without a correction byte and stores the result to \
+ffff1992."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk00c:00058d7a"
+note = "The writer stores 2*min(y, 209) to the end-of-injection word ffff1992."
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK08A.fuel.md"
+note = """
+Homologous targets: the end-of-injection word of JK00C and JK00D has the \
+JK08A coordinate raw*2-590 degrees after intake TDC."""
+
+[[symbol]]
+layout = "jk00d"
+address = "0001719c"
+level = "code"
+note = """
+Writer 00058ae0 loads the curve from literal 00058d0c for the call at \
+00058bce to wrapper 000270d0 on axis 0001718c and engine-speed word ffff11ca \
+while ffff4383.bit0 and ffff2512 bits 3 and 4 are set. It clamps the \
+interpolated value without a correction byte and stores the result to \
+ffff1996."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d0c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk00d:00058d76"
+note = "The writer stores 2*min(y, 209) to the end-of-injection word ffff1996."
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "scale"
+path = "defs/JK08A.fuel.md"
+note = """
+Homologous targets: the end-of-injection word of JK00C and JK00D has the \
+JK08A coordinate raw*2-590 degrees after intake TDC."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00015f42"
 level = "code"
 note = """
 Writer 000730cc loads the curve from literal 000732f4 for the call at \
 000731c0 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac \
-while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set."""
+while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set, and stores twice the \
+clamped value to ffff192a."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -103,6 +163,16 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00084710"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058bce"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058bd2"
+
 [[link]]
 type = "reader"
 to = "enthusiastic-salmon/fn"
@@ -122,3 +192,13 @@ at = "1nd:0007f9d0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00084920"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d0c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d10"

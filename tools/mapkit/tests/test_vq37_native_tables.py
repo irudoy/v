@@ -8,6 +8,9 @@ from tools.mapkit import vq37_native_tables
 
 
 TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+# The registry also holds the 8MFK targets, which carry the end-of-injection
+# curves only (tools/mapkit/tests/test_8mfk_native_tables.py).
+EIGHT_MFK_TARGETS = ("JK00C", "JK00D")
 SELECTOR_ROLES = {
     "fuel_compensation_alternate",
     "fuel_compensation_coefficient_curve",
@@ -346,6 +349,12 @@ def _projected_axes(target):
     }
 
 
+def _vq37_registry():
+    """(ROM, target) of each VQ37 target of the registry."""
+    registry = vq37_native_tables.load_registry()
+    return [(rom, registry[rom]) for rom in TARGETS]
+
+
 def _registry_text():
     with open(vq37_native_tables.DEFAULT_REGISTRY, encoding="utf-8") as handle:
         return handle.read()
@@ -376,7 +385,7 @@ def test_registry_requires_the_complete_vq37_target_set(tmp_path):
 def test_registry_declares_every_role_on_every_target():
     registry = vq37_native_tables.load_registry()
 
-    assert set(registry) == set(TARGETS)
+    assert set(registry) == set(TARGETS) | set(EIGHT_MFK_TARGETS)
     for rom in TARGETS:
         target = registry[rom]
         tables = {table.identifier for table in target.tables}
@@ -471,7 +480,7 @@ def test_registry_displaces_only_the_1me3b_conditioner_constants():
 
 def test_registry_publishes_the_conditioner_calibration_through_its_pool():
     gears = tuple(range(8))
-    for rom, target in vq37_native_tables.load_registry().items():
+    for rom, target in _vq37_registry():
         tables = {t.identifier: t for t in target.tables
                   if t.identifier in CONDITIONER_TABLE_ROLES}
         axes = {a.identifier: a for a in target.axes
@@ -505,7 +514,7 @@ def test_registry_publishes_the_conditioner_calibration_through_its_pool():
 
 
 def test_registry_publishes_the_limiter_threshold_curve_through_its_pool():
-    for rom, target in vq37_native_tables.load_registry().items():
+    for rom, target in _vq37_registry():
         tables = {t.identifier: t for t in target.tables
                   if t.identifier in LIMITER_TABLE_ROLES}
         axes = {a.identifier: a for a in target.axes
@@ -529,7 +538,7 @@ def test_registry_publishes_the_limiter_threshold_curve_through_its_pool():
 
 
 def test_registry_publishes_the_float_model_through_its_pools():
-    for rom, target in vq37_native_tables.load_registry().items():
+    for rom, target in _vq37_registry():
         tables = {t.identifier: t for t in target.tables
                   if t.identifier in FLOAT_MODEL_TABLE_ROLES}
         axes = {a.identifier: a for a in target.axes

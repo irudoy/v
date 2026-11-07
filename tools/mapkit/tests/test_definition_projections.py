@@ -62,7 +62,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 13
-        assert values["native_maps"] == 0
+        assert values["native_maps"] == 2
         assert values["rolling_configuration"] is None
     assert stats["JK78C"]["mapped"] == 45
     assert stats["JK78C"]["unsupported"] == len(JK78C_UNSUPPORTED)
@@ -319,8 +319,11 @@ def test_projection_applies_target_map_checksums_and_switches(
         romkit.load(rom),
         required_maps={"00008a27"},
     )
+    registered = vq37_native_tables.load_registry()[rom]
 
-    assert set(result.maps) == {target_address}
+    assert set(result.maps) == {target_address} | {
+        f"{table.address:08x}" for table in registered.tables
+    }
     assert result.maps[target_address]["addr"] == target_address
     assert result.overrides["checksum"][1]["sumloc"] == runtime_a_sum
     assert len(result.overrides["switch"]) == switch_count

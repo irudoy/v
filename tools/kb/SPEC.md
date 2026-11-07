@@ -742,8 +742,14 @@ meaning. `editor.static_axis_operand` is a reference to the `ram` or `reg`
 meaning whose value the static axis labels. `editor.constant_content = true`
 marks a native VQ37 table whose stock cells may all hold one bits as a
 reviewed calibration value; the native table registry rejects such a block
-of an unmarked table as erased flash. The generators of the editor definitions, the RomRaider files, and
-the diagnostic bindings read these tables.
+of an unmarked table as erased flash. That registry covers the VQ37VHR images
+and, for the target-native tables that their relocated JK08A definition cannot
+state, the 8MFK images JK00C and JK00D. The role set of each family, VQ37VHR
+or 8MFK, is the union of the roles that its images carry: every image of the
+family carries each role of that set or declares it absent with a reason, and
+an absence outside that set is stale. The generators of the editor
+definitions, the RomRaider files, and the diagnostic bindings read these
+tables.
 
 Ledger selectors reproduce column presence and row order without owning a
 second copy of semantic facts. Dependencies require the selected type,

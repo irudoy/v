@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Load exact VQ37 target-native calibration tables and axes for editor definitions."""
+"""Load exact target-native calibration tables and axes for editor definitions.
+
+The registry covers the VQ37VHR images and, for the target-native tables that
+their relocated JK08A definition cannot state, the 8MFK images JK00C and JK00D.
+"""
 
 from __future__ import annotations
 
@@ -18,7 +22,12 @@ DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
 SCHEMA_VERSION = 4
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
-SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"})
+# The target images by family. The images of one family share a role set.
+TARGET_FAMILIES = (
+    frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"}),
+    frozenset({"JK00C", "JK00D"}),
+)
+SUPPORTED_TARGETS = frozenset().union(*TARGET_FAMILIES)
 TARGET_FIELDS = frozenset({"stock_sha256", "table"})
 OPTIONAL_TARGET_FIELDS = frozenset({"axis", "absent"})
 AXIS_KINDS = frozenset({"rpm", "load", "temp", "raw"})
@@ -522,22 +531,24 @@ def load_registry(path=DEFAULT_REGISTRY):
         rom: _parse_target(rom, row, f"{path} [target.{rom}]")
         for rom, row in rows.items()
     }
-    # Every VQ37 image is reviewed against the same role set. A role that a
-    # target neither carries nor declares absent with a reason is stale rather
-    # than different, and an absence that no target contradicts is stale too.
+    # Every image of a family is reviewed against the role set of its family.
+    # A role that a target neither carries nor declares absent with a reason is
+    # stale rather than different, and an absence that no target of the family
+    # contradicts is stale too.
     present = {
         rom: {entity.identifier for entity in (*target.tables, *target.axes)}
         for rom, target in result.items()
     }
-    expected = set.union(*present.values())
-    for rom, target in result.items():
-        covered = present[rom] | set(target.absent)
-        if covered != expected:
-            raise NativeTableError(
-                f"{path} [target.{rom}]: roles differ; "
-                f"missing={sorted(expected - covered)}; "
-                f"unknown={sorted(covered - expected)}"
-            )
+    for family in TARGET_FAMILIES:
+        expected = set.union(*(present[rom] for rom in family))
+        for rom in sorted(family):
+            covered = present[rom] | set(result[rom].absent)
+            if covered != expected:
+                raise NativeTableError(
+                    f"{path} [target.{rom}]: roles differ; "
+                    f"missing={sorted(expected - covered)}; "
+                    f"unknown={sorted(covered - expected)}"
+                )
     return result
 
 
@@ -670,7 +681,7 @@ def table_axis_keys(rom, path=DEFAULT_REGISTRY):
 
 
 def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
-    """Append exact target-native VQ37 tables and axes to a projected editor model."""
+    """Append exact target-native tables and axes to a projected editor model."""
     target = load_registry(path).get(rom)
     if target is None:
         return maps, axes, overrides

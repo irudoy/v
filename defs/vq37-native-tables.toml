@@ -1410,8 +1410,8 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
-note = "Writer 000730cc loads the curve from literal 00073518 for the calls at 0007335e and 000733a2 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac. It adds byte ffff35d3, and on the second call also byte ffff310f, before the clamp."
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
+note = "Writer 000730cc loads the curve from literal 00073518 for the calls at 0007335e and 000733a2 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac. It adds byte ffff35d3, and on the second call also byte ffff310f, before the clamp, and stores the result to ffff192a."
 
 [[target.JK78C.table]]
 id = "injection_end_angle_conditional"
@@ -1433,8 +1433,8 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
-note = "Writer 000730cc loads the curve from literal 000732f4 for the call at 000731c0 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set."
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
+note = "Writer 000730cc loads the curve from literal 000732f4 for the call at 000731c0 to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac while ffff4531.bit6 and ffff23e3 bits 2 and 3 are set, and stores twice the clamped value to ffff192a."
 
 [[target.JK78C.table]]
 id = "vvel_duration_hot_intake_idle_floor"
@@ -4560,7 +4560,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
 note = "Writer 0007f4e0 loads the curve from literal 0007fa04 for the calls at 0007f91a and 0007f95c to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6. It adds byte fffea7ee, and on the second call also byte fffea2ad, before the clamp, and stores the result to fffe89a2."
 
 [[target.1ND0A.table]]
@@ -4583,7 +4583,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
 note = "Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at 0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6, and stores twice the clamped value to fffe89a2."
 
 [[target.1ND0A.table]]
@@ -7657,7 +7657,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
 note = "Writer 0007f4e0 loads the curve from literal 0007fa04 for the calls at 0007f91a and 0007f95c to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6. It adds byte fffea7ee, and on the second call also byte fffea2ad, before the clamp, and stores the result to fffe89a2."
 
 [[target.1ND3B.table]]
@@ -7680,7 +7680,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
 note = "Writer 0007f4e0 loads the curve from literal 0007f9d0 for the call at 0007f824 to wrapper 00028910 on axis 00016550 and engine-speed word fffe81b6, and stores twice the clamped value to fffe89a2."
 
 [[target.1ND3B.table]]
@@ -10797,7 +10797,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Base end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer adds one or two correction bytes to the interpolated value and stores uint16[ffff192a] = 2*min(sum, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does; all 8 stock cells equal 133, 58 degrees before intake TDC."
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
 note = "Writer 000841b4 loads the curve from literals 000846d4 and 00084910 for the calls at 00084662 and 000846f0 to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e. It adds byte fffea8dc, and on the first call also byte fffea363, before the clamp, and stores the result to fffe8946."
 
 [[target.1ME3B.table]]
@@ -10820,7 +10820,7 @@ confidence = "code"
 scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
-semantics = "Conditionally selected end-of-injection angle over the engine-speed axis 00015f32: eight uint16 cells that writer 000730cc reads through wrapper 000282f4 with word ffff11ac. The writer stores uint16[ffff192a] = 2*min(y, 209) from the interpolated value y without correction bytes, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does; the stock cells 133..175 give 58 degrees before to 110 degrees after intake TDC."
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
 note = "Writer 000841b4 loads the curve from literal 00084920 for the call at 00084710 to leaf 0002aeac on axis 000164f4 and engine-speed word fffe819e, and stores twice the clamped value to fffe8946."
 
 [[target.1ME3B.table]]
@@ -12549,3 +12549,139 @@ note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RP
 
 [target.1ME3B.absent]
 vvel_duration_mode_14 = "The 1ME3B resolver FUN_00062FAC stores the constant 50.0, the float literal 0x42480000 at 0x63448, in pair 13 of its output and reads no table for it; its two 8x8 calls read the hot-intake idle surfaces."
+
+[target.JK00C]
+stock_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
+
+[[target.JK00C.table]]
+id = "injection_end_angle_base"
+address = 0x0001715C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x00058E94, accessor = 0x00058AE4 }]
+axis_x = 0x0001716C
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
+note = "Writer 00058ae4 loads the curve from literal 00058e94 for the call at 00058d58 to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca. It adds byte ffff34d1 to the interpolated value before the clamp, and stores the result to ffff1992."
+
+[[target.JK00C.table]]
+id = "injection_end_angle_conditional"
+address = 0x0001717C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "363b26c0b49b225b54d7d84115a1d8a9a7a6770aa708942abf77caf4e282d3fc"
+pointer_bindings = [{ site = 0x00058D10, accessor = 0x00058AE4 }]
+axis_x = 0x0001716C
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
+note = "Writer 00058ae4 loads the curve from literal 00058d10 for the call at 00058bd2 to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca while ffff436f.bit0 and ffff250a bits 3 and 4 are set. It clamps the interpolated value without a correction byte and stores the result to ffff1992."
+
+[[target.JK00C.axis]]
+id = "injection_end_angle_axis"
+address = 0x0001716C
+length = 8
+storagetype = "uint16"
+values_sha256 = "820d8a7df6f60611165132bb0ab2f8235118e8058c2dbadd7ab9fd162dc3dae1"
+pointer_bindings = [{ site = 0x00058D14, accessor = 0x00058AE4 }, { site = 0x00058E98, accessor = 0x00058AE4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 00058ae4 loads the axis from literals 00058d14 and 00058e98 and passes engine-speed word ffff11ca directly to wrapper 000270d0. Stored points 0, 64, 128, 192, 256, 352, 464 and 608 give 0, 800, 1600, 2400, 3200, 4400, 5800 and 7600 RPM."
+
+[target.JK00D]
+stock_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
+
+[[target.JK00D.table]]
+id = "injection_end_angle_base"
+address = 0x0001717C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x00058E90, accessor = 0x00058AE0 }]
+axis_x = 0x0001718C
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does."
+note = "Writer 00058ae0 loads the curve from literal 00058e90 for the call at 00058d54 to wrapper 000270d0 on axis 0001718c and engine-speed word ffff11ca. It adds byte ffff34e5 to the interpolated value before the clamp, and stores the result to ffff1996."
+
+[[target.JK00D.table]]
+id = "injection_end_angle_conditional"
+address = 0x0001719C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "363b26c0b49b225b54d7d84115a1d8a9a7a6770aa708942abf77caf4e282d3fc"
+pointer_bindings = [{ site = 0x00058D0C, accessor = 0x00058AE0 }]
+axis_x = 0x0001718C
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does."
+note = "Writer 00058ae0 loads the curve from literal 00058d0c for the call at 00058bce to wrapper 000270d0 on axis 0001718c and engine-speed word ffff11ca while ffff4383.bit0 and ffff2512 bits 3 and 4 are set. It clamps the interpolated value without a correction byte and stores the result to ffff1996."
+
+[[target.JK00D.axis]]
+id = "injection_end_angle_axis"
+address = 0x0001718C
+length = 8
+storagetype = "uint16"
+values_sha256 = "820d8a7df6f60611165132bb0ab2f8235118e8058c2dbadd7ab9fd162dc3dae1"
+pointer_bindings = [{ site = 0x00058D10, accessor = 0x00058AE0 }, { site = 0x00058E94, accessor = 0x00058AE0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "Writer 00058ae0 loads the axis from literals 00058d10 and 00058e94 and passes engine-speed word ffff11ca directly to wrapper 000270d0. Stored points 0, 64, 128, 192, 256, 352, 464 and 608 give 0, 800, 1600, 2400, 3200, 4400, 5800 and 7600 RPM."

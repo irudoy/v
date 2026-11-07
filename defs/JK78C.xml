@@ -1560,7 +1560,7 @@
          0x73518. Writer 000730cc loads the curve from literal 00073518 for the calls at
          0007335e and 000733a2 to wrapper 000282f4 on axis 00015f32 and engine-speed word
          ffff11ac. It adds byte ffff35d3, and on the second call also byte ffff310f, before the
-         clamp.
+         clamp, and stores the result to ffff192a.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="End of Injection Angle - Base" category="Fuelling//Injection"
            storagetype="uint16" storageaddress="0x15F22" sizex="8" endian="big">
@@ -1600,7 +1600,7 @@
          Exact JK78C target-native table at 0x15f42 bound to accessor 0x730cc through literal
          0x732f4. Writer 000730cc loads the curve from literal 000732f4 for the call at 000731c0
          to wrapper 000282f4 on axis 00015f32 and engine-speed word ffff11ac while ffff4531.bit6
-         and ffff23e3 bits 2 and 3 are set.
+         and ffff23e3 bits 2 and 3 are set, and stores twice the clamped value to ffff192a.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="End of Injection Angle - Conditional" category="Fuelling//Injection"
            storagetype="uint16" storageaddress="0x15F42" sizex="8" endian="big">

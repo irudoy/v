@@ -1,5 +1,10 @@
 """VQ37VHR native registries (tools/kb/SPEC.md, section 20.4).
 
+The table registry also covers JK00C and JK00D of the 8MFK family for the
+target-native tables that their relocated JK08A definition cannot state, such
+as word curves on an explicit axis; the fuel-cut registry covers the VQ37VHR
+images only.
+
 - Each table and axis entry of `defs/vq37-native-tables.toml` gives a `tbl`
   or `axis` symbol on the layout of its target image, and its id joins the
   symbols of every target into one meaning with the strength of a native
@@ -570,8 +575,11 @@ def _pointer(item):
 
 # Projections ---------------------------------------------------------------
 
-# Target images in the order of the registry files.
-TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+# Target images in the order of the registry files: the table registry holds
+# the VQ37VHR images and the 8MFK images, the fuel-cut registry the VQ37VHR
+# images.
+FUEL_CUT_TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+TARGETS = (*FUEL_CUT_TARGETS, "JK00C", "JK00D")
 # The meaning of the symbol at each fuel-cut key; the axis is the x axis of
 # the curves.
 FUEL_CUT_MEANINGS = (("function_address", "rev_fuel_cut_state_machine/fn"),
@@ -599,11 +607,12 @@ def fuel_cut(root=repo.ROOT):
     return render_fuel_cut(fuel_cut_document(compile.cached(root)))
 
 
-def targets(model):
-    """(ROM, layout, image) of each target image."""
+def targets(model, roms=TARGETS):
+    """(ROM, layout, image) of each target image of the table registry, or of
+    the images that `roms` names."""
     catalog = repo.images(model.root)
     layout_of = {rom: layout.id for layout in model.layouts.values() for rom in layout.images}
-    return [(rom, layout_of[rom], catalog[rom]) for rom in TARGETS]
+    return [(rom, layout_of[rom], catalog[rom]) for rom in roms]
 
 
 def meanings(model):
@@ -757,7 +766,7 @@ def fuel_cut_document(model):
     evidence of the reader links to the predicate function."""
     by_key = {meaning.key: meaning for meaning in model.meanings}
     document = {"schema_version": SCHEMA_VERSIONS[FUEL_CUT], "target": {}}
-    for rom, layout, image in targets(model):
+    for rom, layout, image in targets(model, FUEL_CUT_TARGETS):
         subject = f"target.{rom}"
         found = {}
         for name, key in FUEL_CUT_MEANINGS:

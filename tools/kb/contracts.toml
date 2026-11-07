@@ -87,7 +87,7 @@ rows = [
   ["Symbol and hook-key tables of `patches/runtime_targets.py`", "`7mfk` symbols of the feature meanings and the per-layout hook keys", "Symbols and feature targets"],
   ["`defs/definition-projections.toml`, `defs/JK08A-*.definition-addresses.csv`", "Relocated definition settings and table addresses", "Targets of `definitions`; `tbl` and `axis` meanings and their statuses"],
   ["`defs/*.interp.csv`, `defs/*.interp-correspondence.csv`", "Interpolation kernels and wrappers", "`fn` meanings with `[interp]`"],
-  ["`defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`", "Native tables and the fuel-cut mechanism of the VQ37VHR layouts", "Meanings with symbols on `jk78c`, `1nd`, and `1me3b`"],
+  ["`defs/vq37-native-tables.toml`, `defs/vq37-native-fuel-cut.toml`", "Native tables of the VQ37VHR and 8MFK layouts and the fuel-cut mechanism of the VQ37VHR layouts", "Meanings with symbols on `jk78c`, `1nd`, `1me3b`, `jk00c`, and `jk00d`"],
   ["`tools/diagnostics/sid22_inventory.py`", "The decoder of the JK08A service 0x22 tables", "itself; the `did` symbols of `7mfk` and their `source` links derive from it and the image bytes"],
   ["`defs/JK08A.tuning-signals.toml`", "Observation needs", "`kb/signal/`"],
   ["`patches/can-telemetry-profile.toml`", "Fields, contexts, and wire constants", "`kb/field/`; `can_telemetry`"],

@@ -1050,6 +1050,90 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xF0FA" flags="0x0">
+    <title>End of Injection Angle - Base</title>
+    <description>Exact JK00C. Address 0x1715C; 1 rows x 8 columns; uint16; map confidence code. Base end-of-injection angle over an explicit eight-point engine-speed axis. The injection writer interpolates the eight uint16 cells, adds one or two correction bytes, and stores 2*min(sum, 209) to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 00012302 does. Exact JK00C target-native table at 0x1715c bound to accessor 0x58ae4 through literal 0x58e94. Writer 00058ae4 loads the curve from literal 00058e94 for the call at 00058d58 to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca. It adds byte ffff34d1 to the interpolated value before the clamp, and stores the result to ffff1992.</description>
+    <CATEGORYMEM index="0" category="9" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1716C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1715C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9278" flags="0x0">
+    <title>End of Injection Angle - Conditional</title>
+    <description>Exact JK00C. Address 0x1717C; 1 rows x 8 columns; uint16; map confidence code. Conditionally selected end-of-injection angle over the engine-speed axis of the base curve. The injection writer interpolates the eight uint16 cells and stores 2*min(y, 209) of the interpolated value y, without correction bytes, to the end-of-injection word, the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC, as a cell of JK08A 0001230a does. Exact JK00C target-native table at 0x1717c bound to accessor 0x58ae4 through literal 0x58d10. Writer 00058ae4 loads the curve from literal 00058d10 for the call at 00058bd2 to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca while ffff436f.bit0 and ffff250a bits 3 and 4 are set. It clamps the interpolated value without a correction byte and stores the result to ffff1992.</description>
+    <CATEGORYMEM index="0" category="9" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1716C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1717C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x569D" flags="0x0">
     <title>Target Mixture - Main</title>
     <description>Exact JK00C. Address 0xAD2E; 8 rows x 8 columns; uint8; map confidence code. Target mixture map: Q7 fuel-multiplier command against the stoichiometric base schedule (commanded equivalence ratio x/128), 128 = closed-loop stoichiometric target, 149 = 1.16. Stage 0005594a looks it up on engine speed (axis 00011cc0, rpm/50 against word ffff11bc) and load (axis 00011ac7, normalized BFS Q7 from ffff102c, or 0xff while wide-open latch ffff2468 bit 3 holds), scales the deviation from 128 by 00012552 when ffff2466 bit 6 selects the high-detonation surface, and publishes the byte as ffff15eb and, through enrichment latch ffff24a2 bit 7 and the ramp of ffff123a, as commanded mixture ffff22e8 = byte &lt;&lt; 7. Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes Cylinder Filling Up Efficiency (x*0.78125 percent) and Engine Speed (x*50); the AFR scale is a candidate, the Q7 ratio and the stoichiometric neutral are code. Three 2026-08-26 vehicle recordings match the lookup in 98.3..100 percent of settled records. Result disposition: consumer. Definition address projected from JK08A 0000a9aa through JK08A-JK00C.definition-addresses.csv: coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target.</description>

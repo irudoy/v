@@ -1093,6 +1093,45 @@
       </table>
     </table>
 
+    <!-- 0x1715C  8 uint16  map [code]
+         accessor 0x58AE4; r4 operand: reviewed-target
+         scaling x*4-590 deg after intake TDC [code]; axis 0x1716C rpm [code]
+         Exact JK00C target-native table at 0x1715c bound to accessor 0x58ae4 through literal
+         0x58e94. Writer 00058ae4 loads the curve from literal 00058e94 for the call at 00058d58
+         to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca. It adds byte
+         ffff34d1 to the interpolated value before the clamp, and stores the result to ffff1992.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Base" category="Fuelling//Injection"
+           storagetype="uint16" storageaddress="0x1715C" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1716C" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
+                 fineincrement="12.5" coarseincrement="50"/>
+      </table>
+    </table>
+
+    <!-- 0x1717C  8 uint16  map [code]
+         accessor 0x58AE4; r4 operand: reviewed-target
+         scaling x*4-590 deg after intake TDC [code]; axis 0x1716C rpm [code]
+         Exact JK00C target-native table at 0x1717c bound to accessor 0x58ae4 through literal
+         0x58d10. Writer 00058ae4 loads the curve from literal 00058d10 for the call at 00058bd2
+         to wrapper 000270d0 on axis 0001716c and engine-speed word ffff11ca while ffff436f.bit0
+         and ffff250a bits 3 and 4 are set. It clamps the interpolated value without a
+         correction byte and stores the result to ffff1992.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Conditional" category="Fuelling//Injection"
+           storagetype="uint16" storageaddress="0x1717C" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1716C" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
+                 fineincrement="12.5" coarseincrement="50"/>
+      </table>
+    </table>
+
     <!-- 0x0AD2E  8x8 uint8  map [code]
          scaling x/128 ratio [code]; Y Axis 0x13F85 rpm [code]; X Axis 0x13D64 load [code]
          Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes Cylinder

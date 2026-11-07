@@ -50,6 +50,46 @@ supports = "identity"
 at = "1nd:0007f9cc"
 
 [[symbol]]
+layout = "jk00c"
+address = "0001716c"
+level = "code"
+note = """
+Writer 00058ae4 loads the axis from literals 00058d14 and 00058e98 and \
+passes engine-speed word ffff11ca directly to wrapper 000270d0. Stored \
+points 0, 64, 128, 192, 256, 352, 464 and 608 give 0, 800, 1600, 2400, 3200, \
+4400, 5800 and 7600 RPM."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d14"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058e98"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001718c"
+level = "code"
+note = """
+Writer 00058ae0 loads the axis from literals 00058d10 and 00058e94 and \
+passes engine-speed word ffff11ca directly to wrapper 000270d0. Stored \
+points 0, 64, 128, 192, 256, 352, 464 and 608 give 0, 800, 1600, 2400, 3200, \
+4400, 5800 and 7600 RPM."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058e94"
+
+[[symbol]]
 layout = "jk78c"
 address = "00015f32"
 level = "code"
@@ -90,6 +130,16 @@ kind = "l0"
 supports = "scale"
 at = "1me3b:00084662"
 
+[[link.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk00d:00058bce"
+
+[[link.evidence]]
+kind = "l0"
+supports = "scale"
+at = "jk00c:00058bd2"
+
 [[link]]
 type = "reader"
 to = "enthusiastic-salmon/fn"
@@ -119,3 +169,23 @@ at = "1me3b:000846d0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0008490c"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d10"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058e94"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d14"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058e98"

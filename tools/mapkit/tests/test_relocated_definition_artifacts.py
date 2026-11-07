@@ -214,7 +214,7 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
         assert f"defs/{rom}.dtc.csv" in description
-        assert len(root.findall("XDFTABLE")) == 105
+        assert len(root.findall("XDFTABLE")) == 107
         assert root.findall("XDFFLAG") == []
         assert root.find("XDFCHECKSUM") is None
 

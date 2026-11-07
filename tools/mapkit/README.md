@@ -21,7 +21,7 @@ not be edited by hand.
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
 | `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
 | `defs/vq37-native-fuel-cut.toml` | Exact target-native VQ37 fuel-cut maps and executable bindings |
-| `defs/vq37-native-tables.toml` | Exact target-native VQ37 calibration tables and axes with no canonical source, including the VVEL target set and declared absent roles |
+| `defs/vq37-native-tables.toml` | Exact target-native calibration tables and axes with no canonical source: those of the VQ37 targets, including the VVEL target set and declared absent roles, and the JK00C and JK00D end-of-injection curves that the relocated JK08A model cannot state |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Runtime layout manifests | Canonical and target-specific map-slot and Rolling Launch projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
@@ -32,7 +32,10 @@ and target identity; calibration values are not copied into the output.
 JK00C and JK00D instead use SHA-bound reviewed address projections because
 their calibration and executable layouts are relocated. The projection omits
 non-unique source maps explicitly and validates every emitted target map and
-axis against the selected stock image.
+axis against the selected stock image. Their end-of-injection curves hold
+eight `uint16` cells on an explicit eight-word axis where JK08A holds `uint8`
+cells on an implicit axis, so the native table registry publishes them and
+the canonical byte curves stay absent on both targets.
 JK78C, 1ND0A, and 1ND3B use independently reviewed VQ37 address projections.
 The two SH7059 images share one address layout because their address-bearing
 executable code is byte-identical, but retain independent image hashes,
