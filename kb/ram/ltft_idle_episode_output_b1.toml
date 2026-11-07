@@ -1,5 +1,7 @@
 title = "Bank 1 LTFT idle learning episode count output"
-summary = "00058740 stores the bank 1 idle episode count here."
+summary = """
+00058740 copies the bank 1 idle episode count of the last advance from \
+ffff88a0 here on each call."""
 level = "code"
 block = "fuel_closed_loop/block"
 width = 8
@@ -19,6 +21,7 @@ at = "7mfk:00058be4"
 type = "copy"
 to = "ltft_idle_episode_count_b1/ram"
 via = ["ltft_learning_permit_producer/fn"]
+note = "Receives the count of the last advance through ffff88a0."
 
 [[link.evidence]]
 kind = "spec"

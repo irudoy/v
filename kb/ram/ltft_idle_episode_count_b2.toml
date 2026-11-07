@@ -1,8 +1,10 @@
 title = "Bank 2 LTFT idle learning episode count"
 summary = """
-00058740 advances it when the bank 2 composite predicate of the previous \
-call rises with the stability predicate of the previous call set. Bit 1 of \
-ffff1552 is count > ROM8[000083ba]."""
+00058740 advances it on a call with the bank 2 idle mode T26_2 set when the \
+ffff1457 predicate ffff886c was set on the previous call and clear on the \
+call before it, and the ffff1458 predicate ffff8864 was set on the previous \
+call. Each advance stores the new count in ffff88a8 and count > \
+ROM8[000083ba] in ffff88a4, which bit 1 of ffff1552 publishes."""
 note = ["The reset of the count is not traced."]
 level = "code"
 block = "fuel_closed_loop/block"

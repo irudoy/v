@@ -1,7 +1,8 @@
 title = "LTFT idle learning episode limit of both banks"
 summary = """
-00058740 sets bank bit b while the idle episode count ffff8800+b exceeds \
-ROM8[000083ba]; the set bit closes the idle mode of the bank."""
+00058740 publishes in bank bit b the comparison of the idle episode count \
+ffff8800+b with ROM8[000083ba] that the last advance of the count stored in \
+ffff889c+8*b; the set bit closes the idle mode of the bank."""
 level = "code"
 block = "fuel_closed_loop/block"
 width = 8
@@ -28,7 +29,7 @@ at = "7mfk:00058e86"
 [[link]]
 type = "input"
 to = "ltft_idle_episode_count_b1/ram"
-note = "Bit 0 is count > ROM8[000083ba]."
+note = "Bit 0 is count > ROM8[000083ba], taken on each advance of the count."
 
 [[link.evidence]]
 kind = "spec"
@@ -38,7 +39,7 @@ path = "defs/JK08A.closed-loop-publication.md"
 [[link]]
 type = "input"
 to = "ltft_idle_episode_count_b2/ram"
-note = "Bit 1 is count > ROM8[000083ba]."
+note = "Bit 1 is count > ROM8[000083ba], taken on each advance of the count."
 
 [[link.evidence]]
 kind = "spec"

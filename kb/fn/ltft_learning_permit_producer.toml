@@ -1,13 +1,13 @@
 title = "Produce the per-bank LTFT learning permits"
 summary = """
-Called by 00057c78 on every pass of the fuel-trim coordinator. Evaluates the \
-composite gate C_b of each bank from the feedback state ffff22e1, coolant \
-ffff1071, the latched and live af_adjustment, ffff15ce, the idle and \
-off-idle modes and four exclusion bits; counts the ticks with C_b in \
-ffff87fe+b; publishes C_b, P_b = count > 1 and the idle episode limit in \
-ffff1620, ffff131c and ffff1552; sets ffff1457.bit(b) on tick passes with \
-P_b and C_b and ffff1458.bit(b) while P_b and the STFT and nominal stability \
-bounds hold. The formula is stated in \
+Called by 00057c78, which the fuel-trim coordinator 0005911c runs only while \
+ffff41ad.bit4 is set. Evaluates the composite gate C_b of each bank from the \
+feedback state ffff22e1, coolant ffff1071, the latched and live \
+af_adjustment, ffff15ce, the idle and off-idle modes and four exclusion \
+bits; counts the ticks with C_b in ffff87fe+b; publishes C_b, P_b = count > \
+1 and the idle episode limit in ffff1620, ffff131c and ffff1552; sets \
+ffff1457.bit(b) on tick calls with P_b and C_b and ffff1458.bit(b) while P_b \
+and the STFT and nominal stability bounds hold. The formula is stated in \
 defs/JK08A.closed-loop-publication.md."""
 level = "code"
 role = "driver"

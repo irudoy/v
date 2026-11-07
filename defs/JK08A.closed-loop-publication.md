@@ -113,10 +113,14 @@ closed-throttle bit; `T22` is the off-idle mode and `T26_b` the idle mode.
 
 `ffff881a = min(0xffdc, ffff87f0 + 1)` while `ffff110e <= ROM8[00008706]`,
 `ffff3140 / 40 <= ROM8[00008705]` and `ffff2459.bit5` hold, else 0;
-`ffff87f0` keeps the value of the previous call. `T58_b` is set while the
-episode counter `ffff8800+b` exceeds `ROM8[000083ba]`. The counter advances
-when the composite predicate of the previous call rises with the stability
-predicate of the previous call set, and `ffff13ab+b` receives its value.
+`ffff87f0` keeps the value of the previous call. The episode counter
+`ffff8800+b` advances on a call with `T26_b` set when the `ffff1457`
+predicate `ffff8868+4*b` was set on the previous call and clear on the call
+before it, and the `ffff1458` predicate `ffff8860+4*b` was set on the
+previous call. Each advance stores the new count in `ffff88a0+8*b` and
+`T58_b = count > ROM8[000083ba]` in `ffff889c+8*b`; both keep that value
+until the next advance, and each call copies `ffff88a0+8*b` to
+`ffff13ab+b`.
 
 ### Published predicates
 
@@ -129,8 +133,9 @@ ffff1458.bit(b) = P_b && (|X_b - X'_b| >> 8) <= ROM8[000082eb]
 X_b   = (min(65535, ffff22dc+2*b * ffff28b8+2*b / 8000) * 0x8b51 >> 14) >> 1
 ```
 
-`X_b` is sampled on tick calls into `ffff87f6+2*b`, and `X'_b` is the sample of
-the previous tick at `ffff8828+2*b`. `ffff1620`, `ffff131c` and `ffff1552`
+`X_b` is computed and sampled into `ffff87f6+2*b` on a tick call whose
+previous call carried no tick; `ffff88ab` and `ffff88ac` hold the tick of
+the previous call. `X'_b` is the previous sample at `ffff8828+2*b`. `ffff1620`, `ffff131c` and `ffff1552`
 publish `C_b`, `P_b` and `T58_b` in bit `b`. One failing call of `C_b` clears
 `cnt_b`, so a permit returns after two further ticks. `ffff1457` is set for one
 call per tick; `ffff1458` holds between ticks. A set permission bit alone
