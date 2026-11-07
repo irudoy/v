@@ -933,6 +933,37 @@ python3 tools/logs/tcm_shift_audit.py \
   the target gear of the latest TCM group.
 - A downshift counts as closed-pedal when APP1 stays at 160 raw or less from
   its target change to the end of its shift window.
+- The pedal class of a downshift in D or DS follows APP1 at its target change:
+  closed at 160 raw or less, full at 900 raw or more, the full-pedal threshold
+  of `torque_scale_audit.py`, and pressed in between. A downshift in M1..M5
+  is manual. The TCM sends no kickdown flag, so the full class is defined by
+  the pedal alone.
+- Profiles 8 and later stream reduction state `0xFFFF1866` on a fixed page
+  and transition state `0xFFFF23C2` on the dynamic page in the default
+  configuration only. A snapshot without a field leaves it unobserved; an
+  unobserved snapshot ends a run.
+- `0xFFFF1866` is direct when it equals `0x177` byte 4 shifted left by 8 for
+  one of the TCM groups at most 0.03 s before the first page of the snapshot.
+  Where those groups differ, the index of the newest matching group, from 0
+  for the newest, gives the lag. A zero state while every group carries a
+  nonzero byte 4 is cleared, and any other nonzero state is other. Runs of
+  other states report their peak, a nonzero low byte, monotonic decrease,
+  and the burst, shift event, selector, and gear at their start.
+- A run of nonzero `0xFFFF23C2` takes as its source the latest burst, else
+  the latest nonzero `0xFFFF1866` run, that starts by the run start and ends
+  at most 0.5 s before it; the onset lag is measured from that start, and
+  `-1` marks a run without a source. The final-timing reference is the
+  median of the 0.3 s before the run. Each burst window is covered fully,
+  partly, or not at all by snapshots that carry the field.
+- `--events PATH` writes one CSV row per shift event to a new file. The event
+  window runs from 0.03 s before the target change to 0.5 s after its shift
+  window closes; APP1 maximum covers the shift window only. A blank cell
+  marks a quantity that the window does not observe.
+
+The analysis of a drive needs a TRC: the TCM and `0x160`/`0x180` frames are
+not part of an MLG recording. The dashboard writes it beside the MLG while it
+records, and the dynamic page stays in the default configuration so that
+`0xFFFF23C2` is streamed.
 
 The output is one `key = value` line per figure in TOML syntax. Every figure
 is a raw CAN or software quantity; the TCM-side meaning of the status field

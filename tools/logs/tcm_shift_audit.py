@@ -20,7 +20,14 @@ values of the same scheduler pass. Per capture it reports:
 - the agreement of the current gear with the 0x176 speed ratio, of the
   0x177 gear phase with the current gear, and of the 0x421 manual position with
   the target gear;
-- the shared throttle target in closed-pedal downshifts.
+- the shared throttle target in closed-pedal downshifts;
+- the pedal class of each downshift: closed, pressed, or full pedal in D and
+  DS, and manual in M1..M5;
+- the effective transmission reduction state 0xFFFF1866 against the 0x177
+  byte 4 of the TCM groups before each snapshot, and the runs in which it
+  holds another value;
+- the runs of the Q8 transition state 0xFFFF23C2 with their source, peak, and
+  final-timing dip, and how far the dynamic page covers each burst window.
 
 A shift event starts where the 0x174 target nibble changes to a gear that
 differs from the current nibble, ends where the current nibble reaches it or
@@ -39,13 +46,19 @@ address from which FUN_00077892 reads the throttle-limit scalar that caps its
 gear-indexed target: 0x942C in the stock ROM and the selected-map copy in a
 map-switching image, so it stays outside the stock comparison.
 
-The output is one `key = value` line per figure in TOML syntax.
+Both state fields are optional: a snapshot without them, such as one whose
+dynamic page carries another configuration than the default, leaves them
+unobserved, and an unobserved snapshot ends a run.
+
+The output is one `key = value` line per figure in TOML syntax. `--events`
+also writes one CSV row per shift event.
 """
 
 from __future__ import annotations
 
 import argparse
 import bisect
+import csv
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
@@ -63,7 +76,7 @@ from tools.can_dashboard.model import (  # noqa: E402
 )
 from tools.logs import mlg_relation_audit  # noqa: E402
 from tools.logs import peak_trc_audit  # noqa: E402
-from tools.logs.torque_scale_audit import RE5R05A_RATIOS  # noqa: E402
+from tools.logs.torque_scale_audit import FULL_PEDAL_APP1, RE5R05A_RATIOS  # noqa: E402
 
 TELEMETRY_ID = 0x6F0
 GEAR_ID = 0x174
@@ -81,6 +94,10 @@ SNAPSHOT_FIELDS = (
     "final_timing_raw",
     "fuel_inhibit_mask",
 )
+# Optional snapshot fields: 0xFFFF1866 on a fixed page, 0xFFFF23C2 on the
+# dynamic page in the default configuration only.
+REDUCTION_FIELD = "transmission_reduction_state_raw"
+TRANSITION_FIELD = "torque_transition_state_raw"
 PACK_DIVISOR = 5
 PACK_ZERO = 800
 PACK_MAX = 4094
@@ -106,6 +123,9 @@ BURST_REFERENCE_S = 0.3
 BINDING_WINDOW_S = 0.03
 BINDING_FRAMES = 4
 CLOSED_PEDAL_APP1 = 160
+# A transition run takes as its source a burst or a nonzero reduction state
+# that starts at most this long before it.
+TRANSITION_SOURCE_S = 0.5
 # 0x421 byte 0 codes of the drive and manual positions (defs/JK08A.can.md).
 DRIVE_SELECTORS = {0x20: "D", 0x28: "DS"}
 MANUAL_SELECTORS = {0x80: 1, 0x88: 2, 0x90: 3, 0x98: 4, 0xA0: 5}
@@ -232,6 +252,8 @@ class Snapshot:
     throttle_target_raw: int
     timing_raw: int
     fuel_inhibit_mask: int
+    reduction_raw: int | None = None
+    transition_raw: int | None = None
 
 
 @dataclass(frozen=True)
@@ -619,6 +641,8 @@ def read_trc(
                 throttle_target_raw=int(raw["throttle_target_shared_raw"]),
                 timing_raw=int(raw["final_timing_raw"]),
                 fuel_inhibit_mask=int(raw["fuel_inhibit_mask"]),
+                reduction_raw=_optional(raw, REDUCTION_FIELD),
+                transition_raw=_optional(raw, TRANSITION_FIELD),
             )
         )
     if not snapshots:
@@ -631,6 +655,11 @@ def read_trc(
         join_passes(snapshots, ecu),
         tuple(selector_frames),
     )
+
+
+def _optional(raw: dict, name: str) -> int | None:
+    value = raw.get(name)
+    return None if value is None else int(value)
 
 
 def join_passes(snapshots, ecu) -> tuple[Pass, ...]:
@@ -741,6 +770,76 @@ def reduction_bursts(tcm) -> list[tuple[int, int]]:
         bursts.append((index, end))
         index = end + 1
     return bursts
+
+
+def selector_name(selector: int | None) -> str:
+    if selector in DRIVE_SELECTORS:
+        return DRIVE_SELECTORS[selector]
+    if selector in MANUAL_SELECTORS:
+        return f"M{MANUAL_SELECTORS[selector]}"
+    return "" if selector is None else f"0x{selector:02X}"
+
+
+def pedal_class(event: ShiftEvent, selector: int | None, app1: int) -> str:
+    """Upshift, manual downshift, or the pedal class of a D or DS downshift by APP1."""
+    if event.upshift:
+        return "upshift"
+    if selector in MANUAL_SELECTORS:
+        return "manual"
+    if selector not in DRIVE_SELECTORS:
+        return "other"
+    if app1 <= CLOSED_PEDAL_APP1:
+        return "closed"
+    return "full" if app1 >= FULL_PEDAL_APP1 else "pressed"
+
+
+def reduction_relation(snapshots, tcm, tcm_times) -> list[tuple[str, int | None]]:
+    """(kind, lag) of each snapshot against the 0x177 byte 4 of the TCM groups
+    at most BINDING_WINDOW_S before its first page, newest first.
+
+    `direct`: the state equals byte 4 << 8 of a group; the lag is the index of
+    the newest such group when the groups differ, else None. `cleared`: the
+    state is zero while every group carries a nonzero byte 4. `other`: another
+    nonzero state. `unbound`: no group lies in the window. `unobserved`: the
+    snapshot carries no state.
+    """
+    relation = []
+    for snapshot in snapshots:
+        state = snapshot.reduction_raw
+        if state is None:
+            relation.append(("unobserved", None))
+            continue
+        index = _frame_at(tcm_times, snapshot.first_page_s)
+        groups = [
+            tcm[k]
+            for k in range(index, max(-1, index - BINDING_FRAMES), -1)
+            if snapshot.first_page_s - tcm[k].seconds <= BINDING_WINDOW_S
+        ]
+        if not groups:
+            relation.append(("unbound", None))
+            continue
+        lags = [lag for lag, frame in enumerate(groups) if frame.reduction << 8 == state]
+        if lags:
+            varied = len({frame.reduction for frame in groups}) > 1
+            relation.append(("direct", lags[0] if varied else None))
+        elif state == 0:
+            relation.append(("cleared", None))
+        else:
+            relation.append(("other", None))
+    return relation
+
+
+def snapshot_runs(snapshots, member) -> list[tuple[int, int]]:
+    """Index ranges of consecutive-tick snapshots for which `member` holds."""
+    runs = []
+    for index, snapshot in enumerate(snapshots):
+        if not member(index):
+            continue
+        if runs and runs[-1][1] == index - 1 and snapshots[index - 1].tick + 1 == snapshot.tick:
+            runs[-1][1] = index
+        else:
+            runs.append([index, index])
+    return [(start, end) for start, end in runs]
 
 
 def mechanical_gear(output_speed: int, turbine_speed: int) -> int | None:
@@ -886,6 +985,7 @@ def audit_capture(path: Path, code: dict) -> dict:
                 "rpm": snapshot.rpm_raw * RPM_PER_COUNT,
                 "app1": snapshot.app1_raw,
                 "selector": target.selector,
+                "class": pedal_class(event, target.selector, snapshot.app1_raw),
                 "episode": event.target_index in episode_targets,
             }
         )
@@ -1034,6 +1134,157 @@ def audit_capture(path: Path, code: dict) -> dict:
         closed_rise.append(peak - start.throttle_target_raw)
         closed_max.append(peak)
 
+    # Reduction state 0xFFFF1866 against 0x177 byte 4, and transition state
+    # 0xFFFF23C2 with its source and final-timing dip.
+    def window_indices(start, end):
+        return range(bisect.bisect_left(snapshot_starts, start),
+                     bisect.bisect_right(snapshot_starts, end))
+
+    def covering(spans, seconds):
+        return next((k for k, (start, end) in enumerate(spans) if start <= seconds <= end), None)
+
+    event_windows = [
+        (tcm[event.target_index].seconds - BURST_MARGIN_S[0],
+         tcm[event.window_end_index].seconds + BURST_MARGIN_S[1])
+        for event in events
+    ]
+    relation = reduction_relation(snapshots, tcm, tcm_times)
+    kinds = [kind for kind, _ in relation]
+    lag_counts = [0] * BINDING_FRAMES
+    for kind, lag in relation:
+        if kind == "direct" and lag is not None:
+            lag_counts[lag] += 1
+    reduction_rows = []
+    for start, end in snapshot_runs(snapshots, lambda index: kinds[index] == "other"):
+        run = snapshots[start : end + 1]
+        values = [snapshot.reduction_raw for snapshot in run]
+        first_s = run[0].first_page_s
+        frame_index = _frame_at(tcm_times, first_s)
+        frame = tcm[frame_index] if frame_index >= 0 else None
+        event_index = covering(event_windows, first_s)
+        reduction_rows.append(
+            {
+                "start_s": first_s,
+                "passes": len(run),
+                "peak": max(values),
+                "low_byte": any(value & 0xFF for value in values),
+                "non_increasing": all(b <= a for a, b in zip(values, values[1:])),
+                "burst": covering(burst_windows, first_s) is not None,
+                "event": events[event_index].name if event_index is not None else "",
+                "selector": selector_name(frame.selector) if frame else "",
+                "gear": frame.current if frame else 0,
+            }
+        )
+    reduction_spans = [
+        (snapshots[start].first_page_s, snapshots[end].first_page_s)
+        for start, end in snapshot_runs(snapshots, lambda index: bool(snapshots[index].reduction_raw))
+    ]
+    burst_spans = [(tcm[start].seconds, tcm[end].seconds) for start, end in bursts]
+
+    def source_of(spans, seconds):
+        """Start of the latest span that begins by `seconds` and ends at most
+        TRANSITION_SOURCE_S before it."""
+        starts = [
+            start for start, end in spans
+            if start <= seconds and end >= seconds - TRANSITION_SOURCE_S
+        ]
+        return starts[-1] if starts else None
+
+    transition_rows = []
+    for start, end in snapshot_runs(snapshots, lambda index: bool(snapshots[index].transition_raw)):
+        run = snapshots[start : end + 1]
+        first_s = run[0].first_page_s
+        follower = snapshots[end + 1] if end + 1 < len(snapshots) else None
+        if follower is None or follower.tick != run[-1].tick + 1:
+            ending = "gap"
+        elif follower.transition_raw is None:
+            ending = "unobserved"
+        else:
+            ending = "zero"
+        burst_start = source_of(burst_spans, first_s)
+        reduction_start = source_of(reduction_spans, first_s)
+        if burst_start is not None:
+            source, onset = "burst", first_s - burst_start
+        elif reduction_start is not None:
+            source, onset = "reduction", first_s - reduction_start
+        else:
+            source, onset = "other", -1.0
+        reference = _before(snapshots, snapshot_starts, first_s - BURST_REFERENCE_S, first_s)
+        transition_rows.append(
+            {
+                "start_s": first_s,
+                "passes": len(run),
+                "peak_high": max(snapshot.transition_raw for snapshot in run) >> 8,
+                "end": ending,
+                "source": source,
+                "onset_lag_s": onset,
+                "timing_base": statistics.median_low(
+                    snapshot.timing_raw for snapshot in (reference or run[:1])
+                ),
+                "timing_min": min(snapshot.timing_raw for snapshot in run),
+            }
+        )
+    burst_coverage = []
+    burst_followed = 0
+    for window in burst_windows:
+        indices = window_indices(*window)
+        observed = sum(1 for index in indices if snapshots[index].transition_raw is not None)
+        burst_coverage.append(
+            "none" if not observed else "full" if observed == len(indices) else "partial"
+        )
+        burst_followed += any(
+            kinds[index] == "direct" and snapshots[index].reduction_raw for index in indices
+        )
+
+    # One row per shift event.
+    event_rows = []
+    for event, window in zip(events, event_windows):
+        target = tcm[event.target_index]
+        start_s = target.seconds
+        snapshot = _snapshot_at(snapshots, snapshot_starts, start_s)
+        inside = [snapshots[index] for index in window_indices(*window)]
+        window_passes = _between(passes, pass_times, *window)
+        reference = _before(snapshots, snapshot_starts, start_s - BURST_REFERENCE_S, start_s)
+        shift_window = _between(
+            snapshots, snapshot_starts, start_s, tcm[event.window_end_index].seconds
+        )
+        reductions = [item.reduction_raw for item in inside if item.reduction_raw is not None]
+        transitions = [item.transition_raw for item in inside if item.transition_raw is not None]
+        event_rows.append(
+            {
+                "start_s": _rounded(start_s),
+                "shift": event.name,
+                "completed": event.completed,
+                "selector": selector_name(target.selector),
+                "class": pedal_class(event, target.selector, snapshot.app1_raw),
+                "rpm": snapshot.rpm_raw * RPM_PER_COUNT,
+                "app1_start": snapshot.app1_raw,
+                "app1_max": max(
+                    (item.app1_raw for item in shift_window), default=snapshot.app1_raw
+                ),
+                "shift_code": shift_code_index(target.shift_code),
+                "burst_frames": sum(
+                    row["frames"] for row in burst_rows if row["event"] is event
+                ),
+                "episode": event.target_index in episode_targets,
+                "request_word_min": min((item.request_word for item in window_passes), default=None),
+                "actual_word_min": min((item.actual_word for item in window_passes), default=None),
+                "divergence_passes": sum(1 for item in window_passes if item.diverged),
+                "fuel_inhibit_passes": sum(
+                    1 for item in window_passes if item.snapshot.fuel_inhibit_mask
+                ),
+                "reduction_peak": max(reductions, default=None),
+                "reduction_observed": len(reductions),
+                "transition_peak_high": max(transitions) >> 8 if transitions else None,
+                "transition_observed": len(transitions),
+                "snapshots": len(inside),
+                "timing_base": statistics.median_low(item.timing_raw for item in reference)
+                if reference else None,
+                "timing_min": min((item.timing_raw for item in inside), default=None),
+                "window_s": _rounded(window[1] - window[0]),
+            }
+        )
+
     codes: dict[str, set[int]] = {}
     constant_codes = 0
     for event in events:
@@ -1134,6 +1385,44 @@ def audit_capture(path: Path, code: dict) -> dict:
         "closed_pedal_downshift_count": len(closed_rise),
         "closed_pedal_target_rise_max": max(closed_rise, default=0),
         "closed_pedal_target_max": max(closed_max, default=0),
+        "reduction_observed_snapshots": sum(1 for kind in kinds if kind != "unobserved"),
+        "reduction_unbound_snapshots": kinds.count("unbound"),
+        "reduction_direct_zero_snapshots": sum(
+            1 for kind, snapshot in zip(kinds, snapshots)
+            if kind == "direct" and not snapshot.reduction_raw
+        ),
+        "reduction_direct_nonzero_snapshots": sum(
+            1 for kind, snapshot in zip(kinds, snapshots)
+            if kind == "direct" and snapshot.reduction_raw
+        ),
+        "reduction_cleared_snapshots": kinds.count("cleared"),
+        "reduction_other_snapshots": kinds.count("other"),
+        "reduction_other_run_count": len(reduction_rows),
+        "reduction_low_byte_snapshots": sum(
+            1 for snapshot in snapshots
+            if snapshot.reduction_raw is not None and snapshot.reduction_raw & 0xFF
+        ),
+        "reduction_lag_counts": lag_counts,
+        "burst_reduction_followed_count": burst_followed,
+        "transition_observed_snapshots": sum(
+            1 for snapshot in snapshots if snapshot.transition_raw is not None
+        ),
+        "transition_unobserved_snapshots": sum(
+            1 for snapshot in snapshots if snapshot.transition_raw is None
+        ),
+        "transition_run_count": len(transition_rows),
+        "transition_burst_runs": sum(1 for row in transition_rows if row["source"] == "burst"),
+        "transition_reduction_runs": sum(
+            1 for row in transition_rows if row["source"] == "reduction"
+        ),
+        "transition_other_runs": sum(1 for row in transition_rows if row["source"] == "other"),
+        "transition_peak_high_max": max((row["peak_high"] for row in transition_rows), default=0),
+        "burst_transition_full_count": burst_coverage.count("full"),
+        "burst_transition_partial_count": burst_coverage.count("partial"),
+        "burst_transition_none_count": burst_coverage.count("none"),
+        "reduction_runs": reduction_rows,
+        "transition_runs": transition_rows,
+        "events": event_rows,
     }
 
 
@@ -1220,6 +1509,77 @@ BURST_UPSHIFT_KEYS = (
     "timing_min",
     "word_gap_min",
 )
+# Per-capture figures of the optional state fields. The recorded figures of
+# captures without these fields keep PER_CAPTURE_KEYS only.
+STATE_KEYS = (
+    "reduction_observed_snapshots",
+    "reduction_unbound_snapshots",
+    "reduction_direct_zero_snapshots",
+    "reduction_direct_nonzero_snapshots",
+    "reduction_cleared_snapshots",
+    "reduction_other_snapshots",
+    "reduction_other_run_count",
+    "reduction_low_byte_snapshots",
+    "reduction_lag_counts",
+    "burst_reduction_followed_count",
+    "transition_observed_snapshots",
+    "transition_unobserved_snapshots",
+    "transition_run_count",
+    "transition_burst_runs",
+    "transition_reduction_runs",
+    "transition_other_runs",
+    "transition_peak_high_max",
+    "burst_transition_full_count",
+    "burst_transition_partial_count",
+    "burst_transition_none_count",
+)
+REDUCTION_RUN_KEYS = (
+    "start_s",
+    "passes",
+    "peak",
+    "low_byte",
+    "non_increasing",
+    "burst",
+    "event",
+    "selector",
+    "gear",
+)
+TRANSITION_RUN_KEYS = (
+    "start_s",
+    "passes",
+    "peak_high",
+    "end",
+    "source",
+    "onset_lag_s",
+    "timing_base",
+    "timing_min",
+)
+EVENT_COLUMNS = (
+    "capture",
+    "start_s",
+    "shift",
+    "completed",
+    "selector",
+    "class",
+    "rpm",
+    "app1_start",
+    "app1_max",
+    "shift_code",
+    "burst_frames",
+    "episode",
+    "request_word_min",
+    "actual_word_min",
+    "divergence_passes",
+    "fuel_inhibit_passes",
+    "reduction_peak",
+    "reduction_observed",
+    "transition_peak_high",
+    "transition_observed",
+    "snapshots",
+    "timing_base",
+    "timing_min",
+    "window_s",
+)
 
 
 def _column(value):
@@ -1254,6 +1614,7 @@ def combine(results: list[dict]) -> dict:
         "capture_sha256": [result["capture"].sha256 for result in results],
     }
     combined.update({key: [result[key] for result in results] for key in PER_CAPTURE_KEYS})
+    combined.update({key: [result[key] for result in results] for key in STATE_KEYS})
     combined.update(
         {
             "status_values": sorted({v for result in results for v in result["status_values"]}),
@@ -1291,20 +1652,44 @@ def combine(results: list[dict]) -> dict:
             "other_type_downshift_count": len(other_type),
             "drive_downshift_count": len(drive),
             "drive_downshift_app1_max": max((row["app1"] for row in drive), default=0),
+            "drive_downshift_closed_count": sum(1 for row in drive if row["class"] == "closed"),
+            "drive_downshift_pressed_count": sum(1 for row in drive if row["class"] == "pressed"),
+            "drive_downshift_full_count": sum(1 for row in drive if row["class"] == "full"),
+            "manual_downshift_count": sum(1 for row in downshifts if row["class"] == "manual"),
             "shift_code_shifts": ordered,
             "shift_code_values": [sorted(value >> 3 for value in codes[shift]) for shift in ordered],
             "ratio_medians": medians,
         }
     )
+    for name, keys in (("reduction_run", REDUCTION_RUN_KEYS), ("transition_run", TRANSITION_RUN_KEYS)):
+        rows = [
+            (index, row) for index, result in enumerate(results) for row in result[f"{name}s"]
+        ]
+        combined[f"{name}_capture_index"] = [index for index, _ in rows]
+        combined.update({f"{name}_{key}": [_column(row[key]) for _, row in rows] for key in keys})
     return combined
+
+
+def write_events(results: list[dict], path: Path) -> None:
+    """One CSV row per shift event of every capture; an existing file is refused."""
+    with Path(path).open("x", encoding="utf-8", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(EVENT_COLUMNS)
+        for result in results:
+            for row in result["events"]:
+                values = {"capture": result["capture"].path.name, **row}
+                writer.writerow(
+                    "" if values[key] is None else _column(values[key]) for key in EVENT_COLUMNS
+                )
 
 
 def result_lines(result: dict) -> list[str]:
     return [f"{key} = {mlg_relation_audit.format_value(value)}" for key, value in result.items()]
 
 
-def audit(captures: list[Path], rom: Path = STOCK_ROM) -> dict:
-    """ROM identity, the path facts of that ROM, and the combined capture figures."""
+def audit(captures: list[Path], rom: Path = STOCK_ROM, events: Path | None = None) -> dict:
+    """ROM identity, the path facts of that ROM, and the combined capture
+    figures; `events` names the CSV of the shift events."""
     data = Path(rom).read_bytes()
     code = interface_code(data)
     result = {
@@ -1313,7 +1698,10 @@ def audit(captures: list[Path], rom: Path = STOCK_ROM) -> dict:
         "scalar_source": Hex(_pc_literal(data, SCALAR_LOAD)),
     }
     result.update(code)
-    result.update(combine([audit_capture(path, code) for path in captures]))
+    results = [audit_capture(path, code) for path in captures]
+    if events is not None:
+        write_events(results, events)
+    result.update(combine(results))
     return result
 
 
@@ -1326,8 +1714,13 @@ def main(argv: list[str] | None = None) -> int:
         default=STOCK_ROM,
         help="ROM image that ran during the captures (default: the stock JK08A ROM)",
     )
+    parser.add_argument(
+        "--events",
+        type=Path,
+        help="write one CSV row per shift event to this new file",
+    )
     args = parser.parse_args(argv)
-    for line in result_lines(audit(args.captures, args.rom)):
+    for line in result_lines(audit(args.captures, args.rom, args.events)):
         print(line)
     return 0
 
