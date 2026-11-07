@@ -1353,8 +1353,11 @@ class Change:
                           code=2)
         path, document = self.document(meaning)
         source = self._open(other_path) if other_path is not None else {}
+        # The symbols of `other` include those that an earlier merge of the
+        # change brought into its pending file.
+        symbols = self._symbols(other)
         held = set(meaning.symbols) | {entry.get("layout") for entry in document.get("symbol", ())}
-        for layout, symbol in sorted(other.symbols.items()):
+        for layout, symbol in sorted(symbols.items()):
             if layout in held:
                 current = meaning.symbols.get(layout)
                 raise KbError(
@@ -1362,21 +1365,21 @@ class Change:
                     f"{layout}, where {other.key} has {self._ref(symbol)}; `kb move` corrects a "
                     "wrong symbol", code=3)
         own = {layout: symbol.address for layout, symbol in self._symbols(meaning).items()}
-        brought = {layout: symbol.address for layout, symbol in other.symbols.items()}
+        brought = {layout: symbol.address for layout, symbol in symbols.items()}
         sources = joined_sources(
             (meaning.key, document.get("source", []), own, set(brought) - set(own)),
             (other.key, source.get("source", []), brought, set(own) - set(brought)),
             f"{meaning.key} and {other.key}")
         stated = [evidence_item(item) for item in op.get("evidence") or ()]
-        several = len(other.symbols) > 1
-        if several and any((match.location(item.get("at")) or (None,))[0] not in other.symbols
+        several = len(symbols) > 1
+        if several and any((match.location(item.get("at")) or (None,))[0] not in symbols
                            for item in stated):
-            raise KbError(f"{other.key} has {len(other.symbols)} symbols; each evidence item "
+            raise KbError(f"{other.key} has {len(symbols)} symbols; each evidence item "
                           "names the layout of one in `at`", code=2)
         entries = {(entry.get("layout"), entry.get("address")): entry
                    for entry in source.get("symbol", ())}
         moved, joins = [], []
-        for layout, symbol in sorted(other.symbols.items()):
+        for layout, symbol in sorted(symbols.items()):
             items = [item for item in stated
                      if not several or match.location(item.get("at"))[0] == layout]
             evidence = items or self._joining(meaning, named, op.get("from"), symbol)
@@ -1400,7 +1403,7 @@ class Change:
             self._remove(other_path)
             self.moved[other_path] = path
         self.joined[other.key] = meaning.key
-        others = {other.name, *(symbol.generated for symbol in other.symbols.values()),
+        others = {other.name, *(symbol.generated for symbol in symbols.values()),
                   *(entry.get("name") for entry in source.get("symbol", ()))}
         count = self._rename(others - {None, meaning.name}, meaning.kind, meaning.name, path)
         self.lines.append(f"merge {other.key} into {meaning.key}: {', '.join(joins)}"
@@ -1472,6 +1475,7 @@ class Change:
         self._absorb(document, source, layouts, None, formers if semantic else [], own,
                      f"{path.as_posix()} and {other_path.as_posix()}")
         self._remove(other_path)
+        self.moved[other_path] = path
         others = {name, *(entry.get("name") for entry in source.get("symbol", ()))}
         count = self._rename(others - {None, own}, kind, own, path)
         self.lines.append(f"merge {name}/{kind} into {own}/{kind}: {other_path.as_posix()} "

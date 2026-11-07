@@ -421,6 +421,25 @@ def test_exact_source_file_reference_does_not_edit_another_owned_file(baseline):
     assert result.overlay[SP] == store.render('ram', docs[SP])
 
 
+def test_a_set_link_on_an_owned_file_joins_the_merge_of_that_file(baseline):
+    # The alias file of the state meaning changes a link and then joins the
+    # state file; one batch writes what the two batches write.
+    _, docs = baseline
+    docs = copy.deepcopy(docs)
+    alias = store.path_of('ram', 'knock_timing_alias')
+    docs[alias] = {'symbol': copy.deepcopy(docs[SP]['symbol']),
+                   'link': [{'type': 'copy', 'to': 'unrelated_probe/ram',
+                             'layouts': ['7mfk'], 'note': 'Original alias note.'}]}
+    update = {**OP, 'meaning': 'knock_timing_alias/ram', 'type': 'copy',
+              'to': 'unrelated_probe/ram'}
+    joining = {'cmd': 'merge', 'meaning': STATE, 'other': 'knock_timing_alias/ram'}
+    _, first, between = plan(baseline, update, docs=docs)
+    _, second, _ = write.plan([joining], between, write.model_resolver(between), between.root)
+    _, combined, _ = plan(baseline, update, joining, docs=docs)
+    assert combined == {**first, **second}
+    assert OP['keys']['note'] in combined[SP]
+
+
 def test_no_owned_file_cannot_be_created_by_property_edit(baseline):
     model, _ = baseline
     shallow = copy.copy(model)

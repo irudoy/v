@@ -682,7 +682,7 @@ class MergeTest(unittest.TestCase):
         self.assertIn("the masked-match search from 7mfk:0004a238 finds no candidate on 1nd, "
                       "not 1nd:0006ea18; state the evidence",
                       self.refused(merge(self.EVALUATOR, "ruby-boobook/fn")))
-        self.assertIn("op 2: kb/fn/vivid-capuchin.toml leaves the store in this change",
+        self.assertIn(f"op 2: {self.CAPUCHIN} joins {self.EVALUATOR} earlier in this change",
                       self.refused(merge(self.EVALUATOR, self.CAPUCHIN),
                                    merge(self.EVALUATOR, self.CAPUCHIN)))
         self.assertIn(f"{self.EVALUATOR} has a semantic name and {self.CAPUCHIN} a generated "
@@ -1865,6 +1865,40 @@ def test_a_set_link_on_a_link_to_a_merged_meaning_joins_the_merge_batch(probe_st
                                       "probe_target/ram") as caught:
         planned(base, joining, before)
     assert caught.value.code == 3
+
+
+@pytest.mark.parametrize("with_set_link", [False, True])
+def test_a_merge_chain_moves_every_symbol_that_an_earlier_merge_brought(probe_store,
+                                                                        with_set_link):
+    # probe_source joins probe_target, which then joins probe_last: the
+    # second merge brings the symbol that the first one moved into the
+    # pending file of probe_target.
+    base = probe_store(
+        probe_reader=probe("7mfk:ffff4300", link=[
+            {"type": "input", "to": "probe_source/ram", "evidence": [SPEC]}]),
+        probe_source=probe("jk78c:ffff4100"),
+        probe_target=probe("1nd:ffff4200"),
+        probe_last=probe("1me3b:ffff4400"),
+    )
+    restrict = link("probe_reader/ram", "input", "probe_source/ram", cmd="set-link",
+                    keys={"layouts": ["jk78c"]})
+    first = merge("probe_target/ram", "probe_source/ram", evidence=[SPEC])
+    second = merge("probe_last/ram", "probe_target/ram", evidence=[
+        {**SPEC, "at": "1nd:ffff4200"}, {**SPEC, "at": "jk78c:ffff4100"}])
+    leading = [restrict] if with_set_link else []
+    _, texts_one, between = planned(base, *leading, first)
+    _, texts_two, sequential = planned(between, second)
+    _, texts, result = planned(base, *leading, first, second)
+    assert texts == {**texts_one, **texts_two}
+    for model in (result, sequential):
+        for layout, address in (("jk78c", 0xffff4100), ("1nd", 0xffff4200),
+                                ("1me3b", 0xffff4400)):
+            assert model.meaning_of(SymbolKey(layout, "ram", address)).key == "probe_last/ram"
+    assert stored(texts, "probe_reader")["link"][0]["to"] == "probe_last/ram"
+    rename = {"cmd": "rename", "meaning": "probe_last/ram", "name": "probe_final"}
+    _, texts, result = planned(base, *leading, first, second, rename)
+    assert stored(texts, "probe_reader")["link"][0]["to"] == "probe_final/ram"
+    assert result.meaning_of(SymbolKey("jk78c", "ram", 0xffff4100)).key == "probe_final/ram"
 
 
 def test_entries_of_one_link_with_and_without_layouts_lift_the_restricted_union(probe_store):
