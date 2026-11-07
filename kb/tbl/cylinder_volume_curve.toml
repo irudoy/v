@@ -1,0 +1,199 @@
+summary = """
+Cylinder volume over the crank angle from top dead center: 32 explicit \
+points from 0 to 360 degrees, read by the float ignition model root at |360 \
+- X| of its crank-angle input X and multiplied by 2e-8 there. The curve is \
+engine geometry and changes only with another stroke or compression ratio."""
+note = [
+    """
+Stock values: 3080 counts (61.60 cm3) at 0 degrees and 33880 counts (677.60 \
+cm3) at 180 degrees, so 616.00 cm3 swept volume and compression ratio 11.0, \
+the VQ37VHR figures of the factory manual. A slider-crank volume with a \
+connecting-rod to crank-radius ratio of 3.5 matches every point within 0.1 \
+percent of the swept volume; the manual states a 149.45-149.55 mm rod center \
+distance (EM-298) and a 42.96-43.04 mm crank radius (EM-300). The stored \
+curve is asymmetric about 180 degrees by up to 0.6 cm3; its cause is \
+unresolved.""",
+    """
+The scale x*0.02 cm3 reads the code factor 2e-8 as cubic meters. The unit \
+rests on the factory geometry, so the scale stays a candidate.""",
+    """
+The crank-angle input X is unresolved. On 1ND, 000612a0 selects \
+min(fffea2b0/64, fffea066/128) degrees and flags the choice in bit 5 of \
+fffeb8a1; on JK78C and 1ME3B the root passes the word pairs ffff3112 / \
+ffff2ee2 and fffea36c / fffea12a in the same registers to 00057fd4 and \
+0006508c. The engine event that X describes is unestablished.""",
+    """
+The 1ND root stores the volume at fffef610 and uses it in a quotient of the \
+form a*V/(b*c) at 000608b0 and 00060b58; the physical model of that quotient \
+is unresolved. Ten further functions of each layout read the curve and its \
+axis, on 1ND in 00055000..0005c500 beside the VVEL model code; their roles \
+belong to the float model tasks of issue #114.""",
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B. The float model \
+root 1ND 00060756 / 1ME3B 0006452e is reachable from the scheduler task \
+table and reads the curve on every call without a calibration branch. The \
+role stays out of the editor.""",
+]
+home = "1nd"
+role = "table"
+block = "ignition_timing/block"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+unit = "cm3"
+scale = "x*0.02"
+to_raw = "x*50"
+scale_level = "candidate"
+
+[[symbol]]
+layout = "1me3b"
+address = "00017196"
+level = "code"
+note = """
+MOV.L 0006457e loads this curve and MOV.L 0006457c its axis for the call at \
+00064582 (hairy-kagu) in the float model root 0006452e. Its 64 stock bytes \
+equal JK78C 00016ad4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006457e"
+note = """
+The float model root 0006452e forms |360 - X| of its crank-angle input, \
+scales it by 128 with the cap 0xb400, passes this curve in r4 to the \
+explicit-axis 1D-32 wrapper at 00064582 and multiplies the word result by \
+the float 2e-8."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1me3b:00064740"
+value = "32abcc77"
+note = """
+The float factor 2e-8 that the root applies to the word result of this \
+curve."""
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "scale"
+key = "nissan-esm-2013-g37-sedan EM-291 General Specification"
+note = """
+VQ37VHR: displacement 3,696 cm3, bore and stroke 95.5 x 86.0 mm, compression \
+ratio 11; the curve holds 61.60 cm3 at 0 degrees and 677.60 cm3 at 180 \
+degrees."""
+
+[[symbol]]
+layout = "1nd"
+address = "000170e2"
+level = "code"
+note = """
+MOV.L 000607a6 loads this curve and MOV.L 000607a4 its axis for the call at \
+000607aa (adept-limpet) in the float model root 00060756. Every image of the \
+layout holds the stock bytes of JK78C 00016ad4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000607a6"
+note = """
+The float model root 00060756 passes this curve in r4 to the explicit-axis \
+1D-32 wrapper at 000607aa and multiplies the word result by the float 2e-8 \
+at 000607b6 before it stores the volume at fffef610."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1nd:00060968"
+value = "32abcc77"
+note = """
+The float factor 2e-8 that the root applies to the word result of this \
+curve."""
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "scale"
+key = "nissan-esm-2013-g37-sedan EM-291 General Specification"
+note = """
+VQ37VHR: displacement 3,696 cm3, bore and stroke 95.5 x 86.0 mm, compression \
+ratio 11. The curve holds 61.60 cm3 at 0 degrees and 677.60 cm3 at 180 \
+degrees: 616.00 cm3 swept volume per cylinder and compression ratio 11.0."""
+
+[[symbol]]
+layout = "jk78c"
+address = "00016ad4"
+level = "code"
+note = """
+MOV.L 00057d62 loads this curve and MOV.L 00057d64 its axis for the call at \
+00057d68 (loose-lion) in reader 00057d3a, which the float model root \
+00057782 calls at 000577aa with its crank-angle argument in fr4."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057d62"
+note = """
+Reader 00057d3a forms |360 - fr4|, stores it at ffffa374, scales it by 128 \
+with the cap 0xb400, passes this curve in r4 to the explicit-axis 1D-32 \
+wrapper at 00057d68 and stores the word result times the float 2e-8 at \
+ffffa370."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "jk78c:00057ee8"
+value = "32abcc77"
+note = """
+The float factor 2e-8 that reader 00057d3a applies to the word result of \
+this curve."""
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "scale"
+key = "nissan-esm-2013-g37-sedan EM-291 General Specification"
+note = """
+VQ37VHR: displacement 3,696 cm3, bore and stroke 95.5 x 86.0 mm, compression \
+ratio 11; the curve holds 61.60 cm3 at 0 degrees and 677.60 cm3 at 180 \
+degrees."""
+
+[[link]]
+type = "axis"
+to = "cylinder_volume_crank_angle_axis/axis"
+slot = "x"
+layouts = ["jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00057d68"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000607aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00064582"
+
+[[link]]
+type = "reader"
+to = "cylinder_volume_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00057edc"
+
+[[link]]
+type = "reader"
+to = "timing_float_model_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00064738"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00060960"

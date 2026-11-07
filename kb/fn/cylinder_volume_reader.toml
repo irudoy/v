@@ -1,0 +1,20 @@
+summary = """
+Converts the crank-angle argument of the float model root into the cylinder \
+volume: it looks up cylinder_volume_curve at |360 - fr4| degrees, capped at \
+360, and stores the result times 2e-8 at ffffa370. 1ND and 1ME3B perform \
+this lookup inline in the root."""
+block = "ignition_timing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00057d3a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057d3a"
+note = """
+The reviewed primary function entry and complete listing establish this \
+reader: it looks up cylinder_volume_curve at |360 - fr4| and stores the \
+result times 2e-8 at ffffa370."""

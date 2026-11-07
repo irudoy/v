@@ -1,0 +1,136 @@
+summary = """
+Crank angle from top dead center of cylinder_volume_curve in 1/128 degree: \
+32 points from 0 to 360 degrees, 6 degrees apart up to 12 degrees and 12 \
+degrees apart beyond."""
+note = [
+    """
+The float model root forms the coordinate as |360 - X| * 128 from its \
+crank-angle input X in degrees and caps it at 46080, 360 degrees. The \
+conversion x/128 degrees rests on the code factors 360.0 and 128.0, and the \
+crank-angle reading on the cylinder-volume shape of the curve.""",
+    """
+Native editor class (issue #129): active on 1ND and 1ME3B, with \
+cylinder_volume_curve. The role stays out of the editor.""",
+]
+home = "1nd"
+quantity = "angle"
+points = 32
+storage = "uint16"
+unit = "degCA"
+scale = "x/128"
+to_raw = "x*128"
+scale_level = "candidate"
+
+[[symbol]]
+layout = "1me3b"
+address = "00014912"
+level = "code"
+note = """
+MOV.L 0006457c loads this axis for the call at 00064582 in the float model \
+root 0006452e."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006457c"
+note = """
+The float model root 0006452e passes this axis in r5 with the coordinate \
+|360 - X| * 128 in r6 to the explicit-axis 1D-32 wrapper at 00064582."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1me3b:00064728"
+value = "43b40000"
+note = "The float 360.0 that bounds |360 - X| in the root."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1me3b:00064730"
+value = "43000000"
+note = "The float 128.0 that scales |360 - X| into the coordinate of this axis."
+
+[[symbol]]
+layout = "1nd"
+address = "00014ace"
+level = "code"
+note = """
+MOV.L 000607a4 loads this axis for the call at 000607aa in the float model \
+root 00060756."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000607a4"
+note = """
+The float model root 00060756 passes this axis in r5 with the coordinate \
+|360 - X| * 128 in r6 to the explicit-axis 1D-32 wrapper at 000607aa."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1nd:00060950"
+value = "43b40000"
+note = "The float 360.0 that bounds |360 - X| in the root."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1nd:00060958"
+value = "43000000"
+note = "The float 128.0 that scales |360 - X| into the coordinate of this axis."
+
+[[symbol]]
+layout = "jk78c"
+address = "00014618"
+level = "code"
+note = """
+MOV.L 00057d64 loads this axis for the call at 00057d68 in reader 00057d3a."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00057d64"
+note = """
+Reader 00057d3a passes this axis in r5 with the coordinate |360 - fr4| * 128 \
+in r6 to the explicit-axis 1D-32 wrapper at 00057d68."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "jk78c:00057ed4"
+value = "43b40000"
+note = "The float 360.0 that bounds |360 - fr4| in reader 00057d3a."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "jk78c:00057ed8"
+value = "43000000"
+note = """
+The float 128.0 that scales |360 - fr4| into the coordinate of this axis."""
+
+[[link]]
+type = "reader"
+to = "cylinder_volume_reader/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00057ee0"
+
+[[link]]
+type = "reader"
+to = "timing_float_model_builder/fn"
+layouts = ["1me3b", "1nd"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00064734"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0006095c"
