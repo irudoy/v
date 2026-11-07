@@ -59,19 +59,36 @@
 #define STOCK_ACTIVITY 0xffffa56fU
 #define MAILBOX26_MASK 0x0400U
 #define MAILBOX28_MASK 0x1000U
-/* The knock surface field takes table slot 32 and bank byte 37, and the wire
-   carries the high-detonation bit in bit 6, which the hosts decode. The knock
-   surface state of 1ME3B keeps the bit in bit 7; its capture moves that bit
-   into the wire bit and clears the other bits of the wire byte. */
+/* The one-bit fields: their table slot, bank byte, and wire bit, which the
+   hosts decode, and the source bit of the layout. The capture of a layout
+   that keeps the bit elsewhere moves it into the wire bit and clears the
+   other bits of the wire byte. The LTFT neutral control field lies on the
+   dynamic page and moves only while the page carries its default row. */
+#define LTFT_NEUTRAL_SLOT 23U
+#define LTFT_NEUTRAL_BYTE 27U
+#define LTFT_NEUTRAL_WIRE 0x01U
+#define KNOCK_BRANCH_SLOT 29U
+#define KNOCK_BRANCH_BYTE 34U
+#define KNOCK_BRANCH_WIRE 0x80U
 #define KNOCK_SURFACE_SLOT 32U
 #define KNOCK_SURFACE_BYTE 37U
 #define KNOCK_SURFACE_WIRE 0x40U
-#ifdef TARGET_1ME3B
+#if defined(TARGET_1ME3B)
+#define LTFT_NEUTRAL_SOURCE 0x04U
+#define KNOCK_BRANCH_SOURCE 0x80U
 #define KNOCK_SURFACE_SOURCE 0x80U
-#define KNOCK_SURFACE_OTHER_BITS_WIRE 0x00U
-#else
+#elif defined(TARGET_1ND)
+#define LTFT_NEUTRAL_SOURCE 0x80U
+#define KNOCK_BRANCH_SOURCE 0x40U
 #define KNOCK_SURFACE_SOURCE 0x40U
-#define KNOCK_SURFACE_OTHER_BITS_WIRE 0xbfU
+#elif defined(TARGET_JK78)
+#define LTFT_NEUTRAL_SOURCE 0x40U
+#define KNOCK_BRANCH_SOURCE 0x40U
+#define KNOCK_SURFACE_SOURCE 0x40U
+#else
+#define LTFT_NEUTRAL_SOURCE 0x01U
+#define KNOCK_BRANCH_SOURCE 0x80U
+#define KNOCK_SURFACE_SOURCE 0x40U
 #endif
 
 static const uint8_t start_command[8] = {
@@ -321,12 +338,46 @@ static int run_stock_receive_preservation_cases(void)
 }
 #endif
 
+static const struct {
+    const char *bit_case;
+    const char *other_case;
+    size_t slot;
+    size_t byte;
+    uint8_t source;
+    uint8_t wire;
+} bit_fields[] = {
+    {
+        "ltft-neutral-bit", "ltft-neutral-other-bits",
+        LTFT_NEUTRAL_SLOT, LTFT_NEUTRAL_BYTE,
+        LTFT_NEUTRAL_SOURCE, LTFT_NEUTRAL_WIRE,
+    },
+    {
+        "knock-branch-inhibit", "knock-branch-other-bits",
+        KNOCK_BRANCH_SLOT, KNOCK_BRANCH_BYTE,
+        KNOCK_BRANCH_SOURCE, KNOCK_BRANCH_WIRE,
+    },
+    {
+        "knock-surface-high-detonation", "knock-surface-other-bits",
+        KNOCK_SURFACE_SLOT, KNOCK_SURFACE_BYTE,
+        KNOCK_SURFACE_SOURCE, KNOCK_SURFACE_WIRE,
+    },
+};
+
+/* The wire byte of a fixed page slot whose source byte the capture read. */
 static uint8_t wire_byte(size_t slot, uint8_t source)
 {
-    if (slot != KNOCK_SURFACE_SLOT
-            || KNOCK_SURFACE_SOURCE == KNOCK_SURFACE_WIRE)
-        return source;
-    return (source & KNOCK_SURFACE_SOURCE) != 0 ? KNOCK_SURFACE_WIRE : 0U;
+    size_t index;
+
+    for (index = 0; index < sizeof(bit_fields) / sizeof(bit_fields[0]);
+            ++index) {
+        if (bit_fields[index].slot != slot
+                || bit_fields[index].source == bit_fields[index].wire)
+            continue;
+        return (source & bit_fields[index].source) != 0
+            ? bit_fields[index].wire
+            : 0U;
+    }
+    return source;
 }
 
 static int verify_bank(const char *name, uint32_t bank, uint8_t context)
@@ -1012,43 +1063,45 @@ static int run_capture_cases(void)
     return 1;
 }
 
-static int run_knock_surface_cases(void)
+/* Each one-bit field with only its source bit set, then with every other bit
+   set, under the default row of the dynamic page. A moved field carries the
+   wire bit alone; a field that the layout keeps in the wire bit passes its
+   byte unchanged. */
+static int run_bit_field_cases(void)
 {
-    static const struct {
-        const char *name;
-        uint8_t source;
-        uint8_t wire;
-    } cases[] = {
-        {
-            "knock-surface-high-detonation",
-            KNOCK_SURFACE_SOURCE,
-            KNOCK_SURFACE_WIRE,
-        },
-        {
-            "knock-surface-other-bits",
-            (uint8_t)~KNOCK_SURFACE_SOURCE,
-            KNOCK_SURFACE_OTHER_BITS_WIRE,
-        },
-    };
     size_t index;
+    unsigned other;
 
-    for (index = 0; index < sizeof(cases) / sizeof(cases[0]); ++index) {
+    for (index = 0; index < sizeof(bit_fields) / sizeof(bit_fields[0]);
+            ++index) {
         uint32_t source =
-            read_u32(rom_pointer(TABLE + KNOCK_SURFACE_SLOT * 4));
+            read_u32(rom_pointer(TABLE + bit_fields[index].slot * 4));
+        uint8_t moved =
+            bit_fields[index].source != bit_fields[index].wire;
 
-        count_case();
-        reset_case();
-        ((volatile uint8_t *)(uintptr_t)source)[0] = cases[index].source;
-        (void)invoke_r4(CAPTURE, 0);
-        if (!verify_started(
-                cases[index].name, 1, TELEMETRY_PAGE_COUNT, BANK_B))
-            return 0;
-        if (ram_pointer(BANK_B)[KNOCK_SURFACE_BYTE] != cases[index].wire)
-            return fail_value(
-                cases[index].name, "wire_byte",
-                ram_pointer(BANK_B)[KNOCK_SURFACE_BYTE], cases[index].wire);
-        if (!verify_bank(cases[index].name, BANK_B, 0))
-            return 0;
+        for (other = 0; other < 2; ++other) {
+            const char *name = other
+                ? bit_fields[index].other_case
+                : bit_fields[index].bit_case;
+            uint8_t value = other
+                ? (uint8_t)~bit_fields[index].source
+                : bit_fields[index].source;
+            uint8_t wire = !other
+                ? bit_fields[index].wire
+                : moved ? 0U : (uint8_t)~bit_fields[index].wire;
+
+            count_case();
+            reset_case();
+            ((volatile uint8_t *)(uintptr_t)source)[0] = value;
+            (void)invoke_r4(CAPTURE, 0);
+            if (!verify_started(name, 1, TELEMETRY_PAGE_COUNT, BANK_B))
+                return 0;
+            if (ram_pointer(BANK_B)[bit_fields[index].byte] != wire)
+                return fail_value(name, "wire_byte",
+                    ram_pointer(BANK_B)[bit_fields[index].byte], wire);
+            if (!verify_bank(name, BANK_B, 0))
+                return 0;
+        }
     }
     return 1;
 }
@@ -1984,6 +2037,37 @@ static int run_dynamic_capture_cases(void)
     return 1;
 }
 
+/* An installed configuration fills the bank byte of the LTFT neutral control
+   field with slot data, which the capture keeps as the slot reads it while
+   the default source holds its source bit. */
+static int run_bit_field_configuration_case(void)
+{
+    uint32_t addresses[TELEMETRY_DYNAMIC_DATA_BYTES];
+    uint8_t widths[TELEMETRY_DYNAMIC_DATA_BYTES];
+    uint8_t page[TELEMETRY_DYNAMIC_DATA_BYTES + 1];
+    uint32_t source = read_u32(rom_pointer(TABLE + LTFT_NEUTRAL_SLOT * 4));
+    size_t data = LTFT_NEUTRAL_BYTE - TELEMETRY_DYNAMIC_PAGE * 8U - 1U;
+    unsigned slot;
+
+    count_case();
+    reset_case();
+    ((volatile uint8_t *)(uintptr_t)source)[0] = LTFT_NEUTRAL_SOURCE;
+    for (slot = 0; slot < TELEMETRY_DYNAMIC_DATA_BYTES; ++slot) {
+        addresses[slot] = window_start(0x140 + slot);
+        widths[slot] = 1;
+        ram_pointer(addresses[slot])[0] = 0xffU;
+        send_set(16, 0, slot, 1, addresses[slot]);
+    }
+    send_commit(16, 1, TELEMETRY_DYNAMIC_DATA_BYTES, 0);
+    if (!expect_dynamic("ltft-neutral-configured", 16, 0, 0, 0))
+        return 0;
+    expect_page(page, addresses, widths, TELEMETRY_DYNAMIC_DATA_BYTES, 16);
+    if (page[data] != 0xffU)
+        return fail_value("ltft-neutral-configured", "slot_byte",
+            page[data], 0xff);
+    return capture_dynamic("ltft-neutral-configured", page);
+}
+
 int main(void)
 {
 #ifdef TARGET_1ME3B
@@ -2002,7 +2086,9 @@ int main(void)
         return 1;
     if (!run_capture_cases())
         return 1;
-    if (!run_knock_surface_cases())
+    if (!run_bit_field_cases())
+        return 1;
+    if (!run_bit_field_configuration_case())
         return 1;
     if (!run_direct_entry_cases())
         return 1;

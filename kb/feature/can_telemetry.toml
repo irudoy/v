@@ -41,10 +41,11 @@ unsupported wire role is encoded from cleared reserved RAM and remains \
 unavailable in metadata. The exhaust CVTC candidates require independently \
 reviewed target producer-consumer bindings before their fields can be \
 exposed. The intake solenoid duty fields decode their x*25/64 percent source \
-cells with the x*39/100 wire scale, within 0.16 percentage points. The \
-payload moves bit 7 of the knock surface state into bit 6 of the wire byte, \
-the bit that the wire contract decodes, and clears the other bits of the \
-byte."""
+cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit \
+source that the layout keeps in another bit than 7mfk moves into the wire \
+bit that the contract decodes, and the other bits of its wire byte are \
+cleared; a source of the dynamic page moves only while the page carries its \
+default row."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -151,7 +152,11 @@ unsupported wire role is encoded from cleared reserved RAM and remains \
 unavailable in metadata. The exhaust CVTC candidates require independently \
 reviewed target producer-consumer bindings before their fields can be \
 exposed. The intake solenoid duty fields decode their x*25/64 percent source \
-cells with the x*39/100 wire scale, within 0.16 percentage points."""
+cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit \
+source that the layout keeps in another bit than 7mfk moves into the wire \
+bit that the contract decodes, and the other bits of its wire byte are \
+cleared; a source of the dynamic page moves only while the page carries its \
+default row."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -194,6 +199,13 @@ Compensation surfaces. Its independent producer and periodic-copy path are \
 recorded in diamond-macaque/ram; the JK08A byte-producer homolog remains \
 unresolved."""
 symbol = "diamond-macaque/ram"
+
+[target.roles.knock_branch_state_raw]
+note = """
+Coordinator 0006d948 keeps the direct-difference inhibit in bit 6 of \
+fffe948b, and function 000a254a updates bit 7 independently. The capture \
+moves bit 6 into wire bit 7 and clears the other bits of the wire byte."""
+symbol = "knock_direct_difference_inhibit_state/ram"
 
 [target.symbols]
 coherent_snapshot = "coherent_snapshot/fn"
@@ -504,7 +516,11 @@ unsupported wire role is encoded from cleared reserved RAM and remains \
 unavailable in metadata. The exhaust CVTC candidates require independently \
 reviewed target producer-consumer bindings before their fields can be \
 exposed. The intake solenoid duty fields decode their x*25/64 percent source \
-cells with the x*39/100 wire scale, within 0.16 percentage points."""
+cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit \
+source that the layout keeps in another bit than 7mfk moves into the wire \
+bit that the contract decodes, and the other bits of its wire byte are \
+cleared; a source of the dynamic page moves only while the page carries its \
+default row."""
 
 [target.hooks.coherent_snapshot_call]
 hook = "coherent_snapshot_call/hook"
@@ -547,6 +563,13 @@ the target Fuel Compensation surfaces; diamond-macaque/ram holds the \
 evidence."""
 symbol = "diamond-macaque/ram"
 
+[target.roles.knock_branch_state_raw]
+note = """
+Coordinator 00062780 keeps the direct-difference inhibit in bit 6 of \
+ffff23c9, and function 00090790 updates bit 7 independently. The capture \
+moves bit 6 into wire bit 7 and clears the other bits of the wire byte."""
+symbol = "knock_direct_difference_inhibit_state/ram"
+
 [target.symbols]
 coherent_snapshot = "coherent_snapshot/fn"
 feedback_config_record_address = "feedback_config_record_address/tbl"
@@ -567,13 +590,6 @@ mailbox_data = "mailbox_data/reg"
 mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
-
-[[target.unsupported]]
-note = """
-Native FFFF4514 carries the neutralization pulse in bit 6; FUN 00073E78 sets \
-and clears mask 0x40. The shared profile decodes bit 0 and has no conversion \
-for this source, so this field is unavailable on JK78C."""
-symbol = "ltft_publication_neutral_control/ram"
 
 [[target.unsupported]]
 note = """

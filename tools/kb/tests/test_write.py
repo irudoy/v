@@ -302,9 +302,9 @@ class PlanTest(unittest.TestCase):
             facts = profile_facts(*args, **kwargs)
             # The compatibility adapter classifies legacy status prose. Give
             # the registry fixture an explicit unresolved search result.
-            for row in facts.rows["1nd"][1]:
+            for row in facts.rows["1me3b"][1]:
                 if (row["domain"], row["key"]) == (
-                        "telemetry", "ltft_publication_neutral_control_raw"):
+                        "telemetry", "knock_branch_state_raw"):
                     row["evidence"] = "No homolog is established for this fixture source."
             return facts
 
@@ -312,17 +312,17 @@ class PlanTest(unittest.TestCase):
                 mock.patch.object(profiles, "Profiles", side_effect=unresolved_profile_facts):
             base = compile.build(repo.ROOT)
             meaning = next(meaning for meaning in base.meanings
-                           if meaning.key == "ltft_publication_neutral_control/ram")
-            self.assertEqual(meaning.statuses["1nd"].state, "unresolved")
+                           if meaning.key == "knock_branch_state/ram")
+            self.assertEqual(meaning.statuses["1me3b"].state, "unresolved")
             with self.assertRaises(KbError) as caught:
-                write.plan([bind("ltft_publication_neutral_control/ram", "1nd:fffec000", evidence=[
+                write.plan([bind("knock_branch_state/ram", "1me3b:fffec000", evidence=[
                     {"kind": "registry", "path": "patches/rom-address-profiles.toml"}])],
                     base, write.model_resolver(base))
         self.assertEqual(caught.exception.code, 3, str(caught.exception))
         message = str(caught.exception)
-        self.assertIn("symbols: patches/1nd-runtime-correspondence.csv: "
-                      "ltft_publication_neutral_control/ram: "
-                      "status unresolved on 1nd, where the meaning has 1nd-fffec000/ram", message)
+        self.assertIn("symbols: patches/1me3b-runtime-correspondence.csv: "
+                      "knock_branch_state/ram: "
+                      "status unresolved on 1me3b, where the meaning has 1me3b-fffec000/ram", message)
 
     def test_operations_refuse_what_the_model_contradicts(self):
         self.assertIn("finds jk00c:000142d3 on jk00c, not jk00c:000142d4",

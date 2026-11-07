@@ -384,11 +384,13 @@ class BuildRomTest(unittest.TestCase):
                 )
                 self.assertIsNone(target.rolling_layout)
                 self.assertEqual(result.rolling_instruction_count, 0)
-                # The 1ME3B capture adds the six instructions that move the
-                # high-detonation bit of the knock surface byte into the wire bit.
+                # The VQ37 captures add the instructions that move the
+                # one-bit fields into their wire bits.
                 self.assertEqual(
                     result.telemetry_instruction_count,
-                    1044 if rom in runtime_targets.SH7059_1ME3B_ROMS else 1038,
+                    1038 + {
+                        "1ME3B": 13, "JK78C": 15, "1ND0A": 16, "1ND3B": 16,
+                    }.get(rom, 0),
                 )
                 self.assertEqual(
                     target.map_layout.variant,

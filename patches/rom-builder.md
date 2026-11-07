@@ -410,7 +410,11 @@ scheme that the stock calibration selects, the BFR programmer writes BFR7B and
 BFR7A from 16-bit duty words, and the cells hold their high bytes after two
 scheduler copies. The source symbols record the cell scale of that scheme
 (`uv run kb show intake_cvtc_duty_command_b1/ram`,
-[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). A field whose source meaning has a
+[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). The knock branch field reads the
+target direct-difference inhibit state in its role, and the knock branch and
+LTFT neutral control bytes keep their bit in another bit than 7mfk; the
+capture moves each bit into the bit that the wire contract decodes and clears
+the other bits of the byte. A field whose source meaning has a
 status on the layout is encoded from cleared reserved RAM and remains
 identified as unavailable in metadata;
 `uv run kb gaps --feature can_telemetry --layout 1nd` lists those fields with
@@ -453,10 +457,11 @@ No lookup pointer is excluded from coverage because of this region key.
 
 Custom CAN telemetry binds the ECU-RAM fields to 1ME3B source symbols, which
 hold the evidence of each binding. The two intake solenoid duty command fields
-use the 16-bit duty scheme of 1ND. The knock surface field reads the target
-high-detonation state byte; the capture moves the state bit into the bit that
-the wire contract decodes and clears the other bits of the byte
-(`uv run kb show knock_surface_state/ram`). A field whose source meaning has a
+use the 16-bit duty scheme of 1ND. The knock surface and LTFT neutral control
+fields read target bytes that keep their bit in another bit than 7mfk; the
+capture moves each bit into the bit that the wire contract decodes and clears
+the other bits of the byte (`uv run kb show knock_surface_state/ram`,
+`uv run kb show ltft_publication_neutral_control/ram`). A field whose source meaning has a
 status on the layout is encoded from cleared reserved RAM and remains
 identified as unavailable in metadata;
 `uv run kb gaps --feature can_telemetry --layout 1me3b` lists those fields with
@@ -484,7 +489,10 @@ each binding. Under the stock calibration the knock timing field carries the
 start value of its word (`uv run kb show knock_timing_state/ram`), and the Fuel
 Compensation Main column field reads the column word of the target Fuel
 Compensation surfaces in place of the JK08A coordinate cell
-(`uv run kb show diamond-macaque/ram`). The profile also binds both SUM16 regions and both runtime SUM/XOR
+(`uv run kb show diamond-macaque/ram`). The knock branch field reads the
+target direct-difference inhibit state in its role, and the capture moves the
+bits of the knock branch and LTFT neutral control bytes into the bits that the
+wire contract decodes. The profile also binds both SUM16 regions and both runtime SUM/XOR
 regions to the independently reproduced stock checksum values.
 
 The flash-envelope audit distinguishes comparison operands from executable

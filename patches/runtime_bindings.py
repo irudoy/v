@@ -41,7 +41,7 @@ def load(path=DEFAULT_BINDINGS):
     layouts = _table(found["layouts"], "layouts")
     if CANONICAL not in layouts:
         raise RuntimeBindingsError("layouts: canonical layout is absent")
-    required = {"ascd_main_bit", "knock_surface_bit", "knock_surface_address"}
+    required = {"ascd_main_bit", "field_bits"}
     fuel_cut = {"fuel_cut_active_bit", "fuel_cut_address"}
     for name, row in layouts.items():
         _table(row, f"layouts.{name}")
@@ -50,7 +50,17 @@ def load(path=DEFAULT_BINDINGS):
                 or (extra and not fuel_cut <= extra)):
             raise RuntimeBindingsError(f"layouts.{name}: runtime fields differ")
         for key, value in row.items():
-            _integer(value, f"layouts.{name}.{key}", 7 if key.endswith("_bit") else 0xFFFFFFFF)
+            if key != "field_bits":
+                _integer(value, f"layouts.{name}.{key}", 7 if key.endswith("_bit") else 0xFFFFFFFF)
+        field_bits = row["field_bits"]
+        if not isinstance(field_bits, dict):
+            raise RuntimeBindingsError(f"layouts.{name}.field_bits: expected a table")
+        for field, value in field_bits.items():
+            _integer(value, f"layouts.{name}.field_bits.{field}", 7)
+    canonical_fields = set(_table(layouts[CANONICAL]["field_bits"], "layouts.7mfk.field_bits"))
+    for name, row in layouts.items():
+        if not set(row["field_bits"]) <= canonical_fields:
+            raise RuntimeBindingsError(f"layouts.{name}.field_bits: a field lacks its wire bit")
     for image, layout_id in _table(found["images"], "images").items():
         if not isinstance(image, str) or not isinstance(layout_id, str) or layout_id not in layouts:
             raise RuntimeBindingsError(f"images.{image}: unknown layout")
@@ -86,9 +96,11 @@ def layout_of(image):
 
 def layout(layout_id):
     try:
-        return dict(load()["layouts"][layout_id])
+        row = dict(load()["layouts"][layout_id])
     except KeyError as error:
         raise RuntimeBindingsError(f"layout {layout_id}: no runtime bindings") from error
+    row["field_bits"] = dict(row["field_bits"])
+    return row
 
 
 def canonical_symbols(feature):

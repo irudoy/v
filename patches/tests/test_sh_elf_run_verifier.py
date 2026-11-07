@@ -579,77 +579,89 @@ mov #0x5,r1
         self.assertEqual(len(written), 4)
         self.assertEqual(set(written), {f"0x{field.source:08x}"})
 
-    def test_can_telemetry_knock_surface_cases_follow_the_entity_files(self):
-        # The harness states the slot, the bank byte, and the bits of the
-        # knock surface field; they must be those of the profile and of the
-        # named bit high_detonation of each layout, and only the telemetry
-        # harness of 1ME3B, whose layout moves the bit, takes TARGET_1ME3B.
+    def test_can_telemetry_bit_field_cases_follow_the_entity_files(self):
+        # The harness states the slot, the bank byte, and the wire bit of
+        # each one-bit field, which must be those of the profile and of 7mfk,
+        # and under the target define of each layout the source bit of that
+        # layout. A field that a layout does not read keeps the wire bit.
         harness = (
             ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
         ).read_text(encoding="utf-8")
-        block = re.search(
-            r"#ifdef TARGET_1ME3B\n(?P<moved>(?:#define KNOCK_SURFACE_\w+ \S+\n)+)"
-            r"#else\n(?P<kept>(?:#define KNOCK_SURFACE_\w+ \S+\n)+)#endif\n",
-            harness,
-        )
-        self.assertIsNotNone(block)
-
-        def defines(text):
-            return {
-                name: int(value, 0)
-                for name, value in re.findall(
-                    r"#define (KNOCK_SURFACE_\w+) (0x[0-9a-f]+|\d+)U\n", text
-                )
-            }
-
-        common = defines(harness[: block.start()])
-        moved = defines(block.group("moved"))
-        kept = defines(block.group("kept"))
-        page, offset = runtime_targets.knock_surface_slot()
-        bits = {
-            runtime_targets.runtime_bindings.layout_of(rom): (
-                runtime_targets.knock_surface_bits(
-                    runtime_targets.runtime_bindings.layout_of(rom)
-                )
-            )
-            for rom in runtime_targets.SUPPORTED_ROMS
+        prefixes = {
+            "LTFT_NEUTRAL": "ltft_publication_neutral_control_raw",
+            "KNOCK_BRANCH": "knock_branch_state_raw",
+            "KNOCK_SURFACE": "knock_surface_state",
         }
-        wire = 1 << bits["7mfk"][1]
+        define = re.compile(
+            rf"#define ({'|'.join(prefixes)})_(SLOT|BYTE|WIRE|SOURCE) "
+            r"(0x[0-9a-f]+|\d+)U"
+        )
+        start = harness.index("#if defined(TARGET_1ME3B)\n")
+        end = harness.index("#endif\n", start)
+        common = {
+            f"{prefix}_{kind}": int(value, 0)
+            for prefix, kind, value in define.findall(harness[:start])
+        }
+        blocks = {}
+        current = None
+        for line in harness[start:end].splitlines():
+            target = re.fullmatch(r"#(?:el)?if defined\((TARGET_\w+)\)", line)
+            found = define.fullmatch(line)
+            if target is not None:
+                current = target.group(1)
+            elif line == "#else":
+                current = None
+            else:
+                self.assertIsNotNone(found, line)
+                self.assertEqual(found.group(2), "SOURCE")
+                blocks.setdefault(current, {})[
+                    f"{found.group(1)}_SOURCE"
+                ] = int(found.group(3), 0)
 
+        fields = {
+            item.name: item
+            for item in can_telemetry_profile.load_manifest().fields
+        }
+        wire = runtime_targets.field_bits("7mfk")
+        expected = {}
+        for prefix, name in prefixes.items():
+            expected[f"{prefix}_SLOT"] = (
+                fields[name].page * 7 + fields[name].offset - 1
+            )
+            expected[f"{prefix}_BYTE"] = (
+                fields[name].page * 8 + fields[name].offset
+            )
+            expected[f"{prefix}_WIRE"] = 1 << wire[name][1]
+        self.assertEqual(common, expected)
+
+        layouts = {None: {"7mfk"}}
+        for rom in runtime_targets.RELOCATED_ROMS:
+            variant = runtime_targets.load_runtime_target(rom).map_layout.variant
+            layouts.setdefault(
+                RUNTIME_VERIFIER.VQ37_MAP_HARNESS_BY_VARIANT.get(
+                    variant, (None,)
+                )[0],
+                set(),
+            ).add(runtime_targets.runtime_bindings.layout_of(rom))
+        self.assertEqual(set(blocks), set(layouts))
+        for target, held in layouts.items():
+            for layout in held:
+                bits = runtime_targets.field_bits(layout)
+                with self.subTest(target=target, layout=layout):
+                    self.assertEqual(blocks[target], {
+                        f"{prefix}_SOURCE": (
+                            1 << bits[name][0] if name in bits
+                            else expected[f"{prefix}_WIRE"]
+                        )
+                        for prefix, name in prefixes.items()
+                    })
         self.assertEqual(
-            common,
             {
-                "KNOCK_SURFACE_SLOT": page * 7 + offset - 1,
-                "KNOCK_SURFACE_BYTE": page * 8 + offset,
-                "KNOCK_SURFACE_WIRE": wire,
+                layout
+                for held in layouts.values() for layout in held
+                if runtime_targets.bit_moves(layout)
             },
-        )
-        self.assertEqual(
-            moved,
-            {
-                "KNOCK_SURFACE_SOURCE": 1 << bits["1me3b"][0],
-                "KNOCK_SURFACE_OTHER_BITS_WIRE": 0,
-            },
-        )
-        self.assertEqual(
-            kept,
-            {
-                "KNOCK_SURFACE_SOURCE": wire,
-                "KNOCK_SURFACE_OTHER_BITS_WIRE": 0xFF ^ wire,
-            },
-        )
-        self.assertEqual(
-            {layout for layout, (source, _) in bits.items() if 1 << source != wire},
-            {"1me3b"},
-        )
-        self.assertEqual(
-            {
-                RUNTIME_VERIFIER.VQ37_MAP_HARNESS_BY_VARIANT[
-                    runtime_targets.load_runtime_target(rom).map_layout.variant
-                ][0]
-                for rom in runtime_targets.SH7059_1ME3B_ROMS
-            },
-            {"TARGET_1ME3B"},
+            {"1me3b", "1nd", "jk78c"},
         )
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):

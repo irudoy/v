@@ -150,13 +150,12 @@ target = "7mfk:ffff2469"
 count = 0
 l0 = "80899b88e0770eef"
 note = """
-The target-specific inhibit state is reviewed as \
-knock_direct_difference_inhibit_state/ram at fffe948b: coordinator 0006d948 \
-reads and updates bit 6. The canonical source and the shared profile-8 host \
-schema name bit 7 as DIRECT_DIFFERENCE_INHIBIT. Direct raw capture would \
-mislabel bit 7, which target function 000a254a updates independently. This \
-field remains unresolved until a separate encoding decision preserves the \
-inhibit role. A failed masked search does not establish absence."""
+No masked match binds the canonical byte. The direct-difference inhibit of \
+this layout is bit 6 of knock_direct_difference_inhibit_state/ram at \
+fffe948b, which fills the role of knock_branch_state_raw/field in the \
+can_telemetry target. Function 000a254a updates bit 7 of that byte \
+independently, so the byte is not bound as this meaning. A failed masked \
+search does not establish absence."""
 
 [[status]]
 layout = "jk78c"
@@ -166,14 +165,12 @@ target = "7mfk:ffff2469"
 count = 0
 l0 = "ad2dc37ff374398e"
 note = """
-The target-specific inhibit state is reviewed as \
-knock_direct_difference_inhibit_state/ram at ffff23c9: coordinator 00062780 \
-reads and updates bit 6. The canonical source and the ROM-neutral profile-8 \
-host schema name bit 7 as DIRECT_DIFFERENCE_INHIBIT. Direct raw capture \
-would mislabel bit 7, which target function 00090790 updates independently. \
-This telemetry source remains unresolved until an explicit wire \
-normalization or host encoding contract preserves the inhibit role; a failed \
-masked search does not establish absence."""
+No masked match binds the canonical byte. The direct-difference inhibit of \
+this layout is bit 6 of knock_direct_difference_inhibit_state/ram at \
+ffff23c9, which fills the role of knock_branch_state_raw/field in the \
+can_telemetry target. Function 00090790 updates bit 7 of that byte \
+independently, so the byte is not bound as this meaning. A failed masked \
+search does not establish absence."""
 
 [[link]]
 type = "depends"

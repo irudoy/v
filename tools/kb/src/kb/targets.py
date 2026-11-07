@@ -79,6 +79,20 @@ def meaning(feature, layout, key, root=repo.ROOT, overlay=None):
     return role["symbol"]
 
 
+def field_meaning(feature, field, layout, root=repo.ROOT, overlay=None):
+    """The meaning whose symbol a field reads on the target of a feature on a
+    layout: the symbol of the role of the field there, or else the source of
+    the field. None when that meaning has no symbol on the layout or the
+    target lists it as unsupported."""
+    held = target(feature, layout, root, overlay)
+    role = held.get("roles", {}).get(field)
+    found = role["symbol"] if role else _document("field", field, root, overlay)["source"]
+    unsupported = {entry.get("symbol") for entry in held.get("unsupported", ())}
+    if found in unsupported or not _symbols(found, layout, root, overlay):
+        return None
+    return found
+
+
 def bit(ref, layout, name, root=repo.ROOT, overlay=None):
     """The number of the named bit `name` of the meaning `<name>/<kind>` on a
     layout: that of the `[[bit]]` of its symbol entry, which replaces the bits

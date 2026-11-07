@@ -10,6 +10,82 @@ bit = 0
 name = "neutralize_publication_and_reset_grid"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffeb98f"
+level = "code"
+note = """
+FUN 0008524a produces bit 2 as the rising-request pulse of fffeec1c.bit5 \
+before fffeb9f8.bit7 latches it, and clears it otherwise. The LTFT publisher \
+000854f0 selects neutral output on mask 0x04 where the 7mfk publisher tests \
+bit 0, and grid selector 000852a8 reads the same byte. The capture moves bit \
+2 into wire bit 0 while the dynamic page carries its default row. The \
+diagnostic request identity and physical reset conditions remain \
+unreviewed."""
+
+[[symbol.bit]]
+bit = 2
+name = "neutralize_publication_and_reset_grid"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008527e"
+note = """
+Request-edge producer 0008524a sets bit 2 of this byte; the capture moves it \
+into wire bit 0 while the dynamic page carries its default row."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00085290"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00085562"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000853d2"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb82d"
+level = "code"
+note = """
+FUN 0008091e produces bit 7 as the rising-request pulse of fffeebec.bit5 \
+before fffeb88e.bit0 latches it, and clears it otherwise. The LTFT publisher \
+00080bc0 selects neutral output on mask 0x80 where the 7mfk publisher tests \
+bit 0, and grid selector 0008097c reads the same byte. The capture moves bit \
+7 into wire bit 0 while the dynamic page carries its default row. The \
+diagnostic request identity and physical reset conditions remain \
+unreviewed."""
+
+[[symbol.bit]]
+bit = 7
+name = "neutralize_publication_and_reset_grid"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080952"
+note = """
+Request-edge producer 0008091e sets bit 7 of this byte; the capture moves it \
+into wire bit 0 while the dynamic page carries its default row."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00080964"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00080c30"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00080aa4"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff41b5"
 level = "code"
@@ -51,9 +127,9 @@ layout = "jk78c"
 address = "ffff4514"
 level = "code"
 note = """
-The JK78C request-edge producer uses bit 6 at FFFF4514; the 7mfk role uses \
-bit 0. The native correspondence requires wire normalization before this \
-field is available."""
+The JK78C request-edge producer 00073e78 sets and clears the neutralization \
+pulse in bit 6 of ffff4514, where the 7mfk role uses bit 0. The capture \
+moves bit 6 into wire bit 0 while the dynamic page carries its default row."""
 
 [[symbol.bit]]
 bit = 6
@@ -73,28 +149,6 @@ JK78C and 0x01 on 7mfk."""
 [[symbol.evidence]]
 kind = "l0"
 at = "jk78c:00073eb4"
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff41b5"
-count = 0
-l0 = "7ed4ee54a3133ddd"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
-
-[[status]]
-layout = "1nd"
-state = "unresolved"
-method = "masked-match"
-target = "7mfk:ffff41b5"
-count = 0
-l0 = "80899b88e0770eef"
-note = """
-The source-access search has no unique reviewed producer-consumer binding. \
-This field is unavailable on the layout until its source role is reviewed."""
 
 [[status]]
 layout = "jk00c"

@@ -29,7 +29,6 @@ telemetry_unavailable = [
     "knock_branch_state_raw",
     "knock_state_snapshot_raw",
     "knock_timing_state_raw",
-    "ltft_publication_neutral_control_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -144,6 +143,7 @@ injection_0_raw = 0xFFFE93A6
 injection_1_raw = 0xFFFE93A8
 fuel_learning_permit_b_raw = 0xFFFE844A
 fuel_learning_permit_a_raw = 0xFFFE844B
+ltft_publication_neutral_control_raw = 0xFFFEB98F
 torque_transition_state_raw = 0xFFFE93A0
 knock_surface_state = 0xFFFE945B
 app1_raw = 0xFFFE96CE
@@ -215,7 +215,7 @@ free_rom = "AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with 
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B executable census: no stock access reaches the allocation."
 maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points. The payload moves bit 7 of the knock surface state into bit 6 of the wire byte, the bit that the wire contract decodes, and clears the other bits of the byte."
+telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit source that the layout keeps in another bit than 7mfk moves into the wire bit that the contract decodes, and the other bits of its wire byte are cleared; a source of the dynamic page moves only while the page carries its default row."
 
 [profile.1ND0A]
 family = "sh7059_1nd"
@@ -237,8 +237,6 @@ telemetry_unavailable = [
     "exhaust_cvtc_actual_b1_raw",
     "exhaust_cvtc_actual_b2_raw",
     "exhaust_cvtc_target_raw",
-    "knock_branch_state_raw",
-    "ltft_publication_neutral_control_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -354,8 +352,10 @@ injection_0_raw = 0xFFFE93D6
 injection_1_raw = 0xFFFE93D8
 fuel_learning_permit_b_raw = 0xFFFE8482
 fuel_learning_permit_a_raw = 0xFFFE8483
+ltft_publication_neutral_control_raw = 0xFFFEB82D
 torque_transition_state_raw = 0xFFFE93D0
 knock_state_snapshot_raw = 0xFFFE9489
+knock_branch_state_raw = 0xFFFE948B
 knock_timing_state_raw = 0xFFFE8214
 knock_surface_state = 0xFFFE9488
 app1_raw = 0xFFFE96F6
@@ -423,7 +423,7 @@ free_rom = "AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A executable census: no stock access reaches the allocation."
 maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind eighteen supported families. The two 16x16 ignition families and the four 8x8 state-code ignition families are the surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter. The literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the 8x8 lookup 0x000285B4 for the four state-code surfaces; the second literal 0x00075570 serves only the reference surface 0x0000A650, which the stock configuration leaves unread."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points."
+telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit source that the layout keeps in another bit than 7mfk moves into the wire bit that the contract decodes, and the other bits of its wire byte are cleared; a source of the dynamic page moves only while the page carries its default row."
 
 [profile.1ND3B]
 inherits = "1ND0A"
@@ -818,8 +818,6 @@ telemetry_unavailable = [
     "exhaust_cvtc_actual_b1_raw",
     "exhaust_cvtc_actual_b2_raw",
     "exhaust_cvtc_target_raw",
-    "knock_branch_state_raw",
-    "ltft_publication_neutral_control_raw",
 ]
 telemetry_zero_source = 0xFFFF0DE0
 
@@ -930,8 +928,10 @@ injection_0_raw = 0xFFFF231C
 injection_1_raw = 0xFFFF231E
 fuel_learning_permit_b_raw = 0xFFFF144A
 fuel_learning_permit_a_raw = 0xFFFF144B
+ltft_publication_neutral_control_raw = 0xFFFF4514
 torque_transition_state_raw = 0xFFFF2318
 knock_state_snapshot_raw = 0xFFFF23C7
+knock_branch_state_raw = 0xFFFF23C9
 knock_timing_state_raw = 0xFFFF1204
 knock_surface_state = 0xFFFF23C6
 app1_raw = 0xFFFF25F8
@@ -979,4 +979,4 @@ free_rom = "The 0x0001caac..0x0001ffff envelope is erased; recovered stock refer
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recovered functions: zero accesses, calls, candidates, or decompiler failures."
 maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points."
+telemetry = "ECU-RAM fields use per-layout source symbols, whose records own each address qualification. A source with an unresolved layout status or an explicitly unsupported wire role is encoded from cleared reserved RAM and remains unavailable in metadata. The exhaust CVTC candidates require independently reviewed target producer-consumer bindings before their fields can be exposed. The intake solenoid duty fields decode their x*25/64 percent source cells with the x*39/100 wire scale, within 0.16 percentage points. A one-bit source that the layout keeps in another bit than 7mfk moves into the wire bit that the contract decodes, and the other bits of its wire byte are cleared; a source of the dynamic page moves only while the page carries its default row."

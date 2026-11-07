@@ -58,7 +58,6 @@ def test_1me3b_telemetry_correspondence_covers_the_complete_schema():
         "exhaust_cvtc_actual_b1_raw",
         "exhaust_cvtc_actual_b2_raw",
         "exhaust_cvtc_target_raw",
-        "ltft_publication_neutral_control_raw",
         "knock_state_snapshot_raw",
         "knock_branch_state_raw",
         "knock_timing_state_raw",

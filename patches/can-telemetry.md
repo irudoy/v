@@ -525,11 +525,16 @@ on every layout; over the byte range the two scales differ by at most 0.16
 percentage points, less than half a wire step.
 [`JK78C.cvtc.md`](../defs/JK78C.cvtc.md) states the output stage.
 
-The knock surface state carries the high-detonation state in bit 6, the bit
-the hosts decode. The 1ME3B knock function `0x071D64` keeps that state in
-bit 7 of `FFFE945B`, so the 1ME3B capture moves the bit into bit 6 of the
-wire byte after it builds the fixed pages and clears the other bits of the
-byte; every other target sends its source byte unchanged.
+The one-bit fields `knock_surface_state`, `knock_branch_state_raw`, and
+`ltft_publication_neutral_control_raw` carry the named bit of their 7mfk
+source in the wire bit that the hosts decode. A target that keeps that bit
+in another bit of its source byte moves it into the wire bit after the
+capture builds the fixed pages, and clears the other bits of the byte;
+`patches/runtime-bindings.toml` states the source bit of each layout, and a
+target that keeps the 7mfk bit sends its source byte unchanged. The LTFT
+neutral control field lies on the dynamic page, so its bit moves only while
+the page carries its default row with configuration byte 0; the slot bytes of
+an installed configuration stay as the capture reads them.
 
 The stream carries the two column coordinates of the tuning surfaces instead
 of engine speed, which the stock bus publishes directly: `0x180` bytes 0 and 1
@@ -780,9 +785,10 @@ STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
 configuration, rejection of profile ID 0 and of both IDs adjacent to the
 generated one by the capture entry and of the ID below it by the control
 receiver, active-group stop, corrupt-state
-fail-closed behavior, the knock surface byte with only its high-detonation
-bit set and with every other bit set, a real `TRAPA` exception entry, and the
-exact ISR `RTE`.
+fail-closed behavior, the byte of each one-bit field with only its source bit
+set and with every other bit set, an installed configuration over the LTFT
+neutral control byte, a real `TRAPA` exception entry, and the exact ISR
+`RTE`.
 The dynamic page cases cover the power-up and DEFAULT configuration, SET and
 COMMIT of one and two groups, six one-byte slots, the group alternation, the
 capture of 1-, 2-, and 4-byte slots, every rejection cause and the saturating

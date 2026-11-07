@@ -7,6 +7,24 @@ from kb import repo, store, targets
 
 FEATURES = ("map_switching", "rolling_launch", "can_telemetry")
 IGNITION_TEMPLATE_LAYOUT = "1nd"
+# The one-bit telemetry fields and their named bits. The wire carries the bit
+# of 7mfk; the capture of a layout that keeps the bit elsewhere moves it.
+MOVED_FIELD_BITS = (
+    ("knock_branch_state_raw", "direct_difference_inhibit"),
+    ("knock_surface_state", "high_detonation"),
+    ("ltft_publication_neutral_control_raw", "neutralize_publication_and_reset_grid"),
+)
+
+
+def field_bits(layout, root=repo.ROOT):
+    """{field: bit} of the one-bit telemetry fields that a layout reads: the
+    named bit of the symbol that the field reads there."""
+    found = {}
+    for field, name in MOVED_FIELD_BITS:
+        meaning = targets.field_meaning("can_telemetry", field, layout, root)
+        if meaning is not None:
+            found[field] = targets.bit(meaning, layout, name, root)
+    return found
 
 
 def document(root=repo.ROOT):
@@ -45,11 +63,9 @@ def document(root=repo.ROOT):
             fuel = targets.meaning("rolling_launch", layout, "fuel_inhibit", root)
             row["fuel_cut_active_bit"] = targets.bit(fuel, layout, "active", root)
             row["fuel_cut_address"] = targets.address(fuel, layout, root)
-        row["knock_surface_bit"] = targets.bit(
-            "knock_surface_state/ram", layout, "high_detonation", root)
-        row["knock_surface_address"] = targets.address("knock_surface_state/ram", layout, root)
         if layout == targets.CANONICAL or "fuel_inhibit_mask" in rolling.get("symbols", {}):
             row["fuel_inhibit_mask"] = targets.address("fuel_inhibit_mask/ram", layout, root)
+        row["field_bits"] = field_bits(layout, root)
         found["layouts"][layout] = row
     return found
 

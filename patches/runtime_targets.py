@@ -106,15 +106,17 @@ IGNITION_STATE_FAMILY_NAMES = {
 # target tests the bit of its own layout.
 ASCD_STATE = "ascd_state/ram"
 CANONICAL_ASCD_MAIN_MASK = 0x80
-# The telemetry field of the knock surface state carries the high-detonation
-# bit of the canonical layout, which the hosts decode. The capture of a layout
-# that keeps the state in another bit moves it into the wire bit of the bank
-# byte once the fixed pages are copied, and clears the other bits of the byte.
-KNOCK_SURFACE = "knock_surface_state/ram"
-KNOCK_SURFACE_BIT = "high_detonation"
-KNOCK_SURFACE_FIELD = "knock_surface_state"
+# A one-bit telemetry field carries the bit of the canonical layout, which the
+# hosts decode. The capture of a layout that keeps the bit elsewhere moves it
+# into the wire bit of the bank byte once the fixed pages are copied, and
+# clears the other bits of the byte. A field of the dynamic page moves only
+# while the page carries its default row, whose configuration byte is 0; the
+# bytes of an installed configuration stay as their slots read them.
 # A bank page holds its header byte and seven source bytes.
 BANK_PAGE_BYTES = 8
+# The capture reaches every moved byte from one base register through the
+# 4-bit displacement of mov.b.
+BIT_MOVE_REACH = 15
 FIXED_PAGE_LOOP_END = (
     "add 0x1,r6\nmov r6,r0\ncmp/eq 0x9,r0\nbf telemetry_build_page_loop\n"
 )
@@ -503,72 +505,134 @@ def ascd_main_mask(layout):
 
 
 @lru_cache(maxsize=None)
-def knock_surface_bits(layout):
-    """(source bit, wire bit) of the high-detonation state in the knock
-    surface field of a layout: the bit of the layout and the bit of the
-    canonical layout, which the wire carries."""
-    return (
-        _binding(runtime_bindings.layout, layout)["knock_surface_bit"],
-        _binding(runtime_bindings.layout, runtime_bindings.CANONICAL)["knock_surface_bit"],
-    )
+def field_bits(layout):
+    """{field: (source bit, wire bit)} of the one-bit telemetry fields that a
+    layout reads: the bit of the layout and the bit of the canonical layout,
+    which the wire carries."""
+    wire = _binding(
+        runtime_bindings.layout, runtime_bindings.CANONICAL
+    )["field_bits"]
+    return {
+        field: (bit, wire[field])
+        for field, bit in _binding(
+            runtime_bindings.layout, layout
+        )["field_bits"].items()
+    }
 
 
-def knock_surface_slot():
-    """(page, offset) of the knock surface field in the fixed pages."""
-    fields = [
-        item for item in can_telemetry_profile.load_manifest().fields
-        if item.name == KNOCK_SURFACE_FIELD
-    ]
-    if (
-        len(fields) != 1
-        or fields[0].page is None
-        or fields[0].width != 1
-        or fields[0].source != _binding(
-            runtime_bindings.layout, runtime_bindings.CANONICAL
-        )["knock_surface_address"]
-    ):
-        raise RuntimeTargetError(
-            f"{KNOCK_SURFACE_FIELD}: expected one fixed byte field of "
-            f"{KNOCK_SURFACE}"
-        )
-    return fields[0].page, fields[0].offset
+@dataclass(frozen=True)
+class BitMove:
+    """A move of the capture: the bank byte of a one-bit field, its source
+    and wire bits, and the bank byte of the dynamic page configuration that
+    must be 0 for the move, or None for a field of a fixed page."""
+
+    field: str
+    byte: int
+    source: int
+    wire: int
+    configuration: int | None
 
 
-def _move_knock_surface_bit(source, profile):
-    """Move the high-detonation bit of the knock surface byte of a bank into
-    the wire bit after the fixed pages, where the layout keeps it in another
-    bit. The fixed page loop leaves r4 at the end of the fixed pages, and the
-    context pages load r0 and r1 before they read them."""
+@lru_cache(maxsize=None)
+def bit_moves(layout):
+    """The moves of the capture of a layout in bank byte order: one for each
+    one-bit field whose source bit differs from its wire bit."""
+    manifest = can_telemetry_profile.load_manifest()
+    fields = {item.name: item for item in manifest.fields}
+    moves = []
+    for name, (bit, wire) in field_bits(layout).items():
+        if bit == wire:
+            continue
+        field = fields.get(name)
+        if (
+            field is None
+            or field.page is None
+            or field.page >= manifest.fixed_page_count
+            or field.width != 1
+            or field.kind != "ecu_ram"
+        ):
+            raise RuntimeTargetError(
+                f"{name}: expected one fixed byte field of ECU RAM"
+            )
+        pages = {
+            profile.dynamic
+            for profile in manifest.profiles
+            if profile.name in field.profiles and profile.dynamic is not None
+            and profile.dynamic.page == field.page
+        }
+        if len(pages) > 1:
+            raise RuntimeTargetError(f"{name}: dynamic pages differ")
+        dynamic = next(iter(pages), None)
+        moves.append(BitMove(
+            name,
+            field.page * BANK_PAGE_BYTES + field.offset,
+            bit,
+            wire,
+            None if dynamic is None
+            else dynamic.page * BANK_PAGE_BYTES
+            + dynamic.configuration_offset,
+        ))
+    return tuple(sorted(moves, key=lambda move: move.byte))
+
+
+def _move_field_bits(source, profile):
+    """Move the bits of the one-bit fields that the layout of a ROM keeps in
+    another bit than the canonical layout into their wire bits, after the
+    fixed pages. The fixed page loop leaves r4 at the end of the fixed pages;
+    the code that follows loads r0, r1 and T before it reads them."""
     context = "capture fixed page loop"
-    bit, wire = knock_surface_bits(_binding(runtime_bindings.layout_of, profile.rom))
-    if bit == wire:
+    moves = bit_moves(_binding(runtime_bindings.layout_of, profile.rom))
+    if not moves:
         return _replace_source_once(
             source, FIXED_PAGE_LOOP_END, FIXED_PAGE_LOOP_END, context
         )
-    page, offset = knock_surface_slot()
     manifest = can_telemetry_profile.load_manifest()
-    displacement = (
-        page * BANK_PAGE_BYTES + offset
-        - manifest.fixed_page_count * BANK_PAGE_BYTES
-    )
     if f"cmp/eq 0x{manifest.fixed_page_count:X},r0" not in FIXED_PAGE_LOOP_END:
         raise RuntimeTargetError(f"{context}: fixed page count differs")
-    if not -128 <= displacement < 0:
+    end = manifest.fixed_page_count * BANK_PAGE_BYTES
+    reached = [move.byte for move in moves] + [
+        move.configuration for move in moves if move.configuration is not None
+    ]
+    base = min(reached)
+    if max(reached) - base > BIT_MOVE_REACH or not -128 <= base - end < 0:
         raise RuntimeTargetError(f"{context}: field is out of reach")
-    shift = (
-        "shlr r0\n" * (bit - wire) if bit > wire else "shll r0\n" * (wire - bit)
-    )
-    move = (
-        f"// Move bit {bit} of the knock surface byte into wire bit {wire}.\n"
-        "mov r4,r1\n"
-        f"add -0x{-displacement:X},r1\n"
-        "mov.b @r1,r0\n"
-        f"and 0x{1 << bit:02X},r0\n"
-        f"{shift}"
-        "mov.b r0,@r1\n"
-    )
+    lines = [
+        "// Move the bits of the one-bit fields into their wire bits.",
+        "mov r4,r1",
+        f"add -0x{end - base:X},r1",
+    ]
+    for move in moves:
+        offset = move.byte - base
+        done = f"telemetry_bit_move_{move.field}_done"
+        comment = (
+            f"// Move bit {move.source} of {move.field} into wire bit "
+            f"{move.wire}"
+        )
+        if move.configuration is not None:
+            lines.extend((
+                f"{comment} while the dynamic page carries its default row.",
+                f"mov.b @(0x{move.configuration - base:X},r1),r0",
+                "tst r0,r0",
+                f"bf {done}",
+            ))
+        else:
+            lines.append(f"{comment}.")
+        distance = abs(move.source - move.wire)
+        shift = "shlr" if move.source > move.wire else "shll"
+        lines.extend((
+            f"mov.b @(0x{offset:X},r1),r0",
+            f"and 0x{1 << move.source:02X},r0",
+            *[f"{shift}2 r0"] * (distance // 2),
+            *[f"{shift} r0"] * (distance % 2),
+            f"mov.b r0,@(0x{offset:X},r1)",
+        ))
+        if move.configuration is not None:
+            lines.append(f"{done}:")
     return _replace_source_once(
-        source, FIXED_PAGE_LOOP_END, FIXED_PAGE_LOOP_END + move, context
+        source,
+        FIXED_PAGE_LOOP_END,
+        FIXED_PAGE_LOOP_END + "\n".join(lines) + "\n",
+        context,
     )
 
 
@@ -1202,7 +1266,7 @@ def _project_can(
                 if unit.key == "capture" else None,
             )
             if unit.key == "capture":
-                source_texts[unit.key] = _move_knock_surface_bit(
+                source_texts[unit.key] = _move_field_bits(
                     source_texts[unit.key], profile
                 )
     code_regions = tuple(

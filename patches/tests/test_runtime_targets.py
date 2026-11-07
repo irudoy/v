@@ -57,16 +57,23 @@ def test_the_canonical_numbers_are_those_of_the_7mfk_symbols():
     assert rolling_launch.MAIN_PRESSED_MASK == (
         runtime_targets.ascd_main_mask("7mfk")
     )
-    assert runtime_targets.knock_surface_bits("7mfk") == (6, 6)
+    assert runtime_targets.bit_moves("7mfk") == ()
 
 
-@pytest.mark.parametrize("damage", ("schema", "bit", "image", "feature", "hook"))
+@pytest.mark.parametrize(
+    "damage",
+    ("schema", "bit", "field_bit", "wire_bit", "image", "feature", "hook"),
+)
 def test_runtime_bindings_reject_malformed_machine_inputs(tmp_path, monkeypatch, damage):
     document = copy.deepcopy(runtime_bindings.load())
     if damage == "schema":
         document["schema_version"] = True
     elif damage == "bit":
         document["layouts"]["7mfk"]["ascd_main_bit"] = 8
+    elif damage == "field_bit":
+        document["layouts"]["1nd"]["field_bits"]["knock_surface_state"] = 8
+    elif damage == "wire_bit":
+        document["layouts"]["7mfk"]["field_bits"].pop("knock_surface_state")
     elif damage == "image":
         document["images"]["JK08A"] = "missing"
     elif damage == "feature":
@@ -84,6 +91,7 @@ def test_runtime_binding_reads_keep_the_cached_machine_input_unchanged():
     original = runtime_bindings.layout("7mfk")
     changed = runtime_bindings.layout("7mfk")
     changed["ascd_main_bit"] = 0
+    changed["field_bits"].clear()
     assert runtime_bindings.layout("7mfk") == original
     symbols = runtime_bindings.canonical_symbols("can_telemetry")
     symbols.clear()
@@ -293,11 +301,13 @@ def test_vq37_sources_encode_target_variants(rom):
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
     ).instructions == (467 if has_state_adapter else 437)
-    # The 1ME3B capture adds the six instructions that move the
-    # high-detonation bit of the knock surface byte into the wire bit.
+    # The capture adds the instructions that move the one-bit fields into
+    # their wire bits: two that set the base register, three that test the
+    # dynamic page configuration, and per move a load, a mask, the shifts,
+    # and a store.
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == (1044 if rom == "1ME3B" else 1038)
+    ).instructions == 1038 + {"1ME3B": 13, "JK78C": 15}.get(rom, 16)
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
@@ -698,45 +708,89 @@ def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
     ) == 1
 
 
+LTFT_NEUTRAL = "ltft_publication_neutral_control_raw"
+
+
 @pytest.mark.parametrize(
-    ("rom", "bit"),
+    ("rom", "moves"),
     (
-        ("JK00C", 6),
-        ("JK00D", 6),
-        ("JK78C", 6),
-        ("1ND0A", 6),
-        ("1ND3B", 6),
-        ("1ME3B", 7),
+        ("JK08A", ()),
+        ("JK00C", ()),
+        ("JK00D", ()),
+        ("JK78C", ((LTFT_NEUTRAL, 27, 6, 0, 31),
+                   ("knock_branch_state_raw", 34, 6, 7, None))),
+        ("1ND0A", ((LTFT_NEUTRAL, 27, 7, 0, 31),
+                   ("knock_branch_state_raw", 34, 6, 7, None))),
+        ("1ND3B", ((LTFT_NEUTRAL, 27, 7, 0, 31),
+                   ("knock_branch_state_raw", 34, 6, 7, None))),
+        ("1ME3B", ((LTFT_NEUTRAL, 27, 2, 0, 31),
+                   ("knock_surface_state", 37, 7, 6, None))),
     ),
 )
-def test_the_capture_carries_the_high_detonation_bit_of_the_target(rom, bit):
-    # The wire carries the high-detonation bit of 7mfk in the knock surface
-    # byte, bank byte 37. The capture of a layout that keeps the bit
-    # elsewhere moves it into the wire bit once the fixed page loop leaves r4
-    # at bank byte 72, and clears the other bits of the byte.
-    target = runtime_targets.load_runtime_target(rom)
-    capture = target.telemetry_layout.source_text_by_unit["capture"]
+def test_the_capture_moves_the_one_bit_fields_of_the_target(rom, moves):
+    # The wire carries the bit of 7mfk of each one-bit field: bank byte 27 of
+    # the dynamic page default row, guarded by configuration byte 31, and
+    # bank bytes 34 and 37 of fixed page 4.
+    found = runtime_targets.bit_moves(
+        runtime_targets.runtime_bindings.layout_of(rom)
+    )
+    assert tuple(
+        (move.field, move.byte, move.source, move.wire, move.configuration)
+        for move in found
+    ) == moves
+
+
+def test_the_capture_moves_the_bits_once_the_fixed_pages_are_copied():
+    # The fixed page loop leaves r4 at bank byte 72; the moves follow it and
+    # precede the context pages. A dynamic page field moves only while the
+    # configuration byte is 0.
+    loop_end = runtime_targets.FIXED_PAGE_LOOP_END
+    after = "\nmov.b @(0x9,r3),r0\n"
     canonical = (
         runtime_targets.ROOT / "patches" / "can-telemetry-capture.s"
     ).read_text(encoding="utf-8")
-    loop_end = runtime_targets.FIXED_PAGE_LOOP_END
-    move = (
-        "// Move bit 7 of the knock surface byte into wire bit 6.\n"
-        "mov r4,r1\nadd -0x23,r1\nmov.b @r1,r0\nand 0x80,r0\nshlr r0\n"
-        "mov.b r0,@r1\n"
+    moves = (
+        "// Move the bits of the one-bit fields into their wire bits.\n"
+        "mov r4,r1\nadd -0x2D,r1\n"
+        f"// Move bit 2 of {LTFT_NEUTRAL} into wire bit 0 while the dynamic "
+        "page carries its default row.\n"
+        "mov.b @(0x4,r1),r0\ntst r0,r0\n"
+        f"bf telemetry_bit_move_{LTFT_NEUTRAL}_done\n"
+        "mov.b @(0x0,r1),r0\nand 0x04,r0\nshlr2 r0\nmov.b r0,@(0x0,r1)\n"
+        f"telemetry_bit_move_{LTFT_NEUTRAL}_done:\n"
+        "// Move bit 7 of knock_surface_state into wire bit 6.\n"
+        "mov.b @(0xA,r1),r0\nand 0x80,r0\nshlr r0\nmov.b r0,@(0xA,r1)\n"
     )
 
-    assert runtime_targets.knock_surface_bits(
-        runtime_targets.runtime_bindings.layout_of(rom)
-    ) == (bit, 6)
-    assert runtime_targets.knock_surface_slot() == (4, 5)
-    assert canonical.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
-    if bit == 6:
-        assert capture.count(loop_end + "\nmov.b @(0x9,r3),r0\n") == 1
-        assert move not in capture
-    else:
+    assert canonical.count(loop_end + after) == 1
+    capture = runtime_targets.load_runtime_target(
+        "1ME3B"
+    ).telemetry_layout.source_text_by_unit["capture"]
+    assert capture.count(loop_end + moves + after) == 1
+    unmoved = runtime_targets.load_runtime_target(
+        "JK00C"
+    ).telemetry_layout.source_text_by_unit["capture"]
+    assert unmoved.count(loop_end + after) == 1
+    assert "telemetry_bit_move" not in unmoved
+    for rom in ("JK78C", "1ND0A"):
+        capture = runtime_targets.load_runtime_target(
+            rom
+        ).telemetry_layout.source_text_by_unit["capture"]
         assert capture.count(
-            loop_end + move + "\nmov.b @(0x9,r3),r0\n"
+            loop_end + "// Move the bits of the one-bit fields"
         ) == 1
-        assert capture.count(move) == 1
+        assert capture.count("shll r0\nmov.b r0,@(0x7,r1)\n" + after) == 1
+
+
+def test_a_bit_move_out_of_reach_of_the_base_register_is_refused(monkeypatch):
+    far = runtime_targets.BitMove("far", 2, 7, 6, None)
+    near = runtime_targets.BitMove("near", 37, 7, 6, None)
+    monkeypatch.setattr(
+        runtime_targets, "bit_moves", lambda layout: (far, near)
+    )
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+    with pytest.raises(runtime_targets.RuntimeTargetError, match="out of reach"):
+        runtime_targets._move_field_bits(
+            runtime_targets.FIXED_PAGE_LOOP_END, profile
+        )
 

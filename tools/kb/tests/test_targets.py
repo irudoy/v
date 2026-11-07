@@ -77,6 +77,18 @@ class TargetsTest(unittest.TestCase):
             targets.meaning("rolling_launch", "7mfk", "no_such_key")
         self.assertEqual(missing.exception.code, 3)
 
+    def test_a_field_reads_the_symbol_of_its_role_or_else_of_its_source(self):
+        source = "knock_branch_state_raw"
+        role = targets.target("can_telemetry", "jk78c")["roles"][source]["symbol"]
+        self.assertEqual(role, "knock_direct_difference_inhibit_state/ram")
+        self.assertEqual(targets.field_meaning("can_telemetry", source, "jk78c"), role)
+        self.assertEqual(targets.field_meaning("can_telemetry", source, "7mfk"),
+                         targets.field_meaning("can_telemetry", source, "jk00c"))
+        # A source without a symbol on the layout reads nothing there.
+        self.assertIsNone(targets.field_meaning("can_telemetry", source, "1me3b"))
+        self.assertIsNone(targets.field_meaning(
+            "can_telemetry", "ltft_publication_neutral_control_raw", "jk00c"))
+
     def test_an_image_has_the_layout_of_its_family(self):
         self.assertEqual(targets.layout_of("1ND3B"), "1nd")
         self.assertEqual(targets.layout_of("JK08A"), "7mfk")

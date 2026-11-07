@@ -65,8 +65,6 @@ def test_jk78c_telemetry_correspondence_covers_the_complete_schema():
         "exhaust_cvtc_actual_b1_raw",
         "exhaust_cvtc_actual_b2_raw",
         "exhaust_cvtc_target_raw",
-        "ltft_publication_neutral_control_raw",
-        "knock_branch_state_raw",
     }
     for row in rows:
         if row["status"] != "unsupported":

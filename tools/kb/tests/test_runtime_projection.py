@@ -19,9 +19,12 @@ def test_runtime_projection_matches_its_owners():
             assert "fuel_cut_address" not in row
             assert "fuel_cut_active_bit" not in row
         assert row["ascd_main_bit"] == targets.bit("ascd_state/ram", layout, "main")
-        assert row["knock_surface_bit"] == targets.bit(
-            "knock_surface_state/ram", layout, "high_detonation")
-        assert row["knock_surface_address"] == targets.address("knock_surface_state/ram", layout)
+        bits = {}
+        for field, name in runtime_projection.MOVED_FIELD_BITS:
+            meaning = targets.field_meaning("can_telemetry", field, layout)
+            if meaning is not None:
+                bits[field] = targets.bit(meaning, layout, name)
+        assert row["field_bits"] == bits
         hooks = {int(address, 16): key for address, key in document["map_hook_keys"][layout].items()}
         assert hooks == targets.hook_keys("map_switching", layout)
 
@@ -41,6 +44,14 @@ def test_projection_reflects_changed_owner_bits(monkeypatch):
         expected["ascd_main_bit"] ^= 1
         assert after["layouts"][layout] == expected
     assert after["canonical_symbols"] == before["canonical_symbols"]
+
+
+def test_the_canonical_layout_states_the_wire_bit_of_every_moved_field():
+    document = tomllib.loads(runtime_projection.render())
+    wire = document["layouts"][targets.CANONICAL]["field_bits"]
+    assert set(wire) == {field for field, _name in runtime_projection.MOVED_FIELD_BITS}
+    for layout, row in document["layouts"].items():
+        assert set(row["field_bits"]) <= set(wire), layout
 
 
 def test_tracked_runtime_projection_is_current():
