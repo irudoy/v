@@ -86,7 +86,7 @@ pytest = [
 [[subsystem]]
 name = "can_dashboard tests"
 paths = ["tools/can_dashboard/tests/**"]
-pytest = ["tools/can_dashboard/tests"]
+pytest = ["tools/can_dashboard/tests", "tools/logs/tests"]
 
 [[subsystem]]
 name = "diagnostics"
