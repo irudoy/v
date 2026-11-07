@@ -3,6 +3,7 @@ import copy
 import csv
 import io
 from pathlib import Path
+import re
 import tempfile
 import tomllib
 import unittest
@@ -1711,6 +1712,89 @@ def test_a_move_carries_the_keys_of_its_entry_and_keeps_the_home_of_the_target(p
     assert entry["signed"] is True and "note" not in entry
     assert left["title"] == "Source word" and "home" not in left
     assert [entry["layout"] for entry in left["symbol"]] == ["7mfk"]
+
+
+def anchor(place, **keys):
+    """A `[[source]]` entry whose anchor names the function at `layout:address`."""
+    layout, address = place.split(":")
+    return {"layout": layout, "path": "defs/fixture.md", "sha256": "a" * 64,
+            "sections": ["Probe"], "anchor": f"FUN_{address.upper()}", **keys}
+
+
+def by_anchor(entries):
+    return sorted(entries, key=lambda entry: (entry["anchor"], entry.get("role", "")))
+
+
+def test_merges_join_the_source_anchors_of_their_layouts(probe_store):
+    # The second merge joins with the symbol that the first merge brings, and
+    # an entry held by both sides appears once.
+    base = probe_store(
+        probe_target=probe("jk78c:ffff4000", source=[anchor("jk78c:ffff4000")]),
+        probe_source=probe("1nd:ffff4100", source=[anchor("1nd:ffff4100"),
+                                                   anchor("jk78c:ffff4000")]),
+        probe_third=probe("1me3b:ffff4200", source=[anchor("1me3b:ffff4200"),
+                                                    anchor("1nd:ffff4100", role="reader")]))
+    _, texts, _ = planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]),
+                          merge("probe_target/ram", "probe_third/ram", evidence=[SPEC]))
+    assert by_anchor(stored(texts, "probe_target")["source"]) == by_anchor([
+        anchor("jk78c:ffff4000"), anchor("1nd:ffff4100"), anchor("1nd:ffff4100", role="reader"),
+        anchor("1me3b:ffff4200")])
+
+
+@pytest.mark.parametrize(("target", "other", "message"), [
+    ([anchor("jk78c:ffff4000")], [anchor("jk78c:ffff4000", sha256="b" * 64)],
+     "probe_target/ram and probe_source/ram disagree on the digest of a source anchor: "
+     f"probe_target/ram holds layout=jk78c path=defs/fixture.md sha256={'a' * 64} "
+     "sections=['Probe'] anchor=FUN_FFFF4000 and probe_source/ram holds layout=jk78c "
+     f"path=defs/fixture.md sha256={'b' * 64} sections=['Probe'] anchor=FUN_FFFF4000; the "
+     "join keeps neither"),
+    ([anchor("1nd:ffff4300")], [],
+     "the source anchor layout=1nd path=defs/fixture.md sha256=" + "a" * 64
+     + " sections=['Probe'] anchor=FUN_FFFF4300 of probe_target/ram names 1nd:ffff4300, and "
+     "probe_source/ram has 1nd:ffff4100"),
+    ([{"path": "defs/fixture.md", "anchor": "probe_word"}], [],
+     "probe_target/ram holds the source anchor path=defs/fixture.md anchor=probe_word without "
+     "a layout, which would cover 1nd"),
+], ids=["digest", "address", "layout"])
+def test_a_merge_refuses_source_anchors_that_contradict(probe_store, target, other, message):
+    base = probe_store(probe_target=probe("jk78c:ffff4000", source=target),
+                       probe_source=probe("1nd:ffff4100", source=other))
+    with pytest.raises(KbError, match=re.escape(message)) as caught:
+        planned(base, merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]))
+    assert caught.value.code == 3
+
+
+def test_a_merge_of_the_files_of_one_meaning_joins_their_source_anchors(probe_store):
+    base = probe_store(**{
+        "probe_target": probe("jk78c:ffff4000", source=[anchor("jk78c:ffff4000")]),
+        "sturdy-marmot": probe("jk78c:ffff4000:sturdy-marmot",
+                               source=[anchor("jk78c:ffff4000", role="reader")])})
+    _, texts, _ = planned(base, merge("probe_target/ram", "sturdy-marmot/ram"))
+    assert texts[store.path_of("ram", "sturdy-marmot")] is None
+    assert by_anchor(stored(texts, "probe_target")["source"]) == by_anchor([
+        anchor("jk78c:ffff4000"), anchor("jk78c:ffff4000", role="reader")])
+
+
+def test_a_move_carries_the_source_anchors_of_its_layout(probe_store):
+    base = probe_store(
+        probe_target=probe("jk78c:ffff4000", source=[anchor("jk78c:ffff4000")]),
+        probe_source=probe("7mfk:ffff4100", "1nd:ffff4100",
+                           source=[anchor("7mfk:ffff4100"), anchor("1nd:ffff4100")]))
+    _, texts, _ = planned(base, move("1nd:ffff4100", "probe_target/ram", evidence=[SPEC]))
+    target, left = stored(texts, "probe_target"), stored(texts, "probe_source")
+    assert by_anchor(target["source"]) == by_anchor([anchor("jk78c:ffff4000"),
+                                                     anchor("1nd:ffff4100")])
+    assert left["source"] == [anchor("7mfk:ffff4100")]
+
+
+def test_a_move_refuses_a_target_anchor_at_another_address(probe_store):
+    base = probe_store(
+        probe_target=probe("jk78c:ffff4000", source=[anchor("1nd:ffff4300")]),
+        probe_source=probe("7mfk:ffff4100", "1nd:ffff4100"))
+    with pytest.raises(KbError, match=re.escape(
+            "anchor=FUN_FFFF4300 of probe_target/ram names 1nd:ffff4300, and "
+            "probe_source/ram/1nd-ffff4100 has 1nd:ffff4100")):
+        planned(base, move("1nd:ffff4100", "probe_target/ram", evidence=[SPEC]))
 
 
 def test_a_merge_joins_layouts_and_evidence_layouts_of_one_link(probe_store):

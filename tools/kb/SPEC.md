@@ -315,8 +315,10 @@ for another layout, translates an address whose meaning has a symbol there.
 - `kb move <symbol> <meaning>` corrects a wrong homology. The entry of the
   symbol leaves the file of its meaning, or its row leaves `kb/names.csv`,
   and the symbol enters the file of the target with its keys besides its
-  level and note. The symbol takes the target meaning's name if it has one
-  and keeps its generated name otherwise, which it draws when it has none;
+  level and note; the `[[source]]` entries of its layout leave the file of
+  the former meaning and join those of the target. The symbol takes the
+  target meaning's name if it has one and keeps its generated name
+  otherwise, which it draws when it has none;
   its previous full reference becomes its first `former` reference. The
   evidence is stated, or it is that of the candidate at the address of the
   symbol that the search of `kb.match` finds from the symbol of the target on
@@ -736,6 +738,7 @@ describe, so a rename or a move carries them:
 | `[[ledger]]` | a meaning with a legacy row | View selectors: `registry`, `order`, selected `fields`, `notes` indices, evidence indices for `identity`, `contract`, and `scale`; optional diagnostic `binding`, curated `title` or former `name`, and `storage_description` |
 | `[[ledger.dependency]]` | a ledger view | A selected canonical link: token `role`, meaning `to`, link `type`, claiming `end`, optional `link_role`, `relies`, `supports`, and optional numeric `offset` with its `offset_text` spelling |
 | `[[ledger.offset]]` | a ledger view | The selected indirect `evidence` index and its numeric offset spelling in `text` |
+| `[[source]]` | any meaning | Specification anchor: `path` of a narrow specification, its `sha256` when the anchor was bound, the `sections` and the `anchor` that state the meaning, an optional `role`, and the `layout` whose symbol the anchor states; an entry without `layout` states the meaning on every layout |
 
 `editor.name` is the name the editors show; it is not the name of the
 meaning. `editor.static_axis_operand` is a reference to the `ram` or `reg`
@@ -1543,6 +1546,16 @@ references.
   `[[...]]` citation of the entity files to a name of the other meaning names
   the meaning, links of one type, target, slot, and offset whose keys agree
   join, and a link of the meaning to itself leaves its file.
+- The `[[source]]` entries ([Feature tables](#78-feature-tables-in-meanings))
+  of the two files join: an entry equal to a held entry appears once, and
+  every entry keeps its keys, its `layout` among them. The merge is refused
+  when an entry of each file has the same `layout`, `path`, and `anchor` and
+  another `sha256`, with both entries in the refusal and neither kept; when
+  an anchor `FUN_<address>` of one file names another address than the
+  symbol that the other file brings to the layout of the anchor; and when an
+  entry without `layout` would cover a layout that the merge adds to its
+  meaning. The two files of one meaning and `kb move <symbol> <meaning>`
+  join their entries by the same rules.
 - `kb link <from> <type> <to>` writes a link of [Links](#75-links) into the
   file of `<from>` with the keys of a link besides `type`, `to`, and
   `evidence` as `<key>=<value>` and the `--evidence` items; `to` is stored as

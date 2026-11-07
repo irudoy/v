@@ -71,7 +71,9 @@ ENTRY_OWNED = ("layout", "address", "name", "former")
 SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other
 # keys move into a file that lacks them.
-JOINED = ("symbol", "status", "link", "analog", "former", "home")
+JOINED = ("symbol", "status", "link", "analog", "former", "home", "source")
+# A specification anchor that names a function by its address.
+FUNCTION_ANCHOR = re.compile(r"FUN_(?P<address>[0-9A-Fa-f]{8})")
 # The prose keys of a meaning, whose bare addresses refer to its home.
 PROSE = ("title", "summary", "note")
 # The keys of a symbol entry that a merge of two entries of one symbol joins.
@@ -390,6 +392,54 @@ def joined_links(links):
         held["evidence"] = sorted(held.get("evidence", ()), key=lambda item: str(item.get("at")))
         _widen(held)
     return found
+
+
+def _addresses(document):
+    """{layout: address} of the symbol entries of an entity file."""
+    return {entry["layout"]: int(entry["address"], 16) for entry in document.get("symbol", ())
+            if "layout" in entry and "address" in entry}
+
+
+def _source_text(entry):
+    return " ".join(f"{key}={entry[key]}" for key, _ in store.SOURCE.keys if key in entry)
+
+
+def joined_sources(held, added, pair):
+    """The `[[source]]` entries of two sides that a merge or a move joins
+    (tools/kb/SPEC.md, section 7.8). A side is (label, entries, addresses,
+    gained): its entries, the address of its symbol on each of its layouts,
+    and the layouts that the join adds to its meaning. An entry equal to a
+    held one appears once, and no entry changes. The join is refused when an
+    anchor of one layout holds two specification digests, when an anchor that
+    names a function names another address than the symbol that the other
+    side brings to its layout, and when an entry without a layout would cover
+    the added layouts."""
+    sides = (held, added)
+    for label, entries, _, gained in sides:
+        for entry in entries:
+            if "layout" not in entry and gained:
+                raise KbError(
+                    f"{pair}: {label} holds the source anchor {_source_text(entry)} without a "
+                    f"layout, which would cover {', '.join(sorted(gained))}; the anchor states "
+                    "its layout first", code=3)
+    for entry in held[1]:
+        for other in added[1]:
+            if all(entry.get(key) == other.get(key) for key in ("layout", "path", "anchor")) \
+                    and entry.get("sha256") != other.get("sha256"):
+                raise KbError(
+                    f"{pair} disagree on the digest of a source anchor: {held[0]} holds "
+                    f"{_source_text(entry)} and {added[0]} holds {_source_text(other)}; the "
+                    "join keeps neither, and the stale binding is corrected first", code=3)
+    for (label, entries, _, _), (other, _, addresses, _) in (sides, sides[::-1]):
+        for entry in entries:
+            found = FUNCTION_ANCHOR.fullmatch(str(entry.get("anchor", "")))
+            address = addresses.get(entry.get("layout"))
+            if found and address is not None and int(found["address"], 16) != address:
+                raise KbError(
+                    f"{pair}: the source anchor {_source_text(entry)} of {label} names "
+                    f"{entry['layout']}:{int(found['address'], 16):08x}, and {other} has "
+                    f"{entry['layout']}:{address:08x}", code=3)
+    return _union(list(held[1]), added[1])
 
 
 def model_resolver(model):
@@ -1249,6 +1299,12 @@ class Change:
                     f"{meaning.key} has {self._ref(current) if current else 'a symbol'} on "
                     f"{layout}, where {other.key} has {self._ref(symbol)}; `kb move` corrects a "
                     "wrong symbol", code=3)
+        own = {layout: symbol.address for layout, symbol in self._symbols(meaning).items()}
+        brought = {layout: symbol.address for layout, symbol in other.symbols.items()}
+        sources = joined_sources(
+            (meaning.key, document.get("source", []), own, set(brought) - set(own)),
+            (other.key, source.get("source", []), brought, set(own) - set(brought)),
+            f"{meaning.key} and {other.key}")
         stated = [evidence_item(item) for item in op.get("evidence") or ()]
         several = len(other.symbols) > 1
         if several and any((match.location(item.get("at")) or (None,))[0] not in other.symbols
@@ -1272,6 +1328,8 @@ class Change:
         self._take_home(meaning, other, document, source)
         self._keep_home(meaning, [entry["layout"] for entry in moved], document)
         document["symbol"] = [*document.get("symbol", ()), *moved]
+        if sources:
+            document["source"] = sources
         layouts = set(meaning.symbols) | {entry.get("layout") for entry in document["symbol"]}
         formers = ([other.name] if other.semantic else []) + list(source.get("former", ()))
         self._absorb(document, source, layouts, meaning, formers if meaning.semantic else [],
@@ -1299,6 +1357,12 @@ class Change:
             raise KbError(f"{name}/{kind} is a semantic name and {own}/{kind} a generated one; "
                           f"`kb merge {name}/{kind} {own}/{kind}` keeps the semantic name", code=2)
         document, source = self._open(path), self._open(other_path)
+        sources = joined_sources(
+            (path.as_posix(), document.get("source", []), _addresses(document), set()),
+            (other_path.as_posix(), source.get("source", []), _addresses(source), set()),
+            f"{path.as_posix()} and {other_path.as_posix()}")
+        if sources:
+            document["source"] = sources
         symbols = document.setdefault("symbol", [])
         home = next((entry.get("layout") for entry in symbols if entry.get("name") == own), None)
         for entry in source.get("symbol", ()):
@@ -1498,8 +1562,23 @@ class Change:
             evidence = [evidence_item(item) for item in op["evidence"]]
         else:
             evidence = self._found(self._source(target, via, op.get("from")), named.key)
+        left = self._held(meaning) or {}
+        carried = [entry for entry in left.get("source", ()) if entry.get("layout") == layout]
         generated, former, keys = self._release(meaning, named)
         path, document = self.document(target)
+        sources = joined_sources(
+            (old, carried, {layout: named.address}, set()),
+            (target.key, document.get("source", []),
+             {item: symbol.address for item, symbol in self._symbols(target).items()}, {layout}),
+            f"{old} and {target.key}")
+        if carried:
+            kept = [entry for entry in left["source"] if entry.get("layout") != layout]
+            if kept:
+                left["source"] = kept
+            else:
+                del left["source"]
+        if sources:
+            document["source"] = sources
         kind, address = named.kind, f"{named.address:08x}"
         entry = {"layout": layout, "address": address}
         if target.semantic:
