@@ -308,6 +308,10 @@ of a seeded layout binds its bytes as the census registry input. `kb project`
 then writes the same registry, so the manifest census and preparation inputs
 match the tracked registry. A layout that shares the registry, as `jk00c` and
 `jk00d` do, takes its own export with the same batch before `kb apply`.
+Until the batch is written, the exported census is pending: `kb apply` and
+the next export plan over the model without a graph refresh, so the batch
+names meanings by key and symbols by location, and a batch that does not plan
+the pending census is refused.
 
 ## Script groups
 

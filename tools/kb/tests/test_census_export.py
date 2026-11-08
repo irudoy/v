@@ -6,12 +6,14 @@ import contextlib
 import csv
 import io
 from pathlib import Path
+import sys
 
 import pytest
 
 from kb import adapters, checks, compile, l0, project, repo, store, write
 from kb import ghidra_preparation as preparation
 from kb.adapters import files as file_adapter
+from kb.adapters import interp
 from kb.repo import KbError
 from tools.kb.tests import writer_sources
 
@@ -85,9 +87,23 @@ def ghidra(sessions):
                     (stage / name).write_text(table([column for column, _ in columns], *rows))
             else:
                 stage, kernel = Path(arguments[2]), arguments[3]
-                (stage / l0.Census.file(kernel)).write_text(
-                    table([column for column, _ in l0.ACCESSORS]))
+                # One call of the fused kernel, which reads a ROM table.
+                (stage / l0.Census.file(kernel)).write_text(table(
+                    [column for column, _ in l0.ACCESSORS],
+                    (kernel, kernel, "", "", "00010000", "FUN_00010000", "", "", "",
+                     "00030000", "", "", "", "pool", "none", "none", "none", "agree", "")))
     return run
+
+
+def maps_reader(root, model, tmp_path):
+    """The census validation of the graph loader of the maps of 1me3b over the
+    registry that `model` renders: the boundary of a graph refresh."""
+    sys.path.insert(0, str(repo.ROOT / "tools"))
+    from memgraph import load_maps
+    registry = tmp_path / Path(REGISTRY).name
+    registry.write_text(interp.render_registries(model)[REGISTRY], encoding="utf-8")
+    load_maps.read_censuses(str(root / repo.L0 / LAYOUT),
+                            load_maps.read_registry(str(registry)), str(registry))
 
 
 def test_the_census_export_by_the_batch_precedes_the_change(root, tmp_path, monkeypatch):
@@ -133,10 +149,36 @@ def test_the_census_export_by_the_batch_precedes_the_change(root, tmp_path, monk
         l0.export(LAYOUT, check=True, from_stage=stage, batch=other, root=root,
                   log=lambda line: None)
 
+    # The graph loader refuses the exported census beside the registry of the
+    # unwritten sources, so no write plans over a graph refresh until the
+    # batch is written; the second export of a shared registry plans alike.
+    with pytest.raises(SystemExit, match="censuses outside the registry: accessors.20008.csv"):
+        maps_reader(root, compile.build(root), tmp_path)
+
+    def refresh(*args, **keys):
+        raise AssertionError("a graph refresh before the batch is written")
+
+    monkeypatch.setattr(write.graph, "fresh", refresh)
+    assert write.pending_censuses(root) == {LAYOUT: [KERNEL]}
+    assert l0.proposed(LAYOUT, batch, root, log=lambda line: None).encode() == \
+        proposed.read_bytes()
+    unrelated = [{"cmd": "set", "ref": f"{MEANING}/fn", "keys": {"note": ["Probe note."]}}]
+    with pytest.raises(KbError, match="the L0 of 1me3b holds accessors.20008.csv, which no "
+                                      "registry row of the change plans") as early:
+        write.apply(unrelated, root, dry_run=True, log=lambda line: None)
+    assert early.value.code == 3
+    synced = []
+    monkeypatch.setattr(write.graph, "sync_held",
+                        lambda root, full, log, model: synced.append(model))
     _, texts = write.apply(ops, root, log=lambda line: None)
     assert store.path_of("fn", MEANING) in texts
+    # The graph loads the census with the model of the written batch.
+    [model] = synced
+    maps_reader(root, model, tmp_path)
+    assert write.pending_censuses(root) == {LAYOUT: [KERNEL]}
     compile.cached.cache_clear()
     project.write(root, ["defs/*.interp.csv"])
     assert (root / REGISTRY).read_bytes() == proposed.read_bytes()
+    assert write.pending_censuses(root) == {}
     assert checks.census_check(compile.build(root)) == []
     assert l0.check_all(root, only=[LAYOUT]) == []

@@ -2183,6 +2183,7 @@ class ApplyTest(unittest.TestCase):
     def run_apply(self, dry_run):
         planned = (mock.Mock(), {Path("kb/ram/x.toml"): "a\n"}, mock.sentinel.result)
         with mock.patch.object(write.lock, "held", return_value=contextlib.nullcontext()), \
+                mock.patch.object(write, "pending_censuses", return_value={}), \
                 mock.patch.object(write.graph, "fresh",
                                   return_value=contextlib.nullcontext("session")), \
                 mock.patch.object(write.compile, "build", return_value=mock.sentinel.base), \

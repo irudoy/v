@@ -5,7 +5,9 @@ qualification operations belong to the local archive.
 """
 
 import copy
+import csv
 import difflib
+import io
 import random
 from pathlib import Path
 import re
@@ -2354,12 +2356,58 @@ def _planned(ops, root, log, census=True):
                           + '\n'.join(map(str, failures)), code=3)
         if fingerprint.compute(root) != before:
             raise KbError('the sources change during source-only planning; nothing is written', code=6)
+    elif (pending := pending_censuses(root)):
+        # The graph loads no census that its registry lacks, so the batch
+        # whose L0 export added them plans over the model; the graph loads
+        # them with the model of the written batch.
+        base = compile.build(root)
+        change, texts, result = plan(ops, base, model_resolver(base), root, census=census)
+        planned = _registry_kernels(result)
+        left = [(layout, kernel) for layout, kernels in pending.items()
+                for kernel in kernels if kernel not in planned.get(layout, ())]
+        if left:
+            from kb import l0
+            raise KbError("the change does not plan the census that L0 holds; nothing is "
+                          "written\n" + "\n".join(
+                              f"  the L0 of {layout} holds {l0.Census.file(kernel)}, which no "
+                              f"registry row of the change plans; the change of its L0 export "
+                              f"comes first" for layout, kernel in left), code=3)
     else:
         with graph.fresh(root, log=log, held=True) as session:
             base = compile.build(root)
             change, texts, result = plan(ops, base, graph_resolver(session, base, root, log),
                                          root, census=census)
     return change, texts, result
+
+
+def pending_censuses(root=repo.ROOT):
+    """{layout: kernels} of the censuses that the L0 manifest of a layout holds
+    and the tracked registry of the layout does not plan: the L0 export by a
+    batch (`kb.l0.export` with a batch) precedes the write of the batch."""
+    from kb import l0
+    found = {}
+    for layout in sorted(repo.config(root).get("l0", {}).get("census", {})):
+        manifest = root / repo.L0 / layout / l0.MANIFEST
+        if not manifest.is_file():
+            continue
+        held = tomllib.loads(manifest.read_text(encoding="utf-8")).get("census", {})
+        extra = sorted(set(held.get("kernels", ())) - set(l0.census(layout, root).kernels))
+        if extra:
+            found[layout] = extra
+    return found
+
+
+def _registry_kernels(model):
+    """{layout: kernels} that the registries of the model plan."""
+    from kb.adapters import interp
+    rendered = interp.render_registries(model)
+    found = {}
+    for path, layouts in interp.census(model.config).items():
+        kernels = {f"{int(row['kernel'], 16):08x}"
+                   for row in csv.DictReader(io.StringIO(rendered[path])) if row["kernel"]}
+        for layout in layouts:
+            found[layout] = kernels
+    return found
 
 
 def apply(ops, root=repo.ROOT, dry_run=False, log=print):

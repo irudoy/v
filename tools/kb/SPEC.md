@@ -1090,6 +1090,13 @@ rows = 0
   registry, and the `l0` check of `make check` compares the census of the
   manifest with it. A `--from-stage` build with `--batch` requires the same
   rendered registry in the stage.
+- A census that the L0 manifest of a layout holds and the tracked registry
+  does not plan is pending. The graph loader refuses a census outside the
+  registry, so while a census is pending a write plans over the model
+  without a graph refresh: its batch names meanings by key and symbols by
+  location. The write is refused unless its registries plan every pending
+  census, and the graph loads the census with the model of the written
+  batch.
 - A layout joins with a new export of all its files; a partial export, an
   export of another program, or an image digest other than the catalog digest
   is refused.
