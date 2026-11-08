@@ -18,6 +18,32 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1me3b"
+address = "0002b384"
+name = "invisible-heron"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:0002b384"
+to = "7mfk:000265c4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "1nd"
+address = "00028a08"
+name = "abiding-puffin"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028a08"
+to = "7mfk:000265c4"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "7mfk"
 address = "000265c4"
 name = "rough-porpoise"
@@ -26,3 +52,42 @@ name = "rough-porpoise"
 kind = "spec"
 supports = "identity"
 key = "region-entries"
+
+[[symbol]]
+layout = "jk00c"
+address = "000271c8"
+name = "manipulative-snake"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000271c8"
+to = "7mfk:000265c4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000271c8"
+name = "true-heron"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000271c8"
+to = "7mfk:000265c4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000283ec"
+name = "optimistic-manul"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000283ec"
+to = "7mfk:000265c4"
+count = 1
+value = "exact"

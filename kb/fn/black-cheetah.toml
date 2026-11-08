@@ -46,6 +46,43 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002a6b4"
+name = "foamy-robin"
+
+[symbol.interp]
+access = "explicit"
+kernel = "black-cheetah/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a6b4"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002a6b4"
+to = "7mfk:00026320"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026320"
+note = """
+1ME3B compiles this explicit 16x16 lookup of uint8 elements over uint8 axes \
+with its own unrolled kernel at the library position of the shared entry, \
+between bald-dachshund 1me3b:0002a388 and hypnotic-dugong 1me3b:0002a9a4, as \
+7mfk:00026320 lies between 7mfk:000262e0 and 7mfk:00026358. Its finisher \
+returns the limit 0x0080 at 1me3b:0002a9a0 when a corner element reaches it, \
+as fabulous-silkworm/fn, the finisher that only this entry uses, does with \
+7mfk:00026940. Of the two 1ND entries at that position, only 1nd:00028764 \
+has uint8 elements; masked-match finds no counterpart, since the unrolled \
+body shares no instruction run with the wrapper."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028764"
 name = "amethyst-chachalaca"

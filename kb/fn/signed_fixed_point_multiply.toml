@@ -41,6 +41,30 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002b33c"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:0002b33c"
+to = "7mfk:0002657c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "1nd"
+address = "000289c0"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000289c0"
+to = "7mfk:0002657c"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002657c"
 
@@ -95,6 +119,42 @@ key = "sh2-decode"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0002657c"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027180"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027180"
+to = "7mfk:0002657c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027180"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027180"
+to = "7mfk:0002657c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000283a4"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000283a4"
+to = "7mfk:0002657c"
+count = 1
+value = "exact"
 
 [[link]]
 type = "depends"
