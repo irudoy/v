@@ -84,12 +84,15 @@ PUBLISHED_DEFINITION = """<roms><rom><romid><xmlid>JK08A</xmlid></romid>
 </rom></roms>"""
 
 
-def test_published_definition_names_tables_and_the_tables_of_each_axis(tmp_path):
-    path = tmp_path / "JK08A.xml"
+def test_published_definition_names_tables_and_the_tables_of_each_axis(tmp_path, monkeypatch):
+    root = (tmp_path / "repository").resolve()
+    path = root / "defs" / "JK08A.xml"
+    path.parent.mkdir(parents=True)
     path.write_text(PUBLISHED_DEFINITION)
+    monkeypatch.setattr(model, "ROOT", root)
     published = model._published_tables({"rom": "JK08A", "published_definition": str(path)})
 
-    assert published["source"] == str(path)
+    assert published["source"] == "defs/JK08A.xml"
     assert published["tables"] == {
         "00009a1a": [{"name": "Timing", "category": "Ignition//Main"}],
         "00009b00": [{"name": "Fuel", "category": "Fuel"}],
@@ -99,6 +102,18 @@ def test_published_definition_names_tables_and_the_tables_of_each_axis(tmp_path)
     assert model._published_tables({"rom": "JK08A"}) is None
     with pytest.raises(model.ModelError, match="definition identity"):
         model._published_tables({"rom": "JK03A", "published_definition": str(path)})
+
+
+def test_published_definition_outside_the_repository_keeps_its_absolute_source(tmp_path,
+                                                                             monkeypatch):
+    root = (tmp_path / "repository").resolve()
+    root.mkdir()
+    path = tmp_path / "JK08A.xml"
+    path.write_text(PUBLISHED_DEFINITION)
+    monkeypatch.setattr(model, "ROOT", root)
+    published = model._published_tables({"rom": "JK08A", "published_definition": str(path)})
+
+    assert published["source"] == str(path)
 
 
 def test_published_definition_conflicts_with_a_definition_source(tmp_path):
