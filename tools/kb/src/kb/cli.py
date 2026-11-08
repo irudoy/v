@@ -380,12 +380,16 @@ def command_bench(args, root=repo.ROOT):
             code = main(shlex.split(question["command"])[1:] + ["--full"])
         rendered = out.getvalue()
         used = answer.tokens(rendered)
-        base = baseline_tokens(question["baseline"], root)
+        # The baselines measure the alternative search with external tools;
+        # `--check` keeps the outcome a function of the graph alone.
+        base = None if args.check else baseline_tokens(question["baseline"], root)
         missing = [pattern.pattern for pattern in expected if pattern.search(rendered) is None]
-        passed = code == 0 and not missing and used <= question["budget"] and used < base
+        passed = (code == 0 and not missing and used <= question["budget"]
+                  and (base is None or used < base))
         failed += not passed
         print(f"{question['id']:>2}  {'PASS' if passed else 'FAIL'}  {used:>5} tokens, budget "
-              f"{question['budget']:>5}, baseline {base:>6}  {question['command']}"
+              f"{question['budget']:>5}, baseline {'-' if base is None else base:>6}  "
+              f"{question['command']}"
               + ("" if code == 0 else f"  exit {code}")
               + (f"  missing expected content: {missing!r}" if missing else ""))
     return 1 if failed else 0
@@ -695,6 +699,8 @@ def build_parser():
 
     bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
     bench.add_argument("--only", type=int, action="append", help="one question id; repeatable")
+    bench.add_argument("--check", action="store_true",
+                       help="exit codes, required content, and budgets without the baselines")
     bench.set_defaults(handler=command_bench)
 
     code = commands.add_parser("code", help="decompilation or listing of a function")

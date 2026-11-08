@@ -294,3 +294,9 @@ split is needed only if that run exceeds three minutes.
 
 Graph integration tests use the isolated instance selected by `KB_TEST_BOLT`
 and clear that instance. Run them against a dedicated test graph.
+
+`make check` runs `kb bench --check` against the synchronized graph: every
+question of `bench.toml` must exit successfully, state its required content,
+and fit its budget. The check omits the baselines, which run external search
+tools; `kb bench` compares the answers with them. A change of knowledge that
+invalidates an expectation restates the question in the same commit.

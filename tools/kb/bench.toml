@@ -23,8 +23,8 @@ expect = [
     '^7mfk\s+ffff102c',
     '^jk00d\s+ffff1034',
     '^jk78c\s+ffff1032',
-    '^1nd\s+unresolved.*masked-match.*count 0',
-    '^1me3b\s+unresolved.*masked-match.*count 0',
+    '^1nd\s+fffe8034\s+code\s+l0\s',
+    '^1me3b\s+fffe8034\s+code\s+l0\s',
 ]
 baseline = [
     { run = ["rg", "-n", "-i", "--no-ignore", "-e", "normalized_load_raw", "-e", "ffff102c", "patches", "defs"] },
@@ -78,11 +78,17 @@ baseline = [
 [[question]]
 id = 6
 question = "Candidates for a producer on another family"
-command = "kb suggest 7mfk:0003b75c --layout jk78c"
+command = "kb suggest 7mfk:0004e974 --layout jk78c"
 budget = 1500
-expect = ['7mfk(?:-|:)0003b75c', 'jk78c', '\[candidate\]|no candidates|unresolved']
+expect = [
+    '^7mfk:0004e974 injection_pulse_precursor_builder/fn: candidates on jk78c$',
+    '^\[candidate\] function-match: [1-9][0-9]* candidates',
+    '^\[candidate\] masked-match: [1-9][0-9]* candidates',
+    '^  jk78c:0006a59c votes [1-9][0-9]*',
+    '^Suggestions do not bind symbols or change knowledge levels\.$',
+]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "0003b75c", "defs", "patches"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0004e974", "defs", "patches"] },
 ]
 
 [[question]]
@@ -128,10 +134,12 @@ baseline = [
 id = 10
 question = "The state of the knowledge base"
 command = "kb brief"
-budget = 2000
+# The answer lists every fact owner of the registry table, which grows with
+# the registries.
+budget = 2500
 expect = [
     '^graph .*fingerprint .*commit',
-    '^stage [0-9]+: .*owners$',
+    '^fact owners$',
     '^open gaps: [1-9][0-9]* required meanings unavailable',
     '^  by feature: .*can_telemetry [1-9][0-9]*.*definitions [1-9][0-9]*',
     '^  by state: .*absent [1-9][0-9]*.*unsupported [1-9][0-9]*',

@@ -137,9 +137,9 @@ class BenchCommandTest(unittest.TestCase):
     QUESTION = {"id": 9, "command": "kb log apc_output", "budget": 100,
                 "baseline": [], "expect": [r"^apc_output/ram$", r"ffff206c -> ffff11f5"]}
 
-    def bench(self, text, *, questions=None, only=None, code=0, baseline=1000):
+    def bench(self, text, *, questions=None, only=None, code=0, baseline=1000, check=False):
         config = {"question": questions or [dict(self.QUESTION)]}
-        args = Namespace(only=only)
+        args = Namespace(only=only, check=check)
 
         def reply(argv):
             print(text, end="")
@@ -175,6 +175,18 @@ class BenchCommandTest(unittest.TestCase):
                 text = answer + ("x" * 400 if not params else "")
                 self.assertEqual(self.bench(text, **params)[0], 1)
 
+    def test_the_check_runs_no_baseline_and_keeps_the_other_conditions(self):
+        answer = "apc_output/ram\n  jk00d ffff206c -> ffff11f5\n"
+        code, text, _, baselines = self.bench(answer, baseline=1, check=True)
+        self.assertEqual((code, baselines), (0, 0))
+        self.assertIn("PASS", text)
+        self.assertIn("baseline      -", text)
+        for params, reply in (({"code": 5}, answer), ({}, answer + "x" * 400),
+                              ({}, "apc_output/ram\n")):
+            with self.subTest(params=params, reply=reply[-20:]):
+                code, _, _, baselines = self.bench(reply, check=True, **params)
+                self.assertEqual((code, baselines), (1, 0))
+
     def test_invalid_contracts_fail_before_any_question_or_baseline_runs(self):
         for expected in (None, [], "literal", [None], [" "], ["["], [".*"], ["(foo)?"]):
             with self.subTest(expected=expected):
@@ -183,7 +195,7 @@ class BenchCommandTest(unittest.TestCase):
                         mock.patch.object(cli, "main") as command, \
                         mock.patch.object(cli, "baseline_tokens") as baseline, \
                         self.assertRaises(KbError) as error:
-                    cli.command_bench(Namespace(only=None))
+                    cli.command_bench(Namespace(only=None, check=False))
                 self.assertEqual(error.exception.code, 2)
                 command.assert_not_called()
                 baseline.assert_not_called()

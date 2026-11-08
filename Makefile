@@ -42,8 +42,9 @@ help:
 		'Targets:' \
 		'  help              Show this help.' \
 		'  setup             Install dependencies, initialize pinned references, and build the graph.' \
-		'  check             Validate versions, tracked sources, L0 exports, projections, and the' \
-		'                    firmware architecture model, and rebuild the ROM atlas from them.' \
+		'  check             Validate versions, tracked sources, L0 exports, projections, the kb' \
+		'                    benchmark answers, and the firmware architecture model, and rebuild' \
+		'                    the ROM atlas from them.' \
 		'  test-python       Run the complete Python test contract.' \
 		'  test-python-fast  Run Python tests without the slow marker.' \
 		'  test-js           Run the pin-tracer test contract.' \
@@ -121,6 +122,7 @@ check:
 	$(PYTHON) tools/census_homology.py --check
 	$(PYTHON) tools/rom_homology.py --check
 	$(UV) run kb check
+	$(UV) run kb bench --check
 	$(PYTHON) tools/mapkit/emit_def.py all --check
 	$(PYTHON) tools/maps/build_tracker.py all --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
