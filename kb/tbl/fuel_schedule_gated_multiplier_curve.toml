@@ -1,0 +1,74 @@
+title = "Configuration-gated multiplier curve of the 1ME3B fallback fuel schedule"
+summary = """
+Implicit 16-point uint8 curve, step 16, at the high byte of the learned word \
+fffed096. When bit 4 of ROM8[0000865c] is clear and bit 2 of ROM8[0000865f] \
+is set (stock 0x28 and 0x0c), base_fuel_schedule_producer multiplies the \
+fallback result of gainful-mink by out/128 before its 0xffff cap, and \
+00083fb8 multiplies the product of fffe862a and swinging-dugong by out/128 \
+before y=min(65535,(x*100)>>14). Stock cells rise from 61 to 128, and the \
+stock initial value 56000 of fffed096 selects 128."""
+note = [
+    """
+0004eac0 updates fffed096 under the same two ROM bits. It moves fffed096 \
+toward a sample that 000452c8 derives from fffe8d2a, with gain \
+ROM8[0000830e]/128 (stock 80), while the sample lies in \
+ROM16[000092de]..ROM16[000092dc] (stock 25041..63859), and resets it to \
+ROM16[0000957a] (stock 56000). The physical quantity of fffe8d2a, and so of \
+the curve input, is unresolved.""",
+]
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000137c6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004844c"
+note = """
+MOV.L 0004844c of base_fuel_schedule_producer loads this curve for \
+dfco_lookup 0002aa48 at the high byte of fffed096."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00083fea"
+note = """
+MOV.L 00083fea of 00083fb8 loads this curve for dfco_lookup 0002aa48 at the \
+high byte of fffed096."""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = "1ND has no gated multiplier of the fallback fuel schedule."
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044dc8"
+note = """
+1ND 00044c70 stores the fallback result of 0002881c at 00044dcc and shifts \
+it right by 2 with no multiplier curve, and 0007f3a8 forms \
+min(65535,(word*lookup*100)>>14) from mighty-wildcat at 0007f3c6 without \
+one."""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = "JK78C has no gated multiplier of the fallback fuel schedule."
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000407fc"
+note = """
+JK78C 0004068c stores the fallback result of 00028200 at 000407fc and shifts \
+it right by 2 with no multiplier curve, and 00072f5c forms \
+min(65535,(word*lookup*100)>>14) from arboreal-basilisk at 00072f7e without \
+one."""

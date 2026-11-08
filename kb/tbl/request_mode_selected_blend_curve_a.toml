@@ -1,0 +1,65 @@
+title = """
+Blend start curve of the selector-bit-set branch of the request-mode \
+coefficient"""
+summary = """
+Implicit 8-point uint16 curve of 00090664 over the engine-speed coordinate \
+min(ffff11a6, 0x1c0) shifted left by seven. When bit 7 of ffff455b is set \
+and bit 6 of ffff23c6 is set, the builder returns (this*(255-g) + \
+request_mode_selected_word_gain*g)/255 capped at 0x7fff, where g is \
+request_mode_selected_gain_curve_a at the high byte of ffff33ae. Physical \
+units remain unresolved."""
+home = "jk78c"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00017086"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000a8528"
+to = "jk78c:000169e4"
+note = """
+MOV.L 000a8528 of 1ME3B 000a8470 loads this curve as the first lookup of the \
+selector-bit-set branch, which blends it with \
+request_mode_selected_word_gain 00017066 by \
+request_mode_selected_gain_curve_a, as JK78C 00090664 does. Every stock gain \
+cell is 255 and this curve equals 00017066, so it carries no weight in the \
+stock image."""
+
+[[symbol]]
+layout = "jk78c"
+address = "000169e4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00090704"
+note = """
+MOV.L 00090700 loads 000169d4 and ADD #16 at 00090704 forms this curve for \
+the implicit 8-point word wrapper 00028200 in the branch where bit 6 of \
+ffff23c6 is set."""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+1ND has no blend stage: the selector-bit-set branch reads \
+request_mode_selected_word_gain alone."""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a25f6"
+note = """
+1ND 000a254a reads one implicit word curve per branch of bit 6 of fffe9488 \
+through 0002881c: 00016ff2 at 000a25e8 when the bit is clear and 00016fe2 at \
+000a25f6 when it is set. It caps the result at 0x7fff without a second curve \
+or a byte gain lookup."""

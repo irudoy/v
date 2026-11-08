@@ -47,16 +47,16 @@ at = "jk78c:000906ee"
 
 [[status]]
 layout = "1nd"
-state = "unresolved"
-method = "l0"
-target = "jk78c:00014248"
-count = 0
-l0 = "80899b88e0770eef"
+state = "absent"
+note = "1ND has no byte gain stage in 000a254a."
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a25e8"
 note = """
-1ND 000a254a reads one curve in each branch of the fffe9488 bit 6 selection \
-(00016ff2 or 00016fe2) and stores it capped at 0x7fff; it calls no 2D \
-lookup, so the JK78C 2D gain lookups through 0002829c and their crossfade of \
-two curves have no counterpart."""
+1ND 000a254a calls no byte curve lookup, so the axis of the JK78C gain curve \
+b has no counterpart."""
 
 [[link]]
 type = "reader"
