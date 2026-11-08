@@ -72,6 +72,20 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1d10"
+name = "rapid-kakapo"
+level = "code"
+note = """
+fill_bfs_blend_stage copies the selected working word here before it updates \
+it; JK08A takes the previous selected word from a scheduler copy."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040602"
+
 [[link]]
 type = "input"
 to = "wise-squirrel/ram"

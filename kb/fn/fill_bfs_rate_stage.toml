@@ -1,0 +1,37 @@
+summary = """
+Rate stage of the JK78C Base Fuel Schedule. It sets bit 7 of bfs_state_flags \
+ffff240a while alpha_n_flow ffff115c >= bfs_alpha_latch_set 00008300 (stock \
+202) and fill_outflow_previous ffff3a9c >= fill_maf_inflow ffff3aa4, and \
+clears it once either condition fails and alpha_n_flow < \
+bfs_alpha_latch_clear 00008301 (stock 200). The hold counters ffff1d94 and \
+ffff1dbb reload 4 while bit 7 of ffff23a9 or of ffff45c7 is set; when the \
+event byte ffff4443 is 1, they and ffff1dc0 count down to 0. With bit 3 of \
+bfs_mode_flags 00008b10 it sets bit 7 of ffff23ae while any counter is \
+nonzero. When ffff4443 is 1 it stores the rate correction ffff104e and its \
+copy ffff3b46 = clamp_s16(trunc((fill_bfs_word ffff3b48 - ffff390c) * \
+bfs_correction_gain 0000856a / 64)) while bit 0 of ffff23c2 and bit 6 of \
+ffff2413 are set, bit 7 of ffff240a is clear and both first counters are \
+zero, and 0 otherwise; it then copies ffff3b48 to ffff390c and fill_outflow \
+ffff25ba to ffff3a9c and clears ffff4443 and ffff44af."""
+note = [
+    """
+The latch, counters, monitor bit and correction repeat the JK08A rate stage \
+in base_fuel_schedule_producer: ffff240a.bit7, ffff2413.bit6 and \
+ffff23c2.bit0 take the roles of ffff24b1.bit7, ffff24bd.bit2 and \
+ffff2462.bit0, and the comparison of fill_outflow with the MAF inflow takes \
+the place of the JK08A comparison of the previous unblended word with four \
+times the Q7-compensated quarter-BFS word. No L0 access reloads ffff1dc0, \
+which JK08A reloads from a diagnostic fault predicate.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000403a2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000403a2"

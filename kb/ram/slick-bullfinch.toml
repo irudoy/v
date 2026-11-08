@@ -72,6 +72,21 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff23a9"
+name = "ludicrous-degu"
+level = "code"
+note = """
+dual_bank_maf_diagnostic_coordinator publishes bit 7 of extension record \
+0x129 byte 1 here, as JK08A publishes it to ffff2449; fill_bfs_limit_stage \
+selects grid almond-orca while it is set."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000410fe"
+
 [[link]]
 type = "input"
 to = "tourmaline-jackal/ram"

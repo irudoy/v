@@ -101,6 +101,21 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff104e"
+name = "artichoke-cicada"
+level = "code"
+note = """
+fill_bfs_rate_stage stores clamp_s16(trunc((ffff3b48 - ffff390c) * \
+bfs_correction_gain / 64)); fill_bfs_limit_stage adds it to the working \
+word."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000405a6"
+
 [[link]]
 type = "input"
 to = "bfs_correction_gain/tbl"
@@ -146,6 +161,15 @@ path = """
 git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "fill_bfs_word/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040560"
 
 [[link]]
 type = "input"

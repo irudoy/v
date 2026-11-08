@@ -23,6 +23,19 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1dbb"
+level = "code"
+note = """
+Reloads 4 while bit 7 of ffff45c7 is set and counts down in \
+fill_bfs_rate_stage."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000404e0"
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"

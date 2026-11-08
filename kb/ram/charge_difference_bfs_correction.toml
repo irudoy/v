@@ -1,0 +1,35 @@
+summary = """
+Signed Base Fuel Schedule term from the difference of the charge_model fill \
+charge and its reference word, stored by \
+charge_difference_bfs_correction_producer; fill_bfs_limit_stage adds it to \
+bfs."""
+level = "code"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1962"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040390"
+
+[[link]]
+type = "input"
+to = "charge_difference_gain/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040358"
+
+[[link]]
+type = "input"
+to = "charge_fill_charge_difference/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040368"

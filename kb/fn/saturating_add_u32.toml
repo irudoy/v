@@ -1,0 +1,13 @@
+summary = "Returns r4 + r5, or 0xffffffff when the unsigned sum exceeds 32 bits."
+level = "code"
+role = "kernel"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004017a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004017a"

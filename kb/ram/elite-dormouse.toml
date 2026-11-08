@@ -94,6 +94,31 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1d62"
+name = "rare-toad"
+level = "code"
+note = """
+fill_bfs_unblended_copy copies fill_bfs_word into this word; \
+fill_bfs_blend_stage and fill_bfs_limit_stage read it in the positions of \
+the JK08A unblended working word, which the JK08A rate stage filters from \
+the MAF quarter-BFS word."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402da"
+
+[[link]]
+type = "copy"
+to = "fill_bfs_word/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402d4"
+
 [[link]]
 type = "input"
 to = "bfs_rate_coefficient/ram"

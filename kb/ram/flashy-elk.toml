@@ -71,6 +71,21 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff390c"
+name = "auburn-butterfly"
+level = "code"
+note = """
+fill_bfs_rate_stage copies fill_bfs_word here after each correction step and \
+subtracts it in the correction, in the role of the JK08A previous unblended \
+word."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000405ac"
+
 [[link]]
 type = "input"
 to = "elite-dormouse/ram"

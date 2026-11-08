@@ -1,0 +1,26 @@
+summary = """
+Periodic root of the JK78C Base Fuel Schedule stages, run from task-table \
+entry 000218e8 right after fill_model_fast_task. It calls in order \
+fill_bfs_word_producer, fill_reference_bfs_word_producer, \
+fill_bfs_unblended_copy, fill_bfs_rate_stage and fill_bfs_blend_stage, and \
+branches at 0003ff86 to fill_bfs_limit_stage, which writes bfs."""
+note = [
+    """
+These stages take the places of the rate, blend and limit parts of JK08A \
+base_fuel_schedule_producer 0003b75c with the same selectors, flags and \
+calibration roles. Their working word comes from fill_event_quantity of the \
+fill model; the MAF-over-speed word of base_fuel_schedule_producer 0004068c \
+only enters a comparison flag.""",
+]
+level = "code"
+role = "dispatch"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ff70"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ff70"

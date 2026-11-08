@@ -1,0 +1,26 @@
+summary = """
+Copies the selected BFS working word ffff1d60 to ffff1d10. With bit 4 of \
+bfs_mode_flags 00008b10 set (stock 0x1e) it stores ffff1d60 = \
+floor((ffff1d62*A + old*(256-A))/256) with A = bfs_blend_weight ffff1e39 and \
+old the previous ffff1d60 while bit 0 of ffff23c2 and bit 7 of ffff240a are \
+set and bit 6 of ffff2413 is clear, and ffff1d60 = ffff1d62 otherwise. With \
+bit 4 clear it leaves ffff1d60 unchanged."""
+note = [
+    """
+The condition and blend repeat the JK08A selected working-word blend of \
+base_fuel_schedule_producer. The blend runs while the alpha-N latch holds; \
+the rate correction runs while it is clear and bit 6 of ffff2413 is set, so \
+the two modes exclude each other.""",
+]
+level = "code"
+role = "selector"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000405f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000405f0"

@@ -1,0 +1,15 @@
+summary = """
+Byte gain of charge_difference_bfs_correction, looked up by the sign of \
+charge_fill_charge_difference."""
+level = "code"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff14d0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040358"

@@ -1,0 +1,36 @@
+summary = """
+State byte whose bit 7 base_fuel_schedule_producer sets while 4 * tall-quoll \
+ffff1050 < elite-dormouse ffff1d62, the MAF-over-speed word against the \
+fill-model working word. When bit 7 differs from bit 7 of ffff2409 the \
+producer sets bit 5 of bfs_state_flags ffff240a."""
+level = "code"
+width = 8
+signed = false
+unit = "bitfield"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2408"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004089e"
+
+[[link]]
+type = "input"
+to = "elite-dormouse/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004088a"
+
+[[link]]
+type = "input"
+to = "tall-quoll/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004088e"

@@ -24,6 +24,19 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff23ae"
+level = "code"
+note = """
+Bit 7 is set while any of the three hold counters is nonzero, with bit 3 of \
+bfs_mode_flags set."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040530"
+
 [[link]]
 type = "input"
 to = "bfs_rate_timer_first/ram"

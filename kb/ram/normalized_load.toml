@@ -363,6 +363,12 @@ call (0004bcb2, 7mfk:0004ac6a) from the delay slot."""
 [[symbol]]
 layout = "jk78c"
 address = "ffff1032"
+note = """
+coherent_snapshot 00020f1a copies the 16 bytes ffff1042..ffff1051 to \
+ffff1032..ffff1041 through the byte copier 000225c0 at 00020f84, so the \
+snapshot byte is benign-cassowary ffff1042 = min(255, \
+floor(bfs*128/ROM16[000091ee])). ffff1048 on JK78C is the copy of the bank 1 \
+MAF transfer-curve word ffff1044, not a load byte."""
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -373,6 +379,11 @@ value = "ffff1032"
 note = """
 Homologous producer 0004068c writes the Q7 ratio to ffff1042, and the \
 scheduler copy at 00020f84 snapshots it into this byte"""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00020f78"
 
 [[link]]
 type = "copy"

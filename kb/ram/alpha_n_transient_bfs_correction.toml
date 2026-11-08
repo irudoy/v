@@ -1,0 +1,28 @@
+summary = """
+Signed Base Fuel Schedule term stored by fuel_compensation_coordinator: \
+while bit 7 of ffff45bd is clear and bit 0 of ffff23c2 is set, \
+clamp_s16(trunc(G1 * alpha_n_flow_difference * G2 / 256)) with G1 from \
+fuel_compensation_state_gain 00013780 at ffff11d7 and G2 from \
+fuel_compensation_centered_gain 00013800 at the difference clamped to \
+-128..127 plus 128; 0 otherwise. fill_bfs_limit_stage adds it to bfs."""
+level = "code"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1ef8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041088"
+
+[[link]]
+type = "input"
+to = "alpha_n_flow_difference/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041056"

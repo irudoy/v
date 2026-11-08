@@ -178,6 +178,20 @@ at = "7mfk:0003b8d8"
 value = {named = ["000088fb", "00008a27", "00009284", "00015630", "0002c648", "0003b75c", "ffff11e8", "ffff1e38", "ffff1e40"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1db4"
+name = "fragrant-caterpillar"
+level = "code"
+note = """
+base_fuel_schedule_producer stores floor(fixed * 0x23cb / 65536), 0x23cb = \
+9163 as on JK08A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004080a"
+
 [[link]]
 type = "input"
 to = "bfs_alternate_speed/ram"

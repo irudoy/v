@@ -118,6 +118,21 @@ at = "7mfk:0003c29c"
 value = {named = ["0000a29a", "0002c648", "0003b75c", "0003bd74", "ffff1160"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff114c"
+name = "outrageous-bear"
+level = "code"
+note = """
+fuel_compensation_coordinator stores the byte at 00040ef6; \
+base_fuel_schedule_producer multiplies the quarter-BFS word by it over 128 \
+as JK08A does, and fill_maf_inflow_producer multiplies the MAF sum by it."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040812"
+
 [[link]]
 type = "input"
 to = "alpha_n_flow/ram"

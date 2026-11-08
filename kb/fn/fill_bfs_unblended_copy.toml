@@ -1,0 +1,15 @@
+summary = """
+Copies fill_bfs_word ffff3b48 into the unblended BFS working word ffff1d62 \
+(elite-dormouse)."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000402d0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402d0"

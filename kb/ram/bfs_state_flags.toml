@@ -32,6 +32,21 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff240a"
+level = "code"
+note = """
+Bit 7 is the alpha-N latch of fill_bfs_rate_stage that selects the blend or \
+the rate correction. fill_maf_sum_producer clears bit 4, which reverses the \
+MAF inflow of fill_quantity_integrator, and base_fuel_schedule_producer sets \
+bit 5."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040488"
+
 [[link]]
 type = "input"
 to = "alpha_n_flow/ram"
@@ -53,6 +68,24 @@ path = """
 git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "input"
+to = "fill_maf_inflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000403f8"
+
+[[link]]
+type = "input"
+to = "fill_outflow_previous/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000403f2"
 
 [[link]]
 type = "input"

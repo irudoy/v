@@ -1,0 +1,27 @@
+summary = """
+Number of history steps, at most 10, between alpha_n_flow and the sample it \
+is compared with in alpha_n_flow_difference (stock 1)."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008434"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040bc6"
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040bc6"

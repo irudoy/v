@@ -92,3 +92,12 @@ at = "jk78c:00040348"
 note = """
 The reviewed explicit wrapper call passes axis 0001342f in the x slot for \
 table 000137a0."""
+
+[[link]]
+type = "reader"
+to = "charge_difference_bfs_correction_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040338"

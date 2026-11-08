@@ -1,0 +1,26 @@
+summary = """
+Base Fuel Schedule word of the fill model, 4*K*fill_event_quantity/140625 \
+with the K-Value K, stored by fill_bfs_word_producer. \
+fill_bfs_unblended_copy copies it into the unblended working word and \
+fill_bfs_rate_stage differentiates it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3b48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004002c"
+
+[[link]]
+type = "input"
+to = "fill_event_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ff9a"

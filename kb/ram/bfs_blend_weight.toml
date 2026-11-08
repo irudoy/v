@@ -24,6 +24,20 @@ git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1e39"
+level = "code"
+note = """
+fuel_compensation_coordinator stores max(26, min(255, floor(ffff11d7 * \
+bfs_blend_weight_gain / 32))) at 00040b72 with bit 4 of bfs_mode_flags set; \
+fill_bfs_blend_stage reads it as weight A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040620"
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"

@@ -1,0 +1,25 @@
+summary = """
+Stores fill_bfs_word ffff3b48 from fill_event_quantity ffff25b0 and the \
+K-Value word active-caracal 00008f80. With X = floor(4*K*Q/65536) formed \
+from 16-bit partial products, it stores min(0xffff, floor(X/2) - \
+floor(floor(saturating_scaled_quotient(X, 9553, 46875)/3)/2)), which is \
+X*65536/140625 = 4*K*Q/140625 up to truncation; 0xffff when X exceeds 32 \
+bits."""
+note = [
+    """
+With the stock K-Value 26806 the word is 0.7625 times fill_event_quantity. \
+The K-Value takes the multiplier position that it holds in the JK08A primary \
+BFS calculation.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ff8a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ff8a"

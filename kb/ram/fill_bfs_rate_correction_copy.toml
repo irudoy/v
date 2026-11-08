@@ -1,0 +1,24 @@
+summary = """
+Copy of the signed rate correction ffff104e stored by fill_bfs_rate_stage; \
+no reader appears in the L0 accessors."""
+level = "code"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3b46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000405a0"
+
+[[link]]
+type = "copy"
+to = "magenta-anaconda/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000405a0"

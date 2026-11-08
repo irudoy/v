@@ -78,6 +78,21 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0002cd1a"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1050"
+name = "uptight-chimpanzee"
+level = "code"
+note = """
+base_fuel_schedule_producer stores min(0xffff, floor(ffff1db4 * ffff114c / \
+128)) and compares four times the word with elite-dormouse in \
+bfs_maf_model_compare_flags."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040832"
+
 [[link]]
 type = "input"
 to = "majestic-jackrabbit/ram"

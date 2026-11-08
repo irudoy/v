@@ -23,6 +23,19 @@ path = "tools/kb/tests/test_airflow_bfs_limit.py"
 key = """
 test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_store_match_stock"""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1dba"
+level = "code"
+note = """
+fill_bfs_limit_stage stores the lilac-magpie curve byte at ffff11d7 before \
+it caps bfs at 256 times the byte."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040256"
+
 [[link]]
 type = "lookup"
 to = "lilac-magpie/tbl"

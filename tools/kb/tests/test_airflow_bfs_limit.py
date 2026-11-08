@@ -110,14 +110,24 @@ def test_bfs_limit_keeps_working_source_signed_cache_endpoint_and_diagnostic_gri
     assert mode.meaning.props['storage'] == 'uint8'
     assert any('JK00A' in note and '0x7e' in note for note in mode.meaning.props['note'])
     output = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff1026))
-    assert {link.to.key for link in output.links if link.type == 'input'} == {
+
+    def input_layouts(link):
+        return {item['at'].split(':', 1)[0] for item in link.evidence
+                if isinstance(item.get('at'), str) and ':' in item['at']}
+
+    inputs = {link.to.key: input_layouts(link) for link in output.links if link.type == 'input'}
+    assert {key for key, layouts in inputs.items() if '7mfk' in layouts} == {
         'wise-squirrel/ram', 'elite-dormouse/ram', 'magenta-anaconda/ram',
+    }
+    assert {key: layouts for key, layouts in inputs.items() if '7mfk' not in layouts} == {
+        'alpha_n_transient_bfs_correction/ram': {'jk78c'},
+        'charge_difference_bfs_correction/ram': {'jk78c'},
     }
     selectors = [link for link in output.links if link.type == 'selector']
     assert {(link.to.key, link.slot) for link in selectors} == {
         ('slick-bullfinch/ram','bit7'), ('bfs_mode_flags/tbl','bit4'),
     }
-    assert any('coherent correction cache/RAM' in link.props['note']
+    assert any('coherent correction cache/RAM' in link.props.get('note', '')
                for link in output.links if link.type == 'input')
     curve = model.meaning_of(SymbolKey('7mfk', 'tbl', 0x12c9e))
     assert '16-point unsigned byte' in curve.props['summary']

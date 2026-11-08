@@ -1,0 +1,30 @@
+summary = """
+Writes bfs ffff102e. While bit 7 of ffff23a9 is clear it forms r = max(0, W \
++ ffff104e + ffff1ef8 + ffff1962) with W = ffff1d60 when bit 4 of \
+bfs_mode_flags 00008b10 is set and ffff1d62 otherwise, looks up the curve \
+lilac-magpie 000140e4 at the byte ffff11d7, stores the byte as \
+bfs_upper_limit_raw ffff1dba, and writes bfs = min(r, 256*curve). While the \
+bit is set it writes 0 when the speed byte ffff11d6 >= 0xc0 and otherwise \
+256 * almond-orca[row][col] from grid 0000943e, with the row 0, 1 or 2 for \
+ffff11d6 below 0x40, 0x80 or 0xc0 and the column 0..3 for absolute_throttle \
+ffff107b below 7, 15, 22 or above."""
+note = [
+    """
+The structure repeats the JK08A limiting tail of \
+base_fuel_schedule_producer; JK78C adds the terms ffff1ef8 and ffff1962 to \
+the corrected word. ffff11d6 and ffff11d7 take the positions of the JK08A \
+speed bytes angelic-shark and liberal-falcon; their producers 0003b7ee and \
+0003b84c lie outside this subsystem, so they stay unbound candidates.""",
+]
+level = "code"
+role = "selector"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000401d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000401d4"

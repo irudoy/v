@@ -1,0 +1,15 @@
+summary = """
+Returns r4 * r5, or 0xffffffff when r4 exceeds floor(0xffffffff/r5) by \
+unsigned_divide/fn."""
+level = "code"
+role = "kernel"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004018c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004018c"

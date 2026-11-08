@@ -1,0 +1,25 @@
+summary = """
+Signed difference of alpha_n_flow ffff115c from its sample \
+alpha_n_difference_lag steps earlier, stored by \
+fuel_compensation_coordinator from the 11-byte history ffff1ee8..ffff1ef2."""
+level = "code"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1ebe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040be2"
+
+[[link]]
+type = "input"
+to = "alpha_n_flow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040ba2"

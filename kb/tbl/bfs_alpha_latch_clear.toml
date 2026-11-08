@@ -87,3 +87,12 @@ path = """
 git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_airflow_bfs_rate.py"""
 key = """
 test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock"""
+
+[[link]]
+type = "reader"
+to = "fill_bfs_rate_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040478"

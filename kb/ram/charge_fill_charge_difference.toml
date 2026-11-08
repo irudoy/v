@@ -1,0 +1,24 @@
+summary = """
+clamp_s16(charge_model_fill_charge ffff43de - ffff43ea), stored by \
+charge_difference_bfs_correction_producer."""
+level = "code"
+width = 16
+signed = true
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1a34"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004033a"
+
+[[link]]
+type = "input"
+to = "charge_model_fill_charge/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040318"

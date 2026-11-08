@@ -1,0 +1,27 @@
+summary = """
+Runs after charge_model from task table 00021b04. It sets ffff44af to 1 and \
+stores the difference charge_fill_charge_difference ffff1a34 = \
+clamp_s16(charge_model_fill_charge ffff43de - ffff43ea), the gain ffff14d0 \
+from difference_gain_curve_negative 000137a0 or \
+difference_gain_curve_nonnegative 00013790 at the byte ffff11a3 by the sign \
+of the difference, and, while bit 0 of ffff23be is set, \
+charge_difference_bfs_correction ffff1962 = clamp_s16(trunc(ROM8[00008adc] * \
+ffff1a34 * ffff14d0 / 125)), or 0 while it is clear."""
+note = [
+    """
+ambitious-starfish 000302d4 initializes ffff43de and ffff43ea with the same \
+value and is the only L0 writer of ffff43ea, so the runtime update of the \
+reference word, a candidate filtered fill charge, remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000402e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402e0"

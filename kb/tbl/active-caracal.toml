@@ -228,6 +228,24 @@ role = "accessor"
 
 [[link]]
 type = "reader"
+to = "fill_bfs_word_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ff98"
+
+[[link]]
+type = "reader"
+to = "fill_reference_bfs_word_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040052"
+
+[[link]]
+type = "reader"
 to = "maf_range_model_byte_builder/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"

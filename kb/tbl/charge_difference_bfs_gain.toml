@@ -1,0 +1,25 @@
+summary = "Factor of charge_difference_bfs_correction (stock 0x81)."
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008adc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040366"
+
+[[link]]
+type = "reader"
+to = "charge_difference_bfs_correction_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040366"

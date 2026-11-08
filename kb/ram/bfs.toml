@@ -312,6 +312,11 @@ value = "ffff102e"
 [[symbol]]
 layout = "jk78c"
 address = "ffff102e"
+note = """
+fill_bfs_limit_stage 000401d4 stores the word at 000402c6, from the \
+fill-model working word with the rate, alpha-N and charge-difference terms \
+capped by lilac-magpie, or from grid almond-orca while the MAF fault bit 7 \
+of ffff23a9 is set."""
 
 [[symbol.evidence]]
 kind = "literal-pool"
@@ -320,6 +325,29 @@ at = "jk78c:000a7c94"
 to = "7mfk:00085d38"
 value = "ffff102e"
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000402c6"
+
+[[link]]
+type = "input"
+to = "alpha_n_transient_bfs_correction/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040202"
+
+[[link]]
+type = "input"
+to = "charge_difference_bfs_correction/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004020a"
 
 [[link]]
 type = "input"

@@ -156,6 +156,33 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 
 [[link]]
 type = "reader"
+to = "fill_bfs_blend_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040604"
+
+[[link]]
+type = "reader"
+to = "fill_bfs_limit_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000401e8"
+
+[[link]]
+type = "reader"
+to = "fill_bfs_rate_stage/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000404e4"
+
+[[link]]
+type = "reader"
 to = "injector_channel_pulse_builder/fn"
 via = ["injector_channel_pulse_builder/fn"]
 layouts = ["7mfk"]

@@ -1,0 +1,18 @@
+summary = """
+Returns min(0xffffffff, a*b/c) for the longword a and the words b and c as \
+q*b + floor(r*b/c): q comes from unsigned_divide/fn and r from 0002206c, \
+which the sum uses as the remainder of a/c. The product q*b uses \
+saturating_mul_u32 when it can exceed 32 bits, and saturating_add_u32 joins \
+the terms. It returns 0xffffffff for c = 0 and 0 for b = 0."""
+level = "code"
+role = "kernel"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000400ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000400ee"

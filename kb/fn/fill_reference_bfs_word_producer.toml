@@ -1,0 +1,16 @@
+summary = """
+Stores fill_reference_bfs_word ffff1022 from fill_reference_event_quantity \
+ffff3a08 by the same arithmetic as fill_bfs_word_producer, with the K-Value \
+word active-caracal 00008f80."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004003a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004003a"
