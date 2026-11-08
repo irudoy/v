@@ -424,12 +424,14 @@ def l0_part(fp, layout, images, spaces):
     return fingerprint.digest([("files", files), ("spaces", bounds)])
 
 
-def load(graph, model, fp, root=repo.ROOT, full=False, log=print):
+def load(graph, model, fp, root=repo.ROOT, full=False, log=print, progress=None):
     """Load the model into the graph; return a summary per part."""
-    return _load(graph, model, fp, root, full, log)
+    return _load(graph, model, fp, root, full, log, progress)
 
 
-def _load(graph, model, fp, root, full, log):
+def _load(graph, model, fp, root, full, log, progress=None):
+    advance = progress or (lambda stage: None)
+    advance("graph structure")
     ensure_schema(graph)
     previous = meta(graph)
     graph.run("MATCH (m:Kb:Meta) DELETE m")
@@ -460,6 +462,7 @@ def _load(graph, model, fp, root, full, log):
         digest = l0_part(fp, layout.id, images, model.spaces[layout.mcu])
         if not full and loaded.get(layout.id) == digest:
             continue
+        advance(f"L0 {layout.id}")
         started = time.monotonic()
         graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = null", key=layout.id)
         graph.drain(f"MATCH (n:Kb) WHERE (n:Function OR n:Location) AND n.layout = '{layout.id}'")
@@ -475,8 +478,10 @@ def _load(graph, model, fp, root, full, log):
         graph.run("MATCH (l:Kb:Layout {key: $key}) SET l.loaded = $digest",
                   key=layout.id, digest=digest)
         summary[f"l0 {layout.id}"] = (counts, time.monotonic() - started, rows["outside"])
+        advance(f"L0 {layout.id} complete")
         changed = True
     if full or previous is None or previous.get("fingerprint") != fp.value:
+        advance("claims")
         started = time.monotonic()
         for label in CLAIM_LABELS:
             graph.drain(f"MATCH (n:Kb:{label})")
@@ -503,6 +508,7 @@ def _load(graph, model, fp, root, full, log):
         summary["claims"] = (counts, time.monotonic() - started, {})
         changed = True
     if changed:
+        advance("symbol bindings")
         graph.run("MATCH (:Kb:Symbol)-[r:AT]->() DELETE r")
         found = at_rows(model)
         at = sum(_create_links(graph, "AT", "Symbol", label, rows) for label, rows in found.items())
@@ -515,14 +521,18 @@ def _load(graph, model, fp, root, full, log):
                 modes=list(modes))
         summary["at"] = ({"at": at}, 0.0, {})
     return publish(graph, model, fp, root, summary,
-                   full or previous is None or previous.get("fingerprint") != fp.value, log)
+                   full or previous is None or previous.get("fingerprint") != fp.value, log,
+                   progress=progress)
 
 
-def publish(graph, model, fp, root, summary, changed, log=print):
+def publish(graph, model, fp, root, summary, changed, log=print, progress=None):
     """Publish freshness only after every retained layer and source check passes."""
     if changed:
         from kb import compatibility
-        summary.update(compatibility.load(graph, model, root, log))
+        options = {"progress": progress} if progress is not None else {}
+        summary.update(compatibility.load(graph, model, root, log, **options))
+    if progress is not None:
+        progress("validating source fingerprint")
     after = fingerprint.compute(root)
     if after.value != fp.value:
         raise repo.KbError("compiler inputs change during graph construction; Meta is absent", code=6)
@@ -545,26 +555,28 @@ def sync(root=repo.ROOT, full=False, log=print):
 def sync_held(root=repo.ROOT, full=False, log=print, model=None):
     """`sync` under a lock that the caller holds, loading `model` when the
     caller has compiled the working tree."""
-    model = model or compile.build(root)
-    added = names.enroll(model, model.names, root)
-    if added:
-        model.names = model.names + added
-        names.write(model.names, root)
-        names.assign(model, model.names)
-        log(f"{names.PATH}: {len(added)} generated names")
-    fp = fingerprint.compute(root)
-    with Graph(root) as graph:
-        summary = load(graph, model, fp, root, full, log)
-        log(f"graph: {graph.uri}")
-    for part, (counts, seconds, outside) in summary.items():
-        text = ", ".join(f"{count} {name}" for name, count in counts.items())
-        extra = "".join(f"; {count} {name} addresses outside the MCU spaces"
-                        for name, count in outside.items())
-        log(f"{part}: {text} ({seconds:.1f} s){extra}")
-    if not summary:
-        log("graph: every part is current")
-    log(f"meta: fingerprint {fp.value[:16]}")
-    return model, fp
+    with lock.syncing(root) as progress:
+        model = model or compile.build(root)
+        added = names.enroll(model, model.names, root)
+        if added:
+            model.names = model.names + added
+            names.write(model.names, root)
+            names.assign(model, model.names)
+            log(f"{names.PATH}: {len(added)} generated names")
+        progress("source fingerprint")
+        fp = fingerprint.compute(root)
+        with Graph(root) as graph:
+            summary = load(graph, model, fp, root, full, log, progress=progress)
+            log(f"graph: {graph.uri}")
+        for part, (counts, seconds, outside) in summary.items():
+            text = ", ".join(f"{count} {name}" for name, count in counts.items())
+            extra = "".join(f"; {count} {name} addresses outside the MCU spaces"
+                            for name, count in outside.items())
+            log(f"{part}: {text} ({seconds:.1f} s){extra}")
+        if not summary:
+            log("graph: every part is current")
+        log(f"meta: fingerprint {fp.value[:16]}")
+        return model, fp
 
 
 def _query_tokens(query):
@@ -680,6 +692,7 @@ def fresh(root=repo.ROOT, no_sync=False, log=print, held=False):
     if no_sync:
         raise repo.KbError("the graph is stale for this working tree; run `uv run kb sync`",
                            code=6)
+    log("graph: stale index; starting synchronization under .kb/lock")
     if held:
         sync_held(root, log=log)
     else:

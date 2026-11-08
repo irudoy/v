@@ -261,6 +261,15 @@ def cohorts(tmp_path, monkeypatch):
                            load=lambda: compatibility.load(projection, model, root, lambda text: None))
 
 
+def test_compatibility_layers_report_structured_start_and_completion(cohorts):
+    c = cohorts
+    stages = []
+    compatibility.load(c.graph, c.model, c.root, lambda text: None, progress=stages.append)
+    assert stages.index('A accesses') < stages.index('A accesses complete')
+    assert stages.index('B accesses') < stages.index('B accesses complete')
+    assert 'diagnostic corpus' in stages and 'reference A2L complete' in stages
+
+
 def test_changed_common_fingerprint_reuses_all_cohorts_and_exact_outputs(cohorts, monkeypatch):
     c = cohorts
     first = c.load()

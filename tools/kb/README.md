@@ -31,6 +31,9 @@ A `TRUNCATED:` answer names the option or narrower command that exposes the rest
 Ordinary graph reads check freshness and synchronize stale derived data unless
 `--no-sync` requests a refusal. The graph is an index of tracked knowledge.
 A successful synchronization does not establish new firmware semantics.
+The read announces an automatic synchronization. Commands waiting on its lock
+show the current stage; new progress from the same synchronization renews the
+configured waiting deadline. A stalled synchronization retains the timeout.
 Ordinary reads use the CLI directly, without per-read receipts or wrapper
 runners. The MCP server exposes the same supported read commands and `apply`.
 

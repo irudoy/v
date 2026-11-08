@@ -259,18 +259,22 @@ def existing_roms(graph):
     return {row['rom'] for row in graph.run(query) if row['rom'] is not None}
 
 
-def load(graph, model, root=repo.ROOT, log=print):
+def load(graph, model, root=repo.ROOT, log=print, progress=None):
     """Reuse complete exact-input cohorts before publishing overall Meta."""
+    advance = progress or (lambda stage: None)
+    advance("compatibility inputs")
     check_reference(root)
     builders = modules(root)
     completed = state.Completed(graph, log)
     summary = {}
     def run(name, function, *args):
         started = time.monotonic()
+        advance(name)
         state.progress(log, f'graph layer: {name} loading')
         with redirect_stdout(io.StringIO()):
             result = function(graph.driver, *args)
         summary[name] = (result or {}, time.monotonic() - started, {})
+        advance(f"{name} complete")
         state.progress(log, f'graph layer: {name} complete ({summary[name][1]:.1f} s)')
 
     # Even a missing corpus checkpoint with unchanged bytes requires rebuilding
@@ -281,6 +285,7 @@ def load(graph, model, root=repo.ROOT, log=print):
                         for name, data in captured.files if name.startswith('corpus:')}
         with captured.tree(root, destinations) as frozen:
             run('diagnostic corpus', builders['diagnostics'].load, frozen / 'refs/diagnostics')
+    advance("diagnostic corpus")
     completed.run('diagnostic corpus', corpus,
                   build_corpus,
                   kind='corpus', invalidates=completed.roms())
@@ -298,6 +303,7 @@ def load(graph, model, root=repo.ROOT, log=print):
             clear_rom(graph, rom)
         for layout in model.layouts.values():
             for rom in layout.images:
+                advance(f"{rom} inputs")
                 outdir = root / repo.L0 / layout.id
                 source = sources.resolve(rom, root / 'defs/rom-inheritance.toml')
                 sources.verify_image_binding(source, root / 'rom-images/roms.csv')
@@ -353,6 +359,7 @@ def load(graph, model, root=repo.ROOT, log=print):
                                 selected['DiagnosticBinding'], frozen)
 
                 completed.run(f'rom:{rom}', inputs, build_rom, kind='rom', rom=rom)
+                advance(f"{rom} complete")
 
     def build_external(captured):
         destinations = {name: name for name, data in captured.files if not name.startswith('producer:')}
@@ -361,6 +368,7 @@ def load(graph, model, root=repo.ROOT, log=print):
                 frozen / 'refs/vendor/catalog.csv', frozen / 'refs/vendor/facts.csv')
             run('reference A2L', builders['a2l'].load, frozen / A2L, 'HR',
                 frozen / 'refs/vendor/catalog.csv')
+    advance("external vocabularies")
     completed.run('external vocabularies', external_inputs(root),
                   build_external, kind='external')
     return summary

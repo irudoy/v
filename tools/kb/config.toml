@@ -41,7 +41,8 @@ max_running = 3
 ports = [17687, 17787]
 idle_days = 7
 
-# Seconds a sync or a write waits for `.kb/lock` before it exits with code 7.
+# Seconds a command waits for `.kb/lock` without new graph-sync progress
+# before it exits with code 7; ordinary holders retain the total wait limit.
 [lock]
 timeout = 300
 

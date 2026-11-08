@@ -1223,9 +1223,34 @@ before the first query. `kb` syncs on a mismatch; a gate or a tool raises
 
 ### 9.6 Lock
 
-`.kb/lock` serializes syncs and writes within a working tree. A waiting
-process prints the holder's command and process id and waits up to the
-timeout in `tools/kb/config.toml`, then exits with code 7.
+`.kb/lock` serializes reads, syncs and writes within a working tree. While
+held, its contents are a JSON object with these fields:
+
+| Field | Value |
+|---|---|
+| `version` | Lock-status format version, `1` |
+| `pid` | Holder process id |
+| `token` | Unique token of this lock acquisition |
+| `command` | Array of the holder's command arguments |
+| `operation` | `sync` during graph synchronization, otherwise `null` |
+| `stage` | Current stage, or an empty string outside synchronization |
+| `progress` | Nonnegative counter, increasing at stage transitions |
+
+A waiting process prints the holder's command and process id. During a graph
+sync it also shows stage transitions. A newly observed greater `progress`
+counter from the same `pid` and `token`, with `operation = "sync"`, renews
+the waiting deadline by the timeout in `tools/kb/config.toml`. The first
+status, another holder, ordinary contention, and a sync without further
+progress do not renew it; an expired deadline exits with code 7 and names
+the holder and its current stage. A reload can exceed the timeout in total
+while its stages advance within that limit.
+
+The native and compatibility loaders publish structured stage transitions;
+the status is independent of human-readable log text. A read that triggers
+synchronization announces it before the reload. Synchronization restores the
+ordinary holder status on exit, and releasing the lock clears its contents,
+also after a loader failure. Partial, malformed, unsupported-version and
+legacy plain-text records do not extend a wait.
 
 ### 9.7 Legacy graph
 

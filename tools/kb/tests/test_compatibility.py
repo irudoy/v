@@ -51,6 +51,20 @@ def test_current_graph_reuses_all_layers_without_reconstruction(monkeypatch):
     assert graph.publish(source, 'model', held, Path('/unused'), {}, False) == {}
 
 
+def test_publish_passes_structured_progress_to_retained_layers(monkeypatch):
+    stages = []
+    held = fingerprint.Fingerprint('held', {})
+    def layers(*args, progress):
+        progress('fixture accesses')
+        return {}
+    monkeypatch.setattr(compatibility, 'load', layers)
+    monkeypatch.setattr(fingerprint, 'compute', lambda root: held)
+    monkeypatch.setattr(fingerprint, 'head', lambda root: ('commit', {}))
+    source = SimpleNamespace(run=lambda *args, **kwargs: None)
+    graph.publish(source, 'model', held, Path('/unused'), {}, True, progress=stages.append)
+    assert stages == ['fixture accesses', 'validating source fingerprint']
+
+
 def test_layer_sources_bind_corpora_and_builders_but_exclude_owned_registry_files(tmp_path):
     for path in ('refs/diagnostics/sample/source_pack.toml',
                  'refs/diagnostics/sample/parameters.csv',
