@@ -1,0 +1,26 @@
+summary = """
+Stage of throttle_target_area_model. 000491fc forms a charge and a pressure \
+from the target charge; 0004868a forms the flow ffff99c8 as that charge \
+times max(3.125 * ffff11a6, 100) / 20; throttle_target_flux_lookup forms the \
+flux ffff99cc at that pressure; throttle_target_area_inverse forms the \
+throttle area ffff99bc of the flow; throttle_target_angle_lookup converts \
+half of that area into the angle ffff99c4. throttle_held_flux_lookup forms \
+the flux ffff9a70 at the pressure ffff9ab4 of the previous pass, or at ROM \
+word 00009082 * 0.005 while ffff9af4 is clear. 00048814, 000493e0, 00048186, \
+0004846c, 0004852c and 00048408 complete the outputs, and the pass stores \
+ffff9ab4, ffff9ab0 and ffff9aac for the next pass and sets ffff9af4."""
+level = "code"
+role = "driver"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00047f98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047f98"
+note = """
+The reviewed listing establishes the calls at 00047ff8..00048148 and the \
+stores at 00048158..0004816a."""

@@ -1,0 +1,17 @@
+summary = """
+vvel_load_coordinate ffff238a axis of throttle_fill_rise_surface and \
+throttle_fill_fall_surface, 8192..65535 in units of 1/655.36 percent."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000156ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b82"
+note = "The load at 00048b82 passes this axis to its lookup."

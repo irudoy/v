@@ -1,0 +1,21 @@
+summary = """
+Validation counterpart of throttle_target_flux_lookup. It reads ROM byte \
+00008957, looks up throttle_flow_function_curve_validation and \
+throttle_target_flux_floor_curve_validation, scales by ROM word 00017608, \
+which holds the stock value of ROM word 00009020, and stores ffff3812, \
+ffff3814 and ffff9b2c."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ab4c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ab4c"
+note = """
+The reviewed listing establishes the calls at 0004ab66..0004abd4 and the \
+stores at 0004abe0..0004ac30."""

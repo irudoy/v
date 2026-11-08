@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of throttle_fill_time_lookup. It looks up \
+throttle_fill_rise_surface_validation and \
+throttle_fill_fall_surface_validation and stores ffff9b48, ffff9b4c, \
+ffff9b50 and ffff9b54."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ae9c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ae9c"
+note = """
+The reviewed listing establishes the calls at 0004aecc..0004aede and the \
+stores at 0004af00..0004af3e."""

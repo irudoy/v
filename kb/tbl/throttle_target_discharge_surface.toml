@@ -1,0 +1,67 @@
+summary = """
+16x16 discharge coefficient of the throttle model over the throttle area \
+fraction and the raised flow-function word: throttle_target_area_inverse and \
+throttle_transient_area_inverse divide the required effective area by it, \
+times 1/65535, to form the geometric area. Stock values are 19618..65535."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000ddce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000485d6"
+note = """
+The load at 000485d6 passes this table to its lookup in \
+throttle_target_area_inverse."""
+
+[[link]]
+type = "axis"
+to = "throttle_discharge_area_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000485da"
+
+[[link]]
+type = "axis"
+to = "throttle_discharge_flow_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000485de"
+
+[[link]]
+type = "reader"
+to = "throttle_target_area_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000485d6"
+
+[[link]]
+type = "reader"
+to = "throttle_transient_area_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004895a"

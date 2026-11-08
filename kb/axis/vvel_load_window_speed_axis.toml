@@ -1,0 +1,18 @@
+summary = """
+Engine speed ffff11a6 axis of the four load window curves, 32..2560 counts, \
+100..8000 RPM at 3.125 RPM per count, the scale that 0004868a applies to \
+ffff11a6."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001533c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049536"
+note = "The load at 00049536 passes this axis to its lookup."

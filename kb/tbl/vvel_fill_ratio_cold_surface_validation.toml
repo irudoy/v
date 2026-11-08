@@ -1,0 +1,55 @@
+summary = """
+Validation copy of vvel_fill_ratio_cold_surface, read by \
+vvel_fill_ratio_lookup_validation. Its stock bytes equal those of the \
+primary table vvel_fill_ratio_cold_surface."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001a20c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c06a"
+note = """
+The load at 0004c06a passes this table to its lookup in \
+vvel_fill_ratio_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_load_axis_validation/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c07c"
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_word_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c072"
+
+[[link]]
+type = "reader"
+to = "vvel_fill_ratio_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c06a"

@@ -1,0 +1,44 @@
+summary = """
+Validation copy of throttle_model_floor_pressure_curve, read by \
+throttle_model_charge_floor_validation. Its stock bytes equal those of the \
+primary curve throttle_model_floor_pressure_curve."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b4ea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b5e0"
+note = """
+The load at 0004b5e0 passes this table to its lookup in \
+throttle_model_charge_floor_validation."""
+
+[[link]]
+type = "axis"
+to = "throttle_floor_pressure_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b5e4"
+
+[[link]]
+type = "reader"
+to = "throttle_model_charge_floor_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b5e0"

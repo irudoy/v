@@ -1,0 +1,24 @@
+summary = """
+Looks up throttle_angle_cap_surface by coolant byte ffff1069 and engine \
+speed ffff11a6 for 000493e0, stores the word times 0.00171875 as an angle at \
+ffff9a68 and returns the area of that angle on \
+throttle_angle_to_area_primary times 0.0016. It sets a flag when two byte \
+arguments are set, and sets ffff9af6 while engine speed exceeds ROM word \
+00009044, plus ROM word 00008eec while ffff9af6 is clear; the stock word \
+0xffff never sets it. 00049824 and 0004988e cap the model angle and area by \
+these values while the flag is set."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000498f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000498f0"
+note = """
+The reviewed listing establishes the lookups at 00049914 and 00049930 and \
+the stores at 0004992c, 0004994a and 00049986..00049988."""

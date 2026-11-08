@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of vvel_load_window_b_lookup. It looks up \
+vvel_load_window_b_upper_curve_validation and \
+vvel_load_window_b_lower_curve_validation and stores ffff9b94, ffff9b98 and \
+ffff9b9c."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004b7a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b7a0"
+note = """
+The reviewed listing establishes the calls at 0004b7b8..0004b7d0 and the \
+stores at 0004b7d2..0004b82a."""

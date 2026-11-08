@@ -1,0 +1,45 @@
+summary = """
+16-point pressure word of throttle_model_charge_floor over engine speed \
+ffff11a6, read times 0.005 and divided by the ROM gas constant and reference \
+temperature to scale the target charge into the charge floor. Stock values \
+are 4266 up to 896 counts, 4000 at 1024 and 3198 from 1152."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000168a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000492b6"
+note = """
+The load at 000492b6 passes this table to its lookup in \
+throttle_model_charge_floor."""
+
+[[link]]
+type = "axis"
+to = "throttle_floor_pressure_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000492ba"
+
+[[link]]
+type = "reader"
+to = "throttle_model_charge_floor/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000492b6"

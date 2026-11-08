@@ -1,0 +1,23 @@
+summary = """
+Looks up the manifold filling time of 00048a30 by vvel_load_coordinate \
+ffff238a and engine speed ffff11a6: throttle_fill_rise_surface while the \
+pressure difference ffff99dc is at least 0, stored times 1e-4 at ffff99f4, \
+and throttle_fill_fall_surface while it is negative, stored times 1e-4 at \
+ffff99f0. It stores the selected value at ffff99ec and the value raised to \
+the lower bound ffff99e0 and clamped to 1e-4..2.0 at ffff99e8; 00048c02 \
+divides ffff99dc by ffff99e8."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00048b5c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b5c"
+note = """
+The reviewed listing establishes both lookups at 00048b88 and 00048b98 and \
+the stores at 00048bb8..00048bea."""

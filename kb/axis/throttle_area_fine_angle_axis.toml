@@ -1,0 +1,55 @@
+summary = """
+Throttle angle axis of throttle_angle_to_area_primary in the throttle model, \
+0..50752: each breakpoint is 16 times the matching breakpoint of \
+benign-camel at 000167e4. The model reads the angle word times 0.00171875. \
+throttle_flow_from_angle, throttle_angle_cap_lookup, 00048c36 and 0004a0ba \
+look up the area at an angle; throttle_target_angle_lookup, 00048cc8, \
+00049654, 000496cc and 00049714 pass it as the data of the lookup over \
+throttle_angle_to_area_primary to recover the angle of an area."""
+level = "code"
+quantity = "raw"
+points = 32
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016824"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000482de"
+note = "The load at 000482de passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "throttle_angle_cap_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049928"
+
+[[link]]
+type = "reader"
+to = "throttle_flow_from_angle/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000482de"
+
+[[link]]
+type = "reader"
+to = "throttle_target_angle_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048666"

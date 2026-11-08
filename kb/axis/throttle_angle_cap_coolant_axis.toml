@@ -1,0 +1,17 @@
+summary = """
+Coolant byte ffff1069 axis of throttle_angle_cap_surface, raw breakpoints \
+10..150."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016f34"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004990c"
+note = "The load at 0004990c passes this axis to its lookup."

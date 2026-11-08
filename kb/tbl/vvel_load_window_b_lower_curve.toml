@@ -1,0 +1,44 @@
+summary = """
+16-point lower bound of the second load window over engine speed ffff11a6, \
+read by vvel_load_window_b_lookup. Its stock bytes equal those of \
+vvel_load_window_a_lower_curve."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000169a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000495dc"
+note = """
+The load at 000495dc passes this table to its lookup in \
+vvel_load_window_b_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_window_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000495d0"
+
+[[link]]
+type = "reader"
+to = "vvel_load_window_b_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000495dc"

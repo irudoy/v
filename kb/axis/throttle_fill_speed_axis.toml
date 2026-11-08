@@ -1,0 +1,18 @@
+summary = """
+Engine speed ffff11a6 axis of throttle_fill_rise_surface and \
+throttle_fill_fall_surface, 256..1856 counts, 800..5800 RPM at 3.125 RPM per \
+count, the scale that 0004868a applies to ffff11a6."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001535c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b86"
+note = "The load at 00048b86 passes this axis to its lookup."

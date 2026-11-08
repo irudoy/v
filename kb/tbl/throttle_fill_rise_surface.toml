@@ -1,0 +1,56 @@
+summary = """
+8x8 manifold filling time of the rising pressure difference over \
+vvel_load_coordinate ffff238a and engine speed ffff11a6: \
+throttle_fill_time_lookup reads it times 1e-4 while ffff99dc is at least 0. \
+Stock values are 600..2367."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000f9ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b72"
+note = """
+The load at 00048b72 passes this table to its lookup in \
+throttle_fill_time_lookup."""
+
+[[link]]
+type = "axis"
+to = "throttle_fill_load_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b82"
+
+[[link]]
+type = "axis"
+to = "throttle_fill_speed_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b86"
+
+[[link]]
+type = "reader"
+to = "throttle_fill_time_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048b72"

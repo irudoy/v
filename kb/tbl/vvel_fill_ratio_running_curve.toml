@@ -1,0 +1,44 @@
+summary = """
+16-point Q14 fill ratio of VVEL state code 8 (mode 15, warm running above \
+idle) over word ffff11a0: vvel_fill_ratio_lookup reads it times 2^-14 into \
+ffff9a98. 16384 is 1.0. Stock values are 10673..19572, 65..119 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017104"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049d2c"
+note = """
+The load at 00049d2c passes this table to its lookup in \
+vvel_fill_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_running_word_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049d30"
+
+[[link]]
+type = "reader"
+to = "vvel_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049d2c"

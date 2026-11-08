@@ -1,0 +1,24 @@
+summary = """
+Converts the flow of 00048a30, which adds a manifold filling term, into the \
+throttle area for 0004886a under 00048814: the area is the flow / the flux \
+times 1e4, stored at ffff99d0; while bit 7 of ROM byte 00008958 is set, as \
+in the stock byte 0x9a, it averages the area with the previous area \
+ffff9acc. Its fraction of twice max(ROM word 00008c8a * 0.0008, 0.0008) and \
+a flow-function word index throttle_target_discharge_surface; it stores the \
+coefficient at ffff99d8 and the area / coefficient minus a word argument \
+times 2e-4 at ffff99d4, and keeps the area at ffff9acc."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000488a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000488a4"
+note = """
+The reviewed listing establishes the lookup at 00048966 and the stores at \
+000488ec, 00048980, 000489b2 and 000489b4."""

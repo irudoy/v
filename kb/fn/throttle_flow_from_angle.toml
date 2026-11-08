@@ -1,0 +1,23 @@
+summary = """
+Converts a throttle angle into a flow for 0004823e. The angle times 581.82, \
+clamped to 0..65535, looks up throttle_angle_to_area_primary over \
+throttle_area_fine_angle_axis; the area times 0.0008, as a fraction of \
+max(ROM word 00008c8a * 0.0008, 0.0008), and a word argument index \
+throttle_discharge_surface. It stores the coefficient times 1/65535, at \
+least 1/65535, at ffff99ac and (a word argument times 2e-4 + 2 * coefficient \
+* area) * a float argument * 1e-4 at ffff99a8."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000482a8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000482a8"
+note = """
+The reviewed listing establishes the lookups at 000482e2 and 00048342 and \
+the stores at 0004835e, 00048366 and 00048384."""

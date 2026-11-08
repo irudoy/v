@@ -1,0 +1,29 @@
+summary = """
+Validation counterpart of throttle_target_area_stage. Among 33 direct calls \
+in 0004a670..0004bcf6 it runs throttle_target_flux_lookup_validation, \
+throttle_held_flux_lookup_validation, \
+throttle_target_area_inverse_validation, \
+throttle_transient_area_inverse_validation, \
+throttle_flow_from_angle_validation, \
+throttle_target_angle_lookup_validation, \
+throttle_fill_time_lookup_validation, \
+throttle_model_charge_floor_validation, \
+vvel_load_window_a_lookup_validation, vvel_load_window_b_lookup_validation \
+and throttle_angle_cap_lookup_validation. It reads ROM word 00017610, which \
+holds the stock value of ROM word 00009082, and stores ffff9c0c, ffff9c10, \
+ffff9c14 and ffff9c54 for the next pass."""
+level = "code"
+role = "driver"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004a364"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004a364"
+note = """
+The reviewed listing establishes the calls at 0004a3c4..0004a5e8 and the \
+stores at 0004a5f2..0004a602."""

@@ -1,0 +1,25 @@
+summary = """
+Validation counterpart of throttle_target_area_model, run from task table \
+entry 00021c2c next to vvel_load_ratio_stage_validation and \
+vvel_load_coordinate_publisher_validation. It runs 0004c22c, \
+vvel_fill_ratio_lookup_validation, 0004beee and 0004c218, then \
+throttle_target_area_stage_validation with words ffff382c, ffff3822, \
+ffff11bc and ffff1236. It stores the area output of the stage, clamped to \
+0..52.428 and times 1250 as for throttle_target_shared, at ffff1c76, the \
+output of 0004beee at ffff9afc, and the output of 0004be02, clamped to \
+0..99.998 and times 655.36, at ffff382e and as a float at ffff9c08."""
+level = "code"
+role = "driver"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004a134"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004a134"
+note = """
+The reviewed listing establishes the calls at 0004a1ca..0004a2ae and the \
+stores at 0004a20a..0004a2fa."""

@@ -1,0 +1,23 @@
+summary = """
+Forms the throttle mass flux at the pressure of the previous pass for \
+throttle_target_area_stage. It divides the pressure by max(ROM word 00009082 \
+* 0.005, 0.005), looks up throttle_flow_function_curve at that ratio times \
+65535, stores the result at ffff3414, raises it to \
+throttle_held_flux_floor_curve at engine speed ffff11a6, stores the raised \
+word at ffff3412 and stores it / 65535 times ROM word 00009020 / 128, at \
+least 1/128, at ffff9a70."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00049adc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049adc"
+note = """
+The reviewed listing establishes the lookups at 00049aec and 00049bb4 and \
+the stores at 00049bc0, 00049bd0, 00049bd4 and 00049bfa."""

@@ -1,0 +1,18 @@
+summary = """
+Throttle area fraction axis of throttle_target_discharge_surface and \
+throttle_discharge_surface: the area of one throttle as a fraction of ROM \
+word 00008c8a * 0.0008, times 65535. Stock breakpoints are 0..65535."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000150dc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000485da"
+note = "The load at 000485da passes this axis to its lookup."

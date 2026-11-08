@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of throttle_transient_area_inverse. It reads ROM byte \
+00008958 and ROM word 000172b4, which holds the stock value of ROM word \
+00008c8a, looks up throttle_target_discharge_surface_validation and stores \
+ffff9b30, ffff9b34, ffff9b38 and ffff9c2c."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ac44"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ac44"
+note = """
+The reviewed listing establishes the calls at 0004ad02 and the stores at \
+0004ac88..0004adc6."""

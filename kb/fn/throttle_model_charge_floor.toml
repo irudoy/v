@@ -1,0 +1,22 @@
+summary = """
+Forms the charge floor of 000491fc. It looks up \
+throttle_model_floor_pressure_curve at engine speed ffff11a6, divides the \
+word times 0.005 by max(ROM word 00008e98 * 0.001, 0.001) times max(ROM word \
+000091d6 * 0.01, 0.01), stores the target charge ffff9a7c times that factor \
+at ffff9a18 and stores at ffff9a1c the larger of it and ffff369a times \
+1e-7."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000492ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000492ae"
+note = """
+The reviewed listing establishes the lookup at 000492be and the stores at \
+00049326..0004932c."""

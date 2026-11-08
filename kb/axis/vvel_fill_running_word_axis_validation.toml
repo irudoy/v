@@ -1,0 +1,17 @@
+summary = """
+Validation copy of vvel_fill_running_word_axis. Its stock bytes equal those \
+of the primary axis."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b64a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bf64"
+note = "The load at 0004bf64 passes this axis to its lookup."

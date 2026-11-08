@@ -1,0 +1,19 @@
+summary = """
+Validation counterpart of throttle_target_angle_lookup. It recovers an angle \
+word from throttle_area_fine_angle_axis_validation over \
+throttle_angle_to_area_validation and stores the angle at ffff9b24."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004aa66"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004aa66"
+note = """
+The reviewed listing establishes the calls at 0004aa96 and the stores at \
+0004aaac."""

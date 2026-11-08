@@ -1,0 +1,22 @@
+summary = """
+Validation counterpart of throttle_flow_from_angle. It looks up \
+throttle_angle_to_area_validation over \
+throttle_area_fine_angle_axis_validation and \
+throttle_discharge_surface_validation, forms the area fraction with ROM word \
+000172b4, which holds the stock value of ROM word 00008c8a, and stores \
+ffff9b04 and ffff9b08."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004a6e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004a6e6"
+note = """
+The reviewed listing establishes the calls at 0004a720..0004a780 and the \
+stores at 0004a79c..0004a7c8."""

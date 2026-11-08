@@ -1,0 +1,17 @@
+summary = """
+Validation copy of vvel_fill_cold_load_axis. Its stock bytes equal those of \
+the primary axis."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b69a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c07c"
+note = "The load at 0004c07c passes this axis to its lookup."

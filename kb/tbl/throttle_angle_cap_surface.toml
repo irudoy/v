@@ -1,0 +1,56 @@
+summary = """
+8x8 throttle angle cap over coolant byte ffff1069 and engine speed ffff11a6: \
+throttle_angle_cap_lookup reads it times 0.00171875 into ffff9a68. Stock \
+values are 848..1696; each row of eight cells holds one value, 1696 in the \
+first three rows falling to 848 in the last."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000eece"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049908"
+note = """
+The load at 00049908 passes this table to its lookup in \
+throttle_angle_cap_lookup."""
+
+[[link]]
+type = "axis"
+to = "throttle_angle_cap_coolant_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004990c"
+
+[[link]]
+type = "axis"
+to = "throttle_angle_cap_speed_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049910"
+
+[[link]]
+type = "reader"
+to = "throttle_angle_cap_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049908"

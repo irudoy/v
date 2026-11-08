@@ -1,0 +1,20 @@
+summary = """
+Converts half of the target throttle area ffff99bc into an angle for \
+throttle_target_area_stage: the half area times 1250, clamped to 0..65535, \
+looks up throttle_area_fine_angle_axis over throttle_angle_to_area_primary, \
+and the angle word times 0.00171875 is stored at ffff99c4."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004863c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004863c"
+note = """
+The reviewed listing establishes the inverse lookup at 0004866c and the \
+store at 00048682."""

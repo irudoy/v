@@ -1,0 +1,18 @@
+summary = """
+Word ffff11a0 axis of vvel_fill_ratio_default_surface and \
+vvel_fill_ratio_warm_idle_surface, raw breakpoints 384..3840. 0004f0c8 also \
+passes it to its lookups."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017144"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049dea"
+note = "The load at 00049dea passes this axis to its lookup."

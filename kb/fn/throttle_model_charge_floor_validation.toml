@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of throttle_model_charge_floor. It looks up \
+throttle_model_floor_pressure_curve_validation, reads ROM words 000175f0 and \
+0001762a, which hold the stock values of ROM words 00008e98 and 000091d6, \
+and stores ffff9b7c and ffff9b80."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004b5d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b5d8"
+note = """
+The reviewed listing establishes the calls at 0004b5e8 and the stores at \
+0004b650..0004b656."""

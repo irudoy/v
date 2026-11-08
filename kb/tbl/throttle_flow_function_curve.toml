@@ -1,0 +1,68 @@
+summary = """
+32-point normalized compressible flow function of the throttle over the \
+pressure ratio: 65535 at ratios up to 34612/65535 = 0.528 and 0 at 1.0. \
+throttle_target_flux_lookup and throttle_held_flux_lookup read it at the \
+pressure / ROM word 00009082 * 0.005, and request_difference_limit_builder \
+also reads it."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001579a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048792"
+note = """
+The load at 00048792 passes this table to its lookup in \
+throttle_target_flux_lookup."""
+
+[[link]]
+type = "axis"
+to = "throttle_flow_pressure_ratio_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048794"
+
+[[link]]
+type = "reader"
+to = "request_difference_limit_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000922f4"
+
+[[link]]
+type = "reader"
+to = "throttle_held_flux_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049bae"
+
+[[link]]
+type = "reader"
+to = "throttle_target_flux_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048792"

@@ -1,0 +1,24 @@
+summary = """
+Forms the throttle mass flux at the pressure from 000491fc. It divides the \
+pressure by max(ROM word 00009082 * 0.005, 0.005), looks up \
+throttle_flow_function_curve at that ratio times 65535 and stores the result \
+at ffff3418. While bit 1 of ROM byte 00008957 is set, as in the stock byte \
+0x3a, it raises the result to throttle_target_flux_floor_curve at engine \
+speed ffff11a6 and stores the raised word at ffff3416; otherwise it stores \
+0xffff there and uses 1.0. It stores the word / 65535 times ROM word \
+00009020 / 128, at least 1/128, at ffff99cc."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000486ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000486ae"
+note = """
+The reviewed listing establishes the lookups at 000486c2 and 0004879a and \
+the stores at 000487a8, 000487d2, 000487d8 and 00048804."""

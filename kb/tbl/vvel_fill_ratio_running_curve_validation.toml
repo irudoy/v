@@ -1,0 +1,44 @@
+summary = """
+Validation copy of vvel_fill_ratio_running_curve, read by \
+vvel_fill_ratio_lookup_validation. Its stock bytes equal those of the \
+primary curve vvel_fill_ratio_running_curve."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b6ca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bf60"
+note = """
+The load at 0004bf60 passes this table to its lookup in \
+vvel_fill_ratio_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_running_word_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bf64"
+
+[[link]]
+type = "reader"
+to = "vvel_fill_ratio_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bf60"

@@ -1,0 +1,26 @@
+summary = """
+Root of the JK78C throttle target-area model, run from task table entry \
+00021b9c. It takes the closed-throttle area from 0004a0ba, the target charge \
+ffff9a7c from vvel_fill_ratio_lookup, and runs throttle_target_area_stage \
+with that charge, vvel_load_coordinate ffff238a, engine speed ffff11a6, \
+ffff365c and ffff369a. It stores the area output of the stage, clamped to \
+0..52.428 and times 1250, at throttle_target_shared ffff199e; two outputs \
+clamped to 0..327.675 and times 200 at ffff3332 and ffff365a; the output of \
+00049c08, clamped to 0..99.998 and times 655.36, at ffff36a4 and as a float \
+at ffff9aa8; and an output clamped to 0..0.0065535 and times 1e7 at \
+ffff336c."""
+level = "code"
+role = "driver"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00047ce8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047ce8"
+note = """
+The reviewed listing establishes the calls at 00047d56, 00047daa, 00047e0e \
+and 00047ebe and the stores at 00047e24..00047f1a."""

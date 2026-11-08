@@ -1,0 +1,17 @@
+summary = """
+Load coordinate axis of vvel_fill_ratio_idle_learning_surface, 4100..65535 \
+in units of 1/655.36 percent. 0004f0c8 also passes it to its lookups."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000170e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e58"
+note = "The load at 00049e58 passes this axis to its lookup."

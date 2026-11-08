@@ -1,0 +1,45 @@
+summary = """
+16-point lower bound of the first load window over engine speed ffff11a6: \
+vvel_load_window_a_lookup reads it times 100/65535 as percent of \
+vvel_load_coordinate. Stock values are 0 at the first breakpoint and \
+52429..60948 above, 80..93 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000168e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049542"
+note = """
+The load at 00049542 passes this table to its lookup in \
+vvel_load_window_a_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_window_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049536"
+
+[[link]]
+type = "reader"
+to = "vvel_load_window_a_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049542"

@@ -1,0 +1,17 @@
+summary = """
+Validation copy of throttle_fill_speed_axis. Its stock bytes equal those of \
+the primary axis."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ad8a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004aec0"
+note = "The load at 0004aec0 passes this axis to its lookup."

@@ -1,0 +1,22 @@
+summary = """
+Validation counterpart of throttle_angle_cap_lookup. It looks up \
+throttle_angle_cap_surface_validation, returns an area from \
+throttle_angle_to_area_validation over \
+throttle_area_fine_angle_axis_validation, reads ROM word 000175f2, which \
+holds the stock value of ROM word 00008eec, and stores ffff9bcc and \
+ffff9c56."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004bacc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bacc"
+note = """
+The reviewed listing establishes the calls at 0004baf0..0004bb0c and the \
+stores at 0004bb08..0004bb6c."""

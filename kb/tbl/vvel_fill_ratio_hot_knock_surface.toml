@@ -1,0 +1,57 @@
+summary = """
+8x8 Q14 fill ratio of VVEL state code 6 (mode 13, hot-intake idle with the \
+knock state set) over word ffff11a0 and the load coordinate of \
+vvel_fill_ratio_lookup: the lookup reads it times 2^-14 into ffff9a84 and \
+blends it while the state code is 6. 16384 is 1.0. Stock values are \
+14582..16384, 89..100 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000126ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e86"
+note = """
+The load at 00049e86 passes this table to its lookup in \
+vvel_fill_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_hot_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e78"
+
+[[link]]
+type = "axis"
+to = "vvel_fill_hot_word_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e6e"
+
+[[link]]
+type = "reader"
+to = "vvel_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e86"

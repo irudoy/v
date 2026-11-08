@@ -1,0 +1,56 @@
+summary = """
+8x8 Q14 fill ratio of VVEL state code 3 (mode 3, cold) over word ffff11a0 \
+and the load coordinate of vvel_fill_ratio_lookup: the lookup reads it times \
+2^-14 into ffff9a94 and blends it while the state code is 3. 16384 is 1.0. \
+Every stock cell is 16384, 100 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000124ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e00"
+note = """
+The load at 00049e00 passes this table to its lookup in \
+vvel_fill_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e12"
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_word_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e08"
+
+[[link]]
+type = "reader"
+to = "vvel_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049e00"

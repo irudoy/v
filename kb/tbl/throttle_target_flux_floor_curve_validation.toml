@@ -1,0 +1,44 @@
+summary = """
+Validation copy of throttle_target_flux_floor_curve, read by \
+throttle_target_flux_lookup_validation. Its stock bytes equal those of the \
+primary curve throttle_target_flux_floor_curve."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b43a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ab5e"
+note = """
+The load at 0004ab5e passes this table to its lookup in \
+throttle_target_flux_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "throttle_flux_floor_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ab60"
+
+[[link]]
+type = "reader"
+to = "throttle_target_flux_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ab5e"

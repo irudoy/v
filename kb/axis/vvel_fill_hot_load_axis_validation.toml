@@ -1,0 +1,17 @@
+summary = """
+Validation copy of vvel_fill_hot_load_axis. Its stock bytes equal those of \
+the primary axis."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b6ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004bff6"
+note = "The load at 0004bff6 passes this axis to its lookup."

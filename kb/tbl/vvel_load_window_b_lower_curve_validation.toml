@@ -1,0 +1,44 @@
+summary = """
+Validation copy of vvel_load_window_b_lower_curve, read by \
+vvel_load_window_b_lookup_validation. Its stock bytes equal those of the \
+primary curve vvel_load_window_b_lower_curve."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b56a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b7be"
+note = """
+The load at 0004b7be passes this table to its lookup in \
+vvel_load_window_b_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_window_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b7b2"
+
+[[link]]
+type = "reader"
+to = "vvel_load_window_b_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004b7be"

@@ -1,0 +1,23 @@
+summary = """
+Converts the flow ffff99c8 at the flux ffff99cc into the throttle area for \
+throttle_target_area_stage: the area is the flow / flux times 1e4; its \
+fraction of twice max(ROM word 00008c8a * 0.0008, 0.0008), clamped to 0..1 \
+and times 65535, and the raised flow-function word ffff3416 index \
+throttle_target_discharge_surface. It stores the coefficient times 1/65535, \
+at least 1/65535, at ffff99c0 and the area / coefficient minus a word \
+argument times 2e-4 at ffff99bc."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00048550"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00048550"
+note = """
+The reviewed listing establishes the lookup at 000485e2 and the stores at \
+000485fe, 00048604 and 0004862c."""

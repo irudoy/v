@@ -1,0 +1,21 @@
+summary = """
+Forms a load window weight for 000493e0. It looks up \
+vvel_load_window_a_upper_curve and vvel_load_window_a_lower_curve at engine \
+speed ffff11a6, stores both times 100/65535 as percent at ffff9a24 and \
+ffff9a28, and stores at ffff9a2c the position of vvel_load_coordinate \
+ffff238a times 100/65535 between them, clamped to 0..1."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00049526"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00049526"
+note = """
+The reviewed listing establishes both lookups at 0004953c and 00049552 and \
+the stores at 00049554, 0004956e and 000495ae..000495b0."""
