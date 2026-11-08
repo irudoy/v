@@ -37,14 +37,6 @@ relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
-role = "consumer"
-to = "rough-porpoise/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
 role = "indexed_by"
 to = "ambitious-condor/ram"
 type = "input"
@@ -115,13 +107,6 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "rough-porpoise/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 
 [[link]]
 type = "writer"

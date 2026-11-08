@@ -6,6 +6,11 @@ note = [
     """
 The shared interpolation functions are the primitives reachable through \
 PTR_FUN slots, not this wrapper.""",
+    """
+On 1ME3B, 1me3b:0002a6b4 is no wrapper: it is an own unrolled kernel without \
+calls that searches both uint8 axes and interpolates in its body, and its \
+inline finisher returns the limit 0x0080 at 1me3b:0002a9a0 when a corner \
+element reaches it.""",
 ]
 level = "code"
 role = "wrapper"

@@ -4995,17 +4995,6 @@ reason = "writer 7mfk-ffff1b18/ram -> 7mfk-000c1152/fn: no matching normalized L
 
 [[reconciliation.review]]
 kind = "access"
-subject = "7mfk-ffff1b18/ram"
-layout = "7mfk"
-claim_sha256 = "a4964e35d1c13a7650b5dbcf19a08cba46eb862a8fbc9fe91df2fb65c365dbe8"
-l0 = "3ef2478f06d83c6d"
-detail = "reader 7mfk-ffff1b18/ram -> 7mfk-000265c4/fn: no matching normalized L0 access; the original claim remains unresolved"
-sources = ["kb/ram/aquatic-guillemot.toml"]
-state = "unresolved"
-reason = "reader 7mfk-ffff1b18/ram -> 7mfk-000265c4/fn: no matching normalized L0 access; the original claim remains unresolved"
-
-[[reconciliation.review]]
-kind = "access"
 subject = "7mfk-ffff1b1a/ram"
 layout = "7mfk"
 claim_sha256 = "4cd7be91561e9bc2eb84f9c00a599f9d7306ee0b0e8381a5b427f53636a14953"
