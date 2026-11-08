@@ -1614,31 +1614,39 @@ def find(graph, words, limit=15, root=repo.ROOT):
 # kb gaps ----------------------------------------------------------------------------------------
 
 # The order of the status groups: no search yet, a search without a unique
-# result, and a mechanism that the layout lacks.
-GAP_STATES = ("unknown", "unresolved", "absent")
+# result, a mechanism that the layout lacks, and a field source that the
+# target of the layout does not support.
+GAP_STATES = ("unknown", "unresolved", "absent", "unsupported")
 FAMILY = "family"
 
 
 def gap_rows(graph, feature=None, layout=None):
     """[{feature, layout, field, meaning, status, current}] of the required
-    meanings without a symbol on a layout: those a feature requires directly,
-    through the source of a field, or through the `requires` of its target on
-    the layout, and without `feature`, those a symbol on another layout of the
-    family requires. `current` is the L0 digest of the
-    layout, which a stale search does not match."""
+    meanings unavailable on a layout: those a feature requires directly or
+    through the `requires` of its target on the layout without a symbol
+    there, the source meanings of its fields by the rule of
+    `matrix.unavailable`, and without `feature`, those a symbol on another
+    layout of the family requires. A field source that the target lists as
+    `unsupported` has the status `unsupported` with the note of the entry; a
+    field whose role a symbol of the target fills is available. `current` is
+    the L0 digest of the layout, which a stale search does not match."""
     rows = graph.run(
-        "MATCH (f:Kb:Entity {kind: 'feature'})-[:TARGETS]->(l:Kb:Layout) "
+        "MATCH (f:Kb:Entity {kind: 'feature'})-[t:TARGETS]->(l:Kb:Layout) "
         "WHERE ($feature IS NULL OR f.slug = $feature) AND ($layout IS NULL OR l.key = $layout) "
         "MATCH (f)-[q:REQUIRES]->(x) WHERE q.layouts IS NULL OR l.key IN q.layouts "
         "OPTIONAL MATCH (x)-[:CARRIES]->(c:Kb:Meaning) "
-        "WITH f, l, x, CASE WHEN x:Meaning THEN x ELSE c END AS m WHERE m IS NOT NULL "
+        "WITH f, l, t, x, CASE WHEN x:Meaning THEN x ELSE c END AS m WHERE m IS NOT NULL "
         "OPTIONAL MATCH (m)-[:HAS]->(s:Kb:Symbol) WHERE s.layout = l.key "
-        "WITH f, l, x, m, s WHERE s IS NULL "
+        "WITH f, l, t, x, m, s, CASE WHEN x:Meaning THEN [] ELSE "
+        "[entry IN coalesce(t.unsupported, []) WHERE entry.symbol = m.key | entry.note] "
+        "END AS unsupported WHERE s IS NULL OR size(unsupported) > 0 "
         "OPTIONAL MATCH (m)-[r:STATUS]->(l) "
         "RETURN f.slug AS feature, l.key AS layout, "
         "CASE WHEN x:Meaning THEN null ELSE x.key END AS field, m.key AS meaning, "
-        "properties(r) AS status, substring(l.l0, 0, 16) AS current",
+        "properties(r) AS status, substring(l.l0, 0, 16) AS current, "
+        "NOT x:Meaning AND x.slug IN keys(coalesce(t.roles, {})) AS filled, unsupported",
         feature=feature, layout=layout)
+    rows = [row for row in map(_target_gap, rows) if row is not None]
     if feature is None:
         listed = {(row["meaning"], row["layout"]) for row in rows}
         rows += [row for row in graph.run(
@@ -1651,10 +1659,24 @@ def gap_rows(graph, feature=None, layout=None):
                                          row["layout"], row["field"] or "", row["meaning"]))
 
 
+def _target_gap(row):
+    """A required row of a target as `matrix.unavailable` judges its field:
+    an `unsupported` entry of the target first, then a role that a symbol of
+    the target fills; None for an available field."""
+    row = dict(row)
+    notes, filled = row.pop("unsupported", None) or [], row.pop("filled", False)
+    if notes:
+        return {**row, "status": {"state": "unsupported", "note": notes[0]}}
+    return None if filled else row
+
+
 def gap_detail(row):
-    """The search of an `unresolved` status, or the first evidence of an
-    `absent` one; a status without either names its evidence kinds."""
+    """The note of an `unsupported` field, the search of an `unresolved`
+    status, or the first evidence of an `absent` one; a status without either
+    names its evidence kinds."""
     status = row["status"] or {}
+    if status.get("state") == "unsupported":
+        return status.get("note") or ""
     if status.get("method"):
         parts = [status["method"], status.get("target")]
         if status.get("count") is not None:
@@ -1719,7 +1741,7 @@ def gaps(graph, feature=None, layout=None, root=repo.ROOT):
     subject = " ".join(filter(None, (feature, f"on {layout}" if layout else None)))
     features = sorted({row["feature"] for row in rows})
     layouts = sorted({row["layout"] for row in rows})
-    head = f"{len(rows)} required meanings without a symbol"
+    head = f"{len(rows)} required meanings unavailable"
     if not layout and rows:
         head += f" on {len(layouts)} layouts"
     if not feature and len(features) > 1:
@@ -1806,7 +1828,7 @@ def brief(graph, root=repo.ROOT):
     def totals(counts):
         return ", ".join(f"{key} {value}" for key, value in counts.items()) or "none"
 
-    head = f"open gaps: {summary['total']} required meanings without a symbol"
+    head = f"open gaps: {summary['total']} required meanings unavailable"
     if required:
         head += f" on {len(summary['layouts'])} layouts"
     answer.section(head, FACTS, [f"  by {key[:-1]}: {totals(summary[key])}"

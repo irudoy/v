@@ -656,7 +656,7 @@ def build_parser():
     search.set_defaults(handler=command_find)
     reader("brief", "the state of the knowledge base", layout=False) \
         .set_defaults(handler=command_brief)
-    gap = reader("gaps", "required meanings without a symbol, grouped by status")
+    gap = reader("gaps", "required meanings unavailable on a layout, grouped by status")
     gap.add_argument("--feature", help="the meanings that one feature requires")
     gap.add_argument('--catalog', action='store_true', help='parity acceptance and target status')
     gap.set_defaults(handler=command_gaps)

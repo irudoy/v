@@ -927,7 +927,9 @@ Features:
   `requires` of a target lists the meanings that the feature needs on its
   layout beyond those that its key tables, roles, and hooks name.
   `REQUIRES` carries all of them with the layouts of the targets that name
-  them, and `kb gaps` reports those without a symbol there.
+  them, and `kb gaps` reports those unavailable there: a meaning without a
+  symbol, except the source of a field whose role a symbol of the target
+  fills, and the source of a field that the target lists as `unsupported`.
 - `families` (`map_switching`) and `symbols` are tables of the keys of the
   patch build, whose entries name the meaning of each key on the layout of
   the target; a role key enters `roles` instead. `variants` lists the

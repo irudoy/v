@@ -546,7 +546,7 @@ class RoleTest(unittest.TestCase):
 
 
 class GapStore:
-    """Required meanings without a symbol: two telemetry sources of 1nd, one
+    """Required meanings unavailable: two telemetry sources of 1nd, one
     with a search and one absent, and one meaning a symbol of the family
     requires on jk00c."""
 
@@ -582,17 +582,56 @@ class GapsTest(unittest.TestCase):
     def test_a_feature_on_a_layout_lists_its_fields_by_status(self):
         answer = read.gaps(GapStore(), "can_telemetry", "1nd")
         self.assertEqual(answer.text(), (
-            "can_telemetry on 1nd: 2 required meanings without a symbol\n"
+            "can_telemetry on 1nd: 2 required meanings unavailable\n"
             "unresolved: 1\n"
             "  normalized_load_raw/field  normalized_load/ram  masked-match  7mfk:0003bd1c  "
             "count 0\n"
             "absent: 1\n"
             "  knock_timing_state_raw/field  knock_timing_state/ram  l0  1nd:0004d464\n"))
 
+    def test_a_filled_role_is_available_and_an_unsupported_source_states_its_note(self):
+        # The target fills the role of the knock branch field with another
+        # meaning, and it lists the exhaust target source, which has a symbol
+        # on the layout, as unsupported: as in matrix.unavailable, the first
+        # field is available and the second is unavailable.
+        store = GapStore()
+        store.FEATURE = [
+            {**GapStore.FEATURE[0], "filled": False, "unsupported": []},
+            {"feature": "can_telemetry", "layout": "1nd",
+             "field": "knock_branch_state_raw/field", "meaning": "masked-inchworm/ram",
+             "current": GapStore.L0, "filled": True, "unsupported": [], "status": {
+                 "state": "unresolved", "method": "masked-match", "target": "7mfk:ffff2469",
+                 "count": 0, "l0": GapStore.L0}},
+            {"feature": "can_telemetry", "layout": "1nd",
+             "field": "exhaust_cvtc_target_raw/field", "meaning": "exhaust_cvtc_target/ram",
+             "current": GapStore.L0, "filled": False, "status": None,
+             "unsupported": ["The candidate has no reviewed producer-consumer binding."]},
+        ]
+        answer = read.gaps(store, "can_telemetry", "1nd")
+        self.assertEqual(answer.text(), (
+            "can_telemetry on 1nd: 2 required meanings unavailable\n"
+            "unresolved: 1\n"
+            "  normalized_load_raw/field  normalized_load/ram  masked-match  7mfk:0003bd1c  "
+            "count 0\n"
+            "unsupported: 1\n"
+            "  exhaust_cvtc_target_raw/field  exhaust_cvtc_target/ram  The candidate has no "
+            "reviewed producer-consumer binding.\n"))
+        self.assertEqual([gap["state"] for gap in answer.data["gaps"]],
+                         ["unsupported", "unresolved"])
+        self.assertEqual(answer.data["gap_summary"]["states"],
+                         {"unknown": 0, "unresolved": 1, "absent": 0, "unsupported": 1})
+
+    def test_an_unsupported_entry_precedes_a_filled_role(self):
+        row = {"field": "f/field", "meaning": "m/ram", "status": None, "filled": True,
+               "unsupported": ["note"]}
+        self.assertEqual(read._target_gap(row), {
+            "field": "f/field", "meaning": "m/ram",
+            "status": {"state": "unsupported", "note": "note"}})
+
     def test_without_a_feature_the_family_requirements_follow_and_a_stale_search_says_so(self):
         answer = read.gaps(GapStore())
         lines = answer.text().splitlines()
-        self.assertEqual(lines[0], "4 required meanings without a symbol on 3 layouts "
+        self.assertEqual(lines[0], "4 required meanings unavailable on 3 layouts "
                                    "(can_telemetry 3, family 1)")
         self.assertEqual(lines[1:3], ["unknown: 1", "  jk00c   family  astute-toad/tbl"])
         self.assertIn("  jk78c   can_telemetry  request_flow_raw/field  request_flow/ram  trace  "
@@ -655,12 +694,13 @@ class BriefTest(unittest.TestCase):
         self.assertEqual(brief.data["gaps"], full.data["gaps"])
         self.assertEqual(brief.data["gap_summary"], full.data["gap_summary"])
         self.assertEqual(brief.data["gap_summary"]["states"],
-                         {"unknown": 0, "unresolved": 2, "absent": 1})
-        self.assertIn("open gaps: 3 required meanings without a symbol on 2 layouts\n",
+                         {"unknown": 0, "unresolved": 2, "absent": 1, "unsupported": 0})
+        self.assertIn("open gaps: 3 required meanings unavailable on 2 layouts\n",
                       brief.text())
         self.assertIn("  by feature: can_telemetry 3\n", brief.text())
         self.assertIn("  by layout: 1nd 2, jk78c 1\n", brief.text())
-        self.assertIn("  by state: unknown 0, unresolved 2, absent 1\n", brief.text())
+        self.assertIn("  by state: unknown 0, unresolved 2, absent 1, unsupported 0\n",
+                      brief.text())
 
     def test_feature_impact_precedes_degree_and_the_sample_keeps_complete_totals(self):
         row = GapStore.FEATURE[0]

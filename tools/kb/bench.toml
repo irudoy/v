@@ -63,17 +63,16 @@ baseline = [
 [[question]]
 id = 5
 question = "Which telemetry sources lack a symbol on a layout"
-command = "kb gaps --feature can_telemetry --layout 1nd"
+command = "kb gaps --feature can_telemetry --layout 1me3b"
 budget = 1000
 expect = [
-    '^can_telemetry on 1nd: .*required meanings without a symbol',
-    '^unresolved: [1-9][0-9]*$',
-    'alpha_n_flow_raw/field\s+alpha_n_flow/ram.*masked-match.*count 0',
-    'normalized_load_raw/field\s+normalized_load/ram.*masked-match.*count 0',
-    'request_flow_raw/field\s+request_flow/ram.*masked-match.*count 0',
+    '^can_telemetry on 1me3b: [1-9][0-9]* required meanings unavailable$',
+    '^absent: [1-9][0-9]*$',
+    'knock_branch_state_raw/field\s+masked-inchworm/ram\s+l0\s+1me3b:00071d64',
+    'knock_timing_state_raw/field\s+knock_timing_state/ram\s+l0\s+1me3b:00071d64',
 ]
 baseline = [
-    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1nd-runtime-correspondence.csv"] },
+    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
 ]
 
 [[question]]
@@ -133,9 +132,9 @@ budget = 2000
 expect = [
     '^graph .*fingerprint .*commit',
     '^stage [0-9]+: .*owners$',
-    '^open gaps: [1-9][0-9]* required meanings without a symbol',
+    '^open gaps: [1-9][0-9]* required meanings unavailable',
     '^  by feature: .*can_telemetry [1-9][0-9]*.*definitions [1-9][0-9]*',
-    '^  by state: .*unresolved [1-9][0-9]*.*absent [1-9][0-9]*',
+    '^  by state: .*absent [1-9][0-9]*.*unsupported [1-9][0-9]*',
     '^priority gaps: affected features, fields, then link degree$',
     '^stale searches: [0-9]+; pending candidates: [0-9]+$',
 ]
@@ -146,17 +145,15 @@ baseline = [
 [[question]]
 id = 11
 question = "Why telemetry fields are unavailable on a layout"
-command = "kb gaps --feature can_telemetry --layout 1me3b"
+command = "kb gaps --feature can_telemetry --layout jk78c"
 budget = 1000
 expect = [
-    '^can_telemetry on 1me3b: .*required meanings without a symbol',
-    'normalized_load_raw/field\s+normalized_load/ram.*masked-match.*count 0',
-    'request_flow_raw/field\s+request_flow/ram.*masked-match.*count 0',
-    '^absent: [1-9][0-9]*$',
-    'knock_timing_state_raw/field\s+knock_timing_state/ram\s+l0\s+1me3b:00071d64',
+    '^can_telemetry on jk78c: [1-9][0-9]* required meanings unavailable$',
+    '^unsupported: [1-9][0-9]*$',
+    'exhaust_cvtc_target_raw/field\s+exhaust_cvtc_target/ram\s+The jk78c address ffff23a4 is an unresolved candidate',
 ]
 baseline = [
-    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/1me3b-runtime-correspondence.csv"] },
+    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/jk78c-runtime-correspondence.csv"] },
 ]
 
 [[question]]
