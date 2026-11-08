@@ -6,6 +6,7 @@ program of the layout's L0 image, normalizes the CSV files, writes them with
 body the export changes. `check_all` is the `l0` check of `kb check`.
 
 Usage: python -m kb.l0 <layout> [--check] [--stage DIR] [--from-stage DIR]
+                       [--batch FILE]
 """
 
 import argparse
@@ -62,6 +63,9 @@ ACCESSORS = (
 # into programs, and names come from L1.
 DROPPED = {"funcs.csv": {"name"}}
 MANIFEST = "manifest.toml"
+# The file of a raw stage that holds the census registry that the batch of
+# the export renders.
+PROPOSED = "proposed.interp.csv"
 # The fragments that MergeFuncs.java joins into their functions, per layout.
 MERGES = Path("tools/ghidra/merges")
 MERGE_HEADER = ("entry", "fragment", "note")
@@ -79,27 +83,32 @@ class Census:
     kernels: tuple
     fused: tuple
     copy_helpers: tuple
+    # The file that holds the rows of the plan in place of the registry
+    # `interp`: the registry that a proposed change renders.
+    source: Path | None = None
 
     @staticmethod
     def file(kernel):
         return f"accessors.{int(kernel, 16):x}.csv"
 
 
-def census(layout_id, root=repo.ROOT):
-    """The census plan of a layout from the configuration and its registry."""
+def census(layout_id, root=repo.ROOT, source=None):
+    """The census plan of a layout from the configuration and its registry,
+    or from `source`, the registry of the layout that a proposed change
+    renders."""
     settings = repo.config(root).get("l0", {}).get("census", {}).get(layout_id)
     if settings is None:
         raise KbError(f"{repo.CONFIG}: [l0.census.{layout_id}] is missing")
     interp = settings["interp"]
     kernels, fused = set(), set()
-    with (root / interp).open(newline="", encoding="utf-8") as source:
-        for row in csv.DictReader(source):
+    with Path(source or root / interp).open(newline="", encoding="utf-8") as rows:
+        for row in csv.DictReader(rows):
             kernel = f"{int(row['kernel'], 16):08x}"
             kernels.add(kernel)
             if int(row["wrapper"], 16) == int(row["kernel"], 16):
                 fused.add(kernel)
     helpers = tuple(f"{int(value, 16):08x}" for value in settings.get("copy_helpers", ()))
-    return Census(interp, tuple(sorted(kernels)), tuple(sorted(fused)), helpers)
+    return Census(interp, tuple(sorted(kernels)), tuple(sorted(fused)), helpers, source)
 
 
 def expected_files(plan):
@@ -354,7 +363,7 @@ def stage_jobs(layout, plan, stage, root=repo.ROOT):
     stage = Path(stage)
     stage.mkdir(parents=True, exist_ok=True)
     (stage / "program.txt").write_text(program + "\n")
-    prepared = preparation.plan(layout.id, root)
+    prepared = preparation.plan(layout.id, root, plan.source)
     return [
         (program, arguments, stage / f"session-{number}.log")
         for number, arguments in enumerate(sessions(plan, stage, prepared, root), 1)
@@ -377,7 +386,7 @@ def build(layout, plan, stage, out_dir, root=repo.ROOT):
     stage, out_dir = Path(stage), Path(out_dir)
     catalog = repo.images(root)
     verify_stage(layout, stage, root)
-    prepared = preparation.plan(layout.id, root)
+    prepared = preparation.plan(layout.id, root, plan.source)
     preparation.verify_stage(prepared, stage, output_groups(plan), root)
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {}
@@ -468,19 +477,44 @@ def review(layout_id, old, new, root=repo.ROOT):
     return body_changes(old, new, names)
 
 
+def proposed(layout_id, batch, root=repo.ROOT, log=print):
+    """The census registry of a layout that the native batch file `batch`
+    renders, planned as `kb apply --dry-run` plans the batch; nothing is
+    written."""
+    from kb import write
+    interp = census(layout_id, root).interp
+    return write.registries(write.read_batch(Path(batch)), root, log)[interp]
+
+
 def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
-           root=repo.ROOT, log=print):
+           batch=None, root=repo.ROOT, log=print):
     """Export one layout into l0/<layout>/, or compare a fresh export with it.
     Each function with a `fn` symbol whose entry or body the export changes
-    is logged as a `review:` line."""
+    is logged as a `review:` line. With `batch`, a native batch file, the
+    census follows the registry that the batch renders, which the stage keeps
+    as PROPOSED, so the L0 holds every census that the batch plans before
+    `kb apply` writes it."""
     layout = repo.layout(layout_id, root)
-    plan = census(layout_id, root)
     with tempfile.TemporaryDirectory(prefix=f"kb-l0-{layout_id}-") as scratch:
         scratch = Path(scratch)
-        if from_stage:
-            staged = Path(from_stage)
-        else:
-            staged = Path(stage) if stage else scratch / "stage"
+        staged = Path(from_stage or stage or scratch / "stage")
+        source = None
+        if batch is not None:
+            source = staged / PROPOSED
+            text = proposed(layout_id, batch, root, log)
+            if from_stage:
+                if not source.is_file() or source.read_bytes() != text.encode("utf-8"):
+                    raise KbError(f"{source}: the stage holds the census registry of "
+                                  f"another change than {batch}")
+            else:
+                staged.mkdir(parents=True, exist_ok=True)
+                source.write_bytes(text.encode("utf-8"))
+        plan = census(layout_id, root, source)
+        if source is not None:
+            added = sorted(set(plan.kernels) - set(census(layout_id, root).kernels))
+            log(f"census of {batch}: {len(plan.kernels)} kernels; new: "
+                f"{', '.join(added) or 'none'}")
+        if not from_stage:
             run_sessions(stage_jobs(layout, plan, staged, root), root, workers, log)
         built = scratch / "l0"
         build(layout, plan, staged, built, root)
@@ -738,10 +772,13 @@ def main(argv=None):
                         help="normalize a raw export instead of running Ghidra")
     parser.add_argument("--jobs", type=int, default=1,
                         help="parallel headless sessions, each on a copy of the project")
+    parser.add_argument("--batch",
+                        help="plan the census from the registry that this kb batch file "
+                             "renders, before kb apply writes the batch")
     args = parser.parse_args(argv)
     try:
         same = export(args.layout, check=args.check, stage=args.stage,
-                      from_stage=args.from_stage, workers=args.jobs)
+                      from_stage=args.from_stage, workers=args.jobs, batch=args.batch)
     except KbError as error:
         print(f"error: {error}", file=sys.stderr)
         return error.code

@@ -6,7 +6,7 @@ A sealed receipt binds the outputs of one independently prepared session.
 """
 
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 from pathlib import Path
@@ -104,6 +104,9 @@ class Plan:
     inputs: dict[str, str]
     dispatches: tuple[Dispatch, ...] = ()
     data_tables: tuple[DataTable, ...] = ()
+    # {input path: file}: the inputs whose bytes a session reads from another
+    # file than the tracked one, as the registry that a proposed change renders.
+    sources: dict[str, Path] = field(default_factory=dict)
 
     @property
     def digest(self):
@@ -287,11 +290,14 @@ def execution_inputs(layout_id, root=repo.ROOT):
     return tuple(sorted(found))
 
 
-def plan(layout_id, root=repo.ROOT):
+def plan(layout_id, root=repo.ROOT, registry=None):
     """The reviewed primary preparation, or None for an unconfigured layout.
 
     This read-only API performs no graph access, enrollment, or Ghidra call.
     Seed.fragments identify the reviewed former entries for owner integration.
+    `registry` is a file whose bytes take the place of the census registry of
+    the layout: the registry that a proposed change renders, which the plan
+    binds as that input once the change writes the same bytes.
     """
     root = Path(root)
     layout = repo.layout(layout_id, root)
@@ -402,8 +408,14 @@ def plan(layout_id, root=repo.ROOT):
              *execution_inputs(layout_id, root)]
     inputs = {path.as_posix(): repo.sha256_file(root / path) for path in paths}
     inputs[CONFIG_INPUT] = hashlib.sha256(_config_bytes(root)).hexdigest()
+    sources = {}
+    if registry is not None:
+        interp = repo.config(root)["l0"]["census"][layout_id]["interp"]
+        inputs[interp] = repo.sha256_file(registry)
+        sources[interp] = Path(registry).resolve()
     return Plan(layout.id, layout.image, expected_sha, size, tuple(seeds), tuple(pins),
-                tuple(references), joins, forbidden, dict(sorted(inputs.items())), dispatches, data_tables)
+                tuple(references), joins, forbidden, dict(sorted(inputs.items())), dispatches,
+                data_tables, sources)
 
 
 def _wire_text(prepared, root, run_id, wire):
@@ -413,7 +425,7 @@ def _wire_text(prepared, root, run_id, wire):
              f"run_id\t{run_id}"]
     for path, digest in prepared.inputs.items():
         absolute = str(Path(wire).with_suffix(".l0.json").resolve() if path == CONFIG_INPUT
-                       else Path(root).resolve() / path)
+                       else prepared.sources.get(path) or Path(root).resolve() / path)
         if any(char in absolute for char in "\t\r\n"):
             raise KbError("preparation paths cannot contain tabs or line breaks")
         lines.append(f"input\t{path}\t{digest}\t{absolute}")

@@ -292,6 +292,23 @@ raw export, and `--from-stage DIR` normalizes a kept raw export without running
 Ghidra. The export refuses a program whose recorded SHA-256 differs from the
 registered image and a raw export that lacks a file.
 
+A kb write that gives a kernel an `[interp]` without its census in L0 is
+refused by the `census` check of `kb`. The census precedes such a change:
+
+```bash
+tools/ghidra/export-l0.sh 1me3b --batch change.toml --jobs 4
+uv run kb apply change.toml
+uv run kb project
+make check
+```
+
+`--batch FILE` plans the census from the registry that the kb batch renders
+and keeps that registry in the stage as `proposed.interp.csv`; the preparation
+of a seeded layout binds its bytes as the census registry input. `kb project`
+then writes the same registry, so the manifest census and preparation inputs
+match the tracked registry. A layout that shares the registry, as `jk00c` and
+`jk00d` do, takes its own export with the same batch before `kb apply`.
+
 ## Script groups
 
 | Group | Scripts | Purpose |

@@ -3,6 +3,7 @@
 #
 # Usage:
 #   tools/ghidra/export-l0.sh <layout> [--check] [--jobs N] [--stage DIR] [--from-stage DIR]
+#                             [--batch FILE]
 #
 #   --check           export into a temporary directory and compare the result
 #                     byte for byte with the tracked files
@@ -10,12 +11,16 @@
 #                     Ghidra project, because a project admits one process
 #   --stage DIR       keep the raw headless export in DIR
 #   --from-stage DIR  normalize a raw export from DIR instead of running Ghidra
+#   --batch FILE      plan the census from the registry that the kb batch FILE
+#                     renders, so the census of a kernel that the batch adds
+#                     precedes `kb apply FILE`
 #
 # The layout's L0 image comes from rom-images/homology.toml and its program
 # from the Ghidra project index, verified by SHA-256 as decompile.sh does. The
 # census kernels come from the interpolation registry that tools/kb/config.toml
-# names for the layout. tools/kb/SPEC.md section 8 defines the files, the normal
-# form, and the manifest.
+# names for the layout, or with --batch from the registry that the batch
+# renders. tools/kb/SPEC.md section 8 defines the files, the normal form, and
+# the manifest.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

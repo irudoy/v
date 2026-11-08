@@ -1697,8 +1697,9 @@ def test_a_kernel_that_l0_holds_no_census_of_is_refused_before_any_write(tmp_pat
         "the change adds 1 issues; nothing is written\n"
         "  census: kb/fn/rev_fuel_cut_state_machine.toml: 1me3b-00020008/fn: its [interp] plans "
         "the census of the kernel 00020008 on 1me3b, and the L0 of 1me3b lacks "
-        "accessors.20008.csv; the census comes with the L0 export of 1me3b by "
-        "tools/ghidra/export-l0.sh")
+        "accessors.20008.csv; with the change in a batch file, run "
+        "tools/ghidra/export-l0.sh 1me3b --batch <file>, then kb apply <file>, kb project, "
+        "and make check")
     assert path.read_text(encoding="utf-8") == before
 
 
@@ -2190,7 +2191,9 @@ class ApplyTest(unittest.TestCase):
                 mock.patch.object(write.store, "write") as written, \
                 mock.patch.object(write.graph, "sync_held") as synced:
             write.apply(["op"], Path("/root"), dry_run=dry_run, log=print)
-        plan.assert_called_once_with(["op"], mock.sentinel.base, "resolve", Path("/root"))
+        # A write refuses the census issues of its change.
+        plan.assert_called_once_with(["op"], mock.sentinel.base, "resolve", Path("/root"),
+                                     census=True)
         return written, synced
 
     def test_a_change_writes_and_loads_the_planned_model(self):

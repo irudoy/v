@@ -1029,13 +1029,15 @@ def code_check(model):
 
 def census_check(model):
     """Every kernel entry that an interpolation registry of the model plans
-    for the census of a layout has its census in the L0 of that layout."""
+    for the census of a layout has its census in the L0 of that layout. The
+    issue names the sequence that exports the census before the change."""
     from kb import l0
     from kb.adapters import interp
     return [Issue("census", _sources(symbol.meaning), symbol.key.key,
                   f"its [interp] plans the census of the kernel {kernel} on {layout}, and the "
-                  f"L0 of {layout} lacks {l0.Census.file(kernel)}; the census comes with the "
-                  f"L0 export of {layout} by tools/ghidra/export-l0.sh")
+                  f"L0 of {layout} lacks {l0.Census.file(kernel)}; with the change in a batch "
+                  f"file, run tools/ghidra/export-l0.sh {layout} --batch <file>, then "
+                  f"kb apply <file>, kb project, and make check")
             for symbol, layout, kernel in interp.census_gaps(model)]
 
 

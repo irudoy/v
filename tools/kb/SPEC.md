@@ -1080,6 +1080,16 @@ rows = 0
   directory and compares the result byte for byte with the tracked files.
 - `--stage <dir>` keeps the raw session outputs, and `--from-stage <dir>`
   builds `l0/<layout>/` from them without Ghidra.
+- `--batch <file>` plans the census from the registry of the layout that the
+  native batch file renders, as `kb apply --dry-run` plans the batch, so
+  the census of a kernel that the batch adds precedes the batch. The `census`
+  issues of the batch do not refuse that plan, and every other issue does.
+  The stage keeps the rendered registry as `proposed.interp.csv`, and a
+  preparation of the layout binds its bytes as the census registry input.
+  `kb apply <file>` then writes the batch, `kb project` writes the same
+  registry, and the `l0` check of `make check` compares the census of the
+  manifest with it. A `--from-stage` build with `--batch` requires the same
+  rendered registry in the stage.
 - A layout joins with a new export of all its files; a partial export, an
   export of another program, or an image digest other than the catalog digest
   is refused.
@@ -1761,7 +1771,7 @@ its last pass and the files that it read beyond those it states in advance.
 | Check | Requires |
 |---|---|
 | `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form; every join of `tools/ghidra/merges/<layout>.csv` holds: the entry is a function entry, the fragment is none, and the fragment lies in the body of the entry |
-| `census` | Every kernel entry that a row of an interpolation registry of the model plans for the census of a layout that reads the registry has its census file `accessors.<kernel>.csv` in `l0/<layout>/`. The census comes with the L0 export of the layout, so a write that plans a kernel without it is refused before any file changes |
+| `census` | Every kernel entry that a row of an interpolation registry of the model plans for the census of a layout that reads the registry has its census file `accessors.<kernel>.csv` in `l0/<layout>/`. A write that plans a kernel without it is refused before any file changes; `tools/ghidra/export-l0.sh <layout> --batch <file>` exports the census of the change in the batch file first (section 8.4), and `kb apply <file>` then writes the change |
 | `sites` | Every `site:` token of a row of the function ledger `defs/<image>.funcs.csv` of the L0 image of a layout that is an instruction of an L0 function lies in the body of the row's function, of a function the row names outside its prose columns, or of a function that the row's function calls, is called by, or continues into in sequence, or its instruction references the row's function |
 | `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name; a stated `home` of a meaning is the layout of one of its symbols, and a meaning with more than one symbol and none on 7mfk states its `home` |
 | `canonical` | Every entity file equals the canonical rendering of its parse |

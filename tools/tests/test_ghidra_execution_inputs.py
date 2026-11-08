@@ -157,3 +157,25 @@ def test_plan_refuses_unbound_or_outside_execution_inputs(execution_root, before
     config.write_text(config.read_text().replace(before, after))
     with pytest.raises(KbError):
         prep.plan("t1", execution_root)
+
+
+def test_a_proposed_registry_binds_the_bytes_that_the_change_writes(execution_root, tmp_path):
+    tracked = prep.plan("t1", execution_root)
+    proposed = tmp_path / "proposed.interp.csv"
+    proposed.write_text("family,kernel,wrapper\nexplicit,00000100,00000100\n"
+                        "implicit,00000200,00000200\n")
+    plan = prep.plan("t1", execution_root, proposed)
+    assert plan.inputs[CENSUS] == repo.sha256_file(proposed) != tracked.inputs[CENSUS]
+    assert ({path: digest for path, digest in plan.inputs.items() if path != CENSUS}
+            == {path: digest for path, digest in tracked.inputs.items() if path != CENSUS})
+    wire = tmp_path / "plan.tsv"
+    prep.write_plan(plan, wire, execution_root)
+    [row] = [line.split("\t") for line in wire.read_text().splitlines()
+             if line.startswith(f"input\t{CENSUS}\t")]
+    assert row[2:] == [plan.inputs[CENSUS], str(proposed.resolve())]
+    prep.verify_wire(plan, wire, execution_root)
+    with pytest.raises(KbError):
+        prep.verify_wire(tracked, wire, execution_root)
+    # The registry that the change writes holds the sealed bytes.
+    (execution_root / CENSUS).write_bytes(proposed.read_bytes())
+    assert prep.plan("t1", execution_root).manifest == plan.manifest

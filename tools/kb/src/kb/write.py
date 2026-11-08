@@ -2285,8 +2285,11 @@ def refusals(base, result):
     return [issue for key, issue in sorted(after.items()) if key not in before]
 
 
-def plan(ops, base, resolve, root=repo.ROOT):
-    """Plan supported native operations and refuse new issues before writing."""
+def plan(ops, base, resolve, root=repo.ROOT, census=True):
+    """Plan supported native operations and refuse new issues before writing.
+    With `census` false, the `census` issues of the result do not refuse the
+    change: they are the census files that the L0 export of the registries
+    of the change adds (`registries`)."""
     if (any(isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
             and not all(isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)):
         raise KbError('run review rebasing separately from native fact edits', code=2)
@@ -2306,7 +2309,7 @@ def plan(ops, base, resolve, root=repo.ROOT):
     if owner_text is not None:
         texts[repo.OWNER_CONFIG] = owner_text
         result = compile.build(root, {**base.overlay, **texts})
-    refused = refusals(base, result)
+    refused = [issue for issue in refusals(base, result) if census or issue.check != "census"]
     unmet = [message for expected in change.expected for message in [expected(result)]
              if message]
     from kb import research, retirement
@@ -2323,41 +2326,60 @@ def plan(ops, base, resolve, root=repo.ROOT):
     return change, texts, result
 
 
+def _planned(ops, root, log, census=True):
+    """`plan` of a native batch under the lock that the caller holds."""
+    review_only = bool(ops) and all(
+        isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
+    withdrawal_only = bool(ops) and all(
+        isinstance(op, dict) and op.get('cmd') == 'retire' and op.get('withdraw_ledger') for op in ops)
+    source_only = review_only or withdrawal_only
+    if source_only:
+        from kb import fingerprint, l0
+
+        before = fingerprint.compute(root)
+        base = compile.build(root)
+        change, texts, result = plan(ops, base, model_resolver(base), root, census=census)
+        if review_only:
+            layouts = {op['layout'] for op in ops}
+        else:
+            from kb import retirement
+
+            owned = {meaning.key: set(meaning.symbols) for meaning in base.meanings}
+            owned.update({f'{name}/{kind}': {item['layout'] for item in document.get('symbol', ())}
+                          for kind, name, document, _ in retirement.records(base)})
+            layouts = set().union(*(owned[str(op['ref']).strip()] for op in ops))
+        failures = l0.check_all(root, only=sorted(layouts))
+        if failures:
+            raise KbError('source-only write requires valid L0:\n'
+                          + '\n'.join(map(str, failures)), code=3)
+        if fingerprint.compute(root) != before:
+            raise KbError('the sources change during source-only planning; nothing is written', code=6)
+    else:
+        with graph.fresh(root, log=log, held=True) as session:
+            base = compile.build(root)
+            change, texts, result = plan(ops, base, graph_resolver(session, base, root, log),
+                                         root, census=census)
+    return change, texts, result
+
+
 def apply(ops, root=repo.ROOT, dry_run=False, log=print):
     """Validate and apply a native batch under the lock; a dry run writes nothing."""
     with lock.held(root):
-        review_only = bool(ops) and all(
-            isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
-        withdrawal_only = bool(ops) and all(
-            isinstance(op, dict) and op.get('cmd') == 'retire' and op.get('withdraw_ledger') for op in ops)
-        source_only = review_only or withdrawal_only
-        if source_only:
-            from kb import fingerprint, l0
-
-            before = fingerprint.compute(root)
-            base = compile.build(root)
-            change, texts, result = plan(ops, base, model_resolver(base), root)
-            if review_only:
-                layouts = {op['layout'] for op in ops}
-            else:
-                from kb import retirement
-
-                owned = {meaning.key: set(meaning.symbols) for meaning in base.meanings}
-                owned.update({f'{name}/{kind}': {item['layout'] for item in document.get('symbol', ())}
-                              for kind, name, document, _ in retirement.records(base)})
-                layouts = set().union(*(owned[str(op['ref']).strip()] for op in ops))
-            failures = l0.check_all(root, only=sorted(layouts))
-            if failures:
-                raise KbError('source-only write requires valid L0:\n'
-                              + '\n'.join(map(str, failures)), code=3)
-            if fingerprint.compute(root) != before:
-                raise KbError('the sources change during source-only planning; nothing is written', code=6)
-        else:
-            with graph.fresh(root, log=log, held=True) as session:
-                base = compile.build(root)
-                change, texts, result = plan(ops, base, graph_resolver(session, base, root, log), root)
+        change, texts, result = _planned(ops, root, log)
         if not dry_run and texts:
             store.write(root, texts)
             compile.cached.cache_clear()
             graph.sync_held(root, False, log, result)
     return change, texts
+
+
+def registries(ops, root=repo.ROOT, log=print):
+    """{path: text} of the interpolation registries of the model that a native
+    batch makes, planned as `apply` plans it with `dry_run`; nothing is
+    written. The `census` issues of the change do not refuse it: the L0
+    export by these registries adds the census files that they name
+    (`kb.l0.export` with a batch). Every other new issue refuses it."""
+    from kb.adapters import interp
+    with lock.held(root):
+        _, _, result = _planned(ops, root, log, census=False)
+    return interp.render_registries(result)
