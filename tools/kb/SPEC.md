@@ -126,8 +126,12 @@ layouts = { jk00c = "JK00C", jk00d = "JK00D" }
 - `kb family new` records a family with the census report of the new image as
   its evidence; `kb family add` adds an image to a family and, when the family
   does not inherit addresses, a layout. Both write `homology.toml` through its
-  canonical writer (a comment-preserving TOML round trip) and then run
-  `rom_homology.py --check`.
+  canonical writer (a comment-preserving TOML round trip). The homology
+  generator validates the proposed registry and prepares its CSV before
+  publication. A dry run shows both diffs without source writes. One journal
+  covers the registry, report, published-report check and graph synchronization
+  under section 9.8. The post-publication check uses the same report renderer
+  and byte comparison as `rom_homology.py --check` over the published inputs.
 
 ## 4. Storage
 
@@ -1289,7 +1293,9 @@ File replacements and journal updates use temporary files, renames and fsync.
 The publication holds the ordinary lock. Generated-name writes during its
 graph sync join the journal before modifying their file. The native batch and
 legacy reservation move remove the journal only after synchronization returns
-successfully; a standalone store write completes its own file phase.
+successfully. Family onboarding keeps its registry, homology CSV and nested
+name enrollment in one publication through report validation and synchronization.
+A standalone store write completes its own file phase.
 
 An interrupted publication or a post-write sync refusal retains the journal.
 Ordinary CLI reads, writes, sync, source compilation and fingerprinting refuse
@@ -1327,8 +1333,9 @@ batch, bypassing a source/census gate or asserting graph rollback. The next
 ordinary command checks freshness and follows the supported sync path; a
 failed loader leaves Meta absent. The file snapshot does not bind concurrent
 uncooperative filesystem edits between a final check and rename, filesystem
-loss, or a filesystem-wide transaction. Projection generators and family
-post-processing retain their separate failure boundaries under issue #44.
+loss, or a filesystem-wide transaction. Other projection generators and the
+remaining ROM-intake stages retain their separate failure boundaries under
+issue #44.
 
 ## 10. Graph schema
 

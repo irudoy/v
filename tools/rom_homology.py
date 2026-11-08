@@ -151,11 +151,14 @@ def load_images(path: Path = IMAGE_REGISTRY) -> dict[str, Image]:
     return images
 
 
-def load_homology(path: Path = HOMOLOGY_REGISTRY):
+def load_homology(path: Path = HOMOLOGY_REGISTRY, *, text: str | None = None):
     path = Path(path)
     try:
-        with path.open("rb") as source:
-            document = tomllib.load(source)
+        if text is None:
+            with path.open("rb") as source:
+                document = tomllib.load(source)
+        else:
+            document = tomllib.loads(text)
     except OSError as error:
         raise HomologyError(f"homology registry not found: {path}") from error
     if document.get("schema_version") != 1:
@@ -572,13 +575,26 @@ def render_csv(rows: list[PairMetrics]) -> str:
     return output.getvalue()
 
 
-def build_report():
-    images = load_images()
-    settings, families, relationships = load_homology()
-    validate_families(images, families)
-    validate_software_ids(images, families)
-    validate_relationships(families, relationships)
+def build_report(image_registry=IMAGE_REGISTRY, homology_registry=HOMOLOGY_REGISTRY, *,
+                 homology_text=None):
+    """Render a validated report, including a proposed registry without writing it."""
+    images = load_images(image_registry)
+    settings, families, relationships = load_homology(homology_registry, text=homology_text)
+    validate_families(images, families, homology_registry)
+    validate_software_ids(images, families, homology_registry)
+    validate_relationships(families, relationships, homology_registry)
     return render_csv(measure_pairs(images, settings))
+
+
+def check_report(path, report):
+    """Require the exact bytes rendered from the validated registry and images."""
+    path = Path(path)
+    try:
+        current = path.read_bytes()
+    except OSError as error:
+        raise HomologyError(f"report not found: {path}") from error
+    if current != report.encode("utf-8"):
+        raise HomologyError(f"{path}: report is stale")
 
 
 def main(argv=None):
@@ -599,14 +615,10 @@ def main(argv=None):
         report = build_report()
         if args.check:
             try:
-                current = args.output.read_bytes()
-            except OSError as error:
-                raise HomologyError(f"report not found: {args.output}") from error
-            if current != report.encode("utf-8"):
-                raise HomologyError(
-                    f"{args.output}: report is stale; regenerate with "
-                    f"{Path(__file__).relative_to(ROOT)}"
-                )
+                check_report(args.output, report)
+            except HomologyError as error:
+                raise HomologyError(f"{error}; regenerate with "
+                                    f"{Path(__file__).relative_to(ROOT)}") from error
             print(f"status=PASS report={args.output} pairs={report.count(chr(10)) - 1}")
         else:
             args.output.parent.mkdir(parents=True, exist_ok=True)

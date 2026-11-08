@@ -50,6 +50,15 @@ member. A new layout needs its census plan in `../tools/kb/config.toml` and its
 L0 from `../tools/ghidra/export-l0.sh <layout>`, which `make check` then
 verifies. An exact-code member joins the layout of its family.
 
+`kb family new/add` validates the census, image identities, L0 and proposed
+model, then prepares `homology.toml` and `homology.csv` before publishing either
+file. Its dry run shows both diffs. The publication journal stays through the
+report check and graph synchronization; after an interrupted publication,
+`kb recover --status`, `--dry-run` and restoration follow the source-recovery
+contract in `../tools/kb/SPEC.md`, section 9.8. This covers family registration,
+not the later definition, checksum or runtime stages of intake, and establishes
+no graph rollback.
+
 Read identifiers out of the image rather than from the dump tool: the MCU
 marking `SH705822N` or `SH705927N`, the nine-character software base
 identifier, and the doubled `1<LABEL>00000` software version whose label field

@@ -3,12 +3,11 @@
 import hashlib
 from pathlib import Path
 import re
-import subprocess
 import tomllib
 
 import tomlkit
 
-from kb import compile, graph, l0, lock, repo, store, vocab, write
+from kb import compile, graph, l0, lock, publication, repo, store, vocab, write
 from kb.repo import KbError
 
 REPORT = re.compile(r'(?P<source>[A-Z0-9]+)-(?P<target>[A-Z0-9]+)\.census-correspondence\.csv')
@@ -89,7 +88,16 @@ def census(path, image, root=repo.ROOT):
 
 def apply(operation, family_id, image, layout, report, metadata=None, *, root=repo.ROOT,
           dry_run=False, log=print):
-    """Validate in memory, write the primary source, gate and synchronize."""
+    """Prepare registry and report, publish both through synchronization."""
+    from tools import rom_homology
+    try:
+        return _apply(operation, family_id, image, layout, report, metadata,
+                      root=root, dry_run=dry_run, log=log)
+    except rom_homology.HomologyError as error:
+        raise KbError(str(error), code=3) from error
+
+
+def _apply(operation, family_id, image, layout, report, metadata, *, root, dry_run, log):
     from tools import rom_homology
     with lock.held(root):
         path = root / repo.HOMOLOGY
@@ -114,24 +122,29 @@ def apply(operation, family_id, image, layout, report, metadata=None, *, root=re
         if failures:
             raise KbError('family model adds unresolved gate failures: ' + '; '.join(
                 f'{item.check}: {item.subject}: {item.message}' for item in failures.values()), code=3)
+        projection = Path('rom-images/homology.csv')
+        rendered = rom_homology.build_report(root / repo.CATALOG, path, homology_text=text)
+        texts = {repo.HOMOLOGY: text, projection: rendered}
         if dry_run:
             import difflib
-            return ''.join(difflib.unified_diff(original.splitlines(True), text.splitlines(True),
-                                               'a/' + repo.HOMOLOGY.as_posix(),
-                                               'b/' + repo.HOMOLOGY.as_posix()))
-        projection = Path('rom-images/homology.csv')
-        held_projection = (root / projection).read_text(encoding='utf-8') if (root / projection).exists() else None
-        store.write(root, {repo.HOMOLOGY: text})
-        try:
-            for args in ([], ['--check']):
-                result = subprocess.run(['uv', 'run', 'python', 'tools/rom_homology.py', *args],
-                                        cwd=root, capture_output=True, text=True)
-                if result.returncode:
-                    raise KbError(result.stderr.strip() or 'stock family gate fails', code=3)
-                log(result.stdout.strip())
-        except BaseException:
-            store.write(root, {repo.HOMOLOGY: original, projection: held_projection})
-            raise
-        compile.cached.cache_clear()
-        graph.sync_held(root, False, log, model)
+            differences = []
+            for relative, after in texts.items():
+                target = root / relative
+                before = target.read_bytes().decode('utf-8') if target.exists() else ''
+                differences.extend(difflib.unified_diff(
+                    before.splitlines(True), after.splitlines(True),
+                    'a/' + relative.as_posix(), 'b/' + relative.as_posix()))
+            return ''.join(differences)
+        with publication.transaction(root, texts):
+            store.write(root, texts)
+            try:
+                # Rebuild from the published registry and images, independently of
+                # the proposed text used to prepare the publication.
+                checked = rom_homology.build_report(root / repo.CATALOG, path)
+                rom_homology.check_report(root / projection, checked)
+                compile.cached.cache_clear()
+                graph.sync_held(root, False, log, model)
+            except rom_homology.HomologyError as error:
+                raise KbError(f"{error}; publication journal retained; "
+                              "run `uv run kb recover --status`", code=3) from error
         return f'family {operation} {family_id}: {image}; source and stock gates pass'
