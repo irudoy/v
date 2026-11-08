@@ -187,7 +187,9 @@ note = """
 Same call sequence as JK08A 0003d832 with one lane per call: filter, \
 transfer code, captures, running minimum, unfiltered PID code and the tail \
 calls. JK78C inserts fill_temperature_selector 00042008 after the transfer \
-code."""
+code, and after the latched capture 000420f0 it calls 00042160, a second \
+capture of the transfer code ffff278a into ffff421c behind its own \
+first-pass latch ffff3fdc, which has no JK08A counterpart."""
 
 [[symbol.evidence]]
 kind = "l0"
