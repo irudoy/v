@@ -11,7 +11,7 @@ from unittest import mock
 
 import pytest
 
-from kb import (adapters, checks, cli, compile, convert, ledger_projection, match, names, repo,
+from kb import (adapters, checks, cli, compile, convert, l0, ledger_projection, match, names, repo,
                 store, targets, vocab, write)
 from kb.adapters import files as file_adapter
 from kb.adapters import profiles
@@ -1661,6 +1661,45 @@ def stored(texts, name):
 
 
 SOURCE_ANCHOR = {"layout": "jk78c", "path": "defs/fixture.md", "anchor": "probe_word"}
+
+
+@pytest.mark.parametrize("exported", [False, True])
+def test_a_kernel_that_l0_holds_no_census_of_is_refused_before_any_write(tmp_path, monkeypatch,
+                                                                         exported):
+    # The 1ME3B registry of the isolated sources names the image of its
+    # layout, so its rows plan the census of 1me3b.
+    writer_sources.write_sources(tmp_path)
+    monkeypatch.setattr(adapters, "ADAPTERS", (file_adapter,))
+    config = tmp_path / repo.CONFIG
+    config.write_text(config.read_text(encoding="utf-8").replace(
+        "defs/fixture-1me3b.interp.csv", "defs/PROBE1ME3B.interp.csv"), encoding="utf-8")
+    (tmp_path / "defs/PROBE1ME3B.interp.csv").write_text("wrapper,kernel\n", encoding="utf-8")
+    census = tmp_path / repo.L0 / "1me3b" / l0.Census.file("00020008")
+    if exported:
+        census.write_text("", encoding="utf-8")
+    base = compile.build(tmp_path)
+    assert checks.census_check(base) == []
+    # The 1me3b function of the isolated sources becomes its own kernel.
+    meaning = "rev_fuel_cut_state_machine/fn"
+    path = tmp_path / store.path_of("fn", "rev_fuel_cut_state_machine")
+    before = path.read_text(encoding="utf-8")
+    ops = [{"cmd": "set", "ref": meaning, "layout": "1me3b", "keys": {"interp": {
+        "access": "implicit", "kernel": meaning, "cols": 16, "step": 16}}}]
+    if exported:
+        _, texts, result = planned(base, *ops)
+        assert checks.census_check(result) == []
+        assert store.path_of("fn", "rev_fuel_cut_state_machine") in texts
+        return
+    with pytest.raises(KbError) as caught:
+        planned(base, *ops)
+    assert caught.value.code == 3
+    assert str(caught.value) == (
+        "the change adds 1 issues; nothing is written\n"
+        "  census: kb/fn/rev_fuel_cut_state_machine.toml: 1me3b-00020008/fn: its [interp] plans "
+        "the census of the kernel 00020008 on 1me3b, and the L0 of 1me3b lacks "
+        "accessors.20008.csv; the census comes with the L0 export of 1me3b by "
+        "tools/ghidra/export-l0.sh")
+    assert path.read_text(encoding="utf-8") == before
 
 
 def test_a_merge_moves_the_meaning_keys_that_the_target_lacks(probe_store):

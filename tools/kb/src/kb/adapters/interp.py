@@ -265,6 +265,27 @@ def owners(model):
             for path in sorted(census(model.config))}
 
 
+def census_gaps(model):
+    """(symbol, layout, kernel) of every kernel entry that a registry row of
+    the model plans for the census of a layout whose L0 lacks its census file.
+    The census of every layout that reads a registry runs one session per
+    kernel of its rows (`kb.l0.census`)."""
+    from kb import l0
+    layout_of = {rom: layout.id for layout in model.layouts.values() for rom in layout.images}
+    for path, layouts in sorted(census(model.config).items()):
+        named = REGISTRY.fullmatch(path)
+        # The rows of a registry are the symbols of the layout of its image.
+        owner = layout_of.get(named.group(1)) if named else None
+        for symbol in _wrappers(model, owner):
+            entry = _entry(model, symbol)
+            if entry is None:
+                continue
+            kernel = f"{entry:08x}"
+            for layout in layouts:
+                if not (model.root / repo.L0 / layout / l0.Census.file(kernel)).is_file():
+                    yield symbol, layout, kernel
+
+
 def _hex(address):
     return "" if address is None else f"{address:08x}"
 

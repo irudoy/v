@@ -1027,6 +1027,18 @@ def code_check(model):
     return reconciliation.check(model)
 
 
+def census_check(model):
+    """Every kernel entry that an interpolation registry of the model plans
+    for the census of a layout has its census in the L0 of that layout."""
+    from kb import l0
+    from kb.adapters import interp
+    return [Issue("census", _sources(symbol.meaning), symbol.key.key,
+                  f"its [interp] plans the census of the kernel {kernel} on {layout}, and the "
+                  f"L0 of {layout} lacks {l0.Census.file(kernel)}; the census comes with the "
+                  f"L0 export of {layout} by tools/ghidra/export-l0.sh")
+            for symbol, layout, kernel in interp.census_gaps(model)]
+
+
 CHECKS = {
     "schema": schema,
     "canonical": canonical,
@@ -1046,6 +1058,7 @@ CHECKS = {
     'chains': chains,
     'catalog': catalog_check,
     'code': code_check,
+    'census': census_check,
 }
 
 # Reports of a check that do not fail it.
