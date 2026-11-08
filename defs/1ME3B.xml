@@ -4416,8 +4416,8 @@
          publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918,
          whose output byte fffe93d0 nonlinear_transition_controller and four other functions
          read. The issue #114 float model also reads it at 00059954. Stored counts are retained.
-         Physical quantities and engineering conversions are unresolved. Editor values are
-         stored counts; no engineering conversion is established.
+         The physical quantities of the inputs of reader 00064f0c are unresolved. Editor values
+         are stored counts; no engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Timing Float Ratio Response Surface [stored count]"
            category="Ignition//Timing Model Corrections" storagetype="uint16"

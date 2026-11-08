@@ -148,6 +148,13 @@ relies = "structure"
 layout = "jk78c"
 address = "ffff11a6"
 name = "alluring-boa"
+note = [
+    """
+On JK78C 0003b87e writes the source word ffff11da = ffff1186 >> 4 at \
+0003b8ca, and scheduler 00020f1a copies it here through the 52-byte snapshot \
+block ffff11c0.. at 00020fcc. The JK78C word ffff11ee is a different \
+quantity: 0003b938 writes it from the second period measurement.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"

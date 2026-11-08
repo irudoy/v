@@ -110,6 +110,13 @@ key = "Connected injection calculation and raw scheduling"
 layout = "jk78c"
 address = "ffff11d4"
 name = "marigold-zebu"
+note = [
+    """
+On JK78C 0003b87e writes ffff1186 >> 3 here at 0003b89a, and scheduler \
+00020f1a copies the word to engine_speed_fine_snapshot ffff11a0 through the \
+52-byte snapshot block ffff11c0.. at 00020fcc. The JK78C word ffff11ee is a \
+different quantity: 0003b938 writes it from the second period measurement.""",
+]
 
 [[symbol.evidence]]
 kind = "l0"

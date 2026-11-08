@@ -4274,9 +4274,9 @@
          this role without a calibration branch. The root publishes the words ffff3290,
          ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346
          nonlinear_transition_controller and seven other functions read. The issue #114 float
-         model also reads it at 0004dab2. Stored counts are retained. Physical quantities and
-         engineering conversions are unresolved. Editor values are stored counts; no engineering
-         conversion is established.
+         model also reads it at 0004dab2. Stored counts are retained. The physical quantities of
+         the inputs of reader 00057e46 are unresolved. Editor values are stored counts; no
+         engineering conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Timing Float Ratio Response Surface [stored count]"
            category="Ignition//Timing Model Corrections" storagetype="uint16"

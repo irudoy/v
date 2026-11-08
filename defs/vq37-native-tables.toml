@@ -1250,8 +1250,8 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-semantics = "Response surface of the ratio-response builder, indexed after the separately computed (v-1)/v transformation. Its output contributes to the float producer tree. The issue #114 float model also reads this surface with both of its axes."
-note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+semantics = "Response surface of the ratio-response builder over the exponent axis timing_float_ratio_response_axis_x and the ratio axis timing_float_ratio_response_axis_y. The stored surface is x-major: each row of 16 words belongs to one x breakpoint, the exponent times 131072, and each column to one y breakpoint, the ratio times 32768, so the editor X axis is the ratio axis. Every stock cell on every layout equals 32768 * (y / 32768)^(x / 131072) within 1.03 counts, so cell / 32768 = (y / 32768)^(x / 131072). The builder indexes it after the separately computed (v-1)/v transformation, and its output contributes to the float producer tree. The issue #114 float model also reads it with both axes, through charge_ratio_temperature_lookup on JK78C."
+note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. The physical quantities of the inputs of reader 00057e46 are unresolved."
 
 [[target.JK78C.table]]
 id = "intake_cvtc_duty_hold"
@@ -3443,7 +3443,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. The physical quantities of the inputs of reader 00057e46 are unresolved."
 
 [[target.JK78C.axis]]
 id = "timing_float_denominator_gain_axis"
@@ -3713,7 +3713,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads this role without a calibration branch. The root publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346 nonlinear_transition_controller and seven other functions read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained. The physical quantities of the inputs of reader 00057e46 are unresolved."
 
 [[target.JK78C.axis]]
 id = "timing_float_conditional_multiplier_axis"
@@ -5647,8 +5647,8 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-semantics = "Response surface of the ratio-response builder, indexed after the separately computed (v-1)/v transformation. Its output contributes to the float producer tree. The issue #114 float model also reads this surface with both of its axes."
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+semantics = "Response surface of the ratio-response builder over the exponent axis timing_float_ratio_response_axis_x and the ratio axis timing_float_ratio_response_axis_y. The stored surface is x-major: each row of 16 words belongs to one x breakpoint, the exponent times 131072, and each column to one y breakpoint, the ratio times 32768, so the editor X axis is the ratio axis. Every stock cell on every layout equals 32768 * (y / 32768)^(x / 131072) within 1.03 counts, so cell / 32768 = (y / 32768)^(x / 131072). The builder indexes it after the separately computed (v-1)/v transformation, and its output contributes to the float producer tree. The issue #114 float model also reads it with both axes, through charge_ratio_temperature_lookup on JK78C."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND0A.table]]
 id = "intake_cvtc_duty_hold"
@@ -7832,7 +7832,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND0A.axis]]
 id = "timing_float_denominator_gain_axis"
@@ -8102,7 +8102,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND0A.axis]]
 id = "timing_float_conditional_multiplier_axis"
@@ -9991,8 +9991,8 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-semantics = "Response surface of the ratio-response builder, indexed after the separately computed (v-1)/v transformation. Its output contributes to the float producer tree. The issue #114 float model also reads this surface with both of its axes."
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+semantics = "Response surface of the ratio-response builder over the exponent axis timing_float_ratio_response_axis_x and the ratio axis timing_float_ratio_response_axis_y. The stored surface is x-major: each row of 16 words belongs to one x breakpoint, the exponent times 131072, and each column to one y breakpoint, the ratio times 32768, so the editor X axis is the ratio axis. Every stock cell on every layout equals 32768 * (y / 32768)^(x / 131072) within 1.03 counts, so cell / 32768 = (y / 32768)^(x / 131072). The builder indexes it after the separately computed (v-1)/v transformation, and its output contributes to the float producer tree. The issue #114 float model also reads it with both axes, through charge_ratio_temperature_lookup on JK78C."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND3B.table]]
 id = "intake_cvtc_duty_hold"
@@ -12176,7 +12176,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND3B.axis]]
 id = "timing_float_denominator_gain_axis"
@@ -12446,7 +12446,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022194 calls the float model root 00060756; reader 00061120 reads this role without a calibration branch. The root publishes the words fffea43c, fffea43e, fffea566 and fffea752 to the consumer 00061b28, whose output byte fffe9400 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00055aec. Stored counts are retained. The physical quantities of the inputs of reader 00061120 are unresolved."
 
 [[target.1ND3B.axis]]
 id = "timing_float_conditional_multiplier_axis"
@@ -14355,8 +14355,8 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-semantics = "Response surface of the ratio-response builder, indexed after the separately computed (v-1)/v transformation. Its output contributes to the float producer tree. The issue #114 float model also reads this surface with both of its axes."
-note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+semantics = "Response surface of the ratio-response builder over the exponent axis timing_float_ratio_response_axis_x and the ratio axis timing_float_ratio_response_axis_y. The stored surface is x-major: each row of 16 words belongs to one x breakpoint, the exponent times 131072, and each column to one y breakpoint, the ratio times 32768, so the editor X axis is the ratio axis. Every stock cell on every layout equals 32768 * (y / 32768)^(x / 131072) within 1.03 counts, so cell / 32768 = (y / 32768)^(x / 131072). The builder indexes it after the separately computed (v-1)/v transformation, and its output contributes to the float producer tree. The issue #114 float model also reads it with both axes, through charge_ratio_temperature_lookup on JK78C."
+note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. The physical quantities of the inputs of reader 00064f0c are unresolved."
 
 [[target.1ME3B.table]]
 id = "intake_cvtc_duty_hold"
@@ -16624,7 +16624,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. The physical quantities of the inputs of reader 00064f0c are unresolved."
 
 [[target.1ME3B.axis]]
 id = "timing_float_denominator_gain_axis"
@@ -16894,7 +16894,7 @@ format = "0"
 fine = 1
 coarse = 10
 confidence = "code"
-note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. Physical quantities and engineering conversions are unresolved."
+note = "Stock lookup status: active. Scheduler entry 00022200 calls the float model root 0006452e; reader 00064f0c reads this role without a calibration branch. The root publishes the words fffea4fa, fffea4fc, fffea63c and fffea83e to the consumer 00065918, whose output byte fffe93d0 nonlinear_transition_controller and four other functions read. The issue #114 float model also reads it at 00059954. Stored counts are retained. The physical quantities of the inputs of reader 00064f0c are unresolved."
 
 [[target.1ME3B.axis]]
 id = "timing_float_conditional_multiplier_axis"
