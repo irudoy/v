@@ -88,7 +88,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "spotted-zebra/fn"
+to = "reduction_state_decrement_step_builder/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -638,7 +638,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "spotted-zebra/fn"
+to = "reduction_state_decrement_step_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

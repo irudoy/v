@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pistachio-vole/fn"
+to = "request_conditional_surface_inverse_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -123,7 +123,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "pistachio-vole/fn"
+to = "request_conditional_surface_inverse_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

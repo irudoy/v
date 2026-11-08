@@ -1,15 +1,22 @@
 summary = """
-Multimode accessor for maps 0x0B5FA and 0x11FE6. Interpolated uint8 M from \
-the selected map is multiplied by uint8 ffff3373; the product is written to \
-ffff13dc and used as a zero-saturating decrement step for uint16 ffff1866."""
+Build the decrement step of the reduction state. By mode and state bits, one \
+of three branches takes a byte from the 4x4 mode-selected surface \
+reduction_state_decrement_multiplier, from the curve \
+reduction_state_decrement_curve at index (x*0x2d0e>>15)-0x20 clamped to \
+0..255, or from direct constants, multiplies it by a state byte, and stores \
+the word product that strange-mushroom/fn subtracts from the 16-bit \
+reduction state with saturation at zero. The physical quantities remain \
+unresolved."""
 note = [
     """
 The physical purpose of state ffff1866 is unresolved. Map 0x11FE6 contains \
 only zeros in the current ROM.""",
 ]
 level = "code"
+home = "jk78c"
 role = "accessor"
-block = "unattributed/block"
+block = "ignition_timing/block"
+former = ["parameter_mode_selected_gain_builder"]
 
 [[ledger]]
 registry = "funcs"
@@ -63,16 +70,67 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "stalwart-polecat/ram"
+to = "reduction_state_decrement_step/ram"
 type = "writer"
 end = "to"
 relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000964b8"
+former = ["parameter_mode_selected_gain_builder/fn/1me3b-000964b8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000964b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000964b8"
+to = "jk78c:00082cb0"
+note = """
+1ME3B keeps the three branches of the builder with the body of the 1ND \
+symbol 1nd:00090988: the 4x4 mode-selected surface, the curve at index \
+(x*0x2d0e>>15)-0x20 clamped to 0..255, and direct constants. It reads \
+reduction_state_decrement_curve at 1me3b:0009654a and \
+reduction_state_decrement_multiplier at 1me3b:000965c2, and stores the word \
+product at 1me3b:fffe83d0, which eggplant-squirrel, the 1ME3B symbol of \
+strange-mushroom/fn, reads. Masked-match finds no candidate."""
+
+[[symbol]]
+layout = "1nd"
+address = "00090988"
+former = ["parameter_mode_selected_gain_builder/fn/1nd-00090988"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090988"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090988"
+to = "jk78c:00082cb0"
+note = """
+1ND keeps the three branches of the builder: the 4x4 mode-selected surface \
+with the mode index clamped to 1..4 and the column to 0..3, the curve at \
+index (x*0x2d0e>>15)-0x20 clamped to 0..255, and direct constants. It reads \
+reduction_state_decrement_curve at 1nd:00090a1a and \
+reduction_state_decrement_multiplier at 1nd:00090a92, and stores the word \
+product at 1nd:fffe8404, which premium-chachalaca, the 1ND symbol of \
+strange-mushroom/fn, reads. Masked-match finds no candidate."""
+
+[[symbol]]
 layout = "7mfk"
 address = "000647e8"
-name = "spotted-zebra"
+former = [
+    "parameter_mode_selected_gain_builder/fn/7mfk-000647e8",
+    "spotted-zebra/fn/7mfk-000647e8",
+]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -183,6 +241,76 @@ kind = "trace"
 supports = "identity"
 to = "careful-terrier/fn/7mfk"
 relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "7mfk:000647e8"
+to = "jk78c:00082cb0"
+note = """
+Both functions select among the same three branches: the 4x4 mode-selected \
+surface reduction_state_decrement_multiplier with the mode index clamped to \
+1..4 and the column clamped to 0..3, the curve \
+reduction_state_decrement_curve at index (x*0x2d0e>>15)-0x20 clamped to \
+0..255, and direct constants. Each branch multiplies its byte by a state \
+byte and stores the word product, 7mfk:ffff13dc and jk78c:ffff13d6, which \
+strange-mushroom/fn reads on both layouts. Masked-match from JK78C names \
+7mfk:000647e8 as its only candidate."""
+
+[[symbol]]
+layout = "jk00c"
+address = "00066a88"
+former = ["parameter_mode_selected_gain_builder/fn/jk00c-00066a88"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00066a88"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00066a88"
+to = "7mfk:000647e8"
+note = """
+JK00C has the builder of the JK00D symbol jk00d:00066a88 at the same \
+address: the same three branches, and the store of the word product at \
+ffff1400 at jk00c:00066ca4."""
+
+[[symbol]]
+layout = "jk00d"
+address = "00066a88"
+former = ["parameter_mode_selected_gain_builder/fn/jk00d-00066a88"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00066a88"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00066a88"
+to = "7mfk:000647e8"
+note = """
+JK00D keeps the three branches of the 7mfk builder with the same gates: the \
+4x4 mode-selected surface with the mode index clamped to 1..4 and the column \
+to 0..3, the curve at index (x*0x2d0e>>15)-0x20 clamped to 0..255, and \
+direct constants. Each branch multiplies its byte by a state byte, and the \
+common tail at jk00d:00066ca4 stores the word product at base ffff12a4 + \
+0x15c, ffff1400, where 7mfk stores ffff13dc at ffff128c + 0x150. \
+Masked-match from 7mfk names jk00d:00066a88 as its only candidate."""
+
+[[symbol]]
+layout = "jk78c"
+address = "00082cb0"
+level = "code"
+former = ["parameter_mode_selected_gain_builder/fn/jk78c-00082cb0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00082cb0"
 
 [[link]]
 type = "depends"

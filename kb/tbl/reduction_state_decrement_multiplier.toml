@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "stalwart-polecat/ram"
+to = "reduction_state_decrement_step/ram"
 type = "lookup"
 end = "to"
 relies = "structure"
@@ -198,21 +198,16 @@ at = "jk78c:00082d30"
 
 [[link]]
 type = "reader"
-to = "parameter_mode_selected_gain_builder/fn"
-layouts = ["jk78c"]
+to = "reduction_state_decrement_step_builder/fn"
+layouts = ["jk78c", "7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00082d2a"
-
-[[link]]
-type = "reader"
-to = "spotted-zebra/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "reader"

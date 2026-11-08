@@ -84,6 +84,48 @@ supports = "identity"
 at = "7mfk:00064cb2"
 
 [[symbol]]
+layout = "jk00c"
+address = "00066f86"
+name = "huge-squid"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00066f86"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00066f86"
+to = "7mfk:00064cb2"
+note = """
+JK00C has the function of the JK00D symbol jk00d:00066f86 at the same \
+address, and it loads the decrement step ffff1400 at jk00c:0006726a."""
+
+[[symbol]]
+layout = "jk00d"
+address = "00066f86"
+name = "zippy-caiman"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00066f86"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00066f86"
+to = "7mfk:00064cb2"
+note = """
+JK00D keeps the gates and branches of 7mfk:00064cb2 in the same order. Its \
+rise toward the byte target adds the word at ffff12a4 + 0x15e where 7mfk \
+adds ffff128c + 0x152, and its decrement subtracts the word decrement step \
+at ffff12a4 + 0x15c, loaded at jk00d:0006726a, where 7mfk subtracts \
+ffff13dc, with saturation at zero in both. Masked-match from 7mfk names \
+jk00d:00066f86 as its only candidate."""
+
+[[symbol]]
 layout = "jk78c"
 address = "00083174"
 name = "righteous-rottweiler"

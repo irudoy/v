@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "stalwart-polecat/ram"
+to = "reduction_state_decrement_step/ram"
 type = "lookup"
 end = "to"
 relies = "structure"
@@ -236,21 +236,16 @@ with saturation at 0, as 00064cb2 does with ffff1866."""
 
 [[link]]
 type = "reader"
-to = "parameter_mode_selected_gain_builder/fn"
-layouts = ["jk78c"]
+to = "reduction_state_decrement_step_builder/fn"
+layouts = ["jk78c", "7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:00082e12"
-
-[[link]]
-type = "reader"
-to = "spotted-zebra/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "reader"

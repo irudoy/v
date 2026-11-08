@@ -1,0 +1,137 @@
+summary = """
+Word decrement step of the reduction state. The decrement step builder \
+stores the product of its selected branch here, and strange-mushroom/fn \
+subtracts it from the 16-bit reduction state with saturation at zero."""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe83d0"
+former = ["eager-lynx/ram/1me3b-fffe83d0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00096bee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000966cc"
+to = "7mfk:00064a04"
+note = """
+The builder 1me3b:000964b8 stores its word product here in each branch, at \
+1me3b:0009655e, 1me3b:000965d8, and 1me3b:000966cc, as 7mfk:00064a04 stores \
+ffff13dc, and eggplant-squirrel, the 1ME3B symbol of strange-mushroom/fn, \
+loads it at 1me3b:00096bee."""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8404"
+former = ["invisible-gorilla/ram/1nd-fffe8404"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00090f88"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00090b1a"
+to = "7mfk:00064a04"
+note = """
+The builder 1nd:00090988 stores its word product here in each branch, at \
+1nd:00090a2e, 1nd:00090aa8, and 1nd:00090b1a, as 7mfk:00064a04 stores \
+ffff13dc, and premium-chachalaca, the 1ND symbol of strange-mushroom/fn, \
+loads it at 1nd:00090f88."""
+
+[[symbol]]
+layout = "7mfk"
+address = "ffff13dc"
+former = ["stalwart-polecat/ram/7mfk-ffff13dc"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00064fa2"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1400"
+former = ["mysterious-swallow/ram/jk00c-ffff1400"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0006726a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:00066ca4"
+to = "7mfk:00064a04"
+note = """
+The builder jk00c:00066a88 stores its word product here at the end of all \
+three branches, as 7mfk:00064a04 stores ffff13dc, and jk00c:00066f86, the \
+JK00C symbol of strange-mushroom/fn, loads it at jk00c:0006726a."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1400"
+former = ["inquisitive-koel/ram/jk00d-ffff1400"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0006726a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:00066ca4"
+to = "7mfk:00064a04"
+note = """
+The builder jk00d:00066a88 stores its word product here at the end of all \
+three branches, as 7mfk:00064a04 stores ffff13dc, and jk00d:00066f86, the \
+JK00D symbol of strange-mushroom/fn, loads it at jk00d:0006726a."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff13d6"
+former = ["valiant-armadillo/ram/jk78c-ffff13d6"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00083378"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00082e6c"
+to = "7mfk:00064a04"
+note = """
+The builder stores its word product here at the end of all three branches, \
+as 7mfk:00064a04 stores ffff13dc, and righteous-rottweiler, the JK78C symbol \
+of strange-mushroom/fn, loads it at jk78c:00083378."""
+
+[[link]]
+type = "lookup"
+to = "reduction_state_decrement_curve/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "lookup"
+to = "reduction_state_decrement_multiplier/tbl"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "reduction_state_decrement_step_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

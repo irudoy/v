@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pistachio-vole/fn"
+to = "request_conditional_surface_inverse_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -171,7 +171,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pistachio-vole/fn"
+to = "request_conditional_surface_inverse_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -65,7 +65,7 @@ at = "jk78c:00082d30"
 
 [[link]]
 type = "reader"
-to = "parameter_mode_selected_gain_builder/fn"
+to = "reduction_state_decrement_step_builder/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

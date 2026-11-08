@@ -39,7 +39,7 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pistachio-vole/fn"
+to = "request_conditional_surface_inverse_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -274,15 +274,10 @@ supports = "scale"
 
 [[link]]
 type = "reader"
-to = "pistachio-vole/fn"
-layouts = ["7mfk"]
+to = "request_conditional_surface_inverse_builder/fn"
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "scale"
-
-[[link]]
-type = "reader"
-to = "request_conditional_surface_inverse_builder/fn"
-layouts = ["jk78c"]
 role = "accessor"
 
 [[link.evidence]]
