@@ -106,6 +106,27 @@ def test_progress_of_different_holder_tokens_cannot_extend_the_wait(tmp_path, mo
         assert now[0] == 3
 
 
+def test_an_ordinary_successor_uses_ordinary_timeout_diagnostics(tmp_path, monkeypatch):
+    with ExitStack() as syncing, ExitStack() as ordinary:
+        syncing.enter_context(lock.held(tmp_path, timeout=3))
+        progress = syncing.enter_context(lock.syncing(tmp_path))
+
+        def advance(now):
+            if now == 2:
+                progress("accesses")
+            if now == 3:
+                syncing.close()
+                ordinary.enter_context(lock.held(tmp_path, timeout=3))
+
+        now = virtual_time(monkeypatch, advance)
+        with pytest.raises(KbError, match="gave up after 3 s") as caught:
+            with lock.held(tmp_path, timeout=3, log=io.StringIO()):
+                pytest.fail("the ordinary successor still holds the lock")
+        assert caught.value.code == 7
+        assert now[0] == 5
+        assert "graph-sync progress" not in str(caught.value)
+
+
 @pytest.mark.parametrize("ordinary", [False, True])
 def test_old_counters_and_ordinary_status_cannot_renew_a_deadline(tmp_path, monkeypatch, ordinary):
     with lock.held(tmp_path, timeout=3), lock.syncing(tmp_path):

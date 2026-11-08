@@ -113,6 +113,7 @@ def held(root=repo.ROOT, timeout=None, log=sys.stderr):
                     if observed is None or observed[0] != identity:
                         notice = True
                         observed = identity, state["progress"]
+                        renewed = False
                     elif state["progress"] > observed[1]:
                         observed = identity, state["progress"]
                         if state["operation"] == "sync":
