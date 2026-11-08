@@ -322,6 +322,60 @@ supports = "identity"
 to = "imposing-jaybird/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "000d76e8"
+name = "tomato-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d78be"
+to = "7mfk:000b2b78"
+count = 1
+value = 47
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d7870"
+to = "7mfk:000b2b2a"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d77f2"
+to = "7mfk:000b2af4"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d783a"
+to = "7mfk:000b2aac"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d79aa"
+to = "7mfk:000b2c60"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d7a38"
+to = "7mfk:000b2cda"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "attractive-grasshopper/fn"

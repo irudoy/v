@@ -802,6 +802,63 @@ supports = "contract"
 to = "portable-carp/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a79c4"
+name = "nickel-agama"
+level = "code"
+note = """
+JK78C reads the tables of its JK08A reader links in marvellous-malamute \
+000a48fc."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7cfa"
+to = "7mfk:00085d9e"
+count = 1
+value = 56
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7df2"
+to = "7mfk:00085e96"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7fac"
+to = "7mfk:00086052"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7a70"
+to = "7mfk:00085b16"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7ad6"
+to = "7mfk:00085b7a"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a7bf2"
+to = "7mfk:00085c98"
+count = 1
+value = 23
+
 [[link]]
 type = "depends"
 to = "lovely-koala/fn"

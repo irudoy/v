@@ -103,6 +103,20 @@ supports = "identity"
 to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000cad7c"
+name = "holistic-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cad60"
+to = "7mfk:000a681c"
+count = 1
+value = 30
+
 [[link]]
 type = "depends"
 to = "exuberant-wombat/fn"

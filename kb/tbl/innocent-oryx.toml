@@ -162,6 +162,11 @@ loads. MOV.L 000c0f1c loads this datum for jasmine-lizard, as 7mfk MOV.L \
 [[link]]
 type = "reader"
 to = "funny-toucan/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c0f1c"

@@ -430,6 +430,44 @@ supports = "identity"
 to = "dramatic-okapi/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000ca55c"
+name = "optimal-chimpanzee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ca5ce"
+to = "7mfk:000a6592"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ca574"
+to = "7mfk:000a652e"
+count = 1
+value = 23
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cabfe"
+to = "7mfk:000a66f8"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ca55c"
+to = "7mfk:000a6516"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "archetypal-peccary/fn"

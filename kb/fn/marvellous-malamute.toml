@@ -1372,6 +1372,60 @@ supports = "contract"
 to = "ruby-kangaroo/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a48fc"
+name = "opalescent-junglefowl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c290"
+to = "7mfk:0007bfd6"
+count = 1
+value = 145
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a494a"
+to = "7mfk:00082cdc"
+count = 1
+value = 62
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a6048"
+to = "7mfk:00084270"
+count = 1
+value = 51
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a5a5c"
+to = "7mfk:00083ce0"
+count = 1
+value = 44
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a5e8c"
+to = "7mfk:000840a6"
+count = 1
+value = 44
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a53e4"
+to = "7mfk:00083658"
+count = 1
+value = 40
+
 [[link]]
 type = "depends"
 to = "dashing-coucal/fn"

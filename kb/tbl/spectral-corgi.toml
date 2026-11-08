@@ -243,8 +243,13 @@ role = "accessor"
 [[link]]
 type = "reader"
 to = "maf_range_model_byte_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a4576"

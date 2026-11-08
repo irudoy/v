@@ -602,9 +602,14 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "foamy-pony/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004220e"
 
 [[link]]
 type = "reader"
@@ -632,11 +637,16 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "persimmon-raven/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041fe8"
 
 [[link]]
 type = "reader"

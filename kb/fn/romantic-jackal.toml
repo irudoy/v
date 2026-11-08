@@ -134,6 +134,52 @@ supports = "identity"
 to = "overjoyed-buffalo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "000cf344"
+name = "screeching-roadrunner"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf74e"
+to = "7mfk:000ab098"
+count = 1
+value = 33
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf5d4"
+to = "7mfk:000aaf5a"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf722"
+to = "7mfk:000ab06c"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf5b4"
+to = "7mfk:000aaf3a"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf47a"
+to = "7mfk:000aadf2"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "attractive-grasshopper/fn"

@@ -138,3 +138,48 @@ kind = "trace"
 supports = "identity"
 to = "maf_range_performance_bank_2_monitor/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a4510"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a455a"
+to = "7mfk:0008264e"
+count = 1
+value = 130
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a46f6"
+to = "7mfk:000827a2"
+count = 1
+value = 57
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a4662"
+to = "7mfk:00082756"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a4510"
+to = "7mfk:00082604"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000a4510"
+to = "7mfk:00082604"
+count = 1
+value = "mnemonic"

@@ -204,6 +204,36 @@ supports = "identity"
 to = "idle_ignition_lookup/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c7a72"
+name = "humongous-mastiff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7a72"
+to = "7mfk:000a3c00"
+count = 1
+value = 107
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7d4e"
+to = "7mfk:000a3eb2"
+count = 1
+value = 62
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c7a72"
+to = "7mfk:000a3c00"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "mauve-tuatara/fn"

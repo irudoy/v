@@ -157,6 +157,11 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "xanthic-wolf/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c95c6"

@@ -134,6 +134,20 @@ at = "7mfk:0003d336"
 value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00041fb8"
+name = "hopeful-rattlesnake"
+level = "code"
+note = """
+Same four-bit gate, fixed code 75 and table lookup of the filtered word >> 2 \
+as JK08A 0003d2dc for one lane: it reads ffff2786 and stores iat ffff278a."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041fe8"
+
 [[link]]
 type = "depends"
 to = "romantic-caiman/fn"

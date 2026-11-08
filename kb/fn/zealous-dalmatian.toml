@@ -254,3 +254,16 @@ kind = "trace"
 supports = "identity"
 to = "adaptable-wolverine/fn/7mfk"
 relies = "level"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000dfc5e"
+count = 1
+candidate = "jk78c:000df756"
+l0 = "ad2dc37ff374398e"
+note = """
+000df756 (666 bytes) calls eleven sub-functions, among them \
+cherubic-piculet; JK08A 000b6b5a (2702 bytes) holds the same work in one \
+function, so the correspondence is one of function groups."""

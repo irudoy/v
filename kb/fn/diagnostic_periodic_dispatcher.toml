@@ -92,6 +92,30 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009c284"
+level = "code"
+note = """
+The work of the JK08A tail function 0007c166, \
+critical_ecm_etc_fault_aggregate_update, is inlined at the end of 0009c284."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c290"
+to = "7mfk:0007bfd6"
+count = 1
+value = 145
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c284"
+to = "7mfk:0007bfc4"
+count = 1
+value = 42
+
 [[link]]
 type = "depends"
 to = "diagnostic_group_summary_update/fn"

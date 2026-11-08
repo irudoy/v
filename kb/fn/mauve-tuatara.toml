@@ -197,6 +197,61 @@ supports = "identity"
 to = "attractive-grasshopper/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c6d70"
+name = "shrewd-camel"
+level = "code"
+note = "JK78C reads aromatic-kagu through boisterous-ape 000c6cfe."
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = 77
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7068"
+to = "7mfk:000a31f8"
+count = 1
+value = 67
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6d70"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6dce"
+to = "7mfk:000a2fb0"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6fee"
+to = "7mfk:000a31a0"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6e0e"
+to = "7mfk:000a2fe8"
+count = 1
+value = 23
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

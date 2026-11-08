@@ -255,6 +255,11 @@ by a calibration bit. MOV.L 000d6de8 loads this datum for dfco_lookup, as \
 [[link]]
 type = "reader"
 to = "classic-pelican/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6de8"

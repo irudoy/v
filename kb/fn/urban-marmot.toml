@@ -332,6 +332,60 @@ supports = "identity"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c9a1e"
+name = "ambrosial-shrew"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9974"
+to = "7mfk:000a595c"
+count = 1
+value = 97
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9ae2"
+to = "7mfk:000a5aca"
+count = 1
+value = 58
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ca19e"
+to = "7mfk:000a6192"
+count = 1
+value = 52
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9c82"
+to = "7mfk:000a5c6a"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ca05a"
+to = "7mfk:000a6042"
+count = 1
+value = 43
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c9e22"
+to = "7mfk:000a5e0a"
+count = 1
+value = 40
+
 [[link]]
 type = "depends"
 to = "cherry-junglefowl/axis"

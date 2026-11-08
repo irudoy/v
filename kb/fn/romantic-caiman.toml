@@ -178,6 +178,22 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0004256c"
+name = "huge-cassowary"
+level = "code"
+note = """
+Same call sequence as JK08A 0003d832 with one lane per call: filter, \
+transfer code, captures, running minimum, unfiltered PID code and the tail \
+calls. JK78C inserts fill_temperature_selector 00042008 after the transfer \
+code."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004256c"
+
 [[link]]
 type = "depends"
 to = "abstract-lyrebird/fn"

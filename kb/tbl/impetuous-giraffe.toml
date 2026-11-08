@@ -393,8 +393,13 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "urban-marmot/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c9a5c"

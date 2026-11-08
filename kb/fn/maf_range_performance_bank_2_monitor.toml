@@ -251,6 +251,19 @@ at = "7mfk:000824b4"
 value = {named = ["00008d92", "0001236a", "00012868", "00012ac2", "000193b4", "00080f82", "00081d74", "ffff10f5", "ffff11ae", "ffff12ec", "ffff15bd", "ffff15be", "ffff15c6", "ffff4565", "ffff4567", "ffff517c"], span = 1}
 key = "reference"
 
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000a2cbc"
+count = 1
+candidate = "jk78c:000a3410"
+l0 = "ad2dc37ff374398e"
+note = """
+JK78C has one bank-indexed function, 000a3410, which \
+dual_bank_maf_range_monitor_coordinator calls with bank 0 and bank 1; JK08A \
+has one function per bank."""
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_diagnostic_dispatch/fn"

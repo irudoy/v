@@ -93,6 +93,17 @@ at = "7mfk:0007c3a8"
 value = {named = ["00050920", "0007c166", "0007c3b4", "0007d856", "ffff41ea"], span = 1}
 key = "reference"
 
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "masked-match"
+target = "7mfk:0007c166"
+count = 0
+l0 = "ad2dc37ff374398e"
+note = """
+JK78C inlines the aggregate update at the end of \
+diagnostic_periodic_dispatcher 0009c284."""
+
 [[link]]
 type = "depends"
 to = "critical_diagnostic_qualification_counter_update/fn"

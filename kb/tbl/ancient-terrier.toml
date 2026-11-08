@@ -232,17 +232,27 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "caped-barracuda/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d79b8"
+
 [[link]]
 type = "reader"
 to = "classic-pelican/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6e9c"

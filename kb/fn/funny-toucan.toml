@@ -140,6 +140,60 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000c078c"
+name = "spiritual-nightingale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c0bfe"
+to = "7mfk:0009d24a"
+count = 1
+value = 183
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c11d6"
+to = "7mfk:0009d822"
+count = 1
+value = 169
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c09e0"
+to = "7mfk:0009d02c"
+count = 1
+value = 145
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c0d78"
+to = "7mfk:0009d3c4"
+count = 1
+value = 133
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c0ea8"
+to = "7mfk:0009d4f4"
+count = 1
+value = 124
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c10f8"
+to = "7mfk:0009d744"
+count = 1
+value = 107
+
 [[link]]
 type = "depends"
 to = "granite-aardwolf/axis"

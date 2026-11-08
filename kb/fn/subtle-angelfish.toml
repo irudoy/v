@@ -7,3 +7,32 @@ name = "subtle-angelfish"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00085a1c"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a7970"
+name = "lumpy-hamster"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c290"
+to = "7mfk:0007bfd6"
+count = 1
+value = 145
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a797e"
+to = "7mfk:00085a2a"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000a7970"
+to = "7mfk:00085a1c"
+count = 1
+value = "mnemonic"

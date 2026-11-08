@@ -136,6 +136,11 @@ loads 00012e52."""
 [[link]]
 type = "reader"
 to = "merry-dachshund/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000cad82"

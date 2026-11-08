@@ -7,3 +7,59 @@ name = "copper-kakapo"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0009a348"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bb8ac"
+name = "functional-swallow"
+note = """
+Same reset block as JK08A 0009a348, which clears the status bits, zeroes the \
+counters and stores 0x1e, and the same evaluation structure."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbc3e"
+to = "7mfk:0009a68a"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbaae"
+to = "7mfk:0009a51a"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbbf0"
+to = "7mfk:0009a63c"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbccc"
+to = "7mfk:0009a70e"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbcee"
+to = "7mfk:0009a730"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bbbd4"
+to = "7mfk:0009a620"
+count = 1
+value = 13

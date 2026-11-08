@@ -251,3 +251,33 @@ kind = "trace"
 supports = "identity"
 to = "eminent-lynx/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000d6d3a"
+name = "quaint-fennec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d79aa"
+to = "7mfk:000b2c60"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d6f5e"
+to = "7mfk:000b2294"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d6f26"
+to = "7mfk:000b225c"
+count = 1
+value = 13

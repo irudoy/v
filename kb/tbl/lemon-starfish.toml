@@ -145,6 +145,11 @@ loads. MOV.L 000c2462 loads this datum for eminent-lynx, as 7mfk MOV.L \
 [[link]]
 type = "reader"
 to = "righteous-frigatebird/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c2462"

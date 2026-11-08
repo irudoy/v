@@ -175,11 +175,16 @@ and their table loads align one to one in order, wrapper and geometry. MOV.L \
 [[link]]
 type = "reader"
 to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a535c"
 
 [[link]]
 type = "selector"

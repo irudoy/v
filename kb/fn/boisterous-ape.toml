@@ -161,3 +161,33 @@ supports = "identity"
 at = "7mfk:000a2f0e"
 value = {named = ["00011fb6", "000a2ee4", "ffff11b2", "ffff2b6f"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6cfe"
+name = "feathered-angelfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6c92"
+to = "7mfk:000a2e78"
+count = 1
+value = 79
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = 77
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c6cfe"
+to = "7mfk:000a2ee4"
+count = 1
+value = "mnemonic"

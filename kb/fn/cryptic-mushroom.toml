@@ -239,6 +239,25 @@ supports = "identity"
 to = "daft-herring/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000bad54"
+name = "screeching-agama"
+level = "code"
+note = """
+Same two range branches, below 3 and above 0xf1, with reload delays of 0x32, \
+and sub-monitor calls under bit 2 of byte 0x3a as JK08A 00099e00; JK78C \
+reports records 0xcd and 0xce where JK08A reports 0xdd and 0xde, and calls \
+one more sub-monitor."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bad54"
+to = "7mfk:00099e00"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

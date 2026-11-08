@@ -150,6 +150,11 @@ role = "from_map"
 [[link]]
 type = "reader"
 to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a576e"

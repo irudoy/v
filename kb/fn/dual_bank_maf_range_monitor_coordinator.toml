@@ -78,6 +78,23 @@ supports = "identity"
 to = "diagnostic_periodic_dispatcher/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a2cbc"
+level = "code"
+note = """
+Same call structure as JK08A: four sub-monitors, the bank-indexed range \
+monitor 000a3410 with bank 0 and bank 1, and \
+dual_bank_maf_diagnostic_dispatch with seven arguments."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a2cbc"
+to = "7mfk:00080e20"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_diagnostic_dispatch/fn"

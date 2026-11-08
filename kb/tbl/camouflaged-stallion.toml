@@ -226,11 +226,16 @@ loads 000151d2."""
 [[link]]
 type = "reader"
 to = "almond-flamingo/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ca5b4"
 
 [[link]]
 type = "threshold"

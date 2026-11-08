@@ -554,6 +554,36 @@ supports = "identity"
 to = "tough-avocet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000cbcb6"
+name = "functional-loon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cbe3a"
+to = "7mfk:000a791c"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cbd22"
+to = "7mfk:000a77ca"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cbd52"
+to = "7mfk:000a77fa"
+count = 1
+value = 13
+
 [[link]]
 type = "selector"
 to = "charming-skunk/ram"
