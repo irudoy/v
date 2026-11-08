@@ -10,10 +10,11 @@ note = [
     """
 0x21c00 is a literal-pool longword of 0003ec22 and 0003fb38; JK08A has no \
 such pool word. At the 1/128 scale with which charge_model reads ffff2ee4 as \
-an angle, the terms are in 1/512 degree: 0x21c00 is 270, the stock words \
-0x3400 and 0x5000 are 26 and 10, and twice the duration 64 of \
-charge_closing_limit_duration is 128, so the held offset gives ffff33a2 = \
-0xba00 (372 degrees) and ffff2ee2 = ffff2ee4 = 0xbf00 (382 degrees).""",
+an angle, the terms of b are in 1/512 degree and charge_angle_addend, added \
+after the factor 4, in 1/2048 degree: 0x21c00 is 270, the stock word 0x3400 \
+is 26, twice the duration 64 of charge_closing_limit_duration is 128, and \
+the stock word 0x5000 is 10, so the held offset gives ffff33a2 = 0xba00 (372 \
+degrees) and ffff2ee2 = ffff2ee4 = 0xbf00 (382 degrees).""",
 ]
 level = "code"
 role = "accessor"
