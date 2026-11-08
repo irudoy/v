@@ -188,8 +188,8 @@ def rebase(before, after, renames):
     """Rebind renamed claims or passive archive refs; withdraw deleted accesses.
 
     `renames` maps each meaning key that leaves the change, by a merge or a
-    rename, to the key that takes its place, in the order the change applies
-    them, so a claim follows a merge and a later rename of the survivor.
+    rename, to the key that takes its place, so a claim follows its chain of
+    merges and renames to the final meaning.
     New differences and changed conditions, evidence contents, widths or L0
     never gain a review. Every retained record keeps its state and reason.
     """
@@ -226,13 +226,15 @@ def rebase(before, after, renames):
              for old in renames}
 
     def renamed_claim(claim):
-        for old, new in renames.items():
-            # A meaning that the change starts states no reviewed claim.
+        # Each meaning of the base names its final meaning at once, also
+        # through a meaning that the change starts and passes on; such a
+        # meaning states no claim of the base.
+        for old in renames:
             owner = owners.get(old)
             if owner is None:
                 continue
             aliases = {owner.name, *(symbol.generated for symbol in owner.symbols.values())} - {None}
-            claim, _ = write.renamed(claim, aliases, owner.kind, new.split('/')[0])
+            claim, _ = write.renamed(claim, aliases, owner.kind, final(old).split('/')[0])
         return {**claim, 'sources': sorted(paths.get(item, item) for item in claim['sources'])}
 
     found, changed = [], False

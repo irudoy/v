@@ -94,22 +94,35 @@ def test_changed_l0_cannot_reuse_a_renamed_review(tmp_path):
         assert reconciliation.rebase(before, after, {'caller/fn': 'renamed_caller/fn'}) is None
 
 
-@pytest.mark.parametrize('renames', [
-    {'test/ram': 'survivor/ram'},
-    {'test/ram': 'survivor/ram', 'survivor/ram': 'final/ram'},
+def moved(model, key):
+    """`model` with the reviewed claim in the meaning `key` and its file."""
+    link = model.links[0]
+    name = key.split('/')[0]
+    link.owner.key, link.owner.name = key, name
+    link.sources = {f'kb/ram/{name}.toml'}
+    link.owner.symbols['7mfk'].sources = link.sources
+    return model
+
+
+CHAIN = {'test/ram': 'survivor/ram', 'survivor/ram': 'final/ram'}
+
+
+@pytest.mark.parametrize('renames,held', [
+    ({'test/ram': 'survivor/ram'}, True),
+    (CHAIN, True),
+    # survivor/ram starts in the change, takes test/ram, and then joins
+    # final/ram or takes its name.
+    (CHAIN, False),
 ])
-def test_a_merge_and_a_later_rename_rebind_the_exact_claim_and_source(tmp_path, renames):
-    # test/ram joins survivor/ram, which a later rename can name final/ram.
+def test_a_merge_and_a_later_rename_rebind_the_exact_claim_and_source(tmp_path, renames, held):
+    # test/ram joins survivor/ram, which can pass the claim on to final/ram.
     with exact_sources(), patch.object(reconciliation.match, 'l0_digest', return_value='0123456789abcdef'):
         before, text = declared(tmp_path)
-        before.meanings.append(SimpleNamespace(key='survivor/ram', name='survivor', kind='ram',
-                                               symbols={}))
-        after = deepcopy(before)
-        link = after.links[0]
-        name = list(renames.values())[-1].split('/')[0]
-        link.owner.key, link.owner.name = f'{name}/ram', name
-        link.sources = {f'kb/ram/{name}.toml'}
-        link.owner.symbols['7mfk'].sources = link.sources
+        if held:
+            before.meanings.append(SimpleNamespace(key='survivor/ram', name='survivor',
+                                                   kind='ram', symbols={}))
+        final = list(renames.values())[-1]
+        after = moved(deepcopy(before), final)
         updated = reconciliation.rebase(before, after, renames)
         assert updated is not None
         after.config['reconciliation'] = tomlkit.parse(updated)['reconciliation']
@@ -117,8 +130,33 @@ def test_a_merge_and_a_later_rename_rebind_the_exact_claim_and_source(tmp_path, 
         old = before.config['reconciliation']['review'][0]
         new = after.config['reconciliation']['review'][0]
         assert (new['state'], new['reason'], new['l0']) == (old['state'], old['reason'], old['l0'])
-        assert new['sources'] == [f'kb/ram/{name}.toml']
+        assert new['sources'] == [f'kb/ram/{final.split("/")[0]}.toml']
         assert (tmp_path / repo.OWNER_CONFIG).read_text() == text
+        if len(renames) > 1:
+            # Two consecutive changes give the same review.
+            between = moved(deepcopy(before), 'survivor/ram')
+            between.overlay = {repo.OWNER_CONFIG: reconciliation.rebase(
+                before, between, {'test/ram': 'survivor/ram'})}
+            between.config['reconciliation'] = tomlkit.parse(
+                between.overlay[repo.OWNER_CONFIG])['reconciliation']
+            later = moved(deepcopy(between), final)
+            stepwise = reconciliation.rebase(between, later, {'survivor/ram': final})
+            assert (tomlkit.parse(stepwise)['reconciliation']['review'].unwrap()
+                    == tomlkit.parse(updated)['reconciliation']['review'].unwrap())
+
+
+@pytest.mark.parametrize('field,value', [
+    ('roles', ['different role']), ('props', {'note': 'A different condition.'}),
+    ('evidence', [{'kind': 'spec', 'path': 'defs/different.md'}]),
+])
+def test_a_changed_claim_cannot_adopt_the_review_through_a_started_meaning(tmp_path, field,
+                                                                           value):
+    with exact_sources(), patch.object(reconciliation.match, 'l0_digest', return_value='0123456789abcdef'):
+        before, _ = declared(tmp_path)
+        after = moved(deepcopy(before), 'final/ram')
+        setattr(after.links[0], field, value)
+        assert reconciliation.rebase(before, after, CHAIN) is None
+        assert reconciliation.check(after)
 
 
 def test_a_meaning_that_the_change_starts_and_merges_states_no_reviewed_claim(tmp_path):
