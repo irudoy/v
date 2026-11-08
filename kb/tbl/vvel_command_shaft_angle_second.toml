@@ -127,17 +127,7 @@ at = "1me3b:0005c7e6"
 
 [[link]]
 type = "reader"
-to = "helpful-raccoon/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1nd:00058b04"
-
-[[link]]
-type = "reader"
-to = "venomous-lynx/fn"
+to = "vvel_measured_duration_converter_validation/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -145,10 +135,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0005c974"
 
-[[link]]
-type = "reader"
-to = "vvel_measured_duration_converter_validation/fn"
-role = "accessor"
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058b04"
 
 [[link.evidence]]
 kind = "indirect"

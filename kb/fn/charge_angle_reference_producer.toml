@@ -1,0 +1,29 @@
+summary = """
+With b = (0x21c00 - charge_angle_subtrahend + 2 * \
+charge_closing_limit_duration) * 4 and x = b + (charge_angle_offset ffff1a98 \
+- 0x8000) * 1024, it stores charge_angle_reference_base ffff33a2 = x / 16, \
+charge_angle_reference_offset ffff2ee2 = (x + charge_angle_addend) / 16 and \
+charge_angle_reference ffff2ee4 = (y + charge_angle_addend) / 16, each \
+truncated toward zero and clamped to 0..0xffff, where y = b while bit 1 of \
+ROM byte 00008959 is set and y = x otherwise."""
+note = [
+    """
+0x21c00 is a literal-pool longword of 0003ec22 and 0003fb38; JK08A has no \
+such pool word. At the 1/128 scale with which charge_model reads ffff2ee4 as \
+an angle, the terms are in 1/512 degree: 0x21c00 is 270, the stock words \
+0x3400 and 0x5000 are 26 and 10, and twice the duration 64 of \
+charge_closing_limit_duration is 128, so the held offset gives ffff33a2 = \
+0xba00 (372 degrees) and ffff2ee2 = ffff2ee4 = 0xbf00 (382 degrees).""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ec22"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ec22"

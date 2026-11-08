@@ -1,0 +1,19 @@
+summary = """
+Stores fill_event_quantity ffff25b0 = floor(fill_quantity ffff25b4 * \
+fill_event_capacity ffff43d2 / fill_capacity) and ffff3a08 = \
+floor(fill_quantity * fill_reference_capacity / fill_capacity) through \
+quotient-remainder splits of unsigned_divide and 0002206c; each is \
+0xffffffff on overflow or when fill_capacity is zero, and zero when its \
+multiplier is zero."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e932"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e932"

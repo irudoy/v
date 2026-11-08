@@ -1,0 +1,26 @@
+summary = """
+Snapshot of fill_quantity that coherent_snapshot 00020f1a copies with the \
+block ffff25a8.. to ffff2588.. through 00022224. charge_model reads it as x \
+* 1.38889e-8 / (fill_capacity * 1e-6) into ffff9c68 and \
+charge_model_validation over the validation word 00017638 into ffff9e8c."""
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2594"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c2dc"
+
+[[link]]
+type = "copy"
+to = "fill_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c2dc"

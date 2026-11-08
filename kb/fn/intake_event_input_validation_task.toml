@@ -1,0 +1,17 @@
+summary = """
+Periodic root of the charge_model_validation event inputs, run from \
+task-table entry 00021af4: it calls \
+intake_event_offset_min_validation_producer and \
+charge_angle_reference_validation_producer."""
+level = "code"
+role = "dispatch"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003fbd0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fbd0"

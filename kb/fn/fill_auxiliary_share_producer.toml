@@ -1,0 +1,18 @@
+summary = """
+Stores fill_auxiliary_share ffff2760 = floor(102400 * a / min(e - a, \
+0xffffff)) through split divisions, with a fill_auxiliary_event_quantity \
+ffff416c and e fill_event_quantity ffff25b0, or 0xffff when a is not below e \
+or 400 * a / (e - a) exceeds 255: the ratio of the auxiliary part to the \
+rest of the event quantity in percent times 1024."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003efc6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003efc6"

@@ -5,6 +5,7 @@ vvel_shaft_angle_second_axis at the measured VVEL shaft-angle words ffff2670 \
 and ffff2672 and stores only the mean of the two results times 1/512 at \
 ffff9e98."""
 level = "code"
+home = "jk78c"
 role = "accessor"
 block = "airflow_load/block"
 
@@ -14,6 +15,44 @@ path = "defs/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Target surfaces and scales"]
 anchor = "FUN_0004FCB8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0005c7d4"
+former = ["venomous-lynx/fn/1me3b-0005c7d4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0005c7e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0005c7e6"
+note = """
+The function looks up vvel_command_shaft_angle_second over \
+vvel_shaft_angle_second_axis at its two arguments and stores only the mean \
+of the two results times 1/512, as JK78C 0004fcb8 does."""
+
+[[symbol]]
+layout = "1nd"
+address = "00058964"
+former = ["helpful-raccoon/fn/1nd-00058964"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00058976"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000589b4"
+note = """
+The function looks up vvel_command_shaft_angle_second over \
+vvel_shaft_angle_second_axis at its two arguments and stores only the mean \
+of the two results times 1/512, as JK78C 0004fcb8 does."""
 
 [[symbol]]
 layout = "jk78c"

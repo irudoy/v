@@ -1,0 +1,25 @@
+summary = """
+MAF inflow of the fill model, floor(floor(F * ffff114c * fill_maf_sum_gated \
+/ 256) / 125) capped at 0xffff, stored by fill_maf_inflow_producer. \
+fill_quantity_integrator and 000403a2 read it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3aa4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e638"
+
+[[link]]
+type = "input"
+to = "fill_maf_sum_gated/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e638"

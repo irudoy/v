@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of charge_angle_reference_producer over the \
+validation words charge_angle_subtrahend_validation, \
+charge_closing_limit_duration_validation and charge_angle_addend_validation \
+with the same pool word 0x21c00, charge_angle_offset ffff1a98 and bit 1 of \
+ROM byte 00008959: it stores charge_angle_reference_offset_validation \
+ffff37fa = (x + addend) / 16 and charge_angle_reference_validation ffff37f8 \
+= (y + addend) / 16, clamped to 0..0xffff."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003fb38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fb38"

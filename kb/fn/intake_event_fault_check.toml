@@ -1,0 +1,23 @@
+summary = """
+Returns 1 while bit 7 is set in byte 1 of any of the diagnostic status \
+records 20, 64..69 and 127..129 of base ffff5e94 (stride 3, bytes ffff5ed1, \
+ffff5f55..ffff5f64 and ffff6012..ffff6018), and 0 otherwise. \
+intake_event_input_task, intake_event_offset_min_validation_producer and \
+stylish-loon call it."""
+note = [
+    """
+The DTC identities of the ten records are unresolved: the JK78C DTC table \
+carries no record-to-code binding in the knowledge base.""",
+]
+level = "code"
+role = "monitor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000277d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000277d8"

@@ -1,0 +1,28 @@
+summary = """
+Stores fill_level ffff3a8c = min(0xffff, floor(32 * m * (299 * T + 66677) / \
+(9375 * V))) through split divisions, with m fill_quantity ffff25b4, T \
+fill_temperature ffff278c and V fill_capacity; 0xffff when V is zero. It \
+stores fill_level_corrected ffff25b8 = min(0xffff, ffff4454 * fill_level >> \
+14) and fill_level_excess ffff3a86 = clamp(fill_level_corrected - (ffff5d08 \
+>> 1), -32768, 32767)."""
+note = [
+    """
+299 * T + 66677 = 299 * (T + 223), and T is fill_temperature, the iat byte \
+in degrees C plus 50, so the factor is proportional to the absolute \
+temperature and fill_level has the form m * R * T / V of an ideal-gas \
+pressure. charge_model uses the snapshot fill_level_snapshot as the second \
+pressure of its flow function. The manifold-pressure reading is a candidate \
+until a JK08A correspondence or hardware data confirms it.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e75e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e75e"

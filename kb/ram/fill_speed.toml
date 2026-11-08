@@ -1,0 +1,20 @@
+summary = """
+Engine speed of the fill model in rpm/1.5625, stored by 00042f52 as \
+marigold-zebu ffff11d4 while ffff11e0, plus ROM word 00008edc (stock 16) \
+while bit 1 of ffff2410 holds that selection, is at least ROM word 0000904a \
+(stock 48), and as ffff40e4 otherwise. fill_standstill_gate, \
+fill_outflow_producer, fill_auxiliary_outflow_producer, \
+computed_start_signal_state_update and 000295be read it."""
+level = "code"
+width = 16
+signed = false
+unit = "rpm/1.5625"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2758"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042f9a"

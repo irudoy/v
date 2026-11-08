@@ -1,0 +1,18 @@
+summary = """
+Filters ffff3a98 into ffff1d1c. The first pass, while bit 0 of ffff4584 is \
+clear, copies it and sets the bit. With n = fill_outflow_filter_shift (stock \
+1), n = 0 copies ffff3a98, n > 15 leaves ffff1d1c unchanged, and otherwise \
+ffff1d1c = min(0xffff, (ffff1d1c * (2^n - 1) + ffff3a98) / 2^n), raised by \
+one when the result repeats a value below ffff3a98."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003eafe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003eafe"

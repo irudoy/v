@@ -1,0 +1,18 @@
+summary = """
+Periodic root of the fill model, run from task-table entry 000218e4. It \
+calls in order fill_maf_sum_producer, fill_standstill_gate, \
+fill_maf_inflow_producer, fill_quantity_integrator, fill_level_producer, \
+fill_event_quantity_producer, fill_outflow_producer, \
+fill_outflow_maf_scale_producer and fill_outflow_maf_scale_filter."""
+level = "code"
+role = "dispatch"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e374"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e374"

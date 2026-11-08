@@ -1,0 +1,16 @@
+summary = """
+Stores intake_event_offset_min_validation ffff3844 = \
+min(intake_event_offset_b1 ffff23a0, intake_event_offset_b2 ffff23a2), or \
+0x8000 while intake_event_fault_check returns nonzero."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003fb04"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fb04"

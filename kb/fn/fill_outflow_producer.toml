@@ -1,0 +1,23 @@
+summary = """
+Stores fill_outflow ffff25ba = min(0xffff, floor(fill_speed_event_factor * \
+fill_speed ffff2758 * fill_event_quantity ffff25b0 / 19200)), 0xffff when \
+the product exceeds 32 bits."""
+note = [
+    """
+With fill_speed in rpm/1.5625 and fill_speed_event_factor 3 intake events \
+per revolution of six cylinders, the divisor 19200 = 38.4 * 500 makes \
+fill_outflow the cylinder charge flow per 2 ms task period. This reading, \
+including the 2 ms period, is a candidate.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ea32"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ea32"

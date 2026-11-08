@@ -1,7 +1,8 @@
 summary = """
 Fixed duration coordinate of charge_closing_limit_check on \
 charge_closing_duration_axis: the stock word 32768 is 64.0 at 512 counts per \
-unit."""
+unit. charge_angle_reference_producer adds it twice to the base of \
+charge_angle_reference."""
 level = "code"
 role = "table"
 access = "direct-scalar"
@@ -18,6 +19,15 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0004e3ca"
 note = "The load at 0004e3ca in charge_closing_limit_check reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_angle_reference_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ec30"
 
 [[link]]
 type = "reader"

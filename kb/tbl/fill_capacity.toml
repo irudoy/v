@@ -1,0 +1,47 @@
+summary = """
+Divisor word V of the fill model (stock 8200): fill_quantity_integrator, \
+fill_level_producer and fill_event_quantity_producer read it, and \
+charge_model divides fill_quantity_snapshot by V * 1e-6."""
+note = ["A candidate intake manifold volume of 8.2 l in cm3."]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000928a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6ee"
+
+[[link]]
+type = "reader"
+to = "fill_event_quantity_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e942"
+
+[[link]]
+type = "reader"
+to = "fill_level_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e776"
+
+[[link]]
+type = "reader"
+to = "fill_quantity_integrator/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6ee"

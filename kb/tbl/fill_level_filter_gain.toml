@@ -1,0 +1,25 @@
+summary = "Gain byte of fill_level_filter in 1/128, capped at 128 (stock 8)."
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000883f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ed1e"
+
+[[link]]
+type = "reader"
+to = "fill_level_filter/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ed1e"

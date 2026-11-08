@@ -1,0 +1,21 @@
+summary = """
+Filters fill_level_corrected ffff25b8 into fill_level_filtered ffff2762 = \
+(ffff25b8 * k + ffff2762 * (128 - k)) >> 7 with k = min(128, \
+fill_level_filter_gain), raised by one when the result repeats a value below \
+ffff25b8; the first pass, while bit 7 of ffff45a6 is clear, copies ffff25b8. \
+It keeps the five previous filtered words at ffff4194..ffff419c and stores \
+fill_level_filtered_change ffff4002, the filtered word minus that of five \
+passes earlier, clamped to int16; the first pass, while bit 5 of ffff4595 is \
+clear, fills the history and stores zero."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ecdc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ecdc"

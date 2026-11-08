@@ -1,0 +1,25 @@
+summary = """
+Snapshot of fill_auxiliary_share that coherent_snapshot copies with the \
+block ffff26d6.. to ffff25d8..; independent-slug reads it at 0008817e and \
+0008b09e."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2662"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008817e"
+
+[[link]]
+type = "copy"
+to = "fill_auxiliary_share/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008817e"

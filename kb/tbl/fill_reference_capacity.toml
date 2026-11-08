@@ -1,0 +1,27 @@
+summary = """
+Multiplier word of fill_reference_event_quantity (stock 485), read by \
+fill_event_quantity_producer."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000925c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e9bc"
+
+[[link]]
+type = "reader"
+to = "fill_event_quantity_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e9bc"

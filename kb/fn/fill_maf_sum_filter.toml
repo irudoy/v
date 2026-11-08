@@ -1,0 +1,19 @@
+summary = """
+Filters fill_maf_sum ffff3a94 into fill_maf_sum_filtered ffff3ce0 = (g * \
+ffff3a94 + (256 - g) * ffff3ce0) / 256 over the 16-bit halves, with g = \
+fill_maf_sum_filter_gain, raised by one when the result repeats a value \
+below the input, and keeps the five previous filtered longs at \
+ffff3ce4..ffff3cf4. The first pass, while bit 4 of ffff240b is clear, fills \
+all six with fill_maf_sum and sets the bit."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e4ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e4ee"

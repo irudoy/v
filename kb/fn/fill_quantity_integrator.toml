@@ -1,0 +1,30 @@
+summary = """
+Integrates the long fill_quantity ffff25b4. On the first pass, while bit 4 \
+of ffff4584 is clear, and while fill_standstill_gate holds bit 7 of \
+ffff44d8, it stores floor(P * V * 9375 / (64 * (T + 223) * 299)) with P the \
+word ffff5e60, V fill_capacity and T fill_temperature ffff278c, or zero when \
+P or V is zero, and sets bit 4 of ffff4584. Otherwise it adds d = \
+fill_maf_inflow ffff3aa4 + fill_auxiliary_inflow ffff418e - fill_outflow \
+ffff25ba, or ffff418e - ffff3aa4 - ffff25ba while bit 4 of ffff240a is set, \
+saturated to 0..0xffffffff; 000225f8 supplies |d|."""
+note = [
+    """
+The reinitial value makes fill_level ffff3a8c equal P / 2 (code arithmetic). \
+With V a manifold volume, the integrator is a candidate manifold air-mass \
+balance, mass flow in minus cylinder flow out, initialized from the \
+ideal-gas mass at pressure P; P is a candidate barometric pressure. These \
+readings are candidates until a JK08A correspondence or hardware data \
+confirms them.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e644"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e644"

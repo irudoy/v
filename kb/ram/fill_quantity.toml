@@ -1,0 +1,53 @@
+summary = """
+Long integrator state of fill_quantity_integrator. fill_level_producer, \
+fill_event_quantity_producer and fill_auxiliary_event_quantity_producer read \
+it; coherent_snapshot copies it to fill_quantity_snapshot."""
+note = ["A candidate intake manifold air mass; see fill_quantity_integrator."]
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff25b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6dc"
+
+[[link]]
+type = "input"
+to = "fill_auxiliary_inflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6dc"
+
+[[link]]
+type = "input"
+to = "fill_maf_inflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6dc"
+
+[[link]]
+type = "input"
+to = "fill_outflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e6dc"
+
+[[link]]
+type = "input"
+to = "fill_temperature/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e74a"

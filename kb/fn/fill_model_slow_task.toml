@@ -1,0 +1,18 @@
+summary = """
+Second periodic root of the fill model, run from task-table entry 000219cc. \
+It calls in order fill_maf_sum_filter, fill_level_filter, \
+fill_auxiliary_inflow_producer, fill_auxiliary_quantity_integrator, \
+fill_auxiliary_event_quantity_producer, fill_auxiliary_outflow_producer and \
+fill_auxiliary_share_producer."""
+level = "code"
+role = "dispatch"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e39a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e39a"

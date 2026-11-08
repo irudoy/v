@@ -19,15 +19,17 @@ esoteric-whale; ffff33a6 and ffff33a4 for transient_fuel_term_coordinator \
 and two other readers; and ffff44c0, which no code reads."""
 note = [
     """
-The identities of five model inputs are unresolved. 0004cdbc reads the long \
-ffff2594 as x * 1.38889e-8 / (ROM word 0000928a * 1e-6), clamped to \
-1e-4..3.55, into ffff9c68, the divisor of both charge outputs of 0004efa6. \
-0004ebe6 reads ffff2598 while bit 3 of ROM byte 00008958 is set, as in the \
-stock byte 0x9a, and ffff2664 otherwise, times 1/256. ffff2ee4 / 128 enters \
-0004d480, 0004d51e and the volume terms as an angle in degrees; 0003ec22 \
-writes it. 0004cd6c forms the center 16834 + ROM word 00008d8e / 512 - 0.5 * \
-ffff37b2 of the event angle pair; 0003e3b8 and 0003ebe8 write ffff37b2. The \
-physical quantity of each word is unestablished.""",
+fill_quantity_snapshot ffff2594 enters 0004cdbc as x * 1.38889e-8 / \
+(fill_capacity * 1e-6), clamped to 1e-4..3.55, into ffff9c68, the divisor of \
+both charge outputs of 0004efa6. 0004ebe6 reads fill_level_snapshot ffff2598 \
+while bit 3 of ROM byte 00008958 is set, as in the stock byte 0x9a, and \
+fill_level_filtered_snapshot ffff2664 otherwise, times 1/256; 0004da34 reads \
+fill_outflow_snapshot ffff259a as x / 144000. charge_angle_reference \
+ffff2ee4 / 128 enters 0004d480, 0004d51e and the volume terms as an angle in \
+degrees. 0004cd6c forms the center 16834 + ROM word 00008d8e / 512 - 0.5 * \
+intake_event_offset_min ffff37b2 of the event angle pair. The fill model of \
+fill_model_fast_task and fill_model_slow_task produces the first three \
+inputs; their physical quantities are candidates there.""",
 ]
 level = "code"
 role = "driver"

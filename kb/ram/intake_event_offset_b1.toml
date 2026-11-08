@@ -1,0 +1,17 @@
+summary = """
+Bank 1 word intake_event_offset_producer stores as 0x8000 plus a measured \
+minus a reference word of the intake CVTC structure. \
+intake_event_offset_combiner, intake_event_offset_min_validation_producer, \
+esoteric-whale, 000805e8, 000a3410 and further functions read it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ebf0"

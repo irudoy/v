@@ -1,0 +1,19 @@
+summary = """
+Periodic root of the charge_model event inputs, run from task-table entry \
+00021af0 before charge_model at 00021b00. While intake_event_fault_check \
+returns nonzero it stores 0x8000 in intake_event_offset_min ffff37b2 and \
+intake_event_offset_mean ffff37bc; otherwise it calls \
+intake_event_offset_combiner. It then calls charge_angle_offset_holder and \
+tail-calls charge_angle_reference_producer."""
+level = "code"
+role = "dispatch"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e3b8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e3b8"

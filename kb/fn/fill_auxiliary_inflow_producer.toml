@@ -1,0 +1,16 @@
+summary = """
+Stores fill_auxiliary_inflow ffff418e = min(0xffff, floor(F * ffff22b8 / \
+250)) with F the MAF factor byte shapeless-tortoise 00008896 and ffff22b8 \
+the auxiliary MAF contribution wondrous-sparrow."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ee1c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ee1c"

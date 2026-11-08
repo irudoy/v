@@ -1,0 +1,27 @@
+summary = """
+Shift byte n of fill_outflow_maf_scale_filter (stock 1): 0 copies, 1..15 \
+filters with weight 2^-n, and larger values freeze the output."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000887b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003eb28"
+
+[[link]]
+type = "reader"
+to = "fill_outflow_maf_scale_filter/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003eb28"

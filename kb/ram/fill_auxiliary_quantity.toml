@@ -1,0 +1,38 @@
+summary = """
+Long integrator state of fill_auxiliary_quantity_integrator; \
+fill_auxiliary_event_quantity_producer reads it."""
+note = [
+    """
+The part of fill_quantity that entered as fill_auxiliary_inflow, by the code \
+structure of the two integrators.""",
+]
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4170"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ee8a"
+
+[[link]]
+type = "input"
+to = "fill_auxiliary_inflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ee8a"
+
+[[link]]
+type = "input"
+to = "fill_auxiliary_outflow/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ee8a"

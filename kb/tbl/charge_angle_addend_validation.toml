@@ -1,0 +1,27 @@
+summary = """
+Validation copy of charge_angle_addend, read by \
+charge_angle_reference_validation_producer (stock 0x5000)."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000175ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fb76"
+
+[[link]]
+type = "reader"
+to = "charge_angle_reference_validation_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fb76"

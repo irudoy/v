@@ -1,0 +1,16 @@
+summary = """
+Stores ffff3a98 = min(0xffff, floor(250 * fill_outflow ffff25ba / F)) with F \
+the MAF factor byte shapeless-tortoise 00008896, or 0xffff when F is zero: \
+fill_outflow in the scale of fill_maf_inflow before its division by F."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003eabe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003eabe"

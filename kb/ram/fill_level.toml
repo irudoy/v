@@ -1,0 +1,39 @@
+summary = """
+min(0xffff, floor(32 * fill_quantity * (299 * fill_temperature + 66677) / \
+(9375 * fill_capacity))), stored by fill_level_producer; ambitious-starfish \
+initializes it."""
+note = [
+    """
+A candidate manifold pressure in the unit of the word ffff5e60 / 2; see \
+fill_level_producer.""",
+]
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a8c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e8d6"
+
+[[link]]
+type = "input"
+to = "fill_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e8d6"
+
+[[link]]
+type = "input"
+to = "fill_temperature/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e8d6"

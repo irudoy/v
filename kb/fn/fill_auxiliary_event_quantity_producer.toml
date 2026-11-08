@@ -1,0 +1,17 @@
+summary = """
+Stores fill_auxiliary_event_quantity ffff416c = floor(fill_event_quantity \
+ffff25b0 * fill_auxiliary_quantity ffff4170 / min(fill_quantity ffff25b4, \
+0xffffff)) through split divisions, 0xffff when the quotient exceeds 16 \
+bits; with fill_quantity zero it stores min(fill_event_quantity, 0xffff)."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ee8c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ee8c"

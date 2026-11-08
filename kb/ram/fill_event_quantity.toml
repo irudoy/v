@@ -1,0 +1,41 @@
+summary = """
+fill_quantity * fill_event_capacity / fill_capacity, stored by \
+fill_event_quantity_producer. fill_outflow_producer, \
+fill_auxiliary_event_quantity_producer, fill_auxiliary_share_producer and \
+0003ff8a read it."""
+note = [
+    """
+With fill_capacity a manifold volume and fill_event_capacity a cylinder \
+volume, the word is a candidate air mass of one cylinder filling at manifold \
+density.""",
+]
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff25b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e9b2"
+
+[[link]]
+type = "input"
+to = "fill_event_capacity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e9b2"
+
+[[link]]
+type = "input"
+to = "fill_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e9b2"

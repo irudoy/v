@@ -90,6 +90,20 @@ at = "7mfk:0003b25e"
 value = {named = ["0003af42", "0003b252", "ffff1df0", "ffff1df8"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1d6c"
+name = "steady-hippo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f988"
+note = """
+combined_maf_aggregate 0003f97c matches JK08A 0003b252 instruction for \
+instruction; this access takes the position of the JK08A access."""
+
 [[link]]
 type = "input"
 to = "maf_base_reference_b1/ram"

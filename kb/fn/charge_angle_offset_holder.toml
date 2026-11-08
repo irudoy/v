@@ -1,0 +1,13 @@
+summary = "Stores 0x8000 in charge_angle_offset ffff1a98 on every pass."
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ec18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ec18"

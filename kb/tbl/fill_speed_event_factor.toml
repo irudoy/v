@@ -1,0 +1,41 @@
+summary = """
+Byte factor of engine speed in fill_outflow and fill_auxiliary_outflow and \
+divisor of fill_event_capacity (stock 3)."""
+note = [
+    """
+A candidate number of intake events per crankshaft revolution of six \
+cylinders.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000087ab"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ea44"
+
+[[link]]
+type = "reader"
+to = "fill_auxiliary_outflow_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef8c"
+
+[[link]]
+type = "reader"
+to = "fill_outflow_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ea44"

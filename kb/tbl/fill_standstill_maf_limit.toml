@@ -1,0 +1,27 @@
+summary = """
+Limit word of fill_maf_sum in condition A of fill_standstill_gate (stock \
+300)."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000090e2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e452"
+
+[[link]]
+type = "reader"
+to = "fill_standstill_gate/fn"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e452"

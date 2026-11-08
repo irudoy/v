@@ -1,0 +1,17 @@
+summary = """
+Stores fill_temperature ffff278c = iat ffff278a, or \
+fill_temperature_substitute (stock 75) while bit 7 of byte 1 of any of the \
+diagnostic status records 178, 179 and 180 of base ffff5e94 (stride 3) is \
+set. 0004256c calls it."""
+level = "code"
+role = "selector"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00042008"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042008"

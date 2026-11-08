@@ -1,0 +1,24 @@
+summary = """
+Stores fill_maf_sum_gated ffff3aa0 as fill_maf_sum ffff3a94 or zero. \
+Condition A holds while |fill_maf_sum_filtered ffff3ce0 - ffff3cf4| < \
+fill_standstill_maf_change_limit, fill_maf_sum < fill_standstill_maf_limit \
+and fill_speed ffff2758 is zero; timer byte ffff4776 counts its \
+fill_standstill_settle_delay and reloads while A fails. Condition B holds \
+while bit 4 of ffff23b1 is clear and fill_speed is zero; timer byte ffff46f1 \
+counts its fill_standstill_delay. When A or B has elapsed and bit 7 of \
+ffff44d8 is clear, the gate sets that bit and stores zero; while the bit is \
+set and bit 6 of ffff44e0 is clear it stores zero; otherwise it clears the \
+bit and passes fill_maf_sum. fill_quantity_integrator reinitializes \
+fill_quantity while the bit is set."""
+level = "code"
+role = "selector"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e41a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e41a"

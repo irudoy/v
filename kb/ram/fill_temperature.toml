@@ -1,0 +1,19 @@
+summary = """
+iat ffff278a or the fallback fill_temperature_substitute, stored by \
+fill_temperature_selector; fill_quantity_integrator and fill_level_producer \
+read it. It keeps the representation of iat, degrees C plus 50, so T + 223 \
+of the fill model is the absolute temperature."""
+level = "code"
+width = 8
+signed = false
+unit = "degC"
+scale = "x-50"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff278c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00042050"

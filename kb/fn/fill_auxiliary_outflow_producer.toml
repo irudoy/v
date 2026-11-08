@@ -1,0 +1,17 @@
+summary = """
+Stores fill_auxiliary_outflow ffff41a2 = min(0xffff, \
+floor((fill_speed_event_factor * fill_speed ffff2758 * \
+fill_auxiliary_event_quantity ffff416c >> 8) / 75)), the form of \
+fill_outflow for the auxiliary quantity."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ef72"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef72"

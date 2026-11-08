@@ -1,0 +1,29 @@
+summary = """
+Per-bank producer called twice by 000e5930 with bank index i. While bit 2 of \
+ROM byte 0000852a is set (stock 0x05) it copies the high byte of ffff25a4 + \
+2i into intake_cvtc_duty ffff239a + i. While byte ffff11c8 is nonzero and \
+the bank is enabled by bits of ffff8505, it forms d = (ffff4ae0[i] - \
+ffff2228[i]) / 2 for word inputs (bit 2 set) or ffff4ade[i] - ffff221a[i] \
+for byte inputs, and stores intake_event_offset ffff23a0 + 2i = clamp(0x8000 \
++ d, 0, 0xffff); a disabled bank stores 0x8000. In the word mode it also \
+writes ffff1aa0 + 2i and passes the word through 00022560, and stores 0x8000 \
+while ffff2228[i] is zero."""
+note = [
+    """
+The words sit in the per-bank intake CVTC structure ffff2314 next to \
+intake_cvtc_duty and intake_cvtc_actual. A per-bank intake cam advance \
+relative to a reference is a candidate reading; JK08A has no 0x8000-biased \
+word at the same position.""",
+]
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000e6226"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6226"

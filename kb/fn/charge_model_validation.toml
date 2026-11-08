@@ -24,16 +24,16 @@ charge_fill_ratio_lookup, charge_target_ratio_lookup or the other \
 charge_model outputs."""
 note = [
     """
-The identities of four model inputs are unresolved, as for charge_model. \
-0004fa4a reads the long ffff2594 as x * 1.38889e-8 / (ROM word 00017638 * \
+The fill-model inputs are those of charge_model. 0004fa4a reads \
+fill_quantity_snapshot ffff2594 as x * 1.38889e-8 / (ROM word 00017638 * \
 1e-6), clamped to 1e-4..3.55, into ffff9e8c, the divisor of the output. \
-00051454 reads ffff2598 or ffff2664 times 1/256. ffff37f8 / 128, which \
-0003fb38 writes, takes the place of ffff2ee4 in 0004fd1c, 0004fe0a and the \
-volume terms. 0004f9f4 forms the center 16834 + ROM word 000172c6 / 512 - \
-0.5 * ffff3844 of the event angle pair, and 0003fb04 writes ffff3844 in \
-place of ffff37b2. The ROM words 00017638, 000172c6 and 000175f8, the angle \
-margin of 0004fa2c, hold the stock words of 0000928a, 00008d8e and \
-charge_event_angle_margin.""",
+00051454 reads fill_level_snapshot ffff2598 or fill_level_filtered_snapshot \
+ffff2664 times 1/256. charge_angle_reference_validation ffff37f8 / 128 takes \
+the place of charge_angle_reference in 0004fd1c, 0004fe0a and the volume \
+terms. 0004f9f4 forms the center 16834 + ROM word 000172c6 / 512 - 0.5 * \
+intake_event_offset_min_validation ffff3844 of the event angle pair. The ROM \
+words 00017638, 000172c6 and 000175f8, the angle margin of 0004fa2c, hold \
+the stock words of fill_capacity, 00008d8e and charge_event_angle_margin.""",
 ]
 level = "code"
 role = "driver"

@@ -1,0 +1,16 @@
+summary = """
+Stores intake_event_offset_mean ffff37bc = (intake_event_offset_b1 ffff23a0 \
++ intake_event_offset_b2 ffff23a2) >> 1 and intake_event_offset_min ffff37b2 \
+= min(ffff23a0, ffff23a2)."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ebe8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ebe8"

@@ -1,0 +1,18 @@
+summary = """
+Stores fill_maf_inflow ffff3aa4 = floor(floor(F * ffff114c * \
+fill_maf_sum_gated ffff3aa0 / 256) / 125), 0xffff once the quotient reaches \
+0x10000; F is the MAF factor byte shapeless-tortoise 00008896 (stock 131) \
+and ffff114c is the byte that base_fuel_schedule_producer also multiplies \
+with F."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003e5d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e5d8"

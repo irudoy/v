@@ -1,0 +1,24 @@
+summary = """
+fill_maf_sum or zero, stored by fill_standstill_gate; \
+fill_maf_inflow_producer reads it."""
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3aa0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e4e4"
+
+[[link]]
+type = "input"
+to = "fill_maf_sum/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003e4e4"

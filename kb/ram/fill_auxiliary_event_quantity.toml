@@ -1,0 +1,43 @@
+summary = """
+Share of fill_event_quantity in the ratio fill_auxiliary_quantity / \
+fill_quantity, stored by fill_auxiliary_event_quantity_producer. \
+fill_auxiliary_outflow_producer and fill_auxiliary_share_producer read it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff416c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef5a"
+
+[[link]]
+type = "input"
+to = "fill_auxiliary_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef5a"
+
+[[link]]
+type = "input"
+to = "fill_event_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef5a"
+
+[[link]]
+type = "input"
+to = "fill_quantity/ram"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ef5a"

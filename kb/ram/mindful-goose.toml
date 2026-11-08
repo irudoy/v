@@ -124,6 +124,20 @@ at = "7mfk:0003b3de"
 value = {named = ["000086f9", "00008782", "00008b3f", "0003b224", "0003b252", "0003b320", "ffff1e2a", "ffff1e73", "ffff56ba"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1d96"
+name = "competent-herring"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f982"
+note = """
+combined_maf_aggregate 0003f97c matches JK08A 0003b252 instruction for \
+instruction; this access takes the position of the JK08A access."""
+
 [[link]]
 type = "input"
 to = "nippy-wolf/ram"
