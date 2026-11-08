@@ -344,6 +344,89 @@ class PlanTest(unittest.TestCase):
                                      code=2).startswith("op 2: cmd 'not-a-command'"))
 
 
+FIXTURE_IDENTITY = {"kind": "spec", "path": "defs/fixture.md", "key": "controlled_identity"}
+FIXTURE_ANCHOR = {"path": "defs/fixture.md", "anchor": "controlled_identity"}
+UNGROUNDED_1ND, GROUNDED_1ME3B, STATED_JK00C = 0xFFFF17B0, 0xFFFF17B2, 0xFFFF17B4
+INHIBIT_1ND, FLOW_1ND, FLOW_1ME3B = 0xFFFF24A0, 0xFFFF1180, 0xFFFF1182
+
+
+def _candidate(layout, address, *extra, level="candidate"):
+    site = {"kind": "unverified-site", "supports": "identity", "at": f"{layout}:{address:08x}"}
+    return {"layout": layout, "address": f"{address:08x}", "level": level, "note": "probe",
+            "evidence": [site, *extra]}
+
+
+@pytest.fixture(scope="module")
+def candidate_model(isolated_model):
+    """The isolated base with candidate symbols that a retained site states:
+    THROTTLE holds one on 1ND alone, one on 1ME3B that a specification also
+    grounds, and one on JK00C that states the level code; INHIBIT holds one
+    on 1ND under a source anchor without a layout; FLOW holds one on 1ND
+    under a source anchor of 1ND and one on 1ME3B without an anchor."""
+    base, _ = isolated_model
+    texts = {}
+    for name, symbols, sources in (
+            ("throttle_runtime", [_candidate("1nd", UNGROUNDED_1ND),
+                                  _candidate("1me3b", GROUNDED_1ME3B, FIXTURE_IDENTITY),
+                                  _candidate("jk00c", STATED_JK00C, level="code")], []),
+            ("fuel_inhibit", [_candidate("1nd", INHIBIT_1ND)], [FIXTURE_ANCHOR]),
+            ("alpha_n_flow", [_candidate("1nd", FLOW_1ND), _candidate("1me3b", FLOW_1ME3B)],
+             [{"layout": "1nd", **FIXTURE_ANCHOR}])):
+        path = store.path_of("ram", name)
+        document = store.load(base.root, path)
+        document["symbol"].extend(symbols)
+        if sources:
+            document["source"] = sources
+        texts[path] = store.render("ram", document)
+    return compile.build(base.root, texts, order=(file_adapter,))
+
+
+def _plan_on(model, *ops):
+    with mock.patch.object(adapters, "ADAPTERS", (file_adapter,)):
+        return write.plan(list(ops), model, write.model_resolver(model), root=model.root)
+
+
+def _statuses(home):
+    search = {"method": "masked-match", "target": f"7mfk:{home:08x}", "count": 0}
+    return ({"cmd": "absent", "evidence": [FIXTURE_IDENTITY]}, {"cmd": "unresolved", **search})
+
+
+def test_a_status_replaces_a_symbol_that_its_evidence_does_not_ground(candidate_model):
+    for meaning_key, home, layout, address, kept in (
+            (THROTTLE, THROTTLE_HOME, "1nd", UNGROUNDED_1ND, {"7mfk", "jk78c", "1me3b", "jk00c"}),
+            (FLOW, FLOW_HOME, "1me3b", FLOW_1ME3B, {"7mfk", "1nd"})):
+        path = store.path_of("ram", meaning_key.split("/")[0])
+        for op in _statuses(home):
+            change, texts, result = _plan_on(
+                candidate_model, {"meaning": meaning_key, "layout": layout, **op})
+            document = tomllib.loads(texts[path])
+            assert {entry["layout"] for entry in document["symbol"]} == kept
+            assert [status["layout"] for status in document["status"]] == [layout]
+            assert result.meaning_of(SymbolKey(layout, "ram", address)) is None
+            meaning = result.meaning_of(SymbolKey("7mfk", "ram", home))
+            assert layout not in meaning.symbols
+            assert meaning.statuses[layout].state == op["cmd"]
+            assert change.lines[0] == (f"drop {meaning_key}/{layout}-{address:08x}: "
+                                       "its evidence grounds no level")
+        assert candidate_model.meaning_of(SymbolKey(layout, "ram", address)).key == meaning_key
+
+
+def test_a_status_refuses_a_symbol_that_its_evidence_grounds(candidate_model):
+    # A specification grounds the 1ME3B candidate besides its retained site
+    # and the JK78C symbol; the JK00C candidate states the level code; 7mfk
+    # is the home; source anchors without a layout and of 1ND state the 1ND
+    # candidates of INHIBIT and FLOW.
+    for meaning_key, home, layout in (
+            (THROTTLE, THROTTLE_HOME, "1me3b"), (THROTTLE, THROTTLE_HOME, "jk78c"),
+            (THROTTLE, THROTTLE_HOME, "jk00c"), (THROTTLE, THROTTLE_HOME, "7mfk"),
+            (INHIBIT, INHIBIT_HOME, "1nd"), (FLOW, FLOW_HOME, "1nd")):
+        for op in _statuses(home):
+            with pytest.raises(KbError) as caught:
+                _plan_on(candidate_model, {"meaning": meaning_key, "layout": layout, **op})
+            assert caught.value.code == 3
+            assert f"on {layout}; `kb move` corrects a wrong symbol" in str(caught.value)
+
+
 def new(kind, ref, **keys):
     return {"cmd": "new", "kind": kind, "symbol" if ":" in ref else "slug": ref, **keys}
 

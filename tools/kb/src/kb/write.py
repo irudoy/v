@@ -554,6 +554,9 @@ class Change:
         self.rewrites = []
         self.joined = {}
         self.moved = {}
+        # The keys of the ungrounded symbols that a status of the change
+        # replaces.
+        self.dropped = set()
         self.created, self.started = set(), set()
         # Private objects for meanings created in the change. The source
         # model stays intact until the complete rendered change is checked.
@@ -601,12 +604,13 @@ class Change:
         reconstructed from their entries so later assignments remain visible;
         the source meaning and its original symbols stay unchanged."""
         new = self.new_meanings.get(meaning.key) is meaning
-        symbols = {} if new else dict(meaning.symbols)
+        symbols = {} if new else {layout: symbol for layout, symbol in meaning.symbols.items()
+                                  if symbol.key not in self.dropped}
         path = self._path(meaning)
         document = self.documents.get(path, {})
         for entry in document.get("symbol", ()):
             layout = entry["layout"]
-            if not new and layout in meaning.symbols:
+            if not new and layout in symbols:
                 continue
             key = SymbolKey(layout, meaning.kind, int(entry["address"], 16))
             symbols[layout] = Symbol(
@@ -921,7 +925,7 @@ class Change:
         meaning, _ = self.resolve(op["meaning"])
         layout = self._layout(op["layout"])
         evidence = [evidence_item(item) for item in op["evidence"]]
-        self._free(meaning, layout)
+        self._free(meaning, layout, replace=True)
         self._status(meaning, {"layout": layout, "state": "absent", "note": op.get("note"),
                                "evidence": evidence})
         self.lines.append(f"absent {meaning.key} on {layout}: "
@@ -930,7 +934,7 @@ class Change:
     def unresolved(self, op):
         meaning, named = self.resolve(op["meaning"])
         layout = self._layout(op["layout"])
-        self._free(meaning, layout)
+        self._free(meaning, layout, replace=True)
         candidate = _candidate(op.get("candidate"), layout, op.get("note"))
         stated = [op.get(key) for key in SEARCH]
         if any(value is not None for value in stated):
@@ -2108,12 +2112,46 @@ class Change:
             raise KbError(f"{text!r} is not <layout>:<address>", code=2)
         return self._layout(found.group("layout")), int(found.group("address"), 16)
 
-    def _free(self, meaning, layout):
-        """Refuse a layout where the meaning has a symbol."""
+    def _free(self, meaning, layout, *, replace=False):
+        """Refuse a layout where the meaning has a symbol. With `replace`, a
+        status replaces a symbol that its evidence does not ground."""
         symbol = self._symbols(meaning).get(layout)
-        if symbol is not None:
+        if symbol is None:
+            return
+        if not (replace and self._ungrounded(meaning, symbol)):
             raise KbError(f"{meaning.key} has {self._ref(symbol)} on {layout}; `kb move` "
                           "corrects a wrong symbol", code=3)
+        self._gate(meaning)
+        old = self._ref(symbol)
+        self._release(meaning, symbol)
+        self.dropped.add(symbol.key)
+
+        def dropped(result):
+            found = result.meaning_of(symbol.key)
+            if found is None:
+                return None
+            return (f"{meaning.key} on {layout}: the compiled model keeps {old} in {found.key}; "
+                    f"`kb raw {old}` shows the registry rows that state it")
+
+        self.expected.append(dropped)
+        self.lines.append(f"drop {old}: its evidence grounds no level")
+
+    def _ungrounded(self, meaning, symbol):
+        """Whether a symbol holds evidence and none of it grounds a level: every
+        item is of a kind without a level (section 7.6), the symbol states no
+        level besides `candidate`, it lies off the home of the meaning, and no
+        source anchor states it: neither one of its layout nor one without a
+        layout, which states the meaning on every layout."""
+        if not symbol.evidence or symbol.layout == meaning.home:
+            return False
+        if symbol.props.get("level") not in (None, "candidate"):
+            return False
+        if any(vocab.EVIDENCE_KINDS.get(item.get("kind"), ((), "code"))[1] is not None
+               for item in symbol.evidence):
+            return False
+        document = self._held(meaning) or {}
+        return not any(entry.get("layout") in (None, symbol.layout)
+                       for entry in document.get("source", ()))
 
     def _source(self, meaning, named, layout):
         """The symbol that a search starts from: that of `from`, the symbol

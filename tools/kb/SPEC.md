@@ -1584,6 +1584,14 @@ references.
   entity with `new` and a `set` of its keys, including the chain's output and
   steps.
 - `kb absent` requires evidence.
+- `kb absent` and `kb unresolved` refuse a layout where the meaning has a
+  symbol, which `kb move` corrects, unless its evidence does not ground it:
+  every item is of a kind without a level ([Evidence](#76-evidence)), the
+  symbol states no level besides `candidate`, it lies off the home of the
+  meaning, and no `[[source]]` anchor of its layout or without a layout
+  states it. The status replaces such a
+  symbol: its entry, or its row of `kb/names.csv`, leaves the store, and the
+  diff names it.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
   and `--count` state together. A search that finds one candidate is refused
