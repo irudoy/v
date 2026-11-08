@@ -320,6 +320,19 @@ through brilliant-ibis, with the same register assignment. MOV.L 000d6b40 \
 loads this datum for brilliant-ibis, as 7mfk MOV.L 000b1eae loads 00012bda."""
 
 [[link]]
+type = "axis"
+to = "evap_byte_gain_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6b42"
+note = """
+MOV.L 000d6b40 loads the curve 00014068 and MOV.L 000d6b42 its axis 00013ae0 \
+for the call through brilliant-ibis."""
+
+[[link]]
 type = "depends"
 to = "impetuous-finch/tbl"
 layouts = ["7mfk"]

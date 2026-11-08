@@ -2,8 +2,9 @@ title = "Selector-bit-set counterpart of hasty-nautilus in EVAP reader d6d3a"
 summary = """
 Explicit 8-point uint8 curve of 000d6d3a on axis 00013f40 through \
 brilliant-ibis. The reader uses it in place of 00013b70 when the calibration \
-selector bit is set and the RAM word comparison at 000d6dd0 is met. 7mfk \
-000b2096 has no selector-bit-set curves."""
+selector bit is set and uint8[ffff10e2] >= ROM8[000084de] at 000d6dd0; the \
+lookup coordinate is the high byte of the word ffff2686. 7mfk 000b2096 has \
+no selector-bit-set curves."""
 level = "code"
 role = "table"
 block = "evap/block"
@@ -24,3 +25,16 @@ at = "jk78c:000d6dd6"
 note = """
 The wrapper call receives this datum from the literal-pool word loaded \
 here."""
+
+[[link]]
+type = "axis"
+to = "evap_selector_set_curve_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6dd6"
+note = """
+MOV.L 000d6dd6 selects this curve; MOV.L 000d6e88 and ADD #8 at 000d6e8a \
+form axis 00013f40 for the call through brilliant-ibis at 000d6e8e."""

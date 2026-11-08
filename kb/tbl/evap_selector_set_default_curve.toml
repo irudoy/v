@@ -23,3 +23,16 @@ at = "jk78c:000d6e82"
 note = """
 The wrapper call receives this datum from the literal-pool word loaded \
 here."""
+
+[[link]]
+type = "axis"
+to = "evap_selector_set_curve_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6e82"
+note = """
+MOV.L 000d6e82 selects this curve; MOV.L 000d6e88 and ADD #8 at 000d6e8a \
+form axis 00013f40 for the call through brilliant-ibis at 000d6e8e."""

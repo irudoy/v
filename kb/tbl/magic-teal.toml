@@ -190,6 +190,19 @@ through brilliant-ibis, with the same register assignment. MOV.L 000d6b26 \
 loads this datum for jasmine-lizard, as 7mfk MOV.L 000b1e92 loads 00014a7a."""
 
 [[link]]
+type = "axis"
+to = "evap_base_word_curve_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6b2a"
+note = """
+MOV.L 000d6b26 loads the curve 00015c72 and MOV.L 000d6b2a its axis 00015cc2 \
+for the call through jasmine-lizard."""
+
+[[link]]
 type = "depends"
 to = "impetuous-finch/tbl"
 layouts = ["7mfk"]
