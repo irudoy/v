@@ -18,6 +18,8 @@ kernels = [
     "000288a8",
     "000288ac",
     "000288b0",
+    "000288e8",
+    "00028908",
     "000289ac",
     "00028a44",
 ]
@@ -75,6 +77,14 @@ rows = 80
 [files."accessors.288b0.csv"]
 sha256 = "03a7b284732b8ae676cb93beb88540d9c535b260dd7c12afcbe70a35c33ed627"
 rows = 9
+
+[files."accessors.288e8.csv"]
+sha256 = "0f04322732579f1f6906d87577defe82a286461f408879ac9c0b604d687293f6"
+rows = 2
+
+[files."accessors.28908.csv"]
+sha256 = "310b8d84ce930459e27214700543ccb5eced20b8609653a36571c0307843da4b"
+rows = 5
 
 [files."accessors.289ac.csv"]
 sha256 = "6231df200edbe9efcf8eae9d905edc85e806a0b2f6a90ec99592d19bb86325e7"

@@ -1,4 +1,5 @@
 family,kernel,wrapper,width,height,step,storagetype,axistype_x,axistype_y
+implicit-2d,00026ae0,00026040,8,8,32,uint8,,
 explicit,00026944,00026084,4,4,,uint8,uint8,uint8
 explicit,00026944,000260bc,4,4,,uint8,uint8,uint8
 explicit,00026944,00026100,4,4,,uint8,uint8,uint8

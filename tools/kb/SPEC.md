@@ -471,7 +471,7 @@ Keys by kind:
 | `fn` | `role` | `accessor`, `service`, `driver`, `monitor`, `wrapper`, `dispatch`, `init`, `handler`, `selector`, `consumer`, `kernel`, or `finisher` |
 | | `contract` | Inputs, outputs, and side effects in registers, RAM, and ROM |
 | | `contract_level` | Level of the contract claim |
-| | `[interp]` | Interpolation signature of a kernel or wrapper: `access` (`explicit` or `implicit`), `kernel` (a `fn` reference to the function that holds the kernel entry), `offset` (the distance of the kernel entry from the entry of `kernel`, when the entry lies inside it), `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` |
+| | `[interp]` | Interpolation signature of a kernel or wrapper: `access` (`explicit`, `implicit`, or `implicit-2d`, whose two implicit axes one shift kernel indexes and whose finisher reads `storage`), `kernel` (a `fn` reference to the function that holds the kernel entry), `offset` (the distance of the kernel entry from the entry of `kernel`, when the entry lies inside it), `cols`, `rows`, `step`, `storage`, `x_storage`, and `y_storage` |
 | `const` | `width`, `count`, `storage` | Element width in bits, element count, and element type |
 | `hook` | `width` | Width of the redirected word in bits |
 | `did` | `number` | DID number |

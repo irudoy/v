@@ -1,0 +1,78 @@
+summary = """
+Shift kernel of the implicit-2d word entry implicit_2d_word_entry/fn: eight \
+shlr r4/rotcr r5 pairs fall through into the five pairs of the byte kernel \
+sensible-dugong/fn, so the input is shifted right by 13 into the index and \
+the fraction has step 8192. The entry calls it once for each input."""
+home = "jk78c"
+role = "kernel"
+block = "library/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00028f04"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028f04"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00028f04"
+to = "jk78c:000288e8"
+note = """
+Eight shlr r4/rotcr r5 pairs fall through into the byte kernel 1nd:00028f24, \
+as jk78c:000288e8 falls through into jk78c:00028908. Its only caller is the \
+word entry 1nd:000283f8, which loads it from the pool word 1nd:0002843c and \
+calls it at 1nd:00028404 and 1nd:0002840e."""
+
+[[symbol]]
+layout = "jk00c"
+address = "000276c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000276c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000276c4"
+to = "jk78c:000288e8"
+note = """
+Eight shlr r4/rotcr r5 pairs fall through into the byte kernel \
+jk00c:000276e4, as jk78c:000288e8 falls through into jk78c:00028908. Its \
+only caller is the word entry jk00c:00026bc0, which loads it from the pool \
+word jk00c:00026c04 and calls it at jk00c:00026bcc and jk00c:00026bd6."""
+
+[[symbol]]
+layout = "jk00d"
+address = "000276c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000276c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000276c4"
+to = "jk78c:000288e8"
+note = """
+Eight shlr r4/rotcr r5 pairs fall through into the byte kernel \
+jk00d:000276e4, as jk78c:000288e8 falls through into jk78c:00028908. Its \
+only caller is the word entry jk00d:00026bc0, which loads it from the pool \
+word jk00d:00026c04 and calls it at jk00d:00026bcc and jk00d:00026bd6."""
+
+[[symbol]]
+layout = "jk78c"
+address = "000288e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000288e8"

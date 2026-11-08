@@ -29,17 +29,20 @@
 # on the same node as its census fact and would disappear when that node is recreated.
 #
 # Registry (one entry per row):
-#   family       - explicit axis (breakpoint array in ROM, pointer in r5/r6) or implicit
-#                  axis (no array; points 0..N-1 at uniform raw-input steps);
+#   family       - explicit axis (breakpoint array in ROM, pointer in r5/r6), implicit
+#                  axis (no array; points 0..N-1 at uniform raw-input steps), or implicit-2d
+#                  (two implicit axes: r5 and r6 are raw inputs that one shift kernel
+#                  indexes, and a 2D finisher reads the cells);
 #   kernel       - shared entry engine and census filename; a fused entry (wrapper, kernel,
 #                  and axis search in one leaf, as in 1ME3B) names itself here;
 #   wrapper      - address of the entry itself;
 #   width/height - axis point count; empty height means a one-dimensional entry;
-#   step         - implicit-axis step (implicit only);
+#   step         - implicit-axis step (implicit and implicit-2d only);
 #   storagetype  - element type. A 1D entry reads it itself; a 2D entry delegates to its
 #                  finisher, whose pointer it holds in a pool before a tail branch.
-#                  For an implicit axis the element type follows from the limit, so declaring
-#                  it here would create a second source for one fact;
+#                  For a 1D implicit axis the element type follows from the limit, so
+#                  declaring it here would create a second source for one fact; an
+#                  implicit-2d entry takes it from its finisher like an explicit 2D entry;
 #   axistype_x/_y - r5 and r6 axis-array element types (explicit only). Each axis can differ:
 #                  an entry searches them independently. 0x262E0 uses byte core 0x26A0C
 #                  for r5 and word core 0x26984 for r6; 0x26660 does the same with
@@ -111,7 +114,8 @@ import rom_sources  # noqa: E402
 ROM_LO = 0x1000
 ROM_HI = 0x180000
 
-FAMILIES = ("explicit", "implicit")           # access models understood by the census
+FAMILIES = ("explicit", "implicit", "implicit-2d")   # access models understood by the census
+IMPLICIT = ("implicit", "implicit-2d")        # families whose axes are arithmetic
 ROLES = ("table", "threshold", "dead")        # base role in calibration
 LEVELS = ("pattern", "candidate", "code", "silicon")   # section 5 confidence ladder
 AXIS_KINDS = ("rpm", "load", "temp", "raw")   # axis semantics and Stage 5 match key
@@ -193,15 +197,25 @@ def read_registry(path):
         if e["wrapper"] in seen:
             sys.exit(f"{path}: entry {w} is declared twice")
         seen.add(e["wrapper"])
-        if e["family"] == "implicit":
+        if e["family"] in IMPLICIT:
             if not e["step"]:
-                sys.exit(f"{path}: implicit entry {w} lacks an axis step")
+                sys.exit(f"{path}: {e['family']} entry {w} lacks an axis step")
+            if e["axistype_x"] or e["axistype_y"]:
+                sys.exit(f"{path}: {e['family']} entry {w}: no axis array or axis element exists")
+        if e["family"] == "implicit":
             if e["height"]:
                 sys.exit(f"{path}: implicit entry {w}: a bank primitive has one dimension")
             if e["storagetype"]:
                 sys.exit(f"{path}: implicit entry {w}: its limit determines element type")
-            if e["axistype_x"] or e["axistype_y"]:
-                sys.exit(f"{path}: implicit entry {w}: no axis array or axis element exists")
+        elif e["family"] == "implicit-2d":
+            # One shift kernel indexes both inputs, so both axes share its point count
+            # and step, and the finisher reads the element.
+            if e["height"] != e["width"]:
+                sys.exit(f"{path}: implicit-2d entry {w}: one kernel indexes both inputs, "
+                         f"so its axes have one point count")
+            if not e["storagetype"]:
+                sys.exit(f"{path}: implicit-2d entry {w} lacks an element type: its finisher "
+                         f"reads it")
         else:
             if e["step"]:
                 sys.exit(f"{path}: explicit entry {w}: an array axis has no step")
@@ -287,6 +301,10 @@ def geometry(e):
     applies SHLR8 R0; TST R0,R0 to the limit, and limit >= 256 selects the word branch.
     Both branches end with EXTU, making values unsigned. The code has no separate width flag.
 
+    Implicit-2d: one shift kernel indexes both raw inputs, so both axes have the points
+    0..(width-1) at the same step and limit. Like an explicit 2D entry, the entry tail-calls
+    a 2D finisher, which reads the element type that the registry declares.
+
     Explicit axis: the axis is a breakpoint array with no step. Entry code supplies point
     count through the delay-slot clamp. A 1D entry reads its element itself (MOV.B/MOV.W
     before the tail branch); a 2D entry uses a finisher from its pool. All five 2D finishers
@@ -296,9 +314,10 @@ def geometry(e):
     h = int(e["height"]) if e["height"] else None
     g = {"dims": 2 if h else 1, "width": w, "height": h, "step": None, "limit": None,
          "storagetype": e["storagetype"] or None}
-    if e["family"] == "implicit":
+    if e["family"] in IMPLICIT:
         g["step"] = int(e["step"])
         g["limit"] = (w - 1) * g["step"]
+    if e["family"] == "implicit":
         g["storagetype"] = "uint16" if g["limit"] >= 256 else "uint8"
     return g
 
@@ -348,9 +367,9 @@ def build(rows):
                                    family=family, slot=r["slot"]))
         kernels[w] = kern
 
-        # An axis is an object only in the explicit-axis model. A bank axis is arithmetic,
-        # and recovered r5/r6 values there are residual register values rather than call
-        # arguments.
+        # An axis is an object only in the explicit-axis model. A bank axis and both axes of
+        # an implicit-2d entry are arithmetic, and recovered r5/r6 values there are raw
+        # inputs or residual register values rather than axis pointers.
         explicit = family == "explicit"
         ax = rom_addr(r["df_r5"]) if explicit else None
         ay = rom_addr(r["df_r6"]) if explicit and g["dims"] == 2 else None
@@ -414,8 +433,7 @@ def apply_findings(path, maps, accesses, source_model=None):
 
     A row with a nonempty family declares a map outside the access models. No declared
     entry reads it, so the resolver does not find it (0x8fdc is a direct word comparator
-    without a lookup; 0x9eda and 0xa8ea are 2D through 0x26040 with both axes implicit).
-    An empty family is a finding about a map found by the resolver.
+    without a lookup). An empty family is a finding about a map found by the resolver.
 
     The direct-row-major family represents direct access to a rectangular map whose X
     dimension is inner in the array: width corresponds to sizex and height to sizey. The

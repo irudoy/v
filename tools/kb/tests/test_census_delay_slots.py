@@ -113,3 +113,22 @@ def test_an_extension_of_a_memory_word_in_the_slot_leaves_no_value():
     # mov.w at 0006958a reads from ffff31dc.
     row = census_row("7mfk", "00069590")
     assert (row["df_r6"], row["bt_r6"]) == ("", "")
+
+
+def test_a_2d_implicit_entry_passes_its_base_through_the_kernel_slot():
+    # 00026040 loads the shift kernel 00026ae0 from its pool and calls it once
+    # for each input; its readers pass the base of the map in r4.
+    rows = {row["callsite"]: row for row in census_rows("7mfk")
+            if row["kernel"] == "00026ae0"}
+    assert {site: (row["wrapper"], row["df_r4"]) for site, row in rows.items()} == {
+        "0005258c": ("00026040", "0000a8ea"),
+        "000526c2": ("00026040", "00009eda"),
+    }
+
+
+def test_a_fused_2d_implicit_entry_is_its_own_kernel():
+    # 000288b4 computes both fractions and reads the cells itself; the reader
+    # passes the 1ME3B copy of the 00009eda surface of 7mfk.
+    rows = [row for row in census_rows("1me3b") if row["callsite"] == "0007ee7e"]
+    assert [(row["kernel"], row["wrapper"], row["df_r4"]) for row in rows] == [
+        ("000288b4", "000288b4", "00009ef4")]

@@ -18,6 +18,7 @@ kernels = [
     "00026a80",
     "00026a84",
     "00026a88",
+    "00026ae0",
     "00026b84",
     "00026c1c",
 ]
@@ -36,7 +37,7 @@ copy_helpers = ["00022558"]
 schema_version = 1
 
 [preparation.inputs]
-"defs/JK08A.interp.csv" = "6090e4c3440ebd9b54dc5d48dd2fad4201a2a7bd065c2e1e1170e349a4f3296d"
+"defs/JK08A.interp.csv" = "6e20942cb61c8caa506ac2f8fbe1fbb95553c987ae5181334d7a3dd23fa79b93"
 "rom-images/homology.toml" = "cd1128d632f9d79f58b3d40439c7720149c05cff7d07b8db99bfad2d4f1064a8"
 "rom-images/roms.csv" = "37df22c77078b25a99999ad5d394db0d7d1f78ce99a1c05bd0c52632cab66441"
 "tools/ghidra/AnalyzeFuncs.java" = "1a28f613dbbacae960c1e0906b7feeb3b8e2ee60838d9568a8cc5eaa08bf439d"
@@ -60,7 +61,7 @@ schema_version = 1
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
 "tools/ghidra/seeds/7mfk.toml" = "453270d22c70d02d51ded4273c33125920c50cb041df097032447f0db44ea070"
 "tools/kb/config.toml#l0" = "ab8f73905296678a86828401594fa789e95d680ad4309197fc7e2cf360c07a27"
-"tools/kb/src/kb/ghidra_preparation.py" = "d5c0754ae533cf01b8393b4697e827c4fe99175cfbde4feb59643e336898d10d"
+"tools/kb/src/kb/ghidra_preparation.py" = "065ba3afb32c165b136f1b3df0292df4392d4b7eb4a8cf3ab00a58aa788af49f"
 "tools/kb/src/kb/l0.py" = "3a45db8bc79b391e2dd874594f09a5d7034a2b8106a2961729bcc9d54d358255"
 
 [files."accessors.26740.csv"]
@@ -106,6 +107,10 @@ rows = 71
 [files."accessors.26a88.csv"]
 sha256 = "76283b53c00c8f180725921f640f0107fc3ea3c3a056a6fa0b47fb14ee677499"
 rows = 9
+
+[files."accessors.26ae0.csv"]
+sha256 = "3bc375d1ad803fabc0032a7b541502c7dbfd9178f1af8f9226576fecccd462ce"
+rows = 2
 
 [files."accessors.26b84.csv"]
 sha256 = "f6d6b1b6a0d07c5b6d05d806b4396bc6afa2a676cbffe0c93f37444cc8ec2f5f"

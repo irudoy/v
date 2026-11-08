@@ -470,10 +470,16 @@ addr,size,is_thunk,is_external
 0004034c,82,false,false
 0004039e,52,false,false
 00040456,64,false,false
+000404b0,272,false,false
 000405c0,4,true,false
+000405fa,122,false,false
 00040674,130,false,false
 0004078c,88,false,false
+000407e4,40,false,false
 0004080c,10,false,false
+00040816,56,false,false
+00040866,174,false,false
+00040968,58,false,false
 00040a0c,330,false,false
 00040b92,164,false,false
 00040d58,616,false,false

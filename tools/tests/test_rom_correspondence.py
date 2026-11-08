@@ -188,11 +188,11 @@ def test_tracked_1nd_interp_correspondence_is_complete():
         root / "defs" / "JK08A-1ND0A.interp-correspondence.csv"
     )
 
-    assert len(source) == 34
-    assert len(target) == 36
+    assert len(source) == 35
+    assert len(target) == 38
     assert len(rom_correspondence.pair_interp(
         source, target, correspondence
-    )) == 33
+    )) == 34
     mapped_targets = {
         (row["target_kernel"], row["target_wrapper"])
         for row in correspondence
@@ -201,7 +201,7 @@ def test_tracked_1nd_interp_correspondence_is_complete():
     assert len({
         (row["kernel"], row["wrapper"])
         for row in target
-    } - mapped_targets) == 3
+    } - mapped_targets) == 4
     assert [
         (row["source_kernel"], row["source_wrapper"])
         for row in correspondence
@@ -217,11 +217,11 @@ def test_tracked_jk78c_interp_correspondence_is_complete():
         root / "defs" / "JK08A-JK78C.interp-correspondence.csv"
     )
 
-    assert len(source) == 34
-    assert len(target) == 36
+    assert len(source) == 35
+    assert len(target) == 38
     assert len(rom_correspondence.pair_interp(
         source, target, correspondence
-    )) == 33
+    )) == 34
     mapped_targets = {
         (row["target_kernel"], row["target_wrapper"])
         for row in correspondence
@@ -230,7 +230,7 @@ def test_tracked_jk78c_interp_correspondence_is_complete():
     assert len({
         (row["kernel"], row["wrapper"])
         for row in target
-    } - mapped_targets) == 3
+    } - mapped_targets) == 4
     assert [
         (row["source_kernel"], row["source_wrapper"])
         for row in correspondence

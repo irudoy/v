@@ -10,16 +10,16 @@ than the direct map result; readers 000525d8 and 0004e59c are therefore not \
 direct consumers of the target map's output. Numeric scale round trip: 21 -> \
 0.1640625 -> 21; 132 -> 1.03125 -> 132. Saturation applies to the derived \
 product rather than the map's inverse conversion. Index: implicit-2d 8x8: r5 \
-receives uint8 from ffff106f and r6 receives uint8 from ffff10f0; index \
-calculation in 00026040 is not shown. Output trace: 0000a8ea -> \
-site:00052584 -> site:0005258c -> 00026040 -> site:00052590 -> site:000525b0 \
--> site:000525b8 -> site:000525ba -> site:000525bc -> site:000525be -> \
-site:000525cc -> ffff1652. Result disposition: consumer; Result target: \
-site:000525b0. Evidence boundary: The listing and contract of 00026040 are \
-absent; the machine trace breaks between reading cell 0000a8ea and the r0 \
-return captured at site:00052590. The link from the cell to the proven x/128 \
-coefficient therefore remains candidate, and the exact transformation of \
-both indices is unknown.""",
+receives uint8 from ffff106f and r6 receives uint8 from ffff10f0; 00026040 \
+shifts each input right by 5 through 00026ae0, so each axis has 8 points \
+with step 32, and the finisher 00026770 interpolates the uint8 cells with \
+row stride 8. Output trace: 0000a8ea -> site:00052584 -> site:0005258c -> \
+00026040 -> site:00052590 -> site:000525b0 -> site:000525b8 -> site:000525ba \
+-> site:000525bc -> site:000525be -> site:000525cc -> ffff1652. Result \
+disposition: consumer; Result target: site:000525b0. Evidence boundary: the \
+finisher returns the interpolation of the cells of 0000a8ea in r0 at \
+site:00052590, which the x/128 coefficient multiplies; the physical quantity \
+remains unresolved.""",
 ]
 level = "candidate"
 role = "table"
@@ -36,11 +36,6 @@ scale_level = "candidate"
 registry = "findings"
 order = 57
 fields = [
-    "family",
-    "width",
-    "height",
-    "storagetype",
-    "accessor",
     "confidence",
     "role",
     "semantics",
@@ -158,7 +153,7 @@ kind = "l0-context"
 supports = "identity"
 at = "7mfk:0005258c"
 value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0"], span = 64}
-key = "body"
+key = "reference"
 
 [[symbol.evidence]]
 kind = "l0-context"

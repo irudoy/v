@@ -154,7 +154,7 @@ kind = "l0-context"
 supports = "identity"
 at = "7mfk:0005258c"
 value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
-key = "body"
+key = "reference"
 
 [[symbol.evidence]]
 kind = "l0-context"

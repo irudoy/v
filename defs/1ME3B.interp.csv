@@ -1,4 +1,6 @@
 family,kernel,wrapper,width,height,step,storagetype,axistype_x,axistype_y
+implicit-2d,000288b4,000288b4,8,8,32,uint8,,
+implicit-2d,000289cc,000289cc,8,8,8192,uint16,,
 explicit,00028ac0,00028ac0,4,4,,uint8,uint8,uint8
 explicit,00028c8c,00028c8c,4,4,,uint8,uint8,uint8
 explicit,00028e10,00028e10,8,8,,uint8,uint8,uint8
@@ -20,6 +22,7 @@ implicit,0002aaec,0002aaec,4,,16384,,,
 implicit,0002ab40,0002ab40,8,,8192,,,
 implicit,0002ab98,0002ab98,16,,4096,,,
 implicit,0002abec,0002abec,64,,256,,,
+implicit,0002ac3c,0002ac3c,16,,16,,,
 explicit,0002ac9c,0002ac9c,8,,,uint8,uint8,
 explicit,0002ad6c,0002ad6c,16,,,uint8,uint8,
 explicit,0002aeac,0002aeac,8,,,uint16,uint16,

@@ -1,0 +1,107 @@
+summary = """
+Implicit-axis 2D entry with word inputs: r4 holds the table base, and r5 and \
+r6 hold raw inputs that it zero-extends. It calls the shift kernel \
+implicit_2d_word_shift_kernel/fn (jk78c 0x288E8) for each input, gives index \
+7 a zero fraction, doubles both indices for uint16 cells, and tail-calls the \
+2D finisher jk78c 0x28670 with row stride 8, which interpolates uint16 \
+cells. Each axis has 8 points with step 8192. Its readers are \
+request_rise_step_builder/fn and request_transition_conditioner/fn."""
+home = "jk78c"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit-2d"
+kernel = "implicit_2d_word_shift_kernel/fn"
+cols = 8
+rows = 8
+step = 8192
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "000289cc"
+
+[symbol.interp]
+access = "implicit-2d"
+kernel = "implicit_2d_word_entry/fn"
+cols = 8
+rows = 8
+step = 8192
+storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000289cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000289cc"
+to = "jk78c:00027ddc"
+note = """
+1ME3B fuses the word entry into one leaf without calls: it shifts both word \
+inputs right by 13, gives index 7 a zero fraction, and interpolates the \
+uint16 cells with row stride 8 in its body. Its readers are the 1ME3B \
+symbols of request_rise_step_builder/fn at 1me3b:000a7cf2 and of \
+request_transition_conditioner/fn at 1me3b:000b30a4, the readers of \
+jk78c:00027ddc at jk78c:0008ffbc and jk78c:00096ec4."""
+
+[[symbol]]
+layout = "1nd"
+address = "000283f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000283f8"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "jk78c:00027ddc"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00027ddc"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026bc0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026bc0"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "jk78c:00027ddc"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00027ddc"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026bc0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026bc0"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "jk78c:00027ddc"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00027ddc"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027ddc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00027ddc"

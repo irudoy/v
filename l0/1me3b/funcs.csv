@@ -481,9 +481,15 @@ addr,size,is_thunk,is_external
 000434c8,82,false,false
 0004351a,50,false,false
 000435cc,62,false,false
+00043624,272,false,false
 00043734,4,true,false
+0004376e,122,false,false
 000437e8,130,false,false
 00043900,88,false,false
+00043958,50,false,false
+0004398a,56,false,false
+000439da,174,false,false
+00043adc,58,false,false
 00043b80,330,false,false
 00043d06,164,false,false
 00043ecc,694,false,false

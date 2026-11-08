@@ -90,6 +90,8 @@ def _map_geometry(entry):
         step = int(entry["step"])
         storage = "uint16" if (width - 1) * step >= 256 else "uint8"
         return f"{width}x{height}:{storage}:step{step}"
+    if entry["family"] == "implicit-2d":
+        return f"{width}x{height}:{entry['storagetype']}:step{int(entry['step'])}"
     return f"{width}x{height}:{entry['storagetype']}"
 
 

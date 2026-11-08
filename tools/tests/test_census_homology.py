@@ -31,6 +31,13 @@ def test_implicit_element_type_follows_the_axis_limit():
     assert census_homology._map_geometry(entry) == "16x1:uint16:step4096"
 
 
+def test_implicit_2d_element_type_comes_from_the_finisher():
+    entry = {"family": "implicit-2d", "width": "8", "height": "8", "step": "8192",
+             "storagetype": "uint16"}
+    assert census_homology._map_geometry(entry) == "8x8:uint16:step8192"
+    assert census_homology.geometry_bytes(census_homology._map_geometry(entry)) == 128
+
+
 def test_best_function_prefers_the_exact_pair_and_skips_reserved_targets():
     source_tokens = {"a": ("x", "y", "z", "w"), "b": ("x", "y", "z", "q")}
     target_tokens = {
@@ -183,14 +190,14 @@ def test_1me3b_census_ledger_matches_the_stock_images(ledger):
     summary = census_homology.validate_ledger(ledger, "1ND0A", "1ME3B")
 
     assert summary["map"] == {
-        "total": 768,
-        "homolog": 603,
+        "total": 778,
+        "homolog": 612,
         "ambiguous": 3,
-        "unpaired": 162,
-        "aligned-reference": 500,
-        "unique-exact-content": 82,
-        "published-registry": 21,
-        "bytes_equal": 569,
+        "unpaired": 163,
+        "aligned-reference": 505,
+        "unique-exact-content": 85,
+        "published-registry": 22,
+        "bytes_equal": 577,
     }
     assert summary["axis"] == {
         "total": 433,

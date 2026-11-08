@@ -3,6 +3,8 @@ kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,d
 0002aa98,0002aa98,,0003357c,000339f2,orig,,,fffe8d0c,0001451a,,fffe8d0c,fffe8d0c,slice,dyn,sp,sp,df_only,
 0002aa98,0002aa98,00033b44,0003357c,00033964,orig,,,,0001451a,,fffe87b2,00009793,pool,dyn,sp,sp,df_only,
 0002aa98,0002aa98,0004355c,00043304,0004332c,orig,0001451a,,0002aa98,0001451a,,0002aa98,,pool,dyn,sp,none,agree,
+0002aa98,0002aa98,000438c8,0004376e,000437ae,orig,0001451a,,fffe8155,0001451a,,fffe8155,0002aa98,slice,dyn,sp,sp,agree,
+0002aa98,0002aa98,00043b58,000439da,00043a64,orig,0001451a,,fffe94a2,0001451a,,fffe94a2,,pool,dyn,sp,none,agree,
 0002aa98,0002aa98,00043e3c,00043b80,00043cb6,orig,000137e6,,,000137e6,,ffff8020,000000ff,pool,dyn,sp,sp,df_only,
 0002aa98,0002aa98,0004a2ec,0004a0e2,0004a110,orig,0001451a,,fffe9924,0001451a,,fffe9924,0002aa98,pool,dyn,sp,sp,agree,
 0002aa98,0002aa98,0004a788,0004a60c,0004a700,orig,0001451a,,fffe8d0c,0001451a,,fffe8d0c,,pool,dyn,sp,none,agree,

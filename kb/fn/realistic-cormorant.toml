@@ -28,6 +28,36 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002ac3c"
+name = "hopping-chupacabra"
+
+[symbol.interp]
+access = "implicit"
+kernel = "realistic-cormorant/fn"
+cols = 16
+step = 16
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ac3c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002ac3c"
+to = "7mfk:0002642c"
+note = """
+1ME3B compiles this implicit 16-point step-16 lookup of offset-binary uint8 \
+elements with limit 0x00F0 with its own unrolled kernel: it adds 0x0080 to \
+both samples, interpolates, and subtracts 0x0080, as the shared entry \
+subtracts 128 from the kernel result. It lies at the library position of the \
+shared entry, between xanthic-kagu 1me3b:0002abec and brilliant-ibis \
+1me3b:0002ac9c, as 1nd:00028870 lies between 1nd:00028854 and 1nd:000288b8. \
+Masked-match from 7mfk names 1me3b:0002ac3c as its only candidate."""
+
+[[symbol]]
 layout = "1nd"
 address = "00028870"
 name = "crimson-seagull"
