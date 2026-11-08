@@ -1,0 +1,29 @@
+summary = """
+Validation copy of charge_ratio_response_axis, read by \
+charge_ratio_response_lookup_validation. Its stock bytes equal those of the \
+primary axis."""
+level = "code"
+quantity = "raw"
+points = 32
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ae7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051648"
+note = "The load at 00051648 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_ratio_response_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051648"

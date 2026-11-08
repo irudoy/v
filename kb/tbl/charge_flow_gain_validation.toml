@@ -1,0 +1,43 @@
+summary = """
+Validation copy of charge_flow_gain, read by \
+charge_flow_a_builder_validation and charge_flow_b_builder_validation. Its \
+stock word 42480 equals that of the primary constant."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000175fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050150"
+note = """
+The load at 00050150 in charge_flow_a_builder_validation reads this word."""
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050150"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000506ae"

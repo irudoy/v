@@ -1,0 +1,67 @@
+summary = """
+Validation copy of charge_closing_correction_surface, read by \
+charge_closing_correction_lookup_validation and \
+charge_closing_limit_check_validation over second_period_speed_snapshot \
+ffff11ba. Its stock bytes equal those of the primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001838c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c78"
+note = """
+The load at 00050c78 passes this table to its lookup in \
+charge_closing_limit_check_validation."""
+
+[[link]]
+type = "axis"
+to = "charge_closing_duration_axis_validation/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c7c"
+
+[[link]]
+type = "axis"
+to = "charge_closing_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c7a"
+
+[[link]]
+type = "reader"
+to = "charge_closing_correction_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005149a"
+
+[[link]]
+type = "reader"
+to = "charge_closing_limit_check_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c78"

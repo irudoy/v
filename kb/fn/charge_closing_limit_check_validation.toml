@@ -1,0 +1,21 @@
+summary = """
+Validation counterpart of charge_closing_limit_check: it looks up \
+charge_closing_correction_surface_validation at second_period_speed_snapshot \
+ffff11ba and the duration charge_closing_limit_duration_validation, and sets \
+bit 1 of ffff458a+0x27, and its result flag, while a word argument / 128 \
+minus the correction / 512 exceeds 360 degrees."""
+level = "code"
+role = "monitor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00050c60"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c60"
+note = """
+The reviewed listing establishes the calls at 00050c80 and the stores at \
+00050cae."""

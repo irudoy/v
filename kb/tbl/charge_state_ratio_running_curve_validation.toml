@@ -1,0 +1,44 @@
+summary = """
+Validation copy of charge_state_ratio_running_curve, read by \
+charge_state_ratio_lookup_validation over second_period_speed_snapshot \
+ffff11ba. Its stock bytes equal those of the primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001aa9a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fb2a"
+note = """
+The load at 0004fb2a passes this table to its lookup in \
+charge_state_ratio_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "charge_state_running_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fb30"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fb2a"

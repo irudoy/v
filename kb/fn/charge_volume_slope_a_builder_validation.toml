@@ -1,0 +1,21 @@
+summary = """
+Validation counterpart of charge_volume_slope_a_builder: the difference of \
+cylinder_volume_curve_validation at charge_volume_slope_angle_validation / 4 \
+counts and 128 counts below it times 2e-8, times the pressure word of the \
+root / 256 and 9.375 * second_period_speed_snapshot ffff11ba / (R * T) of \
+the validation constants, stored at ffff9f20."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000509c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000509c8"
+note = """
+The reviewed listing establishes the calls at 00050a4a..00050a5a and the \
+stores at 00050a88."""

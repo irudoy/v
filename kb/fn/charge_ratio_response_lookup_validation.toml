@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of charge_ratio_response_lookup: it looks up \
+charge_ratio_response_curve_validation at the ratio p2 / p1, clamped to \
+0..20 and times 2500, and stores the word times 2e-5 at ffff9f84; 0005177a \
+multiplies it by the volume difference ffff9f80 into ffff9f8c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00051608"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051608"
+note = """
+The reviewed listing establishes the calls at 0005164c and the stores at \
+00051662."""

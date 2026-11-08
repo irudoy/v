@@ -1,0 +1,22 @@
+summary = """
+Snapshot of ffff11ee, the speed word that 0003b938 forms from the second \
+period measurement; scheduler 00020f1a copies the 52-byte block ffff11c0.. \
+to ffff118c.. at 00020fcc. 0003b938 also stores ffff11f0 = ffff11ee >> 1, \
+the source of the second speed word ffff11bc, so this word has twice the \
+counts of ffff11bc: 1.5625 RPM per count, the weight of \
+engine_speed_fine_snapshot, under the 3.125 RPM hypothesis that \
+defs/JK78C.vvel.md states for ffff11bc. charge_model_validation and \
+throttle_target_area_model_validation index their speed axes by it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff11ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f41a"
+note = "charge_model_validation reads the word here."

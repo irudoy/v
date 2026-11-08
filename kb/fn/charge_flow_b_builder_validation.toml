@@ -1,0 +1,24 @@
+summary = """
+Validation counterpart of charge_flow_b_builder for charge_model_validation, \
+with the pressure word of the root times 1/256 as its second pressure: it \
+stores min and max at ffff9f00 and ffff9efc, sets bit 6 of ffff458a+0x27 \
+while the first pressure exceeds the second, and stores at ffff9ef8 the \
+flow-function word of charge_flow_function_curve_validation times the flux, \
+charge_flow_gain_validation and 2^-32, and 1 while that bit is clear or -1 \
+while it is set, the sign convention of charge_flow_b_builder. It takes the \
+square root over descriptor 00023b54, whose points are those of 000237dc."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000505e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000505e0"
+note = """
+The reviewed listing establishes the calls at 0005067a..000506f0 and the \
+stores at 0005060c..0005071a."""

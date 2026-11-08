@@ -1,0 +1,22 @@
+summary = """
+Validation counterpart of charge_speed_angle_term_lookup over \
+second_period_speed_snapshot ffff11ba and an angle argument, clamped to \
+200..500 degrees and times 128: (-16 + \
+charge_speed_angle_gain_surface_validation / 2048) * normalized_load \
+ffff1032 * 0.78125 + charge_speed_angle_offset_surface_validation / 64 - \
+512, stored at ffff9edc."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005022a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005022a"
+note = """
+The reviewed listing establishes the calls at 000502e4..000502f6 and the \
+stores at 0005032e."""

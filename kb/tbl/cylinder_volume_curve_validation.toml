@@ -1,0 +1,107 @@
+summary = """
+Validation copy of cylinder_volume_curve, read by \
+charge_event_volume_lookup_validation, \
+charge_volume_difference_builder_validation, \
+charge_volume_rate_a_builder_validation, \
+charge_volume_rate_b_builder_validation, \
+charge_volume_slope_a_builder_validation and \
+charge_volume_slope_b_builder_validation. Its stock bytes equal those of the \
+primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+unit = "cm3"
+scale = "x*0.02"
+to_raw = "x*50"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b5aa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050a48"
+note = """
+The load at 00050a48 passes this table to its lookup in \
+charge_volume_slope_a_builder_validation."""
+
+[[link]]
+type = "axis"
+to = "cylinder_volume_crank_angle_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050a54"
+
+[[link]]
+type = "reader"
+to = "charge_event_volume_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fda6"
+
+[[link]]
+type = "reader"
+to = "charge_volume_difference_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051598"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050bf4"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050fc2"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050a48"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050f18"

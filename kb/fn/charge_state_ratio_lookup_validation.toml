@@ -1,0 +1,23 @@
+summary = """
+Validation counterpart of charge_state_ratio_lookup for \
+charge_model_validation. It interpolates the validation copies of the seven \
+state surfaces and of charge_state_ratio_running_curve over \
+second_period_speed_snapshot ffff11ba and the load coordinate of the root, \
+and stores only the ratio of the current code vvel_state_code_validation \
+ffff3802 times 2^-14 at ffff9e94 and that of the previous code \
+vvel_state_code_previous_validation ffff3803 at ffff9e90."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004fb0c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fb0c"
+note = """
+The reviewed listing establishes the calls at 0004fb36..0004fbde and the \
+stores at 0004fc42..0004fca0."""

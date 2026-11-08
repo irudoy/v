@@ -1,0 +1,103 @@
+summary = """
+Validation copy of charge_reference_temperature, read by \
+charge_flow_a_builder_validation, charge_flow_b_builder_validation, \
+charge_ratio_temperature_lookup_validation, \
+charge_volume_rate_a_builder_validation, \
+charge_volume_rate_b_builder_validation, \
+charge_volume_slope_a_builder_validation and \
+charge_volume_slope_b_builder_validation. Its stock word 38144 equals that \
+of the primary constant. 0004fea0 and 00050354 also read it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017626"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500ea"
+note = """
+The load at 000500ea in charge_flow_a_builder_validation reads this word."""
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500ea"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050662"
+
+[[link]]
+type = "reader"
+to = "charge_ratio_temperature_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050486"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050ba6"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050f74"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000509dc"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050ea8"

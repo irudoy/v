@@ -1,0 +1,20 @@
+summary = """
+Validation counterpart of charge_closing_correction_lookup: it looks up \
+charge_closing_correction_surface_validation at second_period_speed_snapshot \
+ffff11ba and the mean measured duration, clamped to 0..100 and times 512, \
+and stores an angle argument minus the correction / 512 at ffff9f7c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005146c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005146c"
+note = """
+The reviewed listing establishes the calls at 000514a6 and the stores at \
+000514ba."""

@@ -1,0 +1,33 @@
+summary = """
+Validation copy of charge_closing_limit_duration, read by \
+charge_closing_limit_check_validation. Its stock word 32768 equals that of \
+the primary constant. 0003fb38 also reads it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000175ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c74"
+note = """
+The load at 00050c74 in charge_closing_limit_check_validation reads this \
+word."""
+
+[[link]]
+type = "reader"
+to = "charge_closing_limit_check_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c74"

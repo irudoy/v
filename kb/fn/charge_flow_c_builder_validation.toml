@@ -1,0 +1,21 @@
+summary = """
+Validation counterpart of charge_flow_c_builder: it looks up \
+charge_flow_function_curve_validation at the ratio of the pressure word of \
+the root / 256 to p2, limited to 1 and times 65535, and stores the word \
+times charge_flow_c_gain_validation, min(p3 / \
+charge_reference_density_validation, 4), p1 and 2^-22 at ffff9f64."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000511ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000511ae"
+note = """
+The reviewed listing establishes the calls at 00051210 and the stores at \
+00051264."""

@@ -1,0 +1,44 @@
+summary = """
+Validation copy of charge_ratio_response_curve, read by \
+charge_ratio_response_lookup_validation. Its stock bytes equal those of the \
+primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b24a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051646"
+note = """
+The load at 00051646 passes this table to its lookup in \
+charge_ratio_response_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "charge_ratio_response_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051648"
+
+[[link]]
+type = "reader"
+to = "charge_ratio_response_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051646"

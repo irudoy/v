@@ -1,0 +1,24 @@
+summary = """
+Validation counterpart of charge_ratio_temperature_lookup: it looks up \
+timing_float_ratio_response_surface_validation at x = (k - 1) / k, with k = \
+charge_heat_capacity_ratio_validation, clamped to 0.16..0.28 and times \
+131072, and y = p1 / p2, clamped to 0.04..1.6 and times 32768, and stores \
+the word times charge_reference_temperature_validation / 32768 at ffff9ee8. \
+The stock exponent 0.2857 clamps to 0.28, 36700 counts, which lies above the \
+last x breakpoint 35520 as the unclamped exponent of the primary lookup \
+does, so both hold the edge exponent."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000503c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000503c0"
+note = """
+The reviewed listing establishes the calls at 0005047c and the stores at \
+0005049a."""

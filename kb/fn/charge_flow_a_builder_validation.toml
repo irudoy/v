@@ -1,0 +1,27 @@
+summary = """
+Validation counterpart of charge_flow_a_builder for charge_model_validation. \
+Its second pressure p2 is the pressure word of the root times 1/256. It \
+stores min and max of p1 and p2 at ffff9ecc and ffff9ec8, sets bit 5 of \
+ffff458a+0x27 while p1 exceeds p2, looks up \
+charge_flow_function_curve_validation at min / max(max, 1/512) times 65535, \
+and stores at ffff9ec4 the word times the flux max * 1000 / sqrt(1000 * R * \
+T), clamped to 40..1800, times charge_flow_gain_validation, 2^-32, and 1 \
+while p1 exceeds p2 or -1 otherwise. R and T are \
+charge_gas_constant_validation and charge_reference_temperature_validation; \
+0004f3a4 takes the square root over the float curve of descriptor 00023b3c, \
+whose points are those of 000237dc."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ffae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ffae"
+note = """
+The reviewed listing establishes the calls at 000500dc..00050102 and the \
+stores at 0004ffdc..00050162."""

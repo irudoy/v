@@ -1,0 +1,21 @@
+summary = """
+Validation counterpart of charge_volume_difference_builder: \
+cylinder_volume_curve_validation at the angles a2 - 360 and a1 - 360 \
+degrees, clamped to 0..360 and times 128, and stores at ffff9f80 the larger \
+of a factor times their difference times 2e-8 and \
+charge_clearance_volume_validation * 0.233."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000514c6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000514c6"
+note = """
+The reviewed listing establishes the calls at 0005159a..000515cc and the \
+stores at 000515f2..000515f4."""

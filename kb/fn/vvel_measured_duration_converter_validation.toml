@@ -1,0 +1,26 @@
+summary = """
+Validation counterpart of vvel_measured_duration_converter for \
+charge_model_validation: it looks up vvel_command_shaft_angle_second over \
+vvel_shaft_angle_second_axis at the measured VVEL shaft-angle words ffff2670 \
+and ffff2672 and stores only the mean of the two results times 1/512 at \
+ffff9e98."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_0004FCB8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004fcb8"
+former = ["fervent-walrus/fn/jk78c-0004fcb8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004fcd0"

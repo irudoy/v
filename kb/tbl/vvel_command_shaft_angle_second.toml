@@ -125,18 +125,6 @@ at = "1me3b:0005c7e6"
 
 [[link]]
 type = "reader"
-to = "fervent-walrus/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "indirect"
-supports = "identity"
-at = "jk78c:0004fd84"
-value = 32
-mode = "base"
-
-[[link]]
-type = "reader"
 to = "helpful-raccoon/fn"
 role = "accessor"
 
@@ -154,3 +142,15 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0005c974"
+
+[[link]]
+type = "reader"
+to = "vvel_measured_duration_converter_validation/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0004fd84"
+value = 32
+mode = "base"

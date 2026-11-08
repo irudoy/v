@@ -1,0 +1,19 @@
+summary = """
+Second instance of the arithmetic of \
+charge_volume_slope_a_builder_validation for charge_model_validation; it \
+stores the term at ffff9f4c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00050e96"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050e96"
+note = """
+The reviewed listing establishes the calls at 00050f1a..00050f2c and the \
+stores at 00050f5a."""

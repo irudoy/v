@@ -1,0 +1,57 @@
+summary = """
+Validation copy of charge_model, run from task table entry 00021c28 between \
+vvel_load_coordinate_publisher_validation and \
+throttle_target_area_model_validation. It converts the measured VVEL \
+shaft-angle words ffff2670 and ffff2672 through \
+vvel_measured_duration_converter_validation into their mean duration \
+ffff9e98 and repeats the charge terms of charge_model through the validation \
+counterpart of each lookup, which reads the validation copy of each table, \
+axis and ROM constant. Its speed input is second_period_speed_snapshot \
+ffff11ba in place of engine_speed_fine_snapshot ffff11a0. 0004fd0c selects \
+the load coordinate ffff382c of vvel_load_coordinate_publisher_validation, \
+or the area output ffff382e of throttle_target_area_model_validation while \
+bit 5 of ROM byte 00008958 is set, and 00051454 selects the pressure word \
+ffff2598, or ffff2664 while bit 3 of that byte is clear; the stock byte 0x9a \
+selects ffff382c and ffff2598. It blends the ratio of \
+vvel_state_code_validation with that of vvel_state_code_previous_validation \
+by vvel_state_blend_weight_validation / 32768, or with the blend held at the \
+latest code change in ffff9fb4 while bit 3 of ffff457e is clear, and \
+00051782 stores (ffff9f8c - ffff9f74) times the blend divided by ffff9e8c at \
+charge_model_throttle_charge_validation ffff3838. That word and status bits \
+of ffff45b0 and ffff45b1 are its only stores outside its float work area. It \
+has no counterpart of charge_state_ratio_model_load_lookup, \
+charge_fill_ratio_lookup, charge_target_ratio_lookup or the other \
+charge_model outputs."""
+note = [
+    """
+The identities of four model inputs are unresolved, as for charge_model. \
+0004fa4a reads the long ffff2594 as x * 1.38889e-8 / (ROM word 00017638 * \
+1e-6), clamped to 1e-4..3.55, into ffff9e8c, the divisor of the output. \
+00051454 reads ffff2598 or ffff2664 times 1/256. ffff37f8 / 128, which \
+0003fb38 writes, takes the place of ffff2ee4 in 0004fd1c, 0004fe0a and the \
+volume terms. 0004f9f4 forms the center 16834 + ROM word 000172c6 / 512 - \
+0.5 * ffff3844 of the event angle pair, and 0003fb04 writes ffff3844 in \
+place of ffff37b2. The ROM words 00017638, 000172c6 and 000175f8, the angle \
+margin of 0004fa2c, hold the stock words of 0000928a, 00008d8e and \
+charge_event_angle_margin.""",
+]
+level = "code"
+role = "driver"
+block = "airflow_load/block"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.vvel.md"
+sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
+sections = ["Target surfaces and scales"]
+anchor = "FUN_0004F3FE"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004f3fe"
+former = ["adaptable-caracara/fn/jk78c-0004f3fe"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f3fe"

@@ -1,0 +1,19 @@
+summary = """
+Second instance of the arithmetic of charge_volume_rate_a_builder_validation \
+for charge_model_validation, on another float argument; it stores the term \
+at ffff9f50."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00050f6c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050f6c"
+note = """
+The reviewed listing establishes the calls at 00050fc8 and the stores at \
+00050fde."""

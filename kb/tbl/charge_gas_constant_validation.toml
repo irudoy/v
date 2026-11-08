@@ -1,0 +1,92 @@
+summary = """
+Validation copy of charge_gas_constant, read by \
+charge_flow_a_builder_validation, charge_flow_b_builder_validation, \
+charge_volume_rate_a_builder_validation, \
+charge_volume_rate_b_builder_validation, \
+charge_volume_slope_a_builder_validation and \
+charge_volume_slope_b_builder_validation. Its stock word 37749 equals that \
+of the primary constant. 0004fea0, 0005017e, 00050354 and 000504ce also read \
+it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001761c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500e6"
+note = """
+The load at 000500e6 in charge_flow_a_builder_validation reads this word."""
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500e6"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050660"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050bbc"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050f8a"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000509f0"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050ebc"

@@ -1,0 +1,29 @@
+summary = """
+Validation copy of timing_float_ratio_response_axis_x, read by \
+charge_ratio_temperature_lookup_validation. Its stock bytes equal those of \
+the primary axis."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001aa7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050474"
+note = "The load at 00050474 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_ratio_temperature_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050474"

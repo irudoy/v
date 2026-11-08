@@ -1,0 +1,41 @@
+summary = """
+Validation copy of charge_closing_duration_axis, read by \
+charge_closing_correction_lookup_validation and \
+charge_closing_limit_check_validation. Its stock bytes equal those of the \
+primary axis."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b72a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c7c"
+note = "The load at 00050c7c passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_closing_correction_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000514a2"
+
+[[link]]
+type = "reader"
+to = "charge_closing_limit_check_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00050c7c"

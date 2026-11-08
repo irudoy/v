@@ -1,0 +1,18 @@
+summary = """
+Current VVEL state code of the validation chain: \
+vvel_load_ratio_stage_validation maps mode byte ffff2830 through the \
+state-code table of vvel_state_code. charge_state_ratio_lookup_validation \
+selects its current-code ratio by it, and \
+throttle_target_area_model_validation reads it."""
+level = "code"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3802"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046d98"

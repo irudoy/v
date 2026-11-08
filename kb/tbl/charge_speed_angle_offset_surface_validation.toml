@@ -1,0 +1,55 @@
+summary = """
+Validation copy of charge_speed_angle_offset_surface, read by \
+charge_speed_angle_term_lookup_validation over second_period_speed_snapshot \
+ffff11ba. Its stock bytes equal those of the primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001980c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000502e8"
+note = """
+The load at 000502e8 passes this table to its lookup in \
+charge_speed_angle_term_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "charge_speed_angle_axis_validation/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000502dc"
+
+[[link]]
+type = "axis"
+to = "charge_speed_angle_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000502da"
+
+[[link]]
+type = "reader"
+to = "charge_speed_angle_term_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000502e8"

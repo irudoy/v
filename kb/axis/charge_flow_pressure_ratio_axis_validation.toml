@@ -1,0 +1,52 @@
+summary = """
+Validation copy of charge_flow_pressure_ratio_axis, read by \
+charge_flow_a_builder_validation, charge_flow_b_builder_validation and \
+charge_flow_c_builder_validation. Its stock bytes equal those of the primary \
+axis."""
+level = "code"
+quantity = "raw"
+points = 32
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001afaa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500d8"
+note = "The load at 000500d8 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000500d8"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000506ec"
+
+[[link]]
+type = "reader"
+to = "charge_flow_c_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005120c"

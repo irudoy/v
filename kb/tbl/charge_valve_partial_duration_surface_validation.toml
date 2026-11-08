@@ -1,0 +1,55 @@
+summary = """
+Validation copy of charge_valve_partial_duration_surface, read by \
+charge_valve_duration_builder_validation. Its stock bytes equal those of the \
+primary table."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017f0c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000516de"
+note = """
+The load at 000516de passes this table to its lookup in \
+charge_valve_duration_builder_validation."""
+
+[[link]]
+type = "axis"
+to = "charge_valve_partial_angle_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000516e0"
+
+[[link]]
+type = "axis"
+to = "charge_valve_partial_duration_axis_validation/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000516e4"
+
+[[link]]
+type = "reader"
+to = "charge_valve_duration_builder_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000516de"

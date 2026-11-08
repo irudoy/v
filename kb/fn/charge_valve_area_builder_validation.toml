@@ -1,0 +1,24 @@
+summary = """
+Validation counterpart of charge_valve_area_builder. It looks up \
+charge_valve_lift_surface_validation at the mean measured duration ffff9e98, \
+clamped to 0..100 and times 512, and the angle p2 - p3, clamped to 0..160 \
+degrees and times 256, and forms the lift as the word times 2^-21 minus \
+charge_valve_lift_offset_validation times 2^-24, clamped to 0..0.015. It \
+looks up charge_valve_area_ratio_curve_validation at the lift times 2^21, \
+stores the ratio word times 2^-15 at ffff9f5c and the area \
+(charge_valve_diameter_validation / 2)^2 * 3.1415 * ratio at ffff9f58."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00051084"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051084"
+note = """
+The reviewed listing establishes the calls at 000510de..0005112a and the \
+stores at 00051148..00051162."""
