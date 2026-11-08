@@ -148,44 +148,6 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
-layout = "1me3b"
-address = "fffe8aa4"
-level = "candidate"
-note = """
-Unresolved 1me3b address candidate for exhaust_cvtc_duty_b1_word. Historical \
-diagnostic-pointer-table alignment names fffe8aa4, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
-
-[[symbol.evidence]]
-kind = "unverified-site"
-supports = "identity"
-at = "1me3b:fffe8aa4"
-note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
-
-[[symbol]]
-layout = "1nd"
-address = "fffe8b10"
-level = "candidate"
-note = """
-Unresolved 1nd address candidate for exhaust_cvtc_duty_b1_word. Historical \
-diagnostic-pointer-table alignment names fffe8b10, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
-
-[[symbol.evidence]]
-kind = "unverified-site"
-supports = "identity"
-at = "1nd:fffe8b10"
-note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
-
-[[symbol]]
 layout = "7mfk"
 address = "ffff1aac"
 former = ["bright-rottweiler/ram/7mfk-ffff1aac"]
@@ -262,24 +224,98 @@ to = "7mfk:00090616"
 count = 1
 value = 53
 
-[[symbol]]
-layout = "jk78c"
-address = "ffff1a88"
-level = "candidate"
+[[status]]
+layout = "1me3b"
+state = "absent"
 note = """
-Unresolved jk78c address candidate for exhaust_cvtc_duty_b1_word. Historical \
-diagnostic-pointer-table alignment names ffff1a88, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
+VQ37 removes the exhaust valve timing magnet retarder: the ATU-II channel-7 \
+buffer registers BFR7C and BFR7D, which the JK08A output stage drives from \
+the two duty words, have no writer besides the ATU-II initializer, and the \
+inherited DID 0x122F and 0x1230 slots name words without a resolved access \
+in the image"""
 
-[[symbol.evidence]]
-kind = "unverified-site"
+[[status.evidence]]
+kind = "l0"
 supports = "identity"
-at = "jk78c:ffff1a88"
+at = "1me3b:0002c694"
+note = "the ATU-II initializer stores the only write of BFR7D fffff596"
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
 note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+VQ37 removes the exhaust valve timing magnet retarder: the ATU-II channel-7 \
+buffer registers BFR7C and BFR7D, which the JK08A output stage drives from \
+the two duty words, have no writer besides the ATU-II initializer, and the \
+inherited DID 0x122F and 0x1230 slots name words without a resolved access \
+in the image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00029944"
+note = "the ATU-II initializer stores the only write of BFR7D fffff596"
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
+note = """
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+VQ37 removes the exhaust valve timing magnet retarder: the ATU-II channel-7 \
+buffer registers BFR7C and BFR7D, which the JK08A output stage drives from \
+the two duty words, have no writer besides the ATU-II initializer, and the \
+inherited DID 0x122F and 0x1230 slots name words without a resolved access \
+in the image"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00029212"
+note = "the ATU-II initializer stores the only write of BFR7D fffff596"
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
+note = """
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
 
 [[link]]
 type = "reader"

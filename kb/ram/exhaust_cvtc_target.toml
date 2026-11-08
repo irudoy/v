@@ -158,44 +158,6 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
-layout = "1me3b"
-address = "fffe9436"
-level = "candidate"
-note = """
-Unresolved 1me3b address candidate for exhaust_cvtc_target. Historical \
-diagnostic-pointer-table alignment names fffe9436, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
-
-[[symbol.evidence]]
-kind = "unverified-site"
-supports = "identity"
-at = "1me3b:fffe9436"
-note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
-
-[[symbol]]
-layout = "1nd"
-address = "fffe9466"
-level = "candidate"
-note = """
-Unresolved 1nd address candidate for exhaust_cvtc_target. Historical \
-diagnostic-pointer-table alignment names fffe9466, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
-
-[[symbol.evidence]]
-kind = "unverified-site"
-supports = "identity"
-at = "1nd:fffe9466"
-note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
-
-[[symbol]]
 layout = "7mfk"
 address = "ffff2327"
 former = ["antique-degu/ram/7mfk-ffff2327"]
@@ -286,24 +248,101 @@ to = "7mfk:0004d374"
 count = 1
 value = 78
 
-[[symbol]]
-layout = "jk78c"
-address = "ffff23a4"
-level = "candidate"
+[[status]]
+layout = "1me3b"
+state = "absent"
 note = """
-Unresolved jk78c address candidate for exhaust_cvtc_target. Historical \
-diagnostic-pointer-table alignment names ffff23a4, but the normalized access \
-index supplies no resolved accessor and no independently reviewed target \
-publisher or consumer grounds this quantity. Storage role, physical bank \
-identity, conversion and cadence require target review."""
+VQ37 removes exhaust camshaft timing control together with its P0014 and \
+P0024 descriptor records; the inherited DID 0x1164 to 0x1166 slots name \
+bytes without a resolved access in the image"""
 
-[[symbol.evidence]]
-kind = "unverified-site"
+[[status.evidence]]
+kind = "rom-bytes"
 supports = "identity"
-at = "jk78c:ffff23a4"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000380306000000045200000000"
 note = """
-Historical address candidate without an independently reviewed target \
-producer-consumer binding."""
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
+note = """
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+VQ37 removes exhaust camshaft timing control together with its P0014 and \
+P0024 descriptor records; the inherited DID 0x1164 to 0x1166 slots name \
+bytes without a resolved access in the image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c754"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
+note = """
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+VQ37 removes exhaust camshaft timing control together with its P0014 and \
+P0024 descriptor records; the inherited DID 0x1164 to 0x1166 slots name \
+bytes without a resolved access in the image"""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0001c0d0"
+value = "370200000000002100000000380306000000045200000000"
+note = """
+the group 0x37 descriptor records end with P0021 and group 0x38 follows, so \
+P0014 and P0024 have no record"""
+
+[[status.evidence]]
+kind = "spec"
+supports = "identity"
+path = "defs/JK78C.can.md"
+key = "Exhaust camshaft control removal"
+
+[[status.evidence]]
+kind = "manual"
+supports = "identity"
+key = "esm-2013-g-ec160-vq37vhr-data-monitor"
+note = """
+the VQ37VHR ECM data monitor lists INT/V TIM and INT/V SOL for both banks \
+and no EXH/V TIM or VTC DTY EX item, which the VQ25HR section lists at \
+EC-735"""
 
 [[link]]
 type = "input"

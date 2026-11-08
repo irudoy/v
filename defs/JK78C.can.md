@@ -395,17 +395,21 @@ identity where the DTC descriptor table does not.
 
 The DTC descriptor table states the removal directly. JK08A group `0x37` holds
 sub-indices `04`, `03`, `02`, `01`, and `00` for P0174, P0011, P0021, P0014, and
-P0024 at `0x019D14`. JK78C at `0x01C0B8` and 1ND0A at `0x01C73C` hold
-byte-identical `04`, `03`, and `02` records and continue directly with group
-`0x38`. The P1078 and P1084 exhaust-timing-sensor records are absent from both
-VQ37 images. No exhaust camshaft monitor exists on VQ37.
+P0024 at `0x019D14`. JK78C at `0x01C0B8`, 1ND0A at `0x01C73C`, and 1ME3B at
+`0x01C8A0` hold byte-identical `04`, `03`, and `02` records and continue
+directly with group `0x38`. The P0078 and P0084 magnet-retarder circuit records
+and the P1078 and P1084 exhaust-timing-sensor records of JK08A are absent from
+all three VQ37 images. No exhaust camshaft monitor exists on VQ37.
 
 The service-0x22 `0x11xx` pointer tables reach the same boundary from the
 diagnostic side. JK08A base `0x226AC` and JK78C base `0x22718` populate 84 of
 124 slots with an identical sparsity pattern. Intake DIDs stay live in both:
-`0x113A` reaches JK08A `0xFFFF2326` and JK78C `0xFFFF227A`. The exhaust triple
+`0x113A` reaches JK08A `0xFFFF2326` and JK78C `0xFFFF227A`. 1ND base `0x22A70`
+and 1ME3B base `0x22AE4` repeat the pattern of RAM-pointer slots. The exhaust triple
 `0x1164`, `0x1165`, and `0x1166` carries 12, 6, and 21 references on JK08A and
-none on JK78C or `1ND`.
+none on JK78C or `1ND`. On 1ME3B the triple `0xFFFE942F`, `0xFFFE9430`, and
+`0xFFFE9436` has no L0 access, and each address occurs once in the image, in
+its pointer-table slot.
 
 Five independent static channels agree that the inherited exhaust target byte is
 never produced. JK78C `0xFFFF23A4` and 1ND `0xFFFE9466` have no direct
@@ -423,6 +427,23 @@ inherited intake actual-angle DIDs at JK78C `0xFFFF239C` and `0xFFFF239D` and
 1ND `0xFFFE945D` and `0xFFFE945E` carry decompiler-resolved reads, and the
 two-bank arrays beside them carry resolved writes. The exhaust triple carries
 neither a read nor a write in either image.
+
+The exhaust valve timing duty words end at the same boundary. JK08A
+`FUN_000C2040` writes the bank duty words `0xFFFF1AAC` and `0xFFFF1AAE`, DIDs
+`0x122F` and `0x1230`, and `FUN_000C2152` converts them into the ATU-II
+channel-7 buffer registers BFR7D `0xFFFFF596` and BFR7C `0xFFFFF594`. On
+JK78C, 1ND, and 1ME3B the ATU-II initializer, JK78C `0x00029002`, 1ND
+`0x0002975A`, and 1ME3B `0x0002C4AA`, is the only writer of BFR7C, BFR7D, and
+the channel-7 registers `0xFFFFF58C` and `0xFFFFF58E`, so no exhaust duty
+output exists. The homologous `0x122F` and `0x1230` slots name JK78C
+`0xFFFF1A88` and `0xFFFF1A8A`, 1ND `0xFFFE8B10` and `0xFFFE8B12`, and 1ME3B
+`0xFFFE8AA4` and `0xFFFE8AA6`. Each of these addresses occurs only in the two
+service-0x22 address tables of its image and has no L0 access.
+
+The 2013 G Sedan factory manual draws the same line. Its VQ37VHR data monitor
+at EC-160 lists INT/V TIM and INT/V SOL for both banks; the VQ25HR section at
+EC-735 adds EXH/V TIM and VTC DTY EX. Its VQ37VHR DTC index carries P0011 and
+P0021 without P0014, P0024, P0078, or P0084.
 
 ## Recovered periodic entries
 

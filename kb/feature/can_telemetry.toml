@@ -111,27 +111,6 @@ mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
 
-[[target.unsupported]]
-note = """
-The 1me3b address fffe942f is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b1/ram"
-
-[[target.unsupported]]
-note = """
-The 1me3b address fffe9430 is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b2/ram"
-
-[[target.unsupported]]
-note = """
-The 1me3b address fffe9436 is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_target/ram"
-
 [[target]]
 layout = "1nd"
 status = "supported"
@@ -228,27 +207,6 @@ mailbox_data = "mailbox_data/reg"
 mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
-
-[[target.unsupported]]
-note = """
-The 1nd address fffe945f is an unresolved candidate without an independently \
-reviewed target producer-consumer binding. The shared field remains \
-unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b1/ram"
-
-[[target.unsupported]]
-note = """
-The 1nd address fffe9460 is an unresolved candidate without an independently \
-reviewed target producer-consumer binding. The shared field remains \
-unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b2/ram"
-
-[[target.unsupported]]
-note = """
-The 1nd address fffe9466 is an unresolved candidate without an independently \
-reviewed target producer-consumer binding. The shared field remains \
-unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_target/ram"
 
 [[target]]
 layout = "7mfk"
@@ -591,27 +549,6 @@ mailbox_data = "mailbox_data/reg"
 mailbox_record_address = "mailbox_record_address/tbl"
 occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
 stock_sle1_isr = "stock_sle1_isr/fn"
-
-[[target.unsupported]]
-note = """
-The jk78c address ffff239e is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b1/ram"
-
-[[target.unsupported]]
-note = """
-The jk78c address ffff239f is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_actual_b2/ram"
-
-[[target.unsupported]]
-note = """
-The jk78c address ffff23a4 is an unresolved candidate without an \
-independently reviewed target producer-consumer binding. The shared field \
-remains unavailable until its native source identity is qualified."""
-symbol = "exhaust_cvtc_target/ram"
 
 [[contexts]]
 name = "temperatures_and_b2_trim_terms"

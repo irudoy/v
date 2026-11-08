@@ -145,15 +145,16 @@ baseline = [
 [[question]]
 id = 11
 question = "Why telemetry fields are unavailable on a layout"
-command = "kb gaps --feature can_telemetry --layout jk78c"
+command = "kb gaps --feature can_telemetry --layout jk00c"
 budget = 1000
 expect = [
-    '^can_telemetry on jk78c: [1-9][0-9]* required meanings unavailable$',
+    '^can_telemetry on jk00c: [1-9][0-9]* required meanings unavailable$',
     '^unsupported: [1-9][0-9]*$',
-    'exhaust_cvtc_target_raw/field\s+exhaust_cvtc_target/ram\s+The jk78c address ffff23a4 is an unresolved candidate',
+    'ltft_publication_neutral_control_raw/field\s+ltft_publication_neutral_control/ram\s+Bit 1 of FFFF4353 carries the neutralization pulse',
 ]
 baseline = [
-    { run = ["rg", "-n", "--no-ignore", "^telemetry,.*,unsupported,", "patches/jk78c-runtime-correspondence.csv"] },
+    { run = ["rg", "-n", "--no-ignore", "telemetry_unavailable|ltft_publication_neutral_control", "patches/rom-address-profiles.toml"] },
+    { run = ["rg", "-n", "--no-ignore", "-A", "4", "target.unsupported", "kb/feature/can_telemetry.toml"] },
 ]
 
 [[question]]
