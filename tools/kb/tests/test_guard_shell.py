@@ -17,6 +17,192 @@ from tools.kb.tests.test_guard import GuardCase, PROJECTIONS
 
 
 class ShellOperationTest(GuardCase):
+    def test_process_patterns_and_selectors_are_literal_data(self):
+        # These calls inspect the hook decision; they never run a diagnostic
+        # or signal a process, and require no Docker daemon.
+        commands = (
+            "pgrep -fl 'ghidra|kb code'",
+            "pgrep -af 'kb/names.csv|l0/7mfk/funcs.csv'",
+            "pgrep --full --list-name -- 'kb/names.csv'",
+            "pgrep --pid 42 -f 'kb code'",
+            "pgrep --pid=42 -f 'kb code'",
+            "pgrep -r SD -f 'kb code'",
+            "pgrep -frSD 'kb code'",
+            "pgrep --runstates=SD -f 'kb code'",
+            "pgrep -d 'kb/names.csv' -u root -P 42 -f '[k]b'",
+            "pgrep -f 'literal $(cat kb/names.csv)'",
+            r"pgrep -f kb/\*",
+            "pkill -0 -f 'kb code'",
+            "pkill -TERM --full 'l0/7mfk/funcs.csv'",
+            "pkill --signal 0 --full -- 'kb/names.csv'",
+            "pkill --pid 42 --signal 0 -f 'kb code'",
+            "pkill --pid=42 --signal 0 -f 'kb code'",
+            "pkill -0 -ef 'kb code'",
+            "pkill --echo --signal 0 -f 'kb code'",
+            "ps aux",
+            "ps -p42 -o 'pid=kb/names.csv,args=l0/7mfk/funcs.csv'",
+            "ps --pid=42 --format 'pid=kb,args=l0' --sort=-pid",
+            "ps -G 20 -u root -p 42,43 -o 'pid=kb,args=l0'",
+            "lsof -nP -c '/kb|l0/' -p 42 -F pcfn",
+            "lsof -c/kb/ -Fpcfn -iTCP:7687",
+            "lsof -nP -i :7687 -a -u kb",
+            "docker ps --filter 'name=kb' --filter 'volume=kb/names.csv' "
+            "--format '{{.Names}} l0/7mfk/funcs.csv'",
+            "docker container ls -aq --filter=label=kb/names.csv",
+            "docker --context kb container ps -l --format 'l0'",
+            "docker --host unix:///tmp/docker.sock stats --no-stream kb l0",
+            "docker container stats --no-stream --format 'kb/names.csv' kb",
+            "timeout 5 nice -n 5 pgrep -fl 'ghidra|kb code'",
+            "/usr/bin/pgrep -fl 'kb code'",
+        )
+        with mock.patch("subprocess.run", side_effect=AssertionError("must not execute")):
+            for command in commands:
+                with self.subTest(command=command):
+                    self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_diagnostic_file_options_keep_protected_paths(self):
+        commands = (
+            "pgrep -F kb/names.csv -f 'kb code'",
+            "pgrep -Fkb/names.csv -f code",
+            "pgrep -lfFkb/names.csv code",
+            "pgrep --pidfile=kb/names.csv --full code",
+            "pgrep --pid kb/names.csv",
+            "pgrep --pid=kb/names.csv",
+            "pkill -0 -fF kb/names.csv code",
+            "pkill --pidfile l0/7mfk/funcs.csv --signal 0 code",
+            "pkill --pid kb/names.csv",
+            "pkill --pid=l0/7mfk/funcs.csv",
+            "ps -n kb/names.csv -o pid",
+            "ps -nkb/names.csv",
+            "ps -N l0/7mfk/funcs.csv",
+            "ps --namelist=kb/names.csv",
+            "lsof kb/names.csv",
+            "lsof -c kb -- l0/7mfk/funcs.csv",
+            "lsof +Dkb",
+            "lsof -nP +d kb",
+            "lsof -A kb/names.csv",
+            "lsof -k l0/7mfk/funcs.csv",
+            "lsof +m kb/names.csv",
+            "lsof -m l0/7mfk/funcs.csv",
+            "lsof -e kb",
+            "lsof -Drkb/names.csv",
+            "lsof -D ukb/names.csv",
+            "lsof -nDukb/names.csv",
+            "lsof -nDbGUIDE.md",
+            "docker --config kb ps",
+            "docker --config=kb ps",
+            "docker container ps --config kb",
+            "docker stats --no-stream --tlskey=kb/names.csv kb",
+            "docker --tlscacert l0/7mfk/funcs.csv container stats --no-stream",
+            "docker --tlscert=kb/names.csv container ls",
+            "kb/pgrep -f code",
+        )
+        for command in commands:
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        (self.root / "pid-alias").symlink_to(self.root / "kb/names.csv")
+        for command in ("pgrep -F pid-alias code", "pgrep --pid pid-alias",
+                        "pkill --pid=pid-alias", "lsof -Drpid-alias",
+                        "docker --tlskey pid-alias ps"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in ("pgrep -F open.txt code", "pgrep --pid open.txt",
+                        "lsof open.txt", "lsof -Dutmp/cache",
+                        "docker --config /tmp/docker-config ps"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_process_long_option_exemptions_cannot_abbreviate_file_options(self):
+        # Independently known file/device options across process-tool
+        # dialects; --namelist is a conservative compatibility reservation.
+        file_options = {"pgrep": {"--pidfile", "--terminal"},
+                        "pkill": {"--pidfile", "--terminal"},
+                        "ps": {"--namelist", "--tty"}}
+        for program, files in file_options.items():
+            profile = project.hook.process_diagnostic_options(program)
+            for option in profile["flags"] | profile["data"]:
+                if option.startswith("--"):
+                    with self.subTest(program=program, exemption=option):
+                        self.assertFalse(any(name.startswith(option) and name != option
+                                             for name in files),
+                                         f"{option} can abbreviate a file option")
+            for option in files:
+                for length in range(3, len(option) + 1):
+                    for separator in (" ", "="):
+                        command = f"{program} {option[:length]}{separator}'{self.path('kb/names.csv')}'"
+                        with self.subTest(command=command):
+                            self.assertIsNotNone(self.denied("Bash", command=command))
+
+    def test_numeric_file_operands_still_resolve_symlinks(self):
+        (self.root / "42").symlink_to(self.root / "kb/names.csv")
+        for command in ("pgrep --pid 42", "pkill --pid=42", "pgrep -F42 code",
+                        "pgrep --pidfile=42 code", "lsof 42", "docker --tlskey 42 ps",
+                        "cat 42", "cp 42 open.txt", "stat 42"):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in ("ps -p42 -o pid", "pgrep -P42 -f 'kb code'", "pgrep -t42 -f code",
+                        "pgrep -u42 -f 'kb code'", "cat 43"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_terminal_selectors_check_device_paths_and_each_list_item(self):
+        protected = self.path("kb/names.csv")
+        for program in ("pgrep", "pkill", "ps"):
+            for option in ("-t", "--tty" if program == "ps" else "--terminal"):
+                for value in (protected, "/dev/null," + protected,
+                              "../" + protected.lstrip("/"), "0,../" + protected.lstrip("/")):
+                    command = f"{program} {option} '{value}'"
+                    with self.subTest(command=command):
+                        self.assertIsNotNone(self.denied("Bash", command=command))
+                for value in ("pts/0", "ttys000", "/dev/null"):
+                    command = f"{program} {option} '{value}'"
+                    with self.subTest(command=command):
+                        self.assertIsNone(self.denied("Bash", command=command))
+
+    def test_diagnostic_exemptions_preserve_shell_and_dynamic_checks(self):
+        for diagnostic in ("pgrep -f 'kb code'", "pkill -0 -f 'kb code'",
+                           "ps -o 'pid=kb'", "lsof -c kb", "docker ps --filter name=kb",
+                           "uv run kb instance status"):
+            for suffix in (" > kb/names.csv", " < l0/7mfk/funcs.csv",
+                           " > defs/JK08A.xml", "; cat kb/names.csv",
+                           " $(cat kb/names.csv)", " `cat l0/7mfk/funcs.csv`"):
+                with self.subTest(diagnostic=diagnostic, suffix=suffix):
+                    self.assertIsNotNone(self.denied("Bash", command=diagnostic + suffix))
+        for command in (
+            'pgrep -f "$GUARD_UNKNOWN_DIAGNOSTIC"',
+            'pgrep "$GUARD_UNKNOWN_DIAGNOSTIC" code',
+            'pgrep -F /tmp/$GUARD_UNKNOWN_DIAGNOSTIC code',
+            'ps -o "$GUARD_UNKNOWN_DIAGNOSTIC"',
+            'lsof -c "$GUARD_UNKNOWN_DIAGNOSTIC"',
+            'docker ps --format "$GUARD_UNKNOWN_DIAGNOSTIC"',
+            'docker "$GUARD_UNKNOWN_DIAGNOSTIC" ps',
+            'pgrep -f "$(printf kb)"',
+            'pgrep -P "$$" -f code',
+            'pgrep -P "$PPID" -f code',
+            'pgrep -u "$USER" -f code',
+            'pgrep --pid "$PPID" -f code',
+            'pgrep --runstates "$GUARD_UNKNOWN_DIAGNOSTIC" -f code',
+            'pkill --echo -u "$USER" -f code',
+            'ps -p "$$" -o pid',
+            "pgrep -f kb/*", "pgrep -f {kb,l0}",
+            "pgrep -f kb/[a-z]*", "docker ps --format {{.Names}}",
+            "pgrep --unsupported=kb/names.csv code",
+            "ps --unsupported kb/names.csv", "lsof -Qfkb/names.csv",
+            "ps -Cnkb/names.csv", "ps -M kb/names.csv",
+            "docker ps --unsupported=kb/names.csv",
+            "docker exec worker cat kb/names.csv",
+            "docker run --rm -v kb/names.csv:/data image cat /data",
+            "python3 -c \"import subprocess; subprocess.run(['pgrep', '-f', 'kb'])\"",
+            "sh -c 'pgrep -f code; cat kb/names.csv'",
+            'while read opts; do pgrep "$opts"; done',
+        ):
+            with self.subTest(command=command):
+                self.assertIsNotNone(self.denied("Bash", command=command))
+        for command in ("kb instance status", "uv run kb instance status",
+                        "timeout 5 uv run kb instance status"):
+            with self.subTest(command=command):
+                self.assertIsNone(self.denied("Bash", command=command))
+
     def test_bare_tree_operands_are_protected(self):
         for command in ("cat kb", "cat -n kb/names.csv", "cp -n kb/names.csv open.txt",
                         "ls kb", "rg needle kb", "rg --files l0",

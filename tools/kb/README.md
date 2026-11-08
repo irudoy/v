@@ -216,6 +216,55 @@ For `gh api`, the endpoint and field values contain data; `--input` and `-F`
 values that start with `@` remain read operands, and an unresolved `-F` value
 receives the operand check.
 
+Process diagnostics have explicit argument contracts. Quoted patterns and
+formats are data, even when they name a KB tree; they do not read that tree.
+
+| Diagnostic | Data arguments | Protected file operands |
+|---|---|---|
+| `pgrep`, `pkill` | Process patterns, IDs, users, groups, signals and delimiters; `pkill -e` / `--echo`, `pgrep -r` / `--runstates` | `-F` / `--pidfile`, including attached and clustered short options; `--pid`; `-t` / `--terminal` device paths |
+| `ps` | Process selectors, output fields and headers, sorting and display options; BSD `aux` / `ax` forms | `-n`, `-N`, `--namelist`; `-t` / `--tty` device paths |
+| `lsof` | `-c` command patterns, `-d` descriptors, `-p` / `-u` selectors, bounded field, socket and numeric display forms | Positional paths, `+d` / `+D` directories, `-A` / `-k` / `-m` / `+m` source files, `-e` / `+e` paths and `-D` cache paths |
+| `docker ps`, `docker container ls` / `ps` | Filters, output templates and display options | Explicit global configuration and TLS file paths, before or after the subcommand |
+| `docker stats`, `docker container stats` | Container names, output templates and display options | The same global configuration and TLS file paths |
+| `kb instance status` | Native KB command arguments | The existing trusted KB command contract applies |
+
+Diagnostic exceptions require literal arguments without active parameter,
+command, brace or pathname expansion. Quote a regular expression or template
+that contains shell metacharacters. Unknown options and unsupported forms of
+these diagnostics receive a refusal instead of a data exception. Other Docker
+subcommands and cross-dialect `ps -C` / `-M` forms have no diagnostic exception.
+Inline scripts and `xargs` retain their existing checks. Shell
+redirections, active substitutions, executable paths and symbolic links retain
+their file checks. The hook classifies knowledge-file access; a permitted
+`pkill` operand does not authorize sending a signal.
+
+The closed subset uses these dialect baselines:
+
+- procps-ng [3.3.17](https://gitlab.com/procps-ng/procps/-/tree/v3.3.17)
+  and [4.0.4](https://gitlab.com/procps-ng/procps/-/tree/v4.0.4) option tables,
+  and the [upstream manuals](https://gitlab.com/procps-ng/procps/-/tree/master/man);
+- the BSD-derived `pgrep`, `pkill` and `ps` manuals shipped with macOS 27.2
+  and Apple's [process-tool sources](https://github.com/apple-oss-distributions/adv_cmds);
+- the local lsof 4.91 manual and the upstream
+  [lsof 4.99.0 manual](https://lsof.readthedocs.io/en/stable/manpage/);
+- Docker CLI 29.9.2 `ps` / `stats` help and the
+  [Docker CLI reference](https://docs.docker.com/reference/cli/docker/).
+
+When extending a process grammar, inventory file options across the dialect
+baselines and check every accepted long data or flag name against them.
+`getopt_long` accepts unique prefixes: a name that is an exact data option in
+one version can abbreviate a file option in another. Such names retain file
+checks or stay unsupported. In procps-ng 3.3.17 and 4.0.4, `--pid` abbreviates
+`--pidfile`; the guard checks it as a file operand on every version. Numeric
+values such as `--pid 42` pass unless the possible file resolves to a protected
+path; dynamic arguments remain refused.
+Numeric file names retain path and symbolic-link checks; a numeric PID or
+count is data only in a command position whose grammar identifies it as data.
+Terminal selectors retain device-path checks for each comma-separated item,
+including absolute paths and `/dev` lookup paths with parent traversal.
+The regression invariant covers the accepted names and every long-file-option
+prefix, in separate-value and `=` forms.
+
 Inline Python inspection supports literal file paths, simple path bindings and
 captured-response metadata transformations. It conservatively refuses unknown
 operations involving protected references. It does not execute the program or

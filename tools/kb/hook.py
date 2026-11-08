@@ -647,6 +647,15 @@ class Guard:
                     for part in PATHLIKE.findall(shell_value(source, variables))], "unknown", cwd)
                 if reason:
                     return reason
+            try:
+                diagnostic = diagnostic_files(clean)
+            except ValueError as error:
+                return f"cannot inspect process diagnostic: {error}; use literal supported arguments."
+            if diagnostic is not None:
+                reason = self.shell_paths([clean[0], *diagnostic], "unknown", cwd)
+                if reason:
+                    return reason
+                continue
             mode, values = file_operands(clean)
             values = [shell_value(value, variables) for value in values]
             if not values and program in {"ls", "find", *SEARCHERS}:
@@ -671,7 +680,9 @@ class Guard:
 
     def shell_paths(self, values, mode, cwd):
         for value in values:
-            if not value or value == "-" or value.isdigit():
+            # Numeric file names can be symlinks into a protected tree.
+            # Command grammars remove PID/count data before this path check.
+            if not value or value == "-":
                 continue
             dynamic = re.search(r"[$`]", value)
             if dynamic:
@@ -1132,6 +1143,189 @@ def call_name(node):
     return ""
 
 
+def diagnostic_options(args, *, flags=(), data=(), files=(), optional=None,
+                       positional="files", plus=False, file_prefixes=None, terminals=()):
+    """File operands of a closed diagnostic grammar, including short clusters.
+
+    Optional values are consumed only when their finite lexical form matches.
+    An unsupported option never receives a general data exemption.
+    """
+    optional = optional or {}
+    paths, index, options = [], 0, True
+    while index < len(args):
+        word = args[index]
+        index += 1
+        if options and word == "--":
+            options = False
+            continue
+        if options and word.startswith(("-", "+") if plus else ("-",)) and word != "-":
+            if word.startswith("--"):
+                option, separator, value = word.partition("=")
+                parts = [(option, value if separator else None)]
+            else:
+                parts = []
+                offset = 1
+                while offset < len(word):
+                    option = word[0] + word[offset]
+                    offset += 1
+                    value = None
+                    if option in data or option in files or option in optional or option in terminals:
+                        value = word[offset:] or None
+                    parts.append((option, value))
+                    if value is not None:
+                        break
+            for option, value in parts:
+                if option in flags:
+                    if value is not None:
+                        raise ValueError(f"{option} takes no value")
+                elif option in data or option in files or option in terminals:
+                    if value is None:
+                        if index == len(args):
+                            raise ValueError(f"{option} requires a value")
+                        value = args[index]
+                        index += 1
+                    if option in terminals:
+                        # BSD pgrep and ps probe device names; procps ps
+                        # also stats absolute paths. Lists and /dev-relative
+                        # traversal must not hide a protected device path.
+                        for name in value.split(","):
+                            paths.extend([name] if os.path.isabs(name) else
+                                         [prefix + name for prefix in
+                                          ("/dev/", "/dev/pts/", "/dev/tty", "/dev/pty")])
+                    if option in files:
+                        prefixes = (file_prefixes or {}).get(option, "")
+                        if value[:1] in prefixes and value[1:]:
+                            paths.append(value[1:])
+                        paths.append(value)
+                elif option in optional:
+                    pattern = optional[option]
+                    if value is None and index < len(args) and re.fullmatch(pattern, args[index]):
+                        value = args[index]
+                        index += 1
+                    if value is not None and not re.fullmatch(pattern, value):
+                        raise ValueError(f"unsupported {option} value")
+                else:
+                    raise ValueError(f"unsupported option {option}")
+        elif positional == "files":
+            paths.append(word)
+        elif positional == "none":
+            raise ValueError("unexpected positional argument")
+        elif positional == "ps" and not re.fullmatch(r"[0-9,]+|[aAcdeEfghHjlLmnrSTuvwxXyZ]+", word):
+            raise ValueError("unsupported ps selector")
+    return paths
+
+
+def process_diagnostic_options(program):
+    """Closed process-tool grammars shared with the long-option safety check.
+
+    Accepted data/flag names must not abbreviate a file option on another
+    supported version. In procps-ng 3.3.17 and 4.0.4, --pid abbreviates
+    --pidfile; its value therefore keeps file checks on every version.
+    """
+    if program in {"pgrep", "pkill"}:
+        flags = {*("-" + char for char in "aAcfhHiIlLmnoqvVwx"),
+                 "--list-full", "--ignore-ancestors", "--count", "--full", "--ignore-case",
+                 "--list-name", "--logpidfile", "--newest", "--oldest", "--inverse",
+                 "--lightweight", "--exact", "--require-handler", "--mrelease",
+                 "--help", "--version"}
+        data = {*("-" + char for char in "dGgOPpsuU"), "--delimiter", "--group",
+                "--pgroup", "--older", "--parent", "--session",
+                "--euid", "--uid", "--signal", "--queue", "--ns", "--nslist",
+                "--cgroup", "--env"}
+        if program == "pkill":
+            flags |= {"-e", "--echo"}
+        else:
+            data |= {"-r", "--runstates"}
+        return dict(flags=flags, data=data, files={"-F", "--pidfile", "--pid"},
+                    terminals={"-t", "--terminal"}, positional="data")
+    if program == "ps":
+        return dict(
+            # -C and -M have different value contracts across ps dialects.
+            flags={*("-" + char for char in "AacdeEfhHjlLmrSTvwxXyZ"),
+                   "--deselect", "--forest", "--headers", "--no-headers", "--no-heading",
+                   "--context", "--threads", "--help", "--version"},
+            data={*("-" + char for char in "GgOopUu"), "--pid", "--ppid", "--sid",
+                  "--group", "--Group", "--user", "--User", "--format", "--sort",
+                  "--cols", "--columns", "--rows", "--lines", "--quick-pid"},
+            files={"-n", "-N", "--namelist"}, terminals={"-t", "--tty"}, positional="ps")
+    return None
+
+
+def diagnostic_files(words):
+    """Explicit file accesses of supported process diagnostics, or None.
+
+    This is an operand contract, not authorization to signal a process or
+    access a Docker daemon. Shell execution is checked by the caller first.
+    """
+    program, args = os.path.basename(words[0]), words[1:]
+    if program not in {"pgrep", "pkill", "ps", "lsof", "docker"}:
+        return None
+    if program == "docker":
+        # Persistent Docker options can precede or follow the subcommand.
+        root_flags = {"-D", "--debug", "--tls", "--tlsverify"}
+        root_data = {"-c", "--context", "-H", "--host", "-l", "--log-level"}
+        root_files = {"--config", "--tlscacert", "--tlscert", "--tlskey"}
+        index = 0
+        while index < len(args) and args[index].startswith("-"):
+            option = args[index].split("=", 1)[0]
+            if option in root_data | root_files and "=" not in args[index]:
+                index += 2
+            elif option in root_flags | root_data | root_files:
+                index += 1
+            else:
+                # Other Docker commands retain the general file checks.
+                return None
+        command = args[index:index + 1]
+        length = 1
+        if command == ["container"]:
+            command, length = args[index + 1:index + 2], 2
+        if command not in (["ps"], ["ls"], ["stats"]):
+            return None
+        if command == ["ls"] and length != 2:
+            return None
+    # A data exemption must not hide shell pathname expansion or an unknown
+    # parameter that could introduce an option with a file value.
+    if any(getattr(word, "parameter", False) or getattr(word, "expansion", False)
+           or getattr(word, "brace", False) or getattr(word, "wildcard", False)
+           for word in words):
+        raise ValueError("dynamic arguments or pathname expansion")
+    if program in {"pgrep", "pkill"}:
+        if program == "pkill" and args and re.fullmatch(
+                r"-(?:[0-9]+|(?:SIG)?(?:HUP|INT|QUIT|KILL|TERM|STOP|CONT|USR1|USR2))", args[0]):
+            args = args[1:]
+    profile = process_diagnostic_options(program)
+    if profile is not None:
+        return diagnostic_options(args, **profile)
+    if program == "lsof":
+        return diagnostic_options(args,
+            flags={*(prefix + char for prefix in "-+" for char in "?abCEhHlnNOPQRtUvVwX")},
+            data={*(prefix + char for prefix in "-+" for char in "cdpu")},
+            files={"+d", "+D", "-D", "-A", "-k", "-m", "+m", "-e", "+e"},
+            optional={"-F": r"[a-zA-Z0-9]+", "-i": r"[46]?(?:TCP|UDP)?(?:[@:][^/\s]+)?",
+                      "-g": r"\^?[0-9,]+", "-L": r"[0-9]+", "+L": r"[0-9]+",
+                      "-o": r"[0-9]+", "-r": r"[0-9]+", "+r": r"[0-9]+",
+                      "-s": r"(?:TCP|UDP):[A-Z,^]+", "-S": r"[0-9]+", "-T": r"[qsfw]+"},
+            # -D selects a cache function followed by an optional filename.
+            # Its read and update forms remain protected, also in clusters.
+            plus=True, file_prefixes={"-D": "bru"})
+    flags = root_flags | {"-a", "--all", "--no-trunc"}
+    data = root_data | {"--format"}
+    if command == ["stats"]:
+        flags |= {"--no-stream"}
+        positional = "data"
+    else:
+        flags |= {"-q", "--quiet", "-s", "--size", "--latest"}
+        data |= {"-f", "--filter", "-n", "--last"}
+        flags.add("-l")
+        data.discard("-l")
+        positional = "none"
+    # Parse the root prefix separately so its -l log level keeps its meaning.
+    return (diagnostic_options(args[:index], flags=root_flags, data=root_data,
+                               files=root_files, positional="none")
+            + diagnostic_options(args[index + length:], flags=flags, data=data,
+                                 files=root_files, positional=positional))
+
+
 def file_operands(words):
     program, args = os.path.basename(words[0]), words[1:]
     if program in SEARCHERS:
@@ -1399,12 +1593,14 @@ def literal_loops(items, budget=None):
 class ShellWord(str):
     """A shell word: an operator, or a word with an active command
     substitution (`expansion`), parameter expansion (`parameter`) or
-    unquoted brace (`brace`)."""
+    unquoted brace (`brace`) or pathname wildcard (`wildcard`)."""
 
-    def __new__(cls, value, *, operator=False, expansion=False, parameter=False, brace=False):
+    def __new__(cls, value, *, operator=False, expansion=False, parameter=False, brace=False,
+                wildcard=False):
         instance = super().__new__(cls, value)
         instance.operator, instance.expansion, instance.parameter = operator, expansion, parameter
         instance.brace = brace
+        instance.wildcard = wildcard
         return instance
 
 
@@ -1447,13 +1643,14 @@ def _substitution_end(text, start):
 def _shell_words(text):
     """POSIX quote removal retains operators and executable substitutions."""
     tokens, value, quote, started, expansion, parameter, index = [], "", None, False, False, False, 0
-    brace = False
+    brace, wildcard = False, False
 
     def word():
-        nonlocal value, started, expansion, parameter, brace
+        nonlocal value, started, expansion, parameter, brace, wildcard
         if started:
-            tokens.append(ShellWord(value, expansion=expansion, parameter=parameter, brace=brace))
-        value, started, expansion, parameter, brace = "", False, False, False, False
+            tokens.append(ShellWord(value, expansion=expansion, parameter=parameter, brace=brace,
+                                    wildcard=wildcard))
+        value, started, expansion, parameter, brace, wildcard = "", False, False, False, False, False
 
     while index < len(text):
         char = text[index]
@@ -1513,6 +1710,7 @@ def _shell_words(text):
             value += char
             started = True
             brace = brace or char == "{"
+            wildcard = wildcard or char in "*?["
             index += 1
     if quote:
         raise ValueError("unterminated quote")
