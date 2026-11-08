@@ -35,29 +35,43 @@ def former_references(symbol, sources, root=repo.ROOT):
 
 
 def _keys(graph, meaning, layout, root):
+    """The profile keys of the meaning on the images of each layout. A key of a
+    canonical table names one role on every layout, so the canonical target
+    gives its meaning also where the target of a layout states no such key, as
+    a planned target does; a key that the target of a layout states takes its
+    meaning from that target."""
     from kb.adapters import profiles
 
     layouts = repo.layouts(root)
-    found = {}
+    stated = {}
     rows = graph.run(
         "MATCH (f:Kb:Entity {kind: 'feature'})-[t:TARGETS]->(l:Kb:Layout) "
-        "WHERE $layout IS NULL OR l.key = $layout "
-        "RETURN f.slug AS feature, l.key AS layout, properties(t) AS target", layout=layout)
+        "RETURN f.slug AS feature, l.key AS layout, properties(t) AS target")
     for row in rows:
-        table = profiles.CANONICAL_TABLES.get(row["feature"])
-        if table is None or row["layout"] not in layouts:
+        if row["feature"] not in profiles.CANONICAL_TABLES:
             continue
         target = row["target"] or {}
+        table = profiles.CANONICAL_TABLES[row["feature"]]
         tables = [table] + (["map_families"] if row["feature"] == "map_switching" else [])
         for table in tables:
             keys = dict(target.get(profiles.KEY_TABLE[table]) or {})
             if profiles.KEY_TABLE[table] == "symbols":
                 keys.update((key, role.get("symbol"))
                             for key, role in (target.get("roles") or {}).items())
+            stated[(row["layout"], table)] = keys
+    found = {}
+    for on, entry in layouts.items():
+        if layout is not None and on != layout:
+            continue
+        tables = sorted({table for owner, table in stated if owner in (profiles.CANONICAL, on)})
+        for table in tables:
+            keys = dict(stated.get((profiles.CANONICAL, table), {}))
+            keys.update((key, ref) for key, ref in stated.get((on, table), {}).items()
+                        if isinstance(ref, str))
             for key, ref in keys.items():
                 if isinstance(ref, str) and "/".join(ref.split("/")[:2]) == meaning:
-                    for image in layouts[row["layout"]].images:
-                        found[(image, table, key)] = row["layout"]
+                    for image in entry.images:
+                        found[(image, table, key)] = on
     return found
 
 

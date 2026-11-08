@@ -23,15 +23,18 @@ inherits = "JK00D"
 CORRECTED = INITIAL.replace("0xffff2064", "0xffff11f5").replace("0xffff206c", "0xffff11f5")
 
 
+ROLLING = {"symbols": {"apc_output": "apc_output/ram", "rpm": "rpm/ram"}}
+
+
 class HistoryGraph:
-    def __init__(self, symbols=()):
+    def __init__(self, symbols=(), targets=None):
         self.symbols = symbols
+        self.targets = {"jk00c": ROLLING, "jk00d": ROLLING} if targets is None else targets
 
     def run(self, query, **params):
         if ":TARGETS" in query:
-            return [{"feature": "rolling_launch", "layout": layout, "target": {
-                "symbols": {"apc_output": "apc_output/ram", "rpm": "rpm/ram"}}}
-                for layout in ("jk00c", "jk00d") if params.get("layout") in (None, layout)]
+            return [{"feature": "rolling_launch", "layout": layout, "target": target}
+                    for layout, target in self.targets.items()]
         if "-[:HAS]->(s:Kb:Symbol)" in query:
             return [{"s": symbol} for symbol in self.symbols]
         raise AssertionError(query)
@@ -47,7 +50,8 @@ class ProfileHistoryTest(unittest.TestCase):
         self.git("init", "-q", "--initial-branch=master")
         self.git("config", "user.name", "Test")
         self.git("config", "user.email", "fixture@example.invalid")
-        self.layouts = {"jk00c": SimpleNamespace(images=("JK00C",)),
+        self.layouts = {"7mfk": SimpleNamespace(images=("JK08A",)),
+                        "jk00c": SimpleNamespace(images=("JK00C",)),
                         "jk00d": SimpleNamespace(images=("JK00D", "JK00D_ALIAS"))}
         patcher = mock.patch.object(history.repo, "layouts", return_value=self.layouts)
         patcher.start()
@@ -80,6 +84,28 @@ class ProfileHistoryTest(unittest.TestCase):
         self.assertEqual(len(history.profile_changes(HistoryGraph(), "apc_output/ram", "jk00d",
                                                     self.root)), 1)
         self.assertEqual(history.profile_changes(HistoryGraph(), "rpm/ram", root=self.root), [])
+
+    def test_the_canonical_target_names_the_meaning_of_a_key_that_a_planned_target_omits(self):
+        corrected = self.commit(CORRECTED, "Bind the diagnostic mirror byte")
+        graph = HistoryGraph(targets={"7mfk": ROLLING, "jk00c": {"status": "planned"},
+                                      "jk00d": {"status": "planned"}})
+        changes = history.profile_changes(graph, "apc_output/ram", root=self.root)
+        self.assertEqual([(item["commit"], item["layout"], item["old"], item["new"])
+                          for item in changes],
+                         [(corrected, "jk00c", "ffff2064", "ffff11f5"),
+                          (corrected, "jk00d", "ffff206c", "ffff11f5")])
+        self.assertEqual([item["layout"] for item in history.profile_changes(
+            graph, "apc_output/ram", "jk00d", self.root)], ["jk00d"])
+
+    def test_the_target_of_a_layout_restates_the_meaning_of_a_canonical_key(self):
+        self.commit(CORRECTED, "Bind the diagnostic mirror byte")
+        graph = HistoryGraph(targets={
+            "7mfk": ROLLING, "jk00d": {"status": "planned"},
+            "jk00c": {"symbols": {"apc_output": "apc_mirror/ram"}}})
+        self.assertEqual([item["layout"] for item in history.profile_changes(
+            graph, "apc_output/ram", root=self.root)], ["jk00d"])
+        self.assertEqual([item["layout"] for item in history.profile_changes(
+            graph, "apc_mirror/ram", root=self.root)], ["jk00c"])
 
     def test_a_first_parent_merge_records_the_accepted_correction_once(self):
         self.git("switch", "-qc", "correction")
