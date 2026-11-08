@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import difflib
 from pathlib import Path
 
-from kb import compile, graph, l0, lock, names, refs, repo, sites, store, write
+from kb import compile, graph, l0, lock, names, publication, refs, repo, sites, store, write
 from kb.model import SymbolKey
 from kb.repo import KbError
 
@@ -111,7 +111,8 @@ def apply(symbol, to, root=repo.ROOT, *, dry_run=False, log=print):
         base = compile.build(root)
         change, texts, result = plan_move(symbol, to, base, root)
         if not dry_run:
-            store.write(root, texts)
-            compile.cached.cache_clear()
-            graph.sync_held(root, False, log, result)
+            with publication.transaction(root, texts):
+                store.write(root, texts)
+                compile.cached.cache_clear()
+                graph.sync_held(root, False, log, result)
     return change, texts

@@ -95,7 +95,8 @@ class Fingerprint:
 
 
 def compute(root=repo.ROOT):
-    from kb import compatibility
+    from kb import compatibility, publication
+    publication.require_clean(root)
     hashes = Hashes(root)
     blobs = {path: hashes.of(path) for path in inputs(root)}
     blobs[compatibility.PIN] = compatibility.reference_commit(root)

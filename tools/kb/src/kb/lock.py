@@ -19,8 +19,9 @@ _holders = ContextVar("kb_lock_holders", default={})
 
 
 class _Holder:
-    def __init__(self, handle):
+    def __init__(self, handle, timeout):
         self.handle = handle
+        self.timeout = timeout
         self.state = dict(version=1, pid=os.getpid(), token=uuid.uuid4().hex,
                           command=list(sys.argv), operation=None, stage="", progress=0)
         self.publish()
@@ -84,15 +85,30 @@ def timeout_of(root=repo.ROOT):
     return repo.config(root)["lock"]["timeout"]
 
 
+def publication_timeout(root=repo.ROOT):
+    """Retain the publisher's wait setting without rereading its sources."""
+    holder = _holders.get().get(root.resolve())
+    return holder.timeout if holder is not None else 300
+
+
 @contextmanager
-def held(root=repo.ROOT, timeout=None, log=sys.stderr):
+def held(root=repo.ROOT, timeout=None, log=sys.stderr, *, recovery=False):
     """Hold `.kb/lock`; renew a wait on progress of the same graph sync.
 
     Ordinary contention and a sync without progress fail with code 7 after
     the configured timeout. Holder and stage changes are shown to waiters.
     """
+    from kb import publication
+    publication._no_links(root.resolve(), root.resolve() / PATH)
     if timeout is None:
-        timeout = timeout_of(root)
+        # A pending publication may include config.toml. Do not read that
+        # mixed snapshot while waiting for its writer or entering recovery.
+        if recovery:
+            timeout = 30
+        else:
+            timeout = publication.wait_timeout(root)
+            if timeout is None:
+                timeout = timeout_of(root)
     path = root / PATH
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a+", encoding="utf-8") as handle:
@@ -132,9 +148,11 @@ def held(root=repo.ROOT, timeout=None, log=sys.stderr):
                         f"{PATH} is held by {holder}; {reason}", code=7
                     ) from None
                 time.sleep(POLL)
-        state = _Holder(handle)
+        state = _Holder(handle, timeout)
         token = _holders.set({**_holders.get(), root.resolve(): state})
         try:
+            if not recovery:
+                publication.require_clean(root)
             yield
         finally:
             _holders.reset(token)

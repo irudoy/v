@@ -14,7 +14,7 @@ import subprocess
 import sys
 import tomllib
 
-from kb import (answer, catalog, checks, compile, family, fingerprint, graph, guard, instance, l0, lock, passes, project,
+from kb import (answer, catalog, checks, compile, family, fingerprint, graph, guard, instance, l0, lock, passes, project, publication,
                 read, reader, refs, repo, sites, spec, store, suggest, vocab, write)
 from kb.answer import fit
 from kb.repo import KbError
@@ -422,6 +422,22 @@ def command_fmt(args, root=repo.ROOT):
     return 0
 
 
+def command_recover(args, root=repo.ROOT):
+    result = publication.recover(root, dry_run=args.dry_run, status=args.status)
+    if args.json:
+        print(json.dumps(result))
+    elif result['id'] is None:
+        print('recovery: no incomplete publication')
+    else:
+        action = 'pending' if args.status else 'would restore' if args.dry_run else 'restored'
+        print(f"recovery: {result['id']}: {action}")
+        for path in result['paths']:
+            print(f'  {path}')
+        for conflict in result['conflicts']:
+            print(f'  conflict: {conflict}')
+    return 3 if result['conflicts'] else 0
+
+
 def _write(args, ops, root=repo.ROOT):
     """Apply write operations as one change and print the files it writes and
     one line per operation; a dry run prints the diff instead of writing."""
@@ -581,6 +597,13 @@ def build_parser():
         prog="kb", description="Knowledge model and entry point (tools/kb/SPEC.md)."
     )
     commands = parser.add_subparsers(dest="command", required=True)
+
+    recover = commands.add_parser('recover', help='restore the exact previous files of an incomplete publication')
+    mode = recover.add_mutually_exclusive_group()
+    mode.add_argument('--status', action='store_true', help='inspect the journal without restoring files')
+    mode.add_argument('--dry-run', action='store_true', help='validate recovery without restoring files')
+    recover.add_argument('--json', action='store_true')
+    recover.set_defaults(handler=command_recover)
 
     check = commands.add_parser("check", help="run supported model and source checks")
     check.add_argument("--changed", action="store_true",
@@ -846,6 +869,13 @@ def main(argv=None):
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
+        independent = (args.command in ('recover', 'instance')
+                       or args.command == 'guard' and args.action == 'status')
+        if not independent and publication.pending(repo.ROOT):
+            # Wait for a live writer first. Once its lock is available, an
+            # outstanding journal means the publication needs recovery.
+            with lock.held(repo.ROOT):
+                pass
         return args.handler(args)
     except KbError as error:
         print(f"error: {error}", file=sys.stderr)

@@ -54,6 +54,8 @@ rows = [
   ["`kb family new <family> --image <image> --layout <layout> --census <path> --mcu <mcu> --flash-size <size> --software-id <id>... [--kind <kind>] [--calibration-region <range>] [--exact-range <range>]... [--dry-run]`", "Starts a family from a stock-bound census, explicit image identity and exported L0"],
   ["`kb family add <family> --image <image> --census <path> [--layout <layout>] [--dry-run]`", "Adds a stock-bound image; exact-code inheritance retains the layout, and other families require a new layout"],
   ["`kb apply <batch> [--dry-run]`", "A batch of the operations above as one change"],
+  ["`kb recover [--status] [--json]`", "Inspects or restores the previous source files of an incomplete native publication; external changes refuse recovery"],
+  ["`kb recover --dry-run [--json]`", "Validates the complete recovery without changing source files"],
   ["`kb fmt [<path>...]`", "Rewrites entity files in canonical form after a merge"],
   ["`kb project [--check] [<path>...]`", "Renders under the lock the projections of `kb` functions, or those of the paths; `--check` writes nothing and exits with 1 when a projection differs from its rendering ([Projections](#14-projections))"],
   ["`kb sync [--full]`", "Compiles and loads the graph"],

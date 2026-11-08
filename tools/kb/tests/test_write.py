@@ -2272,6 +2272,7 @@ class ApplyTest(unittest.TestCase):
                 mock.patch.object(write.compile, "build", return_value=mock.sentinel.base), \
                 mock.patch.object(write, "graph_resolver", return_value="resolve"), \
                 mock.patch.object(write, "plan", return_value=planned) as plan, \
+                mock.patch.object(write.publication, "transaction", return_value=contextlib.nullcontext()), \
                 mock.patch.object(write.store, "write") as written, \
                 mock.patch.object(write.graph, "sync_held") as synced:
             write.apply(["op"], Path("/root"), dry_run=dry_run, log=print)

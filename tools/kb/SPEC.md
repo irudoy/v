@@ -1277,6 +1277,59 @@ Every element the compiler writes carries the label `:Kb` in addition to its
 own labels. The compiler deletes and replaces only `:Kb` elements, preserving
 other data in the same Memgraph instance.
 
+### 9.8 Source publication and recovery
+
+Before changing supported source files, the native writer saves their exact
+previous bytes and modes in `.kb/publication.json`. The versioned journal is
+bound to its working-tree root and records the admitted states of every path
+and the publisher's lock timeout. A standalone file publication without a held
+lock records a fallback of 300 seconds. Version 1 journals without a recorded
+timeout remain recoverable and use the same fallback; version 2 records it.
+File replacements and journal updates use temporary files, renames and fsync.
+The publication holds the ordinary lock. Generated-name writes during its
+graph sync join the journal before modifying their file. The native batch and
+legacy reservation move remove the journal only after synchronization returns
+successfully; a standalone store write completes its own file phase.
+
+An interrupted publication or a post-write sync refusal retains the journal.
+Ordinary CLI reads, writes, sync, source compilation and fingerprinting refuse
+that incomplete snapshot. A command waits for a live writer's lock before
+reporting recovery, rather than accepting its partial files. Waiting commands
+use the publisher's timeout recorded before source mutation; they do not read
+a possibly interrupted configuration file. Synchronization progress retains
+the usual renewal rule. Only recovery uses a 30-second lock wait. Instance
+controls and `kb guard status` do not enter the source gate; instance operations
+that need configuration still require a valid configuration.
+
+`kb recover --status` reports the recorded paths and conflicting current states.
+`--dry-run` validates restoration without writing sources. With neither option,
+the command restores each path's previous bytes and mode, or removes a path
+that the publication created. `--json` returns the publication id, paths and
+conflicts as JSON. Status and dry run are mutually exclusive. With no journal,
+the command reports no incomplete publication and succeeds.
+
+Recovery first checks the complete path set. Each current file must be absent
+or match a recorded previous or produced state, including its mode. An
+unrecorded edit, unexpected replacement, non-regular file, symlink, unsupported
+path, malformed journal or different working-tree root refuses restoration.
+Each target is checked again immediately before its mutation. Unrelated files
+retain their current state. Recovery itself is restartable: previous states
+are admitted, and an incomplete restoration retains the journal for another invocation.
+
+For a conflicting manual edit, preserve it separately, return the affected
+path's content and mode to a recorded previous or produced state, and repeat
+`kb recover`. Reapply the retained edit through a KB batch after recovery.
+Manually deleting `.kb/publication.json` is not a supported recovery path: it
+discards the previous snapshot without establishing source consistency.
+
+The access guard stays enabled. Recovery restores files, without accepting a
+batch, bypassing a source/census gate or asserting graph rollback. The next
+ordinary command checks freshness and follows the supported sync path; a
+failed loader leaves Meta absent. The file snapshot does not bind concurrent
+uncooperative filesystem edits between a final check and rename, filesystem
+loss, or a filesystem-wide transaction. Projection generators and family
+post-processing retain their separate failure boundaries under issue #44.
+
 ## 10. Graph schema
 
 The compiler loads Memgraph with MAGE. Every node and relationship it writes
@@ -1460,7 +1513,8 @@ synchronization, plans the owner diff, applies the complete-model refusal
 gate, and validates the selected export. A dry run writes no owner and does
 not synchronize the graph. A write uses the primary file writer and then
 synchronizes the graph. Changed source inputs during planning refuse the
-operation before an owner write. It does not supply multi-file or graph rollback.
+operation before an owner write. Interrupted source publication uses the
+recovery contract of section 9.8; it does not assert graph rollback.
 
 `kb retire` keeps the canonical owner document at its existing path and adds
 `retired = true`. The complete document retains its semantic, generated and

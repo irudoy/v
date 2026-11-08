@@ -13,10 +13,8 @@ the `canonical` check: every file equals the rendering of its parse.
 from collections import OrderedDict
 from dataclasses import dataclass
 from functools import lru_cache
-import os
 from pathlib import Path
 import re
-import tempfile
 import tomllib
 
 from kb import vocab
@@ -356,19 +354,15 @@ def load(root, path, overlay=None):
 
 
 def write(root, changes):
-    """Write {repository path: text, or None to remove} through temporary files
-    and renames."""
-    for path, text in sorted(changes.items(), key=lambda item: str(item[0])):
-        target = root / path
-        if text is None:
-            if target.exists():
-                target.unlink()
-            continue
-        target.parent.mkdir(parents=True, exist_ok=True)
-        handle, temporary = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.")
-        with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as out:
-            out.write(text)
-        os.replace(temporary, target)
+    """Publish supported source texts, or removals, with an exact-file journal.
+
+    A caller's publication keeps the journal through subsequent graph sync.
+    A standalone write completes its file phase before removing its journal.
+    """
+    from kb import publication
+    with publication.transaction(root, changes) as change:
+        if change is not None:
+            change.write(changes)
 
 
 # Rendering -----------------------------------------------------------------

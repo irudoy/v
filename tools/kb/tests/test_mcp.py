@@ -10,7 +10,7 @@ from kb.answer import Answer
 # Commands that change state or serve, and so are no MCP read tools.
 NOT_READ = {"sync", "instance", "guard", "mcp", "project", "fmt", "new", "set", "bind", "absent",
             "unresolved", "link", "set-link", "unlink", "select", "merge", "rename", "move", "apply",
-            "retire", "family", "rebase-reviews"}
+            "retire", "family", "rebase-reviews", "recover"}
 
 
 class ToolTest(unittest.TestCase):

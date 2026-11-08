@@ -116,11 +116,8 @@ def owner_check(model):
 
 
 def write(rows, root=repo.ROOT):
-    path = root / PATH
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(".csv.tmp")
-    temporary.write_text(render(rows), encoding="utf-8")
-    temporary.replace(path)
+    from kb import store
+    store.write(root, {PATH: render(rows)})
 
 
 def words(text):

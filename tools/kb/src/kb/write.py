@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 import tomllib
 
-from kb import (checks, compile, evidence_ref, graph, ledger_projection, lock, match, names, refs, repo,
+from kb import (checks, compile, evidence_ref, graph, ledger_projection, lock, match, names, publication, refs, repo,
                 store, tokens, vocab)
 from kb.adapters import files as file_adapter
 from kb.allocation import allocation_phase
@@ -2453,9 +2453,10 @@ def apply(ops, root=repo.ROOT, dry_run=False, log=print):
     with lock.held(root):
         change, texts, result = _planned(ops, root, log)
         if not dry_run and texts:
-            store.write(root, texts)
-            compile.cached.cache_clear()
-            graph.sync_held(root, False, log, result)
+            with publication.transaction(root, texts):
+                store.write(root, texts)
+                compile.cached.cache_clear()
+                graph.sync_held(root, False, log, result)
     return change, texts
 
 

@@ -10,7 +10,7 @@ import csv
 from pathlib import Path
 import tomllib
 
-from kb import adapters, names, repo
+from kb import adapters, names, publication, repo
 from kb.allocation import allocation_phase
 from kb.model import Builder, SymbolKey
 
@@ -25,7 +25,7 @@ NOT_COMPILER = frozenset({"answer.py", "checks.py", "cli.py", "convert.py", "gua
                           "instance.py", "lock.py", "mcp.py", "passes.py", "project.py",
                           "read.py", "refs.py", "spec.py", "write.py", "legacy_reservation.py",
                           "architecture_projection.py", "ledger_projection.py", "history.py", "suggest.py",
-                          "arithmetic.py", "research.py", "reader.py", "family.py",
+                          "arithmetic.py", "research.py", "reader.py", "family.py", "publication.py",
                           *(f"adapters/{adapter.__name__.rsplit('.', 1)[1]}.py"
                             for adapter in adapters.CONVERTED)})
 
@@ -82,6 +82,7 @@ def inputs(root=repo.ROOT):
 def builder_of(root=repo.ROOT, overlay=None):
     """A builder over the layouts, functions, and regions of the working tree,
     whose adapters read the files of `overlay` in place of those on disk."""
+    publication.require_clean(root)
     overlay = {Path(path): text for path, text in (overlay or {}).items()}
     config = repo.config(root, overlay)
     layouts = repo.layouts(root, overlay)

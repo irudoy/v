@@ -58,9 +58,41 @@ uv run kb apply tmp/operations.toml --dry-run
 uv run kb apply --help
 ```
 
-The writer validates the batch under its lock. Its supported interrupted-write
-and recovery boundary is tracked under issue #44; a successful write does not
-establish multi-file rollback.
+The writer validates the batch under its lock, then records previous file bytes
+and modes in `.kb/publication.json` before publishing sources. Native batches
+retain that journal through graph synchronization, including generated-name
+enrollment. An I/O failure, process interruption or post-write sync refusal
+leaves the journal available; ordinary knowledge reads, writes and sync refuse
+the incomplete snapshot. Commands waiting for a live publisher use its recorded
+lock timeout and renew it on graph-sync progress, without reading potentially
+partial configuration. Instance controls and `kb guard status` remain available.
+
+```bash
+uv run kb recover --status
+uv run kb recover --dry-run
+uv run kb recover
+```
+
+Recovery checks every recorded path before restoring any source. Each current
+file must match its previous state or a state produced by the publication;
+manual edits, mode changes, unexpected replacements and symlinks refuse the
+operation. An interrupted restoration retains its journal and can resume. The command
+restores exact previous source bytes and modes without a guard override or a
+Git rollback. It does not accept the proposed batch or relax source and census
+gates. The next ordinary command performs the normal freshness check and sync.
+
+If a path conflicts, preserve the manual edit separately, return that path's
+content and mode to a recorded previous or produced state, and repeat
+`kb recover`. Reapply a retained edit through a KB batch after recovery. Manual
+removal of `.kb/publication.json` is not a supported recovery path: it discards
+the previous snapshot without establishing source consistency.
+
+This contract covers native writer batches, legacy reservation moves and the
+file phase of standalone store writes such as formatting or generated names.
+Projection generators, family post-processing and graph loading do not form
+one filesystem or graph transaction. Their broader publication boundary is
+tracked under issue #44. The full contract is in
+[`SPEC.md`, section 9.8](SPEC.md#98-source-publication-and-recovery).
 
 `semantic=false` identifies a generated name. `kb rename` preserves former
 knowledge references. Source consumer names and filenames are a separate
