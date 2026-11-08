@@ -1837,8 +1837,12 @@ def brief(graph, root=repo.ROOT):
         f"  {row['meaning']} on {row['layout']}  {row['state']}  "
         f"features {', '.join(row['features'])}; fields {', '.join(row['fields']) or 'none'}; "
         f"degree {row['degree']}" for row in priorities] or ["  none"])
+    # A new L0 of a layout leaves every search of its statuses stale, so the
+    # text counts them per layout and the data lists each one.
+    stale_layouts = dict(sorted(Counter(row["layout"] for row in stale).items()))
     answer.section(f"stale searches: {len(stale)}; pending candidates: {candidates}", LINKS,
-                   [f"  {row['key']} on {row['layout']}" for row in stale] or ["  none"])
+                   [f"  by layout: {totals(stale_layouts)}",
+                    "  kb brief --json lists each search under stale"] if stale else ["  none"])
     data.update({"gaps": [{**row, "state": (row["status"] or {}).get("state", "unknown")}
                           for row in required], "gap_summary": summary,
                  "gap_priorities": priorities, "stale": stale, "candidates": candidates})

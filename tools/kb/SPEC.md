@@ -556,7 +556,9 @@ because both differ by layout.
   locates it as `candidate`, and its `note` states why it is not bound:
   `kb bind` refuses the location, or the identity of the candidate is not
   established. When the L0 manifest of the layout changes, the search is
-  stale: `kb brief` lists it, and staleness is not a check failure.
+  stale: `kb brief` counts the stale searches of each layout, its JSON
+  output lists each one under `stale`, and staleness is not a check
+  failure.
 - `unknown` is computed for a layout without a symbol or a status of a
   required meaning. A meaning is required on a layout when a feature that
   targets the layout requires it, directly or through a field, or when the

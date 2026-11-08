@@ -679,6 +679,19 @@ class BriefStore(GapStore):
         return []
 
 
+class StaleBriefStore(BriefStore):
+    """Unresolved statuses whose search ran on an earlier L0 of the layout."""
+
+    def __init__(self, stale):
+        super().__init__(family=[])
+        self.stale = stale
+
+    def run(self, query, **params):
+        if "state: 'unresolved'" in query:
+            return [dict(row) for row in self.stale]
+        return super().run(query, **params)
+
+
 class BriefTest(unittest.TestCase):
     def brief(self, source):
         with mock.patch.object(read.repo, "layouts", return_value={
@@ -701,6 +714,26 @@ class BriefTest(unittest.TestCase):
         self.assertIn("  by layout: 1nd 2, jk78c 1\n", brief.text())
         self.assertIn("  by state: unknown 0, unresolved 2, absent 1, unsupported 0\n",
                       brief.text())
+
+    def test_stale_searches_are_counted_per_layout_and_listed_in_the_data(self):
+        def stale(count):
+            return [{"key": f"stale_{n}/tbl", "layout": ("jk78c", "1nd")[n % 2],
+                     "l0": "0123456789abcdef", "current": "fedcba9876543210"}
+                    for n in range(count)]
+
+        current = {"key": "current/tbl", "layout": "1nd", "l0": "fedcba9876543210",
+                   "current": "fedcba9876543210"}
+        few = self.brief(StaleBriefStore(stale(2) + [current]))
+        many = self.brief(StaleBriefStore(stale(90) + [current]))
+        self.assertEqual(len(few.text().splitlines()), len(many.text().splitlines()))
+        self.assertIn("stale searches: 90; pending candidates: 0\n"
+                      "  by layout: 1nd 45, jk78c 45\n"
+                      "  kb brief --json lists each search under stale\n", many.text())
+        self.assertNotIn("stale_0/tbl", many.text())
+        self.assertEqual(sorted(row["key"] for row in many.data["stale"]),
+                         sorted(f"stale_{n}/tbl" for n in range(90)))
+        self.assertIn("stale searches: 0; pending candidates: 0\n  none\n",
+                      self.brief(StaleBriefStore([current])).text())
 
     def test_feature_impact_precedes_degree_and_the_sample_keeps_complete_totals(self):
         row = GapStore.FEATURE[0]
