@@ -1275,7 +1275,7 @@ def search(model, symbol, layout):
     if symbol.kind == "fn":
         for address, name in _function_pairs(home, other, symbol.address).items():
             vote(address, {"kind": "function-match", "supports": "homology",
-                           "at": f"{layout}:{address:08x}", "to": symbol.key,
+                           "at": f"{layout}:{address:08x}", "to": symbol.key.location,
                            "count": 1, "value": name}, 1 << 20)
         seeds = [(site, "call") for site, relation in home.sites_of(symbol.address)
                  if relation == "call"]

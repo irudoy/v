@@ -58,6 +58,15 @@ uv run kb apply tmp/operations.toml --dry-run
 uv run kb apply --help
 ```
 
+A symbol on another layout starts from `kb suggest <meaning> --layout
+<layout>`, whose candidates carry the evidence items of the matchers.
+`kb bind <meaning> <layout>:<address>` without `--evidence` records the
+strongest item of that candidate, and every item that `kb suggest --json`
+lists is valid evidence of its location, as a TOML inline table of
+`--evidence` or as an item of a batch. A search
+without a bindable candidate becomes `kb unresolved`, whose stated
+`--target` is a location or a reference.
+
 The writer validates the batch under its lock, then records previous file bytes
 and modes in `.kb/publication.json` before publishing sources. Native batches
 retain that journal through graph synchronization, including generated-name

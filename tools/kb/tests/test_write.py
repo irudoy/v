@@ -2,6 +2,7 @@ import contextlib
 import copy
 import csv
 import io
+import json
 from pathlib import Path
 import re
 import tempfile
@@ -12,7 +13,7 @@ from unittest import mock
 import pytest
 
 from kb import (adapters, checks, cli, compile, convert, l0, ledger_projection, match, names, repo,
-                store, targets, vocab, write)
+                store, suggest, targets, vocab, write)
 from kb.adapters import files as file_adapter
 from kb.adapters import profiles
 from kb.model import Meaning, SymbolKey
@@ -335,6 +336,9 @@ class PlanTest(unittest.TestCase):
             bind(TABLE, "jk00c:0", evidence=[{"kind": "did-table", "at": "jk00c:0"}]), code=2))
         self.assertIn("method, target, and count", self.refused(
             {"cmd": "unresolved", "meaning": TABLE, "layout": "jk00c", "count": 2}, code=2))
+        self.assertIn("target 'the dispatcher' is neither a location nor a reference", self.refused(
+            {"cmd": "unresolved", "meaning": TABLE, "layout": "jk00c", "method": "l0",
+             "target": "the dispatcher", "count": 0}, code=2))
         self.assertIn("unknown layout 'k9'", self.refused(bind(TABLE, "k9:0"), code=5))
         self.assertIn("no meaning 'nothing/tbl'", self.refused(bind("nothing/tbl", "jk00c:0"),
                                                                 code=5))
@@ -342,6 +346,66 @@ class PlanTest(unittest.TestCase):
                                       "count": 2}, {"cmd": "not-a-command"}, code=2).startswith("op 1: "))
         self.assertTrue(self.refused(bind(TABLE, f"jk00c:{TABLE_JK00C:08x}"), {"cmd": "not-a-command"},
                                      code=2).startswith("op 2: cmd 'not-a-command'"))
+
+
+# Meanings with reviewed JK78C symbols that the search from the home symbol
+# finds with function-match and masked-match items: the hash pair of a
+# function, and the call ordinals and aligned sites of a datum.
+SUGGESTED = (("combined_maf_aggregate/fn", 0x3F97C), ("af_adjustment_b1/ram", 0xFFFF490A))
+
+
+class SuggestedEvidenceTest(unittest.TestCase):
+    """The candidates of `kb suggest --json` bind with their evidence items as
+    `kb bind --dry-run` plans them, over a base whose files lack the JK78C
+    symbols of SUGGESTED."""
+
+    @classmethod
+    def setUpClass(cls):
+        overlay = {}
+        for reference, _ in SUGGESTED:
+            name, kind = reference.split("/")
+            path = store.path_of(kind, name)
+            document = store.load(repo.ROOT, path)
+            document["symbol"] = [entry for entry in document["symbol"]
+                                  if entry["layout"] != "jk78c"]
+            overlay[path] = store.render(kind, document)
+        cls.base = compile.build(repo.ROOT, overlay)
+
+    def suggested(self, reference, address):
+        """The evidence items of the candidate at `address` in the JSON of
+        `kb suggest <reference> --layout jk78c`, by kind."""
+        meaning = next(meaning for meaning in self.base.meanings if meaning.key == reference)
+        result = match.search(self.base, meaning.home_symbol, "jk78c")
+        channels = json.loads(json.dumps(suggest.symbol_channels(result),
+                                         default=cli._json_default))
+        return {kind: row["evidence"] for kind, rows in channels.items()
+                for row in rows if row["address"] == address}
+
+    def bound(self, reference, address, **keys):
+        _, texts, _ = write.plan([bind(reference, f"jk78c:{address:08x}", **keys)], self.base,
+                                 write.model_resolver(self.base), root=self.base.root)
+        name, kind = reference.split("/")
+        [entry] = [entry for entry in tomllib.loads(texts[store.path_of(kind, name)])["symbol"]
+                   if entry["layout"] == "jk78c"]
+        return entry["evidence"]
+
+    @pytest.mark.slow
+    def test_every_suggested_item_is_bind_evidence_of_its_candidate(self):
+        for reference, address in SUGGESTED:
+            with self.subTest(reference):
+                found = self.suggested(reference, address)
+                self.assertEqual(sorted(found), ["function-match", "masked-match"])
+                items = [item for kind in sorted(found) for item in found[kind]]
+                for item in items:
+                    self.assertTrue(match.location(item["to"]), item)
+                self.assertEqual(self.bound(reference, address, evidence=items), items)
+
+    @pytest.mark.slow
+    def test_bind_without_evidence_records_the_suggested_function_match(self):
+        reference, address = SUGGESTED[0]
+        [item] = self.suggested(reference, address)["function-match"]
+        self.assertEqual(item["to"], "7mfk:0003b252")
+        self.assertEqual(self.bound(reference, address), [item])
 
 
 FIXTURE_IDENTITY = {"kind": "spec", "path": "defs/fixture.md", "key": "controlled_identity"}
@@ -1283,8 +1347,7 @@ class MoveTest(unittest.TestCase):
 
     def test_move_corrects_the_address_with_the_evidence_of_the_search(self):
         home = self.base.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
-        found = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
-        evidence = write.Change._stored(found)
+        evidence = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
         change, texts, result = write.plan(
             [move(f"jk78c:{self.WRONG:08x}", f"jk78c:{THROTTLE_JK78C:08x}")], self.base,
             write.model_resolver(self.base))
@@ -1528,8 +1591,7 @@ class MoveMeaningTest(unittest.TestCase):
     @pytest.mark.slow
     def test_move_joins_a_symbol_with_the_meaning_whose_search_finds_it(self):
         home = self.base.symbols[SymbolKey("7mfk", "ram", THROTTLE_HOME)]
-        found = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
-        evidence = write.Change._stored(found)
+        evidence = match.search(self.base, home, "jk78c").candidates[THROTTLE_JK78C].evidence
         change, texts, result = self.plan(move(self.SYMBOL, THROTTLE))
         self.assertEqual(sorted(texts), [self.INHIBIT_FILE, self.THROTTLE_FILE])
         inhibit = tomllib.loads(texts[self.INHIBIT_FILE])

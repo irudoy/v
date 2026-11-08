@@ -159,8 +159,10 @@ class FunctionMatchTest(unittest.TestCase):
         found = match.search(model, model.symbols[SymbolKey("7mfk", "fn", MNEMONIC[0])], "jk00d")
         best = max(found.candidates.values(), key=lambda candidate: candidate.votes)
         self.assertEqual(best.address, MNEMONIC[1])
-        self.assertEqual((best.evidence["kind"], best.evidence["value"]),
-                         ("function-match", "mnemonic"))
+        self.assertEqual((best.evidence["kind"], best.evidence["value"], best.evidence["to"]),
+                         ("function-match", "mnemonic", f"7mfk:{MNEMONIC[0]:08x}"))
+        self.assertIsNone(match.verify(model, model.symbols[SymbolKey("jk00d", "fn", MNEMONIC[1])],
+                                       best.evidence))
 
 
 class ByteIdentityRangeTest(unittest.TestCase):

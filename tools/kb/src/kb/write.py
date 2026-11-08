@@ -941,6 +941,10 @@ class Change:
             if any(value is None for value in stated):
                 raise KbError("method, target, and count state a search together", code=2)
             method, target, count = stated
+            if not checks.search_target(str(target)):
+                raise KbError(f"target {target!r} is neither a location nor a reference; a stated "
+                              "search names the <layout>:<address> or the symbol or meaning "
+                              "reference that it looked for", code=2)
             try:
                 count = int(count)
             except ValueError:
@@ -1504,7 +1508,7 @@ class Change:
                 f"the {found.method} search from {source.key.location} finds "
                 f"{listed or 'no candidate'} on {key.layout}, not {key.location}; state the "
                 "evidence", code=3)
-        return [self._stored(candidate.evidence)]
+        return [dict(candidate.evidence)]
 
     @staticmethod
     def _entry_of(meaning, other, symbol, entry):
@@ -2202,14 +2206,6 @@ class Change:
     @staticmethod
     def _ref(symbol):
         return f"{symbol.name or '?'}/{symbol.kind}/{symbol.layout}-{symbol.address:08x}"
-
-    @staticmethod
-    def _stored(item):
-        """An evidence item of a search with a symbol `to` as its location."""
-        found = dict(item)
-        if isinstance(found.get("to"), SymbolKey):
-            found["to"] = found["to"].location
-        return found
 
     def _draw(self, key):
         if self._taken is None:

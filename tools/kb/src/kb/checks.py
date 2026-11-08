@@ -578,11 +578,16 @@ def statuses(model):
                 issues.append(Issue("statuses", path, subject,
                                     f"l0 {props['l0']!r} is not 16 hexadecimal digits"))
             target = str(props["target"])
-            if not (match.location(target) or SYMBOL_REF.fullmatch(target)
-                    or MEANING_REF.fullmatch(target)):
+            if not search_target(target):
                 issues.append(Issue("statuses", path, subject,
                                     f"target {target!r} is neither a location nor a reference"))
     return issues
+
+
+def search_target(text):
+    """Whether `text` names what a search looked for: a location, or a symbol
+    or meaning reference."""
+    return bool(match.location(text) or SYMBOL_REF.fullmatch(text) or MEANING_REF.fullmatch(text))
 
 
 def stale(model):

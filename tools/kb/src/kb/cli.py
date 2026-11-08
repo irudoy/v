@@ -770,7 +770,8 @@ def build_parser():
     bind = writer("bind", "a symbol of a meaning on another layout, with evidence", meaning,
                   ("symbol", "<layout>:<address> of the symbol"))
     bind.add_argument("--evidence", action="append",
-                      help=f"{evidence}; by default the evidence of the search")
+                      help=f"{evidence}; by default the strongest item of the candidate at the "
+                      "symbol that the search finds, as `kb suggest` lists it")
     bind.add_argument("--from", dest="source", help=source)
     bind.add_argument("--level", choices=vocab.LEVELS, help="the level of the symbol")
     bind.add_argument("--note", help="prose about the symbol")
@@ -787,7 +788,8 @@ def build_parser():
     unresolved.add_argument("--from", dest="source", help=source)
     unresolved.add_argument("--method", choices=tuple(vocab.EVIDENCE_KINDS),
                             help="the evidence kind of a stated search")
-    unresolved.add_argument("--target", help="what a stated search looked for")
+    unresolved.add_argument("--target", help="the location or reference that a stated search "
+                            "looked for")
     unresolved.add_argument("--count", type=int, help="the matches of a stated search")
     unresolved.add_argument("--candidate", help="the location of the one match, which cannot "
                             "be bound; the note states why")

@@ -1601,11 +1601,12 @@ references.
 
 - `kb bind` refuses a layout where the meaning has a symbol and a location
   that holds a symbol of another meaning, which `kb merge` joins. Without
-  `--evidence`, the evidence is that of the candidate at the location that
-  the search of `kb.match` finds from the symbol on the layout of `--from`,
-  the symbol that the reference names, or the home symbol; a `to` that names
-  a symbol becomes its location. A location that is no candidate is refused
-  with the candidates. A new symbol of an unnamed meaning draws a generated
+  `--evidence`, the evidence is the strongest item of the candidate at the
+  location that the search of `kb.match` finds from the symbol on the layout
+  of `--from`, the symbol that the reference names, or the home symbol. A
+  location that is no candidate is refused with the candidates. Every item
+  that `kb suggest --json` lists for a candidate is valid evidence of its
+  location. A new symbol of an unnamed meaning draws a generated
   name. A meaning without a stated `home` that the new symbol gives more than
   one symbol states its current home, unless that home is 7mfk; the target of
   `kb move` and the survivor of `kb merge` keep their home in the same way.
@@ -1655,7 +1656,8 @@ references.
   diff names it.
 - `kb unresolved` records the `method`, `target`, and `count` of that search
   with the `l0` digest of the layout, or those that `--method`, `--target`,
-  and `--count` state together. A search that finds one candidate is refused
+  and `--count` state together; a stated `--target` is a location or a
+  symbol or meaning reference. A search that finds one candidate is refused
   with the `kb bind` that records it, unless `--candidate` names that
   candidate. `--candidate` with `--note` records one candidate that cannot be
   bound, with count 1, and a stated search with count 1 requires both. A
