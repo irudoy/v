@@ -77,6 +77,23 @@ at = "jk78c:000bd278"
 
 [[link]]
 type = "reader"
+to = "fine-gopher/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d56e"
+note = "The reader supplies axis 00014fcc to its explicit lookup wrapper."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d580"
+note = "The reader supplies axis 00014fcc to its explicit lookup wrapper."
+
+[[link]]
+type = "reader"
 to = "operating_gate_weighted_accumulator/fn"
 layouts = ["jk78c"]
 role = "accessor"

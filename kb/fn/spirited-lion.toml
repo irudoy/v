@@ -207,6 +207,28 @@ at = "7mfk:00062b58"
 value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0001459a", "000145ca", "0001495a", "00014de2", "00014e02", "00021ce0", "0006205c", "ffff2ffa", "ffff2ffc", "ffff33a4", "ffff33a8"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0007f9f2"
+name = "incredible-caracal"
+level = "code"
+note = """
+All 1297 instructions have matching mnemonic and shape sequences. The nine \
+corresponding table loads, Q12 accumulator update, normalized lower bound \
+and paired override operations establish the shared role independently of \
+those structural hashes."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007f9f2"
+to = "7mfk:0006205c"
+note = """
+All 1297 instructions have matching mnemonic and shape sequences. The nine \
+corresponding table loads, Q12 accumulator update, normalized lower bound \
+and paired override operations establish the shared role independently of \
+those structural hashes."""
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

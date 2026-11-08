@@ -1,0 +1,44 @@
+title = "Component mode increment curve"
+summary = """
+Implicit eight-point uint8 curve through 00028198 in 000730cc. When ffff45cc \
+bit 6 is set, its coordinate is min(2*max(uint8[ffff1067]-16,0),255). The \
+byte result at ffff310f enters the sum with explicit word curve 00015f22 and \
+another byte component before limiting to 209 and doubling."""
+note = [
+    """
+The related 7mfk component uses implicit byte base curves 00012302 and \
+0001230a; the JK78C word-base and byte-increment composition does not \
+establish a one-to-one table counterpart. The physical output and \
+engineering conversion are unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013990"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00073388"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "reader"
+to = "enthusiastic-salmon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00073388"
+note = "This literal-pool load supplies the table operand of the reader lookup."

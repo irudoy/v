@@ -1,0 +1,27 @@
+title = "State window transition gate"
+summary = """
+Evaluate two raw word windows and transition flags. The explicit byte curve \
+00024642 at coordinate (uint16(argument)>>1)&255 supplies a factor for the \
+bounded qualification bytes and their counters."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007a640"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a640"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

@@ -1,0 +1,55 @@
+title = "Centered word conversion curve"
+summary = """
+Explicit eight-point uint16 curve on 0001589a through 000282f4 in 000dcbf6. \
+The routine subtracts 0x8000 from the interpolated unsigned result and \
+publishes the centered word at ffff4292 through the MOV.W in the return \
+delay slot at 000dcc1a."""
+note = [
+    """
+The input and output physical quantities, engineering conversions and \
+subsystem role are unresolved. No 7mfk function or table counterpart is \
+independently qualified by the reviewed code.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001611a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000dcbfa"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "centered_word_curve_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000dcbfc"
+note = "The reader loads axis 0001589a for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "centered_word_curve_lookup/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000dcbfa"
+note = "This literal-pool load supplies the table operand of the reader lookup."

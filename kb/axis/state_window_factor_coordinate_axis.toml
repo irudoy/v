@@ -1,0 +1,71 @@
+title = "State window factor coordinate axis"
+summary = """
+Explicit 8-point uint8 axis. Coordinate (uint16(caller argument)>>1)&255 \
+shared by 0007a640, 0007ae5a, 0007b026 and 0007b23c. The last reader forms \
+the axis as 00024634+6."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002463a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a6b4"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "state_window_latch_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ae70"
+note = "The reader supplies axis 0002463a to its explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "state_window_pair_gate/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007b072"
+note = "The reader supplies axis 0002463a to its explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "state_window_qualification_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007b286"
+value = 6
+mode = "base"
+note = "ADD #6 at 0007b296 forms axis 0002463a before the call at 0007b298."
+
+[[link]]
+type = "reader"
+to = "state_window_transition_gate/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a6b4"
+note = "The reader supplies axis 0002463a to its explicit lookup wrapper."

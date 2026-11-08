@@ -197,6 +197,62 @@ supports = "scale"
 to = "optimistic-woodlouse/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000145f8"
+name = "great-pillbug"
+level = "code"
+note = """
+The corresponding readers 0007f0f4 and 7mfk 000617ea load this 8-point \
+uint16 operand at 0007f2b0 and 00061944. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image. The \
+primary curve 000145f8 requires the common caller byte and the first-channel \
+enable byte to be nonzero, all three first-channel blocking bytes to be \
+zero, and the final first-channel selector byte to be nonzero; 000167c4 is \
+selected otherwise. The complete conjunction is tested at \
+0007f270..0007f2ae."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007f2b0"
+to = "7mfk:00015580"
+note = """
+The corresponding readers 0007f0f4 and 7mfk 000617ea load this 8-point \
+uint16 operand at 0007f2b0 and 00061944. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image. The \
+primary curve 000145f8 requires the common caller byte and the first-channel \
+enable byte to be nonzero, all three first-channel blocking bytes to be \
+zero, and the final first-channel selector byte to be nonzero; 000167c4 is \
+selected otherwise. The complete conjunction is tested at \
+0007f270..0007f2ae."""
+
+[[link]]
+type = "axis"
+to = "paired_control_coefficient_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f2ba"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f404"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f450"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
 [[link]]
 type = "depends"
 to = "pragmatic-hare/tbl"
@@ -208,8 +264,14 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "tactful-corgi/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f2b0"
+note = "This literal-pool load supplies the table operand of the reader lookup."

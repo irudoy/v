@@ -1,0 +1,28 @@
+title = "Diagnostic pair reload update"
+summary = """
+Use 00013920 and axis 00014340 at raw byte ffff1066 on the reload path. The \
+unsigned byte result supplies per-channel reload bytes at ffff1555+channel \
+and ffff2434+channel; the reader also updates diagnostic qualification \
+state."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000aab8a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000aab8a"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

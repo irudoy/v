@@ -1,0 +1,36 @@
+title = "Raw state quotient limit axis"
+summary = """
+Explicit 8-point uint8 axis. Raw byte ffff26ca in the quotient-limit lookup \
+of 0007e7e8. The corresponding 7mfk axis operand is 00012fde; an axis \
+meaning for it is not independently qualified."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014360"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ef76"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "banana-marten/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ef76"
+note = "The reader supplies axis 00014360 to its explicit lookup wrapper."

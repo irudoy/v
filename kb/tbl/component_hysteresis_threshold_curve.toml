@@ -1,0 +1,55 @@
+title = "Component hysteresis threshold curve"
+summary = """
+Explicit eight-point uint8 threshold on 00014210 through 0002829c in \
+0007365a. Input uint8[ffff1069] produces ffff34fb; uint8[ffff268c], with a \
+latch-dependent ROM8[000085d7] addition, is compared with that threshold to \
+update ffff4569 bit 4 and ffff45ca bit 1."""
+note = [
+    """
+The reviewed 7mfk helper 00056ea6 uses an implicit byte curve for different \
+retained-counter gating. A matching table role and input contract are not \
+established. Physical quantities remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00073668"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "component_hysteresis_threshold_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007366c"
+note = "The reader loads axis 00014210 for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "component_hysteresis_gate_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00073668"
+note = "This literal-pool load supplies the table operand of the reader lookup."

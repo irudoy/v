@@ -1,0 +1,54 @@
+title = "State pair alternate reload curve"
+summary = """
+Explicit sixteen-point uint8 curve on 00014340 through 000282c8. Routine \
+0007a8a8 uses the selected raw byte input shared with 00013920, multiplies \
+the result by 100 and stores the word reload at ffff89fa."""
+note = [
+    """
+The input selection is documented by shared_state_diagnostic_reload_curve. \
+The physical input, task period and conversion of this reload to elapsed \
+time remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013930"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f6"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "state_reload_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f8"
+note = "The reader loads axis 00014340 for its explicit 16-point lookup."
+
+[[link]]
+type = "reader"
+to = "state_pair_reload_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f6"
+note = "This literal-pool load supplies the table operand of the reader lookup."

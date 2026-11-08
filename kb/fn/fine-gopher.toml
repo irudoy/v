@@ -278,6 +278,28 @@ at = "7mfk:00060964"
 value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "00014f42", "00014f52", "00015002", "00015012", "00021ce0", "0006062c"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0007d53c"
+name = "passionate-mammoth"
+level = "code"
+note = """
+Six explicit eight-word lookup operands preserve the divisor, multiplier and \
+zero-state initializer roles of 0006062c. JK78C forms the 255*M \
+normalization with ROM16[000090da]=14800; the source image uses \
+ROM16[000093e8]=20000. The two raw initializers remain distinct."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007d53c"
+to = "7mfk:0006062c"
+note = """
+Six explicit eight-word lookup operands preserve the divisor, multiplier and \
+zero-state initializer roles of 0006062c. JK78C forms the 255*M \
+normalization with ROM16[000090da]=14800; the source image uses \
+ROM16[000093e8]=20000. The two raw initializers remain distinct."""
+
 [[link]]
 type = "depends"
 to = "eminent-piculet/tbl"

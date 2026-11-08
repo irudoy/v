@@ -7,3 +7,27 @@ name = "true-quokka"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0005b534"
+
+[[symbol]]
+layout = "jk78c"
+address = "00077ab0"
+name = "organic-alpaca"
+level = "code"
+note = """
+The parent dispatcher 00077688 and the adjacent helpers 000776ca, 000779ce \
+and 00077d14 match the 7mfk 0005b10c family by instruction structure. This \
+updater preserves the paired flag branches, bounded word update and reset \
+toward 0x6400 of 0005b534, while four explicit word curves replace its four \
+scalar rate bytes."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00077ab0"
+to = "7mfk:0005b534"
+note = """
+The parent dispatcher 00077688 and the adjacent helpers 000776ca, 000779ce \
+and 00077d14 match the 7mfk 0005b10c family by instruction structure. This \
+updater preserves the paired flag branches, bounded word update and reset \
+toward 0x6400 of 0005b534, while four explicit word curves replace its four \
+scalar rate bytes."""

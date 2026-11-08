@@ -153,6 +153,28 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0007bbf8"
+name = "ambrosial-warthog"
+level = "code"
+note = """
+The paired word lookup sites and the surrounding bounded arithmetic \
+correspond to 7mfk 0005e278: the first result is bounded and stored as a \
+byte, while the second result remains a separate bound-selection operand. \
+Physical I/O quantities remain unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007bbf8"
+to = "7mfk:0005e278"
+note = """
+The paired word lookup sites and the surrounding bounded arithmetic \
+correspond to 7mfk 0005e278: the first result is bounded and stored as a \
+byte, while the second result remains a separate bound-selection operand. \
+Physical I/O quantities remain unqualified."""
+
 [[link]]
 type = "depends"
 to = "bulky-penguin/tbl"

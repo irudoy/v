@@ -173,6 +173,40 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00015bc2"
+name = "aquatic-shrimp"
+level = "code"
+note = """
+The corresponding readers 0007f9f2 and 7mfk 0006205c load this 16-point \
+uint16 operand at 0008012e and 000627a6. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0008012e"
+to = "7mfk:0001495a"
+note = """
+The corresponding readers 0007f9f2 and 7mfk 0006205c load this 16-point \
+uint16 operand at 0008012e and 000627a6. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "cyber-bat/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00080130"
+note = "The reader loads axis 00014e0c for its explicit 16-point lookup."
+
 [[link]]
 type = "depends"
 to = "brown-jackrabbit/tbl"
@@ -192,9 +226,15 @@ role = "from_map"
 [[link]]
 type = "reader"
 to = "spirited-lion/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008012e"
+note = "This literal-pool load supplies the table operand of the reader lookup."
 
 [[link]]
 type = "reader"

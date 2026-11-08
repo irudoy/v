@@ -71,12 +71,58 @@ at = "7mfk:00060700"
 value = {named = ["00014f42", "00021ce0"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "000160fa"
+name = "optimistic-hummingbird"
+level = "code"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d56c and 0006065c. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007d56c"
+to = "7mfk:00014f42"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d56c and 0006065c. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "operating_gate_word_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d56e"
+note = "The reader loads axis 00014fcc for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d580"
+note = "The reader loads axis 00014fcc for its explicit 8-point lookup."
+
 [[link]]
 type = "reader"
 to = "fine-gopher/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d56c"
+note = "This literal-pool load supplies the table operand of the reader lookup."
 
 [[link]]
 type = "reader"

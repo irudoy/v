@@ -154,6 +154,27 @@ at = "7mfk:0007b6ee"
 value = {named = ["00011f6a", "00021ce0", "0007b650", "0007b7c0", "ffff1393", "ffff1394", "ffff1a58", "ffff479e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009b834"
+level = "code"
+note = """
+Both builders clamp 16*uint8(input)-2704 to 0..255, use the four-point byte \
+curve, perform the bounded coefficient calculation and update a separate \
+mode flag. JK78C uses input ffff1a32, raw result ffff138d and scaled result \
+ffff138c; its physical engineering conversion is unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009b834"
+to = "7mfk:0007b650"
+note = """
+Both builders clamp 16*uint8(input)-2704 to 0..255, use the four-point byte \
+curve, perform the bounded coefficient calculation and update a separate \
+mode flag. JK78C uses input ffff1a32, raw result ffff138d and scaled result \
+ffff138c; its physical engineering conversion is unqualified."""
+
 [[link]]
 type = "depends"
 to = "transient_hysteresis_state_update/fn"

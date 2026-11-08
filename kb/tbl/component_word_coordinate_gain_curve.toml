@@ -1,0 +1,55 @@
+title = "Component word coordinate gain curve"
+summary = """
+Explicit eight-point uint8 gain on 00013f50 through 0002829c in 00072bb8. \
+When uint8[ffff106c] <= ROM8[000089d2], the lookup uses the high byte of \
+uint16[ffff33ae], stores its result at ffff1a44 and supplies a factor to the \
+component product calculations; the other branch supplies raw 64."""
+note = [
+    """
+This lookup is an additional JK78C path relative to 7mfk 00056714. Physical \
+input and selector quantities and the engineering conversion remain \
+unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014228"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072d9c"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "component_quotient_gain_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072da0"
+note = "The reader loads axis 00013f50 for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "black-cicada/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072d9c"
+note = "This literal-pool load supplies the table operand of the reader lookup."

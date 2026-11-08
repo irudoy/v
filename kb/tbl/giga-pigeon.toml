@@ -147,6 +147,40 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00015fba"
+name = "straight-ringtail"
+level = "code"
+note = """
+The corresponding readers 0007f9f2 and 7mfk 0006205c load this 16-point \
+uint16 operand at 000803d4 and 00062a54. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000803d4"
+to = "7mfk:00014e02"
+note = """
+The corresponding readers 0007f9f2 and 7mfk 0006205c load this 16-point \
+uint16 operand at 000803d4 and 00062a54. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "hallowed-cicada/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000803c4"
+note = "The reader loads axis 00014eec for its explicit 16-point lookup."
+
 [[link]]
 type = "depends"
 to = "hallowed-cicada/axis"
@@ -158,6 +192,12 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "spirited-lion/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000803d4"
+note = "This literal-pool load supplies the table operand of the reader lookup."

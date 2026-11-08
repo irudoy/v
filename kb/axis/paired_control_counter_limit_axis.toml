@@ -1,0 +1,36 @@
+title = "Paired control counter limit axis"
+summary = """
+Explicit 8-point uint16 axis. Raw coordinate supplied to the per-channel \
+counter-limit lookup of 0007f0f4. The source operand 7mfk:00013ab8 has no \
+qualified axis meaning."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014e2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f866"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "tactful-corgi/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f866"
+note = "The reader supplies axis 00014e2c to its explicit lookup wrapper."

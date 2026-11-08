@@ -1,0 +1,97 @@
+title = "Shared state diagnostic reload curve"
+summary = """
+Explicit sixteen-point uint8 reload curve on 00014340, read through 000282c8 \
+by state routine 0007a8a8 and diagnostic routine 000aab8a. The state reader \
+multiplies its result by 100 for word reloads at ffff89f8 and ffff8a06; the \
+diagnostic reader stores the raw result as byte reloads at ffff1555+channel \
+and ffff2434+channel."""
+note = [
+    """
+State input ffff895f is selected by 00079708: ROM8[0000895a] bit 5 clear \
+selects ffff26ca and bit 5 set selects ffff1066. The diagnostic input is \
+ffff1066 directly. The producer and physical identity of ffff26ca, consumer \
+task periods and a common time conversion remain unresolved; the distinct \
+reload widths and scaling do not establish one clock contract.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013920"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a90c"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a9b4"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000aabf4"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "state_reload_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f8"
+note = "The reader loads axis 00014340 for its explicit 16-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000aabf8"
+note = "The reader loads axis 00014340 for its explicit 16-point lookup."
+
+[[link]]
+type = "reader"
+to = "diagnostic_pair_reload_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000aabf4"
+note = "This literal-pool load supplies the table operand of the reader lookup."
+
+[[link]]
+type = "reader"
+to = "state_pair_reload_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a90c"
+note = "This literal-pool load supplies the table operand of the reader lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a9b4"
+note = "This literal-pool load supplies the table operand of the reader lookup."

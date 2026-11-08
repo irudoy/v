@@ -1,0 +1,35 @@
+title = "Centered word curve coordinate axis"
+summary = """
+Explicit 8-point uint16 axis. Raw word coordinate passed to 000dcbf6; the \
+interpolated result is centered by subtraction of 0x8000."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001589a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000dcbfc"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "centered_word_curve_lookup/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000dcbfc"
+note = "The reader supplies axis 0001589a to its explicit lookup wrapper."

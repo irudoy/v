@@ -226,6 +226,28 @@ supports = "identity"
 to = "transient_threshold_builder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013650"
+name = "dainty-bonobo"
+level = "code"
+note = """
+The corresponding readers 0009b834 and 7mfk 0007b650 load this 4-point uint8 \
+operand at 0009b868 and 0007b686. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0009b868"
+to = "7mfk:00011f6a"
+note = """
+The corresponding readers 0009b834 and 7mfk 0007b650 load this 4-point uint8 \
+operand at 0009b868 and 0007b686. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
 [[link]]
 type = "index"
 to = "artichoke-groundhog/ram"
@@ -243,6 +265,12 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "transient_threshold_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009b868"
+note = "This literal-pool load supplies the table operand of the reader lookup."

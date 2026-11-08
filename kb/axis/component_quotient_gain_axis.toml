@@ -1,0 +1,33 @@
+title = "Component quotient gain axis"
+summary = "Explicit 8-point uint8 axis. High byte of raw word ffff33ae in 00072bb8."
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072da0"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "black-cicada/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072da0"
+note = "The reader supplies axis 00013f50 to its explicit lookup wrapper."

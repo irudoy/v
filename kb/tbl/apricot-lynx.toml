@@ -91,9 +91,49 @@ at = "7mfk:00061ef6"
 value = {named = ["00014fc2"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "000161ba"
+name = "woodoo-falcon"
+level = "code"
+note = """
+The corresponding readers 0007f0f4 and 7mfk 000617ea load this 8-point \
+uint16 operand at 0007f85e and 00061ed2. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007f85e"
+to = "7mfk:00014fc2"
+note = """
+The corresponding readers 0007f0f4 and 7mfk 000617ea load this 8-point \
+uint16 operand at 0007f85e and 00061ed2. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "paired_control_counter_limit_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f866"
+note = "The reader loads axis 00014e2c for its explicit 8-point lookup."
+
 [[link]]
 type = "reader"
 to = "tactful-corgi/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f85e"
+note = "This literal-pool load supplies the table operand of the reader lookup."

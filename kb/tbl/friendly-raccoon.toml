@@ -307,6 +307,40 @@ kind = "registry"
 supports = "scale"
 value = "Cranking Base Fuel Schedule Table"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001624a"
+name = "enchanted-chupacabra"
+level = "code"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d842 and 0006092e. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007d842"
+to = "7mfk:00015012"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d842 and 0006092e. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "multiplier_initializer_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d846"
+note = "The reader loads axis 00014f4c for its explicit 8-point lookup."
+
 [[link]]
 type = "depends"
 to = "fragrant-malkoha/tbl"
@@ -318,6 +352,12 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "fine-gopher/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d842"
+note = "This literal-pool load supplies the table operand of the reader lookup."

@@ -1,0 +1,47 @@
+title = "State reload coordinate axis"
+summary = """
+Explicit 16-point uint8 axis. Selected raw byte ffff895f in 0007a8a8 and \
+direct byte ffff1066 in 000aab8a. Their common physical input contract \
+remains unresolved."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014340"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f8"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "diagnostic_pair_reload_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000aabf8"
+note = "The reader supplies axis 00014340 to its explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "state_pair_reload_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a8f8"
+note = "The reader supplies axis 00014340 to its explicit lookup wrapper."

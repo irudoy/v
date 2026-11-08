@@ -1,0 +1,71 @@
+title = "Paired control first default gain curve"
+summary = """
+Explicit eight-point uint16 first-channel coefficient on 00016fd4 through \
+000282f4 in 0007f0f4. This default curve is selected when the compound \
+caller-byte gate is false. Primary curve 000145f8 requires the common caller \
+byte and the first-channel enable byte to be nonzero, all three \
+first-channel blocking bytes to be zero, and the final first-channel \
+selector byte to be nonzero. The selected unsigned result multiplies a \
+signed intermediate before the common signed16 saturation or Q12 conversion \
+path."""
+note = [
+    """
+The 7mfk first-channel path 000617ea uses 00015580 without this additional \
+curve selection. The caller-byte identity and physical control quantity \
+remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "000167c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f2b6"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "paired_control_coefficient_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f2ba"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f404"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f450"
+note = "The reader loads axis 00016fd4 for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "tactful-corgi/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007f2b6"
+note = "This literal-pool load supplies the table operand of the reader lookup."

@@ -1,0 +1,42 @@
+title = "Component secondary byte gain curve"
+summary = """
+Implicit sixteen-point uint8 curve through 000281b0 in 00072bb8, at \
+coordinate min(2*uint8[ffff11a2],255). The result is written to ffff1612 and \
+participates in the component coefficient calculations."""
+note = [
+    """
+The corresponding 7mfk reader 00056714 has no separately qualified curve for \
+this additional coefficient. The physical quantity and engineering \
+conversion remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013a90"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072c2e"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "reader"
+to = "black-cicada/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00072c2e"
+note = "This literal-pool load supplies the table operand of the reader lookup."

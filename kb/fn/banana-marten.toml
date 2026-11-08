@@ -33,3 +33,25 @@ name = "banana-marten"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00060fb4"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007e7e8"
+name = "feathered-gecko"
+level = "code"
+note = """
+The root calls the paired controllers corresponding to 000617ea and 0006205c \
+and preserves the explicit byte-curve comparison against a nonnegative word \
+quotient by 10 at 0007ef72..0007ef8c, corresponding to 00061612..0006162c. \
+Other root inputs and the physical subsystem remain unqualified."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007e7e8"
+to = "7mfk:00060fb4"
+note = """
+The root calls the paired controllers corresponding to 000617ea and 0006205c \
+and preserves the explicit byte-curve comparison against a nonnegative word \
+quotient by 10 at 0007ef72..0007ef8c, corresponding to 00061612..0006162c. \
+Other root inputs and the physical subsystem remain unqualified."""

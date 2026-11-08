@@ -1,0 +1,28 @@
+title = "State window latch update"
+summary = """
+Update a raw latch and its qualification counters. The explicit byte curve \
+00024642 at coordinate (uint16(argument)>>1)&255 multiplies calibrated bytes \
+to form word counter limits; the routine publishes a latch byte and a word \
+value."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007ae5a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ae5a"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

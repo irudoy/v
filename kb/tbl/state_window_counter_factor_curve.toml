@@ -1,0 +1,145 @@
+title = "State window counter factor curve"
+summary = """
+Explicit eight-point uint8 factor on 0002463a through 0002829c, shared by \
+0007a640, 0007ae5a, 0007b026 and 0007b23c. The coordinate is (uint16(caller \
+argument)>>1)&255. Its product with a calibration byte supplies \
+qualification counter limits or bounded qualification values."""
+note = [
+    """
+The first three readers form the curve as 0002463a+8; 0007b23c forms the \
+same curve as 00024634+14 and the axis as 00024634+6. The first reader adds \
+8 in the call delay slot. Caller quantities, invocation periods and a \
+conversion of the counters to time remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00024642"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007a6b4"
+value = 8
+mode = "base"
+note = """
+The reader forms curve 00024642 by adding 8 to the literal-pool base before \
+calling 0002829c. Reader 0007a640 performs its addition in the call delay \
+slot."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007ae70"
+value = 8
+mode = "base"
+note = """
+The reader forms curve 00024642 by adding 8 to the literal-pool base before \
+calling 0002829c. Reader 0007a640 performs its addition in the call delay \
+slot."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007b072"
+value = 8
+mode = "base"
+note = """
+The reader forms curve 00024642 by adding 8 to the literal-pool base before \
+calling 0002829c. Reader 0007a640 performs its addition in the call delay \
+slot."""
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007b286"
+value = 14
+mode = "base"
+note = """
+The reader forms curve 00024642 by adding 14 to the literal-pool base before \
+calling 0002829c. Reader 0007a640 performs its addition in the call delay \
+slot."""
+
+[[link]]
+type = "axis"
+to = "state_window_factor_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007a6b4"
+note = "The reader loads axis 0002463a for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ae70"
+note = "The reader loads axis 0002463a for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007b072"
+note = "The reader loads axis 0002463a for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "state_window_latch_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007ae70"
+value = 8
+mode = "base"
+note = "The base-plus-offset operand feeds the shared byte-curve lookup."
+
+[[link]]
+type = "reader"
+to = "state_window_pair_gate/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007b072"
+value = 8
+mode = "base"
+note = "The base-plus-offset operand feeds the shared byte-curve lookup."
+
+[[link]]
+type = "reader"
+to = "state_window_qualification_update/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007b286"
+value = 14
+mode = "base"
+note = "The base-plus-offset operand feeds the shared byte-curve lookup."
+
+[[link]]
+type = "reader"
+to = "state_window_transition_gate/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:0007a6b4"
+value = 8
+mode = "base"
+note = "The base-plus-offset operand feeds the shared byte-curve lookup."

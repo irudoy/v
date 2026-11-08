@@ -1,0 +1,35 @@
+title = "Channel adaptation coordinate axis"
+summary = """
+Explicit 8-point uint16 axis. Raw word ffff103c shared by the four \
+byte-clamped rate lookups in 00077ab0."""
+note = [
+    """
+The coordinate is represented in its raw code domain; its engineering \
+conversion is unresolved.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001618a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077ad0"
+note = "The literal-pool load supplies this axis to the explicit lookup wrapper."
+
+[[link]]
+type = "reader"
+to = "true-quokka/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077ad0"
+note = "The reader supplies axis 0001618a to its explicit lookup wrapper."

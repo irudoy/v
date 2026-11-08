@@ -1,0 +1,28 @@
+title = "Component hysteresis gate update"
+summary = """
+Look up the explicit byte threshold 00013f98 by uint8[ffff1069], store it at \
+ffff34fb, and compare it with uint8[ffff268c]. A latched bit adds \
+ROM8[000085d7] before the comparison. The result updates ffff4569 bit 4 and \
+ffff45ca bit 1."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007365a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007365a"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

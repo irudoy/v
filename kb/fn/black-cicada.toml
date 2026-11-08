@@ -152,6 +152,28 @@ supports = "identity"
 to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00072bb8"
+name = "upbeat-boobook"
+level = "code"
+note = """
+The existing five byte-curve paths and the product/right-shift coefficient \
+calculation correspond to 7mfk 00056714. JK78C also reads two additional \
+implicit byte curves and one explicit byte gain curve; those operands have \
+separate working meanings."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00072bb8"
+to = "7mfk:00056714"
+note = """
+The existing five byte-curve paths and the product/right-shift coefficient \
+calculation correspond to 7mfk 00056714. JK78C also reads two additional \
+implicit byte curves and one explicit byte gain curve; those operands have \
+separate working meanings."""
+
 [[link]]
 type = "depends"
 to = "solemn-coua/fn"

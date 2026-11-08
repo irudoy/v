@@ -1,0 +1,55 @@
+title = "Channel adaptation rate a curve"
+summary = """
+Explicit eight-point uint16 curve on 0001618a through 000282f4 in 00077ab0. \
+Raw word ffff103c selects a result clamped to 255 and stored as byte \
+ffff30e3; the updater uses its four rate bytes in gated additions and \
+subtractions of the per-channel word state."""
+note = [
+    """
+The 7mfk updater 0005b534 uses scalar rate bytes in the corresponding \
+branches. The JK78C curve is a separate calibration operand. Input quantity, \
+output conversion and invocation period remain unresolved.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+unit = "raw"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015ef2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077ace"
+note = """
+The literal-pool load supplies this curve to the reviewed interpolation \
+wrapper."""
+
+[[link]]
+type = "axis"
+to = "channel_adaptation_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077ad0"
+note = "The reader loads axis 0001618a for its explicit 8-point lookup."
+
+[[link]]
+type = "reader"
+to = "true-quokka/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00077ace"
+note = "This literal-pool load supplies the table operand of the reader lookup."

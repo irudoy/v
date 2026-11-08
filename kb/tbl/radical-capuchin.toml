@@ -145,6 +145,40 @@ at = "7mfk:0006162e"
 value = {named = ["00012362", "00012fde", "00021bbc", "ffff8cb4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013968"
+name = "splendid-eagle"
+level = "code"
+note = """
+The corresponding readers 0007e7e8 and 7mfk 00060fb4 load this 8-point uint8 \
+operand at 0007ef72 and 00061612. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007ef72"
+to = "7mfk:00012362"
+note = """
+The corresponding readers 0007e7e8 and 7mfk 00060fb4 load this 8-point uint8 \
+operand at 0007ef72 and 00061612. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image."""
+
+[[link]]
+type = "axis"
+to = "raw_state_quotient_limit_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ef76"
+note = "The reader loads axis 00014360 for its explicit 8-point lookup."
+
 [[link]]
 type = "depends"
 to = "lilac-ocelot/tbl"
@@ -156,9 +190,15 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "banana-marten/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007ef72"
+note = "This literal-pool load supplies the table operand of the reader lookup."
 
 [[link]]
 type = "reader"

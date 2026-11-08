@@ -1,0 +1,28 @@
+title = "State window qualification update"
+summary = """
+Update a raw qualification counter and publish paired gating flags. The \
+explicit byte curve at 00024634+14, on the axis at 00024634+6, supplies a \
+factor at coordinate (uint16(argument)>>1)&255; its product with a \
+calibration byte sets a word counter limit."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007b23c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007b23c"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

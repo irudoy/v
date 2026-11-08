@@ -351,6 +351,44 @@ supports = "scale"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001623a"
+name = "godlike-cuttlefish"
+level = "code"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d7b4 and 000608a0. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image. JK78C \
+normalizes the 255*M value with ROM16[000090da]=14800; the source image uses \
+20000."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007d7b4"
+to = "7mfk:00015002"
+note = """
+The corresponding readers 0007d53c and 7mfk 0006062c load this 8-point \
+uint16 operand at 0007d7b4 and 000608a0. The interpolation geometry and the \
+surrounding raw operation agree; the source stock cell values and \
+engineering conversions are not assertions about the JK78C image. JK78C \
+normalizes the 255*M value with ROM16[000090da]=14800; the source image uses \
+20000."""
+
+[[link]]
+type = "axis"
+to = "operating_gate_override_coordinate_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d7b8"
+note = "The reader loads axis 00014f3c for its explicit 8-point lookup."
+
 [[link]]
 type = "depends"
 to = "funny-rook/tbl"
@@ -362,11 +400,17 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "fine-gopher/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = ["identity", "scale"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007d7b4"
+note = "This literal-pool load supplies the table operand of the reader lookup."
 
 [[link]]
 type = "reader"

@@ -1,0 +1,27 @@
+title = "State window pair gate"
+summary = """
+Evaluate paired raw word windows and state transitions. The explicit byte \
+curve 00024642 at coordinate (uint16(argument)>>1)&255 scales the \
+qualification limit before paired flags and byte counters are updated."""
+note = [
+    """
+The enclosing physical subsystem, engineering conversions and invocation \
+period are unresolved. A 7mfk counterpart is not independently qualified by \
+the reviewed code.""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007b026"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007b026"
+note = """
+The complete function listing establishes this entry and its raw \
+operations."""

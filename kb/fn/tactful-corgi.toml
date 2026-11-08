@@ -176,6 +176,30 @@ at = "7mfk:00061ef6"
 value = {named = ["00013a68", "00013ab8", "00014e82", "00014fc2", "00015580", "00015590", "00015d50", "00022530", "000617ea"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "0007f0f4"
+name = "gainful-mussel"
+level = "code"
+note = """
+The two coefficient paths multiply signed intermediate words and saturate or \
+apply the Q12 conversion, and the incremented per-channel counter is \
+compared with an explicit word curve, as in 000617ea. JK78C adds a \
+caller-byte selection between two curves for each coefficient path; the four \
+coefficient operands are distinct."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:0007f0f4"
+to = "7mfk:000617ea"
+note = """
+The two coefficient paths multiply signed intermediate words and saturate or \
+apply the Q12 conversion, and the incremented per-channel counter is \
+compared with an explicit word curve, as in 000617ea. JK78C adds a \
+caller-byte selection between two curves for each coefficient path; the four \
+coefficient operands are distinct."""
+
 [[link]]
 type = "depends"
 to = "optimistic-woodlouse/fn"
