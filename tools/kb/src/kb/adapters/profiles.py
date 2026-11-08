@@ -1,5 +1,7 @@
-"""Address profiles and runtime correspondence (tools/kb/SPEC.md, sections 20.1
-and 20.3).
+"""Address profiles and runtime correspondence (tools/kb/SPEC.md, section 7.9).
+
+`tools/kb/projections.toml` registers the generated profiles and
+correspondences. `kb.model.TIERS` owns name precedence.
 
 - The key tables of the `7mfk` targets of `kb/feature/` give the `7mfk`
   symbols of their keys (`kb.targets`), and the hooks of the `map_switching`

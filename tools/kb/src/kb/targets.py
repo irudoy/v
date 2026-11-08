@@ -1,5 +1,5 @@
 """The feature targets and the symbols of their meanings, read from the entity
-files without compiling the model (tools/kb/SPEC.md, section 20.3).
+files without compiling the model (tools/kb/SPEC.md, section 7.9).
 
 `patches/runtime_targets.py` relocates the canonical runtime, whose sources
 and layouts use `7mfk` addresses, onto every other layout. It takes here the

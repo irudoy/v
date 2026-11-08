@@ -1,4 +1,8 @@
-"""The JK08A ledgers (tools/kb/SPEC.md, sections 20.2 and 20.7).
+"""The JK08A ledgers (tools/kb/SPEC.md, sections 7.8 and 14).
+
+`kb.tokens` owns the token grammar. `dependency` owns the dependency-role
+mapping shared by this importer and `kb.ledger_projection`.
+`tools/kb/projections.toml` registers the generated ledger views.
 
 Every row is a symbol of layout `7mfk` whose meaning takes the row's keys.
 Terminal evidence tokens become evidence items of the symbol, and dependency
@@ -262,7 +266,7 @@ def relate(b, root):
 
 
 def relate_token(b, row, token, supports, src):
-    """Map one dependency token of a ledger row by the table of section 20.7."""
+    """Resolve a ledger token and apply `dependency` or trace evidence."""
     role = token.role
     to = b.resolve(row.layout, token.address, tokens.TARGET_KINDS[role], src)
     if to is None:
@@ -280,7 +284,11 @@ def relate_token(b, row, token, supports, src):
 
 
 def dependency(row, to, token, supports, row_tokens):
-    """The canonical link and claiming end selected by one legacy token."""
+    """The canonical link and claiming end selected by one legacy token.
+
+    This function owns the dependency-role mapping for legacy import and
+    `kb.ledger_projection` validation of selected ledger claims.
+    """
     props = {"relies": token.relies, "supports": supports}
 
     def link(owner, type_, target, stated="owner", **extra):

@@ -25,9 +25,8 @@ import re
 
 from kb import vocab
 
-# Name tiers in precedence order (tools/kb/SPEC.md, section 20.1): the name of
-# a meaning file wins over every registry name, and a former name that a file
-# records only reserves the name.
+# Name tiers in precedence order: the name of a meaning file wins over every
+# registry name, and a former name that a file records only reserves the name.
 TIERS = ("file", "native", "hook", "symbol_key", "curated", "field", "former")
 TIER_RANK = {tier: rank for rank, tier in enumerate(TIERS)}
 # Join strengths, strongest first: meaning files, correspondence rows with

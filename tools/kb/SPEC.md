@@ -6,12 +6,11 @@ agents read and change that knowledge. It fixes the storage of symbols,
 meanings, families, links, and evidence; names and references; layouts; the
 compiler, the graph schema, and the graph fingerprint; per-worktree graph
 instances; the `kb` commands and the MCP server; the gates; the projection
-registry; current fact owners; the access guard; and the
-acceptance questions with their output budgets.
+registry; current fact owners; and the access guard.
 
 Knowledge representation transfer is complete. Current command and fact-owner
-contracts live in `tools/kb/contracts.toml`; benchmark questions and their
-content expectations live in `tools/kb/bench.toml`.
+contracts live in `tools/kb/contracts.toml`; benchmark questions, their output
+budgets, and content expectations live in `tools/kb/bench.toml`.
 
 ## 1. Model
 
@@ -216,6 +215,9 @@ with an underscore or a single word carries meaning, a two-word hyphenated
 name is a placeholder that says nothing about the symbol. Architecture ids
 such as `crank-cam` become slugs such as `crank_cam` when the architecture
 converts.
+
+The `TIERS` constant and its comment in [`kb.model`](src/kb/model.py) own the
+precedence of names contributed by entity files and registries.
 
 ### 5.2 References
 
@@ -868,8 +870,7 @@ Fields:
   `map_switching` or `rolling_launch` for `runtime_state`. A field of another
   origin carries `scale`; an `ecu_ram` field carries no semantic scale,
   and the profile renders the scale, the values, or the named bits of its source meaning
-  ([Telemetry, signals, and
-  presentation](#205-telemetry-signals-and-presentation)).
+  ([telemetry profile projection](src/kb/adapters/telemetry.py)).
 - A numeric source file owns its unit, including its absence; the legacy
   RAM ledger does not supply a replacement. Enumerations and bit fields
   without a file unit retain the ledger's storage description. If no unit,
@@ -2301,10 +2302,9 @@ note = "Set: the producer writes zero."
 ```
 
 The ledger evidence of `ffff114a` converts to the `writer` link and to two
-`input` links ([Evidence tokens](#207-evidence-tokens)); review turns the
+`input` links ([ledger dependency mapping](src/kb/adapters/ledgers.py)); review turns the
 second into the `copy` link and adds the selectors that the step note
-stated. Question 12 of [Acceptance questions](#18-acceptance-questions) then
-reads:
+stated. Benchmark question 12 in [`bench.toml`](bench.toml) reads:
 
 ```text
 $ uv run kb show 7mfk:0003deec

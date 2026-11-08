@@ -1,5 +1,5 @@
-"""The service 0x22 table of the canonical layout (tools/kb/SPEC.md, section
-20.5).
+"""The service 0x22 table of the canonical layout (tools/kb/SPEC.md, sections
+7.3, 7.5, and 7.6).
 
 - `tools/diagnostics/sid22_inventory.py` decodes the DID tables of the JK08A
   image, whose publisher, table extents, and digests it fixes. Every other

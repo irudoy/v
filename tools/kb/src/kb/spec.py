@@ -10,7 +10,6 @@ from kb.repo import KbError
 PATH = Path("tools/kb/contracts.toml")
 BENCH = Path("tools/kb/bench.toml")
 OWNERSHIP = "Ownership"
-QUESTIONS = "## 18. Acceptance questions"
 
 
 def table(heading, root=repo.ROOT):

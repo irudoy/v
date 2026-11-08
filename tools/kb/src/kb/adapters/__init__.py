@@ -1,5 +1,5 @@
 """Adapters of the entity files and of the legacy registries (tools/kb/SPEC.md,
-section 20).
+sections 9.2 and 9.3).
 
 Each adapter module declares `inputs`, the repository paths it reads, and two
 passes over a `model.Builder`: `declare` states the symbols, names, keys, and

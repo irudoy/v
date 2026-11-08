@@ -1,4 +1,4 @@
-"""The canonical feature layouts (tools/kb/SPEC.md, sections 7.9 and 20.3),
+"""The canonical feature layouts (tools/kb/SPEC.md, section 7.9),
 which own the patch design of `7mfk`.
 
 - The `[[hook]]` entries of `patches/map-switching-layout.toml`,

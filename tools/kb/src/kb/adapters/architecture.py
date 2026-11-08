@@ -1,4 +1,6 @@
-"""The JK08A architecture (tools/kb/SPEC.md, sections 7.9 and 20.6).
+"""The JK08A architecture (tools/kb/SPEC.md, section 7.9).
+
+`tools/kb/projections.toml` registers its generated architecture view.
 
 - Each `[[stage]]` gives the `stage` entity of its `id` with `name` as
   `title`, `lane`, `summary`, and its position from 1 as `order`.

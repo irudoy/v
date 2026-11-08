@@ -1,5 +1,7 @@
 """The JK08A presentation layer of the editor definitions (tools/kb/SPEC.md,
-sections 7.8 and 20.5).
+section 7.8).
+
+`tools/kb/projections.toml` registers the generated presentation registry.
 
 - `[table.<address>]` and `[axis.<address>]` give `[editor]` of the `7mfk`
   `tbl` or `axis` symbol at the address, a key that the meaning lifts from

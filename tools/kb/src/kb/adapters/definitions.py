@@ -1,5 +1,7 @@
 """Definition projections and their address correspondences
-(tools/kb/SPEC.md, section 20.3).
+(tools/kb/SPEC.md, sections 7.9 and 14).
+
+`tools/kb/projections.toml` registers the generated definition registries.
 
 The registries state:
 

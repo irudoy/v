@@ -1,4 +1,6 @@
-"""VQ37VHR native registries (tools/kb/SPEC.md, section 20.4).
+"""Native meanings and symbols (tools/kb/SPEC.md, sections 7.2 and 7.3).
+
+`tools/kb/projections.toml` registers their generated native registries.
 
 The table registry also covers JK00C and JK00D of the 8MFK family for the
 target-native tables that their relocated JK08A definition cannot state, such

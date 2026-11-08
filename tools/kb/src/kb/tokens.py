@@ -1,4 +1,8 @@
-"""Evidence tokens of the legacy registries (tools/kb/SPEC.md, section 20.7).
+"""The grammar and role vocabulary of evidence tokens in legacy registries.
+
+This module owns token parsing. `kb.adapters.ledgers.dependency` owns the
+dependency-role mapping shared by legacy import and ledger projection.
+Canonical links and evidence follow tools/kb/SPEC.md, sections 7.5 and 7.6.
 
 A token is `role:value`. A dependency role names a target address with an
 optional offset and the property of the target the claim rests on,

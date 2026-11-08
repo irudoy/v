@@ -1,5 +1,6 @@
-"""The CAN telemetry profile of JK08A (tools/kb/SPEC.md, sections 7.9 and
-20.5).
+"""The CAN telemetry profile of JK08A (tools/kb/SPEC.md, section 7.9).
+
+`tools/kb/projections.toml` registers the generated telemetry profile.
 
 - Each `[[field]]` and `[[context.field]]` gives the `field` entity of its
   `name` with `kind` as `origin`, `width`, `signed`, and its place: `page`,

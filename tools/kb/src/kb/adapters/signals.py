@@ -1,4 +1,6 @@
-"""JK08A tuning signals (tools/kb/SPEC.md, section 20.5).
+"""JK08A tuning signals (tools/kb/SPEC.md, section 7.9).
+
+`tools/kb/projections.toml` registers the generated signal catalog.
 
 - Each `[[signal]]` gives the `signal` entity of its `id`: `label` becomes
   `title`, `evidence` becomes `basis`, and `domain`, `priority`, `coverage`,

@@ -1,11 +1,14 @@
-"""Declarative command contracts agree with the CLI and MCP interfaces."""
+"""Command contracts agree with the interfaces; specification references resolve."""
 
 import argparse
 import contextlib
 from dataclasses import dataclass, field
 import io
+from pathlib import Path
 import re
+import tempfile
 import unittest
+from urllib.parse import unquote, urlsplit
 
 from kb import cli, mcp, project, repo, spec
 
@@ -18,6 +21,87 @@ PACKAGE = "tools/kb/src/kb"
 TOKEN = re.compile(r"\[|\]|\.\.\.|--[a-z][a-z0-9-]*|(?:<[^>]+>[:=]?)+|"
                    r"[a-z]+(?:-[a-z]+)*(?:\|[a-z]+(?:-[a-z]+)*)*")
 WORD = re.compile(r"[a-z]+(?:-[a-z]+)*")
+NUMBER = r"\d+(?:\.\d+)*"
+SECTION_REFERENCE = re.compile(
+    r"(?:(?P<document>\([^()\n]+),\s*)?\bsections?\s+(?P<numbers>" + NUMBER +
+    r"(?:(?:\s*,\s*(?:and\s+)?|\s+and\s+|\s+to\s+)" + NUMBER + r")*)")
+
+
+def outside_fences(text):
+    """Markdown lines outside backtick and tilde code fences."""
+    fence = None
+    for line in text.splitlines():
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        if fence:
+            if (marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence)
+                    and not marker[2].strip()):
+                fence = None
+        elif marker:
+            fence = marker[1]
+        else:
+            yield line
+
+
+def specification_targets(text):
+    """Numbered sections and GitHub heading anchors of the specification."""
+    sections, anchors, occurrences = set(), set(), {}
+    for line in outside_fences(text):
+        heading = re.match(r"^ {0,3}#{1,6}\s+(.+?)(?:\s+#+)?\s*$", line)
+        if not heading:
+            continue
+        title = heading[1]
+        number = re.match(r"(" + NUMBER + r")(?:\.|\s)", title)
+        if number:
+            sections.add(number[1])
+        slug = re.sub(r"[^\w\- ]", "", title.lower()).replace(" ", "-")
+        count = occurrences.get(slug, 0)
+        occurrences[slug] = count + 1
+        anchors.add(f"{slug}-{count}" if count else slug)
+    return sections, anchors
+
+
+def section_references(source):
+    """SPEC.md and bare citations; a qualified citation names its own document."""
+    found = set()
+    for reference in SECTION_REFERENCE.finditer(source):
+        document = reference["document"]
+        if document and "SPEC.md" not in document:
+            continue
+        for item in re.finditer(r"(" + NUMBER + r")(?:\s+to\s+(" + NUMBER + r"))?",
+                                reference["numbers"]):
+            start, end = item.groups()
+            if end is None:
+                found.add(start)
+                continue
+            prefix, _, first = start.rpartition(".")
+            other, _, last = end.rpartition(".")
+            if prefix != other or int(first) > int(last):
+                raise ValueError(f"unsupported specification range {start} to {end}")
+            found.update(f"{prefix}.{number}" if prefix else str(number)
+                         for number in range(int(first), int(last) + 1))
+    return found
+
+
+def link_destinations(text):
+    """Destinations of inline and reference links outside code fences."""
+    prose = "\n".join(outside_fences(text))
+    return set(re.findall(r"\]\(\s*([^\s)]+)\s*\)", prose) +
+               re.findall(r"(?m)^\s*\[[^\]]+\]:\s*(\S+)", prose))
+
+
+def internal_anchors(text):
+    """Fragment destinations that name headings of this document."""
+    return {target[1:] for target in link_destinations(text) if target.startswith("#")}
+
+
+def relative_files(text):
+    """Local file targets, without query strings or fragments."""
+    found = set()
+    for target in link_destinations(text):
+        parts = urlsplit(target)
+        if not parts.scheme and not parts.netloc and parts.path:
+            found.add(unquote(parts.path))
+    return found
 
 
 @dataclass
@@ -253,6 +337,92 @@ class CommandTableTest(unittest.TestCase):
             used.update(int(code) for code in
                         re.findall(r"\bcode=(\d+)", path.read_text(encoding="utf-8")))
         self.assertEqual(used | {0}, table)
+
+
+class SpecificationReferencesTest(unittest.TestCase):
+    def assert_sections(self, document, source):
+        sections, _ = specification_targets(document)
+        self.assertFalse(section_references(source) - sections,
+                         f"missing SPEC.md sections: {section_references(source) - sections}")
+
+    def assert_anchors(self, document):
+        _, anchors = specification_targets(document)
+        self.assertFalse(internal_anchors(document) - anchors,
+                         f"missing SPEC.md anchors: {internal_anchors(document) - anchors}")
+
+    def assert_files(self, document, directory):
+        missing = {path for path in relative_files(document) if not (directory / path).is_file()}
+        self.assertFalse(missing, f"missing SPEC.md files: {missing}")
+
+    def test_source_citations_name_existing_specification_sections(self):
+        document = (repo.ROOT / "tools/kb/SPEC.md").read_text(encoding="utf-8")
+        found = set()
+        for path in sorted((repo.ROOT / PACKAGE).rglob("*.py")):
+            source = path.read_text(encoding="utf-8")
+            found.update(section_references(source))
+            with self.subTest(path=path.relative_to(repo.ROOT)):
+                self.assert_sections(document, source)
+        self.assertTrue(found)
+
+    def test_internal_links_name_existing_specification_headings(self):
+        document = (repo.ROOT / "tools/kb/SPEC.md").read_text(encoding="utf-8")
+        self.assertTrue(internal_anchors(document))
+        self.assert_anchors(document)
+
+    def test_relative_links_name_existing_files(self):
+        path = repo.ROOT / "tools/kb/SPEC.md"
+        document = path.read_text(encoding="utf-8")
+        self.assertTrue(relative_files(document))
+        self.assert_files(document, path.parent)
+
+    def test_missing_sections_in_multiline_lists_and_ranges_are_rejected(self):
+        document = "## 5. Names\n## 6. Kinds\n## 7. Entities\n### 7.3 Symbols\n"
+        self.assert_sections(document, "SPEC.md, sections 5 to 7,\n7.3)")
+        with self.assertRaisesRegex(AssertionError, "20.7"):
+            self.assert_sections(document, "SPEC.md, sections 7.3, 20.7, and 6)")
+        with self.assertRaisesRegex(AssertionError, "8"):
+            self.assert_sections(document, "SPEC.md, sections 5 to 8)")
+
+    def test_bare_section_citations_are_checked_without_checking_other_documents(self):
+        document = "## 7. Entities\n### 7.3 Symbols\n"
+        self.assert_sections(document, "the rules of section 7.3; (section 7)")
+        for source in ("(section 20.7)", "by the table of section 20.7",
+                       "(tools/kb/SPEC.md, section 20.7)"):
+            with self.subTest(source=source), self.assertRaisesRegex(AssertionError, "20.7"):
+                self.assert_sections(document, source)
+        self.assertEqual(section_references(
+            "(SH7059/SH7058S hardware manual, section 7.2.6); "
+            "(other.md, section 20.7); (section 7.3)"), {"7.3"})
+
+    def test_relative_file_links_require_existing_files_and_ignore_remote_links(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "owner.toml").touch()
+            self.assert_files("[Owner](owner.toml?view=raw#record)\n"
+                              "[Remote](https://example.com/missing)\n[Local](#heading)", root)
+            with self.assertRaisesRegex(AssertionError, "missing.py"):
+                self.assert_files("[Code](src/missing.py)", root)
+
+    def test_missing_inline_and_reference_anchors_are_rejected(self):
+        for link in ("[Evidence](#207-evidence-tokens)",
+                     "[evidence]: #207-evidence-tokens"):
+            with self.subTest(link=link), self.assertRaisesRegex(AssertionError, "207"):
+                self.assert_anchors("## 7. Entities\n" + link)
+
+    def test_heading_anchors_ignore_formatting_and_number_duplicates(self):
+        document = ("## 7. Entities\n### `Scale`: values!\n### `Scale`: values!\n"
+                    "[One](#scale-values)\n[Two](#scale-values-1)\n")
+        self.assertEqual(specification_targets(document),
+                         ({"7"}, {"7-entities", "scale-values", "scale-values-1"}))
+        self.assert_anchors(document)
+
+    def test_code_fences_define_neither_headings_nor_links(self):
+        document = ("## 7. Entities\n```text\n## 20. Removed\n[Old](#removed)\n```\n"
+                    "~~~markdown\n## 21. Removed\n[Other](#other)\n~~~\n")
+        self.assertEqual(specification_targets(document), ({"7"}, {"7-entities"}))
+        self.assertEqual(internal_anchors(document), set())
+        with self.assertRaisesRegex(AssertionError, "20"):
+            self.assert_sections(document, "SPEC.md, section 20)")
 
 
 class SyntaxTest(unittest.TestCase):

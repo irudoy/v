@@ -1,5 +1,8 @@
-"""Interpolation registries and their correspondences (tools/kb/SPEC.md,
-section 20.3), which the `fn` meanings with `[interp]` own since stage 3.
+"""Interpolation signatures owned by `fn` meanings and their symbols
+(tools/kb/SPEC.md, sections 7.2 and 7.3).
+
+`tools/kb/projections.toml` registers their generated registries and
+correspondences.
 
 - `interp` of `[l0.census.<layout>]` in `tools/kb/config.toml` names the
   registry of each layout. A registry belongs to the layout of the image in
