@@ -1,8 +1,9 @@
 summary = """
-Second copy of the shaft-angle conversion, read only by FUN_0004FCB8: it \
-converts the two measured control-shaft angle words 0xFFFF2670 and \
-0xFFFF2672 to the command-word domain and publishes the mean of the two \
-results times 1/512 as the float 0xFFFF9E98 for FUN_0004F3FE."""
+Second copy of the shaft-angle conversion, read only by \
+vvel_measured_duration_converter_validation (FUN_0004FCB8): it converts the \
+two measured control-shaft angle words 0xFFFF2670 and 0xFFFF2672 to the \
+command-word domain and publishes the mean of the two results times 1/512 as \
+the float 0xFFFF9E98 for charge_model_validation (FUN_0004F3FE)."""
 level = "code"
 home = "jk78c"
 cols = 16
@@ -81,13 +82,14 @@ key = "test_vvel_command_shaft_angle_second_scale"
 layout = "jk78c"
 address = "0001b00a"
 note = """
-Read by FUN_0004FCB8 at callsites 0x4FCD0 and 0x4FCDE through the 16-point \
-uint16 wrapper 0x28510 of the kernel 0x289AC as GBR + 0x20 from the literal \
-0x0001AFEA at 0x4FD84; the primary conversion 0x000156FC goes through the \
-wrapper 0x28320. FUN_0004F3FE is the only caller and the only reader of the \
-float. The two argument words are the measured angles that the deficit \
-monitors FUN_000BF0C0 and FUN_000BF122 subtract from the floor maximum. \
-Stock bytes are identical to the primary table 0x000156FC."""
+Read by vvel_measured_duration_converter_validation (FUN_0004FCB8) at \
+callsites 0x4FCD0 and 0x4FCDE through the 16-point uint16 wrapper 0x28510 of \
+the kernel 0x289AC as GBR + 0x20 from the literal 0x0001AFEA at 0x4FD84; the \
+primary conversion 0x000156FC goes through the wrapper 0x28320. \
+charge_model_validation (FUN_0004F3FE) is the only caller and the only \
+reader of the float. The two argument words are the measured angles that the \
+deficit monitors FUN_000BF0C0 and FUN_000BF122 subtract from the floor \
+maximum. Stock bytes are identical to the primary table 0x000156FC."""
 
 [[symbol.evidence]]
 kind = "indirect"
