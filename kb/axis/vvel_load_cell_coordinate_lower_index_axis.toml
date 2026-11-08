@@ -1,0 +1,29 @@
+summary = """
+Index axis 1..16 through which vvel_load_coordinate_publisher reads \
+vvel_load_cell_coordinate_axis as breakpoint data: the lookup at the \
+position returns the lower bound of the current grid cell."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000233ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047654"
+note = "The load at 00047654 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "vvel_load_coordinate_publisher/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047654"

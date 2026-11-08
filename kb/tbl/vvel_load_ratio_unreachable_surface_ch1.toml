@@ -1,0 +1,57 @@
+summary = """
+8x8 Q14 load ratio of VVEL state code 7 (mode 14, which no JK78C code \
+writes) over ffff11a6 and ffff197a: vvel_load_ratio_lookup_ch1 reads it \
+times 1/163.84 as percent, and the stage blends it into the VVEL load ratio \
+while the state code is 7. 16384 is 100 percent. Every stock cell is 16384, \
+100 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000dace"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046abc"
+note = """
+The load at 00046abc passes this table to its lookup in \
+vvel_load_ratio_lookup_ch1."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_ratio_unreachable_request_axis_ch1/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046ac6"
+
+[[link]]
+type = "axis"
+to = "vvel_load_ratio_unreachable_speed_axis_ch1/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046acc"
+
+[[link]]
+type = "reader"
+to = "vvel_load_ratio_lookup_ch1/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046abc"

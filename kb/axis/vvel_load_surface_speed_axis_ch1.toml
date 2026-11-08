@@ -1,0 +1,22 @@
+summary = "Engine speed ffff11a6 axis of vvel_load_surface_ch1, 800..6800 RPM."
+note = [
+    """
+The coordinate ffff11a6 is the engine-speed word that \
+vvel_duration_running_axis reads at 3.125 RPM per count; at that scale the \
+stock breakpoints span the stated RPM range. This axis states no scale of \
+its own.""",
+]
+level = "code"
+quantity = "rpm"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000151cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047314"
+note = "The load at 00047314 passes this axis to its lookup."

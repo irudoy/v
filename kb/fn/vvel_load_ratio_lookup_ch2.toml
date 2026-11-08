@@ -1,0 +1,22 @@
+summary = """
+Channel 2 twin of vvel_load_ratio_lookup_ch1. It interpolates the six \
+channel 2 state surfaces by second speed word ffff11bc and request word \
+ffff1cae and the channel 2 running curve by ffff11bc, stores the percent \
+floats at ffff996c..ffff9984, and copies the value of the previous code to \
+ffff9988 and of the current code to ffff998c; code 1 takes the constant \
+100.0."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00046f44"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f44"
+note = """
+The reviewed listing establishes the lookups at 00046f72..00047042 and the \
+code selections into ffff9988 and ffff998c."""

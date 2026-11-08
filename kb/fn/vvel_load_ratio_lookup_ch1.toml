@@ -1,0 +1,22 @@
+summary = """
+Looks up the load ratio of every VVEL state code for carmine-cockatoo \
+(0004678c). It interpolates the six state surfaces by engine speed ffff11a6 \
+and request word ffff197a and the running curve by ffff11a6, converts each \
+word times 1/163.84 to a percent float at ffff9938..ffff9950, and copies the \
+value of the previous code to ffff9930 and of the current code to ffff9934; \
+code 1 takes the constant 100.0."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000469e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000469e0"
+note = """
+The reviewed listing establishes the lookups at 000469fc..00046acc and the \
+code selections into ffff9930 and ffff9934."""

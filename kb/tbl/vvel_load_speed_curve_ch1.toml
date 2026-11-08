@@ -1,0 +1,52 @@
+summary = """
+16-point word curve of vvel_load_coordinate_publisher over engine speed \
+ffff11a6. The publisher multiplies it by the load fraction ffff310c * \
+ffff197a * 2^-30 and stores the product, capped at 25000, at ffff369a for \
+00047ce8 and 000518e6, and at the cell corners at ffff3698, ffff3696, \
+ffff369e and ffff369c for 000518e6. Stock values are 5352..7194. Its \
+physical quantity remains unresolved."""
+note = [
+    """
+ROM byte 0000896c bit 7 replaces ffff369a by ffff5a82 or the ROM word \
+00008e1c, as ROM byte 000085f6 bit 1 selects.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001620a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004729a"
+note = """
+The load at 0004729a passes this table to its lookup in \
+vvel_load_coordinate_publisher."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_speed_curve_axis_ch1/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004729c"
+
+[[link]]
+type = "reader"
+to = "vvel_load_coordinate_publisher/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004729a"

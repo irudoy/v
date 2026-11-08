@@ -3,6 +3,15 @@ Publishes the current and retained previous mode-derived channel codes and \
 the word interpolation weight. Modes 5 and 15 map to codes 2 and 8, which \
 select the alternate fuel-compensation surface and coefficient curve. The \
 conditional code path does not establish stock driving reachability."""
+note = [
+    """
+The same pass forms the VVEL load ratio: vvel_load_ratio_lookup_ch1 \
+(000469e0) supplies the ratios of the previous and current state codes, \
+00046c20 blends them by the weight ffff43f0 under a cap of a ROM byte, and \
+the store at 00046866 writes the result times 163.84, clamped to 0..65535, \
+to ffff310c. 16384 is 100 percent. vvel_load_coordinate_publisher multiplies \
+ffff197a by this ratio to form vvel_load_coordinate.""",
+]
 home = "jk78c"
 
 [[source]]

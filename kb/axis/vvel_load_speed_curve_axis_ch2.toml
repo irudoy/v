@@ -1,0 +1,21 @@
+summary = "Second speed word ffff11bc axis of vvel_load_speed_curve_ch2."
+note = [
+    """
+The coordinate ffff11bc latches the second period measurement in the \
+2000000/period form of ffff11a6; a 3.125 RPM count weight for it is a \
+hypothesis.""",
+]
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b3ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047c02"
+note = "The load at 00047c02 passes this axis to its lookup."

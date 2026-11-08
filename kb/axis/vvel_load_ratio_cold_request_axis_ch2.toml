@@ -1,0 +1,17 @@
+summary = """
+Request word ffff1cae coordinate of vvel_load_ratio_cold_surface_ch2. The \
+physical quantity of the request word remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b36a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046faa"
+note = "The load at 00046faa passes this axis to its lookup."

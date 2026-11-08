@@ -1,0 +1,21 @@
+summary = "Speed coordinate ffff11bc of vvel_load_ratio_cold_surface_ch2."
+note = [
+    """
+The coordinate ffff11bc latches the second period measurement in the \
+2000000/period form of ffff11a6; a 3.125 RPM count weight for it is a \
+hypothesis.""",
+]
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ac8a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046fb0"
+note = "The load at 00046fb0 passes this axis to its lookup."

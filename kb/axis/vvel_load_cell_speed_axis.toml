@@ -1,0 +1,28 @@
+summary = """
+Engine speed ffff11a6 axis of vvel_load_cell_surface and \
+vvel_load_speed_position_curve, 800..6800 RPM. \
+vvel_load_coordinate_publisher also reads its breakpoints as data through \
+the index axes vvel_load_cell_speed_upper_index_axis and \
+vvel_load_cell_speed_lower_index_axis to form the speed bounds ffff3530 and \
+ffff3532 of the current cell, and 000533f4 loads it at 0005342c."""
+note = [
+    """
+The coordinate ffff11a6 is the engine-speed word that \
+vvel_duration_running_axis reads at 3.125 RPM per count; at that scale the \
+stock breakpoints span the stated RPM range. This axis states no scale of \
+its own.""",
+]
+level = "code"
+quantity = "rpm"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001518c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047302"
+note = "The load at 00047302 passes this axis to its lookup."
