@@ -1,0 +1,44 @@
+summary = """
+8-point word curve of cvtc_intake_model_fraction_lookup; the reader divides \
+its value by 65535 into the fractions ffffaac8 and ffffaacc. Stock 65535 \
+falling to 23068, 1.0 to 0.352."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017044"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8bc8"
+note = """
+The load at 000e8bc8 passes this table to its lookup in \
+cvtc_intake_model_fraction_lookup."""
+
+[[link]]
+type = "axis"
+to = "cvtc_intake_model_fraction_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8bc6"
+
+[[link]]
+type = "reader"
+to = "cvtc_intake_model_fraction_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8bc8"

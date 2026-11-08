@@ -1,0 +1,62 @@
+summary = """
+8x8 byte scale surface of channel 1 for cvtc_intake_alternate_channel_term \
+over byte ffff119d and byte ffff1069, selected while bit 0 of ROM byte \
+0000852a is clear. The surface byte multiplies the centered word ffff1214 + \
+2 * channel. The stock image does not run the reader; the physical \
+quantities remain unresolved."""
+note = [
+    """
+The channel 0 and channel 1 surfaces of each selection hold equal stock \
+bytes; the two selections differ.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009cfa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e60"
+note = """
+The load at 000e6e60 passes this table to its lookup in \
+cvtc_intake_alternate_channel_term."""
+
+[[link]]
+type = "axis"
+to = "cvtc_intake_scale_surface_coolant_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e68"
+
+[[link]]
+type = "axis"
+to = "cvtc_intake_scale_surface_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e64"
+
+[[link]]
+type = "reader"
+to = "cvtc_intake_alternate_channel_term/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e60"

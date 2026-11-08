@@ -1,0 +1,34 @@
+summary = """
+8-point byte bias curve of channel 0 for cvtc_intake_alternate_pair_term \
+with an implicit axis over byte ffff1067, selected while bit 0 of ROM byte \
+0000852a is clear; the reader stores it at ffff1a75. Stock 97..111. The \
+stock image does not run the reader."""
+level = "code"
+role = "table"
+access = "implicit-2d"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014280"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e72bc"
+note = """
+The load at 000e72bc passes this table to its lookup in \
+cvtc_intake_alternate_pair_term."""
+
+[[link]]
+type = "reader"
+to = "cvtc_intake_alternate_pair_term/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e72bc"

@@ -1,0 +1,17 @@
+summary = """
+Byte ffff10f1 axis of cvtc_intake_scale_surface_ch0 and _ch1, stock 50..190. \
+Its physical quantity remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000143a8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e56"
+note = "The load at 000e6e56 passes this axis to its lookup."

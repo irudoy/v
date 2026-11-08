@@ -1,0 +1,17 @@
+summary = """
+Byte ffff119d axis of the four intake CVTC scale surfaces, stock 20..112. \
+Its physical quantity remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014390"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6e54"
+note = "The load at 000e6e54 passes this axis to its lookup."

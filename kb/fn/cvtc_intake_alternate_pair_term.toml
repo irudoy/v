@@ -1,0 +1,24 @@
+summary = """
+Two-channel term of the intake CVTC dispatcher 000e5930 on its alternate \
+branch. Bit 0 of ROM byte 0000852a selects the bias curves: set, \
+cvtc_intake_bias_curve_ch0 and _ch1 by byte ffff10f1; clear, \
+cvtc_intake_bias_coolant_curve_ch0 and _ch1 by byte ffff1067. Each curve \
+byte goes to ffff1a75 or ffff1a76 and, centered at 0x80 and shifted left by \
+16, is added to ffff16f8 or ffff16fc and clamped to 0..0xffffff into \
+ffff1a80 or ffff1a84. e5930 calls it once while bit 2 of ROM byte 0000852a \
+is clear; the stock JK78C byte is 0x05, so the stock image does not run it."""
+level = "code"
+role = "accessor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000e70fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e70fe"
+note = """
+The reviewed listing establishes the curve lookups at 000e72b2, 000e72c2, \
+000e7304 and 000e7322 and the stores at 000e72d0..000e734e."""

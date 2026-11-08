@@ -1,0 +1,44 @@
+summary = """
+8-point byte curve of channel 1 for cvtc_intake_alternate_channel_term over \
+byte ffff119d; the reader stores the result at ffff1a7a + channel. Every \
+stock byte is 0. The stock image does not run the reader."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013a00"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6f8a"
+note = """
+The load at 000e6f8a passes this table to its lookup in \
+cvtc_intake_alternate_channel_term."""
+
+[[link]]
+type = "axis"
+to = "cvtc_intake_alternate_curve_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6f90"
+
+[[link]]
+type = "reader"
+to = "cvtc_intake_alternate_channel_term/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6f8a"

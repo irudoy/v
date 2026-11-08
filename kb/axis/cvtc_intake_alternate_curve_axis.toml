@@ -1,0 +1,17 @@
+summary = """
+Byte ffff119d axis of cvtc_intake_alternate_curve_ch0 and _ch1, stock \
+20..112."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000133aa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6f90"
+note = "The load at 000e6f90 passes this axis to its lookup."

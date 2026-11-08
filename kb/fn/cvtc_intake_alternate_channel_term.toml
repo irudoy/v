@@ -1,0 +1,27 @@
+summary = """
+Per-channel term of the intake CVTC dispatcher 000e5930 on its alternate \
+branch. Bit 0 of ROM byte 0000852a selects the scale surface: set, \
+cvtc_intake_scale_surface_ch0 or _ch1 by byte ffff119d and byte ffff10f1; \
+clear, cvtc_intake_scale_coolant_surface_ch0 or _ch1 by ffff119d and coolant \
+byte ffff1069. The product of the surface byte and the centered word \
+ffff1214 + 2 * channel passes range checks and the helper 00021ce8 into the \
+long word ffff1ab0 + 4 * channel; cvtc_intake_alternate_curve_ch0 or _ch1 by \
+ffff119d supplies the byte ffff1a7a + channel. 000e5930 calls it for \
+channels 0 and 1 only while bit 2 of ROM configuration byte 0000852a is \
+clear; the stock JK78C byte is 0x05, so the stock image takes the other \
+branch and does not run it."""
+level = "code"
+role = "accessor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000e6dfc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e6dfc"
+note = """
+The reviewed listing establishes the selections at 000e6e10..000e6e78 and \
+the curve lookup at 000e6f96."""

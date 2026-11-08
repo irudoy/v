@@ -1,0 +1,23 @@
+summary = """
+Converts two float inputs, clamped to 0..0.2 and scaled by 312500, through \
+cvtc_intake_model_fraction_curve into fractions of 65535 at ffffaac8 and \
+ffffaacc, and with its flag argument set stores the sums ffffaac0 + term + \
+ffffab00 and ffffaac4 + term + ffffab04 times those fractions at ffffaad0 \
+and ffffaad4. It runs under 000e81f8, the stock branch of the intake CVTC \
+dispatcher 000e5930, through 000e841a, 000e8630, 000e8794 and 000e8968."""
+level = "code"
+role = "accessor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000e8a98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8a98"
+note = """
+The reviewed listing establishes the conversions at 000e8ab0..000e8b0c, the \
+curve lookups at 000e8bcc and 000e8bdc, and the stores at \
+000e8bfe..000e8c46."""

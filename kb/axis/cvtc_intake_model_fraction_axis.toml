@@ -1,0 +1,18 @@
+summary = """
+Axis of cvtc_intake_model_fraction_curve over the float inputs of its reader \
+clamped to 0..0.2 and times 312500: stock 3125..25000, 0.01 to 0.08 input \
+units. The physical quantity of the inputs remains unresolved."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017054"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e8bc6"
+note = "The load at 000e8bc6 passes this axis to its lookup."
