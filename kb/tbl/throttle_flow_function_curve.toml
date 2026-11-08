@@ -2,8 +2,8 @@ summary = """
 32-point normalized compressible flow function of the throttle over the \
 pressure ratio: 65535 at ratios up to 34612/65535 = 0.528 and 0 at 1.0. \
 throttle_target_flux_lookup and throttle_held_flux_lookup read it at the \
-pressure / ROM word 00009082 * 0.005, and request_difference_limit_builder \
-also reads it."""
+ratio pressure / max(ROM word 00009082 * 0.005, 0.005), and \
+request_difference_limit_builder also reads it."""
 level = "code"
 role = "table"
 access = "explicit"
