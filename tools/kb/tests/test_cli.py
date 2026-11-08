@@ -187,6 +187,38 @@ class BenchCommandTest(unittest.TestCase):
                 code, _, _, baselines = self.bench(reply, check=True, **params)
                 self.assertEqual((code, baselines), (1, 0))
 
+    def test_the_check_lists_a_question_that_needs_more_than_the_graph_as_not_run(self):
+        answer = "apc_output/ram\n  jk00d ffff206c -> ffff11f5\n"
+        code_question = {"id": 8, "command": "kb code jk78c:000564a4", "budget": 100,
+                         "baseline": [], "expect": [r"void FUN_000564a4\("],
+                         "needs": ["ghidra"]}
+        questions = [dict(self.QUESTION), code_question]
+        code, text, calls, _ = self.bench(answer, questions=questions, check=True)
+        self.assertEqual(code, 0)
+        self.assertEqual(calls, [mock.call(["log", "apc_output", "--full"])])
+        self.assertIn(" 8  NOT RUN  needs ghidra", text)
+        self.assertNotIn(" 8  PASS", text)
+        code, text, calls, _ = self.bench(answer, questions=questions)
+        self.assertEqual(code, 1)
+        self.assertEqual(len(calls), 2)
+        self.assertIn(" 8  FAIL", text)
+        with self.assertRaises(KbError) as error:
+            self.bench(answer, questions=questions, only=[8], check=True)
+        self.assertEqual(error.exception.code, 2)
+        self.assertIn("--check", str(error.exception))
+
+    def test_invalid_needs_fail_before_any_question_runs(self):
+        for needs in ("ghidra", ["docker"], ["ghidra", "ghidra"], [None], [["ghidra"]]):
+            with self.subTest(needs=needs):
+                config = {"question": [{**self.QUESTION, "needs": needs}]}
+                with mock.patch.object(cli.read, "bench", return_value=config), \
+                        mock.patch.object(cli, "main") as command, \
+                        self.assertRaises(KbError) as error:
+                    cli.command_bench(Namespace(only=None, check=True))
+                self.assertEqual(error.exception.code, 2)
+                self.assertIn("needs", str(error.exception))
+                command.assert_not_called()
+
     def test_invalid_contracts_fail_before_any_question_or_baseline_runs(self):
         for expected in (None, [], "literal", [None], [" "], ["["], [".*"], ["(foo)?"]):
             with self.subTest(expected=expected):

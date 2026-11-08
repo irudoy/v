@@ -364,14 +364,24 @@ def baseline_tokens(steps, root=repo.ROOT):
 
 def command_bench(args, root=repo.ROOT):
     config = read.bench(root)
-    questions = [(question, spec.expectations(question)) for question in config["question"]]
-    known = {question["id"] for question, _ in questions}
+    questions = [(question, spec.expectations(question), spec.needs(question))
+                 for question in config["question"]]
+    known = {question["id"] for question, _, _ in questions}
     if args.only and (unknown := sorted(set(args.only) - known)):
         raise KbError(f"no benchmark questions {unknown}; known ids: {sorted(known)}", code=2)
-    selected = [(question, expected) for question, expected in questions
+    selected = [(question, expected, needs) for question, expected, needs in questions
                 if not args.only or question["id"] in args.only]
+    # The check answers from the graph alone; a question that needs more is
+    # answered by the complete benchmark and never counts as checked.
+    unrun = [(question, needs) for question, _, needs in selected if args.check and needs]
+    selected = [(question, expected) for question, expected, needs in selected
+                if not (args.check and needs)]
+    for question, needs in unrun:
+        print(f"{question['id']:>2}  NOT RUN  needs {', '.join(needs)}; `kb bench` answers it  "
+              f"{question['command']}")
     if not selected:
-        raise KbError("no benchmark questions selected",
+        raise KbError("no benchmark questions selected" + (
+            "; the selected questions need capabilities that `--check` omits" if unrun else ""),
                       code=2)
     failed = 0
     for question, expected in selected:
@@ -700,7 +710,8 @@ def build_parser():
     bench = commands.add_parser("bench", help="answer the acceptance questions (bench.toml)")
     bench.add_argument("--only", type=int, action="append", help="one question id; repeatable")
     bench.add_argument("--check", action="store_true",
-                       help="exit codes, required content, and budgets without the baselines")
+                       help="exit codes, required content, and budgets of the questions that "
+                            "need only the graph, without the baselines")
     bench.set_defaults(handler=command_bench)
 
     code = commands.add_parser("code", help="decompilation or listing of a function")

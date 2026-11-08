@@ -65,6 +65,17 @@ def test_benchmark_content_contracts_are_required_by_the_source_gate(monkeypatch
         single_source.check_kb_questions()
 
 
+@pytest.mark.parametrize("needs", ["ghidra", ["docker"], ["ghidra", "ghidra"]])
+def test_benchmark_needs_name_known_capabilities_in_the_source_gate(monkeypatch, needs):
+    read = single_source._toml
+    config = read(single_source.KB_BENCH)
+    config["question"][-1]["needs"] = needs
+    monkeypatch.setattr(single_source, "_toml", lambda path: config
+                        if path == single_source.KB_BENCH else read(path))
+    with pytest.raises(single_source.SourceError, match="question .*: needs"):
+        single_source.check_kb_questions()
+
+
 @pytest.mark.parametrize(
     "check, path, old, new",
     [

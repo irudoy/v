@@ -106,6 +106,9 @@ id = 8
 question = "The code of a function"
 command = "kb code jk78c:000564a4"
 budget = 4000
+# The decompiler reads the pinned Ghidra installation and the JK78C project or
+# its verified decompilation cache, which the Verify workflow does not provide.
+needs = ["ghidra"]
 expect = [
     '^jk78c:000564a4\s+fn\s+\[l0\]',
     'void FUN_000564a4\(',

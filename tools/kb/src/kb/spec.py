@@ -30,6 +30,10 @@ def plain(cell):
     return cell.replace("`", "")
 
 
+# The capabilities beyond the synchronized graph that a benchmark question may
+# require. `kb bench --check` answers only the questions that require none.
+NEEDS = {"ghidra": "the pinned Ghidra installation and the project or verified "
+                   "decompilation cache of the image"}
 
 
 def questions(root=repo.ROOT):
@@ -58,3 +62,15 @@ def expectations(question):
             raise KbError(f"{label} pattern {text!r} accepts empty content", code=2)
         found.append(pattern)
     return found
+
+
+def needs(question):
+    """The capabilities of `NEEDS` that a benchmark question requires besides
+    the synchronized graph; none when the question states no `needs`."""
+    stated = question.get("needs", [])
+    if (not isinstance(stated, list)
+            or not all(isinstance(item, str) and item in NEEDS for item in stated)
+            or len(set(stated)) != len(stated)):
+        raise KbError(f"question {question.get('id', '?')}: needs lists distinct "
+                      f"capabilities of {sorted(NEEDS)}", code=2)
+    return tuple(stated)

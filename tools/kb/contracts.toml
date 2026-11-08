@@ -27,7 +27,7 @@ rows = [
   ["`kb raw <ref> [<read options>]`", "The records of the entity: its canonical file under `kb/`, for a symbol the file of its meaning, and applicable registry rows, `kb/names.csv` included"],
   ["`kb cypher <query> [--param <name>=<value>]... [<read options>]`", "A read-only Cypher query over the working tree's instance after the fingerprint check"],
   ["`kb audit [--section <s>]...`", "Disagreements of one fact between registries, the names that lose to a name of higher precedence, and legacy evidence without the keys of its kind under the registry that states it; the `levels` check ([Levels](#71-levels)); `chain-notes` outside the configured arithmetic grammar; `research` lists source-bound unresolved semantic statements separately. `--section` restricts the audit to the named sections, which it alone computes"],
-  ["`kb bench [--only <id>]... [--check]`", "The benchmark questions against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions)); `--check` omits the baselines, which run external search tools, and `make check` runs it"],
+  ["`kb bench [--only <id>]... [--check]`", "The benchmark questions against their required content, budgets, and baselines ([Acceptance questions](#18-acceptance-questions)); `--check` omits the baselines, which run external search tools, and lists the questions that state `needs` as not run, and `make check` runs it"],
   ["`kb check [--changed] [--only <check>]...`", "The gates of [Checks](#13-checks), or those that `--only` names; `--changed` runs those whose inputs differ from those of their last pass"],
 ]
 

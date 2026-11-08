@@ -197,6 +197,7 @@ def check_kb_questions():
     for question in questions:
         try:
             kb_spec.expectations(question)
+            kb_spec.needs(question)
         except KbError as error:
             raise SourceError(f"{KB_BENCH}: {error}") from error
         number = question.get("id")
