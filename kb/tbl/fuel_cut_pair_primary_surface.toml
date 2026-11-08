@@ -20,9 +20,11 @@ threshold bytes.""",
 The surface path runs when no earlier branch of the builder supplies the \
 pair. Stock 0x00 in ROM8[00008a80] (1ND 00008b5b, 1ME3B 00008bac) passes its \
 gate on byte ffff1069 (1ND and 1ME3B fffe8073) on every image, so bit 1 of \
-ffff2425 and the earlier branches decide at run time. The second byte of the \
-pair comes from fuel_cut_pair_secondary_curve, whose stock bytes are zero on \
-every image.""",
+ffff2425 (1ND bit 6 of fffe94ed, 1ME3B bit 6 of fffe94be) and the earlier \
+branches decide at run time. The late pair of the builder still replaces the \
+surface result under two run-time bits. The second byte of the pair comes \
+from fuel_cut_pair_secondary_curve, whose stock bytes are zero on every \
+image.""",
     """
 fuel_cut_coordinator 0006a9b0 calls the builder at 0006aa5c, stores the pair \
 at ffffade8 and in ffff1490/ffff1491, and passes it to 0006c444 with the cut \

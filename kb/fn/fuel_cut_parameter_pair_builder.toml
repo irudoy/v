@@ -1,15 +1,19 @@
 summary = """
 Builds the two-byte parameter pair that fuel_cut_coordinator passes to the \
-fuel-cut entry sequence 0006c444. In priority order it derives the pair from \
-the held pair ffff1490/ffff1491 while ffff1494 is nonzero, takes the \
-override pair ROM8[0000834f..00008352] while ffff477c is positive and no \
-byte is 0xff, returns zero while bit 3 of ffff23ff is set, and takes the \
-fixed pair ROM8[000089a8..000089a9] when ffff1069 is below ROM8[00008a80] or \
-bit 1 of ffff2425 is set. Otherwise the first byte comes from \
+fuel-cut entry sequence 0006c444, whose first stage loads the first byte \
+into a countdown and whose second stage loads the second. In priority order \
+it derives the pair from the held pair ffff1490/ffff1491 while ffff1494 is \
+nonzero, takes one of two override pairs of ROM8[0000834f..00008352] by bit \
+6 of ffff23b0 while ffff477c is nonzero and none of the four bytes is 0xff, \
+takes a zero pair while bit 3 of ffff23ff is set, and takes the fixed pair \
+ROM8[000089a8..000089a9] when ffff1069 is below ROM8[00008a80] or bit 1 of \
+ffff2425 is set. Otherwise the first byte comes from \
 fuel_cut_pair_primary_surface or fuel_cut_pair_primary_alternate_surface by \
 the hysteretic ratio bit 1 of ffff4525, and the second byte from \
-fuel_cut_pair_secondary_curve. Physical component conversions remain \
-unresolved."""
+fuel_cut_pair_secondary_curve. After every branch except the held pair, the \
+late pair ROM8[0000871d], ROM8[0000871c] replaces the result while bit 2 of \
+ffff4501 is set and bit 2 of ffff4504 is clear. The branches differ by \
+layout (symbol notes). Physical component conversions remain unresolved."""
 level = "code"
 home = "jk78c"
 block = "fuel_quantity/block"
@@ -21,9 +25,18 @@ level = "code"
 note = """
 fuel_cut_coordinator 0007a740 calls this builder at 0007ac2e. It selects \
 0000b8d4 or 0000b914 by bit 3 of fffeb9a4 and reads \
-fuel_cut_pair_secondary_curve after each. The override pair \
-ROM8[00008365..00008368] applies while fffebc78 is nonzero; its stock bytes \
-0a 14 00 00 enable it. The fixed pair ROM8[00008ac3..00008ac4] holds 40, 0."""
+fuel_cut_pair_secondary_curve after each. The six bytes \
+ROM8[00008365..0000836a], stock 0a 14 00 00 00 28, hold three pairs as \
+(first, second): the override pairs (00008368, 00008365) and (00008369, \
+00008366), chosen by bit 7 of fffe9442 while fffebc78 is nonzero and none of \
+their four bytes is 0xff, and the pair (0000836a, 00008367). After the \
+override pairs, a zero pair applies while bit 6 of fffe9495 is set; \
+otherwise the pair (0000836a, 00008367), stock 40, 0, applies while \
+vehicle_speed fffe80f8 is below ROM8[00008840] (stock 2) and fffe8073 \
+reaches ROM8[0000883f] (stock 0x78). The fixed pair ROM8[00008ac3..00008ac4] \
+holds 40, 0. The late pair ROM8[0000879c], ROM8[0000879b], stock 0, 20, \
+replaces the result of every branch except the held pair while bit 1 of \
+fffeb979 is set and bit 1 of fffeb97c is clear."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -31,11 +44,14 @@ supports = "homology"
 at = "1me3b:0007bf3c"
 to = "jk78c:0006be58"
 note = """
-The same branch order as JK78C 0006be58: a hysteretic selector from fffeb8da \
+Target function 0007bf3c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder): a hysteretic selector from fffeb8da \
 against ROM8[0000854e] << 8 with release ROM8[0000854f] << 8, a held-pair \
-branch on fffe81fc, the override pair, the fixed pair under ROM8[00008bac] \
-and bit 6 of fffe94be, and the surface and curve lookups over \
-min(2*u8[fffe818e], 0xe0) and min(2*normalized_load, 0xe0)."""
+branch on fffe81fc, the override pairs, a zero pair, the fixed pair under \
+ROM8[00008bac] and bit 6 of fffe94be, the surface and curve lookups over \
+min(2*u8[fffe818e], 0xe0) and min(2*normalized_load, 0xe0), and the late \
+replacement pair. It adds the vehicle-speed pair branch before the fixed \
+pair."""
 
 [[symbol]]
 layout = "1nd"
@@ -44,10 +60,14 @@ level = "code"
 note = """
 fuel_cut_coordinator 000760cc calls this builder at 000765c2. It selects \
 0000b820 or 0000b860 by bit 2 of fffeb83f and reads \
-fuel_cut_pair_secondary_curve after each. The override pair \
-ROM8[00008360..00008363] applies while fffebaf5 is nonzero: stock 0a 14 00 \
-00 on 1ND0A enables it, 0xff bytes on 1ND3B disable it. The fixed pair \
-ROM8[00008a71..00008a72] holds 40, 0 on 1ND0A and 75, 0 on 1ND3B."""
+fuel_cut_pair_secondary_curve after each. The override pairs of \
+ROM8[00008360..00008363], chosen by bit 7 of fffe9472, apply while fffebaf5 \
+is nonzero: stock 0a 14 00 00 on 1ND0A enables them, 0xff bytes on 1ND3B \
+disable them. The builder has no zero-pair branch. The fixed pair \
+ROM8[00008a71..00008a72] holds 40, 0 on 1ND0A and 75, 0 on 1ND3B. The late \
+pair ROM8[00008788], ROM8[00008787], stock 0, 20 on both images, replaces \
+the result of every branch except the held pair while bit 2 of fffeb819 is \
+set and bit 2 of fffeb81c is clear."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -55,16 +75,21 @@ supports = "homology"
 at = "1nd:0007765c"
 to = "jk78c:0006be58"
 note = """
-The same branch order as JK78C 0006be58: a hysteretic selector from fffeb784 \
+Target function 0007765c corresponds to JK78C 0006be58 \
+(fuel_cut_parameter_pair_builder): a hysteretic selector from fffeb784 \
 against ROM8[0000853a] << 8 with release ROM8[0000853b] << 8, a held-pair \
-branch on fffe84cc, the override pair, the fixed pair under ROM8[00008b5b] \
-and bit 6 of fffe94ed, and the surface and curve lookups over \
-min(2*u8[fffe81a8], 0xe0) and min(2*normalized_load, 0xe0)."""
+branch on fffe84cc, the override pairs, the fixed pair under ROM8[00008b5b] \
+and bit 6 of fffe94ed, the surface and curve lookups over \
+min(2*u8[fffe81a8], 0xe0) and min(2*normalized_load, 0xe0), and the late \
+replacement pair. It lacks the zero-pair branch of JK78C."""
 
 [[symbol]]
 layout = "jk78c"
 address = "0006be58"
 level = "code"
+note = """
+Stock: the four override bytes hold 0xff, which disables the override pairs; \
+the fixed pair holds 75, 0 and the late pair 0, 20."""
 
 [[symbol.evidence]]
 kind = "l0"
