@@ -89,10 +89,11 @@ address = "fffe8104"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1nd:000b5b14"
+at = "1nd:000b5c6e"
 to = "7mfk:ffff110e"
 note = """
-Homologous DFCO consumers compare this byte against the same raw threshold"""
+Homologous DFCO consumers compare this byte against the same raw threshold: \
+1nd:000b592e compares it with 1nd:00008c1e."""
 
 [[symbol]]
 layout = "7mfk"

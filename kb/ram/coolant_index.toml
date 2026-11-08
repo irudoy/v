@@ -66,9 +66,11 @@ address = "fffe8077"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1me3b:00042df4"
+at = "1me3b:00042df0"
 to = "7mfk:ffff1077"
-note = "Coolant activation index is recovered from target consumers"
+note = """
+Coolant activation index is recovered from target consumers: the byte that \
+1me3b:00042df0 reads is the input of the lookup at 1me3b:00042df4."""
 
 [[symbol]]
 layout = "1nd"
@@ -77,9 +79,11 @@ address = "fffe8077"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1nd:0003fc78"
+at = "1nd:0003fc74"
 to = "7mfk:ffff1077"
-note = "Coolant activation index is recovered from target consumers"
+note = """
+Coolant activation index is recovered from target consumers: the byte that \
+1nd:0003fc74 reads is the input of the lookup at 1nd:0003fc78."""
 
 [[symbol]]
 layout = "7mfk"

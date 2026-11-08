@@ -85,7 +85,7 @@ can_symbol,feedback_status_byte,ffff3ada,fffeb236,,,mapped,Serializer payload of
 can_symbol,hcan1_init,000c338a,0011f2ec,,,mapped,Primary and recovery callers share this initializer
 can_symbol,knock_channel_alternate,ffff2143,fffe90ff,,,mapped,Target evaluator reads this channel byte while selector bit 3 is set
 can_symbol,knock_channel_primary,ffff11de,fffe81bc,,,mapped,Target evaluator reads this channel byte while selector bit 3 is clear
-can_symbol,knock_count,ffff2142,fffe90fe,,,mapped,Target knock event function updates this saturating counter
+can_symbol,knock_count,ffff2142,fffe90fe,,,mapped,"The knock function 1me3b:00071d64 reads this saturating counter at 1me3b:00072058 and 1me3b:000720a0 and clears it at 1me3b:000720d8, as the 7mfk coordinator consumes and clears the count."
 can_symbol,knock_function,000493e8,00071d64,,,target-specific,Target coordinator clears the saturating event count at 0x720d8
 can_symbol,knock_mask,ffff2150,fffe910c,,,mapped,Target knock event function sets and clears this channel mask at the 1ND offset from the counter
 can_symbol,knock_metric_base,ffff21d8,fffe9194,,,mapped,Target evaluator stores the offset-binary metric of channel n at base plus 4 * (n - 1)

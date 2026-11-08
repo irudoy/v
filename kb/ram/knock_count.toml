@@ -49,9 +49,12 @@ address = "fffe90fe"
 [[symbol.evidence]]
 kind = "l0"
 supports = "homology"
-at = "1me3b:00072142"
+at = "1me3b:000720d8"
 to = "7mfk:ffff2142"
-note = "Target knock event function updates this saturating counter"
+note = """
+The knock function 1me3b:00071d64 reads this saturating counter at \
+1me3b:00072058 and 1me3b:000720a0 and clears it at 1me3b:000720d8, as the \
+7mfk coordinator consumes and clears the count."""
 
 [[symbol]]
 layout = "1nd"
