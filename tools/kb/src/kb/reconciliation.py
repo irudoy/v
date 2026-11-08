@@ -187,6 +187,9 @@ def rebase_export(model, layout, from_l0, *, reasons_reviewed=False):
 def rebase(before, after, renames):
     """Rebind renamed claims or passive archive refs; withdraw deleted accesses.
 
+    `renames` maps each meaning key that leaves the change, by a merge or a
+    rename, to the key that takes its place, in the order the change applies
+    them, so a claim follows a merge and a later rename of the survivor.
     New differences and changed conditions, evidence contents, widths or L0
     never gain a review. Every retained record keeps its state and reason.
     """
@@ -212,13 +215,22 @@ def rebase(before, after, renames):
     for _, _, claim in access_claims(after):
         remaining[claim_identity(claim)].append(claim)
     owners = {meaning.key: meaning for meaning in before.meanings}
+
+    def final(key):
+        while key in renames:
+            key = renames[key]
+        return key
+
     paths = {store.path_of(old.split('/')[1], old.split('/')[0]).as_posix():
-             store.path_of(new.split('/')[1], new.split('/')[0]).as_posix()
-             for old, new in renames.items()}
+             store.path_of(final(old).split('/')[1], final(old).split('/')[0]).as_posix()
+             for old in renames}
 
     def renamed_claim(claim):
         for old, new in renames.items():
-            owner = owners[old]
+            # A meaning that the change starts states no reviewed claim.
+            owner = owners.get(old)
+            if owner is None:
+                continue
             aliases = {owner.name, *(symbol.generated for symbol in owner.symbols.values())} - {None}
             claim, _ = write.renamed(claim, aliases, owner.kind, new.split('/')[0])
         return {**claim, 'sources': sorted(paths.get(item, item) for item in claim['sources'])}

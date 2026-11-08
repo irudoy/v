@@ -2296,8 +2296,11 @@ def plan(ops, base, resolve, root=repo.ROOT):
     texts = change.texts()
     result = compile.build(root, {**base.overlay, **texts})
     from kb import reconciliation
-    owner_text = (reconciliation.rebase(base, result, change.renamed)
-                  if change.renamed or any(op["cmd"] == "unlink" or
+    # No operation names a meaning that an earlier one renames, so the joins
+    # and then the renames give the order in which a claim changes meaning.
+    replaced = {**change.joined, **change.renamed}
+    owner_text = (reconciliation.rebase(base, result, replaced)
+                  if replaced or any(op["cmd"] == "unlink" or
                      (op["cmd"] == "set-link" and "evidence" in (op.get("keys") or {}))
                      for op in ops) else None)
     if owner_text is not None:

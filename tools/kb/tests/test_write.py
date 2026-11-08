@@ -1901,6 +1901,43 @@ def test_a_merge_chain_moves_every_symbol_that_an_earlier_merge_brought(probe_st
     assert result.meaning_of(SymbolKey("jk78c", "ram", 0xffff4100)).key == "probe_final/ram"
 
 
+@pytest.mark.parametrize("renamed", [False, True])
+def test_the_reviews_follow_each_merge_and_a_later_rename_in_their_order(probe_store,
+                                                                         monkeypatch, renamed):
+    # A reviewed claim of probe_source follows it into probe_target, then
+    # into probe_last, then to the name that the batch gives the survivor.
+    base = probe_store(probe_source=probe("jk78c:ffff4100"),
+                       probe_target=probe("1nd:ffff4200"),
+                       probe_last=probe("1me3b:ffff4400"))
+    from kb import reconciliation
+    calls = []
+    monkeypatch.setattr(reconciliation, "rebase",
+                        lambda before, after, renames: calls.append(list(renames.items())))
+    ops = [merge("probe_target/ram", "probe_source/ram", evidence=[SPEC]),
+           merge("probe_last/ram", "probe_target/ram", evidence=[
+               {**SPEC, "at": "1nd:ffff4200"}, {**SPEC, "at": "jk78c:ffff4100"}])]
+    if renamed:
+        ops.append({"cmd": "rename", "meaning": "probe_last/ram", "name": "probe_final"})
+    planned(base, *ops)
+    assert calls == [[("probe_source/ram", "probe_target/ram"),
+                      ("probe_target/ram", "probe_last/ram"),
+                      *([("probe_last/ram", "probe_final/ram")] if renamed else [])]]
+
+
+def test_a_meaning_that_the_change_starts_can_join_another(probe_store, monkeypatch):
+    # The review rebase receives a meaning that the base lacks.
+    base = probe_store(probe_target=probe("1nd:ffff4200"))
+    from kb import reconciliation
+    calls = []
+    monkeypatch.setattr(reconciliation, "rebase",
+                        lambda before, after, renames: calls.append(list(renames.items())))
+    _, _, result = planned(base, new("ram", "jk78c:ffff4100", name="probe_new",
+                                     evidence=[SPEC], level="candidate"),
+                           merge("probe_target/ram", "probe_new/ram", evidence=[SPEC]))
+    assert result.meaning_of(SymbolKey("jk78c", "ram", 0xffff4100)).key == "probe_target/ram"
+    assert calls == [[("probe_new/ram", "probe_target/ram")]]
+
+
 def test_entries_of_one_link_with_and_without_layouts_lift_the_restricted_union(probe_store):
     # Either order of the entries restricts the link to the listed layouts,
     # and the links check notes the narrowing without failing.

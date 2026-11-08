@@ -1,5 +1,6 @@
 """Unresolved review maintenance never supplies evidence for a new claim."""
 from copy import deepcopy
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -91,3 +92,38 @@ def test_changed_l0_cannot_reuse_a_renamed_review(tmp_path):
     with exact_sources(), patch.object(reconciliation.match, 'l0_digest',
                                       side_effect=['0123456789abcdef', '1111111111111111']):
         assert reconciliation.rebase(before, after, {'caller/fn': 'renamed_caller/fn'}) is None
+
+
+@pytest.mark.parametrize('renames', [
+    {'test/ram': 'survivor/ram'},
+    {'test/ram': 'survivor/ram', 'survivor/ram': 'final/ram'},
+])
+def test_a_merge_and_a_later_rename_rebind_the_exact_claim_and_source(tmp_path, renames):
+    # test/ram joins survivor/ram, which a later rename can name final/ram.
+    with exact_sources(), patch.object(reconciliation.match, 'l0_digest', return_value='0123456789abcdef'):
+        before, text = declared(tmp_path)
+        before.meanings.append(SimpleNamespace(key='survivor/ram', name='survivor', kind='ram',
+                                               symbols={}))
+        after = deepcopy(before)
+        link = after.links[0]
+        name = list(renames.values())[-1].split('/')[0]
+        link.owner.key, link.owner.name = f'{name}/ram', name
+        link.sources = {f'kb/ram/{name}.toml'}
+        link.owner.symbols['7mfk'].sources = link.sources
+        updated = reconciliation.rebase(before, after, renames)
+        assert updated is not None
+        after.config['reconciliation'] = tomlkit.parse(updated)['reconciliation']
+        assert reconciliation.check(after) == []
+        old = before.config['reconciliation']['review'][0]
+        new = after.config['reconciliation']['review'][0]
+        assert (new['state'], new['reason'], new['l0']) == (old['state'], old['reason'], old['l0'])
+        assert new['sources'] == [f'kb/ram/{name}.toml']
+        assert (tmp_path / repo.OWNER_CONFIG).read_text() == text
+
+
+def test_a_meaning_that_the_change_starts_and_merges_states_no_reviewed_claim(tmp_path):
+    with exact_sources(), patch.object(reconciliation.match, 'l0_digest', return_value='0123456789abcdef'):
+        before, _ = declared(tmp_path)
+        after = deepcopy(before)
+        assert reconciliation.rebase(before, after, {'started/ram': 'test/ram'}) is None
+        assert reconciliation.check(after) == []
