@@ -1,10 +1,13 @@
 summary = """
-Converts two float inputs, clamped to 0..0.2 and scaled by 312500, through \
-cvtc_intake_model_fraction_curve into fractions of 65535 at ffffaac8 and \
-ffffaacc, and with its flag argument set stores the sums ffffaac0 + term + \
-ffffab00 and ffffaac4 + term + ffffab04 times those fractions at ffffaad0 \
-and ffffaad4. It runs under 000e81f8, the stock branch of the intake CVTC \
-dispatcher 000e5930, through 000e841a, 000e8630, 000e8794 and 000e8968."""
+Clamps two float inputs to 0..0.2 and scales them by 312500. With its flag \
+argument set it looks both up in cvtc_intake_model_fraction_curve, stores \
+the results as fractions of 65535 at ffffaac8 and ffffaacc, and stores the \
+sums ffffaac0 + term + ffffab00 and ffffaac4 + term + ffffab04 times those \
+fractions at ffffaad0 and ffffaad4. With the flag clear it reads no curve, \
+leaves the held fractions at ffffaac8 and ffffaacc, and stores zero at \
+ffffaad0 and ffffaad4. It runs under 000e81f8, the stock branch of the \
+intake CVTC dispatcher 000e5930, through 000e841a, 000e8630, 000e8794 and \
+000e8968."""
 level = "code"
 role = "accessor"
 block = "cvtc_intake/block"
