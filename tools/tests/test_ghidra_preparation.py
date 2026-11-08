@@ -554,3 +554,93 @@ def test_raw_stage_cannot_bind_changed_builder_to_retained_outputs(prepared_root
     builder.write_text("changed primary builder\n")
     with pytest.raises(KbError, match="stale or unsuccessful"):
         prep.verify_stage(prep.plan("t1", root), tmp_path, [(output.name,)], root)
+
+
+def test_a_seed_without_fragments_joins_nothing(prepared_root):
+    root, _ = prepared_root
+    registry = root / prep.SEEDS / "t1.toml"
+    text = registry.read_text()
+    start = text.index("[[seed.fragment]]")
+    registry.write_text(text[:start] + text[text.index("[[pin]]"):])
+    (root / prep.MERGES / "t1.csv").write_text("entry,fragment,note\n")
+    plan = prep.plan("t1", root)
+    assert plan.seeds[0].fragments == ()
+    assert plan.joins == ()
+
+
+def callee_registry(root, image, reference):
+    """The fixture registry with a callee seed at 00000108 and `reference`."""
+    registry = root / prep.SEEDS / "t1.toml"
+    digest = hashlib.sha256(image[0x108:0x10c]).hexdigest()
+    registry.write_text(registry.read_text().replace(
+        '[[pin]]\naddress = "00000020"',
+        '[[seed]]\nentry = "00000108"\nsites = ["0000010a"]\n'
+        'bytes = 4\ninstructions = 2\nranges = 1\n'
+        f'instruction_sha256 = "{digest}"\n\n'
+        '[[pin]]\naddress = "00000108"\nbytes = "0009"\n\n'
+        '[[pin]]\naddress = "00000020"', 1) + reference)
+
+
+def test_a_reviewed_call_of_another_seed_reaches_a_seed_entry(prepared_root):
+    root, image = prepared_root
+    callee_registry(root, image, '\n[[reference]]\nowner = "00000100"\nsite = "00000106"\n'
+                                 'target = "00000108"\ntype = "call"\n')
+    plan = prep.plan("t1", root)
+    assert [seed.entry for seed in plan.seeds] == [0x100, 0x108]
+    assert (0x100, 0x106, 0x108, "call") in plan.references
+
+
+@pytest.mark.parametrize("reference", [
+    "",
+    '\n[[reference]]\nowner = "00000100"\nsite = "00000106"\n'
+    'target = "00000108"\ntype = "read"\n',
+    '\n[[reference]]\nowner = "00000108"\nsite = "0000010a"\n'
+    'target = "00000108"\ntype = "call"\n',
+], ids=["no reference", "read reference", "own call"])
+def test_a_seed_without_pointer_pin_or_call_of_another_seed_is_refused(
+        prepared_root, reference):
+    root, image = prepared_root
+    callee_registry(root, image, reference)
+    with pytest.raises(KbError, match="seed 00000108 lacks an exact entry-pointer pin"):
+        prep.plan("t1", root)
+
+
+def test_preparation_admits_no_function_entry_outside_the_registry():
+    root = Path(__file__).resolve().parents[2]
+    primary = (root / repo.GHIDRA_SCRIPTS / "PrepareProgram.java").read_text()
+    expected = primary.index("Set<String> expected = new HashSet<>(before.keySet());")
+    assert primary.index("expected.addAll(Arrays.asList(entries));") > expected
+    assert primary.index("if (!expected.equals(after.keySet())) {") > expected
+    assert 'throw new IllegalStateException("preparation changes an unreviewed function entry");' \
+        in primary
+    assert 'throw new IllegalStateException("prepared body differs at " + row[1]);' in primary
+
+
+def exact_ranges(family):
+    return [tuple(int(bound, 16) for bound in item.split(":"))
+            for item in family.get("exact_ranges", ())]
+
+
+@pytest.mark.parametrize("path", sorted(
+    (Path(__file__).resolve().parents[2] / prep.SEEDS).glob("*.toml")), ids=lambda p: p.stem)
+def test_tracked_seed_registry_holds_family_bytes(path):
+    """Every pin, seed entry, and cited site of a registry lies in the exact
+    ranges of its family, whose member images carry the pinned bytes."""
+    root = Path(__file__).resolve().parents[2]
+    plan = prep.plan(path.stem, root)
+    families = tomllib.loads((root / repo.HOMOLOGY).read_text())["family"]
+    family = next(item for item in families.values()
+                  if plan.image in item.get("layouts", {}).values())
+    images = repo.images(root)
+    members = [images[member].path.read_bytes() for member in family["members"]]
+    if len(members) > 1:
+        ranges = exact_ranges(family)
+        spans = [(address, address + len(value)) for address, value in plan.pins]
+        spans += [(seed.entry, seed.entry + 2) for seed in plan.seeds]
+        spans += [(site, site + 2) for seed in plan.seeds for site in seed.sites]
+        spans += [(site, site + 2) for _, site, _, _ in plan.references]
+        outside = [f"{start:08x}" for start, end in spans
+                   if not any(low <= start and end <= high for low, high in ranges)]
+        assert outside == []
+    for address, value in plan.pins:
+        assert all(data[address:address + len(value)] == value for data in members)

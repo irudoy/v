@@ -1,0 +1,7 @@
+# Function fragments of layout 1nd, whose L0 image is 1ND0A, and the function
+# each belongs to. MergeFuncs.java joins them into that function after an
+# analysis of the program; the l0 check of kb check requires the joins in
+# l0/1nd/.
+# Format: entry,fragment,note (addresses are eight hexadecimal digits; note
+# states how the entry reaches the fragment and holds no comma).
+entry,fragment,note

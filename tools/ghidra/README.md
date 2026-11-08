@@ -203,9 +203,17 @@ Its image preflight checks both the imported executable digest and the current
 ROM memory before mutations. Exact
 entry-pointer, prologue, branch, literal, and restoration pins come from
 `seeds/<layout>.toml`. The per-layout registry also specifies the prepared
-body, reviewed fragment, cited sites, direct references, and forbidden
-incidental entries. Structural preparation does not establish complete
-interrupt execution or hardware behavior.
+body of every function that the preparation creates, the reviewed fragments
+of a seed that joins any, cited sites, direct references, and forbidden
+incidental entries. Every seed carries an exact prologue pin, and its entry is
+reached through a pinned entry-pointer word or through a reviewed `call`
+reference of another seed at the call site. `RecoverFuncs.java` creates the
+seeds in registry order and refuses a seed that would split a function it
+already created, so a callee that a caller body would otherwise absorb, such
+as the target of a tail branch, precedes that caller. The preparation admits
+no function entry beyond the existing entries and the seeds. Structural
+preparation does not establish complete interrupt execution or hardware
+behavior.
 
 `symbols/<layout>.csv` is the tracked function-name registry of one layout.
 `RenameFuncs.java` applies it to a program, and the Memgraph loaders and ROM

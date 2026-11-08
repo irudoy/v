@@ -1,0 +1,146 @@
+# Exact-image structural preparation of the 1ND0A task entry at 000404b0 and
+# its callees. The task table word at 00021f8c points to the root; each callee
+# is the target of a reviewed call of the root, and RecoverFuncs creates the
+# callees before the root, whose body ends at the tail branch to 00040968.
+# The family exact ranges hold every pin, site and entry, so the 1ND3B image
+# has the same bytes at each of them.
+schema_version = 1
+layout = "1nd"
+image = "1ND0A"
+image_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+image_size = 1572864
+forbidden_entries = []
+
+[[seed]]
+entry = "000405fa"
+sites = ["00040672"]
+bytes = 122
+instructions = 61
+ranges = 1
+instruction_sha256 = "64647cbb6f90695d54dc82473466d57d344b834277f27855a4ec3a5430e9cc00"
+
+[[seed]]
+entry = "000407e4"
+sites = ["0004080a"]
+bytes = 40
+instructions = 20
+ranges = 1
+instruction_sha256 = "88c54029fff3bfe5ae4c47aae2b33b9a163d648ab9db9ffef022cb420de6dab0"
+
+[[seed]]
+entry = "00040816"
+sites = ["0004084c"]
+bytes = 56
+instructions = 28
+ranges = 1
+instruction_sha256 = "509ddbaefb96659727eea126c2eaeaaaef68d5764d03b941438adc7d20af071c"
+
+[[seed]]
+entry = "00040866"
+sites = ["000408be", "000408c4", "000408d0", "000408d4", "00040912"]
+bytes = 174
+instructions = 87
+ranges = 1
+instruction_sha256 = "7a6e961f5ebedc3d74191df74d98fd0d9f2420ebaa12f2853d329be2339cec36"
+
+[[seed]]
+entry = "00040968"
+sites = ["000409a0"]
+bytes = 58
+instructions = 29
+ranges = 1
+instruction_sha256 = "ac4069544c35ffd235eb316676d71f4eb6e8af7cd206afc1c864c491e4207c50"
+
+[[seed]]
+entry = "000404b0"
+sites = ["000404b6", "0004051e", "00040546", "0004054e", "000405bc"]
+bytes = 272
+instructions = 136
+ranges = 1
+instruction_sha256 = "34245c2bf6e4d42aec4284b5bfd55f7a05808641b0b200f73ba561ed8b8af994"
+
+[[pin]]
+address = "00021f8c"
+bytes = "000404b0"
+
+[[pin]]
+address = "000404b0"
+bytes = "2fe64f227ffcb0a0"
+
+[[pin]]
+address = "000405fa"
+bytes = "2fd62fe64f227ff8"
+
+[[pin]]
+address = "000407e4"
+bytes = "d6716060c8108904"
+
+[[pin]]
+address = "00040816"
+bytes = "4f13d064401ec400"
+
+[[pin]]
+address = "00040866"
+bytes = "2fe64f224f12de54"
+
+[[pin]]
+address = "00040968"
+bytes = "d6108462c8408916"
+
+[[pin]]
+address = "000409cc"
+bytes = "00014536000287ccfffe89a600013b52"
+
+[[reference]]
+owner = "000404b0"
+site = "000404b6"
+target = "000405fa"
+type = "call"
+
+[[reference]]
+owner = "000404b0"
+site = "0004051e"
+target = "000407e4"
+type = "call"
+
+[[reference]]
+owner = "000404b0"
+site = "00040546"
+target = "00040866"
+type = "call"
+
+[[reference]]
+owner = "000404b0"
+site = "0004054e"
+target = "00040816"
+type = "call"
+
+[[reference]]
+owner = "000404b0"
+site = "000405bc"
+target = "00040968"
+type = "call"
+
+[[reference]]
+owner = "00040866"
+site = "000408be"
+target = "000409cc"
+type = "read"
+
+[[reference]]
+owner = "00040866"
+site = "000408c4"
+target = "000287cc"
+type = "call"
+
+[[reference]]
+owner = "00040866"
+site = "000408d0"
+target = "000409d8"
+type = "read"
+
+[[reference]]
+owner = "00040866"
+site = "000408d4"
+target = "000287cc"
+type = "call"

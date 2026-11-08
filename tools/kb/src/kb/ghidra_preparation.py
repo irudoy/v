@@ -337,23 +337,23 @@ def plan(layout_id, root=repo.ROOT, registry=None):
         raise KbError(f"{path}: duplicate pin")
     seeds = []
     for row in _tables(document["seed"], str(path)):
-        _keys(row, ("entry", "sites", "bytes", "instructions", "ranges",
-                    "instruction_sha256", "fragment"), str(path))
+        _keys(row, ("entry", "sites", "bytes", "instructions", "ranges", "instruction_sha256")
+              + (("fragment",) if isinstance(row, dict) and "fragment" in row else ()),
+              str(path))
         entry = _address(row["entry"], str(path))
         sites = _addresses(row["sites"], str(path))
         if not sites or entry & 1 or entry >= size or any(site & 1 or site >= size for site in sites):
             raise KbError(f"{path}: seed and sites must identify aligned instructions")
         if not any(address == entry and len(value) >= 2 for address, value in pins):
             raise KbError(f"{path}: seed {entry:08x} lacks an exact prologue pin")
-        if not any(value == entry.to_bytes(4, "big") for _, value in pins):
-            raise KbError(f"{path}: seed {entry:08x} lacks an exact entry-pointer pin")
+        # A seed without fragments joins nothing; one with them names each.
         fragments = []
-        for fragment in _tables(row["fragment"], str(path)):
+        for fragment in (_tables(row["fragment"], str(path)) if "fragment" in row else ()):
             _keys(fragment, ("entry", "instructions", "instruction_sha256"), str(path))
             fragments.append(Fragment(_address(fragment["entry"], str(path)),
                                       _positive(fragment["instructions"], str(path)),
                                       _digest(fragment["instruction_sha256"], str(path))))
-        if not fragments or len({f.entry for f in fragments}) != len(fragments):
+        if len({f.entry for f in fragments}) != len(fragments):
             raise KbError(f"{path}: seed requires unique reviewed fragments")
         seeds.append(Seed(entry, sites, _positive(row["bytes"], str(path)),
                           _positive(row["instructions"], str(path)),
@@ -384,6 +384,15 @@ def plan(layout_id, root=repo.ROOT, registry=None):
         references.append((owner, site, target, row["type"]))
     if len(set(references)) != len(references):
         raise KbError(f"{path}: duplicate reviewed reference")
+    # A seed entry is reached through a pinned pointer word, or through a
+    # reviewed call of another seed: the function that the analysis of that
+    # seed creates at its call target.
+    for seed in seeds:
+        if not (any(value == seed.entry.to_bytes(4, "big") for _, value in pins)
+                or any(target == seed.entry and type_ == "call" and owner != seed.entry
+                       for owner, _, target, type_ in references)):
+            raise KbError(f"{path}: seed {seed.entry:08x} lacks an exact entry-pointer pin "
+                          "and a reviewed call of another seed")
     forbidden = _addresses(document["forbidden_entries"], str(path))
     if set(forbidden) & {seed.entry for seed in seeds}:
         raise KbError(f"{path}: a seed is forbidden")
