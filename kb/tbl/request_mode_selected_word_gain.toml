@@ -30,14 +30,15 @@ note = """
 Target function 000a8470 corresponds to JK78C 00090664 \
 (request_mode_selected_coefficient_builder): the same sequence of \
 calibration loads and lookup calls, with this table in the same call and \
-argument register. Both branches of the selection read two curves and one 2D \
-gain as in JK78C. JK78C reads curve b and axis b at the literals 00013da6 \
-and 00014240 plus 8 in the first branch; the target block keeps the JK78C \
-layout, with the word gain 0x10 below and the second-branch curve 0x10 above \
-the upper limit curve. MOV.L 000a8536 loads this table for the call at \
-000a853a (aspiring-kittiwake), as MOV.L jk78c:00090710 loads 000169c4 for \
-the call at jk78c:00090718 (urban-potoo). The two helpers carry separate \
-meanings and pair by call position. Its 16 stock bytes differ from JK78C."""
+argument register. Both branches of the selection read two word curves and \
+one explicit 8-point byte gain curve as in JK78C. JK78C reads curve b and \
+axis b at the literals 00013da6 and 00014240 plus 8 in the first branch; the \
+target block keeps the JK78C layout, with the word gain 0x10 below and the \
+second-branch curve 0x10 above the upper limit curve. MOV.L 000a8536 loads \
+this table for the call at 000a853a (aspiring-kittiwake), as MOV.L \
+jk78c:00090710 loads 000169c4 for the call at jk78c:00090718 (urban-potoo). \
+The two helpers carry separate meanings and pair by call position. Its 16 \
+stock bytes differ from JK78C."""
 
 [[symbol]]
 layout = "1nd"
@@ -51,11 +52,11 @@ to = "jk78c:000169c4"
 note = """
 Target function 000a254a merges the readers of JK78C 00090664 \
 (request_mode_selected_coefficient_builder) and 00090790 and reads one curve \
-in each branch of the fffe9488 bit 6 selection, with no 2D gain lookup and \
-no crossfade: 00016ff2 while the bit is clear and 00016fe2 while it is set. \
-JK78C reads two curves in each branch, 00016544 and 000169d4 while the bit \
-is clear and 000169e4 and 000169c4 while it is set, so the call position \
-leaves two candidates per branch. The table block order selects the \
+in each branch of the fffe9488 bit 6 selection, with no byte gain curve \
+lookup and no blend: 00016ff2 while the bit is clear and 00016fe2 while it \
+is set. JK78C reads two curves in each branch, 00016544 and 000169d4 while \
+the bit is clear and 000169e4 and 000169c4 while it is set, so the call \
+position leaves two candidates per branch. The table block order selects the \
 counterpart: JK78C keeps 000169c4, 000169d4 and 000169e4, then \
 request_primary_ratio_curve at 000169f4; 1ND keeps 00016fe2 and 00016ff2, \
 then request_primary_ratio_curve at 00017002, with no slot for 000169e4. The \

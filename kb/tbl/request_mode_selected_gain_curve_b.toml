@@ -29,15 +29,15 @@ note = """
 Target function 000a8470 corresponds to JK78C 00090664 \
 (request_mode_selected_coefficient_builder): the same sequence of \
 calibration loads and lookup calls, with this table in the same call and \
-argument register. Both branches of the selection read two curves and one 2D \
-gain as in JK78C. JK78C reads curve b and axis b at the literals 00013da6 \
-and 00014240 plus 8 in the first branch; the target block keeps the JK78C \
-layout, with the word gain 0x10 below and the second-branch curve 0x10 above \
-the upper limit curve. MOV.L 000a84e6 loads this table for the call at \
-000a84ea (jolly-guan), as the call at jk78c:000906ee (brilliant-ibis) \
-receives 00013dae as a register-offset argument. The two helpers carry \
-separate meanings and pair by call position. Its 8 stock bytes differ from \
-JK78C."""
+argument register. Both branches of the selection read two word curves and \
+one explicit 8-point byte gain curve as in JK78C. JK78C reads curve b and \
+axis b at the literals 00013da6 and 00014240 plus 8 in the first branch; the \
+target block keeps the JK78C layout, with the word gain 0x10 below and the \
+second-branch curve 0x10 above the upper limit curve. MOV.L 000a84e6 loads \
+this table for the call at 000a84ea (jolly-guan), as the call at \
+jk78c:000906ee (brilliant-ibis) receives 00013dae as a register-offset \
+argument. The two helpers carry separate meanings and pair by call position. \
+Its 8 stock bytes differ from JK78C."""
 
 [[symbol]]
 layout = "jk78c"

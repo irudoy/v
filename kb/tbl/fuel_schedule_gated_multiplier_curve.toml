@@ -9,12 +9,13 @@ before y=min(65535,(x*100)>>14). Stock cells rise from 61 to 128, and the \
 stock initial value 56000 of fffed096 selects 128."""
 note = [
     """
-0004eac0 updates fffed096 under the same two ROM bits. It moves fffed096 \
-toward a sample that 000452c8 derives from fffe8d2a, with gain \
-ROM8[0000830e]/128 (stock 80), while the sample lies in \
-ROM16[000092de]..ROM16[000092dc] (stock 25041..63859), and resets it to \
-ROM16[0000957a] (stock 56000). The physical quantity of fffe8d2a, and so of \
-the curve input, is unresolved.""",
+0004eac0 updates fffed096 under the same two ROM bits. 000452c8 derives a \
+sample from fffe8d2a, and the function compares uint16(sample << 6) with \
+ROM16[000092de]..ROM16[000092dc] (stock 25041..63859). Within that window it \
+moves fffed096 toward uint16(sample << 6) with gain min(ROM8[0000830e], \
+128)/128 (stock 80/128); while bit 7 of fffed55f is set, it loads \
+ROM16[0000957a] (stock 56000) instead. The physical quantity of fffe8d2a, \
+and so of the curve input, is unresolved.""",
 ]
 role = "table"
 access = "explicit"
