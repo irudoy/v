@@ -1,0 +1,56 @@
+summary = """
+16-point coefficient over the angle ffff9cc8 of charge_model, read times \
+1.5e-8 by charge_angle_coefficient_lookup and \
+charge_target_angle_coefficient_lookup. Stock values fall from 30444 at 295 \
+degrees to 0 at 385 degrees."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014478"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d500"
+note = """
+The load at 0004d500 passes this table to its lookup in \
+charge_angle_coefficient_lookup."""
+
+[[link]]
+type = "axis"
+to = "timing_float_branch_coefficient_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d502"
+
+[[link]]
+type = "reader"
+to = "charge_angle_coefficient_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d500"
+
+[[link]]
+type = "reader"
+to = "charge_target_angle_coefficient_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051dc4"

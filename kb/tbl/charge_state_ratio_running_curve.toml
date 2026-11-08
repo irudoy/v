@@ -1,0 +1,56 @@
+summary = """
+16-point Q14 charge ratio of VVEL state code 8 (mode 15, warm running above \
+idle) over engine speed ffff11a0: charge_state_ratio_lookup reads it times \
+2^-14 into ffff9c74 and charge_state_ratio_model_load_lookup into ffff9c9c. \
+16384 is 1.0. Stock values are 8974..17275, 55..105 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014b2c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce30"
+note = """
+The load at 0004ce30 passes this table to its lookup in \
+charge_state_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_state_running_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce34"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce30"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d13c"

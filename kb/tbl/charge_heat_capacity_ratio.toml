@@ -1,0 +1,31 @@
+summary = """
+Exponent parameter k of charge_ratio_temperature_lookup, read times 2^-14: \
+the stock word 22938 is 1.4000, and the lookup forms (k - 1) / k = 0.2857, \
+the isentropic exponent of air."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008f70"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004db9c"
+note = "The load at 0004db9c in charge_ratio_temperature_lookup reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_ratio_temperature_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004db9c"

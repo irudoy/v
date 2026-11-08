@@ -1,0 +1,19 @@
+summary = """
+Repeats the charge_valve_partial_duration_surface lookup of \
+charge_valve_duration_builder for charge_target_model and stores the word \
+times 2^-18 at ffffa02c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052640"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052640"
+note = """
+The reviewed listing establishes the calls at 000526f0 and the stores at \
+00052702."""

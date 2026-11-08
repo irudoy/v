@@ -170,16 +170,6 @@ at = "1nd:0005f584"
 
 [[link]]
 type = "reader"
-to = "loud-rottweiler/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:0004d58c"
-
-[[link]]
-type = "reader"
 to = "lurking-wolverine/fn"
 role = "accessor"
 
@@ -227,3 +217,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000630e0"
+
+[[link]]
+type = "reader"
+to = "vvel_measured_duration_converter/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d58c"

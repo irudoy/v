@@ -113,6 +113,116 @@ The float 128.0 that scales |360 - fr4| into the coordinate of this axis."""
 
 [[link]]
 type = "reader"
+to = "charge_event_volume_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d4bc"
+
+[[link]]
+type = "reader"
+to = "charge_target_clearance_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005223e"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_difference_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000529c8"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00053276"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_rate_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052122"
+
+[[link]]
+type = "reader"
+to = "charge_volume_difference_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ecd6"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e168"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e71a"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e338"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e67c"
+
+[[link]]
+type = "reader"
 to = "cylinder_volume_reader/fn"
 layouts = ["jk78c"]
 role = "accessor"

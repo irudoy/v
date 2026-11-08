@@ -1,0 +1,42 @@
+summary = """
+Diameter of the valve flow area of charge_valve_area_builder and \
+charge_target_valve_area_builder, read times 9.765625e-7: the stock word \
+37478 is 0.0366, 36.6 mm under the meter reading of the lift."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008db6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e8aa"
+note = "The load at 0004e8aa in charge_valve_area_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_target_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052f60"
+
+[[link]]
+type = "reader"
+to = "charge_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e8aa"

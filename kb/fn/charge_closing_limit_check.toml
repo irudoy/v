@@ -1,0 +1,20 @@
+summary = """
+Looks up charge_closing_correction_surface at engine speed ffff11a0 and the \
+duration charge_closing_limit_duration, and sets bit 4 of ffff458a+0x20, and \
+its result flag, while a word argument / 128 minus the correction / 512 \
+exceeds 360 degrees."""
+level = "code"
+role = "monitor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004e3b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e3b6"
+note = """
+The reviewed listing establishes the calls at 0004e3d6 and the stores at \
+0004e404."""

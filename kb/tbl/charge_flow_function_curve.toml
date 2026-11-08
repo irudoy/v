@@ -1,0 +1,89 @@
+summary = """
+32-point normalized compressible flow function of the charge model over the \
+pressure ratio: 65535 at ratio 0 falling to 9175 at 1.0. \
+charge_flow_a_builder, charge_flow_b_builder, charge_flow_c_builder, \
+charge_target_flow_builder and charge_target_flow_c_builder read it."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000157da"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d7cc"
+note = """
+The load at 0004d7cc passes this table to its lookup in \
+charge_flow_a_builder."""
+
+[[link]]
+type = "axis"
+to = "charge_flow_pressure_ratio_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d7ce"
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d7cc"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ddc2"
+
+[[link]]
+type = "reader"
+to = "charge_flow_c_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e99c"
+
+[[link]]
+type = "reader"
+to = "charge_target_flow_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051ecc"
+
+[[link]]
+type = "reader"
+to = "charge_target_flow_c_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ff2"

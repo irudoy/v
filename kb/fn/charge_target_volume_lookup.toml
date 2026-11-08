@@ -1,0 +1,18 @@
+summary = """
+Looks up cylinder_volume_curve at the angle argument, less 360 degrees from \
+360 degrees, times 128, and stores the volume times 2e-8 at ffffa08c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00053242"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00053242"
+note = """
+The reviewed listing establishes the calls at 0005327a and the stores at \
+00053290."""

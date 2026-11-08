@@ -1,0 +1,40 @@
+summary = """
+Ratio axis of charge_ratio_response_curve, indexed by the ratio times 2500: \
+0..45000, 0..18. charge_target_ratio_inverse reads it as data to recover the \
+ratio of a response."""
+level = "code"
+quantity = "raw"
+points = 32
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001554c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee14"
+note = "The load at 0004ee14 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_ratio_response_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee14"
+
+[[link]]
+type = "reader"
+to = "charge_target_ratio_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052942"

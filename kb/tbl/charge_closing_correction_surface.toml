@@ -1,0 +1,79 @@
+summary = """
+16x16 angle correction over engine speed ffff11a0 and the measured duration: \
+charge_closing_correction_lookup subtracts the word / 512 degrees from the \
+event end angle into ffff2eba, charge_closing_limit_check tests it at \
+charge_closing_limit_duration, and charge_target_closing_correction_lookup \
+repeats the lookup. Stock values are 0..37376, 0..73 degrees."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000cf4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec3a"
+note = """
+The load at 0004ec3a passes this table to its lookup in \
+charge_closing_correction_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_closing_duration_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec42"
+
+[[link]]
+type = "axis"
+to = "charge_closing_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec3e"
+
+[[link]]
+type = "reader"
+to = "charge_closing_correction_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec3a"
+
+[[link]]
+type = "reader"
+to = "charge_closing_limit_check/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e3ce"
+
+[[link]]
+type = "reader"
+to = "charge_target_closing_correction_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052860"

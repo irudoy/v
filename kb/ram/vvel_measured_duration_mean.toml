@@ -1,0 +1,17 @@
+summary = """
+Mean of the two bank durations of vvel_measured_duration_converter times \
+512, stored by charge_model. timing_vvel_state_compositor, \
+timing_float_model_builder, timing_float_correction_builder, spectral-yak \
+and request_mode_selected_coefficient_builder read it."""
+level = "code"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff33ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c330"

@@ -1,0 +1,45 @@
+summary = """
+16-point Q14 fill ratio of VVEL state code 8 (mode 15, warm running above \
+idle) over engine speed ffff11a0: charge_fill_ratio_lookup reads it times \
+2^-14 into ffff9dfc. 16384 is 1.0. Stock values are 12920..29255, 79..179 \
+percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017064"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f0e6"
+note = """
+The load at 0004f0e6 passes this table to its lookup in \
+charge_fill_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_running_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f0ec"
+
+[[link]]
+type = "reader"
+to = "charge_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f0e6"

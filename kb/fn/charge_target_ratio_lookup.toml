@@ -1,0 +1,21 @@
+summary = """
+Looks up charge_target_ratio_surface over engine speed ffff11a0 and the load \
+coordinate that 0004d438 selects by bit 6 of ROM byte 00008958: \
+vvel_load_coordinate ffff238a in the stock byte 0x9a, otherwise the throttle \
+model load ffff36a4, and returns the word that charge_model stores at \
+charge_target_ratio ffff3134."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d0f6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d0f6"
+note = """
+The reviewed listing establishes the calls at 0004d10c and the stores at \
+none."""

@@ -1,0 +1,34 @@
+summary = """
+Angle margin of the event angle pair, read times 1/2048: the stock word \
+27033 is 13.2 degrees. 0004cda0 subtracts it from the event start angle and \
+adds it to the event end angle, and charge_target_valve_area_builder passes \
+the word / 8 as the angle coordinate of charge_valve_lift_surface. 00051bb8 \
+also reads it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008f40"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ef2"
+note = """
+The load at 00052ef2 in charge_target_valve_area_builder reads this word."""
+
+[[link]]
+type = "reader"
+to = "charge_target_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ef2"

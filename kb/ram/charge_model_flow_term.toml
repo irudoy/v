@@ -1,0 +1,15 @@
+summary = """
+Long that charge_model stores as a flow term times 2^40 and \
+charge_target_model reads times 2^-40."""
+level = "code"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff326c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004cb48"

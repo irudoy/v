@@ -1,0 +1,19 @@
+summary = """
+Forms a mass flow of charge_target_model with the arithmetic of \
+charge_flow_c_builder at the ratio 2 * p3 / (p3 + p2), clamped to 0..1, and \
+stores it at ffffa070."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052f8e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052f8e"
+note = """
+The reviewed listing establishes the calls at 00052ff8 and the stores at \
+00053054."""

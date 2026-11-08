@@ -1,0 +1,55 @@
+summary = """
+16x16 offset over engine speed ffff11a0 and the angle ffff9cc8: \
+charge_speed_angle_term_lookup adds the word / 64 - 512. Stock values are \
+32768..40566, offsets 0..121.8."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00010e4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9da"
+note = """
+The load at 0004d9da passes this table to its lookup in \
+charge_speed_angle_term_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_speed_angle_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9ce"
+
+[[link]]
+type = "axis"
+to = "charge_speed_angle_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9cc"
+
+[[link]]
+type = "reader"
+to = "charge_speed_angle_term_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9da"

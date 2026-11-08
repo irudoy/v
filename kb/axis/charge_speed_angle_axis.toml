@@ -1,0 +1,29 @@
+summary = """
+Angle axis of charge_speed_angle_gain_surface and \
+charge_speed_angle_offset_surface, indexed by ffff9cc8 times 128: \
+39040..48640, 305..380 degrees."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000153cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9ce"
+note = "The load at 0004d9ce passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_speed_angle_term_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d9ce"

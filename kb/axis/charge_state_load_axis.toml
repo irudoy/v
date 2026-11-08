@@ -1,0 +1,52 @@
+summary = """
+Load coordinate axis of charge_state_ratio_default_surface, \
+charge_state_ratio_warm_idle_surface and charge_target_ratio_surface, \
+11469..65535 in units of 1/655.36 percent. Its stock bytes equal those of \
+vvel_fill_load_axis."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014bbc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce5e"
+note = "The load at 0004ce5e passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce5e"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d16a"
+
+[[link]]
+type = "reader"
+to = "charge_target_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d104"

@@ -1,7 +1,8 @@
 summary = """
 16-point Q14 fill ratio of VVEL state code 8 (mode 15, warm running above \
-idle) over word ffff11a0: vvel_fill_ratio_lookup reads it times 2^-14 into \
-ffff9a98. 16384 is 1.0. Stock values are 10673..19572, 65..119 percent."""
+idle) over engine speed ffff11a0: vvel_fill_ratio_lookup reads it times \
+2^-14 into ffff9a98. 16384 is 1.0. Stock values are 10673..19572, 65..119 \
+percent."""
 level = "code"
 role = "table"
 access = "explicit"
@@ -23,7 +24,7 @@ vvel_fill_ratio_lookup."""
 
 [[link]]
 type = "axis"
-to = "vvel_fill_running_word_axis/axis"
+to = "vvel_fill_running_speed_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 

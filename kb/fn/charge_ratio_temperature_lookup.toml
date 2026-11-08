@@ -1,0 +1,24 @@
+summary = """
+Looks up timing_float_ratio_response_surface at x = (k - 1) / k times \
+131072, with k = charge_heat_capacity_ratio, and y = p1 / p2, clamped to \
+0.04..1.6 and times 32768, and stores the word times \
+charge_reference_temperature / 32768 at ffff9d00. Every stock cell of the \
+surface equals 32768 * (y / 32768)^(x / 131072) within 1.03 counts, so the \
+result is the reference temperature times the ratio raised to (k - 1) / k. \
+The stock exponent 0.2857 lies above the last x breakpoint 35520 = 0.271, so \
+the lookup holds the edge exponent."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004dab2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004dab2"
+note = """
+The reviewed listing establishes the calls at 0004dbf2 and the stores at \
+0004dc10."""

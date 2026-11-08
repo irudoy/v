@@ -1,0 +1,19 @@
+summary = """
+Repeats the lookup of charge_closing_correction_lookup for \
+charge_target_model: it stores the correction / 512 at ffffa038 and the \
+angle argument minus it at ffffa034."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052832"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052832"
+note = """
+The reviewed listing establishes the calls at 0005286c and the stores at \
+00052882..00052884."""

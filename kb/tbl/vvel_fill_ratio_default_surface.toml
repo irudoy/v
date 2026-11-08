@@ -1,6 +1,6 @@
 summary = """
 16x16 Q14 fill ratio of VVEL state code 1 (every mode outside 3, 5, 10, 12, \
-13, 14 and 15) over word ffff11a0 and the load coordinate of \
+13, 14 and 15) over engine speed ffff11a0 and the load coordinate of \
 vvel_fill_ratio_lookup: the lookup reads it times 2^-14 into ffff9a9c and \
 blends it while the state code is 1. 16384 is 1.0. Stock values are \
 14216..20013, 87..122 percent."""
@@ -36,7 +36,7 @@ at = "jk78c:00049df2"
 
 [[link]]
 type = "axis"
-to = "vvel_fill_word_axis/axis"
+to = "vvel_fill_speed_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 

@@ -1,0 +1,21 @@
+summary = """
+Inverts vvel_duration_characteristic for charge_target_model: it reads \
+vvel_duration_characteristic_axis as data over the characteristic at the \
+argument, clamped to 0..0.2 and times 262144, filters the result / 128 with \
+the weight charge_target_duration_filter_gain / 32768 into ffffa050 and \
+ffffa0b8, and stores a quarter of it at ffffa054."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052a64"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052a64"
+note = """
+The reviewed listing establishes the calls at 00052a9a and the stores at \
+00052adc..00052ae6."""

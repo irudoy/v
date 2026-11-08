@@ -1,0 +1,69 @@
+summary = """
+8x8 Q14 charge ratio of VVEL state code 4 (mode 10, idle with the learning \
+window open) over engine speed ffff11a0 and a load coordinate: \
+charge_state_ratio_lookup reads it times 2^-14 into ffff9c84 and \
+charge_state_ratio_model_load_lookup into ffff9cac, and charge_model blends \
+it while the state code is 4. 16384 is 1.0. Every stock cell is 16384, 100 \
+percent; its stock bytes equal those of charge_state_ratio_cold_surface."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000bfce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ceb4"
+note = """
+The load at 0004ceb4 passes this table to its lookup in \
+charge_state_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_state_idle_learning_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004cec6"
+
+[[link]]
+type = "axis"
+to = "charge_state_idle_learning_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004cec0"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ceb4"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d1c0"

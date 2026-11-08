@@ -1,0 +1,19 @@
+summary = """
+Forms the volume difference of charge_target_model: cylinder_volume_curve at \
+a3 - 360, clamped to 0..180 degrees, and at a1 - 360 degrees, stored times \
+2e-8 at ffffa048 and ffffa044, and their difference times a2 at ffffa040."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052966"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052966"
+note = """
+The reviewed listing establishes the calls at 000529c6..00052a08 and the \
+stores at 000529d8..00052a20."""

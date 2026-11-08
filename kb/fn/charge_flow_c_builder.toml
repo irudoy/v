@@ -1,0 +1,20 @@
+summary = """
+Forms a mass flow of charge_model: it looks up charge_flow_function_curve at \
+the ratio p3 / p2, clamped to 0..1 and times 65535, and stores the word \
+times charge_flow_c_gain, min(p4 / charge_reference_density, 4), p1 and \
+2^-22 at ffff9d94."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004e952"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e952"
+note = """
+The reviewed listing establishes the calls at 0004e9a2 and the stores at \
+0004e9fc."""

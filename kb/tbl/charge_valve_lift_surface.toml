@@ -1,0 +1,74 @@
+summary = """
+16x16 valve lift over the measured duration and the angle from the event \
+start: charge_valve_area_builder and charge_target_valve_area_builder read \
+the word times 2^-21 as a lift in meters. Stock values are 0..24178, 0..11.5 \
+mm under that reading."""
+note = [
+    """
+The lift reading rests on the code: the builder clamps the word times 2^-21 \
+to 0..0.015, indexes charge_valve_area_ratio_curve by it on 1 mm breakpoints \
+and multiplies the ratio by the circle area of charge_valve_diameter, 36.6 \
+mm. No hardware reference binds the unit.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000c3ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7ce"
+note = """
+The load at 0004e7ce passes this table to its lookup in \
+charge_valve_area_builder."""
+
+[[link]]
+type = "axis"
+to = "charge_valve_lift_angle_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7d6"
+
+[[link]]
+type = "axis"
+to = "charge_valve_lift_duration_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7d2"
+
+[[link]]
+type = "reader"
+to = "charge_target_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ef0"
+
+[[link]]
+type = "reader"
+to = "charge_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7ce"

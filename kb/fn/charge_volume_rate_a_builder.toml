@@ -1,0 +1,21 @@
+summary = """
+Forms a term of charge_model: cylinder_volume_curve at 360 degrees times \
+2e-8, a float argument and 9.375 * engine speed ffff11a0 / \
+(charge_gas_constant * charge_reference_temperature), stored at ffff9d3c. \
+9.375 times the speed count is six times the speed in RPM, the crank angle \
+rate in degrees per second."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004e10e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e10e"
+note = """
+The reviewed listing establishes the calls at 0004e16c and the stores at \
+0004e182."""

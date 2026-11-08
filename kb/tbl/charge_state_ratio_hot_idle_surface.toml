@@ -1,0 +1,69 @@
+summary = """
+8x8 Q14 charge ratio of VVEL state code 5 (mode 12, hot-intake idle with the \
+knock state clear) over engine speed ffff11a0 and a load coordinate: \
+charge_state_ratio_lookup reads it times 2^-14 into ffff9c80 and \
+charge_state_ratio_model_load_lookup into ffff9ca8, and charge_model blends \
+it while the state code is 5. 16384 is 1.0. Stock values are 12288..15237, \
+75..93 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000c04e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ced6"
+note = """
+The load at 0004ced6 passes this table to its lookup in \
+charge_state_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_state_hot_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ceea"
+
+[[link]]
+type = "axis"
+to = "charge_state_hot_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004cee2"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ced6"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d1e2"

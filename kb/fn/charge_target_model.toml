@@ -1,0 +1,27 @@
+summary = """
+Root of the JK78C charge target model, run from periodic-list pointer \
+00021bb8. It reads engine speed ffff11a0 and ffff11a6, the charge_model \
+outputs ffff3322 / 128, crank_degree_time ffff2e3c * 2.55e-8, ffff326c * \
+2^-40, charge_target_ratio ffff3134 and ffff3146 times 2^-14, ffff369a * \
+1e-7 and ffff3696 of vvel_load_coordinate_publisher, and \
+vvel_load_coordinate ffff238a. 00051bb8 and 0005247a form an angle that it \
+stores times 128 at charge_target_angle ffff351c; 00052bc4 and 000524d4 form \
+the outputs that it stores times 20 at ffff356e and ffff356c. spectral-yak \
+reads all three. Its callees repeat the volume, flow, valve area and closing \
+correction lookups of charge_model and invert vvel_duration_characteristic \
+and charge_ratio_response_curve."""
+level = "code"
+role = "driver"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000518e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000518e6"
+note = """
+The reviewed listing establishes the calls at 00051968..00051aa8 and the \
+stores at 00051994..00051ac4."""

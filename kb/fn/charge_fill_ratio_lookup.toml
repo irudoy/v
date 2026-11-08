@@ -1,0 +1,26 @@
+summary = """
+Looks up the fill ratio of every VVEL state code for charge_model over \
+engine speed ffff11a0 and the load coordinate that 0004d438 selects by bit 1 \
+of ROM byte 00008958: the throttle model load ffff36a4 in the stock byte \
+0x9a, otherwise vvel_load_coordinate ffff238a, on the axes of the \
+vvel_fill_ratio_lookup surfaces. It stores each word times 2^-14 at \
+ffff9dfc..ffff9e18, the current-code ratio at ffff9df8 and the previous-code \
+ratio at ffff9df4. charge_model blends them as for \
+charge_state_ratio_lookup, with the held values at ffff9e4c and ffff9e50, \
+stores the blend times 16384, clamped to 0..3.99994, at ffff44c0 and \
+multiplies the fill charge ffff43de by it in 0004efa6."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004f0c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f0c8"
+note = """
+The reviewed listing establishes the calls at 0004f0f2..0004f1e8 and the \
+stores at 0004f114..0004f364."""

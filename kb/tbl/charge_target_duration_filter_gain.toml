@@ -1,0 +1,30 @@
+summary = """
+Filter weight of charge_target_duration_inverse, read times 2^-15 and \
+limited to 1.0: the stock word 8192 is 0.25."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008e3e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052aa4"
+note = "The load at 00052aa4 in charge_target_duration_inverse reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_target_duration_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052aa4"

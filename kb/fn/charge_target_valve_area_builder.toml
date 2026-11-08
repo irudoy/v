@@ -1,0 +1,20 @@
+summary = """
+Repeats the arithmetic of charge_valve_area_builder for charge_target_model \
+at the duration argument and the fixed angle charge_event_angle_margin / 8 \
+counts: the lift is clamped to 0..0.02, the ratio word times 2^-15 is stored \
+at ffffa06c and the area at ffffa068."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052ec4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ec4"
+note = """
+The reviewed listing establishes the calls at 00052f00..00052f4c and the \
+stores at 00052f6a..00052f84."""

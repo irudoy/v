@@ -1,0 +1,53 @@
+summary = """
+Gain of charge_flow_a_builder, charge_flow_b_builder and \
+charge_target_flow_builder on the flow-function word times the flux: stock \
+42480, applied with 2^-32."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008f7c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d8b6"
+note = "The load at 0004d8b6 in charge_flow_a_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d8b6"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004de3e"
+
+[[link]]
+type = "reader"
+to = "charge_target_flow_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051f78"

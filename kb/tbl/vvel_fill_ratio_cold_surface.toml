@@ -1,8 +1,8 @@
 summary = """
-8x8 Q14 fill ratio of VVEL state code 3 (mode 3, cold) over word ffff11a0 \
-and the load coordinate of vvel_fill_ratio_lookup: the lookup reads it times \
-2^-14 into ffff9a94 and blends it while the state code is 3. 16384 is 1.0. \
-Every stock cell is 16384, 100 percent."""
+8x8 Q14 fill ratio of VVEL state code 3 (mode 3, cold) over engine speed \
+ffff11a0 and the load coordinate of vvel_fill_ratio_lookup: the lookup reads \
+it times 2^-14 into ffff9a94 and blends it while the state code is 3. 16384 \
+is 1.0. Every stock cell is 16384, 100 percent."""
 level = "code"
 role = "table"
 access = "explicit"
@@ -35,7 +35,7 @@ at = "jk78c:00049e12"
 
 [[link]]
 type = "axis"
-to = "vvel_fill_cold_word_axis/axis"
+to = "vvel_fill_cold_speed_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 

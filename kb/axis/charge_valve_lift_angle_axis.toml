@@ -1,0 +1,39 @@
+summary = """
+Angle axis of charge_valve_lift_surface, indexed by the angle from the event \
+start times 256: 0..38400, 0..150 degrees in steps of 10."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015ec2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7d6"
+note = "The load at 0004e7d6 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_target_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052ef8"
+
+[[link]]
+type = "reader"
+to = "charge_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e7d6"

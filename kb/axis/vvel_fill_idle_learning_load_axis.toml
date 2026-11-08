@@ -1,6 +1,7 @@
 summary = """
 Load coordinate axis of vvel_fill_ratio_idle_learning_surface, 4100..65535 \
-in units of 1/655.36 percent. 0004f0c8 also passes it to its lookups."""
+in units of 1/655.36 percent. charge_fill_ratio_lookup also passes it to its \
+lookups."""
 level = "code"
 quantity = "raw"
 points = 8
@@ -15,3 +16,14 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00049e58"
 note = "The load at 00049e58 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f180"

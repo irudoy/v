@@ -1,8 +1,8 @@
 summary = """
-16x16 Q14 fill ratio of VVEL state code 2 (mode 5, warm idle) over word \
-ffff11a0 and the load coordinate of vvel_fill_ratio_lookup: the lookup reads \
-it times 2^-14 into ffff9a80 and blends it while the state code is 2. 16384 \
-is 1.0. Stock values are 6554..17657, 40..108 percent."""
+16x16 Q14 fill ratio of VVEL state code 2 (mode 5, warm idle) over engine \
+speed ffff11a0 and the load coordinate of vvel_fill_ratio_lookup: the lookup \
+reads it times 2^-14 into ffff9a80 and blends it while the state code is 2. \
+16384 is 1.0. Stock values are 6554..17657, 40..108 percent."""
 level = "code"
 role = "table"
 access = "explicit"
@@ -35,7 +35,7 @@ at = "jk78c:00049df2"
 
 [[link]]
 type = "axis"
-to = "vvel_fill_word_axis/axis"
+to = "vvel_fill_speed_axis/axis"
 slot = "x"
 layouts = ["jk78c"]
 

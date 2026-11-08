@@ -1,0 +1,20 @@
+summary = """
+Looks up charge_ratio_response_curve at the ratio p2 / p1, stored at \
+ffff9dc0, clamped to 0..20 and times 2500, and returns the word times 2e-5, \
+which charge_model stores times 200, clamped to 0..1.275, as the byte \
+ffff310e."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004edc8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004edc8"
+note = """
+The reviewed listing establishes the calls at 0004ee18 and the stores at \
+0004edda..0004edf0."""

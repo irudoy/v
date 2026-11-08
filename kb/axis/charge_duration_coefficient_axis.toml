@@ -1,0 +1,30 @@
+summary = """
+Duration axis of charge_duration_coefficient_curve: \
+charge_duration_coefficient_lookup indexes it by d * 1024 - 10240 for the \
+mean measured duration d, so the breakpoints 10240..65535 are d = 20..74; \
+the last two breakpoints are both 65535."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000171e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d60a"
+note = "The load at 0004d60a passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_duration_coefficient_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d60a"

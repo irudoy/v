@@ -1,0 +1,26 @@
+summary = """
+Looks up the charge ratio of every VVEL state code for charge_model over \
+engine speed ffff11a0 and the load coordinate that 0004d438 selects by bit 5 \
+of ROM byte 00008958: vvel_load_coordinate ffff238a in the stock byte 0x9a, \
+otherwise the throttle model load ffff36a4. It interpolates the seven state \
+surfaces and charge_state_ratio_running_curve, stores each word times 2^-14 \
+at ffff9c74..ffff9c90, and copies the ratio of the current code ffff43f2 to \
+ffff9c70 and of the previous code ffff4480 to ffff9c6c. charge_model blends \
+the current ratio with the previous one by the weight ffff43f0 / 32768 into \
+ffff9c60, or with the held value at ffff9e5c or ffff9e60 while bit 4 of \
+ffff4546 is clear."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ce10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce10"
+note = """
+The reviewed listing establishes the calls at 0004ce3c..0004cf3a and the \
+stores at 0004ce5c..0004d0e0."""

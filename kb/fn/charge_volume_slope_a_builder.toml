@@ -1,0 +1,21 @@
+summary = """
+Forms a term of charge_model: the difference of cylinder_volume_curve at \
+charge_volume_slope_angle / 4 counts and 128 counts below it, the volume \
+over one degree, times 2e-8, a float argument and 9.375 * engine speed \
+ffff11a0 / (charge_gas_constant * charge_reference_temperature), stored at \
+ffff9d50."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004e252"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e252"
+note = """
+The reviewed listing establishes the calls at 0004e336..0004e346 and the \
+stores at 0004e368."""

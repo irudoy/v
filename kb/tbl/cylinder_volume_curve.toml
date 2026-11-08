@@ -182,6 +182,116 @@ at = "1me3b:00064582"
 
 [[link]]
 type = "reader"
+to = "charge_event_volume_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d4ba"
+
+[[link]]
+type = "reader"
+to = "charge_target_clearance_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005223c"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_difference_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000529c2"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00053274"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_rate_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052120"
+
+[[link]]
+type = "reader"
+to = "charge_volume_difference_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ecd0"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e166"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e718"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e334"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e678"
+
+[[link]]
+type = "reader"
 to = "cylinder_volume_reader/fn"
 layouts = ["jk78c"]
 role = "accessor"

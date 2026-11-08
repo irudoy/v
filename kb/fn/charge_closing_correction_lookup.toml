@@ -1,0 +1,20 @@
+summary = """
+Looks up charge_closing_correction_surface at engine speed ffff11a0 and the \
+mean measured duration, clamped to 0..100 and times 512, stores the \
+correction / 512 at ffff9db0 and returns the event end angle ffff9c64 minus \
+it, which charge_model stores times 64 at ffff2eba."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ec00"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec00"
+note = """
+The reviewed listing establishes the calls at 0004ec46 and the stores at \
+0004ec5a."""

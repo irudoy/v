@@ -1,0 +1,43 @@
+summary = """
+Crank angle of the volume slope of charge_volume_slope_a_builder and \
+charge_volume_slope_b_builder: the word / 4 indexes \
+cylinder_volume_crank_angle_axis, 1/128 degree per count. The stock word \
+5120 places the slope between 9 and 10 degrees."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008d48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e2b8"
+note = "The load at 0004e2b8 in charge_volume_slope_a_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e2b8"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e65c"

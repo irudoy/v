@@ -1,0 +1,25 @@
+summary = """
+Forms a mass flux of charge_model from two pressures p1 and p2: it stores \
+min and max at ffff9cec and ffff9ce8, sets bit 0 of ffff458a+0x1b while p1 \
+exceeds p2, looks up charge_flow_function_curve at min / max(max, 1/512) \
+times 65535, and stores at ffff9ce4 the word times the flux max * 1000 / \
+sqrt(1000 * charge_gas_constant * charge_reference_temperature), clamped to \
+40..1800, times charge_flow_gain, 2^-32, and 1 while p1 exceeds p2 or -1 \
+otherwise. The square root comes from 0004c258, which interpolates the float \
+curve of descriptor 000237dc; its 34 float32 points hold y = sqrt(x) for x = \
+0..400000, a library function rather than a calibration."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d728"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d728"
+note = """
+The reviewed listing establishes the calls at 0004d7d2..0004d7fc and the \
+stores at 0004d74c..0004d8c8."""

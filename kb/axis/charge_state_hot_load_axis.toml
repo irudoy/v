@@ -1,0 +1,41 @@
+summary = """
+Load coordinate axis of charge_state_ratio_hot_idle_surface, \
+charge_state_ratio_hot_knock_surface and \
+charge_state_ratio_unreachable_surface, 11469..65535 in units of 1/655.36 \
+percent."""
+level = "code"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014bfc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ceea"
+note = "The load at 0004ceea passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ceea"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d1f6"

@@ -1,0 +1,22 @@
+summary = """
+Looks up charge_angle_coefficient_curve over \
+timing_float_branch_coefficient_axis at the angle ffff9cc8 = 0.75 * ffff2ee4 \
+/ 128 + 0.25 * the event start angle from 0004d51e, clamped to 200..500 \
+degrees and times 128, and stores the word times 1.5e-8 at ffff9cc4. \
+charge_target_angle_coefficient_lookup repeats the lookup for \
+charge_target_model."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d4d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d4d8"
+note = """
+The reviewed listing establishes the calls at 0004d506 and the stores at \
+0004d51c."""

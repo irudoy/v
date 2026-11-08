@@ -1,0 +1,21 @@
+summary = """
+Forms an additive term of charge_model over engine speed ffff11a0 and the \
+angle ffff9cc8, clamped to 200..500 degrees and times 128: (-16 + \
+charge_speed_angle_gain_surface / 2048) * normalized_load ffff1032 * 0.78125 \
++ charge_speed_angle_offset_surface / 64 - 512. charge_model stores the term \
+at ffff9e2c and, times 128 and clamped to -256..255.99, at ffff3322."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d97e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d97e"
+note = """
+The reviewed listing establishes the calls at 0004d9d6..0004d9e8 and the \
+stores at none."""

@@ -1,0 +1,19 @@
+summary = """
+Looks up cylinder_volume_curve at |360 - x| degrees times 128 for the angle \
+x = min(ffff2ee4 / 128, the event start angle) that 0004d480 stores at \
+ffff9cbc, and stores the volume times 2e-8 at ffff9cc0."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d49a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d49a"
+note = """
+The reviewed listing establishes the calls at 0004d4c0 and the stores at \
+0004d4d6."""

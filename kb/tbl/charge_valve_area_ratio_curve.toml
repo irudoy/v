@@ -1,0 +1,56 @@
+summary = """
+16-point Q15 area ratio over the valve lift: charge_valve_area_builder and \
+charge_target_valve_area_builder multiply the circle area of \
+charge_valve_diameter by the word times 2^-15. Stock values rise from 0 at \
+zero lift to 22288, 0.68, at 13.2 mm."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000146c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e892"
+note = """
+The load at 0004e892 passes this table to its lookup in \
+charge_valve_area_builder."""
+
+[[link]]
+type = "axis"
+to = "charge_valve_area_lift_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e894"
+
+[[link]]
+type = "reader"
+to = "charge_target_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052f46"
+
+[[link]]
+type = "reader"
+to = "charge_valve_area_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e892"

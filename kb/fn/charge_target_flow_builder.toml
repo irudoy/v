@@ -1,0 +1,24 @@
+summary = """
+Forms a mass flux of charge_target_model with the arithmetic of \
+charge_flow_a_builder: charge_flow_function_curve at min / max of two \
+pressures, stored times 2^-16 at ffff9ff4, and the flux max * 1000 / \
+sqrt(1000 * charge_gas_constant * charge_reference_temperature), clamped to \
+40..1800, at ffff9fe8. 0005188c takes the square root over the float curve \
+of descriptor 00023e9c, whose points equal those of 000237dc. It stores 1000 \
+* R * T at ffff9ff0, the result times charge_flow_gain at ffff9fec, and sets \
+bit 6 of ffff4506+0x67 while the second pressure exceeds the first."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00051e54"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051e54"
+note = """
+The reviewed listing establishes the calls at 00051ed2..00051f20 and the \
+stores at 00051e86..00051f90."""

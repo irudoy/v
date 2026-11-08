@@ -1,0 +1,68 @@
+summary = """
+8x8 Q14 charge ratio of VVEL state code 3 (mode 3, cold) over engine speed \
+ffff11a0 and a load coordinate: charge_state_ratio_lookup reads it times \
+2^-14 into ffff9c88 and charge_state_ratio_model_load_lookup into ffff9cb0, \
+and charge_model blends it while the state code is 3. 16384 is 1.0. Every \
+stock cell is 16384, 100 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000bb4e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce70"
+note = """
+The load at 0004ce70 passes this table to its lookup in \
+charge_state_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_state_cold_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce82"
+
+[[link]]
+type = "axis"
+to = "charge_state_cold_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce7c"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ce70"
+
+[[link]]
+type = "reader"
+to = "charge_state_ratio_model_load_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d17c"

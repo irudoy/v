@@ -1,0 +1,25 @@
+summary = """
+Engine speed in RPM/1.5625 representation, the snapshot of vigorous-horse \
+ffff11d4 = ffff1186 >> 3 that scheduler 00020f1a copies through the 52-byte \
+snapshot block. charge_model, charge_target_model, \
+throttle_target_area_model and the charge and fill ratio lookups index their \
+speed axes by it."""
+level = "code"
+width = 16
+signed = false
+unit = "rpm/1.5625"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff11a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c2d0"
+note = """
+charge_model reads the word here. Scheduler 00020f1a copies the 52-byte \
+block ffff11c0.. to ffff118c.. through 00022230 at 00020fcc; 0003b87e stores \
+the source word ffff11d4 = ffff1186 >> 3 at 0003b89a. The 7mfk counterpart \
+ffff11b0, the snapshot of ffff11e8 through the 56-byte block, carries no \
+meaning."""

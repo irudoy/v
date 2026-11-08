@@ -1,8 +1,8 @@
 summary = """
 Load coordinate axis of vvel_fill_ratio_hot_idle_surface, \
 vvel_fill_ratio_hot_knock_surface and vvel_fill_ratio_unreachable_surface, \
-11469..65535 in units of 1/655.36 percent. 0004f0c8 also passes it to its \
-lookups."""
+11469..65535 in units of 1/655.36 percent. charge_fill_ratio_lookup also \
+passes it to its lookups."""
 level = "code"
 quantity = "raw"
 points = 8
@@ -17,3 +17,14 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:00049e78"
 note = "The load at 00049e78 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f1a2"

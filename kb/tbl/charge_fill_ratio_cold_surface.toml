@@ -1,0 +1,57 @@
+summary = """
+8x8 Q14 fill ratio of VVEL state code 3 (mode 3, cold) over engine speed \
+ffff11a0 and a load coordinate: charge_fill_ratio_lookup reads it times \
+2^-14 into ffff9e10, and charge_model blends it into the multiplier of the \
+fill charge ffff43de while the state code is 3. 16384 is 1.0. Stock values \
+are 19423..23221, 119..142 percent."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 8
+rows = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001224e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f12a"
+note = """
+The load at 0004f12a passes this table to its lookup in \
+charge_fill_ratio_lookup."""
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_load_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f13c"
+
+[[link]]
+type = "axis"
+to = "vvel_fill_cold_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f132"
+
+[[link]]
+type = "reader"
+to = "charge_fill_ratio_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f12a"

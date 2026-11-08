@@ -1,0 +1,20 @@
+summary = """
+Repeats the lookup of charge_angle_coefficient_lookup for \
+charge_target_model: charge_angle_coefficient_curve at the angle argument, \
+clamped to 200..500 degrees and times 128, times 1.5e-8, stored at \
+ffff9fe0."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00051d9c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051d9c"
+note = """
+The reviewed listing establishes the calls at 00051dca and the stores at \
+00051de0."""

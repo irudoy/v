@@ -1,0 +1,16 @@
+summary = """
+VVEL state code that was current before the latest mode change, kept by \
+00046978 under carmine-cockatoo; the state ratio lookups select their \
+previous-code ratio by it."""
+level = "code"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4480"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000467bc"

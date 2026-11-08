@@ -1,0 +1,51 @@
+summary = """
+Root of the JK78C float charge model, run from periodic-list pointer \
+00021b00. It converts the measured VVEL shaft-angle words ffff2670 and \
+ffff2672 through vvel_measured_duration_converter into the bank durations \
+ffff2816 and ffff2818 and their mean ffff33ae, forms an event angle pair \
+around a center from ffff37b2 in 0004cd6c and 0004cda0, and evaluates the \
+charge terms over engine speed ffff11a0, vvel_load_coordinate ffff238a, the \
+throttle model load ffff36a4, normalized_load ffff1032 and the VVEL state \
+codes ffff43f2 and ffff4480: the state ratio sets of \
+charge_state_ratio_lookup, charge_state_ratio_model_load_lookup and \
+charge_fill_ratio_lookup, cylinder_volume_curve terms in the form p * V / (R \
+* T) with charge_gas_constant and charge_reference_temperature, the flow \
+function charge_flow_function_curve, and the valve lift, area and duration \
+lookups. It stores ffff3112, ffff2eba and ffff324c for \
+timing_float_model_builder and timing_float_correction_builder; ffff3134, \
+ffff3146, ffff3322, ffff326c and ffff2e3c for charge_target_model; ffff3746 \
+for throttle_target_area_model; ffff43de for 000402e0; ffff310e for \
+esoteric-whale; ffff33a6 and ffff33a4 for transient_fuel_term_coordinator \
+and two other readers; and ffff44c0, which no code reads."""
+note = [
+    """
+The identities of five model inputs are unresolved. 0004cdbc reads the long \
+ffff2594 as x * 1.38889e-8 / (ROM word 0000928a * 1e-6), clamped to \
+1e-4..3.55, into ffff9c68, the divisor of both charge outputs of 0004efa6. \
+0004ebe6 reads ffff2598 while bit 3 of ROM byte 00008958 is set, as in the \
+stock byte 0x9a, and ffff2664 otherwise, times 1/256. ffff2ee4 / 128 enters \
+0004d480, 0004d51e and the volume terms as an angle in degrees; 0003ec22 \
+writes it. 0004cd6c forms the center 16834 + ROM word 00008d8e / 512 - 0.5 * \
+ffff37b2 of the event angle pair; 0003e3b8 and 0003ebe8 write ffff37b2. The \
+physical quantity of each word is unestablished.""",
+]
+level = "code"
+role = "driver"
+block = "airflow_load/block"
+
+[[source]]
+layout = "jk78c"
+path = "defs/JK78C.can.md"
+sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
+sections = ["Calibration boundary", "Producers of the transmit words"]
+anchor = "FUN_0004C2B2"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004c2b2"
+former = ["sociable-crayfish/fn/jk78c-0004c2b2"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004c2b2"

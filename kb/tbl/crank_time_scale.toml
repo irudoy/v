@@ -1,0 +1,31 @@
+summary = """
+Numerator of the crank degree time of charge_valve_duration_builder, read \
+times 1/4096: the stock word 4096 is 1.0, so the time is 1 / (9.375 * engine \
+speed ffff11a0) seconds. 00051bb8 also reads it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008dcc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ef46"
+note = "The load at 0004ef46 in charge_valve_duration_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_valve_duration_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ef46"

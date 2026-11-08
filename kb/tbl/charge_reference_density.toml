@@ -1,0 +1,48 @@
+summary = """
+Divisor of the density argument of charge_flow_c_builder and \
+charge_target_flow_c_builder, read times 2^-14: the stock word 19399 is \
+1.184; charge_flow_c_builder limits the quotient to 4."""
+note = [
+    """
+1.184 equals the density of air in kg/m3 at charge_reference_temperature and \
+101.3 kPa under the gas-constant reading; no independent source binds the \
+unit.""",
+]
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00009196"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e9ac"
+note = "The load at 0004e9ac in charge_flow_c_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_flow_c_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e9ac"
+
+[[link]]
+type = "reader"
+to = "charge_target_flow_c_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00053002"

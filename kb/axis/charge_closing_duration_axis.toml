@@ -1,0 +1,50 @@
+summary = """
+Measured duration axis of charge_closing_correction_surface, indexed by the \
+duration times 512: 12800..51200, 25..100."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017184"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec42"
+note = "The load at 0004ec42 passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_closing_correction_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec42"
+
+[[link]]
+type = "reader"
+to = "charge_closing_limit_check/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e3d2"
+
+[[link]]
+type = "reader"
+to = "charge_target_closing_correction_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052868"

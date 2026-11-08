@@ -1,0 +1,30 @@
+summary = """
+Angle of charge_target_clearance_builder, read times 1/64 less 360 degrees: \
+the stock word 23360 is 365.0, 5 degrees."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00008d46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000521f6"
+note = "The load at 000521f6 in charge_target_clearance_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_target_clearance_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000521f6"

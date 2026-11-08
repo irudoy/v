@@ -1,0 +1,120 @@
+summary = """
+Reference temperature of the charge model, read times 1/128: the stock word \
+38144 is 298.0, in kelvin under the gas-constant reading of \
+charge_gas_constant. charge_ratio_temperature_lookup scales the isentropic \
+ratio by it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000091b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d7ec"
+note = "The load at 0004d7ec in charge_flow_a_builder reads this word."
+
+[[link]]
+type = "reader"
+to = "charge_flow_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d7ec"
+
+[[link]]
+type = "reader"
+to = "charge_flow_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ddda"
+
+[[link]]
+type = "reader"
+to = "charge_ratio_temperature_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004dbfc"
+
+[[link]]
+type = "reader"
+to = "charge_target_flow_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051ee6"
+
+[[link]]
+type = "reader"
+to = "charge_target_volume_rate_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052132"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e11a"
+
+[[link]]
+type = "reader"
+to = "charge_volume_rate_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e6cc"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_a_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e268"
+
+[[link]]
+type = "reader"
+to = "charge_volume_slope_b_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e60c"

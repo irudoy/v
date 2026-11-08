@@ -1,15 +1,16 @@
 summary = """
 Looks up the fill ratio of every VVEL state code for \
-throttle_target_area_model. It interpolates the seven state tables by word \
-ffff11a0 and a load coordinate and the running curve by ffff11a0, and stores \
-each word times 2^-14 at ffff9a80..ffff9a9c. The coordinate is \
-vvel_load_coordinate ffff238a while bit 0 of ROM byte 00008958 is clear, as \
-in the stock byte 0x9a, and the previous model output ffff9aa8 otherwise. It \
-copies the ratio of the current code ffff43f2 to ffff9aa4 and of the \
-previous code ffff4480 to ffff9aa0, blends the current ratio with the \
+throttle_target_area_model. It interpolates the seven state tables by engine \
+speed ffff11a0 and a load coordinate and the running curve by engine speed \
+ffff11a0, and stores each word times 2^-14 at ffff9a80..ffff9a9c. The \
+coordinate is vvel_load_coordinate ffff238a while bit 0 of ROM byte 00008958 \
+is clear, as in the stock byte 0x9a, and the previous model output ffff9aa8 \
+otherwise. It copies the ratio of the current code ffff43f2 to ffff9aa4 and \
+of the previous code ffff4480 to ffff9aa0, blends the current ratio with the \
 previous one, or with a held blend at ffff9aec or ffff9af0 while bit 4 of \
 ffff4546 is clear, by the weight ffff43f0 / 32768, and stores the blend at \
-ffff9a78 and the blend times ffff3746 times 1e-7 at ffff9a7c."""
+ffff9a78 and the blend times charge_model_throttle_charge ffff3746 times \
+1e-7 at ffff9a7c."""
 level = "code"
 role = "accessor"
 block = "throttle_target/block"

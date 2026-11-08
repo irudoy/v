@@ -1,0 +1,24 @@
+summary = """
+Forms the valve flow area of charge_model. It looks up \
+charge_valve_lift_surface at the mean measured duration, clamped to 0..100 \
+and times 512, and the angle p1 - p3, clamped to 0..160 degrees and times \
+256, and forms the lift as the word times 2^-21 minus \
+charge_valve_lift_offset times 2^-24, clamped to 0..0.015. It looks up \
+charge_valve_area_ratio_curve at the lift times 2^21, stores the ratio word \
+times 2^-15 at ffff9d88 and the area (charge_valve_diameter / 2)^2 * 3.1415 \
+* ratio at ffff9d80."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004e776"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004e776"
+note = """
+The reviewed listing establishes the calls at 0004e7da..0004e898 and the \
+stores at 0004e7a6..0004e8ce."""

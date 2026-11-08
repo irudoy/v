@@ -1,0 +1,19 @@
+summary = """
+Looks up charge_duration_coefficient_curve at the mean measured duration d, \
+clamped to 10..70, as d * 1024 - 10240, and stores the word times 2^-36 at \
+ffff9cd0."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004d56c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d56c"
+note = """
+The reviewed listing establishes the calls at 0004d60e and the stores at \
+0004d624."""

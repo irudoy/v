@@ -1,0 +1,39 @@
+summary = """
+Measured duration axis of charge_valve_partial_duration_surface, indexed by \
+the duration times 512: 11520..46080, 22.5..90."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00017024"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004eeec"
+note = "The load at 0004eeec passes this axis to its lookup."
+
+[[link]]
+type = "reader"
+to = "charge_target_partial_duration_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000526ec"
+
+[[link]]
+type = "reader"
+to = "charge_valve_duration_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004eeec"

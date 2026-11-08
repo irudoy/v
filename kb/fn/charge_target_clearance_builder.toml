@@ -1,0 +1,21 @@
+summary = """
+Forms a volume term of charge_target_model: cylinder_volume_curve at \
+charge_target_clearance_angle / 64 - 360 degrees times 2e-8, stored at \
+ffffa010, minus charge_clearance_volume, stored at ffffa008, and that \
+difference divided by the angle at ffffa00c; it passes them to 000522aa and \
+returns ffffa014."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000521e2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000521e2"
+note = """
+The reviewed listing establishes the calls at 00052242..00052290 and the \
+stores at 00052260..0005228c."""

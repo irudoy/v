@@ -1574,9 +1574,10 @@
     </table>
 
     <!-- 0x15AA2  16 uint16  map [code]
-         accessor 0x55E78, 0x55FF2; r4 operand: reviewed-target
+         accessor 0x4EE30, 0x52A64, 0x55E78, 0x55FF2; r4 operand: reviewed-target
          scaling x Stored count; axis 0x17004 raw
-         Exact JK78C target-native table at 0x15aa2 bound to accessor 0x55e78 through literal
+         Exact JK78C target-native table at 0x15aa2 bound to accessor 0x4ee30 through literal
+         0x4f000, accessor 0x52a64 through literal 0x52b98, accessor 0x55e78 through literal
          0x56084, accessor 0x55ff2 through literal 0x562ec. Engineering conversion is
          unestablished. Retained hypothesis: x*2^-18; proposed editor-grid inverse x*2^18.
          Origin: the float literal 2^-18 at 0x56090. Editor values are stored counts; no
@@ -4265,16 +4266,17 @@
     </table>
 
     <!-- 0x11ACE  16x16 uint16  map [code]
-         accessor 0x57E46; r4 operand: reviewed-target
+         accessor 0x4DAB2, 0x57E46; r4 operand: reviewed-target
          scaling x Stored count; Y Axis 0x147E0 raw; X Axis 0x154AC raw
-         Exact JK78C target-native table at 0x11ace bound to accessor 0x57e46 through literal
-         0x581a4. Stock lookup status: active. Scheduler entry 00021b80 calls the float model
-         root 00057782; reader 00057e46 reads this role without a calibration branch. The root
-         publishes the words ffff3290, ffff3292, ffff33ac and ffff353a to the consumer 00058d98,
-         whose output byte ffff2346 nonlinear_transition_controller and seven other functions
-         read. The issue #114 float model also reads it at 0004dab2. Stored counts are retained.
-         Physical quantities and engineering conversions are unresolved. Editor values are
-         stored counts; no engineering conversion is established.
+         Exact JK78C target-native table at 0x11ace bound to accessor 0x4dab2 through literal
+         0x4dd7c, accessor 0x57e46 through literal 0x581a4. Stock lookup status: active.
+         Scheduler entry 00021b80 calls the float model root 00057782; reader 00057e46 reads
+         this role without a calibration branch. The root publishes the words ffff3290,
+         ffff3292, ffff33ac and ffff353a to the consumer 00058d98, whose output byte ffff2346
+         nonlinear_transition_controller and seven other functions read. The issue #114 float
+         model also reads it at 0004dab2. Stored counts are retained. Physical quantities and
+         engineering conversions are unresolved. Editor values are stored counts; no engineering
+         conversion is established.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Timing Float Ratio Response Surface [stored count]"
            category="Ignition//Timing Model Corrections" storagetype="uint16"

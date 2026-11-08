@@ -76,6 +76,28 @@ at = "jk78c:00055eb4"
 
 [[link]]
 type = "reader"
+to = "charge_target_duration_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052b94"
+
+[[link]]
+type = "reader"
+to = "charge_valve_duration_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004f004"
+
+[[link]]
+type = "reader"
 to = "clay-galago/fn"
 role = "accessor"
 

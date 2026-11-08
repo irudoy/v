@@ -1,0 +1,26 @@
+summary = """
+Forms the open-time terms of charge_model. It looks up \
+vvel_duration_characteristic at the mean measured duration times 512 and \
+charge_valve_partial_duration_surface at the angle p2 - p3, clamped to 0..90 \
+degrees and times 512, and the same duration, stores both times 2^-18 at \
+ffff9dd8 and ffff9ddc and their difference at ffff9dc8. Its output is \
+min(crank_time_scale / (9.375 * engine speed ffff11a0), 0.00167), the time \
+of one crank degree in seconds, which charge_model stores at \
+crank_degree_time ffff2e3c; it stores twice the difference times that time \
+at ffff9dd0 and that product times min(charge_duration_time_gain * p4 / 128, \
+400) at ffff9dcc."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ee30"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee30"
+note = """
+The reviewed listing establishes the calls at 0004ee9e..0004eef0 and the \
+stores at 0004eea4..0004ef86."""

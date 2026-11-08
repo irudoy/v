@@ -1,0 +1,21 @@
+summary = """
+Forms the volume difference of charge_model: cylinder_volume_curve at the \
+angles a2 - 360 and a1 - 360 degrees, clamped to 0..360 and times 128, \
+stored times 2e-8 at ffff9db8 and ffff9dbc, and stores at ffff9db4 the \
+larger of a factor times their difference and charge_clearance_volume * \
+0.233."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004ec68"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec68"
+note = """
+The reviewed listing establishes the calls at 0004ecd4..0004ed94 and the \
+stores at 0004ece6..0004edb4."""

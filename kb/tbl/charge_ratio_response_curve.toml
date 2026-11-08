@@ -1,0 +1,56 @@
+summary = """
+32-point response over a ratio: charge_ratio_response_lookup reads it times \
+2e-5 at the ratio times 2500 for the byte ffff310e, and \
+charge_target_ratio_inverse reads charge_ratio_response_axis as data over \
+it. Stock values rise from 0 to 50000, 0..1.0."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 32
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015f5a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee12"
+note = """
+The load at 0004ee12 passes this table to its lookup in \
+charge_ratio_response_lookup."""
+
+[[link]]
+type = "axis"
+to = "charge_ratio_response_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee14"
+
+[[link]]
+type = "reader"
+to = "charge_ratio_response_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ee12"
+
+[[link]]
+type = "reader"
+to = "charge_target_ratio_inverse/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052944"

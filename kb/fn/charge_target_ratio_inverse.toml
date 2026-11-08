@@ -1,0 +1,20 @@
+summary = """
+Inverts charge_ratio_response_curve for charge_target_model: it reads \
+charge_ratio_response_axis as data over the curve at min(p1 / max(p2, \
+8.68e-10), 1) times 50000 and stores the ratio word times p2 times 0.0004 at \
+ffffa03c."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00052890"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052890"
+note = """
+The reviewed listing establishes the calls at 00052948 and the stores at \
+0005295c."""

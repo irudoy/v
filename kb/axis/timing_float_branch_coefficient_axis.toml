@@ -112,6 +112,28 @@ interpolation contract; no engineering conversion is inferred."""
 
 [[link]]
 type = "reader"
+to = "charge_angle_coefficient_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004d5c8"
+
+[[link]]
+type = "reader"
+to = "charge_target_angle_coefficient_lookup/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00051e48"
+
+[[link]]
+type = "reader"
 to = "timing_float_branch_coefficient_reader/fn"
 layouts = ["jk78c"]
 role = "accessor"

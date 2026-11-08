@@ -1,0 +1,44 @@
+summary = """
+Volume floor of charge_volume_difference_builder and the clearance term of \
+charge_target_clearance_builder, read times 2^-28: the stock word 16536 is \
+6.160e-5, the value of cylinder_volume_curve at 0 degrees, 3080 * 2e-8. \
+0004d626 also reads it."""
+level = "code"
+role = "table"
+access = "direct-scalar"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000092cc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec80"
+note = """
+The load at 0004ec80 in charge_volume_difference_builder reads this word."""
+
+[[link]]
+type = "reader"
+to = "charge_target_clearance_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00052256"
+
+[[link]]
+type = "reader"
+to = "charge_volume_difference_builder/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004ec80"

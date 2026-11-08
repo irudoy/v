@@ -34,7 +34,7 @@ at = "jk78c:0004bfd6"
 
 [[link]]
 type = "axis"
-to = "vvel_fill_word_axis_validation/axis"
+to = "vvel_fill_speed_axis_validation/axis"
 slot = "x"
 layouts = ["jk78c"]
 

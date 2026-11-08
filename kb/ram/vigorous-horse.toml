@@ -106,6 +106,19 @@ kind = "spec"
 path = "defs/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff11d4"
+name = "marigold-zebu"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003b89a"
+note = """
+0003b87e stores ffff1186 >> 3 here, the form of the 7mfk source ffff11e8 = \
+ffff1196 >> 3; kb suggest reports this address as the unique match."""
+
 [[link]]
 type = "reader"
 to = "base_fuel_schedule_producer/fn"
