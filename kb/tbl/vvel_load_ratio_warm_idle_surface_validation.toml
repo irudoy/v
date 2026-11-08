@@ -1,0 +1,60 @@
+summary = """
+16x16 Q14 load ratio of VVEL state code 2 (mode 5, warm idle) over ffff11bc \
+and ffff1cae: vvel_load_ratio_lookup_validation reads it times 1/163.84 as \
+percent, and the stage blends it into the VVEL load ratio while the state \
+code is 2. 16384 is 100 percent. Stock values are 13435..17039, 82..104 \
+percent."""
+note = ["Its stock bytes equal those of the primary table 0000dbce."]
+level = "code"
+role = "table"
+former = ["vvel_load_ratio_warm_idle_surface_ch2"]
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001860c"
+former = ["vvel_load_ratio_warm_idle_surface_ch2/tbl/jk78c-0001860c"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f7c"
+note = """
+The load at 00046f7c passes this table to its lookup in \
+vvel_load_ratio_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_ratio_warm_idle_request_axis_validation/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f8a"
+
+[[link]]
+type = "axis"
+to = "vvel_ratio_warm_idle_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f8e"
+
+[[link]]
+type = "reader"
+to = "vvel_load_ratio_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f7c"

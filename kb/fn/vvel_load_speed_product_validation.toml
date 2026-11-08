@@ -1,0 +1,23 @@
+summary = """
+Forms the fraction ffff3804 * ffff1cae * 2^-30 for \
+vvel_load_coordinate_publisher_validation, returns it times 100 as the \
+percent coordinate, and returns the fraction times \
+vvel_load_speed_curve_validation at second speed word ffff11bc times 1e-7, \
+capped at 0.0025."""
+level = "code"
+role = "accessor"
+block = "airflow_load/block"
+former = ["vvel_load_speed_product_ch2"]
+
+[[symbol]]
+layout = "jk78c"
+address = "00047bee"
+former = ["vvel_load_speed_product_ch2/fn/jk78c-00047bee"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047bee"
+note = """
+The reviewed listing establishes the curve lookup at 00047c1c and the F32 \
+constants at 00047cc0..00047cd0."""

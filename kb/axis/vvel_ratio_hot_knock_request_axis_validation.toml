@@ -1,0 +1,22 @@
+summary = """
+Request word ffff1cae coordinate of \
+vvel_load_ratio_hot_knock_surface_validation. The physical quantity of the \
+request word remains unresolved."""
+level = "code"
+former = ["vvel_load_ratio_hot_idle_knock_request_axis_ch2"]
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b38a"
+former = [
+    "vvel_load_ratio_hot_idle_knock_request_axis_ch2/axis/jk78c-0001b38a",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047018"
+note = "The load at 00047018 passes this axis to its lookup."

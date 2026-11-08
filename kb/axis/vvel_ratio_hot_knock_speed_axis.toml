@@ -1,0 +1,24 @@
+summary = "Speed coordinate ffff11a6 of vvel_load_ratio_hot_knock_surface."
+note = [
+    """
+The coordinate ffff11a6 is the engine-speed word that \
+vvel_duration_running_axis reads at 3.125 RPM per count; at that scale the \
+stock breakpoints span the stated RPM range. This axis states no scale of \
+its own.""",
+]
+level = "code"
+former = ["vvel_load_ratio_hot_idle_knock_speed_axis_ch1"]
+quantity = "rpm"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001526c"
+former = ["vvel_load_ratio_hot_idle_knock_speed_axis_ch1/axis/jk78c-0001526c"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046aa6"
+note = "The load at 00046aa6 passes this axis to its lookup."

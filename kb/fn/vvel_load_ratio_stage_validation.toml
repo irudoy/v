@@ -1,0 +1,29 @@
+summary = """
+Validation copy of carmine-cockatoo (0004678c). It maps mode byte ffff2830 \
+through the same state-code table in 00046e3c, keeps the current code \
+ffff3802, the previous code ffff3803 and the weight ffff3800, takes the \
+state ratios from vvel_load_ratio_lookup_validation by request word ffff1cae \
+and second speed word ffff11bc, blends them in 0004715c and stores the \
+result times 163.84 at ffff3804. vvel_load_coordinate_publisher_validation \
+reads ffff3804. Task table entry 00021c20 runs it, and the adjacent entries \
+run vvel_load_coordinate_publisher_validation, 0004f3fe and 0004a134. \
+0004a134 reads ffff382c, ffff382a and ffff3822, and its callees look up \
+throttle_angle_to_area_validation, so this chain is the validation copy of \
+the VVEL load ratio of carmine-cockatoo."""
+level = "code"
+role = "driver"
+block = "airflow_load/block"
+former = ["vvel_load_ratio_stage_ch2"]
+
+[[symbol]]
+layout = "jk78c"
+address = "00046d3c"
+former = ["vvel_load_ratio_stage_ch2/fn/jk78c-00046d3c"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046d3c"
+note = """
+The reviewed listing establishes the calls at 00046d54, 00046d84, 00046daa \
+and 00046dc4 and the stores at 00046d6c..00046dda."""

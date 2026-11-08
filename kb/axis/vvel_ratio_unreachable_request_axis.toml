@@ -1,0 +1,19 @@
+summary = """
+Request word ffff197a coordinate of vvel_load_ratio_unreachable_surface. The \
+physical quantity of the request word remains unresolved."""
+level = "code"
+former = ["vvel_load_ratio_unreachable_request_axis_ch1"]
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000163ba"
+former = ["vvel_load_ratio_unreachable_request_axis_ch1/axis/jk78c-000163ba"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046ac6"
+note = "The load at 00046ac6 passes this axis to its lookup."

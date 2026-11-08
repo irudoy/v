@@ -1,0 +1,21 @@
+summary = """
+Request word ffff197a coordinate of vvel_load_ratio_idle_learning_surface. \
+The physical quantity of the request word remains unresolved."""
+level = "code"
+former = ["vvel_load_ratio_idle_learning_request_axis_ch1"]
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001639a"
+former = [
+    "vvel_load_ratio_idle_learning_request_axis_ch1/axis/jk78c-0001639a",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046a68"
+note = "The load at 00046a68 passes this axis to its lookup."

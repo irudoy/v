@@ -1,0 +1,63 @@
+summary = """
+16x16 word surface of vvel_load_coordinate_publisher over engine speed \
+ffff11a6 and the VVEL load coordinate; the publisher stores its value at \
+ffff365c, which 00047ce8 and 000518e6 read. Stock values are 1699..24895. \
+Its physical quantity remains unresolved."""
+note = [
+    """
+ROM byte 0000896c bit 5 replaces ffff365c by ffff5a80 or the ROM word \
+00008e1a, as ROM byte 000085f6 bit 1 selects.""",
+]
+level = "code"
+role = "table"
+former = ["vvel_load_surface_ch1"]
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0000f74e"
+former = ["vvel_load_surface_ch1/tbl/jk78c-0000f74e"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047312"
+note = """
+The load at 00047312 passes this table to its lookup in \
+vvel_load_coordinate_publisher."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_surface_coordinate_axis/axis"
+slot = "y"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047316"
+
+[[link]]
+type = "axis"
+to = "vvel_load_surface_speed_axis/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047314"
+
+[[link]]
+type = "reader"
+to = "vvel_load_coordinate_publisher/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047312"

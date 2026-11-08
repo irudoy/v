@@ -1,0 +1,48 @@
+summary = """
+16-point word curve of vvel_load_speed_product_validation over second speed \
+word ffff11bc. Its product with the validation load fraction, capped at \
+25000, is stored at ffff382a, which 0004a134 reads. Stock values are \
+5352..7194."""
+note = ["Its stock bytes equal vvel_load_speed_curve (1620a)."]
+level = "code"
+role = "table"
+former = ["vvel_load_speed_curve_ch2"]
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b3fa"
+former = ["vvel_load_speed_curve_ch2/tbl/jk78c-0001b3fa"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047bf6"
+note = """
+The load at 00047bf6 passes this table to its lookup in \
+vvel_load_speed_product_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_load_speed_curve_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047c02"
+
+[[link]]
+type = "reader"
+to = "vvel_load_speed_product_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047bf6"

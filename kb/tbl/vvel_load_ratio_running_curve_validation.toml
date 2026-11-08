@@ -1,0 +1,48 @@
+summary = """
+16-point Q14 load ratio of VVEL state code 8 (mode 15, warm running above \
+idle) over ffff11bc; vvel_load_ratio_lookup_validation reads it times \
+1/163.84 as percent. 16384 is 100 percent; stock 18022, 110 percent, up to \
+the fourth breakpoint and 16384 above."""
+note = ["Its stock bytes equal those of the primary curve 1505c."]
+level = "code"
+role = "table"
+former = ["vvel_load_ratio_running_curve_ch2"]
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ab9a"
+former = ["vvel_load_ratio_running_curve_ch2/tbl/jk78c-0001ab9a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f66"
+note = """
+The load at 00046f66 passes this table to its lookup in \
+vvel_load_ratio_lookup_validation."""
+
+[[link]]
+type = "axis"
+to = "vvel_ratio_running_speed_axis_validation/axis"
+slot = "x"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f6c"
+
+[[link]]
+type = "reader"
+to = "vvel_load_ratio_lookup_validation/fn"
+layouts = ["jk78c"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00046f66"

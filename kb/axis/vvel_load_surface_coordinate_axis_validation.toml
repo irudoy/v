@@ -1,0 +1,19 @@
+summary = """
+Validation VVEL load coordinate axis of vvel_load_surface_validation, \
+8192..65535 in units of 1/655.36 percent."""
+level = "code"
+former = ["vvel_load_surface_coordinate_axis_ch2"]
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b3da"
+former = ["vvel_load_surface_coordinate_axis_ch2/axis/jk78c-0001b3da"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00047c7a"
+note = "The load at 00047c7a passes this axis to its lookup."
